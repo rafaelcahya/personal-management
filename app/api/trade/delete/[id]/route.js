@@ -1,4 +1,4 @@
-import { getDeleteTrade } from "@/lib/trade/services/getDeleteTrade";
+import { getDeleteTrade } from "@/lib/services/trade/getDeleteTrade";
 import { toast } from "sonner";
 
 export async function DELETE(req, { params }) {
