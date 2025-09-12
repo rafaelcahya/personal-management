@@ -30,7 +30,7 @@ function EventList() {
 
     return (
         <div className="shadow shadow-black/5 border-none bg-white/70 backdrop-blur-3xl space-y-4 p-6 rounded-2xl overflow-x-auto">
-            <div className="flex justify-between items-center gap-20">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-semibold tracking-[0.010em]">
                         Event List
@@ -56,7 +56,7 @@ function EventList() {
                 <Table>
                     <TableHeader className="bg-violet-50 rounded-xl">
                         <TableRow className="border-none">
-                            <TableHead className="rounded-l-lg w-[50%] min-w-[50%] max-w-[50%]">
+                            <TableHead className="rounded-l-lg w-[400px] md:w-1/2">
                                 Event Description
                             </TableHead>
                             <TableHead>Impact Direction</TableHead>
@@ -71,7 +71,7 @@ function EventList() {
                                 key={index}
                                 className="border-dashed hover:bg-violet-50"
                             >
-                                <TableCell className="w-[50%] min-w-[50%] max-w-[50%] whitespace-normal">
+                                <TableCell className="whitespace-normal">
                                     {event.event_description}
                                 </TableCell>
                                 <TableCell>{event.impact_direction}</TableCell>

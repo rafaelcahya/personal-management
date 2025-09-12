@@ -19,5 +19,5 @@ export default function CatchAll() {
 		localStorage.removeItem("user");
 	}, [router]);
 
-	return null; // atau loading spinner
+	return null;
 }

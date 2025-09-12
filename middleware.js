@@ -1,38 +1,38 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 
-const LOGIN_PATH = "/auth/login";
-const DASHBOARD_PATH = "/dashboard";
+const secret = new TextEncoder().encode(
+    process.env.JWT_SECRET || "default-secret"
+);
 
-export async function middleware(req) {
-	const token = req.cookies.get("token")?.value;
-	const { pathname } = req.nextUrl;
+export async function middleware(request) {
+    const token = request.cookies.get("authToken")?.value;
+    const { pathname } = request.nextUrl;
 
-	let user = null;
+    // console.log("🔑 Middleware token:", token);
 
-	if (token) {
-		try {
-			user = jwt.verify(token, process.env.JWT_SECRET);
-		} catch (e) {
-			// Token invalid / expired
-		}
-	}
+    if (pathname.startsWith("/auth") || pathname.startsWith("/api")) {
+        return NextResponse.next();
+    }
 
-	const isAuthRoute = pathname.startsWith(LOGIN_PATH);
-	const isProtected =
-		pathname.startsWith(DASHBOARD_PATH) || pathname.startsWith("/protected");
+    if (pathname.startsWith("/main")) {
+        if (!token) {
+            console.log("❌ No token, redirecting...");
+            return NextResponse.redirect(new URL("/auth/login", request.url));
+        }
 
-	if (!user && isProtected) {
-		return NextResponse.redirect(new URL(LOGIN_PATH, req.url));
-	}
+        try {
+            await jwtVerify(token, secret);
+            // console.log("✅ Token valid");
+        } catch (err) {
+            // console.log("❌ Invalid token:", err.message);
+            return NextResponse.redirect(new URL("/auth/login", request.url));
+        }
+    }
 
-	if (user && isAuthRoute) {
-		return NextResponse.redirect(new URL(DASHBOARD_PATH, req.url));
-	}
-
-	return NextResponse.next();
+    return NextResponse.next();
 }
 
 export const config = {
-	matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+    matcher: ["/main/:path*"],
 };

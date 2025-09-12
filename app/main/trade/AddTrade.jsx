@@ -148,8 +148,8 @@ export default function AddNewTrade({ onAdded }) {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-2xl max-h-[90svh] overflow-y-auto">
-                <DialogHeader>
+            <DialogContent className="sm:max-w-2xl max-h-[90svh] overflow-y-auto space-y-5">
+                <DialogHeader className="text-left">
                     <DialogTitle>Add New Trade</DialogTitle>
                     <DialogDescription>
                         Record your latest trade details to keep track of
@@ -357,11 +357,17 @@ export default function AddNewTrade({ onAdded }) {
                                                         placeholder={`Select ${label}`}
                                                     />
                                                 </SelectTrigger>
-                                                <SelectContent>
+                                                <SelectContent
+                                                    className="w-auto max-w-[90vw] min-w-[200px] overflow-auto"
+                                                    style={{
+                                                        whiteSpace: "normal",
+                                                    }}
+                                                >
                                                     {data.map((opt) => (
                                                         <SelectItem
                                                             key={opt.id}
                                                             value={opt[key]}
+                                                            className="whitespace-normal break-words"
                                                         >
                                                             {opt[key]}
                                                         </SelectItem>
@@ -385,7 +391,7 @@ export default function AddNewTrade({ onAdded }) {
                                         <Textarea
                                             {...field}
                                             placeholder="Additional notes"
-                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm"
                                         />
                                     </FormControl>
                                 </FormItem>

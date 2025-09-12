@@ -32,27 +32,34 @@ export default function LoginPage() {
             return;
         }
 
-        const res = await fetch("/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
-        });
+        try {
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+                credentials: "include",
+            });
 
-        const data = await res.json();
+            const data = await res.json();
+            console.log("LOGIN RESPONSE:", data);
 
-        if (!res.ok) {
-            toast.error(data.error || "Login failed");
-            setLoading(false);
-            return;
-        }
+            if (!res.ok) {
+                toast.error(data.error || "Login failed");
+                setLoading(false);
+                return;
+            }
 
-        if (res.ok) {
+            localStorage.setItem("tradform-user", JSON.stringify(data.user));
+
             toast.success("Login successful!");
-            localStorage.setItem("user", JSON.stringify(data.user));
-            router.push("/main/dashboard");
+            router.replace("/main/dashboard");
+        } catch (err) {
+            toast.error("Unexpected error occurred");
+        } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <div
@@ -80,10 +87,10 @@ export default function LoginPage() {
                             <Input
                                 id="username"
                                 type="text"
-                                placeholder="cahya"
+                                placeholder="Username"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm"
                             />
                         </div>
                         <div className="space-y-2">

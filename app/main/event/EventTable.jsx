@@ -80,7 +80,7 @@ function EventTable({ events: initialEvents }) {
                     placeholder="Search event..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="flex-1 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                    className="flex-1 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm py-2"
                 />
 
                 {/* Impact Filter */}
@@ -102,7 +102,7 @@ function EventTable({ events: initialEvents }) {
                 <Table noWrapper>
                     <TableHeader className="bg-violet-50 sticky top-0 z-10">
                         <TableRow className=" border-none">
-                            <TableHead className="w-1/2 min-w-[50%] max-w-[50%] rounded-l-xl">
+                            <TableHead className="w-[400px] md:w-1/2 rounded-l-xl">
                                 Event Description
                             </TableHead>
                             <TableHead>Impact Direction</TableHead>
@@ -119,7 +119,7 @@ function EventTable({ events: initialEvents }) {
                                 className="border-dashed hover:bg-violet-50 cursor-pointer"
                                 onClick={() => setSelectedEvent(event)}
                             >
-                                <TableCell className="w-[50%] min-w-[50%] max-w-[50%] whitespace-normal">
+                                <TableCell className="whitespace-normal">
                                     {highlightKeyword(
                                         event.event_description,
                                         searchTerm,

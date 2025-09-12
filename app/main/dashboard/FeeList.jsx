@@ -30,7 +30,7 @@ function FeeList() {
 
     return (
         <div className="shadow shadow-black/5 border-none bg-white/70 backdrop-blur-3xl space-y-4 p-6 rounded-2xl overflow-x-auto">
-            <div className="flex justify-between items-center gap-20">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-semibold tracking-[0.010em]">
                         Fee List
