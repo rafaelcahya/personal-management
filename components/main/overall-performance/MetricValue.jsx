@@ -10,7 +10,7 @@ export default function MetricValue({
     indicator = null,
 }) {
     const getIndicatorColor = (val) => {
-        if (val > 10) return "text-emerald-500 bg-emerald-50";
+        if (val > 10) return "text-green-500 bg-green-50";
         if (val >= 0) return "text-orange-500 bg-orange-50";
         return "text-rose-500 bg-rose-50";
     };

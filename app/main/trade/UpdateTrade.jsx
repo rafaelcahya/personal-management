@@ -535,7 +535,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <DialogClose asChild>
                                         <Button
                                             type="button"
-                                            className="text-violet-600 bg-white hover:bg-purple-50"
+                                            className="text-violet-600 bg-white hover:bg-violet-50"
                                         >
                                             Cancel
                                         </Button>

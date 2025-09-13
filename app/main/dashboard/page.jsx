@@ -8,6 +8,7 @@ import EventList from "./EventList";
 import OverallPerformance from "./OverallPerformance";
 import Settings from "../settings/Settings";
 import Logout from "../auth/logout/Logout";
+import Breadcrumbs from "../../../components/ui/common/Breadcrumbs"
 
 export default function Page() {
     const [user, setUser] = useState(null);
@@ -28,6 +29,7 @@ export default function Page() {
 
     return (
         <div className="min-h-svh flex flex-col gap-5 w-full mx-auto px-6 py-6 xl:py-20 max-w-full sm:max-w-xl md:max-w-5xl xl:max-w-7xl">
+            <Breadcrumbs/>
             <div className="flex flex-wrap justify-between items-center">
                 <div className="space-y-1">
                     <h1 className="text-xl font-semibold">

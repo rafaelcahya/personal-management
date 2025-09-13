@@ -29,10 +29,10 @@ function TradeList() {
     }, []);
 
     const profitLossColor = (value) =>
-        value < 0 ? "text-rose-600" : "text-emerald-600";
+        value < 0 ? "text-rose-600" : "text-green-600";
 
     return (
-        <div className="shadow shadow-black/5 border-none bg-white/70 backdrop-blur-3xl space-y-4 p-6 rounded-2xl overflow-x-auto">
+        <div className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl space-y-4 p-6 overflow-x-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-semibold tracking-[0.010em]">
@@ -43,11 +43,11 @@ function TradeList() {
                         and what’s not.
                     </p>
                 </div>
-                <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white">
-                    <Link href="/main/trade" prefetch={false}>
+                <Link href="/main/trade" prefetch={false}>
+                    <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white">
                         Trade
-                    </Link>
-                </Button>
+                    </Button>
+                </Link>
             </div>
             {loading ? (
                 <LoadingComponent description="Loading trade list..." />

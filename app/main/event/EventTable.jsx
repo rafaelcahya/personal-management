@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
     Table,
     TableBody,
@@ -19,10 +20,12 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import AddEvent from "./AddEvent";
 import UpdateEvent from "./UpdateEvent";
-
 import { highlightKeyword } from "@/lib/utils/highlightKeyword";
+import { ChevronLeft } from "lucide-react";
+import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
 
 function EventTable({ events: initialEvents }) {
     const [eventList, setEventList] = useState(initialEvents || []);
@@ -57,19 +60,31 @@ function EventTable({ events: initialEvents }) {
     }, [initialEvents]);
 
     return (
-        <div className="shadow shadow-black/5 border-none bg-white/70 backdrop-blur-3xl flex flex-col flex-1 p-6 rounded-2xl overflow-hidden space-y-5">
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-0 sm:gap-20">
-                <div>
-                    <p className="text-lg font-semibold tracking-[0.010em]">
-                        Event List
-                    </p>
-                    <p className="text-sm text-gray-500">
-                        Track key political, economic, and global events that
-                        move the market.
-                    </p>
+        <div className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl flex flex-col flex-1 p-6 overflow-hidden space-y-5">
+            {/* Header Section */}
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
+                <div className="space-y-2">
+                    <Breadcrumbs />
+                    <div>
+                        <p className="text-lg font-semibold tracking-[0.010em]">
+                            Event List
+                        </p>
+                        <p className="text-sm text-gray-500">
+                            Track key political, economic, and global events
+                            that move the market.
+                        </p>
+                    </div>
                 </div>
-                <div className="hidden sm:block">
-                    <AddEvent onAdded={fetchEvents} />
+                <div className="flex items-center gap-5">
+                    <Link href="/main/dashboard" className="hidden sm:block">
+                        <Button className="bg-transparent hover:bg-violet-50 text-violet-600">
+                            <ChevronLeft />
+                            Back
+                        </Button>
+                    </Link>
+                    <div className="hidden sm:block">
+                        <AddEvent onAdded={fetchEvents} />
+                    </div>
                 </div>
             </div>
 
@@ -85,7 +100,7 @@ function EventTable({ events: initialEvents }) {
 
                 {/* Impact Filter */}
                 <Select value={impactFilter} onValueChange={setImpactFilter}>
-                    <SelectTrigger className="w-48">
+                    <SelectTrigger className="w-full sm:w-48">
                         <SelectValue placeholder="All Impacts" />
                     </SelectTrigger>
                     <SelectContent>
@@ -102,11 +117,11 @@ function EventTable({ events: initialEvents }) {
                 <Table noWrapper>
                     <TableHeader className="bg-violet-50 sticky top-0 z-10">
                         <TableRow className=" border-none">
-                            <TableHead className="w-[400px] md:w-1/2 rounded-l-xl">
+                            <TableHead className="w-[400px] md:w-1/2 rounded-l-lg">
                                 Event Description
                             </TableHead>
                             <TableHead>Impact Direction</TableHead>
-                            <TableHead className="rounded-r-xl">
+                            <TableHead className="rounded-r-lg">
                                 Event Date
                             </TableHead>
                         </TableRow>
@@ -116,14 +131,14 @@ function EventTable({ events: initialEvents }) {
                         {filteredEvents.map((event, index) => (
                             <TableRow
                                 key={index}
-                                className="border-dashed hover:bg-violet-50 cursor-pointer"
+                                className="border-dashed hover:bg-violet-50 rounded-l-lg cursor-pointer"
                                 onClick={() => setSelectedEvent(event)}
                             >
                                 <TableCell className="whitespace-normal">
                                     {highlightKeyword(
                                         event.event_description,
                                         searchTerm,
-                                        "bg-violet-200 text-violet-600 font-semibold"
+                                        "bg-violet-100 text-violet-600 font-medium"
                                     )}
                                 </TableCell>
                                 <TableCell>{event.impact_direction}</TableCell>

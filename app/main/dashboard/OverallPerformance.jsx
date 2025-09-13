@@ -14,6 +14,7 @@ import {
     Wallet,
 } from "lucide-react";
 import SkeletonBlock from "../../../components/ui/common/SkeletonBlock";
+import { Separator } from "@/components/ui/separator";
 
 function OverallPerformance() {
     const [metrics, setMetrics] = useState({});
@@ -64,13 +65,13 @@ function OverallPerformance() {
     } = metrics || {};
 
     const commentStyleVal = (val, threshold = 1) =>
-        val >= threshold ? "text-emerald-600" : "text-rose-600";
+        val >= threshold ? "text-green-600" : "text-rose-600";
 
     return (
         <main className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Card className="shadow-black/5 border-none bg-white/70 backdrop-blur-3xl rounded-2xl">
+                    <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
                         <CardContent className="space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />
@@ -78,15 +79,15 @@ function OverallPerformance() {
                                 <>
                                     <MetricValue
                                         icon={
-                                            <Wallet className="text-purple-600 w-4" />
+                                            <Wallet className="text-violet-600 w-4" />
                                         }
                                         label="Initial Margin"
                                         value={initialMargin}
                                     />
-                                    <div className="bg-slate-200 w-full h-px" />
+                                    <Separator />
                                     <MetricValue
                                         icon={
-                                            <Wallet className="text-purple-600 w-4" />
+                                            <Wallet className="text-violet-600 w-4" />
                                         }
                                         label="Total Trading Balance"
                                         value={tradingBalance}
@@ -97,7 +98,7 @@ function OverallPerformance() {
                         </CardContent>
                     </Card>
 
-                    <Card className="shadow-black/5 border-none bg-white/70 backdrop-blur-3xl rounded-2xl">
+                    <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
                         <CardContent className="space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />
@@ -105,15 +106,15 @@ function OverallPerformance() {
                                 <>
                                     <MetricValue
                                         icon={
-                                            <Wallet className="text-purple-600 w-4" />
+                                            <Wallet className="text-violet-600 w-4" />
                                         }
                                         label="PNL"
                                         value={pnl}
                                     />
-                                    <div className="bg-slate-200 w-full h-px" />
+                                    <Separator />
                                     <MetricValue
                                         icon={
-                                            <Wallet className="text-purple-600 w-4" />
+                                            <Wallet className="text-violet-600 w-4" />
                                         }
                                         label="Average PNL"
                                         value={avgPnl}
@@ -124,7 +125,7 @@ function OverallPerformance() {
                     </Card>
                 </div>
 
-                <Card className="shadow-black/5 border-none bg-white/70 backdrop-blur-3xl rounded-2xl">
+                <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
                     <CardContent className="space-y-4 p-6">
                         {loading ? (
                             <SkeletonBlock />
@@ -132,18 +133,18 @@ function OverallPerformance() {
                             <>
                                 <MetricValue
                                     icon={
-                                        <ChartBarStacked className="text-purple-600 w-4" />
+                                        <ChartBarStacked className="text-violet-600 w-4" />
                                     }
                                     label="Total Trade"
                                     value={totalTrade}
                                     format=""
                                 />
-                                <div className="bg-slate-200 w-full h-px" />
+                                <Separator />
                                 <BarStat
                                     label="Win"
                                     count={winCount}
                                     percent={winRate}
-                                    color="bg-gradient-to-r from-emerald-400 to-emerald-300"
+                                    color="bg-gradient-to-r from-green-400 to-green-300"
                                 />
                                 <BarStat
                                     label="Lose"
@@ -161,63 +162,63 @@ function OverallPerformance() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Card className="shadow-black/5 border-none bg-white/70 backdrop-blur-3xl rounded-2xl">
+                        <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
                                     <MetricValue
                                         icon={
-                                            <TrendingUp className="text-emerald-600 w-4" />
+                                            <TrendingUp className="text-green-600 w-4" />
                                         }
                                         label="Biggest Profit"
                                         value={biggestProfit}
-                                        color="text-emerald-500"
+                                        color="text-green-500"
                                     />
                                 )}
-                                <div className="bg-slate-200 w-full h-px" />
+                                <Separator />
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
                                     <MetricValue
                                         icon={
-                                            <TrendingUp className="text-emerald-600 w-4" />
+                                            <TrendingUp className="text-green-600 w-4" />
                                         }
                                         label="Lowest Profit"
                                         value={lowestProfit}
-                                        color="text-emerald-500"
+                                        color="text-green-500"
                                     />
                                 )}
-                                <div className="bg-slate-200 w-full h-px" />
+                                <Separator />
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
                                     <MetricValue
                                         icon={
-                                            <TrendingUp className="text-emerald-600 w-4" />
+                                            <TrendingUp className="text-green-600 w-4" />
                                         }
                                         label="Total Profit"
                                         value={totalProfit}
-                                        color="text-emerald-500"
+                                        color="text-green-500"
                                     />
                                 )}
-                                <div className="bg-slate-200 w-full h-px" />
+                                <Separator />
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
                                     <MetricValue
                                         icon={
-                                            <TrendingUp className="text-emerald-600 w-4" />
+                                            <TrendingUp className="text-green-600 w-4" />
                                         }
                                         label="Average Profit"
                                         value={avgProfit}
-                                        color="text-emerald-500"
+                                        color="text-green-500"
                                     />
                                 )}
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-black/5 border-none bg-white/70 backdrop-blur-3xl rounded-2xl">
+                        <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -233,7 +234,7 @@ function OverallPerformance() {
                                         />
                                     </>
                                 )}
-                                <div className="bg-slate-200 w-full h-px" />
+                                <Separator />
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
@@ -248,7 +249,7 @@ function OverallPerformance() {
                                         />
                                     </>
                                 )}
-                                <div className="bg-slate-200 w-full h-px" />
+                                <Separator />
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
@@ -263,7 +264,7 @@ function OverallPerformance() {
                                         />
                                     </>
                                 )}
-                                <div className="bg-slate-200 w-full h-px" />
+                                <Separator />
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
@@ -282,7 +283,7 @@ function OverallPerformance() {
                         </Card>
                     </div>
 
-                    <Card className="shadow-black/5 border-none bg-white/70 backdrop-blur-3xl rounded-2xl">
+                    <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
                         <CardContent className="space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />
@@ -303,7 +304,7 @@ function OverallPerformance() {
 
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Card className="shadow-black/5 border-none bg-white/70 backdrop-blur-3xl rounded-2xl">
+                        <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -322,7 +323,7 @@ function OverallPerformance() {
                                         />
                                     </>
                                 )}
-                                <div className="bg-slate-200 w-full h-px" />
+                                <Separator />
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
@@ -341,7 +342,7 @@ function OverallPerformance() {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-black/5 border-none bg-white/70 backdrop-blur-3xl rounded-2xl">
+                        <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -358,7 +359,7 @@ function OverallPerformance() {
                                         />
                                     </>
                                 )}
-                                <div className="bg-slate-200 w-full h-px" />
+                                <Separator />
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
@@ -380,7 +381,7 @@ function OverallPerformance() {
                         </Card>
                     </div>
 
-                    <Card className="shadow-black/5 border-none bg-white/70 backdrop-blur-3xl rounded-2xl">
+                    <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
                         <CardContent className="space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />

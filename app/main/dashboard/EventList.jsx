@@ -29,7 +29,7 @@ function EventList() {
     }, []);
 
     return (
-        <div className="shadow shadow-black/5 border-none bg-white/70 backdrop-blur-3xl space-y-4 p-6 rounded-2xl overflow-x-auto">
+        <div className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl space-y-4 p-6 overflow-x-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-semibold tracking-[0.010em]">
@@ -40,14 +40,11 @@ function EventList() {
                         move the market.
                     </p>
                 </div>
-                <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white">
-                    <Link
-                        href="/main/event"
-                        className="flex items-center gap-2"
-                    >
+                <Link href="/main/event" prefetch={false}>
+                    <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white">
                         Event
-                    </Link>
-                </Button>
+                    </Button>
+                </Link>
             </div>
 
             {loading ? (

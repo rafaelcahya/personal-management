@@ -41,7 +41,6 @@ export default function LoginPage() {
             });
 
             const data = await res.json();
-            console.log("LOGIN RESPONSE:", data);
 
             if (!res.ok) {
                 toast.error(data.error || "Login failed");
@@ -60,7 +59,6 @@ export default function LoginPage() {
         }
     };
 
-
     return (
         <div
             className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-gray-50"
@@ -71,7 +69,7 @@ export default function LoginPage() {
                 backgroundAttachment: "fixed",
             }}
         >
-            <Card className="shadow-black/5 border-none bg-white/70 backdrop-blur-3xl rounded-2xl">
+            <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
                 <CardHeader>
                     <CardTitle className="text-center text-2xl">
                         Welcome back 👋

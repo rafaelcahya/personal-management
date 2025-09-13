@@ -147,7 +147,6 @@ export default function AddNewTrade({ onAdded }) {
                     Add New Trade
                 </Button>
             </DialogTrigger>
-
             <DialogContent className="sm:max-w-2xl max-h-[90svh] overflow-y-auto space-y-5">
                 <DialogHeader className="text-left">
                     <DialogTitle>Add New Trade</DialogTitle>
@@ -402,7 +401,7 @@ export default function AddNewTrade({ onAdded }) {
                             <DialogClose asChild>
                                 <Button
                                     type="button"
-                                    className="text-violet-600 bg-white hover:bg-purple-50"
+                                    className="text-violet-600 bg-white hover:bg-violet-50"
                                 >
                                     Cancel
                                 </Button>

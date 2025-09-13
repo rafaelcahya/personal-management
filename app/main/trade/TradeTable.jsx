@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
     Table,
     TableBody,
@@ -10,12 +11,15 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import AddNewTrade from "./AddTrade";
 import TradeUpdate from "./UpdateTrade";
+import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
+import { ChevronLeft } from "lucide-react";
 
-// 🔹 Helper styling untuk profit/loss
+// Helper styling untuk profit/loss
 const profitLossColor = (value) =>
-    value < 0 ? "text-rose-600" : "text-emerald-600";
+    value < 0 ? "text-rose-600" : "text-green-600";
 
 export default function TradeTable({ trades: initialTrades }) {
     const [listTrade, setListTrade] = useState(initialTrades || []);
@@ -36,19 +40,28 @@ export default function TradeTable({ trades: initialTrades }) {
     }, [initialTrades]);
 
     return (
-        <div className="shadow shadow-black/5 border-none bg-white/70 backdrop-blur-3xl flex flex-col flex-1 p-6 rounded-2xl overflow-hidden">
+        <div className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl flex flex-col flex-1 p-6 overflow-hidden">
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
-                <div>
-                    <p className="text-lg font-semibold tracking-[0.010em]">
-                        Trade List
-                    </p>
-                    <p className="text-sm text-gray-500">
-                        Quick peek at your trading history — see what’s winning
-                        and what’s not.
-                    </p>
+                <div className="space-y-2">
+                    <Breadcrumbs />
+                    <div>
+                        <p className="text-lg font-semibold tracking-[0.010em]">
+                            Trade List
+                        </p>
+                        <p className="text-sm text-gray-500">
+                            Quick peek at your trading history — see what’s
+                            winning and what’s not.
+                        </p>
+                    </div>
                 </div>
-                <div>
+                <div className="flex items-center gap-5">
+                    <Link href="/main/dashboard" className="hidden sm:block">
+                        <Button className="bg-transparent hover:bg-violet-50 text-violet-600">
+                            <ChevronLeft />
+                            Back
+                        </Button>
+                    </Link>
                     <AddNewTrade onAdded={fetchTrades} />
                 </div>
             </div>

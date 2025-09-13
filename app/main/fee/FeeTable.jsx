@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
     Table,
     TableBody,
@@ -9,9 +10,12 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import AddFee from "./AddFee";
 import UpdateFee from "./UpdateFee";
+import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
 
 function FeeTable({ fees: initialFees }) {
     const [feeList, setFeeList] = useState(initialFees || []);
@@ -32,18 +36,28 @@ function FeeTable({ fees: initialFees }) {
     }, [initialFees]);
 
     return (
-        <div className="shadow shadow-black/5 border-none bg-white/70 backdrop-blur-3xl flex flex-col flex-1 p-6 rounded-2xl overflow-hidden">
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-0 sm:gap-20">
-                <div>
-                    <p className="text-lg font-semibold tracking-[0.010em]">
-                        Fee List
-                    </p>
-                    <p className="text-sm text-gray-500">
-                        Keep track of commissions and fees — the little things
-                        that add up.
-                    </p>
+        <div className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl flex flex-col flex-1 p-6 overflow-hidden">
+            {/* Header Section */}
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
+                <div className="space-y-2">
+                    <Breadcrumbs />
+                    <div>
+                        <p className="text-lg font-semibold tracking-[0.010em]">
+                            Fee List
+                        </p>
+                        <p className="text-sm text-gray-500">
+                            Keep track of commissions and fees — the little
+                            things that add up.
+                        </p>
+                    </div>
                 </div>
-                <div className="hidden sm:block">
+                <div className="flex items-center gap-5">
+                    <Link href="/main/dashboard" className="hidden sm:block">
+                        <Button className="bg-transparent hover:bg-violet-50 text-violet-600">
+                            <ChevronLeft />
+                            Back
+                        </Button>
+                    </Link>
                     <AddFee onAdded={fetchFees} />
                 </div>
             </div>
@@ -51,11 +65,11 @@ function FeeTable({ fees: initialFees }) {
                 <Table noWrapper>
                     <TableHeader className="bg-violet-50 sticky top-0 z-10">
                         <TableRow className="border-none">
-                            <TableHead className="rounded-l-xl">
+                            <TableHead className="rounded-l-lg">
                                 Fee Date
                             </TableHead>
                             <TableHead>Fee Name</TableHead>
-                            <TableHead className="text-right rounded-r-xl">
+                            <TableHead className="text-right rounded-r-lg">
                                 Fee
                             </TableHead>
                         </TableRow>

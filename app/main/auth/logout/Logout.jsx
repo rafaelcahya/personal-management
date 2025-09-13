@@ -21,7 +21,7 @@ export default function Logout() {
             onClick={handleLogout}
             className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white"
         >
-            <LogOutIcon/>
+            <LogOutIcon />
             Logout
         </Button>
     );
