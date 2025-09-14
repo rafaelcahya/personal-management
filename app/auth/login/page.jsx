@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import background from "../../assets/background.jpg";
+import { login } from "@/lib/api/login";
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
@@ -33,20 +34,7 @@ export default function LoginPage() {
         }
 
         try {
-            const res = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password }),
-                credentials: "include",
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                toast.error(data.error || "Login failed");
-                setLoading(false);
-                return;
-            }
+            const data = await login(username, password);
 
             localStorage.setItem("tradform-user", JSON.stringify(data.user));
 
@@ -69,7 +57,7 @@ export default function LoginPage() {
                 backgroundAttachment: "fixed",
             }}
         >
-            <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
+            <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e] backdrop-blur-2xl rounded-xl">
                 <CardHeader>
                     <CardTitle className="text-center text-2xl">
                         Welcome back 👋

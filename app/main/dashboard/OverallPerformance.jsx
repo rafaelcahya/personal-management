@@ -71,7 +71,7 @@ function OverallPerformance() {
         <main className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
+                    <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e] backdrop-blur-2xl rounded-xl">
                         <CardContent className="space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />
@@ -98,7 +98,7 @@ function OverallPerformance() {
                         </CardContent>
                     </Card>
 
-                    <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
+                    <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e]  backdrop-blur-2xl rounded-xl">
                         <CardContent className="space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />
@@ -125,7 +125,7 @@ function OverallPerformance() {
                     </Card>
                 </div>
 
-                <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
+                <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e]  backdrop-blur-2xl rounded-xl">
                     <CardContent className="space-y-4 p-6">
                         {loading ? (
                             <SkeletonBlock />
@@ -162,7 +162,7 @@ function OverallPerformance() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
+                        <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e]  backdrop-blur-2xl rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -218,7 +218,7 @@ function OverallPerformance() {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
+                        <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e]  backdrop-blur-2xl rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -283,7 +283,7 @@ function OverallPerformance() {
                         </Card>
                     </div>
 
-                    <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
+                    <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e]  backdrop-blur-2xl rounded-xl">
                         <CardContent className="space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />
@@ -304,7 +304,7 @@ function OverallPerformance() {
 
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
+                        <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e]  backdrop-blur-2xl rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -342,7 +342,7 @@ function OverallPerformance() {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
+                        <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e]  backdrop-blur-2xl rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -381,7 +381,7 @@ function OverallPerformance() {
                         </Card>
                     </div>
 
-                    <Card className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl">
+                    <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e]  backdrop-blur-2xl rounded-xl">
                         <CardContent className="space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />

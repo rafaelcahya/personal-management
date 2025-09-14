@@ -36,7 +36,7 @@ function FeeTable({ fees: initialFees }) {
     }, [initialFees]);
 
     return (
-        <div className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl flex flex-col flex-1 p-6 overflow-hidden">
+        <div className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e] backdrop-blur-2xl rounded-xl flex flex-col flex-1 p-6 overflow-hidden">
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div className="space-y-2">
@@ -45,7 +45,7 @@ function FeeTable({ fees: initialFees }) {
                         <p className="text-lg font-semibold tracking-[0.010em]">
                             Fee List
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                             Keep track of commissions and fees — the little
                             things that add up.
                         </p>
@@ -53,8 +53,7 @@ function FeeTable({ fees: initialFees }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link href="/main/dashboard" className="hidden sm:block">
-                        <Button className="bg-transparent hover:bg-violet-50 text-violet-600">
-                            <ChevronLeft />
+                        <Button className="bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 text-violet-600">
                             Back
                         </Button>
                     </Link>
@@ -63,7 +62,7 @@ function FeeTable({ fees: initialFees }) {
             </div>
             <div className="relative w-full flex-1 overflow-y-auto mt-4">
                 <Table noWrapper>
-                    <TableHeader className="bg-violet-50 sticky top-0 z-10">
+                    <TableHeader className="bg-violet-100 dark:bg-[#0e0f11] sticky top-0 z-10">
                         <TableRow className="border-none">
                             <TableHead className="rounded-l-lg">
                                 Fee Date
@@ -79,7 +78,7 @@ function FeeTable({ fees: initialFees }) {
                         {feeList.map((fee, index) => (
                             <TableRow
                                 key={index}
-                                className="border-dashed hover:bg-violet-50 cursor-pointer"
+                                className="border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11] cursor-pointer"
                                 onClick={() => setSelectedFee(fee)}
                             >
                                 <TableCell>

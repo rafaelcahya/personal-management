@@ -7,8 +7,7 @@ import FeeList from "./FeeList";
 import EventList from "./EventList";
 import OverallPerformance from "./OverallPerformance";
 import Settings from "../settings/Settings";
-import Logout from "../auth/logout/Logout";
-import Breadcrumbs from "../../../components/ui/common/Breadcrumbs"
+import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
 
 export default function Page() {
     const [user, setUser] = useState(null);
@@ -29,13 +28,13 @@ export default function Page() {
 
     return (
         <div className="min-h-svh flex flex-col gap-5 w-full mx-auto px-6 py-6 xl:py-20 max-w-full sm:max-w-xl md:max-w-5xl xl:max-w-7xl">
-            <Breadcrumbs/>
+            <Breadcrumbs />
             <div className="flex flex-wrap justify-between items-center">
                 <div className="space-y-1">
                     <h1 className="text-xl font-semibold">
                         Trading Performance Dashboard
                     </h1>
-                    <p className="text-gray-500 text-[15px] w-full lg:w-3/4">
+                    <p className="text-gray-500 dark:text-gray-400 text-[15px] w-full lg:w-3/4">
                         Keep track of commissions and fees — the little things
                         that add up.
                     </p>
@@ -44,7 +43,6 @@ export default function Page() {
                     <div className="hidden lg:flex items-center space-x-2">
                         <Settings />
                     </div>
-                    <Logout />
                 </div>
             </div>
             <div className="space-y-5">

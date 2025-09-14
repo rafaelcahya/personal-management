@@ -10,18 +10,17 @@ import { ChevronRight } from "lucide-react";
 
 export default function Breadcrumbs() {
     const pathname = usePathname();
-    const [username, setUsername] = useState("User");
+    const [nickname, setNickname] = useState("User");
 
     useEffect(() => {
         async function fetchUser() {
             try {
-                // Ambil userId dari localStorage
                 const userData = localStorage.getItem("tradform-user");
                 if (!userData) return;
                 const { id: userId } = JSON.parse(userData);
 
                 const user = await getUserById(userId);
-                setUsername(user.username);
+                setNickname(user.nickname ?? user.username);
             } catch (err) {
                 console.error("Failed to fetch user:", err);
             }
@@ -29,18 +28,15 @@ export default function Breadcrumbs() {
         fetchUser();
     }, []);
 
-    // Split URL & ignore "main"
     let pathParts = pathname
         .split("/")
         .filter(Boolean)
         .filter((part) => part !== "main");
 
-    // Jika halaman pertama bukan "dashboard", insert dashboard di awal
     if (pathParts[0] !== "dashboard") {
         pathParts = ["dashboard", ...pathParts];
     }
 
-    // Build crumbs
     const crumbs = pathParts.map((part, idx) => {
         const href = "/" + ["main", ...pathParts.slice(0, idx + 1)].join("/");
         const isLast = idx === pathParts.length - 1;
@@ -52,18 +48,19 @@ export default function Breadcrumbs() {
     });
 
     const finalCrumbs = [
-        { label: username, href: "#", isUsername: true },
+        { label: nickname, href: "#", isUsername: true },
         ...crumbs,
     ];
 
     return (
-        <nav className="flex items-center space-x-2 text-sm text-gray-500">
+        <nav className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
             {finalCrumbs.map((crumb, idx) => (
                 <div key={idx} className="flex items-center space-x-2">
                     {crumb.isUsername || crumb.isLast ? (
                         <span
                             className={cn(
-                                crumb.isLast && "font-semibold text-gray-700"
+                                crumb.isLast &&
+                                    "font-medium text-gray-700 dark:text-gray-400"
                             )}
                         >
                             {crumb.label}

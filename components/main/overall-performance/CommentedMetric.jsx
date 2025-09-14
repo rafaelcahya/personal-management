@@ -19,7 +19,7 @@ export default function CommentedMetric({
     return (
         <div className="space-y-4">
             <div>
-                <CardTitle className="flex items-center gap-2 font-normal tracking-wide text-sm text-slate-500">
+                <CardTitle className="flex items-center gap-2 font-normal tracking-wide text-sm text-gray-500  dark:text-gray-400">
                     {icon && <span>{icon}</span>} {label}
                 </CardTitle>
                 <p className="text-lg md:text-xl font-semibold">

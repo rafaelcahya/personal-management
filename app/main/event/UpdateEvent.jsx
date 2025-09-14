@@ -117,7 +117,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                                             {...field}
                                             placeholder="e.g. Event description"
                                             className={cn(
-                                                "text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500",
+                                                "text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 h-[150px]",
                                                 fieldState.error &&
                                                     "border-rose-500"
                                             )}
@@ -227,7 +227,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                                     <DialogClose asChild>
                                         <Button
                                             type="button"
-                                            className="text-violet-600 bg-white hover:bg-violet-50"
+                                            className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
                                         >
                                             Cancel
                                         </Button>
@@ -235,7 +235,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="bg-violet-600 hover:bg-violet-700"
+                                        className="bg-violet-600 hover:bg-violet-700 dark:text-white"
                                     >
                                         {loading
                                             ? "Updating..."

@@ -9,8 +9,6 @@ export async function middleware(request) {
     const token = request.cookies.get("authToken")?.value;
     const { pathname } = request.nextUrl;
 
-    // console.log("🔑 Middleware token:", token);
-
     if (pathname.startsWith("/auth") || pathname.startsWith("/api")) {
         return NextResponse.next();
     }
@@ -23,9 +21,7 @@ export async function middleware(request) {
 
         try {
             await jwtVerify(token, secret);
-            // console.log("✅ Token valid");
         } catch (err) {
-            // console.log("❌ Invalid token:", err.message);
             return NextResponse.redirect(new URL("/auth/login", request.url));
         }
     }

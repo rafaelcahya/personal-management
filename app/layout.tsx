@@ -39,7 +39,7 @@ export default function RootLayout({
                 }}
             >
                 {/* Overlay frosted glass */}
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-2xl" />
+                <div className="absolute inset-0 bg-white/80 dark:bg-[#0e0f11] backdrop-blur-2xl" />
 
                 {/* Main Content */}
                 <div className="relative z-10">
@@ -50,10 +50,7 @@ export default function RootLayout({
                         disableTransitionOnChange
                     >
                         {children}
-                        <Toaster
-                            richColors
-                            position="top-center"
-                        />
+                        <Toaster richColors position="top-center" />
                     </ThemeProvider>
                 </div>
             </body>

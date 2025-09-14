@@ -535,7 +535,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <DialogClose asChild>
                                         <Button
                                             type="button"
-                                            className="text-violet-600 bg-white hover:bg-violet-50"
+                                            className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
                                         >
                                             Cancel
                                         </Button>
@@ -543,7 +543,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="bg-violet-600 hover:bg-violet-700"
+                                        className="bg-violet-600 hover:bg-violet-700 dark:text-white"
                                     >
                                         {loading
                                             ? "Updating..."

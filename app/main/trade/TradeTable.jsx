@@ -40,7 +40,7 @@ export default function TradeTable({ trades: initialTrades }) {
     }, [initialTrades]);
 
     return (
-        <div className="shadow-black/5 shadow-lg border-none bg-white backdrop-blur-2xl rounded-xl flex flex-col flex-1 p-6 overflow-hidden">
+        <div className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e] backdrop-blur-2xl rounded-xl flex flex-col flex-1 p-6 overflow-hidden">
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div className="space-y-2">
@@ -49,7 +49,7 @@ export default function TradeTable({ trades: initialTrades }) {
                         <p className="text-lg font-semibold tracking-[0.010em]">
                             Trade List
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                             Quick peek at your trading history — see what’s
                             winning and what’s not.
                         </p>
@@ -57,8 +57,7 @@ export default function TradeTable({ trades: initialTrades }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link href="/main/dashboard" className="hidden sm:block">
-                        <Button className="bg-transparent hover:bg-violet-50 text-violet-600">
-                            <ChevronLeft />
+                        <Button className="bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 text-violet-600">
                             Back
                         </Button>
                     </Link>
@@ -69,12 +68,12 @@ export default function TradeTable({ trades: initialTrades }) {
             {/* Table Section */}
             <div className="relative w-full flex-1 overflow-y-auto mt-4">
                 {listTrade.length === 0 ? (
-                    <p className="text-center text-gray-500 py-10">
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-10">
                         No trades yet. Start by adding a new trade 🚀
                     </p>
                 ) : (
                     <Table noWrapper>
-                        <TableHeader className="bg-violet-50 rounded-xl sticky top-0 z-10">
+                        <TableHeader className="bg-violet-100 dark:bg-[#0e0f11] rounded-xl sticky top-0 z-10">
                             <TableRow className="border-none">
                                 <TableHead className="pr-6 rounded-l-lg">
                                     Date
@@ -112,7 +111,7 @@ export default function TradeTable({ trades: initialTrades }) {
                             {listTrade.map((trade) => (
                                 <TableRow
                                     key={trade.id}
-                                    className="border-dashed hover:bg-violet-50 cursor-pointer"
+                                    className="border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11] cursor-pointer"
                                     onClick={() => setSelectedTrade(trade)}
                                 >
                                     <TableCell className="pr-6 py-4">

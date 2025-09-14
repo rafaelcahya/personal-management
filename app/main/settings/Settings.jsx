@@ -1,220 +1,228 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 import {
     Dialog,
-    DialogClose,
     DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-} from "@/components/ui/form";
-import { toast } from "sonner";
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+
+import Profile from "./Profile";
+import PerformConfig from "./PerformConfig";
+import ThemeToggle from "../../../components/main/ThemeToggle";
+import Logout from "../auth/logout/Logout";
+import { Palette, Settings2, User } from "lucide-react";
+import { getUser } from "@/lib/api/user";
 
 export default function Settings() {
     const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const form = useForm({
-        defaultValues: {
-            initial_margin: "",
-            bi_risk_free_rate: "",
-            personal_risk_free_rate: "",
-        },
-    });
-    const { control, handleSubmit, reset } = form;
+    const [selectedMenu, setSelectedMenu] = useState("profile");
+    const [isMobile, setIsMobile] = useState(false);
+    const [userId, setUserId] = useState(null);
+    const [avatarPreview, setAvatarPreview] = useState(null);
+    const [nickname, setNickname] = useState("User");
 
-    // Fetch existing settings
+    // Detect screen size
     useEffect(() => {
-        async function fetchSettings() {
-            try {
-                const res = await fetch("/api/settings/list");
-                const data = await res.json();
-                if (res.ok && data?.settingsList) {
-                    reset({
-                        initial_margin:
-                            data.settingsList.initial_margin?.toString() || "",
-                        bi_risk_free_rate:
-                            data.settingsList.bi_risk_free_rate?.toString() ||
-                            "",
-                        personal_risk_free_rate:
-                            data.settingsList.personal_risk_free_rate?.toString() ||
-                            "",
-                    });
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 500);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    useEffect(() => {
+        if (typeof document !== "undefined") {
+            const token = document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("authToken="))
+                ?.split("=")[1];
+
+            if (token) {
+                try {
+                    const decoded = jwtDecode(token);
+                    setUserId(decoded.sub);
+                } catch (err) {
+                    console.error("JWT decode error:", err);
                 }
-            } catch (err) {
-                toast.error(err);
             }
         }
-        fetchSettings();
-    }, [reset]);
+    }, []);
 
-    // Submit
-    const handleSetSettings = async (values) => {
-        setLoading(true);
-        try {
-            const res = await fetch("/api/settings/update", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(values),
-            });
-            const data = await res.json();
-            if (!res.ok) toast.error(data.error || "Failed");
-            else {
-                toast.success("Changes applied successfully!");
-                setOpen(false);
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const data = await getUser();
+                if (data?.user?.avatar) setAvatarPreview(data.user.avatar);
+                if (data?.user?.nickname) setNickname(data.user.nickname);
+            } catch (err) {
+                console.error(err);
             }
-        } catch (err) {
-            toast.error("Something went wrong");
-            toast.error(err);
-        } finally {
-            setLoading(false);
+        };
+        fetchUser();
+    }, []);
+
+
+
+    const renderContent = () => {
+        switch (selectedMenu) {
+            case "profile":
+                return <Profile userId={userId} />;
+            case "configuration":
+                return <PerformConfig />;
+            case "theme":
+                return <ThemeToggle />;
+            case "logout":
+                return <Logout />;
+            default:
+                return null;
         }
     };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-transparent hover:bg-white text-violet-600">
-                    Settings
-                </Button>
+                <button className="flex items-center gap-2 pl-4 pr-1 py-1 hover:bg-violet-100 dark:hover:bg-violet-500/5 rounded-full">
+                    <span className="font-medium text-sm text-gray-700 dark:text-gray-200">
+                        {nickname ?? "User"}
+                    </span>
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-300">
+                        {avatarPreview ? (
+                            <img
+                                src={avatarPreview}
+                                alt="User Avatar"
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <span className="flex items-center justify-center w-full h-full bg-gray-300 text-white font-bold">
+                                U
+                            </span>
+                        )}
+                    </div>
+                </button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Performance configurations</DialogTitle>
-                    <DialogDescription>
-                        Configure Initial Margin and Risk-Free Rate to keep your
-                        trading metrics accurate.
-                    </DialogDescription>
-                </DialogHeader>
-
-                <Form {...form}>
-                    <form
-                        onSubmit={handleSubmit(handleSetSettings)}
-                        className="space-y-6"
-                    >
-                        {/* Initial Margin */}
-                        <FormField
-                            control={control}
-                            name="initial_margin"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Initial Margin</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            {...field}
-                                            value={
-                                                field.value
-                                                    ? `Rp. ${Number(
-                                                          field.value
-                                                      ).toLocaleString(
-                                                          "id-ID"
-                                                      )}`
-                                                    : ""
-                                            }
-                                            onChange={(e) => {
-                                                const raw =
-                                                    e.target.value.replace(
-                                                        /\D/g,
-                                                        ""
-                                                    );
-                                                field.onChange(raw);
-                                            }}
-                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* BI Risk Free Rate */}
-                        <FormField
-                            control={control}
-                            name="bi_risk_free_rate"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>BI Risk Free Rate</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            {...field}
-                                            value={field.value}
-                                            onChange={(e) =>
-                                                field.onChange(
-                                                    e.target.value.replace(
-                                                        /[^0-9.,]/g,
-                                                        ""
-                                                    )
-                                                )
-                                            }
-                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Personal Risk Free Rate */}
-                        <FormField
-                            control={control}
-                            name="personal_risk_free_rate"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Personal Risk Free Rate
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            {...field}
-                                            value={field.value}
-                                            onChange={(e) =>
-                                                field.onChange(
-                                                    e.target.value.replace(
-                                                        /[^0-9.,]/g,
-                                                        ""
-                                                    )
-                                                )
-                                            }
-                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button
-                                    type="button"
-                                    className="text-violet-600 bg-white hover:bg-violet-50"
-                                >
-                                    Cancel
-                                </Button>
-                            </DialogClose>
-                            <Button
-                                type="submit"
-                                disabled={loading}
-                                className="bg-violet-600 hover:bg-violet-700"
+            <DialogContent className="flex sm:max-w-xl h-[600px] overflow-y-auto p-0 gap-0">
+                {isMobile ? (
+                    // Mobile: Dropdown menu
+                    <div className="flex flex-col w-full">
+                        <div className="p-4 space-y-4">
+                            <DialogTitle className="font-medium">
+                                Settings
+                            </DialogTitle>
+                            <Select
+                                value={selectedMenu}
+                                onValueChange={(val) => setSelectedMenu(val)}
                             >
-                                {loading ? "Submitting..." : "Save changes"}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="profile">
+                                        <User className="inline mr-2 w-4 h-4" />
+                                        Profile
+                                    </SelectItem>
+                                    <SelectItem value="configuration">
+                                        <Settings2 className="inline mr-2 w-4 h-4" />
+                                        Configuration
+                                    </SelectItem>
+                                    <SelectItem value="theme">
+                                        <Palette className="inline mr-2 w-4 h-4" />
+                                        Theme
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <Separator />
+                        <div className="flex-1 overflow-y-auto p-0 sm:px-4">
+                            {renderContent()}
+                        </div>
+                        <div className="border-t p-0 sm:p-4">
+                            <Logout />
+                        </div>
+                    </div>
+                ) : (
+                    // Desktop: Sidebar layout
+                    <>
+                        <div className="w-48 border-r flex flex-col justify-between">
+                            <div className="flex flex-col">
+                                <DialogTitle className="font-medium p-4">
+                                    Settings
+                                </DialogTitle>
+                                <Separator />
+                                <nav className="flex flex-col p-2 space-y-1">
+                                    <Button
+                                        variant={
+                                            selectedMenu === "profile"
+                                                ? "secondary"
+                                                : "ghost"
+                                        }
+                                        className={`justify-start hover:bg-violet-50 ${
+                                            selectedMenu === "profile"
+                                                ? "bg-violet-100 hover:bg-violet-200 dark:bg-violet-500"
+                                                : ""
+                                        }`}
+                                        onClick={() =>
+                                            setSelectedMenu("profile")
+                                        }
+                                    >
+                                        <User className="w-4 h-4 mr-2" />
+                                        Profile
+                                    </Button>
+                                    <Button
+                                        variant={
+                                            selectedMenu === "configuration"
+                                                ? "secondary"
+                                                : "ghost"
+                                        }
+                                        className={`justify-start hover:bg-violet-50 ${
+                                            selectedMenu === "configuration"
+                                                ? "bg-violet-100 hover:bg-violet-200 dark:bg-violet-500"
+                                                : ""
+                                        }`}
+                                        onClick={() =>
+                                            setSelectedMenu("configuration")
+                                        }
+                                    >
+                                        <Settings2 className="w-4 h-4 mr-2" />
+                                        Configuration
+                                    </Button>
+                                    <Button
+                                        variant={
+                                            selectedMenu === "theme"
+                                                ? "secondary"
+                                                : "ghost"
+                                        }
+                                        className={`justify-start hover:bg-violet-50 ${
+                                            selectedMenu === "theme"
+                                                ? "bg-violet-100 hover:bg-violet-200 dark:bg-violet-500"
+                                                : ""
+                                        }`}
+                                        onClick={() => setSelectedMenu("theme")}
+                                    >
+                                        <Palette className="w-4 h-4 mr-2" />
+                                        Theme
+                                    </Button>
+                                </nav>
+                            </div>
+                            <Logout />
+                        </div>
+                        <div className="flex-1 overflow-y-auto w-[450px]">
+                            {renderContent()}
+                        </div>
+                    </>
+                )}
             </DialogContent>
         </Dialog>
     );

@@ -5,7 +5,7 @@ import { Card, CardContent, CardTitle } from "../card";
 export default function MetricCard({
     title,
     value,
-    format = "number", // "currency", "percent", "number"
+    format = "number",
     comment,
     className = "",
     highlight = false,
