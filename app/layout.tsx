@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Quicksand } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     description: "The fastest way to build apps with Next.js and Supabase",
 };
 
-const geist = Geist({
+const geist = Quicksand({
     variable: "--font-geist",
     display: "swap",
     subsets: ["latin"],
@@ -31,15 +31,15 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body
                 className={`${geist.className} antialiased relative min-h-screen`}
-                style={{
-                    backgroundImage: `url(${background.src})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundAttachment: "fixed",
-                }}
+                // style={{
+                //     backgroundImage: `url(${background.src})`,
+                //     backgroundSize: "cover",
+                //     backgroundPosition: "center",
+                //     backgroundAttachment: "fixed",
+                // }}
             >
                 {/* Overlay frosted glass */}
-                <div className="absolute inset-0 bg-white/80 dark:bg-[#0e0f11] backdrop-blur-2xl" />
+                {/* <div className="absolute inset-0 bg-white/80 dark:bg-[#0e0f11] backdrop-blur-2xl" /> */}
 
                 {/* Main Content */}
                 <div className="relative z-10">

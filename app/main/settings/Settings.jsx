@@ -19,7 +19,7 @@ import {
 
 import Profile from "./Profile";
 import PerformConfig from "./PerformConfig";
-import ThemeToggle from "../../../components/main/ThemeToggle";
+import ThemeToggle from "./ThemeToggle";
 import Logout from "../auth/logout/Logout";
 import { Palette, Settings2, User } from "lucide-react";
 import { getUser } from "@/lib/api/user";
@@ -73,8 +73,6 @@ export default function Settings() {
         fetchUser();
     }, []);
 
-
-
     const renderContent = () => {
         switch (selectedMenu) {
             case "profile":
@@ -94,7 +92,7 @@ export default function Settings() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <button className="flex items-center gap-2 pl-4 pr-1 py-1 hover:bg-violet-100 dark:hover:bg-violet-500/5 rounded-full">
-                    <span className="font-medium text-sm text-gray-700 dark:text-gray-200">
+                    <span className="font-semibold text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
                         {nickname ?? "User"}
                     </span>
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-300">
@@ -118,26 +116,35 @@ export default function Settings() {
                     // Mobile: Dropdown menu
                     <div className="flex flex-col w-full">
                         <div className="p-4 space-y-4">
-                            <DialogTitle className="font-medium">
+                            <DialogTitle className="font-semibold">
                                 Settings
                             </DialogTitle>
                             <Select
                                 value={selectedMenu}
                                 onValueChange={(val) => setSelectedMenu(val)}
                             >
-                                <SelectTrigger className="w-full">
+                                <SelectTrigger className="w-full font-semibold">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="profile">
+                                    <SelectItem
+                                        value="profile"
+                                        className="font-semibold"
+                                    >
                                         <User className="inline mr-2 w-4 h-4" />
                                         Profile
                                     </SelectItem>
-                                    <SelectItem value="configuration">
+                                    <SelectItem
+                                        value="configuration"
+                                        className="font-semibold"
+                                    >
                                         <Settings2 className="inline mr-2 w-4 h-4" />
                                         Configuration
                                     </SelectItem>
-                                    <SelectItem value="theme">
+                                    <SelectItem
+                                        value="theme"
+                                        className="font-semibold"
+                                    >
                                         <Palette className="inline mr-2 w-4 h-4" />
                                         Theme
                                     </SelectItem>
@@ -157,7 +164,7 @@ export default function Settings() {
                     <>
                         <div className="w-48 border-r flex flex-col justify-between">
                             <div className="flex flex-col">
-                                <DialogTitle className="font-medium p-4">
+                                <DialogTitle className="font-semibold p-4">
                                     Settings
                                 </DialogTitle>
                                 <Separator />
@@ -168,7 +175,7 @@ export default function Settings() {
                                                 ? "secondary"
                                                 : "ghost"
                                         }
-                                        className={`justify-start hover:bg-violet-50 ${
+                                        className={`justify-start hover:bg-violet-50 font-semibold ${
                                             selectedMenu === "profile"
                                                 ? "bg-violet-100 hover:bg-violet-200 dark:bg-violet-500"
                                                 : ""
@@ -186,7 +193,7 @@ export default function Settings() {
                                                 ? "secondary"
                                                 : "ghost"
                                         }
-                                        className={`justify-start hover:bg-violet-50 ${
+                                        className={`justify-start hover:bg-violet-50 font-semibold ${
                                             selectedMenu === "configuration"
                                                 ? "bg-violet-100 hover:bg-violet-200 dark:bg-violet-500"
                                                 : ""
@@ -204,7 +211,7 @@ export default function Settings() {
                                                 ? "secondary"
                                                 : "ghost"
                                         }
-                                        className={`justify-start hover:bg-violet-50 ${
+                                        className={`justify-start hover:bg-violet-50 font-semibold ${
                                             selectedMenu === "theme"
                                                 ? "bg-violet-100 hover:bg-violet-200 dark:bg-violet-500"
                                                 : ""

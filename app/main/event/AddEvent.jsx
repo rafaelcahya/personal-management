@@ -83,7 +83,7 @@ export default function AddEvent({ onAdded }) {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-lg overflow-y-auto">
+            <DialogContent className="sm:max-w-lg overflow-y-auto font-semibold">
                 <DialogHeader>
                     <DialogTitle>Add Market Event</DialogTitle>
                     <DialogDescription>
@@ -103,7 +103,9 @@ export default function AddEvent({ onAdded }) {
                             name="event_description"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel>Event description</FormLabel>
+                                    <FormLabel className="font-semibold">
+                                        Event description
+                                    </FormLabel>
                                     <FormControl>
                                         <Textarea
                                             {...field}
@@ -128,7 +130,9 @@ export default function AddEvent({ onAdded }) {
                             name="impact_direction"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel>Impact Direction</FormLabel>
+                                    <FormLabel className="font-semibold">
+                                        Impact Direction
+                                    </FormLabel>
                                     <Select
                                         onValueChange={field.onChange}
                                         defaultValue={field.value}
@@ -166,13 +170,15 @@ export default function AddEvent({ onAdded }) {
                             name="event_date"
                             render={({ field, fieldState }) => (
                                 <FormItem className="flex flex-col">
-                                    <FormLabel>Event Date</FormLabel>
+                                    <FormLabel className="font-semibold">
+                                        Event Date
+                                    </FormLabel>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button
                                                 variant="outline"
                                                 className={cn(
-                                                    "w-[240px] pl-3 text-left font-normal",
+                                                    "w-[240px] pl-3 text-left font-semibold",
                                                     fieldState.error &&
                                                         "border-rose-500 text-rose-500",
                                                     !field.value &&
@@ -215,7 +221,7 @@ export default function AddEvent({ onAdded }) {
                             <DialogClose asChild>
                                 <Button
                                     type="button"
-                                    className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
+                                    className="font-semibold text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
                                 >
                                     Cancel
                                 </Button>
@@ -223,7 +229,7 @@ export default function AddEvent({ onAdded }) {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="bg-violet-600 hover:bg-violet-700 dark:text-white"
+                                className="font-semibold bg-violet-600 hover:bg-violet-700 dark:text-white"
                             >
                                 {loading ? "Submitting..." : "Submit new event"}
                             </Button>

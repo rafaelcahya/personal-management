@@ -16,6 +16,7 @@ import AddNewTrade from "./AddTrade";
 import TradeUpdate from "./UpdateTrade";
 import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
 import { ChevronLeft } from "lucide-react";
+import SummaryTrade from "./SummaryTrade";
 
 // Helper styling untuk profit/loss
 const profitLossColor = (value) =>
@@ -40,16 +41,14 @@ export default function TradeTable({ trades: initialTrades }) {
     }, [initialTrades]);
 
     return (
-        <div className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e] backdrop-blur-2xl rounded-xl flex flex-col flex-1 p-6 overflow-hidden">
+        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl flex flex-col flex-1 gap-y-6 p-6 overflow-hidden">
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div className="space-y-2">
                     <Breadcrumbs />
                     <div>
-                        <p className="text-lg font-semibold tracking-[0.010em]">
-                            Trade List
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-lg font-bold">Trade List</p>
+                        <p className="text-sm font-semibold text-slate-500 dark:text-gray-400">
                             Quick peek at your trading history — see what’s
                             winning and what’s not.
                         </p>
@@ -57,7 +56,7 @@ export default function TradeTable({ trades: initialTrades }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link href="/main/dashboard" className="hidden sm:block">
-                        <Button className="bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 text-violet-600">
+                        <Button className="bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 text-violet-600 font-semibold">
                             Back
                         </Button>
                     </Link>
@@ -65,43 +64,49 @@ export default function TradeTable({ trades: initialTrades }) {
                 </div>
             </div>
 
+            <SummaryTrade />
+
             {/* Table Section */}
-            <div className="relative w-full flex-1 overflow-y-auto mt-4">
+            <div className="relative w-full flex-1 overflow-y-auto">
                 {listTrade.length === 0 ? (
-                    <p className="text-center text-gray-500 dark:text-gray-400 py-10">
+                    <p className="text-center font-semibold text-slate-500 dark:text-gray-400 py-10">
                         No trades yet. Start by adding a new trade 🚀
                     </p>
                 ) : (
                     <Table noWrapper>
                         <TableHeader className="bg-violet-100 dark:bg-[#0e0f11] rounded-xl sticky top-0 z-10">
                             <TableRow className="border-none">
-                                <TableHead className="pr-6 rounded-l-lg">
+                                <TableHead className="font-semibold pr-6 rounded-l-lg">
                                     Date
                                 </TableHead>
-                                <TableHead className="px-6">Ticker</TableHead>
-                                <TableHead className="px-6 text-right">
+                                <TableHead className="font-semibold px-6">
+                                    Ticker
+                                </TableHead>
+                                <TableHead className="font-semibold px-6 text-right">
                                     Margin
                                 </TableHead>
-                                <TableHead className="px-6 text-right">
+                                <TableHead className="font-semibold px-6 text-right">
                                     Proceeds
                                 </TableHead>
-                                <TableHead className="px-6">Return %</TableHead>
-                                <TableHead className="px-6">
+                                <TableHead className="font-semibold px-6">
+                                    Return %
+                                </TableHead>
+                                <TableHead className="font-semibold px-6">
                                     Realized Gain
                                 </TableHead>
-                                <TableHead className="px-6">
+                                <TableHead className="font-semibold px-6">
                                     Entry Session
                                 </TableHead>
-                                <TableHead className="px-6">
+                                <TableHead className="font-semibold px-6">
                                     Entry Occasion
                                 </TableHead>
-                                <TableHead className="px-6 w-[300px] min-w-[300px] max-w-[300px]">
+                                <TableHead className="font-semibold px-6 w-[300px] min-w-[300px] max-w-[300px]">
                                     Buy Reason
                                 </TableHead>
-                                <TableHead className="px-6 w-[300px] min-w-[300px] max-w-[300px]">
+                                <TableHead className="font-semibold px-6 w-[300px] min-w-[300px] max-w-[300px]">
                                     Sell Reason
                                 </TableHead>
-                                <TableHead className="pl-6 rounded-r-lg w-[300px] min-w-[300px] max-w-[300px]">
+                                <TableHead className="font-semibold pl-6 rounded-r-lg w-[300px] min-w-[300px] max-w-[300px]">
                                     Notes
                                 </TableHead>
                             </TableRow>
@@ -111,7 +116,7 @@ export default function TradeTable({ trades: initialTrades }) {
                             {listTrade.map((trade) => (
                                 <TableRow
                                     key={trade.id}
-                                    className="border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11] cursor-pointer"
+                                    className="font-semibold border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11] cursor-pointer"
                                     onClick={() => setSelectedTrade(trade)}
                                 >
                                     <TableCell className="pr-6 py-4">

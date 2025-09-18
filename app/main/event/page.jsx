@@ -31,7 +31,7 @@ export default function EventPage() {
         <main className="flex flex-col gap-5 h-screen w-full mx-auto px-6 py-6 xl:py-20 max-w-full md:max-w-5xl xl:max-w-7xl">
             {loading ? (
                 <div className="flex flex-1 items-center justify-center">
-                    <LoadingComponent description="Loading all fees..." />
+                    <LoadingComponent description="Loading all events..." />
                 </div>
             ) : (
                 <EventTable events={events} />

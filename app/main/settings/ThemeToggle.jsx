@@ -22,8 +22,8 @@ export default function ThemeToggle() {
         <div className="flex flex-col h-full w-full max-w-lg">
             {/* Header */}
             <div className="px-5 py-4">
-                <p className="font-medium">Theme</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-semibold">Theme</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                     Choose how the interface looks. Select light, dark, or
                     system default.
                 </p>
@@ -41,17 +41,21 @@ export default function ThemeToggle() {
                 >
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="light" id="light" />
-                        <Label htmlFor="light">Light</Label>
+                        <Label htmlFor="light" className="font-semibold">
+                            Light
+                        </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="dark" id="dark" />
-                        <Label htmlFor="dark">Dark</Label>
+                        <Label htmlFor="dark" className="font-semibold">
+                            Dark
+                        </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="system" id="system" />
-                        <Label htmlFor="system">
+                        <Label htmlFor="system" className="font-semibold">
                             System{" "}
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs font-semibold text-slate-500">
                                 ({systemTheme})
                             </span>
                         </Label>

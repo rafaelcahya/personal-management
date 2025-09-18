@@ -57,7 +57,7 @@ export default function LoginPage() {
                 backgroundAttachment: "fixed",
             }}
         >
-            <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e] backdrop-blur-2xl rounded-xl">
+            <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#111214] backdrop-blur-2xl rounded-xl">
                 <CardHeader>
                     <CardTitle className="text-center text-2xl">
                         Welcome back 👋

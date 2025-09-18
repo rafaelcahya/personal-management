@@ -73,12 +73,12 @@ export default function AddFee({ onAdded }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-violet-600 hover:bg-violet-700 text-white">
+                <Button className="font-semibold bg-violet-600 hover:bg-violet-700 text-white">
                     Add New Fee
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-lg overflow-y-auto">
+            <DialogContent className="sm:max-w-lg overflow-y-auto font-semibold ">
                 <DialogHeader>
                     <DialogTitle>Add New Fee</DialogTitle>
                     <DialogDescription>
@@ -206,7 +206,7 @@ export default function AddFee({ onAdded }) {
                             <DialogClose asChild>
                                 <Button
                                     type="button"
-                                    className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
+                                    className="font-semibold text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
                                 >
                                     Cancel
                                 </Button>
@@ -214,7 +214,7 @@ export default function AddFee({ onAdded }) {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="bg-violet-600 hover:bg-violet-700 dark:text-white"
+                                className="font-semibold bg-violet-600 hover:bg-violet-700 dark:text-white"
                             >
                                 {loading ? "Submitting..." : "Submit new fee"}
                             </Button>

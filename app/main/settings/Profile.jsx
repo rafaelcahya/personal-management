@@ -72,8 +72,8 @@ export default function Profile() {
     return (
         <div className="flex flex-col h-full w-full max-w-lg">
             <div className="px-5 py-4">
-                <p className="font-medium">Profile</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-bold">Profile</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                     Update your profile to keep your account info accurate.
                 </p>
             </div>
@@ -88,7 +88,7 @@ export default function Profile() {
                     <div className="flex-1 px-5 py-4 space-y-6 overflow-y-auto">
                         {/* Avatar Upload */}
                         <FormItem>
-                            <Label>Avatar</Label>
+                            <Label className="font-semibold">Avatar</Label>
                             <div className="flex items-center space-x-4">
                                 <div
                                     className="w-16 h-16 rounded-full overflow-hidden cursor-pointer bg-gray-300 flex items-center justify-center"
@@ -124,10 +124,15 @@ export default function Profile() {
                             name="username"
                             render={({ field }) => (
                                 <FormItem>
-                                    <Label htmlFor="username">Username</Label>
+                                    <Label
+                                        htmlFor="username"
+                                        className="font-semibold"
+                                    >
+                                        Username
+                                    </Label>
                                     <Input
                                         id="username"
-                                        className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                        className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         {...field}
                                     />
                                 </FormItem>
@@ -140,10 +145,15 @@ export default function Profile() {
                             name="nickname"
                             render={({ field }) => (
                                 <FormItem>
-                                    <Label htmlFor="nickname">Nickname</Label>
+                                    <Label
+                                        htmlFor="nickname"
+                                        className="font-semibold"
+                                    >
+                                        Nickname
+                                    </Label>
                                     <Input
                                         id="nickname"
-                                        className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                        className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         {...field}
                                     />
                                 </FormItem>
@@ -155,7 +165,7 @@ export default function Profile() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="bg-violet-600 hover:bg-violet-700 dark:text-white"
+                            className="bg-violet-600 hover:bg-violet-700 dark:text-white font-semibold"
                         >
                             {loading ? "Saving..." : "Save Profile"}
                         </Button>

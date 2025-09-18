@@ -21,6 +21,7 @@ export default function PerformConfig() {
             initial_margin: "",
             bi_risk_free_rate: "",
             personal_risk_free_rate: "",
+            margin_of_error: "",
         },
     });
     const { control, handleSubmit, reset } = form;
@@ -41,6 +42,8 @@ export default function PerformConfig() {
                         personal_risk_free_rate:
                             data.settingsList.personal_risk_free_rate?.toString() ||
                             "",
+                        margin_of_error:
+                            data.settingsList.margin_of_error?.toString() || "",
                     });
                 }
             } catch (err) {
@@ -76,8 +79,8 @@ export default function PerformConfig() {
         <div className="flex flex-col h-full w-full max-w-lg">
             {/* Header */}
             <div className="px-5 py-4">
-                <p className="font-medium">Performance Configurations</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-semibold">Performance Configurations</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                     Configure Initial Margin and Risk-Free Rate to keep your
                     trading metrics accurate.
                 </p>
@@ -97,7 +100,9 @@ export default function PerformConfig() {
                             name="initial_margin"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Initial Margin</FormLabel>
+                                    <FormLabel className="font-semibold">
+                                        Initial Margin
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             type="text"
@@ -119,7 +124,7 @@ export default function PerformConfig() {
                                                     );
                                                 field.onChange(raw);
                                             }}
-                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                            className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -132,7 +137,9 @@ export default function PerformConfig() {
                             name="bi_risk_free_rate"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>BI Risk Free Rate</FormLabel>
+                                    <FormLabel className="font-semibold">
+                                        BI Risk Free Rate
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             type="text"
@@ -146,7 +153,7 @@ export default function PerformConfig() {
                                                     )
                                                 )
                                             }
-                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                            className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -159,7 +166,7 @@ export default function PerformConfig() {
                             name="personal_risk_free_rate"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>
+                                    <FormLabel className="font-semibold">
                                         Personal Risk Free Rate
                                     </FormLabel>
                                     <FormControl>
@@ -175,7 +182,36 @@ export default function PerformConfig() {
                                                     )
                                                 )
                                             }
-                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                            className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Margin of error */}
+                        <FormField
+                            control={control}
+                            name="margin_of_error"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="font-semibold">
+                                        Margin of Error (%)
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="text"
+                                            {...field}
+                                            value={field.value}
+                                            onChange={(e) =>
+                                                field.onChange(
+                                                    e.target.value.replace(
+                                                        /[^0-9.,]/g,
+                                                        ""
+                                                    )
+                                                )
+                                            }
+                                            className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -188,7 +224,7 @@ export default function PerformConfig() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="bg-violet-600 hover:bg-violet-700 dark:text-white"
+                            className="bg-violet-600 hover:bg-violet-700 dark:text-white font-semibold"
                         >
                             {loading ? "Submitting..." : "Save changes"}
                         </Button>

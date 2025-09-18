@@ -35,26 +35,28 @@ export default function TradeDelete({ trade, onDeleted, onClose }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-600">
+                <Button className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-600 font-semibold">
                     Delete
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Trade</AlertDialogTitle>
-                    <AlertDialogDescription>
+                    <AlertDialogTitle className="font-semibold">
+                        Delete Trade
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="font-semibold text-slate-500">
                         Are you sure you want to delete this trade? This action
                         cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="dark:bg-transaprent hover:bg-violet-100 dark:hover:bg-violet-500/5 border-none text-violet-500 hover:text-violet-500">
+                    <AlertDialogCancel className="font-semibold dark:bg-transaprent hover:bg-violet-100 dark:hover:bg-violet-500/5 border-none text-violet-500 hover:text-violet-500">
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleDelete}
                         disabled={loading}
-                        className="bg-rose-600 hover:bg-rose-700 dark:text-white"
+                        className="bg-rose-600 hover:bg-rose-700 dark:text-white font-semibold"
                     >
                         {loading ? "Deleting..." : "Delete"}
                     </AlertDialogAction>

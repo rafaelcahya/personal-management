@@ -85,7 +85,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
 
     return (
         <Dialog open={!!fee} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-lg overflow-y-auto">
+            <DialogContent className="sm:max-w-lg overflow-y-auto font-semibold">
                 <DialogHeader>
                     <DialogTitle>Update Fee</DialogTitle>
                     <DialogDescription>
@@ -105,13 +105,15 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                             name="fee_date"
                             render={({ field, fieldState }) => (
                                 <FormItem className="flex flex-col">
-                                    <FormLabel>Fee Date</FormLabel>
+                                    <FormLabel className="font-semibold">
+                                        Fee Date
+                                    </FormLabel>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button
                                                 variant="outline"
                                                 className={cn(
-                                                    "w-[240px] pl-3 text-left font-normal",
+                                                    "w-[240px] pl-3 text-left font-semibold",
                                                     fieldState.error &&
                                                         "border-rose-500 text-rose-500",
                                                     !field.value &&
@@ -152,7 +154,9 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                             name="fee_name"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel>Fee Name</FormLabel>
+                                    <FormLabel className="font-semibold">
+                                        Fee Name
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
@@ -177,7 +181,9 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                             name="fee"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel>Fee</FormLabel>
+                                    <FormLabel className="font-semibold">
+                                        Fee
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             type="text"
@@ -220,7 +226,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                                     <DialogClose asChild>
                                         <Button
                                             type="button"
-                                            className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
+                                            className="font-semibold text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
                                         >
                                             Cancel
                                         </Button>
@@ -228,7 +234,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="bg-violet-600 hover:bg-violet-700 dark:text-white"
+                                        className="font-semibold bg-violet-600 hover:bg-violet-700 dark:text-white"
                                     >
                                         {loading ? "Updating..." : "Update Fee"}
                                     </Button>

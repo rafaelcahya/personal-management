@@ -32,19 +32,17 @@ function TradeList() {
         value < 0 ? "text-rose-600" : "text-green-600";
 
     return (
-        <div className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#1a1b1e] backdrop-blur-2xl rounded-xl space-y-4 p-6 overflow-x-auto">
+        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 border dark:border-none bg-white dark:bg-[#111214] rounded-xl space-y-4 p-6 overflow-x-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
-                    <p className="text-lg font-semibold tracking-[0.010em]">
-                        Trade List
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-lg font-bold">Trade List</p>
+                    <p className="text-sm font-semibold text-slate-500 dark:text-gray-400">
                         Quick peek at your trading history — see what’s winning
                         and what’s not.
                     </p>
                 </div>
                 <Link href="/main/trade" prefetch={false}>
-                    <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white">
+                    <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white font-semibold">
                         Trade
                     </Button>
                 </Link>
@@ -55,18 +53,22 @@ function TradeList() {
                 <Table>
                     <TableHeader className="bg-violet-100 dark:bg-[#0e0f11] rounded-xl">
                         <TableRow className="border-none">
-                            <TableHead className="pr-6 rounded-l-lg">
+                            <TableHead className="font-bold pr-6 rounded-l-lg">
                                 Date
                             </TableHead>
-                            <TableHead className="px-6 ">Ticker</TableHead>
-                            <TableHead className="px-6 text-right">
+                            <TableHead className="font-bold px-6 ">
+                                Ticker
+                            </TableHead>
+                            <TableHead className="font-bold px-6 text-right">
                                 Margin
                             </TableHead>
-                            <TableHead className="px-6 text-right">
+                            <TableHead className="font-bold px-6 text-right">
                                 Proceeds
                             </TableHead>
-                            <TableHead className="px-6 ">Return %</TableHead>
-                            <TableHead className="pl-6 text-right rounded-r-lg">
+                            <TableHead className="font-bold px-6">
+                                Return %
+                            </TableHead>
+                            <TableHead className="font-bold pl-6 text-right rounded-r-lg">
                                 Realized Gain
                             </TableHead>
                         </TableRow>
@@ -75,7 +77,7 @@ function TradeList() {
                         {tradeList.slice(0, 10).map((trade, index) => (
                             <TableRow
                                 key={index}
-                                className="border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11]"
+                                className="border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11] font-semibold"
                             >
                                 <TableCell className="pr-6 py-4">
                                     {new Intl.DateTimeFormat("id-ID", {

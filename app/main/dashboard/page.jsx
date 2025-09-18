@@ -8,9 +8,11 @@ import EventList from "./EventList";
 import OverallPerformance from "./OverallPerformance";
 import Settings from "../settings/Settings";
 import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
-
+import { getUser } from "@/lib/api/user";
+import Navbar from "../../../components/ui/common/Navbar";
 export default function Page() {
     const [user, setUser] = useState(null);
+    const [nickname, setNickname] = useState("User");
     const router = useRouter();
 
     useEffect(() => {
@@ -26,17 +28,28 @@ export default function Page() {
         fetchUser();
     }, [router]);
 
+    useEffect(() => {
+        const fetchNickname = async () => {
+            try {
+                const data = await getUser();
+                if (data?.user?.nickname) setNickname(data.user.nickname);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchNickname();
+    }, []);
+
     return (
         <div className="min-h-svh flex flex-col gap-5 w-full mx-auto px-6 py-6 xl:py-20 max-w-full sm:max-w-xl md:max-w-5xl xl:max-w-7xl">
             <Breadcrumbs />
-            <div className="flex flex-wrap justify-between items-center">
+            <div className="flex justify-between items-center">
                 <div className="space-y-1">
-                    <h1 className="text-xl font-semibold">
-                        Trading Performance Dashboard
+                    <h1 className="text-sm font-semibold text-slate-500 dark:text-gray-400">
+                        Hi! {nickname ?? "User"}
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-[15px] w-full lg:w-3/4">
-                        Keep track of commissions and fees — the little things
-                        that add up.
+                    <p className="font-bold text-xl w-full">
+                        Your trading journey at a glance.
                     </p>
                 </div>
                 <div className="flex items-center gap-5">

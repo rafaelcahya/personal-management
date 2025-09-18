@@ -2,6 +2,7 @@ import { CardTitle } from "@/components/ui/card";
 
 export default function CommentedMetric({
     icon = null,
+    iconBgStyle,
     label,
     value,
     comment,
@@ -18,15 +19,16 @@ export default function CommentedMetric({
 
     return (
         <div className="space-y-4">
-            <div>
-                <CardTitle className="flex items-center gap-2 font-normal tracking-wide text-sm text-gray-500  dark:text-gray-400">
-                    {icon && <span>{icon}</span>} {label}
+            <div className="space-y-2">
+                <CardTitle className="flex items-center gap-2 font-semibold text-sm text-slate-500  dark:text-gray-400">
+                    {icon && <span className={iconBgStyle}>{icon}</span>}{" "}
+                    {label}
                 </CardTitle>
-                <p className="text-lg md:text-xl font-semibold">
-                    {formattedValue}
-                </p>
+                <p className="text-lg md:text-xl font-bold">{formattedValue}</p>
             </div>
-            {comment && <p className={`text-sm ${color}`}>{comment}</p>}
+            {comment && (
+                <p className={`text-sm font-semibold ${color}`}>{comment}</p>
+            )}
         </div>
     );
 }
