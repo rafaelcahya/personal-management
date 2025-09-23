@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import AddNewTrade from "./AddTrade";
 import TradeUpdate from "./UpdateTrade";
 import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
-import { ChevronLeft } from "lucide-react";
 import SummaryTrade from "./SummaryTrade";
 
 // Helper styling untuk profit/loss
@@ -95,6 +94,9 @@ export default function TradeTable({ trades: initialTrades }) {
                                     Realized Gain
                                 </TableHead>
                                 <TableHead className="font-semibold px-6">
+                                    Stock Type
+                                </TableHead>
+                                <TableHead className="font-semibold px-6">
                                     Entry Session
                                 </TableHead>
                                 <TableHead className="font-semibold px-6">
@@ -149,6 +151,9 @@ export default function TradeTable({ trades: initialTrades }) {
                                     >{`Rp. ${Number(
                                         trade.realized_gain
                                     ).toLocaleString("id-ID")}`}</TableCell>
+                                    <TableCell className="px-6">
+                                        {trade.stock_type_option}
+                                    </TableCell>
                                     <TableCell className="px-6">
                                         {trade.entry_session_option}
                                     </TableCell>

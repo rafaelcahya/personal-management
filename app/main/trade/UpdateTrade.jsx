@@ -51,6 +51,7 @@ import { updateTrade } from "@/lib/api/trade";
 export default function TradeUpdate({ trade, onClose, onUpdated }) {
     const [loading, setLoading] = useState(false);
     const [options, setOptions] = useState({
+        stockType: [],
         entrySession: [],
         entryOccasion: [],
         buyReason: [],
@@ -73,6 +74,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                 proceeds: trade.proceeds?.toString() ?? "",
                 return_percent: trade.return_percent ?? "",
                 realized_gain: trade.realized_gain?.toString() ?? "",
+                stock_type_option: trade.stock_type_option ?? "",
                 entry_session_option: trade.entry_session_option ?? "",
                 entry_occasion_option: trade.entry_occasion_option ?? "",
                 buy_reason_option: trade.buy_reason_option ?? "",
@@ -365,6 +367,46 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                             disabled
                                             className="font-semibold text-slate-900"
                                         />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Stock Type Option */}
+                        <FormField
+                            control={control}
+                            name="stock_type_option"
+                            render={({ field, fieldState }) => (
+                                <FormItem>
+                                    <FormLabel className="font-semibold">
+                                        Stock Type Option
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <SelectTrigger className="min-w-full font-semibold">
+                                                <SelectValue placeholder="Select entry session" />
+                                            </SelectTrigger>
+                                            <SelectContent className="font-semibold">
+                                                {options.stockType.map(
+                                                    (opt) => (
+                                                        <SelectItem
+                                                            key={opt.id}
+                                                            value={
+                                                                opt.stock_type_option
+                                                            }
+                                                        >
+                                                            {
+                                                                opt.stock_type_option
+                                                            }
+                                                        </SelectItem>
+                                                    )
+                                                )}
+                                            </SelectContent>
+                                        </Select>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

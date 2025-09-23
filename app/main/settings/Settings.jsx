@@ -92,7 +92,7 @@ export default function Settings() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <button className="flex items-center gap-2 pl-4 pr-1 py-1 hover:bg-violet-100 dark:hover:bg-violet-500/5 rounded-full">
-                    <span className="font-semibold text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                    <span className="hidden sm:block font-semibold text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
                         {nickname ?? "User"}
                     </span>
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-300">

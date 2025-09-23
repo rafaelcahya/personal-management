@@ -1,10 +1,22 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 function SummaryTrade() {
     const [metrics, setMetrics] = useState({});
     const [listTrade, setListTrade] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         Promise.all([
@@ -19,9 +31,22 @@ function SummaryTrade() {
             .finally(() => setLoading(false));
     }, []);
 
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640); // < sm
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     const { totalTrade, winCount, loseCount } = metrics || {};
 
-    // --- Hitung summary untuk entry_session_option & entry_occasion_option
+    // --- Hitung summary
+    const stockTypeSummary = listTrade.reduce((acc, trade) => {
+        const key = trade.stock_type_option || "Unknown";
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+    }, {});
+
     const sessionSummary = listTrade.reduce((acc, trade) => {
         const key = trade.entry_session_option || "Unknown";
         acc[key] = (acc[key] || 0) + 1;
@@ -34,8 +59,8 @@ function SummaryTrade() {
         return acc;
     }, {});
 
-    return (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+    const SummaryContent = () => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 my-4">
             {/* --- Basic Summary --- */}
             <div className="p-4 border-slate-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
                 <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">
@@ -54,6 +79,28 @@ function SummaryTrade() {
                         <span className="font-semibold">Total Lose</span>
                         <span className="font-semibold">{loseCount}</span>
                     </li>
+                </ul>
+            </div>
+
+            {/* --- Stock Type Summary --- */}
+            <div className="p-4 border-slate-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
+                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                    Stock Type
+                </p>
+                <ul className="text-sm space-y-1">
+                    {Object.entries(stockTypeSummary).map(
+                        ([stockType, count]) => (
+                            <li
+                                key={stockType}
+                                className="flex justify-between"
+                            >
+                                <span className="font-semibold">
+                                    {stockType}
+                                </span>
+                                <span className="font-semibold">{count}</span>
+                            </li>
+                        )
+                    )}
                 </ul>
             </div>
 
@@ -91,6 +138,36 @@ function SummaryTrade() {
                 </ul>
             </div>
         </div>
+    );
+
+    if (loading) return <p>Loading summary...</p>;
+
+    return (
+        <>
+            {/* Mobile: pakai dialog */}
+            {isMobile ? (
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button className="bg-violet-100 hover:bg-violet-700 text-violet-600 font-semibold">
+                            View Summary
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                        <DialogHeader className="text-left font-semibold">
+                            <DialogTitle>Trade Summary</DialogTitle>
+                            <DialogDescription>
+                                Overview of your trading performance and
+                                breakdown.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <SummaryContent />
+                    </DialogContent>
+                </Dialog>
+            ) : (
+                // Desktop / Tablet
+                <SummaryContent />
+            )}
+        </>
     );
 }
 

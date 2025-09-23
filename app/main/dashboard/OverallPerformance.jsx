@@ -23,7 +23,11 @@ import {
 } from "lucide-react";
 import SkeletonBlock from "../../../components/ui/common/SkeletonBlock";
 import { Separator } from "@/components/ui/separator";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 function OverallPerformance() {
     const [metrics, setMetrics] = useState({});
@@ -42,20 +46,23 @@ function OverallPerformance() {
 
     const {
         initialMargin,
+        accountValue,
         biSharpeRatio,
         personalSharpeRatio,
-        tradingBalance,
-        balanceChangePercent,
+        portfolioGrowth,
+        accountValueChangePercent,
+        accountValueComparePercent,
         pnl,
         pnlChangePercent,
-        portfolioGrowth,
-        totalTrade,
+        pnlComparePercent,
+        averagePnL,
+        avgPnLChangePercent,
+        avgPnLComparePercent,
+        totalTrades,
         winCount,
         loseCount,
         winRate,
         loseRate,
-        avgPnl,
-        avgPnlChangePercent,
         biggestProfit,
         lowestProfit,
         totalProfit,
@@ -68,37 +75,20 @@ function OverallPerformance() {
         profitFactorComment,
         payoffRatio,
         payoffComment,
-        avgExpectation,
-        stdDeviation,
-        stdDeviationComment,
         sharpeBI,
-        sharpeBIComment,
         sharpePersonal,
+        sharpeBIComment,
         sharpePersonalComment,
-        balanceComparePercent,
-        pnlComparePercent,
-        avgPnlComparePercent,
-        // Comfort Zone
-        suggestedSL,
-        suggestedTP,
-        adjustedSL,
-        adjustedTP,
-        timesToZeroSuggested,
-        timesToZeroAdjusted,
-
-        // Changes & Compare
-        suggestedSLChange,
-        adjustedSLChange,
-        suggestedTPChange,
-        adjustedTPChange,
-        timesToZeroSuggestedChange,
-        timesToZeroAdjustedChange,
-        suggestedSLCompare,
-        adjustedSLCompare,
-        suggestedTPCompare,
-        adjustedTPCompare,
-        timesToZeroSuggestedCompare,
-        timesToZeroAdjustedCompare,
+        avgReturn,
+        stdDevRupiah,
+        stdDevRatio,
+        stdDevComment,
+        safeZoneAvgProfitWithoutMoe,
+        safeZoneAvgProfitWithMoe,
+        safeZoneAvgLossWithoutMoe,
+        safeZoneAvgLossWithMoe,
+        timesToZeroWithoutMoe,
+        timesToZeroWithMoe,
     } = metrics || {};
 
     const commentStyleVal = (val, threshold = 1) =>
@@ -110,7 +100,7 @@ function OverallPerformance() {
 
     return (
         <main className="space-y-6">
-            <div className="flex flex-col gap-2 p-4 shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
+            <div className="flex flex-col gap-2 p-4 shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
                 <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
                     Filter Balance & PNL :
                 </p>
@@ -162,7 +152,7 @@ function OverallPerformance() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
+                <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
                     <CardContent className="p-6">
                         {loading ? (
                             <SkeletonBlock />
@@ -181,19 +171,18 @@ function OverallPerformance() {
                                         <HandCoins className="text-violet-600 w-4 h-4" />
                                     }
                                     iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
-                                    label="Total Trading Balance"
-                                    value={tradingBalance}
-                                    indicator1={
-                                        percentType === "change"
-                                            ? balanceChangePercent
-                                            : balanceComparePercent
-                                    }
+                                    label="Account Value"
+                                    value={accountValue}
+                                    indicator2={portfolioGrowth}
+                                    indicator1={pick(
+                                        accountValueChangePercent,
+                                        accountValueComparePercent
+                                    )}
                                     unit={
                                         percentType === "change"
-                                            ? "Then yesterday"
-                                            : "Cumulative return"
+                                            ? "Since last trade"
+                                            : "Day-over-Day"
                                     }
-                                    indicator2={portfolioGrowth}
                                 />
                                 <MetricValue
                                     icon={
@@ -202,15 +191,14 @@ function OverallPerformance() {
                                     iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
                                     label="PNL"
                                     value={pnl}
-                                    indicator1={
-                                        percentType === "change"
-                                            ? pnlChangePercent
-                                            : pnlComparePercent
-                                    }
+                                    indicator1={pick(
+                                        pnlChangePercent,
+                                        pnlComparePercent
+                                    )}
                                     unit={
                                         percentType === "change"
-                                            ? "Then yesterday"
-                                            : "Cumulative return"
+                                            ? "Since last trade"
+                                            : "Day-over-Day"
                                     }
                                 />
                                 <MetricValue
@@ -219,16 +207,15 @@ function OverallPerformance() {
                                     }
                                     iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
                                     label="Average PNL"
-                                    value={avgPnl}
-                                    indicator1={
-                                        percentType === "change"
-                                            ? avgPnlChangePercent
-                                            : avgPnlComparePercent
-                                    }
+                                    value={averagePnL}
+                                    indicator1={pick(
+                                        avgPnLChangePercent,
+                                        avgPnLComparePercent
+                                    )}
                                     unit={
                                         percentType === "change"
-                                            ? "Then yesterday"
-                                            : "Cumulative return"
+                                            ? "Since last trade"
+                                            : "Day-over-Day"
                                     }
                                 />
                             </div>
@@ -236,7 +223,7 @@ function OverallPerformance() {
                     </CardContent>
                 </Card>
 
-                <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
+                <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
                     <CardContent className="space-y-4 p-6">
                         {loading ? (
                             <SkeletonBlock />
@@ -248,8 +235,8 @@ function OverallPerformance() {
                                             <ChartBarStacked className="text-violet-600 w-4 h-4" />
                                         }
                                         iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
-                                        label="Total Trade"
-                                        value={totalTrade}
+                                        label="Total Trades"
+                                        value={totalTrades}
                                         displayMode="number"
                                     />
                                     <div className="bg-slate-200 dark:bg-slate-800 h-px sm:h-10 w-full sm:w-px"></div>
@@ -281,7 +268,7 @@ function OverallPerformance() {
             </div>
 
             {/* Comfort Zone */}
-            <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
+            <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
                 <CardContent className="space-y-4 p-6">
                     {loading ? (
                         <SkeletonBlock />
@@ -293,11 +280,15 @@ function OverallPerformance() {
                                 }
                                 iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
                                 label="Suggested TP"
-                                value={suggestedTP}
-                                indicator1={pick(
-                                    suggestedTPChange,
-                                    suggestedTPCompare
-                                )}
+                                value={safeZoneAvgProfitWithoutMoe}
+                            />
+                            <MetricValue
+                                icon={
+                                    <ArrowUpRight className="text-violet-600 w-4 h-4" />
+                                }
+                                iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                label="Adjusted TP"
+                                value={safeZoneAvgProfitWithMoe}
                             />
                             <MetricValue
                                 icon={
@@ -305,61 +296,33 @@ function OverallPerformance() {
                                 }
                                 iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
                                 label="Suggested SL"
-                                value={suggestedSL}
-                                indicator1={pick(
-                                    suggestedSLChange,
-                                    suggestedSLCompare
-                                )}
+                                value={safeZoneAvgLossWithoutMoe}
+                            />
+                            <MetricValue
+                                icon={
+                                    <ArrowDownRight className="text-violet-600 w-4 h-4" />
+                                }
+                                iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                label="adjusted SL"
+                                value={safeZoneAvgLossWithMoe}
                             />
                             <MetricValue
                                 icon={
                                     <Sliders className="text-violet-600 w-4 h-4" />
                                 }
                                 iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
-                                label="Adjusted TP"
-                                value={adjustedTP}
-                                indicator1={pick(
-                                    adjustedTPChange,
-                                    adjustedTPCompare
-                                )}
+                                label="Times to zero (Sug)"
+                                value={timesToZeroWithoutMoe}
+                                displayMode="number"
                             />
                             <MetricValue
                                 icon={
                                     <Sliders className="text-violet-600 w-4 h-4" />
                                 }
                                 iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
-                                label="Adjusted SL"
-                                value={adjustedSL}
-                                indicator1={pick(
-                                    adjustedSLChange,
-                                    adjustedSLCompare
-                                )}
-                            />
-                            <MetricValue
-                                icon={
-                                    <Hourglass className="text-violet-600 w-4 h-4" />
-                                }
-                                iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
-                                label="Times to Zero (Sug)"
-                                value={timesToZeroSuggested}
+                                label="Times to zero (Adj)"
+                                value={timesToZeroWithMoe}
                                 displayMode="number"
-                                indicator1={pick(
-                                    timesToZeroSuggestedChange,
-                                    timesToZeroSuggestedCompare
-                                )}
-                            />
-                            <MetricValue
-                                icon={
-                                    <Hourglass className="text-violet-600 w-4 h-4" />
-                                }
-                                iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
-                                label="Times to Zero (Adj)"
-                                value={timesToZeroAdjusted}
-                                displayMode="number"
-                                indicator1={pick(
-                                    timesToZeroAdjustedChange,
-                                    timesToZeroAdjustedCompare
-                                )}
                             />
                         </div>
                     )}
@@ -370,7 +333,7 @@ function OverallPerformance() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
+                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -430,7 +393,7 @@ function OverallPerformance() {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
+                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -499,7 +462,7 @@ function OverallPerformance() {
                         </Card>
                     </div>
 
-                    <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
+                    {/* <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
                         <CardContent className="space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />
@@ -516,12 +479,12 @@ function OverallPerformance() {
                                 </>
                             )}
                         </CardContent>
-                    </Card>
+                    </Card> */}
                 </div>
 
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
+                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -561,7 +524,7 @@ function OverallPerformance() {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
+                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
                             <CardContent className="space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -602,7 +565,7 @@ function OverallPerformance() {
                         </Card>
                     </div>
 
-                    <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
+                    <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
                         <CardContent className="space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />
@@ -614,9 +577,9 @@ function OverallPerformance() {
                                         }
                                         iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
                                         label="Standard Deviation"
-                                        value={stdDeviation}
-                                        comment={stdDeviationComment}
-                                        color={commentStyleVal(stdDeviation)}
+                                        value={stdDevRupiah}
+                                        comment={stdDevComment}
+                                        color={commentStyleVal(stdDevRupiah)}
                                         format="currency"
                                     />
                                 </>

@@ -57,19 +57,22 @@ export default function LoginPage() {
                 backgroundAttachment: "fixed",
             }}
         >
-            <Card className="shadow-black/5 shadow-lg border-none bg-white dark:bg-[#111214] backdrop-blur-2xl rounded-xl">
+            <div className="absolute inset-0 bg-white/60 dark:bg-[#0e0f11] backdrop-blur-2xl" />
+            <Card className="max-w-sm shadow-black/15 shadow-2xl border-none bg-white dark:bg-[#111214] rounded-3xl z-10">
                 <CardHeader>
-                    <CardTitle className="text-center text-2xl">
+                    <CardTitle className="text-2xl font-bold">
                         Welcome back 👋
                     </CardTitle>
-                    <CardDescription className="text-center">
+                    <CardDescription className="font-semibold">
                         Log in to access your trading performance dashboard
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleLogin}>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 font-semibold">
                         <div className="space-y-2">
-                            <Label htmlFor="username">Username</Label>
+                            <Label htmlFor="username" className="font-semibold">
+                                Username
+                            </Label>
                             <Input
                                 id="username"
                                 type="text"
@@ -80,7 +83,9 @@ export default function LoginPage() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password" className="font-semibold">
+                                Password
+                            </Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -95,7 +100,7 @@ export default function LoginPage() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-violet-600 hover:bg-violet-700 text-white hover:text-white"
+                            className="w-full bg-violet-600 hover:bg-violet-700 text-white hover:text-white rounded-xl"
                         >
                             {loading ? "Logging in..." : "Log In"}
                         </Button>

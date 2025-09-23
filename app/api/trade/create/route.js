@@ -10,6 +10,7 @@ export async function POST(req) {
             body.proceeds,
             body.return_percent,
             body.realized_gain,
+            body.stock_type_option,
             body.entry_session_option,
             body.entry_occasion_option,
             body.sell_reason_option,

@@ -48,14 +48,12 @@ export default function Page() {
                     <h1 className="text-sm font-semibold text-slate-500 dark:text-gray-400">
                         Hi! {nickname ?? "User"}
                     </h1>
-                    <p className="font-bold text-xl w-full">
+                    <p className="font-bold text-sm sm:text-xl w-full">
                         Your trading journey at a glance.
                     </p>
                 </div>
-                <div className="flex items-center gap-5">
-                    <div className="hidden lg:flex items-center space-x-2">
-                        <Settings />
-                    </div>
+                <div className="flex items-center space-x-2">
+                    <Settings />
                 </div>
             </div>
             <div className="space-y-5">

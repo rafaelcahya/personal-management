@@ -32,7 +32,7 @@ function TradeList() {
         value < 0 ? "text-rose-600" : "text-green-600";
 
     return (
-        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 border dark:border-none bg-white dark:bg-[#111214] rounded-xl space-y-4 p-6 overflow-x-auto">
+        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 border dark:border-none bg-white dark:bg-[#111214] rounded-xl space-y-4 p-6 overflow-x-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-bold">Trade List</p>

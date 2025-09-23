@@ -65,6 +65,7 @@ export default function AddNewTrade({ onAdded }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [options, setOptions] = useState({
+        stockType: [],
         entrySession: [],
         entryOccasion: [],
         buyReason: [],
@@ -80,6 +81,7 @@ export default function AddNewTrade({ onAdded }) {
             proceeds: "",
             return_percent: "",
             realized_gain: "",
+            stock_type_option: "",
             entry_session_option: "",
             entry_occasion_option: "",
             buy_reason_option: "",
@@ -109,13 +111,14 @@ export default function AddNewTrade({ onAdded }) {
             }
         } else {
             setValue("realized_gain", "");
-            setValue("return_percent", "")
+            setValue("return_percent", "");
         }
     }, [margin, proceeds, setValue]);
 
     // Fetch dropdown options
     const fetchOptions = useCallback(async () => {
         const data = await fetchTradeOptions();
+        console.log("API response raw:", data);
         setOptions(data);
     }, []);
 
@@ -331,6 +334,12 @@ export default function AddNewTrade({ onAdded }) {
 
                         {/* Dropdown Options */}
                         {[
+                            {
+                                name: "stock_type_option",
+                                label: "Stock Type",
+                                data: options.stockType,
+                                key: "stock_type_option",
+                            },
                             {
                                 name: "entry_session_option",
                                 label: "Entry Session",
