@@ -60,7 +60,7 @@ function EventTable({ events: initialEvents }) {
     }, [initialEvents]);
 
     return (
-        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 border dark:border-none bg-white dark:bg-[#111214] rounded-xl flex flex-col flex-1 p-6 overflow-hidden space-y-5">
+        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 border dark:border-none bg-white dark:bg-[#111214] rounded-xl flex flex-col flex-1 px-4 sm:px-6 py-6 overflow-hidden space-y-5">
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20 font-semibold">
                 <div className="space-y-2">

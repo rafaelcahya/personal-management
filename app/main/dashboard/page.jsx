@@ -41,7 +41,7 @@ export default function Page() {
     }, []);
 
     return (
-        <div className="min-h-svh flex flex-col gap-5 w-full mx-auto px-6 py-6 xl:py-20 max-w-full sm:max-w-xl md:max-w-5xl xl:max-w-7xl">
+        <div className="min-h-svh flex flex-col gap-5 w-full mx-auto px-3 py-6 xl:py-20 max-w-full sm:max-w-xl md:max-w-5xl xl:max-w-7xl">
             <Breadcrumbs />
             <div className="flex justify-between items-center">
                 <div className="space-y-1">
