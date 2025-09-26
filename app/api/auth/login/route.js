@@ -31,6 +31,13 @@ export async function POST(req) {
             maxAge: 60 * 60 * 24,
         });
 
+        res.headers.set(
+            "Set-Cookie",
+            `authToken=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400${
+                process.env.NODE_ENV === "production" ? "; Secure" : ""
+            }`
+        );
+
         return res;
     } catch (err) {
         return NextResponse.json({ error: err.message }, { status: 401 });

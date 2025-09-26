@@ -41,7 +41,7 @@ function TradeList() {
                         and what’s not.
                     </p>
                 </div>
-                <Link href="/main/trade" prefetch={false}>
+                <Link href="/main/trade" prefetch={false} id="tradeBtn">
                     <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white font-semibold">
                         Trade
                     </Button>

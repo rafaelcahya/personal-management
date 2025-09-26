@@ -41,7 +41,7 @@ export default function LoginPage() {
             toast.success("Login successful!");
             router.replace("/main/dashboard");
         } catch (err) {
-            toast.error("Unexpected error occurred");
+            toast.error("Invalid username or password");
         } finally {
             setLoading(false);
         }
@@ -98,6 +98,7 @@ export default function LoginPage() {
                     </CardContent>
                     <CardFooter>
                         <Button
+                            id="loginBtn"
                             type="submit"
                             disabled={loading}
                             className="w-full bg-violet-600 hover:bg-violet-700 text-white hover:text-white rounded-xl"
