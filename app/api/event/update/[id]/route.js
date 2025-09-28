@@ -7,7 +7,7 @@ export async function PUT(req, { params }) {
 
         const updateEvent = await getUpdateEvent(id, body);
 
-        return new Response(JSON.stringify({ success: true, updateEvent }), {
+        return new Response(JSON.stringify({ success: true, event: updateEvent }), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });

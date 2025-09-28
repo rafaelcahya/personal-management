@@ -7,7 +7,7 @@ export async function PUT(req, { params }) {
 
         const updateFee = await getUpdateFee(id, body);
 
-        return new Response(JSON.stringify({ success: true, updateFee }), {
+        return new Response(JSON.stringify({ success: true, fee: updateFee }), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });

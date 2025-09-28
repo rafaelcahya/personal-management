@@ -3,15 +3,17 @@ import { getListEvent } from "@/lib/services/event/getListEvent";
 export async function GET() {
     try {
         const eventList = await getListEvent();
-        return new Response(JSON.stringify({ success: true, eventList }), {
+        return new Response(JSON.stringify({ success: true, event: eventList }), {
             status: 200,
             headers: {
                 "Cache-Control": "no-store",
+                "Content-Type": "application/json",
             },
         });
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), {
             status: 401,
+            headers: { "Content-Type": "application/json" },
         });
     }
 }

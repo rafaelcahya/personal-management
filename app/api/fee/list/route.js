@@ -7,11 +7,13 @@ export async function GET() {
             status: 200,
             headers: {
                 "Cache-Control": "no-store",
+                "Content-Type": "application/json",
             },
         });
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), {
             status: 401,
+            headers: { "Content-Type": "application/json" },
         });
     }
 }

@@ -7,14 +7,18 @@ export async function DELETE(req, { params }) {
 
         const deletedFee = await getDeleteFee(id);
 
-        return new Response(JSON.stringify({ success: true, deletedFee }), {
-            status: 200,
-        });
+        return new Response(
+            JSON.stringify({ success: true, fee: deletedFee }),
+            {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            }
+        );
     } catch (err) {
         toast.error("Error deleting fee:", err);
         return new Response(
             JSON.stringify({ success: false, error: err.message }),
-            { status: 500 }
+            { status: 500, headers: { "Content-Type": "application/json" } }
         );
     }
 }

@@ -118,7 +118,6 @@ export default function AddNewTrade({ onAdded }) {
     // Fetch dropdown options
     const fetchOptions = useCallback(async () => {
         const data = await fetchTradeOptions();
-        console.log("API response raw:", data);
         setOptions(data);
     }, []);
 
@@ -137,7 +136,6 @@ export default function AddNewTrade({ onAdded }) {
             reset();
         } catch (err) {
             toast.error(err.message || "Something went wrong");
-            toast.error(err);
         } finally {
             setLoading(false);
         }
