@@ -5,6 +5,7 @@ export async function getUserFromDb(supabase, userId) {
         .from("users")
         .select("*")
         .eq("id", userId)
+        .is("deleted_at", null)
         .single();
 
     if (error) throw new Error(error.message);

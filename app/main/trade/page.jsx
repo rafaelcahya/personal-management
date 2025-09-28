@@ -16,7 +16,7 @@ export default function TradePage() {
                     cache: "no-store",
                 });
                 const data = await res.json();
-                if (data.success) setTrades(data.listTrade);
+                if (data.success) setTrades(data.trade);
             } catch (err) {
                 toast.error("Failed to fetch trades:", err);
             } finally {

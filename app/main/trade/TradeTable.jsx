@@ -29,7 +29,7 @@ export default function TradeTable({ trades: initialTrades }) {
         try {
             const res = await fetch("/api/trade/list", { cache: "no-store" });
             const data = await res.json();
-            if (data.success) setListTrade(data.listTrade);
+            if (data.success) setListTrade(data.trade);
         } catch (err) {
             toast.error("Failed to fetch fees:", err);
         }
@@ -67,7 +67,7 @@ export default function TradeTable({ trades: initialTrades }) {
 
             {/* Table Section */}
             <div className="relative w-full flex-1 overflow-y-auto">
-                {listTrade.length === 0 ? (
+                {listTrade?.length === 0 ? (
                     <p className="text-center font-semibold text-slate-500 dark:text-gray-400 py-10">
                         No trades yet. Start by adding a new trade 🚀
                     </p>
@@ -115,7 +115,7 @@ export default function TradeTable({ trades: initialTrades }) {
                         </TableHeader>
 
                         <TableBody>
-                            {listTrade.map((trade) => (
+                            {listTrade?.map((trade) => (
                                 <TableRow
                                     key={trade.id}
                                     className="font-semibold border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11] cursor-pointer"

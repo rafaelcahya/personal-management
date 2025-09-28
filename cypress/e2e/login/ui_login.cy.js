@@ -1,8 +1,16 @@
 import { randomString } from "../../support/common/helper";
+import loginValidationTestCases from "./loginValTc.json";
 
 let userData;
 
 describe("Login page", () => {
+    const protectedUrls = [
+        "/main/dashboard",
+        "/main/trade",
+        "/main/fee",
+        "/main/event",
+    ];
+
     beforeEach(() => {
         cy.fixture("user").then((user) => {
             userData = user;
@@ -19,39 +27,45 @@ describe("Login page", () => {
         cy.get("#password").invoke("attr", "type").should("eq", "password");
     });
 
-    it("should show error when username is empty", () => {
-        cy.fillField("#username", randomString());
-        cy.get("#loginBtn").click();
-        cy.verifyToastMessage("Username and password cannot be empty");
-    });
-
-    it("should show error when username is empty", () => {
-        cy.fillField("#password", randomString());
-        cy.get("#loginBtn").click();
-        cy.verifyToastMessage("Username and password cannot be empty");
-    });
-
-    it("should show error when username and password are empty", () => {
-        cy.get("#loginBtn").click();
-        cy.verifyToastMessage("Username and password cannot be empty");
-    });
-
-    it("should not login with invalid credentials", () => {
-        cy.fillField({
-            "#username": randomString(),
-            "#password": randomString(),
-        });
-        cy.get("#loginBtn").click();
-        cy.verifyToastMessage("Invalid username or password");
-    });
+    loginValidationTestCases?.forEach(
+        ({ description, fields, expectedToast }) => {
+            it(description, () => {
+                Object.entries(fields).forEach(([selector, value]) => {
+                    const inputValue =
+                        value === "random" ? randomString() : value;
+                    cy.get(selector).clear().type(inputValue);
+                });
+                cy.get("#loginBtn").click();
+                cy.verifyToastMessage(expectedToast);
+            });
+        }
+    );
 
     it("should login with valid credentials", () => {
-        cy.fillField({
-            "#username": userData.username,
-            "#password": userData.password,
+        cy.task("decryptPasswordTask", userData.password).then(
+            (decryptedPassword) => {
+                cy.fillField({
+                    "#username": userData.username,
+                    "#password": decryptedPassword,
+                });
+                cy.get("#loginBtn").click();
+                cy.verifyToastMessage("Login successful!");
+                cy.url().should("include", "/main/dashboard");
+            }
+        );
+    });
+
+    it("should not have authToken cookie when opening login page", () => {
+        cy.getCookie("authToken").should("not.exist");
+        cy.checkComponentVisible(["#username", "#password", "#loginBtn"]);
+    });
+
+    protectedUrls.forEach((url) => {
+        it(`should redirect to login when accessing ${url} without auth`, () => {
+            cy.visit(url, { failOnStatusCode: false });
+            cy.url().should("include", "/auth/login");
+            cy.getCookie("authToken").should("not.exist");
+            cy.checkComponentVisible(["#username", "#password", "#loginBtn"]);
         });
-        cy.get("#loginBtn").click();
-        cy.verifyToastMessage("Login successful!");
-        cy.url().should("include", "/main/dashboard");
     });
 });

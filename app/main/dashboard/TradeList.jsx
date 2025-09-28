@@ -22,7 +22,7 @@ function TradeList() {
         fetch("/api/trade/list")
             .then((r) => r.json())
             .then((d) => {
-                d.success && setTradeList(d.listTrade);
+                d.success && setTradeList(d.trade);
             })
             .catch(toast.error)
             .finally(() => setLoading(false));
@@ -74,7 +74,7 @@ function TradeList() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {tradeList.slice(0, 10).map((trade, index) => (
+                        {tradeList?.slice(0, 10).map((trade, index) => (
                             <TableRow
                                 key={index}
                                 className="border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11] font-semibold"

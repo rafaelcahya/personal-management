@@ -22,6 +22,7 @@ export async function POST(req) {
             JSON.stringify({ success: true, trade: newTrade }),
             {
                 status: 200,
+                headers: { "Content-Type": "application/json" },
             }
         );
     } catch (err) {
@@ -29,6 +30,7 @@ export async function POST(req) {
             JSON.stringify({ success: false, error: err.message }),
             {
                 status: 500,
+                headers: { "Content-Type": "application/json" },
             }
         );
     }

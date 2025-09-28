@@ -25,7 +25,7 @@ function SummaryTrade() {
         ])
             .then(([metricsRes, tradeRes]) => {
                 if (metricsRes.success) setMetrics(metricsRes.data);
-                if (tradeRes.success) setListTrade(tradeRes.listTrade);
+                if (tradeRes.success) setListTrade(tradeRes.trade);
             })
             .catch(toast.error)
             .finally(() => setLoading(false));
@@ -41,23 +41,26 @@ function SummaryTrade() {
     const { totalTrade, winCount, loseCount } = metrics || {};
 
     // --- Hitung summary
-    const stockTypeSummary = listTrade.reduce((acc, trade) => {
-        const key = trade.stock_type_option || "Unknown";
-        acc[key] = (acc[key] || 0) + 1;
-        return acc;
-    }, {});
+    const stockTypeSummary =
+        listTrade?.reduce((acc, trade) => {
+            const key = trade.stock_type_option || "Unknown";
+            acc[key] = (acc[key] || 0) + 1;
+            return acc;
+        }, {}) || {};
 
-    const sessionSummary = listTrade.reduce((acc, trade) => {
-        const key = trade.entry_session_option || "Unknown";
-        acc[key] = (acc[key] || 0) + 1;
-        return acc;
-    }, {});
+    const sessionSummary =
+        listTrade?.reduce((acc, trade) => {
+            const key = trade.entry_session_option || "Unknown";
+            acc[key] = (acc[key] || 0) + 1;
+            return acc;
+        }, {}) || {};
 
-    const occasionSummary = listTrade.reduce((acc, trade) => {
-        const key = trade.entry_occasion_option || "Unknown";
-        acc[key] = (acc[key] || 0) + 1;
-        return acc;
-    }, {});
+    const occasionSummary =
+        listTrade?.reduce((acc, trade) => {
+            const key = trade.entry_occasion_option || "Unknown";
+            acc[key] = (acc[key] || 0) + 1;
+            return acc;
+        }, {}) || {};
 
     const SummaryContent = () => (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 my-4">

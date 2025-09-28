@@ -1,0 +1,22 @@
+[
+    {
+        "description": "should show error when username is empty",
+        "fields": { "#password": "random" },
+        "expectedToast": "Username and password cannot be empty"
+    },
+    {
+        "description": "should show error when password is empty",
+        "fields": { "#username": "random" },
+        "expectedToast": "Username and password cannot be empty"
+    },
+    {
+        "description": "should show error when username and password are empty",
+        "fields": {},
+        "expectedToast": "Username and password cannot be empty"
+    },
+    {
+        "description": "should not login with invalid credentials",
+        "fields": { "#username": "random", "#password": "random" },
+        "expectedToast": "Invalid username or password"
+    }
+]

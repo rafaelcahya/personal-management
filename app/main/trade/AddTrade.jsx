@@ -146,11 +146,17 @@ export default function AddNewTrade({ onAdded }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-violet-600 hover:bg-violet-700 text-white font-semibold">
+                <Button
+                    id="addNewTradeBtn"
+                    className="bg-violet-600 hover:bg-violet-700 text-white font-semibold"
+                >
                     Add New Trade
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl max-h-[90svh] overflow-y-auto space-y-5">
+            <DialogContent
+                id="addNewTradeDialogForm"
+                className="sm:max-w-2xl max-h-[90svh] overflow-y-auto space-y-5"
+            >
                 <DialogHeader className="text-left font-semibold">
                     <DialogTitle>Add New Trade</DialogTitle>
                     <DialogDescription className="text-slate-500">
@@ -218,6 +224,7 @@ export default function AddNewTrade({ onAdded }) {
                         {/* Ticker */}
                         <FormField
                             control={control}
+                            id="ticker"
                             name="ticker"
                             render={({ field, fieldState }) => (
                                 <FormItem>
@@ -235,7 +242,10 @@ export default function AddNewTrade({ onAdded }) {
                                             }`}
                                         />
                                     </FormControl>
-                                    <FormMessage className="font-medium">
+                                    <FormMessage
+                                        id="tickerMessage"
+                                        className="font-medium"
+                                    >
                                         {fieldState.error?.message}
                                     </FormMessage>
                                 </FormItem>
@@ -245,6 +255,7 @@ export default function AddNewTrade({ onAdded }) {
                         {/* Margin */}
                         <FormField
                             control={control}
+                            id="margin"
                             name="margin"
                             render={({ field, fieldState }) => (
                                 <FormItem>
@@ -258,7 +269,10 @@ export default function AddNewTrade({ onAdded }) {
                                             placeholder="e.g. 1000"
                                         />
                                     </FormControl>
-                                    <FormMessage className="font-medium">
+                                    <FormMessage
+                                        id="marginMessage"
+                                        className="font-medium"
+                                    >
                                         {fieldState.error?.message}
                                     </FormMessage>
                                 </FormItem>
@@ -268,6 +282,7 @@ export default function AddNewTrade({ onAdded }) {
                         {/* Proceeds */}
                         <FormField
                             control={control}
+                            id="proceeds"
                             name="proceeds"
                             render={({ field, fieldState }) => (
                                 <FormItem>
@@ -281,7 +296,10 @@ export default function AddNewTrade({ onAdded }) {
                                             placeholder="e.g. 2000"
                                         />
                                     </FormControl>
-                                    <FormMessage className="font-medium">
+                                    <FormMessage
+                                        id="proceedsMessage"
+                                        className="font-medium"
+                                    >
                                         {fieldState.error?.message}
                                     </FormMessage>
                                 </FormItem>
@@ -336,79 +354,101 @@ export default function AddNewTrade({ onAdded }) {
                         {[
                             {
                                 name: "stock_type_option",
+                                id: "stockTypeOption",
                                 label: "Stock Type",
                                 data: options.stockType,
                                 key: "stock_type_option",
+                                optionMessage: "stockTypeOptionMessage",
                             },
                             {
                                 name: "entry_session_option",
+                                id: "entrySessionOption",
                                 label: "Entry Session",
                                 data: options.entrySession,
                                 key: "entry_session_options",
+                                optionMessage: "entrySessionOptionMessage",
                             },
                             {
                                 name: "entry_occasion_option",
+                                id: "entryOccasionOption",
                                 label: "Entry Occasion",
                                 data: options.entryOccasion,
                                 key: "entry_occasion_option",
+                                optionMessage: "entryOccasionOptionMessage",
                             },
                             {
                                 name: "buy_reason_option",
+                                id: "buyReasonOption",
                                 label: "Buy Reason",
                                 data: options.buyReason,
                                 key: "buy_reason_options",
+                                optionMessage: "buyReasonOptionMessage",
                             },
                             {
                                 name: "sell_reason_option",
+                                id: "sellReasonOption",
                                 label: "Sell Reason",
                                 data: options.sellReason,
                                 key: "sell_reason_options",
+                                optionMessage: "sellReasonOptionMessage",
                             },
-                        ].map(({ name, label, data, key }) => (
-                            <FormField
-                                key={name}
-                                control={control}
-                                name={name}
-                                render={({ field, fieldState }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-semibold">
-                                            {label}
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                value={field.value}
-                                            >
-                                                <SelectTrigger className="min-w-full font-semibold">
-                                                    <SelectValue
-                                                        placeholder={`Select ${label}`}
-                                                    />
-                                                </SelectTrigger>
-                                                <SelectContent
-                                                    className="w-auto max-w-[90vw] min-w-[200px] overflow-auto font-semibold"
-                                                    style={{
-                                                        whiteSpace: "normal",
-                                                    }}
+                        ].map(
+                            (
+                                { name, id, label, data, key, optionMessage },
+                                index
+                            ) => (
+                                <FormField
+                                    key={name}
+                                    id={id}
+                                    control={control}
+                                    name={name}
+                                    render={({ field, fieldState }) => (
+                                        <FormItem>
+                                            <FormLabel className="font-semibold">
+                                                {label}
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Select
+                                                    onValueChange={
+                                                        field.onChange
+                                                    }
+                                                    value={field.value}
                                                 >
-                                                    {data.map((opt) => (
-                                                        <SelectItem
-                                                            key={opt.id}
-                                                            value={opt[key]}
-                                                            className="whitespace-normal break-words"
-                                                        >
-                                                            {opt[key]}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </FormControl>
-                                        <FormMessage className="font-medium">
-                                            {fieldState.error?.message}
-                                        </FormMessage>
-                                    </FormItem>
-                                )}
-                            />
-                        ))}
+                                                    <SelectTrigger className="min-w-full font-semibold">
+                                                        <SelectValue
+                                                            placeholder={`Select ${label}`}
+                                                        />
+                                                    </SelectTrigger>
+                                                    <SelectContent
+                                                        className="w-auto max-w-[90vw] min-w-[200px] overflow-auto font-semibold"
+                                                        style={{
+                                                            whiteSpace:
+                                                                "normal",
+                                                        }}
+                                                    >
+                                                        {data.map((opt) => (
+                                                            <SelectItem
+                                                                key={opt.id}
+                                                                value={opt[key]}
+                                                                className="whitespace-normal break-words"
+                                                            >
+                                                                {opt[key]}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </FormControl>
+                                            <FormMessage
+                                                id={optionMessage}
+                                                className="font-medium"
+                                            >
+                                                {fieldState.error?.message}
+                                            </FormMessage>
+                                        </FormItem>
+                                    )}
+                                />
+                            )
+                        )}
 
                         {/* Notes */}
                         <FormField
@@ -433,6 +473,7 @@ export default function AddNewTrade({ onAdded }) {
                         <DialogFooter>
                             <DialogClose asChild>
                                 <Button
+                                    id="cancelNewTradeBtn"
                                     type="button"
                                     className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-semibold"
                                 >
@@ -440,6 +481,7 @@ export default function AddNewTrade({ onAdded }) {
                                 </Button>
                             </DialogClose>
                             <Button
+                                id="submitNewTradeBtn"
                                 type="submit"
                                 disabled={loading}
                                 className="bg-violet-600 hover:bg-violet-700 dark:text-white font-semibold"
