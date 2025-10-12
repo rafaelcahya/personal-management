@@ -78,12 +78,18 @@ export default function AddEvent({ onAdded }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-violet-600 hover:bg-violet-700 text-white">
+                <Button
+                    className="bg-violet-600 hover:bg-violet-700 text-white"
+                    id="addNewEventBtn"
+                >
                     Add New Event
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-lg overflow-y-auto font-semibold">
+            <DialogContent
+                id="addNewEventDialogForm"
+                className="sm:max-w-lg overflow-y-auto font-semibold"
+            >
                 <DialogHeader>
                     <DialogTitle>Add Market Event</DialogTitle>
                     <DialogDescription>
@@ -109,6 +115,7 @@ export default function AddEvent({ onAdded }) {
                                     <FormControl>
                                         <Textarea
                                             {...field}
+                                            id="eventDescriptionField"
                                             placeholder="e.g. Event description"
                                             className={cn(
                                                 "focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 h-[150px]",
@@ -117,7 +124,7 @@ export default function AddEvent({ onAdded }) {
                                             )}
                                         ></Textarea>
                                     </FormControl>
-                                    <FormMessage>
+                                    <FormMessage id="eventDescriptionMsg">
                                         {fieldState.error?.message}
                                     </FormMessage>
                                 </FormItem>
@@ -157,7 +164,7 @@ export default function AddEvent({ onAdded }) {
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <FormMessage>
+                                    <FormMessage id="impactDescription">
                                         {fieldState.error?.message}
                                     </FormMessage>
                                 </FormItem>
@@ -221,6 +228,7 @@ export default function AddEvent({ onAdded }) {
                             <DialogClose asChild>
                                 <Button
                                     type="button"
+                                    id="cancelNewEventBtn"
                                     className="font-semibold text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
                                 >
                                     Cancel
@@ -228,6 +236,7 @@ export default function AddEvent({ onAdded }) {
                             </DialogClose>
                             <Button
                                 type="submit"
+                                id="submitNewEventBtn"
                                 disabled={loading}
                                 className="font-semibold bg-violet-600 hover:bg-violet-700 dark:text-white"
                             >

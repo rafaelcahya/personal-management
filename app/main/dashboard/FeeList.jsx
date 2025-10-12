@@ -38,7 +38,7 @@ function FeeList() {
                         that add up.
                     </p>
                 </div>
-                <Link href="/main/fee" prefetch={false}>
+                <Link href="/main/fee" prefetch={false} id="feeBtn">
                     <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white font-semibold">
                         Fee
                     </Button>

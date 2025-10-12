@@ -1,10 +1,10 @@
-import { toTradeDto } from "./tradeDto";
+import { toEventDto } from "./eventDto";
 
-export async function getTradeFromDb(supabase, tradeId) {
+export async function getEventFromDb(supabase, eventId) {
     const { data, error } = await supabase
-        .from("trade_list")
+        .from("event_list")
         .select("*")
-        .eq("id", tradeId)
+        .eq("id", eventId)
         .is("deleted_at", null)
         .single();
 
@@ -14,5 +14,5 @@ export async function getTradeFromDb(supabase, tradeId) {
 
     if (error) throw new Error(error.message);
 
-    return toTradeDto(data);
+    return toEventDto(data);
 }

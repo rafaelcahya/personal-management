@@ -47,11 +47,15 @@ Cypress.Commands.add("fillField", (fields, value) => {
 });
 
 Cypress.Commands.add("Login", ({ username, password }) => {
-    cy.fillField({
-        "#username": username,
-        "#password": password,
-    });
-    cy.get("#loginBtn").click();
+    cy.task("decryptPasswordTask", password).then(
+        (decryptedPassword) => {
+            cy.fillField({
+                "#username": username,
+                "#password": decryptedPassword,
+            });
+            cy.get("#loginBtn").click();
+        }
+    );
 });
 
 Cypress.Commands.add("AddNewTrade", () => {

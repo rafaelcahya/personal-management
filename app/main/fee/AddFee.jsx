@@ -73,12 +73,18 @@ export default function AddFee({ onAdded }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="font-semibold bg-violet-600 hover:bg-violet-700 text-white">
+                <Button
+                    id="addNewFeeBtn"
+                    className="font-semibold bg-violet-600 hover:bg-violet-700 text-white"
+                >
                     Add New Fee
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-lg overflow-y-auto font-semibold ">
+            <DialogContent
+                id="addNewFeeDialogForm"
+                className="sm:max-w-lg overflow-y-auto font-semibold "
+            >
                 <DialogHeader>
                     <DialogTitle>Add New Fee</DialogTitle>
                     <DialogDescription>
@@ -149,6 +155,7 @@ export default function AddFee({ onAdded }) {
                                     <FormControl>
                                         <Input
                                             {...field}
+                                            id="feeNameField"
                                             placeholder="e.g. Admin Fee"
                                             className={cn(
                                                 "focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500",
@@ -157,7 +164,7 @@ export default function AddFee({ onAdded }) {
                                             )}
                                         />
                                     </FormControl>
-                                    <FormMessage>
+                                    <FormMessage id="feeNameMessage">
                                         {fieldState.error?.message}
                                     </FormMessage>
                                 </FormItem>
@@ -179,6 +186,7 @@ export default function AddFee({ onAdded }) {
                                                     ? formatRupiah(field.value)
                                                     : ""
                                             }
+                                            id="feeField"
                                             placeholder="e.g. 1000"
                                             className={cn(
                                                 "focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500",
@@ -195,7 +203,7 @@ export default function AddFee({ onAdded }) {
                                             }
                                         />
                                     </FormControl>
-                                    <FormMessage>
+                                    <FormMessage id="feeMessage">
                                         {fieldState.error?.message}
                                     </FormMessage>
                                 </FormItem>
@@ -206,6 +214,7 @@ export default function AddFee({ onAdded }) {
                             <DialogClose asChild>
                                 <Button
                                     type="button"
+                                    id="cancelNewFeeBtn"
                                     className="font-semibold text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
                                 >
                                     Cancel
@@ -213,6 +222,7 @@ export default function AddFee({ onAdded }) {
                             </DialogClose>
                             <Button
                                 type="submit"
+                                id="submitNewFeeBtn"
                                 disabled={loading}
                                 className="font-semibold bg-violet-600 hover:bg-violet-700 dark:text-white"
                             >

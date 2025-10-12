@@ -39,7 +39,7 @@ function EventList() {
                         move the market.
                     </p>
                 </div>
-                <Link href="/main/event" prefetch={false}>
+                <Link href="/main/event" prefetch={false} id="eventBtn">
                     <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white font-semibold">
                         Event
                     </Button>
@@ -54,7 +54,7 @@ function EventList() {
                     className="w-full"
                 >
                     <CarouselContent>
-                        {eventList.slice(0, 10).map((event, index) => (
+                        {eventList?.slice(0, 5).map((event, index) => (
                             <CarouselItem
                                 key={index}
                                 className="md:basis-1/2 lg:basis-1/3"
@@ -79,6 +79,7 @@ function EventList() {
                                             </p>
                                         </div>
                                     )}
+
                                     {/* Description */}
                                     <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm line-clamp-3">
                                         {event.event_description}

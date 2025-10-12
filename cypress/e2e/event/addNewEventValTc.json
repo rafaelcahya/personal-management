@@ -1,0 +1,16 @@
+[
+    {
+        "description": "should show error when Event Description is empty",
+        "fields": {},
+        "expectedMsg": {
+            "#eventDescriptionMsg": "Event description cannot be empty"
+        }
+    },
+    {
+        "description": "should show error when Impact description is empty",
+        "fields": {},
+        "expectedMsg": {
+            "#impactDescription": "Impact description cannot be empty"
+        }
+    }
+]

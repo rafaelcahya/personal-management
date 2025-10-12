@@ -3,13 +3,22 @@ import { defineConfig } from "cypress";
 import { createEngine } from "./cypress/support/engine/createEngine";
 import { getUserFromDb } from "./cypress/support/db/users/getUserFromDb";
 import { getTradeFromDb } from "./cypress/support/db/trade/getTradeFromDb";
-import { getRandomTradeId, saveTradeId } from "./cypress/support/common/helper";
-import { decryptPassword } from "./lib/utils/decryptedPassword"
+import { getFeeFromDb } from "./cypress/support/db/fee/getFeeFromDb";
+import { getEventFromDb } from "./cypress/support/db/event/getEventFromDb";
+import {
+    getRandomTradeId,
+    saveTradeId,
+    getRandomFeeId,
+    saveFeeId,
+    getRandomEventId,
+    saveEventId,
+} from "./cypress/support/common/helper";
+import { decryptPassword } from "./lib/utils/decryptedPassword";
 
 dotenv.config({ path: ".env.local" });
 
 export default defineConfig({
-    projectId: 'wjf13y',
+    projectId: "wjf13y",
     e2e: {
         setupNodeEvents(on, config) {
             const supabase = createEngine(
@@ -28,11 +37,31 @@ export default defineConfig({
                     const trade = await getTradeFromDb(supabase, tradeId);
                     return trade ? JSON.parse(JSON.stringify(trade)) : null;
                 },
+                async getFeeFromDbTask(feeId) {
+                    const fee = await getFeeFromDb(supabase, feeId);
+                    return fee ? JSON.parse(JSON.stringify(fee)) : null;
+                },
+                async getEventFromDbTask(eventId) {
+                    const event = await getEventFromDb(supabase, eventId);
+                    return event ? JSON.parse(JSON.stringify(event)) : null;
+                },
                 saveTradeId(tradeId) {
                     return saveTradeId(tradeId);
                 },
                 getRandomTradeId() {
                     return getRandomTradeId();
+                },
+                saveFeeId(feeId) {
+                    return saveFeeId(feeId);
+                },
+                getRandomFeeId() {
+                    return getRandomFeeId();
+                },
+                saveEventId(eventId) {
+                    return saveEventId(eventId);
+                },
+                getRandomEventId() {
+                    return getRandomEventId();
                 },
             });
             return config;

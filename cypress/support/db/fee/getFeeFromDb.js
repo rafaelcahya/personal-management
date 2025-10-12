@@ -1,10 +1,10 @@
-import { toTradeDto } from "./tradeDto";
+import { toFeeDto } from "./feeDto";
 
-export async function getTradeFromDb(supabase, tradeId) {
+export async function getFeeFromDb(supabase, feeId) {
     const { data, error } = await supabase
-        .from("trade_list")
+        .from("fee_list")
         .select("*")
-        .eq("id", tradeId)
+        .eq("id", feeId)
         .is("deleted_at", null)
         .single();
 
@@ -14,5 +14,5 @@ export async function getTradeFromDb(supabase, tradeId) {
 
     if (error) throw new Error(error.message);
 
-    return toTradeDto(data);
+    return toFeeDto(data);
 }

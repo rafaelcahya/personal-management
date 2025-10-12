@@ -2,9 +2,13 @@ import { getCreateFee } from "@/lib/services/fee/getCreateFee";
 
 export async function POST(req) {
     try {
-        const { fee_name, fee, fee_date } = await req.json();
+        const body = await req.json();
 
-        const newFee = await getCreateFee(fee_name, fee, fee_date);
+        const newFee = await getCreateFee(
+            body.fee_name,
+            body.fee,
+            body.fee_date
+        );
 
         return new Response(JSON.stringify({ success: true, fee: newFee }), {
             status: 200,

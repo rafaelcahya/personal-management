@@ -1,0 +1,12 @@
+[
+    {
+        "description": "should show error when fee name is empty",
+        "fields": { },
+        "expectedMsg": { "#feeNameMessage": "Fee Name cannot be empty" }
+    },
+    {
+        "description": "should show error when fee is empty",
+        "fields": { },
+        "expectedMsg": { "#feeMessage": "Fee cannot be empty" }
+    }
+]

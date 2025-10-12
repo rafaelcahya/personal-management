@@ -32,32 +32,38 @@ describe("Trade API", () => {
 
             const apiTrade = response.body.trade;
 
-            cy.task("getTradeFromDbTask", apiTrade.id).then((dbUser) => {
-                expect(apiTrade.trade_date).to.eq(dbUser.tradeDate);
-                expect(apiTrade.ticker).to.eq(dbUser.ticker);
-                expect(apiTrade.margin).to.eq(dbUser.margin);
-                expect(apiTrade.proceeds).to.eq(dbUser.proceeds);
-                expect(apiTrade.return_percent).to.eq(dbUser.returnPercent);
-                expect(apiTrade.realized_gain).to.eq(dbUser.realizedGain);
-                expect(apiTrade.entry_session_option).to.eq(
-                    dbUser.entrySessionOption
-                );
-                expect(apiTrade.entry_occasion_option).to.eq(
-                    dbUser.entryOccasionOption
-                );
-                expect(apiTrade.entry_occasion_option).to.eq(
-                    dbUser.entryOccasionOption
-                );
-                expect(apiTrade.buy_reason_option).to.eq(
-                    dbUser.buyReasonOption
-                );
-                expect(apiTrade.sell_reason_option).to.eq(
-                    dbUser.sellReasonOption
-                );
-                expect(apiTrade.stock_type_option).to.eq(
-                    dbUser.stockTypeOption
-                );
-                expect(apiTrade.notes).to.eq(dbUser.notes);
+            cy.request({
+                method: "GET",
+                url: `/api/trade/list/${apiTrade.id}`,
+                failOnStatusCode: false,
+            }).then(() => {
+                cy.task("getTradeFromDbTask", apiTrade.id).then((dbUser) => {
+                    expect(apiTrade.trade_date).to.eq(dbUser.tradeDate);
+                    expect(apiTrade.ticker).to.eq(dbUser.ticker);
+                    expect(apiTrade.margin).to.eq(dbUser.margin);
+                    expect(apiTrade.proceeds).to.eq(dbUser.proceeds);
+                    expect(apiTrade.return_percent).to.eq(dbUser.returnPercent);
+                    expect(apiTrade.realized_gain).to.eq(dbUser.realizedGain);
+                    expect(apiTrade.entry_session_option).to.eq(
+                        dbUser.entrySessionOption
+                    );
+                    expect(apiTrade.entry_occasion_option).to.eq(
+                        dbUser.entryOccasionOption
+                    );
+                    expect(apiTrade.entry_occasion_option).to.eq(
+                        dbUser.entryOccasionOption
+                    );
+                    expect(apiTrade.buy_reason_option).to.eq(
+                        dbUser.buyReasonOption
+                    );
+                    expect(apiTrade.sell_reason_option).to.eq(
+                        dbUser.sellReasonOption
+                    );
+                    expect(apiTrade.stock_type_option).to.eq(
+                        dbUser.stockTypeOption
+                    );
+                    expect(apiTrade.notes).to.eq(dbUser.notes);
+                });
             });
             cy.task("saveTradeId", apiTrade.id);
         });
@@ -134,32 +140,44 @@ describe("Trade API", () => {
 
                 const apiTrade = response.body.trade;
 
-                cy.task("getTradeFromDbTask", apiTrade.id).then((dbUser) => {
-                    expect(apiTrade.trade_date).to.eq(dbUser.tradeDate);
-                    expect(apiTrade.ticker).to.eq(dbUser.ticker);
-                    expect(apiTrade.margin).to.eq(dbUser.margin);
-                    expect(apiTrade.proceeds).to.eq(dbUser.proceeds);
-                    expect(apiTrade.return_percent).to.eq(dbUser.returnPercent);
-                    expect(apiTrade.realized_gain).to.eq(dbUser.realizedGain);
-                    expect(apiTrade.entry_session_option).to.eq(
-                        dbUser.entrySessionOption
+                cy.request({
+                    method: "GET",
+                    url: `/api/trade/list/${randomId}`,
+                    failOnStatusCode: false,
+                }).then(() => {
+                    cy.task("getTradeFromDbTask", apiTrade.id).then(
+                        (dbUser) => {
+                            expect(apiTrade.trade_date).to.eq(dbUser.tradeDate);
+                            expect(apiTrade.ticker).to.eq(dbUser.ticker);
+                            expect(apiTrade.margin).to.eq(dbUser.margin);
+                            expect(apiTrade.proceeds).to.eq(dbUser.proceeds);
+                            expect(apiTrade.return_percent).to.eq(
+                                dbUser.returnPercent
+                            );
+                            expect(apiTrade.realized_gain).to.eq(
+                                dbUser.realizedGain
+                            );
+                            expect(apiTrade.entry_session_option).to.eq(
+                                dbUser.entrySessionOption
+                            );
+                            expect(apiTrade.entry_occasion_option).to.eq(
+                                dbUser.entryOccasionOption
+                            );
+                            expect(apiTrade.entry_occasion_option).to.eq(
+                                dbUser.entryOccasionOption
+                            );
+                            expect(apiTrade.buy_reason_option).to.eq(
+                                dbUser.buyReasonOption
+                            );
+                            expect(apiTrade.sell_reason_option).to.eq(
+                                dbUser.sellReasonOption
+                            );
+                            expect(apiTrade.stock_type_option).to.eq(
+                                dbUser.stockTypeOption
+                            );
+                            expect(apiTrade.notes).to.eq(dbUser.notes);
+                        }
                     );
-                    expect(apiTrade.entry_occasion_option).to.eq(
-                        dbUser.entryOccasionOption
-                    );
-                    expect(apiTrade.entry_occasion_option).to.eq(
-                        dbUser.entryOccasionOption
-                    );
-                    expect(apiTrade.buy_reason_option).to.eq(
-                        dbUser.buyReasonOption
-                    );
-                    expect(apiTrade.sell_reason_option).to.eq(
-                        dbUser.sellReasonOption
-                    );
-                    expect(apiTrade.stock_type_option).to.eq(
-                        dbUser.stockTypeOption
-                    );
-                    expect(apiTrade.notes).to.eq(dbUser.notes);
                 });
             });
         });
@@ -205,18 +223,16 @@ describe("Trade API", () => {
     });
 
     it("should successfully delete trade", () => {
-        cy.AddNewTrade().then((response) => {
-            const apiTrade = response.body.trade;
-
+        cy.task("getRandomTradeId").then((randomId) => {
             cy.request({
                 method: "DELETE",
-                url: `/api/trade/delete/${apiTrade.id}`,
+                url: `/api/trade/delete/${randomId}`,
                 failOnStatusCode: false,
             }).then((response) => {
                 expect(response.status).to.eq(200);
                 expect(response.body).to.have.property("success", true);
 
-                cy.task("getTradeFromDbTask", apiTrade.id).then((dbUser) => {
+                cy.task("getTradeFromDbTask", randomId).then((dbUser) => {
                     expect(dbUser).to.be.null;
                 });
             });

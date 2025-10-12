@@ -9,7 +9,7 @@ import OverallPerformance from "./OverallPerformance";
 import Settings from "../settings/Settings";
 import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
 import { getUser } from "@/lib/api/user";
-import Navbar from "../../../components/ui/common/Navbar";
+
 export default function Page() {
     const [user, setUser] = useState(null);
     const [nickname, setNickname] = useState("User");
