@@ -29,11 +29,11 @@ function FeeList() {
     }, []);
 
     return (
-        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 border dark:border-none bg-white dark:bg-[#111214] rounded-xl space-y-4 p-6 overflow-x-auto">
+        <main className="flex flex-col gap-2 bg-white rounded-xl shadow-lg shadow-gray-500/5 space-y-4 p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-bold">Fee List</p>
-                    <p className="text-sm font-semibold text-slate-500 dark:text-gray-400">
+                    <p className="text-sm font-medium text-slate-500 dark:text-gray-400">
                         Keep track of commissions and fees — the little things
                         that add up.
                     </p>
@@ -48,15 +48,15 @@ function FeeList() {
                 <LoadingComponent description="Loading fee list..." />
             ) : (
                 <Table>
-                    <TableHeader className="bg-violet-100 dark:bg-[#0e0f11] rounded-xl">
+                    <TableHeader className="bg-gray-50 dark:bg-[#0e0f11] rounded-xl">
                         <TableRow className="border-none">
-                            <TableHead className="font-bold rounded-l-lg">
+                            <TableHead className="font-semibold rounded-l-lg text-slate-700">
                                 Date
                             </TableHead>
-                            <TableHead className="font-bold">
+                            <TableHead className="font-semibold text-slate-700">
                                 Fee Name
                             </TableHead>
-                            <TableHead className="font-bold text-right rounded-r-lg">
+                            <TableHead className="font-semibold text-right rounded-r-lg text-slate-700">
                                 Fee
                             </TableHead>
                         </TableRow>
@@ -65,7 +65,7 @@ function FeeList() {
                         {feeList.slice(0, 10).map((fee, index) => (
                             <TableRow
                                 key={index}
-                                className="border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11] font-semibold"
+                                className="border-dashed hover:bg-gray-50 dark:hover:bg-[#0e0f11] font-semibold"
                             >
                                 <TableCell className="py-4">
                                     {new Intl.DateTimeFormat("id-ID", {
@@ -83,7 +83,7 @@ function FeeList() {
                     </TableBody>
                 </Table>
             )}
-        </div>
+        </main>
     );
 }
 

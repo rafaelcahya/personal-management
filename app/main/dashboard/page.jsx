@@ -41,11 +41,19 @@ export default function Page() {
     }, []);
 
     return (
-        <div className="min-h-svh flex flex-col gap-5 w-full mx-auto px-3 py-6 xl:py-20 max-w-full sm:max-w-xl md:max-w-5xl xl:max-w-7xl">
+        <main className="min-h-svh flex flex-col gap-5 w-full mx-auto px-3 py-6 xl:py-20 max-w-full sm:max-w-xl md:max-w-5xl xl:max-w-7xl">
+            <div className="fixed inset-0 min-h-svh w-full pointer-events-none -z-10">
+                {/* Layer 1: Gradient base */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-blue-50/50 to-orange-100/50"></div>
+
+                {/* Layer 2: Frosted glass noise */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent backdrop-blur-lg"></div>
+            </div>
+
             <Breadcrumbs />
             <div className="flex justify-between items-center">
                 <div className="space-y-1">
-                    <h1 className="text-sm font-semibold text-slate-500 dark:text-gray-400">
+                    <h1 className="text-sm font-semibold text-black dark:text-gray-400">
                         Hi! {nickname ?? "User"}
                     </h1>
                     <p className="font-bold text-sm sm:text-xl w-full">
@@ -64,6 +72,6 @@ export default function Page() {
                 </div>
                 <EventList />
             </div>
-        </div>
+        </main>
     );
 }

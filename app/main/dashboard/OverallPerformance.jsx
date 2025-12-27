@@ -100,24 +100,24 @@ function OverallPerformance() {
 
     return (
         <main className="space-y-6">
-            <div className="flex flex-col gap-2 p-4 shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+            <div className="flex flex-col gap-2 bg-white p-4 rounded-xl shadow-lg shadow-gray-500/5">
+                <p className="text-sm font-semibold text-gray-700 dark:text-slate-400">
                     Filter Balance & PNL :
                 </p>
                 <div className="flex items-center gap-2 ">
                     <button
                         onClick={() => setPercentType("change")}
-                        className={`px-3 py-1 rounded-md text-sm font-medium ${
+                        className={`px-3 py-1 rounded-md text-sm font-semibold ${
                             percentType === "change"
-                                ? "bg-violet-600 text-white"
-                                : "bg-slate-100 dark:bg-transparent dark:hover:bg-violet-600/15 text-slate-600 dark:text-slate-400"
+                                ? "bg-violet-50 text-violet-600"
+                                : "bg-transparent dark:bg-transparent dark:hover:bg-violet-600/15 text-slate-600 dark:text-slate-400"
                         }`}
                     >
                         <HoverCard>
                             <HoverCardTrigger>Change %</HoverCardTrigger>
                             <HoverCardContent
                                 sideOffset={10}
-                                className="w-72 text-sm font-medium text-slate-500 dark:text-slate-400"
+                                className="w-72 text-sm font-medium text-slate-700 dark:text-slate-400 border-none rounded-xl shadow-xl shadow-black/5"
                             >
                                 Shows the percentage difference between the
                                 current value and the previous baseline. A value
@@ -129,17 +129,17 @@ function OverallPerformance() {
                     </button>
                     <button
                         onClick={() => setPercentType("compare")}
-                        className={`px-3 py-1 rounded-md text-sm font-medium ${
+                        className={`px-3 py-1 rounded-md text-sm font-semibold ${
                             percentType === "compare"
-                                ? "bg-violet-600 text-white"
-                                : "bg-slate-100 dark:bg-transparent dark:hover:bg-violet-600/15 text-slate-600 dark:text-slate-400"
+                                ? "bg-violet-50 text-violet-600"
+                                : "bg-transparent dark:bg-transparent dark:hover:bg-violet-600/15 text-slate-600 dark:text-slate-400"
                         }`}
                     >
                         <HoverCard>
                             <HoverCardTrigger>Compare %</HoverCardTrigger>
                             <HoverCardContent
                                 sideOffset={10}
-                                className="w-72 text-sm font-medium text-slate-500 dark:text-slate-400"
+                                className="w-72 text-sm font-medium text-slate-700 dark:text-slate-400 border-none rounded-xl shadow-xl shadow-black/5"
                             >
                                 Shows the ratio of the current value compared to
                                 the previous baseline (e.g., yesterday’s trade
@@ -152,25 +152,25 @@ function OverallPerformance() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
-                    <CardContent className="p-6">
+                <Card className="border-none shadow-lg shadow-gray-500/5">
+                    <CardContent className="flex flex-col gap-2 rounded-xl p-6">
                         {loading ? (
                             <SkeletonBlock />
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6">
                                 <MetricValue
                                     icon={
-                                        <Wallet className="text-violet-600 w-4 h-4" />
+                                        <Wallet className="text-blue-600 w-4 h-4" />
                                     }
-                                    iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                    iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                     label="Initial Margin"
                                     value={initialMargin}
                                 />
                                 <MetricValue
                                     icon={
-                                        <HandCoins className="text-violet-600 w-4 h-4" />
+                                        <HandCoins className="text-blue-600 w-4 h-4" />
                                     }
-                                    iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                    iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                     label="Account Value"
                                     value={accountValue}
                                     indicator2={portfolioGrowth}
@@ -186,9 +186,9 @@ function OverallPerformance() {
                                 />
                                 <MetricValue
                                     icon={
-                                        <TrendingUpDown className="text-violet-600 w-4 h-4" />
+                                        <TrendingUpDown className="text-blue-600 w-4 h-4" />
                                     }
-                                    iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                    iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                     label="PNL"
                                     value={pnl}
                                     indicator1={pick(
@@ -203,9 +203,9 @@ function OverallPerformance() {
                                 />
                                 <MetricValue
                                     icon={
-                                        <ChartNoAxesGantt className="text-violet-600 w-4 h-4" />
+                                        <ChartNoAxesGantt className="text-blue-600 w-4 h-4" />
                                     }
-                                    iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                    iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                     label="Average PNL"
                                     value={averagePnL}
                                     indicator1={pick(
@@ -223,8 +223,8 @@ function OverallPerformance() {
                     </CardContent>
                 </Card>
 
-                <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
-                    <CardContent className="space-y-4 p-6">
+                <Card className="border-none shadow-lg shadow-gray-500/5">
+                    <CardContent className="flex flex-col gap-2 bg-white rounded-xl h-full space-y-4 p-6">
                         {loading ? (
                             <SkeletonBlock />
                         ) : (
@@ -232,9 +232,9 @@ function OverallPerformance() {
                                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
                                     <MetricValue
                                         icon={
-                                            <ChartBarStacked className="text-violet-600 w-4 h-4" />
+                                            <ChartBarStacked className="text-blue-600 w-4 h-4" />
                                         }
-                                        iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                        iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                         label="Total Trades"
                                         value={totalTrades}
                                         displayMode="number"
@@ -268,58 +268,58 @@ function OverallPerformance() {
             </div>
 
             {/* Comfort Zone */}
-            <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
-                <CardContent className="space-y-4 p-6">
+            <Card className="border-none shadow-lg shadow-gray-500/5">
+                <CardContent className="flex flex-col gap-2 bg-white rounded-xl space-y-4 p-6">
                     {loading ? (
                         <SkeletonBlock />
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
                             <MetricValue
                                 icon={
-                                    <ArrowUpRight className="text-violet-600 w-4 h-4" />
+                                    <ArrowUpRight className="text-blue-600 w-4 h-4" />
                                 }
-                                iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                 label="Suggested TP"
                                 value={safeZoneAvgProfitWithoutMoe}
                             />
                             <MetricValue
                                 icon={
-                                    <ArrowUpRight className="text-violet-600 w-4 h-4" />
+                                    <ArrowUpRight className="text-blue-600 w-4 h-4" />
                                 }
-                                iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                 label="Adjusted TP"
                                 value={safeZoneAvgProfitWithMoe}
                             />
                             <MetricValue
                                 icon={
-                                    <ArrowDownRight className="text-violet-600 w-4 h-4" />
+                                    <ArrowDownRight className="text-blue-600 w-4 h-4" />
                                 }
-                                iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                 label="Suggested SL"
                                 value={safeZoneAvgLossWithoutMoe}
                             />
                             <MetricValue
                                 icon={
-                                    <ArrowDownRight className="text-violet-600 w-4 h-4" />
+                                    <ArrowDownRight className="text-blue-600 w-4 h-4" />
                                 }
-                                iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                 label="adjusted SL"
                                 value={safeZoneAvgLossWithMoe}
                             />
                             <MetricValue
                                 icon={
-                                    <Sliders className="text-violet-600 w-4 h-4" />
+                                    <Sliders className="text-blue-600 w-4 h-4" />
                                 }
-                                iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                 label="Times to zero (Sug)"
                                 value={timesToZeroWithoutMoe}
                                 displayMode="number"
                             />
                             <MetricValue
                                 icon={
-                                    <Sliders className="text-violet-600 w-4 h-4" />
+                                    <Sliders className="text-blue-600 w-4 h-4" />
                                 }
-                                iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                 label="Times to zero (Adj)"
                                 value={timesToZeroWithMoe}
                                 displayMode="number"
@@ -333,8 +333,8 @@ function OverallPerformance() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
-                            <CardContent className="space-y-4 p-6">
+                        <Card className="border-none shadow-lg shadow-gray-500/5">
+                            <CardContent className="flex flex-col gap-2 bg-white rounded-xl space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
@@ -342,7 +342,7 @@ function OverallPerformance() {
                                         icon={
                                             <TrendingUp className="text-green-600 w-4 h-4" />
                                         }
-                                        iconBgStyle="bg-green-100 dark:bg-green-500/15 p-2 rounded-lg"
+                                        iconBgStyle="bg-green-50 dark:bg-green-500/15 p-2 rounded-lg"
                                         label="Biggest Profit"
                                         value={biggestProfit}
                                         color="text-green-500"
@@ -356,7 +356,7 @@ function OverallPerformance() {
                                         icon={
                                             <TrendingUp className="text-green-600 w-4 h-4" />
                                         }
-                                        iconBgStyle="bg-green-100 dark:bg-green-500/15 p-2 rounded-lg"
+                                        iconBgStyle="bg-green-50 dark:bg-green-500/15 p-2 rounded-lg"
                                         label="Lowest Profit"
                                         value={lowestProfit}
                                         color="text-green-500"
@@ -370,7 +370,7 @@ function OverallPerformance() {
                                         icon={
                                             <TrendingUp className="text-green-600 w-4 h-4" />
                                         }
-                                        iconBgStyle="bg-green-100 dark:bg-green-500/15 p-2 rounded-lg"
+                                        iconBgStyle="bg-green-50 dark:bg-green-500/15 p-2 rounded-lg"
                                         label="Total Profit"
                                         value={totalProfit}
                                         color="text-green-500"
@@ -384,7 +384,7 @@ function OverallPerformance() {
                                         icon={
                                             <TrendingUp className="text-green-600 w-4 h-4" />
                                         }
-                                        iconBgStyle="bg-green-100 dark:bg-green-500/15 p-2 rounded-lg"
+                                        iconBgStyle="bg-green-50 dark:bg-green-500/15 p-2 rounded-lg"
                                         label="Average Profit"
                                         value={avgProfit}
                                         color="text-green-500"
@@ -393,8 +393,8 @@ function OverallPerformance() {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
-                            <CardContent className="space-y-4 p-6">
+                        <Card className="border-none shadow-lg shadow-gray-500/5">
+                            <CardContent className="flex flex-col gap-2 bg-white rounded-xl space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
@@ -403,7 +403,7 @@ function OverallPerformance() {
                                             icon={
                                                 <TrendingDown className="text-rose-600 w-4 h-4" />
                                             }
-                                            iconBgStyle="bg-rose-100 dark:bg-rose-500/15 p-2 rounded-lg"
+                                            iconBgStyle="bg-rose-50 dark:bg-rose-500/15 p-2 rounded-lg"
                                             label="Biggest Loss"
                                             value={biggestLoss}
                                             color="text-rose-500"
@@ -419,7 +419,7 @@ function OverallPerformance() {
                                             icon={
                                                 <TrendingDown className="text-rose-600 w-4 h-4" />
                                             }
-                                            iconBgStyle="bg-rose-100 dark:bg-rose-500/15 p-2 rounded-lg"
+                                            iconBgStyle="bg-rose-50 dark:bg-rose-500/15 p-2 rounded-lg"
                                             label="Lowest Loss"
                                             value={lowestLoss}
                                             color="text-rose-500"
@@ -435,7 +435,7 @@ function OverallPerformance() {
                                             icon={
                                                 <TrendingDown className="text-rose-600 w-4 h-4" />
                                             }
-                                            iconBgStyle="bg-rose-100 dark:bg-rose-500/15 p-2 rounded-lg"
+                                            iconBgStyle="bg-rose-50 dark:bg-rose-500/15 p-2 rounded-lg"
                                             label="Total Loss"
                                             value={totalLoss}
                                             color="text-rose-500"
@@ -451,7 +451,7 @@ function OverallPerformance() {
                                             icon={
                                                 <TrendingDown className="text-rose-600 w-4 h-4" />
                                             }
-                                            iconBgStyle="bg-rose-100 dark:bg-rose-500/15 p-2 rounded-lg"
+                                            iconBgStyle="bg-rose-50 dark:bg-rose-500/15 p-2 rounded-lg"
                                             label="Average Loss"
                                             value={avgLoss}
                                             color="text-rose-500"
@@ -470,9 +470,9 @@ function OverallPerformance() {
                                 <>
                                     <MetricValue
                                         icon={
-                                            <TrendingUpDown className="text-violet-600 w-4 h-4" />
+                                            <TrendingUpDown className="text-blue-600 w-4 h-4" />
                                         }
-                                        iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                        iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                         label="Average Expectation"
                                         value={avgExpectation}
                                     />
@@ -484,17 +484,17 @@ function OverallPerformance() {
 
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
-                            <CardContent className="space-y-4 p-6">
+                        <Card className="border-none shadow-lg shadow-gray-500/5">
+                            <CardContent className="flex flex-col gap-2 bg-white rounded-xl space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
                                     <>
                                         <CommentedMetric
                                             icon={
-                                                <Blend className="text-violet-600 w-4 h-4" />
+                                                <Blend className="text-blue-600 w-4 h-4" />
                                             }
-                                            iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                            iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                             label="Profit Factor"
                                             value={profitFactor}
                                             comment={profitFactorComment}
@@ -511,9 +511,9 @@ function OverallPerformance() {
                                     <>
                                         <CommentedMetric
                                             icon={
-                                                <Blend className="text-violet-600 w-4 h-4" />
+                                                <Blend className="text-blue-600 w-4 h-4" />
                                             }
-                                            iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                            iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                             label="Payoff Ratio"
                                             value={payoffRatio}
                                             comment={payoffComment}
@@ -524,17 +524,17 @@ function OverallPerformance() {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
-                            <CardContent className="space-y-4 p-6">
+                        <Card className="border-none shadow-lg shadow-gray-500/5">
+                            <CardContent className="flex flex-col gap-2 bg-white rounded-xl space-y-4 p-6 h-full">
                                 {loading ? (
                                     <SkeletonBlock />
                                 ) : (
                                     <>
                                         <CommentedMetric
                                             icon={
-                                                <Blend className="text-violet-600 w-4 h-4" />
+                                                <Blend className="text-blue-600 w-4 h-4" />
                                             }
-                                            iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                            iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                             label={`Sharpe Ratio (${biSharpeRatio}%)`}
                                             value={sharpeBI}
                                             comment={sharpeBIComment}
@@ -549,9 +549,9 @@ function OverallPerformance() {
                                     <>
                                         <CommentedMetric
                                             icon={
-                                                <Blend className="text-violet-600 w-4 h-4" />
+                                                <Blend className="text-blue-600 w-4 h-4" />
                                             }
-                                            iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                            iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                             label={`Personal Ratio (${personalSharpeRatio}%)`}
                                             value={sharpePersonal}
                                             comment={sharpePersonalComment}
@@ -565,17 +565,17 @@ function OverallPerformance() {
                         </Card>
                     </div>
 
-                    <Card className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl">
-                        <CardContent className="space-y-4 p-6">
+                    <Card className="border-none shadow-lg shadow-gray-500/5">
+                        <CardContent className="flex flex-col gap-2 bg-white rounded-xl space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />
                             ) : (
                                 <>
                                     <CommentedMetric
                                         icon={
-                                            <TrendingUpDown className="text-violet-600 w-4 h-4" />
+                                            <TrendingUpDown className="text-blue-600 w-4 h-4" />
                                         }
-                                        iconBgStyle="bg-violet-100 dark:bg-violet-500/15 p-2 rounded-lg"
+                                        iconBgStyle="bg-blue-50 dark:bg-blue-500/15 p-2 rounded-lg"
                                         label="Standard Deviation"
                                         value={stdDevRupiah}
                                         comment={stdDevComment}

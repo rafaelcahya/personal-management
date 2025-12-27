@@ -14,8 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import background from "../../assets/background.jpg";
 import { login } from "@/lib/api/login";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
@@ -48,29 +48,23 @@ export default function LoginPage() {
     };
 
     return (
-        <div
-            className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-gray-50"
-            style={{
-                backgroundImage: `url(${background.src})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundAttachment: "fixed",
-            }}
-        >
-            <div className="absolute inset-0 bg-white/60 dark:bg-[#0e0f11] backdrop-blur-2xl" />
-            <Card className="max-w-sm shadow-black/15 shadow-2xl border-none bg-white dark:bg-[#111214] rounded-3xl z-10">
+        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-gradient-to-br from-blue-200 via-blue-100 to-orange-50">
+            <Card className="max-w-sm shadow-black/10 shadow-2xl bg-white/70 backdrop-blur-lg border-none rounded-[24px] z-10">
                 <CardHeader>
-                    <CardTitle className="text-2xl font-bold">
-                        Welcome back 👋
+                    <CardTitle className="text-2xl text-black font-bold">
+                        Welcome 👋
                     </CardTitle>
-                    <CardDescription className="font-semibold">
+                    <CardDescription className="font-medium">
                         Log in to access your trading performance dashboard
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleLogin}>
-                    <CardContent className="space-y-4 font-semibold">
+                    <CardContent className="space-y-4 font-medium">
                         <div className="space-y-2">
-                            <Label htmlFor="username" className="font-semibold">
+                            <Label
+                                htmlFor="username"
+                                className="font-semibold text-black"
+                            >
                                 Username
                             </Label>
                             <Input
@@ -79,11 +73,14 @@ export default function LoginPage() {
                                 placeholder="Username"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm"
+                                className="!bg-white focus-visible:ring-violet-100 focus-visible:border-white selection:bg-violet-500 text-sm"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password" className="font-semibold">
+                            <Label
+                                htmlFor="password"
+                                className="font-semibold text-black"
+                            >
                                 Password
                             </Label>
                             <Input
@@ -92,7 +89,7 @@ export default function LoginPage() {
                                 placeholder="••••••••"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                className="!bg-white focus-visible:ring-violet-100 focus-visible:border-white selection:bg-violet-500"
                             />
                         </div>
                     </CardContent>
@@ -101,9 +98,15 @@ export default function LoginPage() {
                             id="loginBtn"
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-violet-600 hover:bg-violet-700 text-white hover:text-white rounded-xl"
+                            className="w-full bg-violet-600 hover:bg-violet-700 text-white hover:text-white rounded-lg"
                         >
-                            {loading ? "Logging in..." : "Log In"}
+                            {loading ? (
+                                <span className="flex items-center gap-2">
+                                    <Spinner /> Logging in...
+                                </span>
+                            ) : (
+                                "Log In"
+                            )}
                         </Button>
                     </CardFooter>
                 </form>

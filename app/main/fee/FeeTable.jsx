@@ -54,7 +54,7 @@ function FeeTable({ fees: initialFees }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link href="/main/dashboard" className="hidden sm:block">
-                        <Button className="font-semibold bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 text-violet-600">
+                        <Button className="font-semibold bg-transparent hover:bg-violet-50 dark:hover:bg-violet-500/5 text-violet-600">
                             Back
                         </Button>
                     </Link>
@@ -64,7 +64,7 @@ function FeeTable({ fees: initialFees }) {
             <SummaryFee />
             <div className="relative w-full flex-1 overflow-y-auto">
                 <Table noWrapper>
-                    <TableHeader className="bg-violet-100 dark:bg-[#0e0f11] sticky top-0 z-10">
+                    <TableHeader className="bg-gray-50 dark:bg-[#0e0f11] sticky top-0 z-10">
                         <TableRow className="border-none">
                             <TableHead className="font-semibold rounded-l-lg">
                                 Fee Date
@@ -82,7 +82,7 @@ function FeeTable({ fees: initialFees }) {
                         {feeList.map((fee, index) => (
                             <TableRow
                                 key={index}
-                                className="font-semibold border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11] cursor-pointer"
+                                className="font-semibold border-dashed hover:bg-gray-50 dark:hover:bg-[#0e0f11] cursor-pointer"
                                 onClick={() => setSelectedFee(fee)}
                             >
                                 <TableCell>

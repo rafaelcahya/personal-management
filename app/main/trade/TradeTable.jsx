@@ -55,7 +55,7 @@ export default function TradeTable({ trades: initialTrades }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link href="/main/dashboard" className="hidden sm:block">
-                        <Button className="bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 text-violet-600 font-semibold">
+                        <Button className="bg-transparent hover:bg-violet-50 dark:hover:bg-violet-500/5 text-violet-600 font-semibold">
                             Back
                         </Button>
                     </Link>
@@ -73,7 +73,7 @@ export default function TradeTable({ trades: initialTrades }) {
                     </p>
                 ) : (
                     <Table noWrapper>
-                        <TableHeader className="bg-violet-100 dark:bg-[#0e0f11] rounded-xl sticky top-0 z-10">
+                        <TableHeader className="bg-gray-50 dark:bg-[#0e0f11] rounded-xl sticky top-0 z-10">
                             <TableRow className="border-none">
                                 <TableHead className="font-semibold pr-6 rounded-l-lg">
                                     Date
@@ -118,7 +118,7 @@ export default function TradeTable({ trades: initialTrades }) {
                             {listTrade?.map((trade) => (
                                 <TableRow
                                     key={trade.id}
-                                    className="font-semibold border-dashed hover:bg-violet-100 dark:hover:bg-[#0e0f11] cursor-pointer"
+                                    className="font-semibold border-dashed hover:bg-gray-50 dark:hover:bg-[#0e0f11] cursor-pointer"
                                     onClick={() => setSelectedTrade(trade)}
                                 >
                                     <TableCell className="pr-6 py-4">

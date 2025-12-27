@@ -15,11 +15,11 @@ export default function MetricValue({
     unit,
 }) {
     const getIndicatorColor = (val) => {
-        if (val > 10) return "text-green-500 bg-green-100 dark:bg-green-500/5";
+        if (val > 10) return "text-green-500 bg-green-50 dark:bg-green-500/5";
         if (val > 0)
-            return "text-orange-500 bg-orange-100 dark:bg-orange-500/5";
+            return "text-orange-500 bg-orange-50 dark:bg-orange-500/5";
         if (val === 0) return "text-slate-500 bg-slate-200 dark:bg-slate-500/5";
-        return "text-rose-500 bg-rose-100 dark:bg-rose-500/5";
+        return "text-rose-500 bg-rose-50 dark:bg-rose-500/5";
     };
 
     const indicatorColor = getIndicatorColor(Number(indicator1));
@@ -39,7 +39,7 @@ export default function MetricValue({
 
     return (
         <div className="space-y-2">
-            <CardTitle className="flex items-center gap-2 font-semibold text-sm whitespace-nowrap text-slate-500 dark:text-slate-400">
+            <CardTitle className="flex items-center gap-2 font-semibold text-sm whitespace-nowrap text-slate-700 dark:text-slate-400">
                 {icon && <span className={iconBgStyle}>{icon}</span>} {label}
             </CardTitle>
 
@@ -71,7 +71,7 @@ export default function MetricValue({
                             )}
                             {indicator1}%
                         </span>
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                        <p className="text-xs font-medium text-gray-500 dark:text-slate-400">
                             {unit}
                         </p>
                     </div>

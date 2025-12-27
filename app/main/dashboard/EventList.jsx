@@ -15,26 +15,51 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 
+const BACKGROUND_COLORS = [
+    "bg-cyan-50",
+    "bg-red-50",
+    "bg-orange-50",
+    "bg-yellow-50",
+    "bg-lime-50",
+    "bg-indigo-50",
+    "bg-pink-50",
+];
+
 function EventList() {
     const [eventList, setEventList] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [randomColors, setRandomColors] = useState([]);
 
     useEffect(() => {
         fetch("/api/event/list")
             .then((r) => r.json())
             .then((d) => {
-                d.success && setEventList(d.eventList);
+                if (d.success) {
+                    setEventList(d.eventList);
+                    // Generate random colors for each event
+                    const colors = d.eventList
+                        .slice(0, 5)
+                        .map(
+                            () =>
+                                BACKGROUND_COLORS[
+                                    Math.floor(
+                                        Math.random() * BACKGROUND_COLORS.length
+                                    )
+                                ]
+                        );
+                    setRandomColors(colors);
+                }
             })
             .catch(toast.error)
             .finally(() => setLoading(false));
     }, []);
 
     return (
-        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.3)] dark:shadow-none border-slate-200 border dark:border-none bg-white dark:bg-[#111214] rounded-xl space-y-4 p-6">
+        <div className="flex flex-col gap-2 bg-white rounded-xl shadow-lg shadow-gray-500/5 space-y-4 p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-bold">Event List</p>
-                    <p className="text-sm font-semibold text-slate-500 dark:text-gray-400">
+                    <p className="text-sm font-medium text-slate-500 dark:text-gray-400">
                         Track key political, economic, and global events that
                         move the market.
                     </p>
@@ -59,55 +84,34 @@ function EventList() {
                                 key={index}
                                 className="md:basis-1/2 lg:basis-1/3"
                             >
-                                <div className="border rounded-xl p-4 bg-white dark:bg-[#1a1b1e] shadow-sm space-y-3 h-full">
-                                    {event.impact_direction === "UP" ? (
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-green-100 dark:bg-green-500/15 text-green-500 p-2 rounded-full inline-flex">
-                                                <TrendingUp className="w-5 h-5" />
-                                            </div>
-                                            <p className="text-green-500 text-sm font-semibold">
-                                                Market Bullish
-                                            </p>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-red-100 dark:bg-red-500/15 text-rose-500 p-2 rounded-full inline-flex">
-                                                <TrendingDown className="w-5 h-5" />
-                                            </div>
-                                            <p className="text-rose-500 text-sm font-semibold">
-                                                Market Bearish
-                                            </p>
-                                        </div>
-                                    )}
-
+                                <div
+                                    className={`
+                                    flex flex-col justify-between 
+                                    rounded-xl space-y-4 h-full p-6
+                                    ${
+                                        randomColors[index] ||
+                                        BACKGROUND_COLORS[0]
+                                    }
+                                    transition-all duration-300
+                                `}
+                                >
                                     {/* Description */}
-                                    <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm line-clamp-3">
+                                    <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm line-clamp-5 min-h-[100px]">
                                         {event.event_description}
                                     </p>
 
                                     {/* Impact */}
                                     <div className="flex items-center gap-2">
-                                        <span className="text-sm font-medium">
-                                            {event.impact_direction === "UP" ? (
-                                                <p className="bg-green-100 dark:bg-green-500/15 text-green-500 px-2 py-1 rounded-full text-xs font-semibold">
-                                                    {event.impact_direction}
-                                                </p>
-                                            ) : (
-                                                <p className="bg-red-100 dark:bg-red-500/15 text-rose-500 px-2 py-1 rounded-full text-xs font-semibold">
-                                                    {event.impact_direction}
-                                                </p>
-                                            )}
-                                        </span>
+                                        {event.impact_direction === "UP" ? (
+                                            <p className="text-green-600 dark:text-green-400 text-xs font-semibold bg-green-100/80 dark:bg-green-900/50 border border-green-200/50 rounded-lg px-2 py-1 backdrop-blur-sm">
+                                                Market Bullish
+                                            </p>
+                                        ) : (
+                                            <p className="text-rose-600 dark:text-rose-400 text-xs font-semibold bg-rose-100/80 dark:bg-rose-900/50 border border-rose-200/50 rounded-lg px-2 py-1 backdrop-blur-sm">
+                                                Market Bearish
+                                            </p>
+                                        )}
                                     </div>
-
-                                    {/* Date */}
-                                    <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                                        {new Intl.DateTimeFormat("id-ID", {
-                                            day: "2-digit",
-                                            month: "short",
-                                            year: "numeric",
-                                        }).format(new Date(event.event_date))}
-                                    </p>
                                 </div>
                             </CarouselItem>
                         ))}
