@@ -35,7 +35,7 @@ export default function DeleteEvent({ event, onDeleted, onClose }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="font-semibold bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-600">
+                <Button className="font-semibold bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500">
                     Delete
                 </Button>
             </AlertDialogTrigger>
@@ -48,7 +48,7 @@ export default function DeleteEvent({ event, onDeleted, onClose }) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="font-semibold dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 border-none text-violet-500 hover:text-violet-500">
+                    <AlertDialogCancel className="font-semibold text-secondary-foreground bg-transparent hover:bg-secondary-hover hover:text-secondary-foreground border-none">
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction

@@ -29,20 +29,20 @@ function TradeList() {
     }, []);
 
     const profitLossColor = (value) =>
-        value < 0 ? "text-rose-600" : "text-green-600";
+        value < 0 ? "text-trade-loss-foreground" : "text-trade-profit-foreground";
 
     return (
         <main className="flex flex-col gap-2 bg-white rounded-xl shadow-lg shadow-gray-500/5 space-y-4 p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-bold">Trade List</p>
-                    <p className="text-sm font-medium text-slate-500 dark:text-gray-400">
+                    <p className="text-sm font-medium text-gray-foreground">
                         Quick peek at your trading history — see what’s winning
                         and what’s not.
                     </p>
                 </div>
                 <Link href="/main/trade" prefetch={false} id="tradeBtn">
-                    <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white font-semibold">
+                    <Button className="bg-primary hover:bg-primary-hover font-semibold">
                         Trade
                     </Button>
                 </Link>
@@ -51,24 +51,24 @@ function TradeList() {
                 <LoadingComponent description="Loading trade list..." />
             ) : (
                 <Table>
-                    <TableHeader className="bg-gray-50 dark:bg-[#0e0f11] rounded-xl">
+                    <TableHeader className="bg-gray-50 rounded-xl">
                         <TableRow className="border-none">
-                            <TableHead className="font-semibold pr-6 rounded-l-lg text-slate-700">
+                            <TableHead className="font-semibold pr-6 rounded-l-lg text-gray-foreground">
                                 Date
                             </TableHead>
-                            <TableHead className="font-semibold px-6 text-slate-700">
+                            <TableHead className="font-semibold px-6 text-gray-foreground">
                                 Ticker
                             </TableHead>
-                            <TableHead className="font-semibold px-6 text-right text-slate-700">
+                            <TableHead className="font-semibold px-6 text-right text-gray-foreground">
                                 Margin
                             </TableHead>
-                            <TableHead className="font-semibold px-6 text-right text-slate-700">
+                            <TableHead className="font-semibold px-6 text-right text-gray-foreground">
                                 Proceeds
                             </TableHead>
-                            <TableHead className="font-semibold px-6 text-slate-700">
+                            <TableHead className="font-semibold px-6 text-gray-foreground">
                                 Return %
                             </TableHead>
-                            <TableHead className="font-semibold pl-6 text-right rounded-r-lg text-slate-700">
+                            <TableHead className="font-semibold pl-6 text-right rounded-r-lg text-gray-foreground">
                                 Realized Gain
                             </TableHead>
                         </TableRow>
@@ -77,7 +77,7 @@ function TradeList() {
                         {tradeList.slice(0, 10).map((trade, index) => (
                             <TableRow
                                 key={index}
-                                className="border-dashed hover:bg-gray-50 dark:hover:bg-[#0e0f11] font-semibold"
+                                className="border-dashed hover:bg-gray-50 font-medium"
                             >
                                 <TableCell className="pr-6 py-4">
                                     {new Intl.DateTimeFormat("id-ID", {
@@ -86,7 +86,7 @@ function TradeList() {
                                         year: "numeric",
                                     }).format(new Date(trade.trade_date))}
                                 </TableCell>
-                                <TableCell className="px-6 uppercase font-bold text-blue-500">
+                                <TableCell className="px-6 uppercase font-semibold text-secondary-foreground">
                                     {trade.ticker}
                                 </TableCell>
                                 <TableCell className="px-6 text-right">{`Rp. ${Number(

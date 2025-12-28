@@ -19,7 +19,7 @@ import SummaryTrade from "./SummaryTrade";
 
 // Helper styling untuk profit/loss
 const profitLossColor = (value) =>
-    value < 0 ? "text-rose-600" : "text-green-600";
+    value < 0 ? "text-trade-loss-foreground" : "text-trade-profit-foreground";
 
 export default function TradeTable({ trades: initialTrades }) {
     const [listTrade, setListTrade] = useState(initialTrades || []);
@@ -40,14 +40,14 @@ export default function TradeTable({ trades: initialTrades }) {
     }, [initialTrades]);
 
     return (
-        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 dark:border-none bg-white dark:bg-[#111214] rounded-xl flex flex-col flex-1 gap-y-6 px-4 sm:px-6 py-6 overflow-hidden">
+        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] border-gray-200 dark:border-none bg-white rounded-xl flex flex-col flex-1 gap-y-6 px-4 sm:px-6 py-6 overflow-hidden">
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div className="space-y-2">
                     <Breadcrumbs />
                     <div>
                         <p className="text-lg font-bold">Trade List</p>
-                        <p className="text-sm font-semibold text-slate-500 dark:text-gray-400">
+                        <p className="text-sm font-semibold text-gray-foreground">
                             Quick peek at your trading history — see what’s
                             winning and what’s not.
                         </p>
@@ -55,7 +55,7 @@ export default function TradeTable({ trades: initialTrades }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link href="/main/dashboard" className="hidden sm:block">
-                        <Button className="bg-transparent hover:bg-violet-50 dark:hover:bg-violet-500/5 text-violet-600 font-semibold">
+                        <Button className="bg-transparent hover:bg-secondary text-secondary-foreground font-semibold">
                             Back
                         </Button>
                     </Link>
@@ -68,7 +68,7 @@ export default function TradeTable({ trades: initialTrades }) {
             {/* Table Section */}
             <div className="relative w-full flex-1 overflow-y-auto">
                 {listTrade?.length === 0 ? (
-                    <p className="text-center font-semibold text-slate-500 dark:text-gray-400 py-10">
+                    <p className="text-center font-medium text-gray-foregroundpy-10">
                         No trades yet. Start by adding a new trade 🚀
                     </p>
                 ) : (
@@ -118,7 +118,7 @@ export default function TradeTable({ trades: initialTrades }) {
                             {listTrade?.map((trade) => (
                                 <TableRow
                                     key={trade.id}
-                                    className="font-semibold border-dashed hover:bg-gray-50 dark:hover:bg-[#0e0f11] cursor-pointer"
+                                    className="font-medium border-dashed hover:bg-gray-50 dark:hover:bg-[#0e0f11] cursor-pointer"
                                     onClick={() => setSelectedTrade(trade)}
                                 >
                                     <TableCell className="pr-6 py-4">
@@ -128,7 +128,7 @@ export default function TradeTable({ trades: initialTrades }) {
                                             year: "numeric",
                                         }).format(new Date(trade.trade_date))}
                                     </TableCell>
-                                    <TableCell className="px-6 uppercase font-bold text-violet-600">
+                                    <TableCell className="px-6 uppercase font-semibold text-tertiary-foreground">
                                         {trade.ticker}
                                     </TableCell>
                                     <TableCell className="px-6 text-right">{`Rp. ${Number(

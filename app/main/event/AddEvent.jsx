@@ -79,7 +79,7 @@ export default function AddEvent({ onAdded }) {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button
-                    className="bg-violet-600 hover:bg-violet-700 text-white"
+                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold"
                     id="addNewEventBtn"
                 >
                     Add New Event
@@ -156,10 +156,10 @@ export default function AddEvent({ onAdded }) {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="UP">
+                                            <SelectItem value="UP" className="font-semibold">
                                                 Up
                                             </SelectItem>
-                                            <SelectItem value="DOWN">
+                                            <SelectItem value="DOWN" className="font-semibold">
                                                 Down
                                             </SelectItem>
                                         </SelectContent>
@@ -187,7 +187,7 @@ export default function AddEvent({ onAdded }) {
                                                 className={cn(
                                                     "w-[240px] pl-3 text-left font-semibold",
                                                     fieldState.error &&
-                                                        "border-rose-500 text-rose-500",
+                                                        "border-rose-500 text-trade-loss",
                                                     !field.value &&
                                                         "text-muted-foreground"
                                                 )}
@@ -229,7 +229,7 @@ export default function AddEvent({ onAdded }) {
                                 <Button
                                     type="button"
                                     id="cancelNewEventBtn"
-                                    className="font-semibold text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
+                                    className="font-semibold text-secondary-foreground bg-transparent hover:bg-secondary-hover"
                                 >
                                     Cancel
                                 </Button>
@@ -238,7 +238,7 @@ export default function AddEvent({ onAdded }) {
                                 type="submit"
                                 id="submitNewEventBtn"
                                 disabled={loading}
-                                className="font-semibold bg-violet-600 hover:bg-violet-700 dark:text-white"
+                                className="font-semibold bg-primary hover:bg-primary-hover text-primary-foreground"
                             >
                                 {loading ? "Submitting..." : "Submit new event"}
                             </Button>

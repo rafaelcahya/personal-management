@@ -1,6 +1,10 @@
 import { randomString } from "../../support/common/helper";
 
 describe("Fee API", () => {
+    before(() => {
+        cy.task("clearFixtureFile", "feeIds.json");
+    });
+
     it("should successfully add new fee", () => {
         const date = new Date().toISOString().replace("Z", "+00:00");
         const text = randomString(10, "text").toUpperCase();

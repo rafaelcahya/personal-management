@@ -33,13 +33,13 @@ function FeeList() {
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-bold">Fee List</p>
-                    <p className="text-sm font-medium text-slate-500 dark:text-gray-400">
+                    <p className="text-sm font-medium text-gray-foreground">
                         Keep track of commissions and fees — the little things
                         that add up.
                     </p>
                 </div>
                 <Link href="/main/fee" prefetch={false} id="feeBtn">
-                    <Button className="bg-violet-600 hover:bg-violet-700 text-white hover:text-white font-semibold">
+                    <Button className="bg-primary hover:bg-primary-hover font-semibold">
                         Fee
                     </Button>
                 </Link>
@@ -48,15 +48,15 @@ function FeeList() {
                 <LoadingComponent description="Loading fee list..." />
             ) : (
                 <Table>
-                    <TableHeader className="bg-gray-50 dark:bg-[#0e0f11] rounded-xl">
+                    <TableHeader className="bg-gray-50 rounded-xl">
                         <TableRow className="border-none">
-                            <TableHead className="font-semibold rounded-l-lg text-slate-700">
+                            <TableHead className="font-semibold rounded-l-lg text-gray-foreground">
                                 Date
                             </TableHead>
-                            <TableHead className="font-semibold text-slate-700">
+                            <TableHead className="font-semibold text-gray-foreground">
                                 Fee Name
                             </TableHead>
-                            <TableHead className="font-semibold text-right rounded-r-lg text-slate-700">
+                            <TableHead className="font-semibold text-right rounded-r-lg text-gray-foreground">
                                 Fee
                             </TableHead>
                         </TableRow>
@@ -65,7 +65,7 @@ function FeeList() {
                         {feeList.slice(0, 10).map((fee, index) => (
                             <TableRow
                                 key={index}
-                                className="border-dashed hover:bg-gray-50 dark:hover:bg-[#0e0f11] font-semibold"
+                                className="border-dashed hover:bg-gray-50 font-medium"
                             >
                                 <TableCell className="py-4">
                                     {new Intl.DateTimeFormat("id-ID", {

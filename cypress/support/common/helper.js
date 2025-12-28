@@ -118,3 +118,19 @@ export function getRandomEventId() {
     const randomId = data[Math.floor(Math.random() * data.length)];
     return randomId;
 }
+
+export function clearFixtureFile(filename) {
+    const filePath = path.resolve(`cypress/fixtures/${filename}`);
+    try {
+        const dir = path.dirname(filePath);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+
+        fs.writeFileSync(filePath, "[]");
+        return true;
+    } catch (error) {
+        console.error(`Failed to clear ${filename}:`, error);
+        return false;
+    }
+}

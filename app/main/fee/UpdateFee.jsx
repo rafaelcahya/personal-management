@@ -115,7 +115,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                                                 className={cn(
                                                     "w-[240px] pl-3 text-left font-semibold",
                                                     fieldState.error &&
-                                                        "border-rose-500 text-rose-500",
+                                                        "border-rose-500 text-trade-loss",
                                                     !field.value &&
                                                         "text-muted-foreground"
                                                 )}
@@ -226,7 +226,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                                     <DialogClose asChild>
                                         <Button
                                             type="button"
-                                            className="font-semibold text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
+                                            className="font-medium bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground"
                                         >
                                             Cancel
                                         </Button>
@@ -234,7 +234,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="font-semibold bg-violet-600 hover:bg-violet-700 dark:text-white"
+                                        className="font-medium bg-primary hover:bg-primary-hover text-primary-foreground"
                                     >
                                         {loading ? "Updating..." : "Update Fee"}
                                     </Button>

@@ -35,7 +35,7 @@ export default function TradeDelete({ trade, onDeleted, onClose }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-600 font-semibold">
+                <Button className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500 font-semibold">
                     Delete
                 </Button>
             </AlertDialogTrigger>
@@ -50,7 +50,7 @@ export default function TradeDelete({ trade, onDeleted, onClose }) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="font-semibold dark:bg-transaprent hover:bg-violet-100 dark:hover:bg-violet-500/5 border-none text-violet-500 hover:text-violet-500">
+                    <AlertDialogCancel className="font-semibold bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none">
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction

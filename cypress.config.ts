@@ -12,6 +12,7 @@ import {
     saveFeeId,
     getRandomEventId,
     saveEventId,
+    clearFixtureFile,
 } from "./cypress/support/common/helper";
 import { decryptPassword } from "./lib/utils/decryptedPassword";
 
@@ -63,6 +64,7 @@ export default defineConfig({
                 getRandomEventId() {
                     return getRandomEventId();
                 },
+                clearFixtureFile,
             });
             return config;
         },

@@ -2,14 +2,14 @@ import React from "react";
 
 /**
  * CircleStat (SVG)
- * - colorClass: tailwind text color class (e.g. "text-green-500")
+ * - colorClass: tailwind text color class (e.g. "text-trade-profit")
  * - percent: 0..100
  */
 export default function CircleStat({
     label,
     count,
     percent = 0,
-    colorClass = "text-green-500",
+    colorClass = "text-trade-profit",
     size = 72, // px
     stroke = 8, // width of ring
 }) {

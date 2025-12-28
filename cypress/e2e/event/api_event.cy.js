@@ -1,6 +1,10 @@
 import { randomString } from "../../support/common/helper";
 
 describe("Event API", () => {
+    before(() => {
+        cy.task("clearFixtureFile", "eventIds.json");
+    });
+
     it("should successfully add new event", () => {
         const date = new Date().toISOString().replace("Z", "+00:00");
         const text = randomString(4, "text").toUpperCase();

@@ -48,8 +48,15 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-gradient-to-br from-blue-200 via-blue-100 to-orange-50">
-            <Card className="max-w-sm shadow-black/10 shadow-2xl bg-white/70 backdrop-blur-lg border-none rounded-[24px] z-10">
+        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+            <div className="fixed inset-0 min-h-svh w-full pointer-events-none -z-10">
+                {/* Layer 1: Gradient base */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-blue-50/50 to-orange-100/50"></div>
+
+                {/* Layer 2: Frosted glass noise */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent backdrop-blur-lg"></div>
+            </div>
+            <Card className="max-w-sm shadow-gray-500/5 shadow-lg bg-white border-none rounded-[24px] z-10">
                 <CardHeader>
                     <CardTitle className="text-2xl text-black font-bold">
                         Welcome 👋
@@ -73,7 +80,7 @@ export default function LoginPage() {
                                 placeholder="Username"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="!bg-white focus-visible:ring-violet-100 focus-visible:border-white selection:bg-violet-500 text-sm"
+                                className="!bg-background focus-visible:ring-violet-100 focus-visible:border-white selection:bg-violet-500 text-sm"
                             />
                         </div>
                         <div className="space-y-2">
@@ -89,7 +96,7 @@ export default function LoginPage() {
                                 placeholder="••••••••"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="!bg-white focus-visible:ring-violet-100 focus-visible:border-white selection:bg-violet-500"
+                                className="!bg-background focus-visible:ring-violet-100 focus-visible:border-white selection:bg-violet-500"
                             />
                         </div>
                     </CardContent>
@@ -98,7 +105,7 @@ export default function LoginPage() {
                             id="loginBtn"
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-violet-600 hover:bg-violet-700 text-white hover:text-white rounded-lg"
+                            className="w-full bg-primary hover:bg-primary-hover rounded-lg"
                         >
                             {loading ? (
                                 <span className="flex items-center gap-2">

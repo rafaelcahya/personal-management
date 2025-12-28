@@ -21,7 +21,7 @@ export default function CircleStatConic({
                     backgroundImage: gradient,
                 }}
             >
-                <div className="rounded-full bg-white dark:bg-[#0b0b0b] w-[70%] h-[70%] flex items-center justify-center">
+                <div className="rounded-full bg-white w-[70%] h-[70%] flex items-center justify-center">
                     <span className="text-sm font-bold" style={{ color }}>
                         {pct}%
                     </span>
@@ -29,8 +29,8 @@ export default function CircleStatConic({
             </div>
 
             <div className="text-center">
-                <p className="font-semibold">{count}</p>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
+                <p className="font-medium">{count}</p>
+                <p className="text-sm font-medium text-gray-foreground">{label}</p>
             </div>
         </div>
     );

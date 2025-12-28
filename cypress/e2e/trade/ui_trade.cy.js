@@ -38,7 +38,7 @@ describe("Navigation", () => {
         ({ description, fields, expectedMsg }) => {
             it(description, () => {
                 cy.get("#tradeBtn").click();
-
+                cy.visit("/main/trade", { timeout: 5000 });
                 cy.url().should("include", "/trade");
                 cy.get("#addNewTradeBtn").should("be.visible").click();
                 Object.entries(fields).forEach(([selector, value]) => {

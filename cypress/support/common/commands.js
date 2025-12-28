@@ -1,5 +1,3 @@
-import { randomString } from "./helper";
-
 Cypress.Commands.add("OpenTradingPerformance", () => {
     cy.visit("/auth/login");
 });
@@ -47,41 +45,11 @@ Cypress.Commands.add("fillField", (fields, value) => {
 });
 
 Cypress.Commands.add("Login", ({ username, password }) => {
-    cy.task("decryptPasswordTask", password).then(
-        (decryptedPassword) => {
-            cy.fillField({
-                "#username": username,
-                "#password": decryptedPassword,
-            });
-            cy.get("#loginBtn").click();
-        }
-    );
-});
-
-Cypress.Commands.add("AddNewTrade", () => {
-    const date = new Date().toISOString().replace("Z", "+00:00");
-    const text = randomString(4, "text").toUpperCase();
-    const number = randomString(5, "number");
-    const uuid = crypto.randomUUID();
-
-    return cy.request({
-        method: "POST",
-        url: "/api/trade/create",
-        body: {
-            trade_date: date,
-            ticker: text,
-            margin: number,
-            proceeds: number,
-            return_percent: number,
-            realized_gain: number,
-            entry_session_option: text,
-            entry_occasion_option: text,
-            buy_reason_option: text,
-            sell_reason_option: text,
-            stock_type_option: text,
-            notes: "created by automation at" + date,
-            uuid: uuid,
-        },
-        failOnStatusCode: false,
+    cy.task("decryptPasswordTask", password).then((decryptedPassword) => {
+        cy.fillField({
+            "#username": username,
+            "#password": decryptedPassword,
+        });
+        cy.get("#loginBtn").click();
     });
 });

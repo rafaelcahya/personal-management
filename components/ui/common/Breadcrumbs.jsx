@@ -53,14 +53,14 @@ export default function Breadcrumbs() {
     ];
 
     return (
-        <nav className="flex items-center space-x-2 text-sm text-slate-500 dark:text-gray-400 font-semibold">
+        <nav className="flex items-center space-x-2 text-sm text-gray-foreground font-semibold">
             {finalCrumbs.map((crumb, idx) => (
                 <div key={idx} className="flex items-center space-x-2 whitespace-nowrap">
                     {crumb.isUsername || crumb.isLast ? (
                         <span
                             className={cn(
                                 crumb.isLast &&
-                                    "text-slate-700 dark:text-gray-400"
+                                    "text-gray-foreground"
                             )}
                         >
                             {crumb.label}

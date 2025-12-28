@@ -149,11 +149,11 @@ function EventTable({ events: initialEvents }) {
                                 <TableCell className="flex items-center gap-2 font-semibold">
                                     {event.impact_direction}{" "}
                                     {event.impact_direction === "UP" ? (
-                                        <div className="bg-green-100 dark:bg-green-500/15 text-green-500 p-2 rounded-full inline-flex">
+                                        <div className="bg-trade-profit text-trade-profit-foreground p-2 rounded-full inline-flex">
                                             <TrendingDown className="w-5 h-5" />
                                         </div>
                                     ) : (
-                                        <div className="bg-red-100 dark:bg-red-500/15 text-red-500 p-2 rounded-full inline-flex">
+                                        <div className="bg-trade-loss text-trade-loss-foreground p-2 rounded-full inline-flex">
                                             <TrendingUp className="w-5 h-5" />
                                         </div>
                                     )}

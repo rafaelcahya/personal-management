@@ -47,7 +47,7 @@ export default function Navbar() {
                             href={item.href}
                             className={`px-4 py-1 rounded-full font-medium transition-colors ${
                                 isActive
-                                    ? "bg-violet-600 text-white"
+                                    ? "bg-primary text-white"
                                     : "text-gray-300 hover:text-white"
                             }`}
                         >

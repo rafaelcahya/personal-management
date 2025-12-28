@@ -73,7 +73,7 @@ export default function Profile() {
         <div className="flex flex-col h-full w-full max-w-lg">
             <div className="px-5 py-4">
                 <p className="font-bold">Profile</p>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-sm font-medium text-gray-foreground">
                     Update your profile to keep your account info accurate.
                 </p>
             </div>
@@ -86,12 +86,11 @@ export default function Profile() {
                     className="flex flex-col justify-between h-full"
                 >
                     <div className="flex-1 px-5 py-4 space-y-6 overflow-y-auto">
-                        {/* Avatar Upload */}
                         <FormItem>
                             <Label className="font-semibold">Avatar</Label>
                             <div className="flex items-center space-x-4">
                                 <div
-                                    className="w-16 h-16 rounded-full overflow-hidden cursor-pointer bg-gray-300 flex items-center justify-center"
+                                    className="w-16 h-16 rounded-full overflow-hidden cursor-pointer bg-gray-200 flex items-center justify-center"
                                     onClick={() => inputRef.current?.click()}
                                 >
                                     {avatarPreview ? (
@@ -118,7 +117,6 @@ export default function Profile() {
                             </div>
                         </FormItem>
 
-                        {/* Username */}
                         <FormField
                             control={form.control}
                             name="username"
@@ -139,7 +137,6 @@ export default function Profile() {
                             )}
                         />
 
-                        {/* Nickname */}
                         <FormField
                             control={form.control}
                             name="nickname"
@@ -165,7 +162,7 @@ export default function Profile() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="bg-violet-600 hover:bg-violet-700 dark:text-white font-semibold"
+                            className="bg-primary hover:bg-primary-hover font-semibold"
                         >
                             {loading ? "Saving..." : "Save Profile"}
                         </Button>

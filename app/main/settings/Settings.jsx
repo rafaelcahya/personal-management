@@ -175,7 +175,7 @@ export default function Settings() {
                                                 ? "secondary"
                                                 : "ghost"
                                         }
-                                        className={`justify-start hover:bg-violet-50 font-semibold ${
+                                        className={`justify-start hover:bg-secondary font-semibold ${
                                             selectedMenu === "profile"
                                                 ? "bg-violet-100 hover:bg-violet-200 dark:bg-violet-500"
                                                 : ""
@@ -193,7 +193,7 @@ export default function Settings() {
                                                 ? "secondary"
                                                 : "ghost"
                                         }
-                                        className={`justify-start hover:bg-violet-50 font-semibold ${
+                                        className={`justify-start hover:bg-secondary font-semibold ${
                                             selectedMenu === "configuration"
                                                 ? "bg-violet-100 hover:bg-violet-200 dark:bg-violet-500"
                                                 : ""
@@ -211,7 +211,7 @@ export default function Settings() {
                                                 ? "secondary"
                                                 : "ghost"
                                         }
-                                        className={`justify-start hover:bg-violet-50 font-semibold ${
+                                        className={`justify-start hover:bg-secondary font-semibold ${
                                             selectedMenu === "theme"
                                                 ? "bg-violet-100 hover:bg-violet-200 dark:bg-violet-500"
                                                 : ""

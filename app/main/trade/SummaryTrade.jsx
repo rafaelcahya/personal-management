@@ -13,19 +13,17 @@ import {
 } from "@/components/ui/dialog";
 
 function SummaryTrade() {
-    const [metrics, setMetrics] = useState({});
-    const [listTrade, setListTrade] = useState([]);
+    const [summary, setSummary] = useState({});
     const [loading, setLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         Promise.all([
-            fetch("/api/metrics").then((r) => r.json()),
+            fetch("/api/trade/summary").then((r) => r.json()),
             fetch("/api/trade/list").then((r) => r.json()),
         ])
-            .then(([metricsRes, tradeRes]) => {
-                if (metricsRes.success) setMetrics(metricsRes.data);
-                if (tradeRes.success) setListTrade(tradeRes.trade);
+            .then(([summaryRes]) => {
+                if (summaryRes.success) setSummary(summaryRes.data);
             })
             .catch(toast.error)
             .finally(() => setLoading(false));
@@ -38,56 +36,39 @@ function SummaryTrade() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const { totalTrade, winCount, loseCount } = metrics || {};
-
-    // --- Hitung summary
-    const stockTypeSummary =
-        listTrade?.reduce((acc, trade) => {
-            const key = trade.stock_type_option || "Unknown";
-            acc[key] = (acc[key] || 0) + 1;
-            return acc;
-        }, {}) || {};
-
-    const sessionSummary =
-        listTrade?.reduce((acc, trade) => {
-            const key = trade.entry_session_option || "Unknown";
-            acc[key] = (acc[key] || 0) + 1;
-            return acc;
-        }, {}) || {};
-
-    const occasionSummary =
-        listTrade?.reduce((acc, trade) => {
-            const key = trade.entry_occasion_option || "Unknown";
-            acc[key] = (acc[key] || 0) + 1;
-            return acc;
-        }, {}) || {};
+    const {
+        totalTrades,
+        totalWins,
+        totalLosses,
+        stockTypeSummary,
+        entrySessionSummary,
+        entryOccasionSummary,
+    } = summary || {};
 
     const SummaryContent = () => (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 my-4">
-            {/* --- Basic Summary --- */}
-            <div className="p-4 border-slate-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">
+            <div className="p-4 border-gray-200 border bg-white rounded-xl w-full">
+                <p className="text-sm font-semibold text-gray-foreground mb-1">
                     Progress Overview
                 </p>
                 <ul className="text-sm space-y-1">
                     <li className="flex justify-between">
                         <span className="font-semibold">Total Trade</span>
-                        <span className="font-semibold">{totalTrade}</span>
+                        <span className="font-semibold">{totalTrades}</span>
                     </li>
                     <li className="flex justify-between">
                         <span className="font-semibold">Total Win</span>
-                        <span className="font-semibold">{winCount}</span>
+                        <span className="font-semibold">{totalWins}</span>
                     </li>
                     <li className="flex justify-between">
                         <span className="font-semibold">Total Lose</span>
-                        <span className="font-semibold">{loseCount}</span>
+                        <span className="font-semibold">{totalLosses}</span>
                     </li>
                 </ul>
             </div>
 
-            {/* --- Stock Type Summary --- */}
-            <div className="p-4 border-slate-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">
+            <div className="p-4 border-gray-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
+                <p className="text-sm font-semibold text-gray-foreground mb-1">
                     Stock Type
                 </p>
                 <ul className="text-sm space-y-1">
@@ -107,28 +88,28 @@ function SummaryTrade() {
                 </ul>
             </div>
 
-            {/* --- Entry Session Summary --- */}
-            <div className="p-4 border-slate-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">
+            <div className="p-4 border-gray-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
+                <p className="text-sm font-semibold text-gray-foreground mb-1">
                     Entry Session
                 </p>
                 <ul className="text-sm space-y-1">
-                    {Object.entries(sessionSummary).map(([session, count]) => (
-                        <li key={session} className="flex justify-between">
-                            <span className="font-semibold">{session}</span>
-                            <span className="font-semibold">{count}</span>
-                        </li>
-                    ))}
+                    {Object.entries(entrySessionSummary).map(
+                        ([session, count]) => (
+                            <li key={session} className="flex justify-between">
+                                <span className="font-semibold">{session}</span>
+                                <span className="font-semibold">{count}</span>
+                            </li>
+                        )
+                    )}
                 </ul>
             </div>
 
-            {/* --- Entry Occasion Summary --- */}
-            <div className="p-4 border-slate-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">
+            <div className="p-4 border-gray-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
+                <p className="text-sm font-semibold text-gray-foreground mb-1">
                     Entry Occasion
                 </p>
                 <ul className="text-sm space-y-1">
-                    {Object.entries(occasionSummary).map(
+                    {Object.entries(entryOccasionSummary).map(
                         ([occasion, count]) => (
                             <li key={occasion} className="flex justify-between">
                                 <span className="font-semibold">
@@ -147,11 +128,10 @@ function SummaryTrade() {
 
     return (
         <>
-            {/* Mobile: pakai dialog */}
             {isMobile ? (
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button className="bg-violet-100 hover:bg-violet-700 text-violet-600 font-semibold">
+                        <Button className="bg-secondary hover:bg-secondary-hover text-secondary-foreground font-medium w-full">
                             View Summary
                         </Button>
                     </DialogTrigger>
@@ -167,7 +147,6 @@ function SummaryTrade() {
                     </DialogContent>
                 </Dialog>
             ) : (
-                // Desktop / Tablet
                 <SummaryContent />
             )}
         </>

@@ -26,7 +26,6 @@ export default function PerformConfig() {
     });
     const { control, handleSubmit, reset } = form;
 
-    // Fetch existing settings
     useEffect(() => {
         async function fetchSettings() {
             try {
@@ -53,7 +52,6 @@ export default function PerformConfig() {
         fetchSettings();
     }, [reset]);
 
-    // Submit
     const handleSetSettings = async (values) => {
         setLoading(true);
         try {
@@ -77,24 +75,21 @@ export default function PerformConfig() {
 
     return (
         <div className="flex flex-col h-full w-full max-w-lg">
-            {/* Header */}
             <div className="px-5 py-4">
                 <p className="font-semibold">Performance Configurations</p>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-sm font-medium text-gray-foreground">
                     Configure Initial Margin and Risk-Free Rate to keep your
                     trading metrics accurate.
                 </p>
             </div>
             <Separator />
 
-            {/* Form Content */}
             <Form {...form}>
                 <form
                     onSubmit={handleSubmit(handleSetSettings)}
                     className="flex flex-col justify-between h-full"
                 >
                     <div className="flex-1 px-5 py-4 space-y-6 overflow-y-auto">
-                        {/* Initial Margin */}
                         <FormField
                             control={control}
                             name="initial_margin"
@@ -131,7 +126,6 @@ export default function PerformConfig() {
                             )}
                         />
 
-                        {/* BI Risk Free Rate */}
                         <FormField
                             control={control}
                             name="bi_risk_free_rate"
@@ -160,7 +154,6 @@ export default function PerformConfig() {
                             )}
                         />
 
-                        {/* Personal Risk Free Rate */}
                         <FormField
                             control={control}
                             name="personal_risk_free_rate"
@@ -189,7 +182,6 @@ export default function PerformConfig() {
                             )}
                         />
 
-                        {/* Margin of error */}
                         <FormField
                             control={control}
                             name="margin_of_error"
@@ -219,12 +211,11 @@ export default function PerformConfig() {
                         />
                     </div>
 
-                    {/* Actions pinned at bottom */}
                     <div className="flex justify-end gap-2 border-t px-5 py-3 bg-background">
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="bg-violet-600 hover:bg-violet-700 dark:text-white font-semibold"
+                            className="bg-primary hover:bg-primary-hoverfont-semibold"
                         >
                             {loading ? "Submitting..." : "Save changes"}
                         </Button>

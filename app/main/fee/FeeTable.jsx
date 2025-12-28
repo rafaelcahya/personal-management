@@ -37,7 +37,7 @@ function FeeTable({ fees: initialFees }) {
     }, [initialFees]);
 
     return (
-        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 border dark:border-none bg-white dark:bg-[#111214] backdrop-blur-2xl rounded-xl flex flex-col flex-1 gap-y-6 px-4 sm:px-6 py-6 overflow-hidden">
+        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] border-gray-200 border dark:border-none bg-white dark:bg-[#111214] backdrop-blur-2xl rounded-xl flex flex-col flex-1 gap-y-6 px-4 sm:px-6 py-6 overflow-hidden">
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div className="space-y-2">
@@ -46,7 +46,7 @@ function FeeTable({ fees: initialFees }) {
                         <p className="text-lg font-semibold tracking-[0.010em]">
                             Fee List
                         </p>
-                        <p className="text-sm font-medium text-slate-500 dark:text-gray-400">
+                        <p className="text-sm font-medium text-gray-foreground">
                             Keep track of commissions and fees — the little
                             things that add up.
                         </p>
@@ -54,7 +54,7 @@ function FeeTable({ fees: initialFees }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link href="/main/dashboard" className="hidden sm:block">
-                        <Button className="font-semibold bg-transparent hover:bg-violet-50 dark:hover:bg-violet-500/5 text-violet-600">
+                        <Button className="font-semibold bg-transparent hover:bg-secondary dark:hover:bg-violet-500/5 text-secondary-foreground">
                             Back
                         </Button>
                     </Link>
@@ -82,7 +82,7 @@ function FeeTable({ fees: initialFees }) {
                         {feeList.map((fee, index) => (
                             <TableRow
                                 key={index}
-                                className="font-semibold border-dashed hover:bg-gray-50 dark:hover:bg-[#0e0f11] cursor-pointer"
+                                className="font-medium border-dashed hover:bg-gray-50 dark:hover:bg-[#0e0f11] cursor-pointer"
                                 onClick={() => setSelectedFee(fee)}
                             >
                                 <TableCell>

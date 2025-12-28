@@ -19,7 +19,7 @@ export default function Logout() {
     return (
         <Button
             onClick={handleLogout}
-            className="font-semibold text-rose-600 bg-rose-50 dark:bg-rose-500/5 hover:bg-rose-100 dark:hover:bg-rose-500/25 bg-transparent m-2"
+            className="font-semibold text-rose-500 bg-rose-50 dark:bg-rose-500/5 hover:bg-rose-100 dark:hover:bg-rose-500/25 bg-transparent m-2"
         >
             <LogOut />
             Logout

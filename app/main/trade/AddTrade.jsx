@@ -45,7 +45,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { tradeSchema } from "@/schemas/trade";
 import { addTrade } from "@/lib/api/trade";
-import { fetchTradeOptions } from "@/lib/api/options";
 
 import { formatRupiah } from "@/lib/utils/currencyFormatter";
 
@@ -61,9 +60,25 @@ const CurrencyInputField = ({ field, fieldState, placeholder }) => (
     />
 );
 
+const OPTION_APIS = {
+    stockType: "/api/options/stock-type",
+    entrySession: "/api/options/entry-session",
+    entryOccasion: "/api/options/entry-occasion",
+    buyReason: "/api/options/buy-reason",
+    sellReason: "/api/options/sell-reason",
+};
+
 export default function AddNewTrade({ onAdded }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [optionsLoading, setOptionsLoading] = useState({
+        stockType: false,
+        entrySession: false,
+        entryOccasion: false,
+        buyReason: false,
+        sellReason: false,
+    });
+
     const [options, setOptions] = useState({
         stockType: [],
         entrySession: [],
@@ -116,14 +131,37 @@ export default function AddNewTrade({ onAdded }) {
     }, [margin, proceeds, setValue]);
 
     // Fetch dropdown options
-    const fetchOptions = useCallback(async () => {
-        const data = await fetchTradeOptions();
-        setOptions(data);
+    const fetchOptionType = useCallback(async (type) => {
+        try {
+            setOptionsLoading((prev) => ({ ...prev, [type]: true }));
+
+            const response = await fetch(OPTION_APIS[type]);
+            const data = await response.json();
+
+            if (data.success) {
+                setOptions((prev) => ({
+                    ...prev,
+                    [type]: data.option,
+                }));
+            }
+        } catch (error) {
+            toast.error(`Failed to load ${type} options`);
+        } finally {
+            setOptionsLoading((prev) => ({ ...prev, [type]: false }));
+        }
     }, []);
 
+    // Fetch semua options saat dialog open
+    const fetchAllOptions = useCallback(async () => {
+        const optionTypes = Object.keys(OPTION_APIS);
+        await Promise.all(optionTypes.map(fetchOptionType));
+    }, [fetchOptionType]);
+
     useEffect(() => {
-        if (open) fetchOptions();
-    }, [open, fetchOptions]);
+        if (open) {
+            fetchAllOptions();
+        }
+    }, [open, fetchAllOptions]);
 
     // Submit handler
     const handleAddNewTrade = async (values) => {
@@ -146,7 +184,7 @@ export default function AddNewTrade({ onAdded }) {
             <DialogTrigger asChild>
                 <Button
                     id="addNewTradeBtn"
-                    className="bg-violet-600 hover:bg-violet-700 text-white font-semibold"
+                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold"
                 >
                     Add New Trade
                 </Button>
@@ -184,7 +222,7 @@ export default function AddNewTrade({ onAdded }) {
                                                 className={cn(
                                                     "w-[240px] pl-3 text-left font-semibold",
                                                     fieldState.error &&
-                                                        "border-rose-500 text-rose-500",
+                                                        "border-rose-500 text-trade-loss-foreground",
                                                     !field.value &&
                                                         "text-slate-500"
                                                 )}
@@ -352,52 +390,55 @@ export default function AddNewTrade({ onAdded }) {
                         {[
                             {
                                 name: "stock_type_option",
-                                id: "stockTypeOption",
                                 label: "Stock Type",
-                                data: options.stockType,
-                                key: "stock_type_option",
-                                optionMessage: "stockTypeOptionMessage",
+                                options: options.stockType,
+                                loading: optionsLoading.stockType,
+                                optionKey: "stock_type_option",
+                                id_message: "stockTypeOptionMessage",
                             },
                             {
                                 name: "entry_session_option",
-                                id: "entrySessionOption",
                                 label: "Entry Session",
-                                data: options.entrySession,
-                                key: "entry_session_options",
-                                optionMessage: "entrySessionOptionMessage",
+                                options: options.entrySession,
+                                loading: optionsLoading.entrySession,
+                                optionKey: "entry_session_options",
+                                id_message: "entrySessionOptionMessage",
                             },
                             {
                                 name: "entry_occasion_option",
-                                id: "entryOccasionOption",
                                 label: "Entry Occasion",
-                                data: options.entryOccasion,
-                                key: "entry_occasion_option",
-                                optionMessage: "entryOccasionOptionMessage",
+                                options: options.entryOccasion,
+                                loading: optionsLoading.entryOccasion,
+                                optionKey: "entry_occasion_option",
+                                id_message: "entryOccasionOptionMessage",
                             },
                             {
                                 name: "buy_reason_option",
-                                id: "buyReasonOption",
                                 label: "Buy Reason",
-                                data: options.buyReason,
-                                key: "buy_reason_options",
-                                optionMessage: "buyReasonOptionMessage",
+                                options: options.buyReason,
+                                loading: optionsLoading.buyReason,
+                                optionKey: "buy_reason_options",
+                                id_message: "buyReasonOptionMessage",
                             },
                             {
                                 name: "sell_reason_option",
-                                id: "sellReasonOption",
                                 label: "Sell Reason",
-                                data: options.sellReason,
-                                key: "sell_reason_options",
-                                optionMessage: "sellReasonOptionMessage",
+                                options: options.sellReason,
+                                loading: optionsLoading.sellReason,
+                                optionKey: "sell_reason_options",
+                                id_message: "sellReasonOptionMessage",
                             },
                         ].map(
-                            (
-                                { name, id, label, data, key, optionMessage },
-                                index
-                            ) => (
+                            ({
+                                name,
+                                label,
+                                options: optData,
+                                loading,
+                                optionKey,
+                                id_message,
+                            }) => (
                                 <FormField
                                     key={name}
-                                    id={id}
                                     control={control}
                                     name={name}
                                     render={({ field, fieldState }) => (
@@ -414,32 +455,55 @@ export default function AddNewTrade({ onAdded }) {
                                                 >
                                                     <SelectTrigger className="min-w-full font-semibold">
                                                         <SelectValue
-                                                            placeholder={`Select ${label}`}
+                                                            placeholder={
+                                                                loading
+                                                                    ? "Loading..."
+                                                                    : `Select ${label}`
+                                                            }
                                                         />
                                                     </SelectTrigger>
-                                                    <SelectContent
-                                                        className="w-auto max-w-[90vw] min-w-[200px] overflow-auto font-semibold"
-                                                        style={{
-                                                            whiteSpace:
-                                                                "normal",
-                                                        }}
-                                                    >
-                                                        {data.map((opt) => (
+                                                    <SelectContent className="w-auto max-w-[90vw] min-w-[200px]">
+                                                        {loading ? (
+                                                            <div className="p-8 text-center text-muted-foreground">
+                                                                Loading
+                                                                options...
+                                                            </div>
+                                                        ) : optData.length ===
+                                                          0 ? (
                                                             <SelectItem
-                                                                key={opt.id}
-                                                                value={opt[key]}
-                                                                className="whitespace-normal break-words"
+                                                                value=""
+                                                                disabled
                                                             >
-                                                                {opt[key]}
+                                                                No options
+                                                                available
                                                             </SelectItem>
-                                                        ))}
+                                                        ) : (
+                                                            optData.map(
+                                                                (opt) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            opt.id
+                                                                        }
+                                                                        value={
+                                                                            opt[
+                                                                                optionKey
+                                                                            ]
+                                                                        }
+                                                                        className="whitespace-normal break-words font-semibold"
+                                                                    >
+                                                                        {
+                                                                            opt[
+                                                                                optionKey
+                                                                            ]
+                                                                        }
+                                                                    </SelectItem>
+                                                                )
+                                                            )
+                                                        )}
                                                     </SelectContent>
                                                 </Select>
                                             </FormControl>
-                                            <FormMessage
-                                                id={optionMessage}
-                                                className="font-medium"
-                                            >
+                                            <FormMessage id={id_message}>
                                                 {fieldState.error?.message}
                                             </FormMessage>
                                         </FormItem>
@@ -447,7 +511,6 @@ export default function AddNewTrade({ onAdded }) {
                                 />
                             )
                         )}
-
                         {/* Notes */}
                         <FormField
                             control={control}
@@ -482,7 +545,7 @@ export default function AddNewTrade({ onAdded }) {
                                 id="submitNewTradeBtn"
                                 type="submit"
                                 disabled={loading}
-                                className="bg-violet-600 hover:bg-violet-700 dark:text-white font-semibold"
+                                className="bg-primary hover:bg-primary-hover dark:text-white font-semibold"
                             >
                                 {loading ? "Submitting..." : "Submit new trade"}
                             </Button>

@@ -11,7 +11,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
     Form,
@@ -50,6 +50,7 @@ import { updateTrade } from "@/lib/api/trade";
 
 export default function TradeUpdate({ trade, onClose, onUpdated }) {
     const [loading, setLoading] = useState(false);
+
     const [options, setOptions] = useState({
         stockType: [],
         entrySession: [],
@@ -88,7 +89,6 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
     const proceeds = watch("proceeds");
     const realized_gain = watch("realized_gain");
 
-    // auto calculate realized gain
     useEffect(() => {
         const marginNum = parseFloat(margin);
         const proceedsNum = parseFloat(proceeds);
@@ -99,7 +99,6 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
         }
     }, [margin, proceeds, setValue]);
 
-    // auto calculate return %
     useEffect(() => {
         const marginNum = parseFloat(margin);
         const gainNum = parseFloat(realized_gain);
@@ -113,7 +112,6 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
         }
     }, [realized_gain, margin, setValue]);
 
-    // fetch dropdown options
     useEffect(() => {
         (async () => {
             const data = await fetchTradeOptions();
@@ -136,7 +134,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
             onUpdated?.();
         } catch (err) {
             toast.error(err);
-            toast.error(err.message || "Something went wrong");
+            toast.error(err.message);
         } finally {
             setLoading(false);
         }
@@ -175,7 +173,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                                 className={cn(
                                                     "w-[240px] pl-3 text-left font-semibold",
                                                     fieldState.error &&
-                                                        "border-rose-500 text-rose-500",
+                                                        "border-rose-500 text-trade-loss",
                                                     !field.value &&
                                                         "text-slate-500"
                                                 )}
@@ -604,7 +602,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <DialogClose asChild>
                                         <Button
                                             type="button"
-                                            className="text-violet-600 font-semibold bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5"
+                                            className="text-secondary-foreground bg-transparent hover:bg-secondary-hover font-semibold"
                                         >
                                             Cancel
                                         </Button>
@@ -612,7 +610,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="font-semibold bg-violet-600 hover:bg-violet-700 dark:text-white"
+                                        className="font-semibold bg-primary hover:bg-primary-hover"
                                     >
                                         {loading
                                             ? "Updating..."
