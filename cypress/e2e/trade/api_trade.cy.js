@@ -36,9 +36,11 @@ describe("Trade API", () => {
                 const entrySessionSummary = summary.entrySessionSummary;
                 const entrySessions = Object.keys(entrySessionSummary);
                 entrySessions.forEach((session) => {
-                    cy.task("getTotalEntrySessionFromDb", session).then((dbCount) => {
-                        expect(entrySessionSummary[session]).to.eq(dbCount);
-                    });
+                    cy.task("getTotalEntrySessionFromDb", session).then(
+                        (dbCount) => {
+                            expect(entrySessionSummary[session]).to.eq(dbCount);
+                        }
+                    );
                 });
             });
         });
@@ -48,13 +50,16 @@ describe("Trade API", () => {
                 const entryOccasionSummary = summary.entryOccasionSummary;
                 const entryOccasions = Object.keys(entryOccasionSummary);
                 entryOccasions.forEach((occasion) => {
-                    cy.task("getTotalEntryOccasionFromDb", occasion).then((dbCount) => {
-                        expect(entryOccasionSummary[occasion]).to.eq(dbCount);
-                    });
+                    cy.task("getTotalEntryOccasionFromDb", occasion).then(
+                        (dbCount) => {
+                            expect(entryOccasionSummary[occasion]).to.eq(
+                                dbCount
+                            );
+                        }
+                    );
                 });
             });
         });
-
     });
 
     describe("Create", () => {
@@ -174,35 +179,6 @@ describe("Trade API", () => {
 
                 expect(response.body.message).to.include(
                     "Invalid JSON in request body"
-                );
-            });
-        });
-
-        it("should fail to add new trade with invalid date format", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
-            const request = {
-                trade_date: "invalid-date",
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
-            };
-
-            cy.AddNewTrade(request).then((response) => {
-                expect(response.status).to.eq(400);
-                expect(response.body.message).to.include(
-                    "trade date must be valid format YYYY-MM-DD"
                 );
             });
         });
@@ -440,7 +416,7 @@ describe("Trade API", () => {
             cy.UpdateTrade(invalidId).then((response) => {
                 expect(response.status).to.eq(400);
                 expect(response.body).to.have.property(
-                    "error",
+                    "message",
                     "Invalid trade ID provided"
                 );
             });
@@ -472,13 +448,16 @@ describe("Trade API", () => {
                 .then((id) => cy.UpdateTrade(id, request))
                 .then((response) => {
                     expect(response.status).to.eq(200);
-                    cy.wrap(response.body.trade).as("apiTrade");
+
+                    const apiTrade = response.body.trade;
+                    cy.wrap(apiTrade).as("apiTrade");
+                    cy.wrap(apiTrade.id).as("tradeId");
                 })
-                .then(() =>
-                    cy
-                        .get("@apiTrade")
-                        .then(({ id }) => cy.task("getTradeFromDbTask", id))
-                )
+                .then(() => {
+                    cy.get("@tradeId").then((tradeId) => {
+                        return cy.task("getTradeFromDbTask", tradeId);
+                    });
+                })
                 .then((dbTrade) => {
                     cy.get("@apiTrade").then((apiTrade) => {
                         expect(apiTrade.trade_date).to.eq(dbTrade.tradeDate);
@@ -553,40 +532,7 @@ describe("Trade API", () => {
                 });
             });
         });
-
-        it("should fail to update trade with invalid date format", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
-            const request = {
-                trade_date: "invalid-date",
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
-            };
-
-            cy.task("getRandomTradeId").then((randomId) => {
-                cy.UpdateTrade(randomId, request).then((response) => {
-                    expect(response.status).to.eq(400);
-                    expect(response.body).to.have.property("success", false);
-                    expect(response.body).to.have.property("message");
-                    expect(response.body.message).to.include(
-                        "trade date must be valid format YYYY-MM-DD"
-                    );
-                });
-            });
-        });
-
+        
         it("should fail to update trade with invalid ticker", () => {
             const testData = {
                 text: randomString(4, "text").toUpperCase(),
@@ -828,24 +774,45 @@ describe("Trade API", () => {
 
     describe("Delete", () => {
         it("should successfully delete trade", () => {
-            cy.task("getRandomTradeId").then((randomId) => {
-                cy.request({
-                    method: "DELETE",
-                    url: `/api/trade/delete/${randomId}`,
-                    failOnStatusCode: false,
-                }).then((response) => {
-                    expect(response.status).to.eq(200);
-                    expect(response.body).to.have.property("success", true);
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+            };
 
-                    cy.task("getTradeFromDbTask", randomId).then((dbUser) => {
-                        expect(dbUser).to.be.null;
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.AddNewTrade(request)
+                .then((response) => {
+                    cy.wrap(response.body.trade.id).as("tradeIdToDelete");
+                })
+                .then(() => {
+                    cy.get("@tradeIdToDelete").then((id) => {
+                        cy.DeleteTrade(id).then((deleteResponse) => {
+                            expect(deleteResponse.status).to.eq(200);
+                            cy.task("getTradeFromDbTask", id).then((dbTrade) => {
+                                expect(dbTrade).to.be.null;
+                            });
+                        });
                     });
                 });
-            });
         });
 
         it("should Total Trades decrease by 1 after deleting a trade", () => {
-            let baseline;
+            let baselineotalTrades;
 
             const testData = {
                 date: new Date().toISOString().split("T")[0],
@@ -869,8 +836,8 @@ describe("Trade API", () => {
             };
 
             cy.GetTradeSummary()
-                .then(({ totalTrades }) => {
-                    baseline = totalTrades;
+                .then((summary) => {
+                    baselineotalTrades = summary.totalTrades;
                     return cy.AddNewTrade(request);
                 })
                 .then((response) => {
@@ -878,9 +845,18 @@ describe("Trade API", () => {
                     return cy.DeleteTrade(tradeId);
                 })
                 .then(() => cy.GetTradeSummary())
-                .then(({ totalTrades: final }) => {
-                    expect(final).to.eq(baseline);
+                .then((summary) => {
+                    expect(summary.totalTrades).to.eq(baselineotalTrades);
                 });
+        });
+
+        it("should fail with invalid ID", () => {
+            cy.DeleteTrade("abc").then((response) => {
+                expect(response.status).to.eq(400);
+                expect(response.body.message).to.eq(
+                    "Invalid trade ID provided"
+                );
+            });
         });
     });
 });

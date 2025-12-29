@@ -43,31 +43,10 @@ export async function POST(req) {
             }
         });
 
-        const isValidDateFormat = (dateStr) => {
-            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-            return dateRegex.test(dateStr);
-        };
-
-        const isValidDate = (dateStr) => {
-            if (!isValidDateFormat(dateStr)) {
-                return false;
-            }
-            const date = new Date(dateStr);
-            return !isNaN(date.getTime());
-        };
-
         const isValidTicker = (ticker) => /^[a-zA-Z0-9]+$/.test(ticker);
 
         const isValidNumber = (value) =>
             /^\d+(\.\d+)?$/.test(value.replace(/^-/, ""));
-
-        if (body.trade_date) {
-            if (!isValidDate(body.trade_date)) {
-                validationErrors.push(
-                    "trade date must be valid format YYYY-MM-DD"
-                );
-            }
-        }
 
         if (body.ticker && !isValidTicker(body.ticker)) {
             validationErrors.push(

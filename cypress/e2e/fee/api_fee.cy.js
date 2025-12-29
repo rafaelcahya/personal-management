@@ -5,153 +5,488 @@ describe("Fee API", () => {
         cy.task("clearFixtureFile", "feeIds.json");
     });
 
-    it("should successfully add new fee", () => {
-        const date = new Date().toISOString().replace("Z", "+00:00");
-        const text = randomString(10, "text").toUpperCase();
-        const number = randomString(5, "number");
-        const uuid = crypto.randomUUID();
-
-        cy.request({
-            method: "POST",
-            url: "/api/fee/create",
-            body: {
-                fee_name: text,
-                fee_date: date,
-                fee: number,
-                uuid: uuid,
-            },
-            failOnStatusCode: false,
-        }).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body).to.have.property("success", true);
-
-            const apiFee = response.body.fee;
-
-            cy.request({
-                method: "GET",
-                url: `/api/fee/list/${apiFee.id}`,
-                failOnStatusCode: false,
-            }).then(() => {
-                cy.task("getFeeFromDbTask", apiFee.id).then((dbFee) => {
-                    expect(apiFee.fee_name).to.eq(dbFee.feeName);
-                    expect(apiFee.fee).to.eq(dbFee.fee);
-                    expect(apiFee.fee_date).to.eq(dbFee.feeDate);
+    describe("Summary", () => {
+        it("should display correct total transactions in summary", () => {
+            cy.GetFeeSummary().then((summary) => {
+                cy.task("getTotalTransactionsFromDb").then((dbCount) => {
+                    expect(summary.feeCount).to.eq(dbCount.total_transactions);
                 });
-                cy.task("saveFeeId", apiFee.id);
+            });
+        });
+
+        it("should display correct total fees in summary", () => {
+            cy.GetFeeSummary().then((summary) => {
+                cy.task("getTotalFeeFromDb").then((dbTotalFee) => {
+                    expect(summary.totalFee).to.eq(dbTotalFee.total_fee);
+                });
             });
         });
     });
 
-    it("should ensure deleted_at is null after successfully adding a new fee", () => {
-        const date = new Date().toISOString().replace("Z", "+00:00");
-        const text = randomString(10, "text").toUpperCase();
-        const number = randomString(5, "number");
-        const uuid = crypto.randomUUID();
+    describe("Create", () => {
+        it("should successfully add new fee", () => {
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(10, "text").toUpperCase(),
+                number: randomString(5, "number"),
+                uuid: crypto.randomUUID(),
+            };
 
-        cy.request({
-            method: "POST",
-            url: "/api/fee/create",
-            body: {
-                fee_name: text,
-                fee_date: date,
-                fee: number,
-                uuid: uuid,
-            },
-            failOnStatusCode: false,
-        }).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body).to.have.property("success", true);
+            const request = {
+                fee_name: testData.text,
+                fee_date: testData.date,
+                fee: testData.number,
+                uuid: testData.uuid,
+            };
 
-            const apiFee = response.body.fee;
-
-            cy.task("getFeeFromDbTask", apiFee.id).then((dbFee) => {
-                expect(apiFee.deleted_at).to.eq(dbFee.deletedAt);
-                expect(apiFee.deleted_at).to.be.null;
-            });
-        });
-    });
-
-    it("should successfully update fee", () => {
-        const date = new Date().toISOString().replace("Z", "+00:00");
-        const text = randomString(10, "text").toUpperCase();
-        const number = randomString(5, "number");
-        const uuid = crypto.randomUUID();
-
-        cy.task("getRandomFeeId").then((randomId) => {
-            cy.request({
-                method: "PUT",
-                url: `/api/fee/update/${randomId}`,
-                body: {
-                    fee_name: text,
-                    fee_date: date,
-                    fee: number,
-                    uuid: uuid,
-                },
-                failOnStatusCode: false,
-            }).then((response) => {
+            cy.AddNewFee(request).then((response) => {
                 expect(response.status).to.eq(200);
-                expect(response.body).to.have.property("success", true);
 
-                const apiFee = response.body.fee;
+                cy.wrap(response.body.fee).as("apiFee");
+                cy.wrap(response.body.fee.id).as("feeId");
 
-                cy.request({
-                    method: "GET",
-                    url: `/api/fee/update/${randomId}`,
-                    failOnStatusCode: false,
-                }).then(() => {
-                    cy.task("getFeeFromDbTask", apiFee.id).then((dbFee) => {
-                        expect(apiFee.fee_name).to.eq(dbFee.feeName);
-                        expect(apiFee.fee).to.eq(dbFee.fee);
-                        expect(apiFee.fee_date).to.eq(dbFee.feeDate);
+                cy.get("@feeId").then((id) => {
+                    cy.task("getFeeFromDbTask", id).then((dbFee) => {
+                        cy.get("@apiFee").then((apiFee) => {
+                            expect(apiFee.fee_name).to.eq(dbFee.feeName);
+                            expect(apiFee.fee).to.eq(dbFee.fee);
+                            expect(apiFee.fee_date).to.eq(dbFee.feeDate);
+                        });
                     });
                 });
+
+                cy.task("saveFeeId", response.body.fee.id);
             });
         });
+
+        it("should fail to add new fee with missing required fields", () => {
+            const request = {
+                fee_name: "",
+                fee_date: "",
+                fee: "",
+            };
+
+            cy.AddNewFee(request).then((response) => {
+                expect(response.status).to.eq(400);
+
+                cy.wrap(response.body.fee).as("apiFee");
+
+                const requiredErrors = [
+                    "fee name is required",
+                    "fee date is required",
+                    "fee is required",
+                ];
+
+                requiredErrors.forEach((error) => {
+                    expect(response.body.message).to.include(error);
+                });
+            });
+        });
+
+        it("should fail to add new fee with invalid JSON", () => {
+            cy.AddNewFee().then((response) => {
+                expect(response.status).to.eq(400);
+
+                cy.wrap(response.body.fee).as("apiFee");
+
+                expect(response.body.message).to.include(
+                    "Invalid JSON in request body"
+                );
+            });
+        });
+
+        it("should fail to add new fee with invalid date format", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+            };
+
+            const request = {
+                fee_name: testData.text,
+                fee_date: "invalid-date",
+                fee: testData.number,
+            };
+
+            cy.AddNewFee(request).then((response) => {
+                expect(response.status).to.eq(400);
+                expect(response.body.message).to.include(
+                    "fee date must be valid format YYYY-MM-DD"
+                );
+            });
+        });
+
+        it("should fail to add new fee with invalid number fields", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                date: new Date().toISOString().split("T")[0],
+                invalidNumber: "123ABC",
+            };
+
+            const request = {
+                fee_name: testData.text,
+                fee_date: testData.date,
+                fee: testData.invalidNumber,
+            };
+
+            cy.AddNewFee(request).then((response) => {
+                expect(response.status).to.eq(400);
+
+                expect(response.body.message).to.include(
+                    "fee must be a valid number"
+                );
+            });
+        });
+
+        it("should ensure deleted_at is null after successfully adding a new fee", () => {
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(10, "text").toUpperCase(),
+                number: randomString(5, "number"),
+                uuid: crypto.randomUUID(),
+            };
+
+            const request = {
+                fee_name: testData.text,
+                fee_date: testData.date,
+                fee: testData.number,
+                uuid: testData.uuid,
+            };
+
+            cy.AddNewFee(request).then((response) => {
+                expect(response.status).to.eq(200);
+
+                cy.wrap(response.body.fee.id).as("feeId");
+
+                cy.get("@feeId").then((id) => {
+                    cy.task("getFeeFromDbTask", id).then((dbFee) => {
+                        expect(response.body.fee.deleted_at).to.eq(
+                            dbFee.deletedAt
+                        );
+                        expect(response.body.fee.deleted_at).to.be.null;
+                    });
+                });
+
+                cy.task("saveFeeId", response.body.fee.id);
+            });
+        });
+
+        it("should Total Transactions in summary increase by 1 after adding a new fee", () => {
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(10, "text").toUpperCase(),
+                number: randomString(5, "number"),
+                uuid: crypto.randomUUID(),
+            };
+
+            const request = {
+                fee_name: testData.text,
+                fee_date: testData.date,
+                fee: testData.number,
+                uuid: testData.uuid,
+            };
+
+            cy.GetFeeSummary()
+                .then((summary) => {
+                    cy.wrap(summary.feeCount).as("initialTotalFees");
+                })
+                .then(() => cy.AddNewFee(request))
+                .then(() =>
+                    cy.GetFeeSummary().then((finalSummary) => {
+                        cy.get("@initialTotalFees").then((initialTotalFees) => {
+                            expect(finalSummary.feeCount).to.eq(
+                                initialTotalFees + 1
+                            );
+                        });
+                    })
+                );
+        });
+
+        it("should Total Fee in summary increase correctly after adding a new fee", () => {
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(10, "text").toUpperCase(),
+                number: parseFloat(randomString(5, "number")),
+                uuid: crypto.randomUUID(),
+            };
+
+            const request = {
+                fee_name: testData.text,
+                fee_date: testData.date,
+                fee: testData.number.toString(),
+                uuid: testData.uuid,
+            };
+
+            cy.GetFeeSummary()
+                .then((summary) => {
+                    cy.wrap(parseFloat(summary.totalFee)).as(
+                        "initialTotalFees"
+                    );
+                })
+                .then(() => cy.AddNewFee(request))
+                .then(() =>
+                    cy.GetFeeSummary().then((finalSummary) => {
+                        cy.get("@initialTotalFees").then((initialTotalFees) => {
+                            const expected = initialTotalFees + testData.number;
+                            expect(parseFloat(finalSummary.totalFee)).to.eq(
+                                expected
+                            );
+                        });
+                    })
+                );
+        });
     });
+});
 
-    it("should ensure deleted_at is null after successfully updating a fee", () => {
-        const date = new Date().toISOString().replace("Z", "+00:00");
-        const text = randomString(4, "text").toUpperCase();
-        const number = randomString(5, "number");
-        const uuid = crypto.randomUUID();
+describe("Update", () => {
+    it("should successfully update fee", () => {
+        const testData = {
+            date: new Date().toISOString().split("T")[0],
+            text: randomString(10, "text").toUpperCase(),
+            number: randomString(5, "number"),
+            uuid: crypto.randomUUID(),
+        };
 
-        cy.task("getRandomFeeId").then((randomId) => {
-            cy.request({
-                method: "PUT",
-                url: `/api/fee/update/${randomId}`,
-                body: {
-                    fee_name: text,
-                    fee_date: date,
-                    fee: number,
-                    uuid: uuid,
-                },
-                failOnStatusCode: false,
-            }).then((response) => {
+        const request = {
+            fee_name: testData.text,
+            fee_date: testData.date,
+            fee: testData.number,
+            uuid: testData.uuid,
+        };
+
+        cy.task("getRandomFeeId")
+            .then((id) => cy.UpdateFee(id, request))
+            .then((response) => {
                 expect(response.status).to.eq(200);
 
                 const apiFee = response.body.fee;
+                cy.wrap(apiFee).as("apiFee");
+                cy.wrap(apiFee.id).as("feeId");
+            })
+            .then(() => {
+                cy.get("@feeId").then((feeId) => {
+                    return cy.task("getFeeFromDbTask", feeId);
+                });
+            })
+            .then((dbFee) => {
+                cy.get("@apiFee").then((apiFee) => {
+                    expect(apiFee.fee_name).to.eq(dbFee.feeName);
+                    expect(apiFee.fee_date).to.eq(dbFee.feeDate);
+                    expect(apiFee.fee).to.eq(dbFee.fee);
+                });
+            });
+    });
 
-                cy.task("getFeeFromDbTask", apiFee.id).then((dbFee) => {
-                    expect(apiFee.deleted_at).to.eq(dbFee.deletedAt);
-                    expect(apiFee.deleted_at).to.be.null;
+    it("should fail to update fee with missing required fields", () => {
+        const request = {
+            fee_name: "",
+            fee_date: "",
+            fee: "",
+        };
+
+        cy.task("getRandomFeeId").then((randomId) => {
+            cy.UpdateFee(randomId, request).then((response) => {
+                expect(response.status).to.eq(400);
+
+                cy.wrap(response.body.fee).as("apiFee");
+
+                const requiredErrors = [
+                    "fee name is required",
+                    "fee date is required",
+                    "fee is required",
+                ];
+
+                requiredErrors.forEach((error) => {
+                    expect(response.body.message).to.include(error);
+                });
+            });
+        });
+
+        it("should fail to update fee with invalid JSON", () => {
+            cy.UpdateFee().then((response) => {
+                expect(response.status).to.eq(400);
+
+                cy.wrap(response.body.fee).as("apiFee");
+
+                expect(response.body.message).to.include(
+                    "Invalid JSON in request body"
+                );
+            });
+        });
+
+        it("should fail to update fee with invalid date format", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+            };
+
+            const request = {
+                fee_name: testData.text,
+                fee_date: "invalid-date",
+                fee: testData.number,
+            };
+
+            cy.task("getRandomFeeId").then((randomId) => {
+                cy.UpdateFee(randomId, request).then((response) => {
+                    expect(response.status).to.eq(400);
+
+                    expect(response.body.message).to.include(
+                        "fee date must be valid format YYYY-MM-DD"
+                    );
+                });
+            });
+        });
+
+        it("should fail to update fee with invalid number fields", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                date: new Date().toISOString().split("T")[0],
+                invalidNumber: "123ABC",
+            };
+
+            const request = {
+                fee_name: testData.text,
+                fee_date: testData.date,
+                fee: testData.invalidNumber,
+            };
+
+            cy.task("getRandomFeeId").then((randomId) => {
+                cy.UpdateFee(randomId, request).then((response) => {
+                    expect(response.status).to.eq(400);
+
+                    expect(response.body.message).to.include(
+                        "fee must be a valid number"
+                    );
+                });
+            });
+        });
+
+        it("should ensure deleted_at is null after successfully updating a fee", () => {
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(10, "text").toUpperCase(),
+                number: randomString(5, "number"),
+                uuid: crypto.randomUUID(),
+            };
+
+            const request = {
+                fee_name: testData.text,
+                fee_date: testData.date,
+                fee: testData.number,
+                uuid: testData.uuid,
+            };
+
+            cy.task("getRandomFeeId")
+                .then((id) => cy.UpdateFee(id, request))
+                .then((response) => {
+                    expect(response.status).to.eq(200);
+                    cy.wrap(response.body.fee).as("apiFee");
+                })
+                .then(() =>
+                    cy
+                        .get("@apiFee")
+                        .then((id) => cy.task("getFeeFromDbTask", id))
+                )
+                .then((dbFee) => {
+                    cy.get("@apiFee").then((apiFee) => {
+                        expect(apiFee.deleted_at).to.eq(dbFee.deletedAt);
+                        expect(apiFee.deleted_at).to.be.null;
+                    });
+                });
+        });
+
+        it("should fail to update fee with invalid ID", () => {
+            const text = randomString(4, "text").toUpperCase();
+            const invalidId = text;
+
+            cy.UpdateFee(invalidId).then((response) => {
+                expect(response.status).to.eq(400);
+                expect(response.body).to.have.property(
+                    "error",
+                    "Invalid fee ID provided"
+                );
+            });
+        });
+
+        it("should fail to update fee with invalid JSON", () => {
+            cy.task("getRandomFeeId").then((randomId) => {
+                cy.UpdateFee(randomId).then((response) => {
+                    expect(response.status).to.eq(400);
+                    expect(response.body.message).to.include(
+                        "Invalid JSON in request body"
+                    );
                 });
             });
         });
     });
 
-    it("should successfully delete fee", () => {
-        cy.task("getRandomFeeId").then((randomId) => {
-            cy.request({
-                method: "DELETE",
-                url: `/api/fee/delete/${randomId}`,
-                failOnStatusCode: false,
-            }).then((response) => {
-                expect(response.status).to.eq(200);
-                expect(response.body).to.have.property("success", true);
+    describe("Delete", () => {
+        it("should successfully delete fee", () => {
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(10, "text").toUpperCase(),
+                number: randomString(5, "number"),
+                uuid: crypto.randomUUID(),
+            };
 
-                cy.task("getFeeFromDbTask", randomId).then((dbFee) => {
-                    expect(dbFee).to.be.null;
+            const request = {
+                fee_name: testData.text,
+                fee_date: testData.date,
+                fee: testData.number,
+                uuid: testData.uuid,
+            };
+
+            cy.AddNewFee(request)
+                .then((response) => {
+                    cy.wrap(response.body.fee.id).as("feeIdToDelete");
+                })
+                .then(() => {
+                    cy.get("@feeIdToDelete").then((id) => {
+                        cy.DeleteFee(id).then((deleteResponse) => {
+                            expect(deleteResponse.status).to.eq(200);
+                            cy.task("getFeeFromDbTask", id).then((dbFee) => {
+                                expect(dbFee).to.be.null;
+                            });
+                        });
+                    });
                 });
+        });
+
+        it("should Total Transactions in summary decrease by 1 after deleting a fee", () => {
+            let baselineTotalFees;
+
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(10, "text").toUpperCase(),
+                number: randomString(5, "number"),
+                uuid: crypto.randomUUID(),
+            };
+
+            const request = {
+                fee_name: testData.text,
+                fee_date: testData.date,
+                fee: testData.number,
+                uuid: testData.uuid,
+            };
+
+            cy.GetFeeSummary()
+                .then((summary) => {
+                    baselineTotalFees = summary.feeCount;
+                    return cy.AddNewFee(request);
+                })
+                .then((response) => {
+                    const feeId = response.body.fee.id;
+                    return cy.DeleteFee(feeId);
+                })
+                .then(() => cy.GetFeeSummary())
+                .then((summary) => {
+                    expect(summary.feeCount).to.eq(baselineTotalFees);
+                });
+        });
+
+        it("should fail with invalid ID", () => {
+            cy.DeleteFee("abc").then((response) => {
+                expect(response.status).to.eq(400);
+                expect(response.body.message).to.eq("Invalid fee ID provided");
             });
         });
     });

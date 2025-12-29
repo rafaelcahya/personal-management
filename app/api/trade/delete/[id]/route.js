@@ -1,23 +1,35 @@
+import { NextResponse } from "next/server";
 import { getDeleteTrade } from "@/lib/services/trade/getDeleteTrade";
-import { toast } from "sonner";
 
 export async function DELETE(req, { params }) {
     try {
         const { id } = await params;
+
+        if (!id || isNaN(Number(id))) {
+            return NextResponse.json(
+                { success: false, message: "Invalid trade ID provided" },
+                { status: 400 }
+            );
+        }
+
         const deletedTrade = await getDeleteTrade(id);
 
-        return new Response(
-            JSON.stringify({ success: true, trade: deletedTrade }),
-            {
-                status: 200,
-                headers: { "Content-Type": "application/json" },
-            }
+        if (!deletedTrade) {
+            return NextResponse.json(
+                { success: false, message: "Trade not found" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(
+            { success: true },
+            { status: 200 }
         );
     } catch (err) {
-        toast.error("Error deleting trade:", err);
-        return new Response(
-            JSON.stringify({ success: false, error: err.message }),
-            { status: 500, headers: { "Content-Type": "application/json" } }
+        console.error("DELETE /api/trade/delete error:", err);
+        return NextResponse.json(
+            { success: false, message: "Internal server error" },
+            { status: 500 }
         );
     }
 }

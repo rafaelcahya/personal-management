@@ -9,7 +9,11 @@ import {
     getTotalStockTypeFromDb,
     getTradeFromDb,
 } from "./cypress/support/db/trade/getTradeFromDb";
-import { getFeeFromDb } from "./cypress/support/db/fee/getFeeFromDb";
+import {
+    getFeeFromDb,
+    getTotalFeeFromDb,
+    getTotalTransactionsFromDb,
+} from "./cypress/support/db/fee/getFeeFromDb";
 import { getEventFromDb } from "./cypress/support/db/event/getEventFromDb";
 import {
     getRandomTradeId,
@@ -76,6 +80,16 @@ export default defineConfig({
                 async getFeeFromDbTask(feeId) {
                     const fee = await getFeeFromDb(supabase, feeId);
                     return fee ? JSON.parse(JSON.stringify(fee)) : null;
+                },
+                async getTotalTransactionsFromDb() {
+                    const totalTransactions = await getTotalTransactionsFromDb(
+                        supabase
+                    );
+                    return totalTransactions;
+                },
+                async getTotalFeeFromDb() {
+                    const totalFee = await getTotalFeeFromDb(supabase);
+                    return totalFee;
                 },
                 async getEventFromDbTask(eventId) {
                     const event = await getEventFromDb(supabase, eventId);
