@@ -5,443 +5,882 @@ describe("Trade API", () => {
         cy.task("clearFixtureFile", "tradeIds.json");
     });
 
-    it("should successfully add new trade", () => {
-        const date = new Date().toISOString().split('T')[0];
-        const text = randomString(4, "text").toUpperCase();
-        const number = randomString(5, "number");
-        const uuid = crypto.randomUUID();
-
-        cy.request({
-            method: "POST",
-            url: "/api/trade/create",
-            body: {
-                trade_date: date,
-                ticker: text,
-                margin: number,
-                proceeds: number,
-                return_percent: number,
-                realized_gain: number,
-                entry_session_option: text,
-                entry_occasion_option: text,
-                buy_reason_option: text,
-                sell_reason_option: text,
-                stock_type_option: text,
-                notes: "created by automation at" + date,
-                uuid: uuid,
-            },
-            failOnStatusCode: false,
-        }).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body).to.have.property("success", true);
-
-            const apiTrade = response.body.trade;
-
-            cy.request({
-                method: "GET",
-                url: `/api/trade/list/${apiTrade.id}`,
-                failOnStatusCode: false,
-            }).then(() => {
-                cy.task("getTradeFromDbTask", apiTrade.id).then((dbUser) => {
-                    expect(apiTrade.trade_date).to.eq(dbUser.tradeDate);
-                    expect(apiTrade.ticker).to.eq(dbUser.ticker);
-                    expect(apiTrade.margin).to.eq(dbUser.margin);
-                    expect(apiTrade.proceeds).to.eq(dbUser.proceeds);
-                    expect(apiTrade.return_percent).to.eq(dbUser.returnPercent);
-                    expect(apiTrade.realized_gain).to.eq(dbUser.realizedGain);
-                    expect(apiTrade.entry_session_option).to.eq(
-                        dbUser.entrySessionOption
-                    );
-                    expect(apiTrade.entry_occasion_option).to.eq(
-                        dbUser.entryOccasionOption
-                    );
-                    expect(apiTrade.entry_occasion_option).to.eq(
-                        dbUser.entryOccasionOption
-                    );
-                    expect(apiTrade.buy_reason_option).to.eq(
-                        dbUser.buyReasonOption
-                    );
-                    expect(apiTrade.sell_reason_option).to.eq(
-                        dbUser.sellReasonOption
-                    );
-                    expect(apiTrade.stock_type_option).to.eq(
-                        dbUser.stockTypeOption
-                    );
-                    expect(apiTrade.notes).to.eq(dbUser.notes);
-                });
-            });
-            cy.task("saveTradeId", apiTrade.id);
-        });
-    });
-
-    it("should ensure deleted_at is null after successfully adding a new trade", () => {
-        const date = new Date().toISOString().split('T')[0];
-        const text = randomString(4, "text").toUpperCase();
-        const number = randomString(5, "number");
-        const uuid = crypto.randomUUID();
-
-        cy.request({
-            method: "POST",
-            url: "/api/trade/create",
-            body: {
-                deleted_at: date,
-                trade_date: date,
-                ticker: text,
-                margin: number,
-                proceeds: number,
-                return_percent: number,
-                realized_gain: number,
-                entry_session_option: text,
-                entry_occasion_option: text,
-                buy_reason_option: text,
-                sell_reason_option: text,
-                stock_type_option: text,
-                notes: "created by automation at" + date,
-                uuid: uuid,
-            },
-            failOnStatusCode: false,
-        }).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body).to.have.property("success", true);
-
-            const apiTrade = response.body.trade;
-
-            cy.task("getTradeFromDbTask", apiTrade.id).then((dbUser) => {
-                expect(apiTrade.deleted_at).to.eq(dbUser.deletedAt);
-                expect(apiTrade.deleted_at).to.be.null;
-            });
-        });
-    });
-
-    it("should Total Trades increase by 1 after adding a new trade", () => {
-        let initialTotalTrades;
-
-        cy.GetTradeSummary().then((summary) => {
-            initialTotalTrades = summary.totalTrades;
-            cy.log("Initial Total Trades: " + initialTotalTrades);
-        });
-
-        cy.AddNewTrade().then((trade) => {
-            cy.log("Added Trade ID: " + trade.id);
+    describe("Summary", () => {
+        it("should display correct progress overview summary", () => {
             cy.GetTradeSummary().then((summary) => {
-                expect(summary.totalTrades).to.eq(initialTotalTrades + 1);
-            });
-        });
-    });
-
-    it("should Total Trades decrease by 1 after deleting a trade", () => {
-        let initialTotalTrades;
-
-        cy.AddNewTrade().then((trade) => {
-            cy.log("Added Trade ID: " + trade.id);
-
-            cy.GetTradeSummary().then((summary) => {
-                initialTotalTrades = summary.totalTrades;
-                cy.log("Initial Total Trades: " + initialTotalTrades);
-            });
-            cy.DeleteTrade(trade.id).then(() => {
-                cy.GetTradeSummary().then((summary) => {
-                    expect(summary.totalTrades).to.eq(initialTotalTrades - 1);
-                });
-            });
-        });
-    });
-
-    it("should fail to update trade with invalid ID", () => {
-        const text = randomString(4, "text").toUpperCase();
-        const invalidId = text;
-
-        cy.UpdateTrade(invalidId).then((response) => {
-            expect(response.status).to.eq(400);
-            expect(response.body).to.have.property("success", false);
-            expect(response.body).to.have.property(
-                "error",
-                "Invalid trade ID provided"
-            );
-        });
-    });
-
-    it("should successfully update trade", () => {
-        const date = new Date().toISOString().split('T')[0];
-        const text = randomString(4, "text").toUpperCase();
-        const number = randomString(5, "number");
-        const uuid = crypto.randomUUID();
-
-        cy.task("getRandomTradeId").then((randomId) => {
-            cy.request({
-                method: "PUT",
-                url: `/api/trade/update/${randomId}`,
-                body: {
-                    trade_date: date,
-                    ticker: text,
-                    margin: number,
-                    proceeds: number,
-                    return_percent: number,
-                    realized_gain: number,
-                    entry_session_option: text,
-                    entry_occasion_option: text,
-                    buy_reason_option: text,
-                    sell_reason_option: text,
-                    stock_type_option: text,
-                    notes: "updated by automation at" + date,
-                    uuid: uuid,
-                },
-                failOnStatusCode: false,
-            }).then((response) => {
-                cy.log(
-                    "🟢 Response Body:",
-                    JSON.stringify(response.body, null, 2)
-                );
-                expect(response.status).to.eq(200);
-                expect(response.body).to.have.property("success", true);
-
-                const apiTrade = response.body.trade;
-
-                cy.request({
-                    method: "GET",
-                    url: `/api/trade/list/${randomId}`,
-                    failOnStatusCode: false,
-                }).then(() => {
-                    cy.task("getTradeFromDbTask", apiTrade.id).then(
-                        (dbUser) => {
-                            expect(apiTrade.trade_date).to.eq(dbUser.tradeDate);
-                            expect(apiTrade.ticker).to.eq(dbUser.ticker);
-                            expect(apiTrade.margin).to.eq(dbUser.margin);
-                            expect(apiTrade.proceeds).to.eq(dbUser.proceeds);
-                            expect(apiTrade.return_percent).to.eq(
-                                dbUser.returnPercent
-                            );
-                            expect(apiTrade.realized_gain).to.eq(
-                                dbUser.realizedGain
-                            );
-                            expect(apiTrade.entry_session_option).to.eq(
-                                dbUser.entrySessionOption
-                            );
-                            expect(apiTrade.entry_occasion_option).to.eq(
-                                dbUser.entryOccasionOption
-                            );
-                            expect(apiTrade.entry_occasion_option).to.eq(
-                                dbUser.entryOccasionOption
-                            );
-                            expect(apiTrade.buy_reason_option).to.eq(
-                                dbUser.buyReasonOption
-                            );
-                            expect(apiTrade.sell_reason_option).to.eq(
-                                dbUser.sellReasonOption
-                            );
-                            expect(apiTrade.stock_type_option).to.eq(
-                                dbUser.stockTypeOption
-                            );
-                            expect(apiTrade.notes).to.eq(dbUser.notes);
+                const metrics = ["totalTrades", "totalWins", "totalLosses"];
+                metrics.forEach((metric) => {
+                    cy.task("getProgressOverviewSummaryFromDb", metric).then(
+                        (dbCount) => {
+                            expect(summary[metric]).to.eq(dbCount);
                         }
                     );
                 });
             });
         });
+
+        it("should display correct total stock type counts in summary", () => {
+            cy.GetTradeSummary().then((summary) => {
+                const stockTypeSummary = summary.stockTypeSummary;
+                const stockTypes = Object.keys(stockTypeSummary);
+                stockTypes.forEach((type) => {
+                    cy.task("getTotalStockTypeFromDb", type).then((dbCount) => {
+                        expect(stockTypeSummary[type]).to.eq(dbCount);
+                    });
+                });
+            });
+        });
+
+        it("should display correct total entry session counts in summary", () => {
+            cy.GetTradeSummary().then((summary) => {
+                const entrySessionSummary = summary.entrySessionSummary;
+                const entrySessions = Object.keys(entrySessionSummary);
+                entrySessions.forEach((session) => {
+                    cy.task("getTotalEntrySessionFromDb", session).then((dbCount) => {
+                        expect(entrySessionSummary[session]).to.eq(dbCount);
+                    });
+                });
+            });
+        });
+
+        it("should display correct total entry occasion counts in summary", () => {
+            cy.GetTradeSummary().then((summary) => {
+                const entryOccasionSummary = summary.entryOccasionSummary;
+                const entryOccasions = Object.keys(entryOccasionSummary);
+                entryOccasions.forEach((occasion) => {
+                    cy.task("getTotalEntryOccasionFromDb", occasion).then((dbCount) => {
+                        expect(entryOccasionSummary[occasion]).to.eq(dbCount);
+                    });
+                });
+            });
+        });
+
     });
 
-    it("should fail to update trade with missing required fields", () => {
-        cy.task("getRandomTradeId").then((randomId) => {
-            cy.UpdateTrade(
-                randomId,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            ).then((response) => {
+    describe("Create", () => {
+        it("should successfully add new trade", () => {
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+            };
+
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.AddNewTrade(request).then((response) => {
+                expect(response.status).to.eq(200);
+
+                cy.wrap(response.body.trade).as("apiTrade");
+                cy.wrap(response.body.trade.id).as("tradeId");
+
+                cy.get("@tradeId").then((id) => {
+                    cy.task("getTradeFromDbTask", id).then((dbTrade) => {
+                        cy.get("@apiTrade").then((apiTrade) => {
+                            expect(apiTrade.trade_date).to.eq(
+                                dbTrade.tradeDate
+                            );
+                            expect(apiTrade.ticker).to.eq(dbTrade.ticker);
+                            expect(apiTrade.margin).to.eq(dbTrade.margin);
+                            expect(apiTrade.proceeds).to.eq(dbTrade.proceeds);
+                            expect(apiTrade.return_percent).to.eq(
+                                dbTrade.returnPercent
+                            );
+                            expect(apiTrade.realized_gain).to.eq(
+                                dbTrade.realizedGain
+                            );
+                            expect(apiTrade.stock_type_option).to.eq(
+                                dbTrade.stockTypeOption
+                            );
+                            expect(apiTrade.entry_session_option).to.eq(
+                                dbTrade.entrySessionOption
+                            );
+                            expect(apiTrade.entry_occasion_option).to.eq(
+                                dbTrade.entryOccasionOption
+                            );
+                            expect(apiTrade.buy_reason_option).to.eq(
+                                dbTrade.buyReasonOption
+                            );
+                            expect(apiTrade.sell_reason_option).to.eq(
+                                dbTrade.sellReasonOption
+                            );
+                            expect(apiTrade.notes).to.eq(dbTrade.notes);
+                        });
+                    });
+                });
+
+                cy.task("saveTradeId", response.body.trade.id);
+            });
+        });
+
+        it("should fail to add new trade with missing required fields", () => {
+            const request = {
+                trade_date: "",
+                ticker: "",
+                margin: "",
+                proceeds: "",
+                return_percent: "",
+                realized_gain: "",
+                stock_type_option: "",
+                entry_session_option: "",
+                entry_occasion_option: "",
+                buy_reason_option: "",
+                sell_reason_option: "",
+                notes: "",
+            };
+
+            cy.AddNewTrade(request).then((response) => {
                 expect(response.status).to.eq(400);
-                expect(response.body).to.have.property("success", false);
-                expect(response.body).to.have.property("message");
+
+                cy.wrap(response.body.trade).as("apiTrade");
+
+                const requiredErrors = [
+                    "trade date is required",
+                    "ticker is required",
+                    "margin is required",
+                    "proceeds is required",
+                    "return percent is required",
+                    "realized gain is required",
+                    "stock type option is required",
+                    "entry session option is required",
+                    "entry occasion option is required",
+                    "buy reason option is required",
+                    "sell reason option is required",
+                ];
+
+                requiredErrors.forEach((error) => {
+                    expect(response.body.message).to.include(error);
+                });
+            });
+        });
+
+        it("should fail to add new trade with invalid JSON", () => {
+            cy.AddNewTrade().then((response) => {
+                expect(response.status).to.eq(400);
+
+                cy.wrap(response.body.trade).as("apiTrade");
+
                 expect(response.body.message).to.include(
-                    "trade date is required"
-                );
-                expect(response.body.message).to.include("ticker is required");
-                expect(response.body.message).to.include("margin is required");
-                expect(response.body.message).to.include(
-                    "proceeds is required"
-                );
-                expect(response.body.message).to.include(
-                    "return percent is required"
-                );
-                expect(response.body.message).to.include(
-                    "realized gain is required"
-                );
-                expect(response.body.message).to.include(
-                    "stock type option is required"
-                );
-                expect(response.body.message).to.include(
-                    "entry session option is required"
-                );
-                expect(response.body.message).to.include(
-                    "entry occasion option is required"
-                );
-                expect(response.body.message).to.include(
-                    "buy reason option is required"
-                );
-                expect(response.body.message).to.include(
-                    "sell reason option is required"
+                    "Invalid JSON in request body"
                 );
             });
         });
-    });
 
-    it("should fail to update trade with invalid date format", () => {
-        const text = randomString(4, "text").toUpperCase();
-        const number = randomString(5, "number");
+        it("should fail to add new trade with invalid date format", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+            };
 
-        cy.task("getRandomTradeId").then((randomId) => {
-            cy.UpdateTrade(
-                randomId,
-                number,
-                text,
-                number,
-                number,
-                number,
-                number,
-                text,
-                text,
-                text,
-                text,
-                text
-            ).then((response) => {
+            const request = {
+                trade_date: "invalid-date",
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.AddNewTrade(request).then((response) => {
                 expect(response.status).to.eq(400);
-                expect(response.body).to.have.property("success", false);
-                expect(response.body).to.have.property("message");
                 expect(response.body.message).to.include(
                     "trade date must be valid format YYYY-MM-DD"
                 );
             });
         });
-    });
 
-    it("should fail to update trade with invalid ticker", () => {
-        const text = randomString(4, "text").toUpperCase();
-        const number = randomString(5, "number");
-        const invalidTicker = "TICKER!@#";
+        it("should fail to add new trade with invalid ticker", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+                invalidTicker: "TICKER!@#",
+            };
 
-        cy.task("getRandomTradeId").then((randomId) => {
-            cy.UpdateTrade(
-                randomId,
-                number,
-                invalidTicker,
-                number,
-                number,
-                number,
-                number,
-                text,
-                text,
-                text,
-                text,
-                text
-            ).then((response) => {
+            const request = {
+                trade_date: new Date().toISOString().split("T")[0],
+                ticker: testData.invalidTicker,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.AddNewTrade(request).then((response) => {
                 expect(response.status).to.eq(400);
-                expect(response.body).to.have.property("success", false);
-                expect(response.body).to.have.property("message");
                 expect(response.body.message).to.include(
                     "ticker can only contain letters and numbers (A-Z, a-z, 0-9)"
                 );
             });
         });
-    });
 
-    it("should fail to update trade with invalid number fields", () => {
-        const text = randomString(4, "text").toUpperCase();
-        const date = new Date().toISOString().split('T')[0];
-        const invalidNumber = "123ABC";
+        it("should fail to add new trade with invalid number fields", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                date: new Date().toISOString().split("T")[0],
+                invalidNumber: "123ABC",
+            };
 
-        cy.task("getRandomTradeId").then((randomId) => {
-            cy.UpdateTrade(
-                randomId,
-                date,
-                text,
-                invalidNumber,
-                invalidNumber,
-                invalidNumber,
-                invalidNumber,
-                text,
-                text,
-                text,
-                text,
-                text
-            ).then((response) => {
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.invalidNumber,
+                proceeds: testData.invalidNumber,
+                return_percent: testData.invalidNumber,
+                realized_gain: testData.invalidNumber,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.AddNewTrade(request).then((response) => {
                 expect(response.status).to.eq(400);
-                expect(response.body).to.have.property("success", false);
-                expect(response.body).to.have.property("message");
-                expect(response.body.message).to.include(
-                    "margin must be a valid number"
-                );
-                expect(response.body.message).to.include(
-                    "proceeds must be a valid number"
-                );
-                expect(response.body.message).to.include(
-                    "return percent must be a valid number (with or without %)"
-                );
-                expect(response.body.message).to.include(
-                    "realized gain must be a valid number"
-                );
+
+                const requiredErrors = [
+                    "margin must be a valid number",
+                    "proceeds must be a valid number",
+                    "return percent must be a valid number (with or without %)",
+                    "realized gain must be a valid number",
+                ];
+
+                requiredErrors.forEach((error) => {
+                    expect(response.body.message).to.include(error);
+                });
             });
+        });
+
+        it("should ensure deleted_at is null after successfully adding a new trade", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                date: new Date().toISOString().split("T")[0],
+                number: randomString(5, "number"),
+            };
+
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.AddNewTrade(request).then((response) => {
+                expect(response.status).to.eq(200);
+
+                cy.wrap(response.body.trade.id).as("tradeId");
+
+                cy.get("@tradeId").then((id) => {
+                    cy.task("getTradeFromDbTask", id).then((dbUser) => {
+                        expect(response.body.trade.deleted_at).to.eq(
+                            dbUser.deletedAt
+                        );
+                        expect(response.body.trade.deleted_at).to.be.null;
+                    });
+                });
+            });
+        });
+
+        it("should Total Trades increase by 1 after adding a new trade", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                date: new Date().toISOString().split("T")[0],
+                number: randomString(5, "number"),
+            };
+
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.GetTradeSummary()
+                .then((summary) => {
+                    cy.wrap(summary.totalTrades).as("initialTotalTrades");
+                })
+
+                .then(() => cy.AddNewTrade(request))
+
+                .then(() =>
+                    cy.GetTradeSummary().then((finalSummary) => {
+                        cy.get("@initialTotalTrades").then(
+                            (initialTotalTrades) => {
+                                expect(finalSummary.totalTrades).to.eq(
+                                    initialTotalTrades + 1
+                                );
+                            }
+                        );
+                    })
+                );
+        });
+
+        it("should Total Win Trades increase by 1 after adding a new winning trade", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                date: new Date().toISOString().split("T")[0],
+                number: randomString(5, "number"),
+            };
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: "10",
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+            cy.GetTradeSummary()
+                .then((summary) => {
+                    cy.wrap(summary.totalWins).as("initialTotalWins");
+                })
+
+                .then(() => cy.AddNewTrade(request))
+                .then(() =>
+                    cy.GetTradeSummary().then((finalSummary) => {
+                        cy.get("@initialTotalWins").then((initialTotalWins) => {
+                            expect(finalSummary.totalWins).to.eq(
+                                initialTotalWins + 1
+                            );
+                        });
+                    })
+                );
+        });
+
+        it("should Total Loss Trades increase by 1 after adding a new winning trade", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                date: new Date().toISOString().split("T")[0],
+                number: randomString(5, "number"),
+            };
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: "-10",
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+            cy.GetTradeSummary()
+                .then((summary) => {
+                    cy.wrap(summary.totalLosses).as("initialTotalLosses");
+                })
+
+                .then(() => cy.AddNewTrade(request))
+                .then(() =>
+                    cy.GetTradeSummary().then((finalSummary) => {
+                        cy.get("@initialTotalLosses").then(
+                            (initialTotalLosses) => {
+                                expect(finalSummary.totalLosses).to.eq(
+                                    initialTotalLosses + 1
+                                );
+                            }
+                        );
+                    })
+                );
         });
     });
 
-    it("should ensure deleted_at is null after successfully updating a trade", () => {
-        const date = new Date().toISOString().split('T')[0];
-        const text = randomString(4, "text").toUpperCase();
-        const number = randomString(5, "number");
-        const uuid = crypto.randomUUID();
+    describe("Update", () => {
+        it("should fail to update trade with invalid ID", () => {
+            const text = randomString(4, "text").toUpperCase();
+            const invalidId = text;
 
-        cy.task("getRandomTradeId").then((randomId) => {
-            cy.request({
-                method: "PUT",
-                url: `/api/trade/update/${randomId}`,
-                body: {
-                    trade_date: date,
-                    ticker: text,
-                    margin: number,
-                    proceeds: number,
-                    return_percent: number,
-                    realized_gain: number,
-                    entry_session_option: text,
-                    entry_occasion_option: text,
-                    buy_reason_option: text,
-                    sell_reason_option: text,
-                    stock_type_option: text,
-                    notes: "updated by automation at" + date,
-                    uuid: uuid,
-                },
-                failOnStatusCode: false,
-            }).then((response) => {
-                expect(response.status).to.eq(200);
+            cy.UpdateTrade(invalidId).then((response) => {
+                expect(response.status).to.eq(400);
+                expect(response.body).to.have.property(
+                    "error",
+                    "Invalid trade ID provided"
+                );
+            });
+        });
 
-                const apiTrade = response.body.trade;
+        it("should successfully update trade", () => {
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+            };
 
-                cy.task("getTradeFromDbTask", apiTrade.id).then((dbUser) => {
-                    expect(apiTrade.deleted_at).to.eq(dbUser.deletedAt);
-                    expect(apiTrade.deleted_at).to.be.null;
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.task("getRandomTradeId")
+                .then((id) => cy.UpdateTrade(id, request))
+                .then((response) => {
+                    expect(response.status).to.eq(200);
+                    cy.wrap(response.body.trade).as("apiTrade");
+                })
+                .then(() =>
+                    cy
+                        .get("@apiTrade")
+                        .then(({ id }) => cy.task("getTradeFromDbTask", id))
+                )
+                .then((dbTrade) => {
+                    cy.get("@apiTrade").then((apiTrade) => {
+                        expect(apiTrade.trade_date).to.eq(dbTrade.tradeDate);
+                        expect(apiTrade.ticker).to.eq(dbTrade.ticker);
+                        expect(apiTrade.margin).to.eq(dbTrade.margin);
+                        expect(apiTrade.proceeds).to.eq(dbTrade.proceeds);
+                        expect(apiTrade.return_percent).to.eq(
+                            dbTrade.returnPercent
+                        );
+                        expect(apiTrade.realized_gain).to.eq(
+                            dbTrade.realizedGain
+                        );
+                        expect(apiTrade.stock_type_option).to.eq(
+                            dbTrade.stockTypeOption
+                        );
+                        expect(apiTrade.entry_session_option).to.eq(
+                            dbTrade.entrySessionOption
+                        );
+                        expect(apiTrade.entry_occasion_option).to.eq(
+                            dbTrade.entryOccasionOption
+                        );
+                        expect(apiTrade.buy_reason_option).to.eq(
+                            dbTrade.buyReasonOption
+                        );
+                        expect(apiTrade.sell_reason_option).to.eq(
+                            dbTrade.sellReasonOption
+                        );
+                        expect(apiTrade.notes).to.eq(dbTrade.notes);
+                    });
+                });
+        });
+
+        it("should fail to update trade with missing required fields", () => {
+            const request = {
+                trade_date: "",
+                ticker: "",
+                margin: "",
+                proceeds: "",
+                return_percent: "",
+                realized_gain: "",
+                stock_type_option: "",
+                entry_session_option: "",
+                entry_occasion_option: "",
+                buy_reason_option: "",
+                sell_reason_option: "",
+                notes: "",
+            };
+
+            cy.task("getRandomTradeId").then((randomId) => {
+                cy.UpdateTrade(randomId, request).then((response) => {
+                    expect(response.status).to.eq(400);
+                    expect(response.body).to.have.property("success", false);
+                    expect(response.body).to.have.property("message");
+
+                    const requiredErrors = [
+                        "trade date is required",
+                        "ticker is required",
+                        "margin is required",
+                        "proceeds is required",
+                        "return percent is required",
+                        "realized gain is required",
+                        "stock type option is required",
+                        "entry session option is required",
+                        "entry occasion option is required",
+                        "buy reason option is required",
+                        "sell reason option is required",
+                    ];
+
+                    requiredErrors.forEach((error) => {
+                        expect(response.body.message).to.include(error);
+                    });
+                });
+            });
+        });
+
+        it("should fail to update trade with invalid date format", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+            };
+
+            const request = {
+                trade_date: "invalid-date",
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.task("getRandomTradeId").then((randomId) => {
+                cy.UpdateTrade(randomId, request).then((response) => {
+                    expect(response.status).to.eq(400);
+                    expect(response.body).to.have.property("success", false);
+                    expect(response.body).to.have.property("message");
+                    expect(response.body.message).to.include(
+                        "trade date must be valid format YYYY-MM-DD"
+                    );
+                });
+            });
+        });
+
+        it("should fail to update trade with invalid ticker", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+                invalidTicker: "TICKER!@#",
+            };
+
+            const request = {
+                trade_date: new Date().toISOString().split("T")[0],
+                ticker: testData.invalidTicker,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.task("getRandomTradeId").then((randomId) => {
+                cy.UpdateTrade(randomId, request).then((response) => {
+                    expect(response.status).to.eq(400);
+                    expect(response.body.message).to.include(
+                        "ticker can only contain letters and numbers (A-Z, a-z, 0-9)"
+                    );
+                });
+            });
+        });
+
+        it("should fail to update trade with invalid number fields", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                date: new Date().toISOString().split("T")[0],
+                invalidNumber: "123ABC",
+            };
+
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.invalidNumber,
+                proceeds: testData.invalidNumber,
+                return_percent: testData.invalidNumber,
+                realized_gain: testData.invalidNumber,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.task("getRandomTradeId").then((randomId) => {
+                cy.UpdateTrade(randomId, request).then((response) => {
+                    expect(response.status).to.eq(400);
+
+                    const requiredErrors = [
+                        "margin must be a valid number",
+                        "proceeds must be a valid number",
+                        "return percent must be a valid number (with or without %)",
+                        "realized gain must be a valid number",
+                    ];
+
+                    requiredErrors.forEach((error) => {
+                        expect(response.body.message).to.include(error);
+                    });
+                });
+            });
+        });
+
+        it("should ensure deleted_at is null after successfully updating a trade", () => {
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+            };
+
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.task("getRandomTradeId").then((randomId) => {
+                cy.wrap(randomId).as("tradeId");
+            });
+
+            cy.get("@tradeId").then((id) => {
+                cy.UpdateTrade(id, request).then((response) => {
+                    expect(response.status).to.eq(200);
+                    cy.wrap(response.body.trade).as("apiTrade");
+
+                    cy.get("@apiTrade").then((apiTrade) => {
+                        cy.task("getTradeFromDbTask", id).then((dbUser) => {
+                            expect(apiTrade.deleted_at).to.eq(dbUser.deletedAt);
+                            expect(apiTrade.deleted_at).to.be.null;
+                        });
+                    });
+                });
+            });
+        });
+
+        it("should Total Win Trades increase by 1 after updating a losing trade", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                date: new Date().toISOString().split("T")[0],
+                number: randomString(5, "number"),
+            };
+
+            const requestCreate = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: "-10",
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            const requestUpdate = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: "10",
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.GetTradeSummary().then((summary) => {
+                cy.wrap(summary.totalWins).as("initialTotalWins");
+            });
+
+            cy.AddNewTrade(requestCreate).then((response) => {
+                const tradeId = response.body.trade.id;
+
+                cy.UpdateTrade(tradeId, requestUpdate).then(() => {
+                    cy.GetTradeSummary().then((finalSummary) => {
+                        cy.get("@initialTotalWins").then((initialTotalWins) => {
+                            expect(finalSummary.totalWins).to.eq(
+                                initialTotalWins + 1
+                            );
+                        });
+                    });
+                });
+            });
+        });
+
+        it("should Total Lose Trades increase by 1 after updating a winning trade", () => {
+            const testData = {
+                text: randomString(4, "text").toUpperCase(),
+                date: new Date().toISOString().split("T")[0],
+                number: randomString(5, "number"),
+            };
+
+            const requestCreate = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: "10",
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            const requestUpdate = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: "-10",
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.GetTradeSummary().then((summary) => {
+                cy.wrap(summary.totalLosses).as("initialTotalLosses");
+            });
+
+            cy.AddNewTrade(requestCreate).then((response) => {
+                const tradeId = response.body.trade.id;
+
+                cy.UpdateTrade(tradeId, requestUpdate).then(() => {
+                    cy.GetTradeSummary().then((finalSummary) => {
+                        cy.get("@initialTotalLosses").then(
+                            (initialTotalLosses) => {
+                                expect(finalSummary.totalLosses).to.eq(
+                                    initialTotalLosses + 1
+                                );
+                            }
+                        );
+                    });
+                });
+            });
+        });
+
+        it("should fail to update trade with invalid JSON", () => {
+            cy.task("getRandomTradeId").then((randomId) => {
+                cy.UpdateTrade(randomId).then((response) => {
+                    expect(response.status).to.eq(400);
+                    expect(response.body.message).to.include(
+                        "Invalid JSON in request body"
+                    );
                 });
             });
         });
     });
 
-    it("should successfully delete trade", () => {
-        cy.task("getRandomTradeId").then((randomId) => {
-            cy.request({
-                method: "DELETE",
-                url: `/api/trade/delete/${randomId}`,
-                failOnStatusCode: false,
-            }).then((response) => {
-                expect(response.status).to.eq(200);
-                expect(response.body).to.have.property("success", true);
+    describe("Delete", () => {
+        it("should successfully delete trade", () => {
+            cy.task("getRandomTradeId").then((randomId) => {
+                cy.request({
+                    method: "DELETE",
+                    url: `/api/trade/delete/${randomId}`,
+                    failOnStatusCode: false,
+                }).then((response) => {
+                    expect(response.status).to.eq(200);
+                    expect(response.body).to.have.property("success", true);
 
-                cy.task("getTradeFromDbTask", randomId).then((dbUser) => {
-                    expect(dbUser).to.be.null;
+                    cy.task("getTradeFromDbTask", randomId).then((dbUser) => {
+                        expect(dbUser).to.be.null;
+                    });
                 });
             });
+        });
+
+        it("should Total Trades decrease by 1 after deleting a trade", () => {
+            let baseline;
+
+            const testData = {
+                date: new Date().toISOString().split("T")[0],
+                text: randomString(4, "text").toUpperCase(),
+                number: randomString(5, "number"),
+            };
+
+            const request = {
+                trade_date: testData.date,
+                ticker: testData.text,
+                margin: testData.number,
+                proceeds: testData.number,
+                return_percent: testData.number,
+                realized_gain: testData.number,
+                stock_type_option: testData.text,
+                entry_session_option: testData.text,
+                entry_occasion_option: testData.text,
+                buy_reason_option: testData.text,
+                sell_reason_option: testData.text,
+                notes: testData.text,
+            };
+
+            cy.GetTradeSummary()
+                .then(({ totalTrades }) => {
+                    baseline = totalTrades;
+                    return cy.AddNewTrade(request);
+                })
+                .then((response) => {
+                    const tradeId = response.body.trade.id;
+                    return cy.DeleteTrade(tradeId);
+                })
+                .then(() => cy.GetTradeSummary())
+                .then(({ totalTrades: final }) => {
+                    expect(final).to.eq(baseline);
+                });
         });
     });
 });

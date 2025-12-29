@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Quicksand } from "next/font/google";
+import { Figtree, Geist, Google_Sans_Code, Manrope, Mulish, Nunito, Nunito_Sans, Outfit, Quicksand } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     description: "Trading Performance",
 };
 
-const geist = Quicksand({
+const geist = Figtree({
     variable: "--font-geist",
     display: "swap",
     subsets: ["latin"],

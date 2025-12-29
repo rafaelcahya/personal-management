@@ -7,7 +7,7 @@ export async function PUT(req, { params }) {
 
         if (!id || isNaN(Number(id))) {
             return NextResponse.json(
-                { success: false, error: "Invalid trade ID provided" },
+                { success: false, message: "Invalid trade ID provided" },
                 { status: 400 }
             );
         }
@@ -17,14 +17,14 @@ export async function PUT(req, { params }) {
             body = await req.json();
         } catch (parseError) {
             return NextResponse.json(
-                { success: false, error: "Invalid JSON in request body" },
+                { success: false, message: "Invalid JSON in request body" },
                 { status: 400 }
             );
         }
 
         if (!body) {
             return NextResponse.json(
-                { success: false, error: "Request body is required" },
+                { success: false, message: "Request body is required" },
                 { status: 400 }
             );
         }
@@ -46,7 +46,9 @@ export async function PUT(req, { params }) {
         const validationErrors = [];
         requiredFields.forEach((field) => {
             if (!body[field] || body[field].toString().trim() === "") {
-                validationErrors.push(`${field.replaceAll("_", " ")} is required`);
+                validationErrors.push(
+                    `${field.replaceAll("_", " ")} is required`
+                );
             }
         });
 
@@ -136,7 +138,7 @@ export async function PUT(req, { params }) {
         return NextResponse.json(
             {
                 success: false,
-                error: err.message || "Something went wrong",
+                error: err.message,
             },
             { status: 500 }
         );

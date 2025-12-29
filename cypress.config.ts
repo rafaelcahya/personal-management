@@ -2,7 +2,13 @@ import * as dotenv from "dotenv";
 import { defineConfig } from "cypress";
 import { createEngine } from "./cypress/support/engine/createEngine";
 import { getUserFromDb } from "./cypress/support/db/users/getUserFromDb";
-import { getTradeFromDb } from "./cypress/support/db/trade/getTradeFromDb";
+import {
+    getProgressOverviewSummaryFromDb,
+    getTotalEntryOccasionFromDb,
+    getTotalEntrySessionFromDb,
+    getTotalStockTypeFromDb,
+    getTradeFromDb,
+} from "./cypress/support/db/trade/getTradeFromDb";
 import { getFeeFromDb } from "./cypress/support/db/fee/getFeeFromDb";
 import { getEventFromDb } from "./cypress/support/db/event/getEventFromDb";
 import {
@@ -37,6 +43,35 @@ export default defineConfig({
                 async getTradeFromDbTask(tradeId) {
                     const trade = await getTradeFromDb(supabase, tradeId);
                     return trade ? JSON.parse(JSON.stringify(trade)) : null;
+                },
+                async getProgressOverviewSummaryFromDb(metric) {
+                    const progressOverviews =
+                        await getProgressOverviewSummaryFromDb(
+                            supabase,
+                            metric
+                        );
+                    return progressOverviews;
+                },
+                async getTotalStockTypeFromDb(stockType) {
+                    const stockTypes = await getTotalStockTypeFromDb(
+                        supabase,
+                        stockType
+                    );
+                    return stockTypes;
+                },
+                async getTotalEntrySessionFromDb(entrySession) {
+                    const entrySessions = await getTotalEntrySessionFromDb(
+                        supabase,
+                        entrySession
+                    );
+                    return entrySessions;
+                },
+                async getTotalEntryOccasionFromDb(entryOccasion) {
+                    const entryOccasions = await getTotalEntryOccasionFromDb(
+                        supabase,
+                        entryOccasion
+                    );
+                    return entryOccasions;
                 },
                 async getFeeFromDbTask(feeId) {
                     const fee = await getFeeFromDb(supabase, feeId);
