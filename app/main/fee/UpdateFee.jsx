@@ -85,7 +85,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
 
     return (
         <Dialog open={!!fee} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-lg overflow-y-auto font-semibold">
+            <DialogContent className="sm:max-w-lg overflow-y-auto font-medium">
                 <DialogHeader>
                     <DialogTitle>Update Fee</DialogTitle>
                     <DialogDescription>
@@ -105,7 +105,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                             name="fee_date"
                             render={({ field, fieldState }) => (
                                 <FormItem className="flex flex-col">
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Fee Date
                                     </FormLabel>
                                     <Popover>
@@ -113,7 +113,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                                             <Button
                                                 variant="outline"
                                                 className={cn(
-                                                    "w-[240px] pl-3 text-left font-semibold",
+                                                    "w-[240px] pl-3 text-left font-medium",
                                                     fieldState.error &&
                                                         "border-rose-500 text-trade-loss",
                                                     !field.value &&
@@ -154,7 +154,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                             name="fee_name"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Fee Name
                                     </FormLabel>
                                     <FormControl>
@@ -181,7 +181,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                             name="fee"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Fee
                                     </FormLabel>
                                     <FormControl>

@@ -147,7 +147,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
             <DialogContent className="sm:max-w-2xl max-h-[90svh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Update Trade</DialogTitle>
-                    <DialogDescription className="font-semibold text-slate-500">
+                    <DialogDescription className="font-medium text-gray-foreground">
                         Edit your trade details to keep performance insights
                         accurate.
                     </DialogDescription>
@@ -163,7 +163,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="trade_date"
                             render={({ field, fieldState }) => (
                                 <FormItem className="flex flex-col">
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Trade Date
                                     </FormLabel>
                                     <Popover>
@@ -171,7 +171,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                             <Button
                                                 variant="outline"
                                                 className={cn(
-                                                    "w-[240px] pl-3 text-left font-semibold",
+                                                    "w-[240px] pl-3 text-left font-medium",
                                                     fieldState.error &&
                                                         "border-rose-500 text-trade-loss",
                                                     !field.value &&
@@ -210,14 +210,14 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="ticker"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Ticker
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
                                             placeholder="e.g. AAPL"
-                                            className={`uppercase text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                                            className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
                                                 fieldState.error
                                                     ? "border-rose-500"
                                                     : ""
@@ -235,7 +235,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="margin"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Margin
                                     </FormLabel>
                                     <FormControl>
@@ -251,7 +251,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                                     : ""
                                             }
                                             placeholder="e.g. 1000"
-                                            className={`text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                                            className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
                                                 fieldState.error
                                                     ? "border-rose-500"
                                                     : ""
@@ -277,7 +277,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="proceeds"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Proceeds
                                     </FormLabel>
                                     <FormControl>
@@ -293,7 +293,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                                     : ""
                                             }
                                             placeholder="e.g. 1000"
-                                            className={`text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                                            className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
                                                 fieldState.error
                                                     ? "border-rose-500"
                                                     : ""
@@ -319,7 +319,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="realized_gain"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Realized Gain
                                     </FormLabel>
                                     <FormDescription className="font-medium text-slate-500">
@@ -328,7 +328,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     </FormDescription>
                                     <FormControl>
                                         <Input
-                                            className="font-semibold text-slate-900"
+                                            className="font-medium text-slate-900"
                                             value={
                                                 field.value
                                                     ? `Rp. ${Number(
@@ -352,7 +352,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="return_percent"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Return %
                                     </FormLabel>
                                     <FormDescription className="font-medium text-slate-500">
@@ -363,7 +363,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                         <Input
                                             value={field.value}
                                             disabled
-                                            className="font-semibold text-slate-900"
+                                            className="font-medium text-slate-900"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -377,7 +377,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="stock_type_option"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Stock Type Option
                                     </FormLabel>
                                     <FormControl>
@@ -385,10 +385,10 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
-                                            <SelectTrigger className="min-w-full font-semibold">
+                                            <SelectTrigger className="min-w-full font-medium">
                                                 <SelectValue placeholder="Select entry session" />
                                             </SelectTrigger>
-                                            <SelectContent className="font-semibold">
+                                            <SelectContent className="font-medium">
                                                 {options.stockType.map(
                                                     (opt) => (
                                                         <SelectItem
@@ -417,7 +417,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="entry_session_option"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Entry Session Option
                                     </FormLabel>
                                     <FormControl>
@@ -425,10 +425,10 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
-                                            <SelectTrigger className="min-w-full font-semibold">
+                                            <SelectTrigger className="min-w-full font-medium">
                                                 <SelectValue placeholder="Select entry session" />
                                             </SelectTrigger>
-                                            <SelectContent className="font-semibold">
+                                            <SelectContent className="font-medium">
                                                 {options.entrySession.map(
                                                     (opt) => (
                                                         <SelectItem
@@ -456,7 +456,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="entry_occasion_option"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Entry Occasion Option
                                     </FormLabel>
                                     <FormControl>
@@ -464,10 +464,10 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
-                                            <SelectTrigger className="min-w-full font-semibold">
+                                            <SelectTrigger className="min-w-full font-medium">
                                                 <SelectValue placeholder="Select entry occasion" />
                                             </SelectTrigger>
-                                            <SelectContent className="font-semibold">
+                                            <SelectContent className="font-medium">
                                                 {options.entryOccasion.map(
                                                     (opt) => (
                                                         <SelectItem
@@ -496,7 +496,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="buy_reason_option"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Buy Reason
                                     </FormLabel>
                                     <FormControl>
@@ -504,10 +504,10 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
-                                            <SelectTrigger className="min-w-full whitespace-normal text-left font-semibold">
+                                            <SelectTrigger className="min-w-full whitespace-normal text-left font-medium">
                                                 <SelectValue placeholder="Select buy reason" />
                                             </SelectTrigger>
-                                            <SelectContent className="font-semibold">
+                                            <SelectContent className="font-medium">
                                                 {options.buyReason.map(
                                                     (opt) => (
                                                         <SelectItem
@@ -536,7 +536,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="sell_reason_option"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Sell Reason
                                     </FormLabel>
                                     <FormControl>
@@ -544,10 +544,10 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
-                                            <SelectTrigger className="min-w-full whitespace-normal text-left font-semibold">
+                                            <SelectTrigger className="min-w-full whitespace-normal text-left font-medium">
                                                 <SelectValue placeholder="Select sell reason" />
                                             </SelectTrigger>
-                                            <SelectContent className="font-semibold">
+                                            <SelectContent className="font-medium">
                                                 {options.sellReason.map(
                                                     (opt) => (
                                                         <SelectItem
@@ -576,14 +576,14 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                             name="notes"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Notes
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea
                                             {...field}
                                             placeholder="Additional notes"
-                                            className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                            className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -602,7 +602,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <DialogClose asChild>
                                         <Button
                                             type="button"
-                                            className="text-secondary-foreground bg-transparent hover:bg-secondary-hover font-semibold"
+                                            className="text-secondary-foreground bg-transparent hover:bg-secondary-hover font-medium"
                                         >
                                             Cancel
                                         </Button>
@@ -610,7 +610,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="font-semibold bg-primary hover:bg-primary-hover"
+                                        className="font-medium bg-primary hover:bg-primary-hover"
                                     >
                                         {loading
                                             ? "Updating..."

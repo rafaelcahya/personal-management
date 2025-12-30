@@ -11,7 +11,6 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import AddFee from "./AddFee";
 import UpdateFee from "./UpdateFee";
@@ -38,7 +37,6 @@ function FeeTable({ fees: initialFees }) {
 
     return (
         <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] border-gray-200 border dark:border-none bg-white dark:bg-[#111214] backdrop-blur-2xl rounded-xl flex flex-col flex-1 gap-y-6 px-4 sm:px-6 py-6 overflow-hidden">
-            {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div className="space-y-2">
                     <Breadcrumbs />
@@ -46,7 +44,7 @@ function FeeTable({ fees: initialFees }) {
                         <p className="text-lg font-semibold tracking-[0.010em]">
                             Fee List
                         </p>
-                        <p className="text-sm font-medium text-gray-foreground">
+                        <p className="text-sm text-gray-foreground">
                             Keep track of commissions and fees — the little
                             things that add up.
                         </p>
@@ -54,7 +52,7 @@ function FeeTable({ fees: initialFees }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link href="/main/dashboard" className="hidden sm:block">
-                        <Button className="font-semibold bg-transparent hover:bg-secondary dark:hover:bg-violet-500/5 text-secondary-foreground">
+                        <Button className="font-medium bg-transparent hover:bg-secondary dark:hover:bg-violet-500/5 text-secondary-foreground">
                             Back
                         </Button>
                     </Link>
@@ -66,13 +64,13 @@ function FeeTable({ fees: initialFees }) {
                 <Table noWrapper>
                     <TableHeader className="bg-gray-50 dark:bg-[#0e0f11] sticky top-0 z-10">
                         <TableRow className="border-none">
-                            <TableHead className="font-semibold rounded-l-lg">
+                            <TableHead className="font-medium text-gray-foreground rounded-l-lg">
                                 Fee Date
                             </TableHead>
-                            <TableHead className="font-semibold">
+                            <TableHead className="font-medium text-gray-foreground">
                                 Fee Name
                             </TableHead>
-                            <TableHead className="font-semibold text-right rounded-r-lg">
+                            <TableHead className="font-medium text-gray-foreground text-right rounded-r-lg">
                                 Fee
                             </TableHead>
                         </TableRow>

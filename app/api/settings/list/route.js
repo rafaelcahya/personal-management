@@ -4,20 +4,11 @@ import { NextResponse } from "next/server";
 export async function GET() {
     try {
         const settingsList = await getListSettings();
-        return (
-            NextResponse.json({ success: true, settingsList }),
-            {
-                status: 200,
-                headers: { "Content-Type": "application/json" },
-            }
+        return NextResponse.json(
+            { success: true, settingsList },
+            { status: 200 }
         );
     } catch (err) {
-        return (
-            NextResponse.json({ error: err.message }),
-            {
-                status: 401,
-                headers: { "Content-Type": "application/json" },
-            }
-        );
+        return NextResponse.json({ error: err.message }, { status: 401 });
     }
 }

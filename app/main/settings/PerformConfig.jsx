@@ -76,7 +76,7 @@ export default function PerformConfig() {
     return (
         <div className="flex flex-col h-full w-full max-w-lg">
             <div className="px-5 py-4">
-                <p className="font-semibold">Performance Configurations</p>
+                <p className="font-medium">Performance Configurations</p>
                 <p className="text-sm font-medium text-gray-foreground">
                     Configure Initial Margin and Risk-Free Rate to keep your
                     trading metrics accurate.
@@ -95,7 +95,7 @@ export default function PerformConfig() {
                             name="initial_margin"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Initial Margin
                                     </FormLabel>
                                     <FormControl>
@@ -119,7 +119,7 @@ export default function PerformConfig() {
                                                     );
                                                 field.onChange(raw);
                                             }}
-                                            className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                            className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -131,7 +131,7 @@ export default function PerformConfig() {
                             name="bi_risk_free_rate"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         BI Risk Free Rate
                                     </FormLabel>
                                     <FormControl>
@@ -147,7 +147,7 @@ export default function PerformConfig() {
                                                     )
                                                 )
                                             }
-                                            className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                            className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -159,7 +159,7 @@ export default function PerformConfig() {
                             name="personal_risk_free_rate"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Personal Risk Free Rate
                                     </FormLabel>
                                     <FormControl>
@@ -175,7 +175,7 @@ export default function PerformConfig() {
                                                     )
                                                 )
                                             }
-                                            className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                            className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -187,7 +187,7 @@ export default function PerformConfig() {
                             name="margin_of_error"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Margin of Error (%)
                                     </FormLabel>
                                     <FormControl>
@@ -203,7 +203,7 @@ export default function PerformConfig() {
                                                     )
                                                 )
                                             }
-                                            className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                            className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -215,7 +215,7 @@ export default function PerformConfig() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="bg-primary hover:bg-primary-hoverfont-semibold"
+                            className="bg-primary hover:bg-primary-hoverfont-medium"
                         >
                             {loading ? "Submitting..." : "Save changes"}
                         </Button>

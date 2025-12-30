@@ -35,12 +35,12 @@ export default function DeleteFee({ fee, onDeleted, onClose }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="font-semibold bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500">
+                <Button className="font-medium bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500">
                     Delete
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
-                <AlertDialogHeader className="font-semibold">
+                <AlertDialogHeader className="font-medium">
                     <AlertDialogTitle>Delete Fee</AlertDialogTitle>
                     <AlertDialogDescription>
                         Are you sure you want to delete this fee? This action
@@ -54,7 +54,7 @@ export default function DeleteFee({ fee, onDeleted, onClose }) {
                     <AlertDialogAction
                         onClick={handleDelete}
                         disabled={loading}
-                        className="font-semibold bg-rose-600 hover:bg-rose-700 dark:text-white"
+                        className="font-medium bg-rose-600 hover:bg-rose-700 dark:text-white"
                     >
                         {loading ? "Deleting..." : "Delete"}
                     </AlertDialogAction>

@@ -83,7 +83,7 @@ export default function AddFee({ onAdded }) {
 
             <DialogContent
                 id="addNewFeeDialogForm"
-                className="sm:max-w-lg overflow-y-auto font-semibold "
+                className="sm:max-w-lg overflow-y-auto font-medium "
             >
                 <DialogHeader>
                     <DialogTitle>Add New Fee</DialogTitle>
@@ -110,7 +110,7 @@ export default function AddFee({ onAdded }) {
                                             <Button
                                                 variant="outline"
                                                 className={cn(
-                                                    "w-[240px] pl-3 text-left font-semibold",
+                                                    "w-[240px] pl-3 text-left font-medium",
                                                     fieldState.error &&
                                                         "border-rose-500 text-trade-loss",
                                                     !field.value &&

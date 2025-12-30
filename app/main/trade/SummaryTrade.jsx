@@ -48,27 +48,27 @@ function SummaryTrade() {
     const SummaryContent = () => (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 my-4">
             <div className="p-4 border-gray-200 border bg-white rounded-xl w-full">
-                <p className="text-sm font-semibold text-gray-foreground mb-1">
+                <p className="text-sm font-medium text-gray-foreground mb-1">
                     Progress Overview
                 </p>
                 <ul className="text-sm space-y-1">
                     <li className="flex justify-between">
-                        <span className="font-semibold">Total Trade</span>
-                        <span className="font-semibold">{totalTrades}</span>
+                        <span className="font-medium">Total Trade</span>
+                        <span className="font-medium">{totalTrades}</span>
                     </li>
                     <li className="flex justify-between">
-                        <span className="font-semibold">Total Win</span>
-                        <span className="font-semibold">{totalWins}</span>
+                        <span className="font-medium">Total Win</span>
+                        <span className="font-medium">{totalWins}</span>
                     </li>
                     <li className="flex justify-between">
-                        <span className="font-semibold">Total Lose</span>
-                        <span className="font-semibold">{totalLosses}</span>
+                        <span className="font-medium">Total Lose</span>
+                        <span className="font-medium">{totalLosses}</span>
                     </li>
                 </ul>
             </div>
 
             <div className="p-4 border-gray-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
-                <p className="text-sm font-semibold text-gray-foreground mb-1">
+                <p className="text-sm font-medium text-gray-foreground mb-1">
                     Stock Type
                 </p>
                 <ul className="text-sm space-y-1">
@@ -78,10 +78,8 @@ function SummaryTrade() {
                                 key={stockType}
                                 className="flex justify-between"
                             >
-                                <span className="font-semibold">
-                                    {stockType}
-                                </span>
-                                <span className="font-semibold">{count}</span>
+                                <span className="font-medium">{stockType}</span>
+                                <span className="font-medium">{count}</span>
                             </li>
                         )
                     )}
@@ -89,15 +87,15 @@ function SummaryTrade() {
             </div>
 
             <div className="p-4 border-gray-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
-                <p className="text-sm font-semibold text-gray-foreground mb-1">
+                <p className="text-sm font-medium text-gray-foreground mb-1">
                     Entry Session
                 </p>
                 <ul className="text-sm space-y-1">
                     {Object.entries(entrySessionSummary).map(
                         ([session, count]) => (
                             <li key={session} className="flex justify-between">
-                                <span className="font-semibold">{session}</span>
-                                <span className="font-semibold">{count}</span>
+                                <span className="font-medium">{session}</span>
+                                <span className="font-medium">{count}</span>
                             </li>
                         )
                     )}
@@ -105,17 +103,15 @@ function SummaryTrade() {
             </div>
 
             <div className="p-4 border-gray-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
-                <p className="text-sm font-semibold text-gray-foreground mb-1">
+                <p className="text-sm font-medium text-gray-foreground mb-1">
                     Entry Occasion
                 </p>
                 <ul className="text-sm space-y-1">
                     {Object.entries(entryOccasionSummary).map(
                         ([occasion, count]) => (
                             <li key={occasion} className="flex justify-between">
-                                <span className="font-semibold">
-                                    {occasion}
-                                </span>
-                                <span className="font-semibold">{count}</span>
+                                <span className="font-medium">{occasion}</span>
+                                <span className="font-medium">{count}</span>
                             </li>
                         )
                     )}

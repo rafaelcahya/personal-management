@@ -72,7 +72,7 @@ export default function Profile() {
     return (
         <div className="flex flex-col h-full w-full max-w-lg">
             <div className="px-5 py-4">
-                <p className="font-bold">Profile</p>
+                <p className="font-semibold">Profile</p>
                 <p className="text-sm font-medium text-gray-foreground">
                     Update your profile to keep your account info accurate.
                 </p>
@@ -87,7 +87,7 @@ export default function Profile() {
                 >
                     <div className="flex-1 px-5 py-4 space-y-6 overflow-y-auto">
                         <FormItem>
-                            <Label className="font-semibold">Avatar</Label>
+                            <Label className="font-medium">Avatar</Label>
                             <div className="flex items-center space-x-4">
                                 <div
                                     className="w-16 h-16 rounded-full overflow-hidden cursor-pointer bg-gray-200 flex items-center justify-center"
@@ -124,13 +124,13 @@ export default function Profile() {
                                 <FormItem>
                                     <Label
                                         htmlFor="username"
-                                        className="font-semibold"
+                                        className="font-medium"
                                     >
                                         Username
                                     </Label>
                                     <Input
                                         id="username"
-                                        className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                        className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         {...field}
                                     />
                                 </FormItem>
@@ -144,13 +144,13 @@ export default function Profile() {
                                 <FormItem>
                                     <Label
                                         htmlFor="nickname"
-                                        className="font-semibold"
+                                        className="font-medium"
                                     >
                                         Nickname
                                     </Label>
                                     <Input
                                         id="nickname"
-                                        className="text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                                        className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         {...field}
                                     />
                                 </FormItem>
@@ -162,7 +162,7 @@ export default function Profile() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="bg-primary hover:bg-primary-hover font-semibold"
+                            className="bg-primary hover:bg-primary-hover font-medium"
                         >
                             {loading ? "Saving..." : "Save Profile"}
                         </Button>

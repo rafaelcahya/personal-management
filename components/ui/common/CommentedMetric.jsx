@@ -20,11 +20,15 @@ export default function CommentedMetric({
     return (
         <div className="space-y-4">
             <div className="space-y-2">
-                <CardTitle className="flex items-center gap-2 font-semibold text-sm text-gray-foreground">
-                    {icon && <span className={iconBgStyle}>{icon}</span>}{" "}
+                <div className="flex items-center gap-2 font-semibold text-sm text-gray-foreground">
+                    {icon && <span>{icon}</span>}
+                </div>
+                <p className="text-lg md:text-xl font-semibold">
+                    {formattedValue}
+                </p>
+                <p className="text-xs font-medium text-gray-foreground uppercase tracking-wide">
                     {label}
-                </CardTitle>
-                <p className="text-lg md:text-xl font-semibold">{formattedValue}</p>
+                </p>
             </div>
             {comment && (
                 <p className={`text-sm font-medium ${color}`}>{comment}</p>

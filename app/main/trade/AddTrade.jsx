@@ -53,7 +53,7 @@ const CurrencyInputField = ({ field, fieldState, placeholder }) => (
         type="text"
         value={formatRupiah(field.value)}
         placeholder={placeholder}
-        className={`text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+        className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
             fieldState.error ? "border-rose-500" : ""
         }`}
         onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ""))}
@@ -184,7 +184,7 @@ export default function AddNewTrade({ onAdded }) {
             <DialogTrigger asChild>
                 <Button
                     id="addNewTradeBtn"
-                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold"
+                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium"
                 >
                     Add New Trade
                 </Button>
@@ -193,9 +193,9 @@ export default function AddNewTrade({ onAdded }) {
                 id="addNewTradeDialogForm"
                 className="sm:max-w-2xl max-h-[90svh] overflow-y-auto space-y-5"
             >
-                <DialogHeader className="text-left font-semibold">
+                <DialogHeader className="text-left font-medium">
                     <DialogTitle>Add New Trade</DialogTitle>
-                    <DialogDescription className="text-slate-500">
+                    <DialogDescription className="font-normal text-gray-foreground">
                         Record your latest trade details to keep track of
                         performance and insights.
                     </DialogDescription>
@@ -212,7 +212,7 @@ export default function AddNewTrade({ onAdded }) {
                             name="trade_date"
                             render={({ field, fieldState }) => (
                                 <FormItem className="flex flex-col">
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Trade Date
                                     </FormLabel>
                                     <Popover>
@@ -220,7 +220,7 @@ export default function AddNewTrade({ onAdded }) {
                                             <Button
                                                 variant="outline"
                                                 className={cn(
-                                                    "w-[240px] pl-3 text-left font-semibold",
+                                                    "w-[240px] pl-3 text-left font-medium",
                                                     fieldState.error &&
                                                         "border-rose-500 text-trade-loss-foreground",
                                                     !field.value &&
@@ -264,14 +264,14 @@ export default function AddNewTrade({ onAdded }) {
                             name="ticker"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Ticker
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
                                             placeholder="e.g. AAPL"
-                                            className={`uppercase text-sm font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                                            className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
                                                 fieldState.error
                                                     ? "border-rose-500"
                                                     : ""
@@ -295,7 +295,7 @@ export default function AddNewTrade({ onAdded }) {
                             name="margin"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Margin
                                     </FormLabel>
                                     <FormControl>
@@ -322,7 +322,7 @@ export default function AddNewTrade({ onAdded }) {
                             name="proceeds"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Proceeds
                                     </FormLabel>
                                     <FormControl>
@@ -348,7 +348,7 @@ export default function AddNewTrade({ onAdded }) {
                             name="realized_gain"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Realized Gain
                                     </FormLabel>
                                     <FormDescription className="font-medium">
@@ -359,7 +359,7 @@ export default function AddNewTrade({ onAdded }) {
                                         <Input
                                             value={formatRupiah(field.value)}
                                             disabled
-                                            className="font-semibold"
+                                            className="font-medium"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -372,14 +372,14 @@ export default function AddNewTrade({ onAdded }) {
                             name="return_percent"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Return %
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             value={field.value}
                                             disabled
-                                            className="font-semibold"
+                                            className="font-medium"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -443,7 +443,7 @@ export default function AddNewTrade({ onAdded }) {
                                     name={name}
                                     render={({ field, fieldState }) => (
                                         <FormItem>
-                                            <FormLabel className="font-semibold">
+                                            <FormLabel className="font-medium">
                                                 {label}
                                             </FormLabel>
                                             <FormControl>
@@ -453,7 +453,7 @@ export default function AddNewTrade({ onAdded }) {
                                                     }
                                                     value={field.value}
                                                 >
-                                                    <SelectTrigger className="min-w-full font-semibold">
+                                                    <SelectTrigger className="min-w-full font-medium">
                                                         <SelectValue
                                                             placeholder={
                                                                 loading
@@ -489,7 +489,7 @@ export default function AddNewTrade({ onAdded }) {
                                                                                 optionKey
                                                                             ]
                                                                         }
-                                                                        className="whitespace-normal break-words font-semibold"
+                                                                        className="whitespace-normal break-words font-medium"
                                                                     >
                                                                         {
                                                                             opt[
@@ -517,14 +517,14 @@ export default function AddNewTrade({ onAdded }) {
                             name="notes"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Notes
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea
                                             {...field}
                                             placeholder="Additional notes"
-                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-semibold"
+                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -536,7 +536,7 @@ export default function AddNewTrade({ onAdded }) {
                                 <Button
                                     id="cancelNewTradeBtn"
                                     type="button"
-                                    className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-semibold"
+                                    className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
                                 >
                                     Cancel
                                 </Button>
@@ -545,7 +545,7 @@ export default function AddNewTrade({ onAdded }) {
                                 id="submitNewTradeBtn"
                                 type="submit"
                                 disabled={loading}
-                                className="bg-primary hover:bg-primary-hover dark:text-white font-semibold"
+                                className="bg-primary hover:bg-primary-hover dark:text-white font-medium"
                             >
                                 {loading ? "Submitting..." : "Submit new trade"}
                             </Button>

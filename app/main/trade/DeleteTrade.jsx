@@ -35,28 +35,28 @@ export default function TradeDelete({ trade, onDeleted, onClose }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500 font-semibold">
+                <Button className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500 font-medium">
                     Delete
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle className="font-semibold">
+                    <AlertDialogTitle className="font-medium">
                         Delete Trade
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="font-semibold text-slate-500">
+                    <AlertDialogDescription className="font-medium text-slate-500">
                         Are you sure you want to delete this trade? This action
                         cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="font-semibold bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none">
+                    <AlertDialogCancel className="font-medium bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none">
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleDelete}
                         disabled={loading}
-                        className="bg-rose-600 hover:bg-rose-700 dark:text-white font-semibold"
+                        className="bg-rose-600 hover:bg-rose-700 dark:text-white font-medium"
                     >
                         {loading ? "Deleting..." : "Delete"}
                     </AlertDialogAction>

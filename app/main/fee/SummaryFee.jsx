@@ -26,16 +26,16 @@ function SummaryFee() {
             {
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <li className="flex flex-col items-center gap-2">
-                        <p className="font-semibold text-gray-foreground">
+                        <p className="font-medium text-gray-foreground">
                             Total Transactions
                         </p>
-                        <p className="font-semibold text-lg">{feeCount}</p>
+                        <p className="font-medium text-lg">{feeCount}</p>
                     </li>
                     <li className="flex flex-col items-center gap-2">
-                        <p className="font-semibold text-gray-foreground">
+                        <p className="font-medium text-gray-foreground">
                             Total Fee
                         </p>
-                        <p className="font-semibold text-lg">
+                        <p className="font-medium text-lg">
                             {`Rp. ${(totalFee || 0).toLocaleString("id-ID")}`}
                         </p>
                     </li>

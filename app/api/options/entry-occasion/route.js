@@ -4,20 +4,14 @@ import { NextResponse } from "next/server";
 export async function GET() {
     try {
         const entryOccasionOptions = await getEntryOccasionOptions();
-        return (
-            NextResponse.json({
+        return NextResponse.json(
+            {
                 success: true,
                 option: entryOccasionOptions,
-            }),
-            { status: 200, headers: { "Content-Type": "application/json" } }
+            },
+            { status: 200 }
         );
     } catch (err) {
-        return (
-            NextResponse.json({ error: err.message }),
-            {
-                status: 401,
-                headers: { "Content-Type": "application/json" },
-            }
-        );
+        return NextResponse.json({ error: err.message }, { status: 401 });
     }
 }

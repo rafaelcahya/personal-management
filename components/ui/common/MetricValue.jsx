@@ -1,9 +1,7 @@
-import { CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
 export default function MetricValue({
     icon = null,
-    iconBgStyle,
     label,
     value,
     color = "text-gray-900 dark:text-white",
@@ -39,29 +37,33 @@ export default function MetricValue({
 
     return (
         <div className="space-y-2">
-            <CardTitle className="flex items-center gap-2 font-semibold text-sm whitespace-nowrap text-gray-foreground">
-                {icon && <span className={iconBgStyle}>{icon}</span>} {label}
-            </CardTitle>
+            <div className="flex items-center gap-2 font-semibold text-sm whitespace-nowrap text-gray-foreground">
+                {icon && <span>{icon}</span>}
+            </div>
 
             <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                    <p className={`text-lg md:text-xl font-semibold ${color}`}>
-                        {displayValue}
+                <div className="space-y-2">
+                    <div className="flex gap-2 items-center">
+                        <p className={`text-lg font-semibold ${color}`}>
+                            {displayValue}
+                        </p>
+                        {indicator2 !== null && (
+                            <span
+                                className={`text-xs font-medium px-2 py-1 rounded-lg ${indicator2Color} ${indicatorStyle}`}
+                            >
+                                {indicator2}%
+                            </span>
+                        )}
+                    </div>
+                    <p className="text-xs font-medium text-gray-foreground uppercase tracking-wide">
+                        {label}
                     </p>
-
-                    {indicator2 !== null && (
-                        <span
-                            className={`text-xs font-semibold px-2 py-1 rounded-lg ${indicator2Color} ${indicatorStyle}`}
-                        >
-                            {indicator2}%
-                        </span>
-                    )}
                 </div>
 
                 {indicator1 !== null && (
                     <div className="flex items-center gap-2">
                         <span
-                            className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg ${indicatorColor} ${indicatorStyle}`}
+                            className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg ${indicatorColor} ${indicatorStyle}`}
                         >
                             {indicator1 > 0 && (
                                 <TrendingUp className="w-3 h-3" />
@@ -71,9 +73,7 @@ export default function MetricValue({
                             )}
                             {indicator1}%
                         </span>
-                        <p className="text-xs font-medium text-gray-foreground">
-                            {unit}
-                        </p>
+                        <p className="text-xs text-gray-foreground">{unit}</p>
                     </div>
                 )}
             </div>

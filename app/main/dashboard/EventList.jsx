@@ -38,20 +38,20 @@ function EventList() {
     }, []);
 
     return (
-        <div className="bg-card rounded-2xl p-6 shadow-lg shadow-gray-500/5">
+        <div className="bg-card rounded-2xl p-6 border border-gray-200">
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
                 <div>
-                    <p className="text-lg font-bold text-foreground">
+                    <p className="text-lg font-semibold text-foreground">
                         Event List
                     </p>
-                    <p className="text-sm font-medium text-muted-foreground">
+                    <p className="text-sm text-gray-foreground">
                         Track key political, economic, and global events that
                         move the market.
                     </p>
                 </div>
                 <Link href="/main/event" id="eventBtn">
-                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
                         Event
                     </Button>
                 </Link>

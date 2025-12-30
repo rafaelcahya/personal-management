@@ -91,7 +91,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
 
     return (
         <Dialog open={!!event} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-lg overflow-y-auto font-semibold">
+            <DialogContent className="sm:max-w-lg overflow-y-auto font-medium">
                 <DialogHeader>
                     <DialogTitle>Update Event</DialogTitle>
                     <DialogDescription>
@@ -111,7 +111,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                             name="event_description"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Event description
                                     </FormLabel>
                                     <FormControl>
@@ -138,7 +138,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                             name="impact_direction"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Impact Direction
                                     </FormLabel>
                                     <Select
@@ -179,7 +179,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                             name="event_date"
                             render={({ field, fieldState }) => (
                                 <FormItem className="flex flex-col">
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Event Date
                                     </FormLabel>
                                     <Popover>
@@ -187,7 +187,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                                             <Button
                                                 variant="outline"
                                                 className={cn(
-                                                    "w-[240px] pl-3 text-left font-semibold",
+                                                    "w-[240px] pl-3 text-left font-medium",
                                                     fieldState.error &&
                                                         "border-rose-500 text-trade-loss",
                                                     !field.value &&
@@ -233,7 +233,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                                     <DialogClose asChild>
                                         <Button
                                             type="button"
-                                            className="font-semibold text-secondary-foreground bg-transparent hover:bg-secondary-hover"
+                                            className="font-medium text-secondary-foreground bg-transparent hover:bg-secondary-hover"
                                         >
                                             Cancel
                                         </Button>
@@ -241,7 +241,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="font-semibold bg-primary hover:bg-primary-hover text-primary-foreground"
+                                        className="font-medium bg-primary hover:bg-primary-hover text-primary-foreground"
                                     >
                                         {loading
                                             ? "Updating..."

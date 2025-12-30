@@ -35,12 +35,12 @@ export default function DeleteEvent({ event, onDeleted, onClose }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="font-semibold bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500">
+                <Button className="font-medium bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500">
                     Delete
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
-                <AlertDialogHeader className="font-semibold">
+                <AlertDialogHeader className="font-medium">
                     <AlertDialogTitle>Remove Event</AlertDialogTitle>
                     <AlertDialogDescription>
                         Deleting this event will remove it from your performance
@@ -48,13 +48,13 @@ export default function DeleteEvent({ event, onDeleted, onClose }) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="font-semibold text-secondary-foreground bg-transparent hover:bg-secondary-hover hover:text-secondary-foreground border-none">
+                    <AlertDialogCancel className="font-medium text-secondary-foreground bg-transparent hover:bg-secondary-hover hover:text-secondary-foreground border-none">
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleDelete}
                         disabled={loading}
-                        className="font-semibold bg-rose-600 hover:bg-rose-700 dark:text-white"
+                        className="font-medium bg-rose-600 hover:bg-rose-700 dark:text-white"
                     >
                         {loading ? "Deleting..." : "Delete"}
                     </AlertDialogAction>

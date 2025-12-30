@@ -100,8 +100,8 @@ function OverallPerformance() {
 
     return (
         <main className="space-y-6">
-            <div className="flex flex-col gap-2 bg-white p-4 rounded-xl shadow shadow-gray-500/5">
-                <p className="text-sm font-semibold text-gray-800">
+            <div className="flex flex-col gap-2 bg-white p-4 rounded-xl border border-gray-200">
+                <p className="text-sm font-medium text-gray-800">
                     Filter Balance & PNL :
                 </p>
                 <div className="flex items-center gap-2">
@@ -152,7 +152,7 @@ function OverallPerformance() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="border-none shadow-lg shadow-gray-500/5">
+                <Card className="shadow-none border border-gray-200">
                     <CardContent className="flex flex-col gap-2 rounded-xl p-6">
                         {loading ? (
                             <SkeletonBlock />
@@ -223,7 +223,7 @@ function OverallPerformance() {
                     </CardContent>
                 </Card>
 
-                <Card className="border-none shadow-lg shadow-gray-500/5">
+                <Card className="shadow-none border border-gray-200">
                     <CardContent className="flex flex-col gap-2 rounded-xl h-full space-y-4 p-6">
                         {loading ? (
                             <SkeletonBlock />
@@ -268,7 +268,7 @@ function OverallPerformance() {
             </div>
 
             {/* Comfort Zone */}
-            <Card className="border-none shadow-lg shadow-gray-500/5">
+            <Card className="shadow-none border border-gray-200">
                 <CardContent className="flex flex-col gap-2 rounded-xl space-y-4 p-6">
                     {loading ? (
                         <SkeletonBlock />
@@ -333,7 +333,7 @@ function OverallPerformance() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Card className="border-none shadow-lg shadow-gray-500/5">
+                        <Card className="shadow-none border border-gray-200">
                             <CardContent className="flex flex-col gap-2 rounded-xl space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -393,7 +393,7 @@ function OverallPerformance() {
                             </CardContent>
                         </Card>
 
-                        <Card className="border-none shadow-lg shadow-gray-500/5">
+                        <Card className="shadow-none border border-gray-200">
                             <CardContent className="flex flex-col gap-2 rounded-xl space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -484,7 +484,7 @@ function OverallPerformance() {
 
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Card className="border-none shadow-lg shadow-gray-500/5">
+                        <Card className="shadow-none border border-gray-200">
                             <CardContent className="flex flex-col gap-2 rounded-xl space-y-4 p-6">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -524,7 +524,7 @@ function OverallPerformance() {
                             </CardContent>
                         </Card>
 
-                        <Card className="border-none shadow-lg shadow-gray-500/5">
+                        <Card className="shadow-none border border-gray-200">
                             <CardContent className="flex flex-col gap-2 rounded-xl space-y-4 p-6 h-full">
                                 {loading ? (
                                     <SkeletonBlock />
@@ -565,7 +565,7 @@ function OverallPerformance() {
                         </Card>
                     </div>
 
-                    <Card className="border-none shadow-lg shadow-gray-500/5">
+                    <Card className="shadow-none border border-gray-200">
                         <CardContent className="flex flex-col gap-2 rounded-xl space-y-4 p-6">
                             {loading ? (
                                 <SkeletonBlock />

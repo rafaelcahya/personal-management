@@ -17,7 +17,6 @@ import TradeUpdate from "./UpdateTrade";
 import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
 import SummaryTrade from "./SummaryTrade";
 
-// Helper styling untuk profit/loss
 const profitLossColor = (value) =>
     value < 0 ? "text-trade-loss-foreground" : "text-trade-profit-foreground";
 
@@ -40,14 +39,13 @@ export default function TradeTable({ trades: initialTrades }) {
     }, [initialTrades]);
 
     return (
-        <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] border-gray-200 dark:border-none bg-white rounded-xl flex flex-col flex-1 gap-y-6 px-4 sm:px-6 py-6 overflow-hidden">
-            {/* Header Section */}
+        <div className="shadow border-gray-200 bg-white rounded-xl flex flex-col flex-1 gap-y-6 px-4 sm:px-6 py-6 overflow-hidden">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div className="space-y-2">
                     <Breadcrumbs />
                     <div>
-                        <p className="text-lg font-bold">Trade List</p>
-                        <p className="text-sm font-semibold text-gray-foreground">
+                        <p className="text-lg font-semibold">Trade List</p>
+                        <p className="text-sm text-gray-foreground">
                             Quick peek at your trading history — see what’s
                             winning and what’s not.
                         </p>
@@ -55,7 +53,7 @@ export default function TradeTable({ trades: initialTrades }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link href="/main/dashboard" className="hidden sm:block">
-                        <Button className="bg-transparent hover:bg-secondary text-secondary-foreground font-semibold">
+                        <Button className="bg-transparent hover:bg-secondary text-secondary-foreground font-medium">
                             Back
                         </Button>
                     </Link>
@@ -65,7 +63,6 @@ export default function TradeTable({ trades: initialTrades }) {
 
             <SummaryTrade />
 
-            {/* Table Section */}
             <div className="relative w-full flex-1 overflow-y-auto">
                 {listTrade?.length === 0 ? (
                     <p className="text-center font-medium text-gray-foregroundpy-10">
@@ -73,42 +70,42 @@ export default function TradeTable({ trades: initialTrades }) {
                     </p>
                 ) : (
                     <Table noWrapper>
-                        <TableHeader className="bg-gray-50 dark:bg-[#0e0f11] rounded-xl sticky top-0 z-10">
+                        <TableHeader className="bg-gray-50 rounded-xl sticky top-0 z-10">
                             <TableRow className="border-none">
-                                <TableHead className="font-semibold pr-6 rounded-l-lg">
+                                <TableHead className="font-medium text-gray-foreground pr-6 rounded-l-lg">
                                     Date
                                 </TableHead>
-                                <TableHead className="font-semibold px-6">
+                                <TableHead className="font-medium text-gray-foreground px-6">
                                     Ticker
                                 </TableHead>
-                                <TableHead className="font-semibold px-6 text-right">
+                                <TableHead className="font-medium text-gray-foreground px-6 text-right">
                                     Margin
                                 </TableHead>
-                                <TableHead className="font-semibold px-6 text-right">
+                                <TableHead className="font-medium text-gray-foreground px-6 text-right">
                                     Proceeds
                                 </TableHead>
-                                <TableHead className="font-semibold px-6">
+                                <TableHead className="font-medium text-gray-foreground px-6">
                                     Return %
                                 </TableHead>
-                                <TableHead className="font-semibold px-6">
+                                <TableHead className="font-medium text-gray-foreground px-6">
                                     Realized Gain
                                 </TableHead>
-                                <TableHead className="font-semibold px-6">
+                                <TableHead className="font-medium text-gray-foreground px-6">
                                     Stock Type
                                 </TableHead>
-                                <TableHead className="font-semibold px-6">
+                                <TableHead className="font-medium text-gray-foreground px-6">
                                     Entry Session
                                 </TableHead>
-                                <TableHead className="font-semibold px-6">
+                                <TableHead className="font-medium text-gray-foreground px-6">
                                     Entry Occasion
                                 </TableHead>
-                                <TableHead className="font-semibold px-6 w-[300px] min-w-[300px] max-w-[300px]">
+                                <TableHead className="font-medium text-gray-foreground px-6 w-[300px] min-w-[300px] max-w-[300px]">
                                     Buy Reason
                                 </TableHead>
-                                <TableHead className="font-semibold px-6 w-[300px] min-w-[300px] max-w-[300px]">
+                                <TableHead className="font-medium text-gray-foreground px-6 w-[300px] min-w-[300px] max-w-[300px]">
                                     Sell Reason
                                 </TableHead>
-                                <TableHead className="font-semibold pl-6 rounded-r-lg w-[300px] min-w-[300px] max-w-[300px]">
+                                <TableHead className="font-medium text-gray-foreground pl-6 rounded-r-lg w-[300px] min-w-[300px] max-w-[300px]">
                                     Notes
                                 </TableHead>
                             </TableRow>

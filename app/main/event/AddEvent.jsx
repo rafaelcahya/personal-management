@@ -79,7 +79,7 @@ export default function AddEvent({ onAdded }) {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button
-                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold"
+                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium"
                     id="addNewEventBtn"
                 >
                     Add New Event
@@ -88,7 +88,7 @@ export default function AddEvent({ onAdded }) {
 
             <DialogContent
                 id="addNewEventDialogForm"
-                className="sm:max-w-lg overflow-y-auto font-semibold"
+                className="sm:max-w-lg overflow-y-auto font-medium"
             >
                 <DialogHeader>
                     <DialogTitle>Add Market Event</DialogTitle>
@@ -109,7 +109,7 @@ export default function AddEvent({ onAdded }) {
                             name="event_description"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Event description
                                     </FormLabel>
                                     <FormControl>
@@ -137,7 +137,7 @@ export default function AddEvent({ onAdded }) {
                             name="impact_direction"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Impact Direction
                                     </FormLabel>
                                     <Select
@@ -156,10 +156,10 @@ export default function AddEvent({ onAdded }) {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="UP" className="font-semibold">
+                                            <SelectItem value="UP" className="font-medium">
                                                 Up
                                             </SelectItem>
-                                            <SelectItem value="DOWN" className="font-semibold">
+                                            <SelectItem value="DOWN" className="font-medium">
                                                 Down
                                             </SelectItem>
                                         </SelectContent>
@@ -177,7 +177,7 @@ export default function AddEvent({ onAdded }) {
                             name="event_date"
                             render={({ field, fieldState }) => (
                                 <FormItem className="flex flex-col">
-                                    <FormLabel className="font-semibold">
+                                    <FormLabel className="font-medium">
                                         Event Date
                                     </FormLabel>
                                     <Popover>
@@ -185,7 +185,7 @@ export default function AddEvent({ onAdded }) {
                                             <Button
                                                 variant="outline"
                                                 className={cn(
-                                                    "w-[240px] pl-3 text-left font-semibold",
+                                                    "w-[240px] pl-3 text-left font-medium",
                                                     fieldState.error &&
                                                         "border-rose-500 text-trade-loss",
                                                     !field.value &&
@@ -229,7 +229,7 @@ export default function AddEvent({ onAdded }) {
                                 <Button
                                     type="button"
                                     id="cancelNewEventBtn"
-                                    className="font-semibold text-secondary-foreground bg-transparent hover:bg-secondary-hover"
+                                    className="font-medium text-secondary-foreground bg-transparent hover:bg-secondary-hover"
                                 >
                                     Cancel
                                 </Button>
@@ -238,7 +238,7 @@ export default function AddEvent({ onAdded }) {
                                 type="submit"
                                 id="submitNewEventBtn"
                                 disabled={loading}
-                                className="font-semibold bg-primary hover:bg-primary-hover text-primary-foreground"
+                                className="font-medium bg-primary hover:bg-primary-hover text-primary-foreground"
                             >
                                 {loading ? "Submitting..." : "Submit new event"}
                             </Button>

@@ -32,17 +32,17 @@ function TradeList() {
         value < 0 ? "text-trade-loss-foreground" : "text-trade-profit-foreground";
 
     return (
-        <main className="flex flex-col gap-2 bg-white rounded-xl shadow-lg shadow-gray-500/5 space-y-4 p-6">
+        <main className="flex flex-col gap-2 bg-white rounded-xl border border-gray-200 space-y-4 p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
-                    <p className="text-lg font-bold">Trade List</p>
-                    <p className="text-sm font-medium text-gray-foreground">
+                    <p className="text-lg font-semibold">Trade List</p>
+                    <p className="text-sm text-gray-foreground">
                         Quick peek at your trading history — see what’s winning
                         and what’s not.
                     </p>
                 </div>
                 <Link href="/main/trade" prefetch={false} id="tradeBtn">
-                    <Button className="bg-primary hover:bg-primary-hover font-semibold">
+                    <Button className="bg-primary hover:bg-primary-hover font-medium">
                         Trade
                     </Button>
                 </Link>
@@ -53,22 +53,22 @@ function TradeList() {
                 <Table>
                     <TableHeader className="bg-gray-50 rounded-xl">
                         <TableRow className="border-none">
-                            <TableHead className="font-semibold pr-6 rounded-l-lg text-gray-foreground">
+                            <TableHead className="font-medium pr-6 rounded-l-lg text-gray-foreground">
                                 Date
                             </TableHead>
-                            <TableHead className="font-semibold px-6 text-gray-foreground">
+                            <TableHead className="font-medium px-6 text-gray-foreground">
                                 Ticker
                             </TableHead>
-                            <TableHead className="font-semibold px-6 text-right text-gray-foreground">
+                            <TableHead className="font-medium px-6 text-right text-gray-foreground">
                                 Margin
                             </TableHead>
-                            <TableHead className="font-semibold px-6 text-right text-gray-foreground">
+                            <TableHead className="font-medium px-6 text-right text-gray-foreground">
                                 Proceeds
                             </TableHead>
-                            <TableHead className="font-semibold px-6 text-gray-foreground">
+                            <TableHead className="font-medium px-6 text-gray-foreground">
                                 Return %
                             </TableHead>
-                            <TableHead className="font-semibold pl-6 text-right rounded-r-lg text-gray-foreground">
+                            <TableHead className="font-medium pl-6 text-right rounded-r-lg text-gray-foreground">
                                 Realized Gain
                             </TableHead>
                         </TableRow>

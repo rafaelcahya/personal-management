@@ -62,12 +62,12 @@ function EventTable({ events: initialEvents }) {
     return (
         <div className="shadow-[0_0_75px_16px_rgba(202,213,226,0.5)] dark:shadow-none border-slate-200 border dark:border-none bg-white dark:bg-[#111214] rounded-xl flex flex-col flex-1 px-4 sm:px-6 py-6 overflow-hidden space-y-5">
             {/* Header Section */}
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20 font-semibold">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20 font-medium">
                 <div className="space-y-2">
                     <Breadcrumbs />
                     <div>
-                        <p className="text-lg">Event List</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-lg font-semibold">Event List</p>
+                        <p className="text-sm text-gray-foreground">
                             Track key political, economic, and global events
                             that move the market.
                         </p>
@@ -75,7 +75,7 @@ function EventTable({ events: initialEvents }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link href="/main/dashboard" className="hidden sm:block">
-                        <Button className="font-semibold bg-transparent hover:bg-purple-50 dark:hover:bg-purple-500/5 text-purple-600">
+                        <Button className="font-medium bg-transparent hover:bg-purple-50 dark:hover:bg-purple-500/5 text-purple-600">
                             Back
                         </Button>
                     </Link>
@@ -92,23 +92,23 @@ function EventTable({ events: initialEvents }) {
                     placeholder="Search event..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="flex-1 font-semibold focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm py-2"
+                    className="flex-1 font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm py-2"
                 />
 
                 {/* Impact Filter */}
                 <Select value={impactFilter} onValueChange={setImpactFilter}>
-                    <SelectTrigger className="font-semibold w-full sm:w-48">
+                    <SelectTrigger className="font-medium w-full sm:w-48">
                         <SelectValue placeholder="All Impacts" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>
-                            <SelectItem className="font-semibold" value="ALL">
+                            <SelectItem className="font-medium" value="ALL">
                                 All Impacts
                             </SelectItem>
-                            <SelectItem className="font-semibold" value="UP">
+                            <SelectItem className="font-medium" value="UP">
                                 Up
                             </SelectItem>
-                            <SelectItem className="font-semibold" value="DOWN">
+                            <SelectItem className="font-medium" value="DOWN">
                                 Down
                             </SelectItem>
                         </SelectGroup>
@@ -120,13 +120,13 @@ function EventTable({ events: initialEvents }) {
                 <Table noWrapper>
                     <TableHeader className="bg-gray-50 dark:bg-[#0e0f11] sticky top-0 z-10">
                         <TableRow className="border-none">
-                            <TableHead className="font-semibold min-w-[400px] rounded-l-lg">
+                            <TableHead className="font-medium text-gray-foreground min-w-[400px] rounded-l-lg">
                                 Event Description
                             </TableHead>
-                            <TableHead className="font-semibold w-[200px] min-w-[200px]">
+                            <TableHead className="font-medium text-gray-foreground w-[200px] min-w-[200px]">
                                 Impact Direction
                             </TableHead>
-                            <TableHead className="font-semibold w-[200px] min-w-[200px] rounded-r-lg">
+                            <TableHead className="font-medium text-gray-foreground w-[200px] min-w-[200px] rounded-r-lg">
                                 Event Date
                             </TableHead>
                         </TableRow>
@@ -139,14 +139,14 @@ function EventTable({ events: initialEvents }) {
                                 className="border-dashed hover:bg-gray-50 dark:hover:bg-[#0e0f11] rounded-l-lg cursor-pointer"
                                 onClick={() => setSelectedEvent(event)}
                             >
-                                <TableCell className="font-semibold whitespace-normal">
+                                <TableCell className="font-medium whitespace-normal">
                                     {highlightKeyword(
                                         event.event_description,
                                         searchTerm,
                                         "bg-violet-100 text-violet-600 font-medium"
                                     )}
                                 </TableCell>
-                                <TableCell className="flex items-center gap-2 font-semibold">
+                                <TableCell className="flex items-center gap-2 font-medium">
                                     {event.impact_direction}{" "}
                                     {event.impact_direction === "UP" ? (
                                         <div className="bg-trade-profit text-trade-profit-foreground p-2 rounded-full inline-flex">
@@ -158,7 +158,7 @@ function EventTable({ events: initialEvents }) {
                                         </div>
                                     )}
                                 </TableCell>
-                                <TableCell className="font-semibold pr-6 py-4">
+                                <TableCell className="font-medium pr-6 py-4">
                                     {new Intl.DateTimeFormat("id-ID", {
                                         day: "2-digit",
                                         month: "short",

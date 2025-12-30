@@ -29,17 +29,17 @@ function FeeList() {
     }, []);
 
     return (
-        <main className="flex flex-col gap-2 bg-white rounded-xl shadow-lg shadow-gray-500/5 space-y-4 p-6">
+        <main className="flex flex-col gap-2 bg-white rounded-xl border border-gray-200 space-y-4 p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
-                    <p className="text-lg font-bold">Fee List</p>
-                    <p className="text-sm font-medium text-gray-foreground">
+                    <p className="text-lg font-semibold">Fee List</p>
+                    <p className="text-sm text-gray-foreground">
                         Keep track of commissions and fees — the little things
                         that add up.
                     </p>
                 </div>
                 <Link href="/main/fee" prefetch={false} id="feeBtn">
-                    <Button className="bg-primary hover:bg-primary-hover font-semibold">
+                    <Button className="bg-primary hover:bg-primary-hover font-medium">
                         Fee
                     </Button>
                 </Link>
@@ -50,13 +50,13 @@ function FeeList() {
                 <Table>
                     <TableHeader className="bg-gray-50 rounded-xl">
                         <TableRow className="border-none">
-                            <TableHead className="font-semibold rounded-l-lg text-gray-foreground">
+                            <TableHead className="font-medium rounded-l-lg text-gray-foreground">
                                 Date
                             </TableHead>
-                            <TableHead className="font-semibold text-gray-foreground">
+                            <TableHead className="font-medium text-gray-foreground">
                                 Fee Name
                             </TableHead>
-                            <TableHead className="font-semibold text-right rounded-r-lg text-gray-foreground">
+                            <TableHead className="font-medium text-right rounded-r-lg text-gray-foreground">
                                 Fee
                             </TableHead>
                         </TableRow>
