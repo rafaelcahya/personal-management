@@ -7,7 +7,7 @@ export async function DELETE(req, { params }) {
 
         if (!id || isNaN(Number(id))) {
             return NextResponse.json(
-                { success: false, message: "Invalid fee ID provided" },
+                { success: false, error: "Invalid fee ID provided" },
                 { status: 400 }
             );
         }
@@ -16,7 +16,7 @@ export async function DELETE(req, { params }) {
 
         if (!deletedFee) {
             return NextResponse.json(
-                { success: false, message: "Fee not found" },
+                { success: false, error: "Fee not found" },
                 { status: 404 }
             );
         }
@@ -28,7 +28,7 @@ export async function DELETE(req, { params }) {
     } catch (err) {
         console.error("DELETE /api/fee/delete error:", err);
         return NextResponse.json(
-            { success: false, message: "Internal server error" },
+            { success: false, error: "Internal server error" },
             { status: 500 }
         );
     }

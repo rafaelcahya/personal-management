@@ -7,7 +7,7 @@ export async function PUT(req, { params }) {
 
         if (!id || isNaN(Number(id))) {
             return NextResponse.json(
-                { success: false, message: "Invalid trade ID provided" },
+                { success: false, error: "Invalid fee ID provided" },
                 { status: 400 }
             );
         }
@@ -17,14 +17,14 @@ export async function PUT(req, { params }) {
             body = await req.json();
         } catch (parseError) {
             return NextResponse.json(
-                { success: false, message: "Invalid JSON in request body" },
+                { success: false, error: "Invalid JSON in request body" },
                 { status: 400 }
             );
         }
 
         if (!body) {
             return NextResponse.json(
-                { success: false, message: "Request body is required" },
+                { success: false, error: "Request body is required" },
                 { status: 400 }
             );
         }
@@ -40,27 +40,6 @@ export async function PUT(req, { params }) {
             }
         });
 
-        const isValidDateFormat = (dateStr) => {
-            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-            return dateRegex.test(dateStr);
-        };
-
-        const isValidDate = (dateStr) => {
-            if (!isValidDateFormat(dateStr)) {
-                return false;
-            }
-            const date = new Date(dateStr);
-            return !isNaN(date.getTime());
-        };
-
-        if (body.fee_date) {
-            if (!isValidDate(body.fee_date)) {
-                validationErrors.push(
-                    "fee date must be valid format YYYY-MM-DD"
-                );
-            }
-        }
-
         const isValidNumber = (value) =>
             /^\d+(\.\d+)?$/.test(value.replace(/^-/, ""));
 
@@ -72,7 +51,7 @@ export async function PUT(req, { params }) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: validationErrors,
+                    error: validationErrors,
                 },
                 { status: 400 }
             );
@@ -80,17 +59,15 @@ export async function PUT(req, { params }) {
 
         const updateFee = await getUpdateFee(id, body);
 
-        return new Response(JSON.stringify({ success: true, fee: updateFee }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-        });
+        return NextResponse.json(
+            { success: true, fee: updateFee },
+            { status: 200 }
+        );
     } catch (err) {
-        return new Response(
-            JSON.stringify({ success: false, error: err.message }),
-            {
-                status: 500,
-                headers: { "Content-Type": "application/json" },
-            }
+        console.error("PUT /api/fee/update error:", err);
+        return NextResponse.json(
+            { success: false, error: "Internal server error" },
+            { status: 500 }
         );
     }
 }

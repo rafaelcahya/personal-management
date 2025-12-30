@@ -1,4 +1,5 @@
 import { getUpdateSettings } from "@/lib/services/settings/getUpdateSettings";
+import { NextResponse } from "next/server";
 
 export async function PUT(req) {
     try {
@@ -16,14 +17,20 @@ export async function PUT(req) {
             margin_of_error
         );
 
-        return new Response(JSON.stringify({ success: true, settings }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-        });
+        return (
+            NextResponse.json({ success: true, settings }),
+            {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            }
+        );
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), {
-            status: 401,
-            headers: { "Content-Type": "application/json" },
-        });
+        return (
+            NextResponse.json({ error: err.message }),
+            {
+                status: 401,
+                headers: { "Content-Type": "application/json" },
+            }
+        );
     }
 }

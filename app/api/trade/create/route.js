@@ -8,14 +8,14 @@ export async function POST(req) {
             body = await req.json();
         } catch (parseError) {
             return NextResponse.json(
-                { success: false, message: "Invalid JSON in request body" },
+                { success: false, error: "Invalid JSON in request body" },
                 { status: 400 }
             );
         }
 
         if (!body) {
             return NextResponse.json(
-                { success: false, message: "Request body is required" },
+                { success: false, error: "Request body is required" },
                 { status: 400 }
             );
         }
@@ -79,7 +79,7 @@ export async function POST(req) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: validationErrors,
+                    error: validationErrors,
                 },
                 { status: 400 }
             );
@@ -102,18 +102,13 @@ export async function POST(req) {
 
         return NextResponse.json(
             { success: true, trade: newTrade },
-            {
-                status: 200,
-                headers: { "Content-Type": "application/json" },
-            }
+            { status: 200 }
         );
     } catch (err) {
+        console.error("POST /api/trade/create error:", err);
         return NextResponse.json(
-            { success: false, error: err.message },
-            {
-                status: 500,
-                headers: { "Content-Type": "application/json" },
-            }
+            { success: false, error: "Internal server error" },
+            { status: 500 }
         );
     }
 }

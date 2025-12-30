@@ -39,9 +39,6 @@ export async function GET() {
             return acc;
         }, {});
 
-        // =========================
-        // Return JSON
-        // =========================
         return NextResponse.json({
             success: true,
             data: {

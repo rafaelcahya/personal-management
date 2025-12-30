@@ -7,7 +7,7 @@ export async function DELETE(req, { params }) {
 
         if (!id || isNaN(Number(id))) {
             return NextResponse.json(
-                { success: false, message: "Invalid trade ID provided" },
+                { success: false, error: "Invalid trade ID provided" },
                 { status: 400 }
             );
         }
@@ -16,7 +16,7 @@ export async function DELETE(req, { params }) {
 
         if (!deletedTrade) {
             return NextResponse.json(
-                { success: false, message: "Trade not found" },
+                { success: false, error: "Trade not found" },
                 { status: 404 }
             );
         }
@@ -28,7 +28,7 @@ export async function DELETE(req, { params }) {
     } catch (err) {
         console.error("DELETE /api/trade/delete error:", err);
         return NextResponse.json(
-            { success: false, message: "Internal server error" },
+            { success: false, error: "Internal server error" },
             { status: 500 }
         );
     }

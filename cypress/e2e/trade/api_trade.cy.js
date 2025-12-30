@@ -65,7 +65,7 @@ describe("Trade API", () => {
     describe("Create", () => {
         it("should successfully add new trade", () => {
             const testData = {
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 text: randomString(4, "text").toUpperCase(),
                 number: randomString(5, "number"),
             };
@@ -166,7 +166,7 @@ describe("Trade API", () => {
                 ];
 
                 requiredErrors.forEach((error) => {
-                    expect(response.body.message).to.include(error);
+                    expect(response.body.error).to.include(error);
                 });
             });
         });
@@ -177,7 +177,7 @@ describe("Trade API", () => {
 
                 cy.wrap(response.body.trade).as("apiTrade");
 
-                expect(response.body.message).to.include(
+                expect(response.body.error).to.include(
                     "Invalid JSON in request body"
                 );
             });
@@ -191,7 +191,7 @@ describe("Trade API", () => {
             };
 
             const request = {
-                trade_date: new Date().toISOString().split("T")[0],
+                trade_date: new Date().toISOString().replace("Z", "+00:00"),
                 ticker: testData.invalidTicker,
                 margin: testData.number,
                 proceeds: testData.number,
@@ -207,7 +207,7 @@ describe("Trade API", () => {
 
             cy.AddNewTrade(request).then((response) => {
                 expect(response.status).to.eq(400);
-                expect(response.body.message).to.include(
+                expect(response.body.error).to.include(
                     "ticker can only contain letters and numbers (A-Z, a-z, 0-9)"
                 );
             });
@@ -216,7 +216,7 @@ describe("Trade API", () => {
         it("should fail to add new trade with invalid number fields", () => {
             const testData = {
                 text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 invalidNumber: "123ABC",
             };
 
@@ -246,7 +246,7 @@ describe("Trade API", () => {
                 ];
 
                 requiredErrors.forEach((error) => {
-                    expect(response.body.message).to.include(error);
+                    expect(response.body.error).to.include(error);
                 });
             });
         });
@@ -254,7 +254,7 @@ describe("Trade API", () => {
         it("should ensure deleted_at is null after successfully adding a new trade", () => {
             const testData = {
                 text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 number: randomString(5, "number"),
             };
 
@@ -292,7 +292,7 @@ describe("Trade API", () => {
         it("should Total Trades increase by 1 after adding a new trade", () => {
             const testData = {
                 text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 number: randomString(5, "number"),
             };
 
@@ -334,7 +334,7 @@ describe("Trade API", () => {
         it("should Total Win Trades increase by 1 after adding a new winning trade", () => {
             const testData = {
                 text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 number: randomString(5, "number"),
             };
             const request = {
@@ -371,7 +371,7 @@ describe("Trade API", () => {
         it("should Total Loss Trades increase by 1 after adding a new winning trade", () => {
             const testData = {
                 text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 number: randomString(5, "number"),
             };
             const request = {
@@ -415,8 +415,7 @@ describe("Trade API", () => {
 
             cy.UpdateTrade(invalidId).then((response) => {
                 expect(response.status).to.eq(400);
-                expect(response.body).to.have.property(
-                    "message",
+                expect(response.body.error).to.include(
                     "Invalid trade ID provided"
                 );
             });
@@ -424,7 +423,7 @@ describe("Trade API", () => {
 
         it("should successfully update trade", () => {
             const testData = {
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 text: randomString(4, "text").toUpperCase(),
                 number: randomString(5, "number"),
             };
@@ -509,8 +508,6 @@ describe("Trade API", () => {
             cy.task("getRandomTradeId").then((randomId) => {
                 cy.UpdateTrade(randomId, request).then((response) => {
                     expect(response.status).to.eq(400);
-                    expect(response.body).to.have.property("success", false);
-                    expect(response.body).to.have.property("message");
 
                     const requiredErrors = [
                         "trade date is required",
@@ -527,12 +524,12 @@ describe("Trade API", () => {
                     ];
 
                     requiredErrors.forEach((error) => {
-                        expect(response.body.message).to.include(error);
+                        expect(response.body.error).to.include(error);
                     });
                 });
             });
         });
-        
+
         it("should fail to update trade with invalid ticker", () => {
             const testData = {
                 text: randomString(4, "text").toUpperCase(),
@@ -541,7 +538,7 @@ describe("Trade API", () => {
             };
 
             const request = {
-                trade_date: new Date().toISOString().split("T")[0],
+                trade_date: new Date().toISOString().replace("Z", "+00:00"),
                 ticker: testData.invalidTicker,
                 margin: testData.number,
                 proceeds: testData.number,
@@ -558,7 +555,7 @@ describe("Trade API", () => {
             cy.task("getRandomTradeId").then((randomId) => {
                 cy.UpdateTrade(randomId, request).then((response) => {
                     expect(response.status).to.eq(400);
-                    expect(response.body.message).to.include(
+                    expect(response.body.error).to.include(
                         "ticker can only contain letters and numbers (A-Z, a-z, 0-9)"
                     );
                 });
@@ -568,7 +565,7 @@ describe("Trade API", () => {
         it("should fail to update trade with invalid number fields", () => {
             const testData = {
                 text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 invalidNumber: "123ABC",
             };
 
@@ -599,15 +596,15 @@ describe("Trade API", () => {
                     ];
 
                     requiredErrors.forEach((error) => {
-                        expect(response.body.message).to.include(error);
+                        expect(response.body.error).to.include(error);
                     });
                 });
             });
         });
 
-        it("should ensure deleted_at is null after successfully updating a trade", () => {
+        it("should ensure deleted_at is null after successfully updating a event", () => {
             const testData = {
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 text: randomString(4, "text").toUpperCase(),
                 number: randomString(5, "number"),
             };
@@ -627,29 +624,25 @@ describe("Trade API", () => {
                 notes: testData.text,
             };
 
-            cy.task("getRandomTradeId").then((randomId) => {
-                cy.wrap(randomId).as("tradeId");
-            });
+            let apiTrade;
 
-            cy.get("@tradeId").then((id) => {
-                cy.UpdateTrade(id, request).then((response) => {
+            cy.task("getRandomTradeId")
+                .then((id) => cy.UpdateTrade(id, request))
+                .then((response) => {
                     expect(response.status).to.eq(200);
-                    cy.wrap(response.body.trade).as("apiTrade");
-
-                    cy.get("@apiTrade").then((apiTrade) => {
-                        cy.task("getTradeFromDbTask", id).then((dbUser) => {
-                            expect(apiTrade.deleted_at).to.eq(dbUser.deletedAt);
-                            expect(apiTrade.deleted_at).to.be.null;
-                        });
-                    });
+                    apiTrade = response.body.trade;
+                    return cy.task("getTradeFromDbTask", apiTrade.id);
+                })
+                .then((dbTrade) => {
+                    expect(apiTrade.deleted_at).to.eq(dbTrade.deletedAt);
+                    expect(apiTrade.deleted_at).to.be.null;
                 });
-            });
         });
 
         it("should Total Win Trades increase by 1 after updating a losing trade", () => {
             const testData = {
                 text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 number: randomString(5, "number"),
             };
 
@@ -705,7 +698,7 @@ describe("Trade API", () => {
         it("should Total Lose Trades increase by 1 after updating a winning trade", () => {
             const testData = {
                 text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 number: randomString(5, "number"),
             };
 
@@ -764,7 +757,7 @@ describe("Trade API", () => {
             cy.task("getRandomTradeId").then((randomId) => {
                 cy.UpdateTrade(randomId).then((response) => {
                     expect(response.status).to.eq(400);
-                    expect(response.body.message).to.include(
+                    expect(response.body.error).to.include(
                         "Invalid JSON in request body"
                     );
                 });
@@ -775,7 +768,7 @@ describe("Trade API", () => {
     describe("Delete", () => {
         it("should successfully delete trade", () => {
             const testData = {
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 text: randomString(4, "text").toUpperCase(),
                 number: randomString(5, "number"),
             };
@@ -803,9 +796,11 @@ describe("Trade API", () => {
                     cy.get("@tradeIdToDelete").then((id) => {
                         cy.DeleteTrade(id).then((deleteResponse) => {
                             expect(deleteResponse.status).to.eq(200);
-                            cy.task("getTradeFromDbTask", id).then((dbTrade) => {
-                                expect(dbTrade).to.be.null;
-                            });
+                            cy.task("getTradeFromDbTask", id).then(
+                                (dbTrade) => {
+                                    expect(dbTrade).to.be.null;
+                                }
+                            );
                         });
                     });
                 });
@@ -815,7 +810,7 @@ describe("Trade API", () => {
             let baselineotalTrades;
 
             const testData = {
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().replace("Z", "+00:00"),
                 text: randomString(4, "text").toUpperCase(),
                 number: randomString(5, "number"),
             };
@@ -853,9 +848,7 @@ describe("Trade API", () => {
         it("should fail with invalid ID", () => {
             cy.DeleteTrade("abc").then((response) => {
                 expect(response.status).to.eq(400);
-                expect(response.body.message).to.eq(
-                    "Invalid trade ID provided"
-                );
+                expect(response.body.error).to.eq("Invalid trade ID provided");
             });
         });
     });

@@ -1,19 +1,11 @@
 import { getListFee } from "@/lib/services/fee/getListFee";
+import { NextResponse } from "next/server";
 
 export async function GET() {
     try {
         const feeList = await getListFee();
-        return new Response(JSON.stringify({ success: true, feeList }), {
-            status: 200,
-            headers: {
-                "Cache-Control": "no-store",
-                "Content-Type": "application/json",
-            },
-        });
+        return NextResponse.json({ success: true, feeList }, { status: 200 });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), {
-            status: 401,
-            headers: { "Content-Type": "application/json" },
-        });
+        return NextResponse.json({ error: err.message }, { status: 401 });
     }
 }
