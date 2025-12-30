@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import FeeTable from "./FeeTable";
-import LoadingComponent from "../../LoadingComponent";
+import LoadingComponent from "../../../../LoadingComponent";
 
 export default function FeePage() {
     const [fees, setFees] = useState([]);

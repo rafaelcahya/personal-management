@@ -39,7 +39,7 @@
     "middleware.js",
     "lib/supabase/client.js",
     "app/[...catchall]/page.jsx",
-    "app/main/dashboard/page.jsx"
+    "app/main/landing/trading-management/dashboard/page.jsx"
   ],
   "exclude": [
     "node_modules"

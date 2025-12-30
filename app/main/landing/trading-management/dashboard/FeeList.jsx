@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import LoadingComponent from "../../LoadingComponent";
+import LoadingComponent from "../../../../LoadingComponent";
 
 function FeeList() {
     const [feeList, setFeeList] = useState([]);

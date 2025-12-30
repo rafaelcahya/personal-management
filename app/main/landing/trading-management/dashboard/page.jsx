@@ -7,7 +7,7 @@ import FeeList from "./FeeList";
 import EventList from "./EventList";
 import OverallPerformance from "./OverallPerformance";
 import Settings from "../settings/Settings";
-import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
+import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
 import { getUser } from "@/lib/api/user";
 
 export default function Page() {

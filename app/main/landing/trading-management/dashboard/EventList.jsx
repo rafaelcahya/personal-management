@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import LoadingComponent from "../../LoadingComponent";
+import LoadingComponent from "../../../../LoadingComponent";
 
 import {
     Carousel,

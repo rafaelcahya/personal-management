@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import TradeTable from "./TradeTable";
-import LoadingComponent from "../../LoadingComponent";
+import LoadingComponent from "../../../../LoadingComponent";
 
 export default function TradePage() {
     const [trades, setTrades] = useState([]);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import EventTable from "./EventTable";
-import LoadingComponent from "../../LoadingComponent";
+import LoadingComponent from "../../../../LoadingComponent";
 
 export default function EventPage() {
     const [events, setEvents] = useState([]);

@@ -39,7 +39,7 @@ export default function LoginPage() {
             localStorage.setItem("tradform-user", JSON.stringify(data.user));
 
             toast.success("Login successful!");
-            router.replace("/main/dashboard");
+            router.replace("/main/landing");
         } catch (err) {
             toast.error("Invalid username or password");
         } finally {
@@ -56,7 +56,7 @@ export default function LoginPage() {
                 {/* Layer 2: Frosted glass noise */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent backdrop-blur-lg"></div>
             </div>
-            <Card className="max-w-sm shadow-gray-500/5 shadow-lg bg-white border-none rounded-[24px] z-10">
+            <Card className="max-w-sm shadow-gray-500/10 shadow-2xl bg-white border-none rounded-[24px] z-10">
                 <CardHeader>
                     <CardTitle className="text-2xl text-black font-bold">
                         Welcome 👋
@@ -105,7 +105,7 @@ export default function LoginPage() {
                             id="loginBtn"
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-primary hover:bg-primary-hover rounded-lg"
+                            className="w-full mt-4"
                         >
                             {loading ? (
                                 <span className="flex items-center gap-2">
