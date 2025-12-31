@@ -156,10 +156,16 @@ export default function AddEvent({ onAdded }) {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="UP" className="font-medium">
+                                            <SelectItem
+                                                value="UP"
+                                                className="font-medium"
+                                            >
                                                 Up
                                             </SelectItem>
-                                            <SelectItem value="DOWN" className="font-medium">
+                                            <SelectItem
+                                                value="DOWN"
+                                                className="font-medium"
+                                            >
                                                 Down
                                             </SelectItem>
                                         </SelectContent>

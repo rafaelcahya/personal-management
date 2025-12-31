@@ -19,7 +19,7 @@ function FeeList() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("/api/fee/list")
+        fetch("/api/trade/fee/list")
             .then((r) => r.json())
             .then((d) => {
                 d.success && setFeeList(d.feeList);
@@ -38,7 +38,7 @@ function FeeList() {
                         that add up.
                     </p>
                 </div>
-                <Link href="/main/fee" prefetch={false} id="feeBtn">
+                <Link href="/main/landing/trading-management/fee" prefetch={false} id="feeBtn">
                     <Button className="bg-primary hover:bg-primary-hover font-medium">
                         Fee
                     </Button>

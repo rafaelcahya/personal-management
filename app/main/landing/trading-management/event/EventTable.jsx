@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import AddEvent from "./AddEvent";
 import UpdateEvent from "./UpdateEvent";
 import { highlightKeyword } from "@/lib/utils/highlightKeyword";
-import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
+import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
 import { TrendingDown, TrendingUp } from "lucide-react";
 
 function EventTable({ events: initialEvents }) {
@@ -35,7 +35,9 @@ function EventTable({ events: initialEvents }) {
 
     const fetchEvents = async () => {
         try {
-            const res = await fetch("/api/event/list", { cache: "no-store" });
+            const res = await fetch("/api/trade/event/list", {
+                cache: "no-store",
+            });
             const data = await res.json();
             if (data.success) setEventList(data.eventList);
         } catch (err) {
@@ -74,7 +76,7 @@ function EventTable({ events: initialEvents }) {
                     </div>
                 </div>
                 <div className="flex items-center gap-5">
-                    <Link href="/main/dashboard" className="hidden sm:block">
+                    <Link href="/main/landing/trading-management/dashboard" className="hidden sm:block">
                         <Button className="font-medium bg-transparent hover:bg-purple-50 dark:hover:bg-purple-500/5 text-purple-600">
                             Back
                         </Button>

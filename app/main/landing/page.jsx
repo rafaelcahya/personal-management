@@ -20,7 +20,11 @@ export default function CardDemo() {
                     </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                    <Link href="/main/landing/trading-management/dashboard" prefetch={false} id="tradeBtn">
+                    <Link
+                        href="/main/landing/trading-management/dashboard"
+                        prefetch={false}
+                        id="tradeBtnLandingPage"
+                    >
                         <Button>Launch Trading Analytics</Button>
                     </Link>
                 </CardFooter>
@@ -35,7 +39,13 @@ export default function CardDemo() {
                     </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                    <Button>Master Inventory Control</Button>
+                    <Link
+                        href="/main/landing/trading-management/dashboard"
+                        prefetch={false}
+                        id="inventoryBtnLandingPage"
+                    >
+                        <Button>Master Inventory Control</Button>
+                    </Link>
                 </CardFooter>
             </Card>
         </div>

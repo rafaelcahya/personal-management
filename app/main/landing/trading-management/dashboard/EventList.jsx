@@ -20,7 +20,7 @@ function EventList() {
     const [randomCardIndices, setRandomCardIndices] = useState([]);
 
     useEffect(() => {
-        fetch("/api/event/list")
+        fetch("/api/trade/event/list")
             .then((r) => r.json())
             .then((d) => {
                 if (d.success) {
@@ -50,7 +50,7 @@ function EventList() {
                         move the market.
                     </p>
                 </div>
-                <Link href="/main/event" id="eventBtn">
+                <Link href="/main/landing/trading-management/event" id="eventBtn">
                     <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
                         Event
                     </Button>

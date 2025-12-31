@@ -15,7 +15,7 @@ describe("Login page", () => {
         cy.fixture("user").then((user) => {
             userData = user;
         });
-        cy.OpenTradingPerformance();
+        cy.OpenPersonalManagement();
     });
 
     it("should display username and password fields with login button", () => {

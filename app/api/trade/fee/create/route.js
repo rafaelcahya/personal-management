@@ -1,17 +1,8 @@
-import { getUpdateFee } from "@/lib/services/fee/getUpdateFee";
+import { getCreateFee } from "@/lib/services/fee/getCreateFee";
 import { NextResponse } from "next/server";
 
-export async function PUT(req, { params }) {
+export async function POST(req) {
     try {
-        const { id } = await params;
-
-        if (!id || isNaN(Number(id))) {
-            return NextResponse.json(
-                { success: false, error: "Invalid fee ID provided" },
-                { status: 400 }
-            );
-        }
-
         let body;
         try {
             body = await req.json();
@@ -30,8 +21,8 @@ export async function PUT(req, { params }) {
         }
 
         const requiredFields = ["fee_name", "fee", "fee_date"];
-
         const validationErrors = [];
+
         requiredFields.forEach((field) => {
             if (!body[field] || body[field].toString().trim() === "") {
                 validationErrors.push(
@@ -49,22 +40,23 @@ export async function PUT(req, { params }) {
 
         if (validationErrors.length > 0) {
             return NextResponse.json(
-                {
-                    success: false,
-                    error: validationErrors,
-                },
+                { success: false, error: validationErrors },
                 { status: 400 }
             );
         }
 
-        const updateFee = await getUpdateFee(id, body);
+        const newFee = await getCreateFee(
+            body.fee_name,
+            body.fee,
+            body.fee_date
+        );
 
         return NextResponse.json(
-            { success: true, fee: updateFee },
+            { success: true, fee: newFee },
             { status: 200 }
         );
     } catch (err) {
-        console.error("PUT /api/fee/update error:", err);
+        console.error("POST /api/trade/fee/create error:", err);
         return NextResponse.json(
             { success: false, error: "Internal server error" },
             { status: 500 }

@@ -3,7 +3,7 @@ import addEventValidationTestCases from "./addNewEventValTc.json";
 
 describe("Navigation", () => {
     beforeEach(() => {
-        cy.OpenTradingPerformance();
+        cy.OpenPersonalManagement();
         cy.fixture("user").then((user) => {
             userData = user;
             cy.Login({
@@ -11,23 +11,24 @@ describe("Navigation", () => {
                 password: userData.password,
             });
         });
+        cy.OpenTradingManagement();
     });
 
     it("should navigate to the event page", () => {
         cy.get("#eventBtn").click();
-        cy.url().should("include", "/event");
+        cy.url().should("include", "/trading-management/event");
     });
 
     it("should open Add New Event Dialog", () => {
         cy.get("#eventBtn").click();
-        cy.url().should("include", "/event");
+        cy.url().should("include", "/trading-management/event");
         cy.get("#addNewEventBtn").click();
         cy.checkComponentVisible("#addNewEventDialogForm");
     });
 
     it("should close the Add New Event Dialog", () => {
         cy.get("#eventBtn").click();
-        cy.url().should("include", "/event");
+        cy.url().should("include", "/trading-management/event");
         cy.get("#addNewEventBtn").click();
         cy.checkComponentVisible("#addNewEventDialogForm");
         cy.get("#cancelNewEventBtn").click();
@@ -39,7 +40,7 @@ describe("Navigation", () => {
             it(description, () => {
                 cy.get("#eventBtn").click();
 
-                cy.url().should("include", "/event");
+                cy.url().should("include", "/trading-management/event");
                 cy.get("#addNewEventBtn").should("be.visible").click();
                 Object.entries(fields).forEach(([selector, value]) => {
                     cy.get(selector);

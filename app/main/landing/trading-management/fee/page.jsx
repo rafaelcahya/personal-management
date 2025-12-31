@@ -12,7 +12,7 @@ export default function FeePage() {
     useEffect(() => {
         const fetchFees = async () => {
             try {
-                const res = await fetch("/api/fee/list", {
+                const res = await fetch("/api/trade/fee/list", {
                     cache: "no-store",
                 });
                 const data = await res.json();

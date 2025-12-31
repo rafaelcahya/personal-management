@@ -19,7 +19,7 @@ function TradeList() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("/api/trade/list")
+        fetch("/api/trade/trade/list")
             .then((r) => r.json())
             .then((d) => {
                 d.success && setTradeList(d.trade);
@@ -29,7 +29,9 @@ function TradeList() {
     }, []);
 
     const profitLossColor = (value) =>
-        value < 0 ? "text-trade-loss-foreground" : "text-trade-profit-foreground";
+        value < 0
+            ? "text-trade-loss-foreground"
+            : "text-trade-profit-foreground";
 
     return (
         <main className="flex flex-col gap-2 bg-white rounded-xl border border-gray-200 space-y-4 p-6">
@@ -41,7 +43,7 @@ function TradeList() {
                         and what’s not.
                     </p>
                 </div>
-                <Link href="/main/trade" prefetch={false} id="tradeBtn">
+                <Link href="/main/landing/trading-management/trade" prefetch={false} id="tradeBtn">
                     <Button className="bg-primary hover:bg-primary-hover font-medium">
                         Trade
                     </Button>

@@ -12,7 +12,7 @@ export default function EventPage() {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const res = await fetch("/api/event/list", {
+                const res = await fetch("/api/trade/event/list", {
                     cache: "no-store",
                 });
                 const data = await res.json();

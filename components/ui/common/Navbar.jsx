@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { getUser } from "@/lib/api/user";
+import { getUser } from "@/lib/api/trade/user";
 import Settings from "@/app/main/settings/Settings";
 
 const navItems = [

@@ -29,7 +29,7 @@ export default function PerformConfig() {
     useEffect(() => {
         async function fetchSettings() {
             try {
-                const res = await fetch("/api/settings/list");
+                const res = await fetch("/api/trade/settings/list");
                 const data = await res.json();
                 if (res.ok && data?.settingsList) {
                     reset({
@@ -55,7 +55,7 @@ export default function PerformConfig() {
     const handleSetSettings = async (values) => {
         setLoading(true);
         try {
-            const res = await fetch("/api/settings/update", {
+            const res = await fetch("/api/trade/settings/update", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(values),

@@ -61,11 +61,11 @@ const CurrencyInputField = ({ field, fieldState, placeholder }) => (
 );
 
 const OPTION_APIS = {
-    stockType: "/api/options/stock-type",
-    entrySession: "/api/options/entry-session",
-    entryOccasion: "/api/options/entry-occasion",
-    buyReason: "/api/options/buy-reason",
-    sellReason: "/api/options/sell-reason",
+    stockType: "/api/trade/options/stock-type",
+    entrySession: "/api/trade/options/entry-session",
+    entryOccasion: "/api/trade/options/entry-occasion",
+    buyReason: "/api/trade/options/buy-reason",
+    sellReason: "/api/trade/options/sell-reason",
 };
 
 export default function AddNewTrade({ onAdded }) {

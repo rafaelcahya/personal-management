@@ -1,5 +1,5 @@
+import { getDeleteEvent } from "@/lib/services/event/getDeleteEvent";
 import { NextResponse } from "next/server";
-import { getDeleteFee } from "@/lib/services/fee/getDeleteFee";
 
 export async function DELETE(req, { params }) {
     try {
@@ -7,26 +7,23 @@ export async function DELETE(req, { params }) {
 
         if (!id || isNaN(Number(id))) {
             return NextResponse.json(
-                { success: false, error: "Invalid fee ID provided" },
+                { success: false, error: "Invalid event ID provided" },
                 { status: 400 }
             );
         }
 
-        const deletedFee = await getDeleteFee(id);
+        const deletedEvent = await getDeleteEvent(id);
 
-        if (!deletedFee) {
+        if (!deletedEvent) {
             return NextResponse.json(
-                { success: false, error: "Fee not found" },
+                { success: false, error: "Event not found" },
                 { status: 404 }
             );
         }
 
-        return NextResponse.json(
-            { success: true },
-            { status: 200 }
-        );
+        return NextResponse.json({ success: true }, { status: 200 });
     } catch (err) {
-        console.error("DELETE /api/fee/delete error:", err);
+        console.error("DELETE /api/trade/trade/trade/event/delete error:", err);
         return NextResponse.json(
             { success: false, error: "Internal server error" },
             { status: 500 }

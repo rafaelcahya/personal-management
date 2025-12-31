@@ -35,7 +35,7 @@ function OverallPerformance() {
     const [percentType, setPercentType] = useState("change");
 
     useEffect(() => {
-        fetch("/api/metrics")
+        fetch("/api/trade/metrics")
             .then((r) => r.json())
             .then((d) => {
                 if (d.success) setMetrics(d.data);
@@ -92,7 +92,9 @@ function OverallPerformance() {
     } = metrics || {};
 
     const commentStyleVal = (val, threshold = 1) =>
-        val >= threshold ? "text-trade-profit-foreground" : "text-trade-loss-foreground";
+        val >= threshold
+            ? "text-trade-profit-foreground"
+            : "text-trade-loss-foreground";
 
     // Pilih Change/Compare sesuai filter
     const pick = (changeVal, compareVal) =>

@@ -3,7 +3,7 @@ import addTradeValidationTestCases from "./addNewTradeValTc.json";
 
 describe("Navigation", () => {
     beforeEach(() => {
-        cy.OpenTradingPerformance();
+        cy.OpenPersonalManagement();
         cy.fixture("user").then((user) => {
             userData = user;
             cy.Login({
@@ -11,23 +11,24 @@ describe("Navigation", () => {
                 password: userData.password,
             });
         });
+        cy.OpenTradingManagement();
     });
 
     it("should navigate to the trade page", () => {
         cy.get("#tradeBtn").click();
-        cy.url().should("include", "/trade");
+        cy.url().should("include", "/trading-management/trade");
     });
 
     it("should open Add New Trade Dialog", () => {
         cy.get("#tradeBtn").click();
-        cy.url().should("include", "/trade");
+        cy.url().should("include", "/trading-management/trade");
         cy.get("#addNewTradeBtn").click();
         cy.checkComponentVisible("#addNewTradeDialogForm");
     });
 
     it("should close the Add New Trade Dialog", () => {
         cy.get("#tradeBtn").click();
-        cy.url().should("include", "/trade");
+        cy.url().should("include", "/trading-management/trade");
         cy.get("#addNewTradeBtn").click();
         cy.checkComponentVisible("#addNewTradeDialogForm");
         cy.get("#cancelNewTradeBtn").click();
@@ -38,8 +39,7 @@ describe("Navigation", () => {
         ({ description, fields, expectedMsg }) => {
             it(description, () => {
                 cy.get("#tradeBtn").click();
-                cy.visit("/main/trade", { timeout: 5000 });
-                cy.url().should("include", "/trade");
+                cy.url().should("include", "/trading-management/trade");
                 cy.get("#addNewTradeBtn").should("be.visible").click();
                 Object.entries(fields).forEach(([selector, value]) => {
                     cy.get(selector);

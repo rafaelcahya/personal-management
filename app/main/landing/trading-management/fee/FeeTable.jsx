@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import AddFee from "./AddFee";
 import UpdateFee from "./UpdateFee";
-import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
+import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
 import SummaryFee from "./SummaryFee";
 
 function FeeTable({ fees: initialFees }) {
@@ -23,7 +23,9 @@ function FeeTable({ fees: initialFees }) {
 
     const fetchFees = async () => {
         try {
-            const res = await fetch("/api/fee/list", { cache: "no-store" });
+            const res = await fetch("/api/trade/fee/list", {
+                cache: "no-store",
+            });
             const data = await res.json();
             if (data.success) setFeeList(data.feeList);
         } catch (err) {
@@ -51,7 +53,10 @@ function FeeTable({ fees: initialFees }) {
                     </div>
                 </div>
                 <div className="flex items-center gap-5">
-                    <Link href="/main/dashboard" className="hidden sm:block">
+                    <Link
+                        href="/main/landing/trading-management/dashboard"
+                        className="hidden sm:block"
+                    >
                         <Button className="font-medium bg-transparent hover:bg-secondary dark:hover:bg-violet-500/5 text-secondary-foreground">
                             Back
                         </Button>

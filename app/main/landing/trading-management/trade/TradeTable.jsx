@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import AddNewTrade from "./AddTrade";
 import TradeUpdate from "./UpdateTrade";
-import Breadcrumbs from "../../../components/ui/common/Breadcrumbs";
+import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
 import SummaryTrade from "./SummaryTrade";
 
 const profitLossColor = (value) =>
@@ -26,7 +26,9 @@ export default function TradeTable({ trades: initialTrades }) {
 
     const fetchTrades = async () => {
         try {
-            const res = await fetch("/api/trade/list", { cache: "no-store" });
+            const res = await fetch("/api/trade/trade/list", {
+                cache: "no-store",
+            });
             const data = await res.json();
             if (data.success) setListTrade(data.trade);
         } catch (err) {
@@ -52,7 +54,10 @@ export default function TradeTable({ trades: initialTrades }) {
                     </div>
                 </div>
                 <div className="flex items-center gap-5">
-                    <Link href="/main/dashboard" className="hidden sm:block">
+                    <Link
+                        href="/main/landing/trading-management/dashboard"
+                        className="hidden sm:block"
+                    >
                         <Button className="bg-transparent hover:bg-secondary text-secondary-foreground font-medium">
                             Back
                         </Button>

@@ -6,9 +6,7 @@ function SummaryFee() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        Promise.all([
-            fetch("/api/fee/summary").then((r) => r.json()),
-        ])
+        Promise.all([fetch("/api/trade/fee/summary").then((r) => r.json())])
             .then(([summaryRes]) => {
                 if (summaryRes.success) setSummary(summaryRes.data);
             })
@@ -16,10 +14,7 @@ function SummaryFee() {
             .finally(() => setLoading(false));
     }, []);
 
-    const {
-        feeCount,
-        totalFee,
-    } = summary || {};
+    const { feeCount, totalFee } = summary || {};
 
     return (
         <div className="p-4 border-gray-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">

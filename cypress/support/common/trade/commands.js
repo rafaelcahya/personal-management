@@ -2,7 +2,7 @@ Cypress.Commands.add("GetSingleTrade", (id) => {
     return cy
         .request({
             method: "GET",
-            url: `/api/trade/list/${id}`,
+            url: `/api/trade/trade/list/${id}`,
             failOnStatusCode: false,
         })
         .then((response) => {
@@ -14,7 +14,7 @@ Cypress.Commands.add("AddNewTrade", (request) => {
     return cy
         .request({
             method: "POST",
-            url: "/api/trade/create",
+            url: "/api/trade/trade/create",
             body: request,
             failOnStatusCode: false,
         })
@@ -27,7 +27,7 @@ Cypress.Commands.add("DeleteTrade", (id) => {
     return cy
         .request({
             method: "DELETE",
-            url: `/api/trade/delete/${id}`,
+            url: `/api/trade/trade/delete/${id}`,
             failOnStatusCode: false,
         })
         .then((response) => {
@@ -39,7 +39,7 @@ Cypress.Commands.add("UpdateTrade", (id, request) => {
     return cy
         .request({
             method: "PUT",
-            url: `/api/trade/update/${id}`,
+            url: `/api/trade/trade/update/${id}`,
             body: request,
             failOnStatusCode: false,
         })
@@ -52,7 +52,7 @@ Cypress.Commands.add("GetTradeSummary", () => {
     return cy
         .request({
             method: "GET",
-            url: "/api/trade/summary",
+            url: "/api/trade/trade/summary",
             failOnStatusCode: false,
         })
         .then((response) => {

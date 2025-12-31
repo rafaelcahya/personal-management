@@ -2,7 +2,7 @@ Cypress.Commands.add("GetSingleEvent", (id) => {
     return cy
         .request({
             method: "GET",
-            url: `/api/event/list/${id}`,
+            url: `/api/trade/event/list/${id}`,
             failOnStatusCode: false,
         })
         .then((response) => {
@@ -14,7 +14,7 @@ Cypress.Commands.add("AddNewEvent", (request) => {
     return cy
         .request({
             method: "POST",
-            url: "/api/event/create",
+            url: "/api/trade/event/create",
             body: request,
             failOnStatusCode: false,
         })
@@ -27,7 +27,7 @@ Cypress.Commands.add("DeleteEvent", (id) => {
     return cy
         .request({
             method: "DELETE",
-            url: `/api/event/delete/${id}`,
+            url: `/api/trade/event/delete/${id}`,
             failOnStatusCode: false,
         })
         .then((response) => {
@@ -39,7 +39,7 @@ Cypress.Commands.add("UpdateEvent", (id, request) => {
     return cy
         .request({
             method: "PUT",
-            url: `/api/event/update/${id}`,
+            url: `/api/trade/event/update/${id}`,
             body: request,
             failOnStatusCode: false,
         })

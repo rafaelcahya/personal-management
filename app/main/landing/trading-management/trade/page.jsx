@@ -12,7 +12,7 @@ export default function TradePage() {
     useEffect(() => {
         const fetchTrades = async () => {
             try {
-                const res = await fetch("/api/trade/list", {
+                const res = await fetch("/api/trade/trade/list", {
                     cache: "no-store",
                 });
                 const data = await res.json();

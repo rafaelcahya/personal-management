@@ -19,8 +19,8 @@ function SummaryTrade() {
 
     useEffect(() => {
         Promise.all([
-            fetch("/api/trade/summary").then((r) => r.json()),
-            fetch("/api/trade/list").then((r) => r.json()),
+            fetch("/api/trade/trade/summary").then((r) => r.json()),
+            fetch("/api/trade/trade/list").then((r) => r.json()),
         ])
             .then(([summaryRes]) => {
                 if (summaryRes.success) setSummary(summaryRes.data);
