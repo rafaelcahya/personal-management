@@ -10,11 +10,12 @@ describe("Trade API", () => {
             cy.GetTradeSummary().then((summary) => {
                 const metrics = ["totalTrades", "totalWins", "totalLosses"];
                 metrics.forEach((metric) => {
-                    cy.task("getProgressOverviewSummaryFromDb", metric).then(
-                        (dbCount) => {
-                            expect(summary[metric]).to.eq(dbCount);
-                        }
-                    );
+                    cy.task(
+                        "getProgressOverviewSummaryFromDbTask",
+                        metric
+                    ).then((dbCount) => {
+                        expect(summary[metric]).to.eq(dbCount);
+                    });
                 });
             });
         });
@@ -24,9 +25,11 @@ describe("Trade API", () => {
                 const stockTypeSummary = summary.stockTypeSummary;
                 const stockTypes = Object.keys(stockTypeSummary);
                 stockTypes.forEach((type) => {
-                    cy.task("getTotalStockTypeFromDb", type).then((dbCount) => {
-                        expect(stockTypeSummary[type]).to.eq(dbCount);
-                    });
+                    cy.task("getTotalStockTypeFromDbTask", type).then(
+                        (dbCount) => {
+                            expect(stockTypeSummary[type]).to.eq(dbCount);
+                        }
+                    );
                 });
             });
         });
@@ -36,7 +39,7 @@ describe("Trade API", () => {
                 const entrySessionSummary = summary.entrySessionSummary;
                 const entrySessions = Object.keys(entrySessionSummary);
                 entrySessions.forEach((session) => {
-                    cy.task("getTotalEntrySessionFromDb", session).then(
+                    cy.task("getTotalEntrySessionFromDbTask", session).then(
                         (dbCount) => {
                             expect(entrySessionSummary[session]).to.eq(dbCount);
                         }
@@ -50,7 +53,7 @@ describe("Trade API", () => {
                 const entryOccasionSummary = summary.entryOccasionSummary;
                 const entryOccasions = Object.keys(entryOccasionSummary);
                 entryOccasions.forEach((occasion) => {
-                    cy.task("getTotalEntryOccasionFromDb", occasion).then(
+                    cy.task("getTotalEntryOccasionFromDbTask", occasion).then(
                         (dbCount) => {
                             expect(entryOccasionSummary[occasion]).to.eq(
                                 dbCount
@@ -126,7 +129,7 @@ describe("Trade API", () => {
                     });
                 });
 
-                cy.task("saveTradeId", response.body.trade.id);
+                cy.saveTradeId(response.body.trade.id);
             });
         });
 

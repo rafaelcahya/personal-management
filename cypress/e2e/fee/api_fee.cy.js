@@ -8,7 +8,7 @@ describe("Fee API", () => {
     describe("Summary", () => {
         it("should display correct total transactions in summary", () => {
             cy.GetFeeSummary().then((summary) => {
-                cy.task("getTotalTransactionsFromDb").then((dbCount) => {
+                cy.task("getTotalTransactionsFromDbTask").then((dbCount) => {
                     expect(summary.feeCount).to.eq(dbCount.total_transactions);
                 });
             });
@@ -16,7 +16,7 @@ describe("Fee API", () => {
 
         it("should display correct total fees in summary", () => {
             cy.GetFeeSummary().then((summary) => {
-                cy.task("getTotalFeeFromDb").then((dbTotalFee) => {
+                cy.task("getTotalFeeFromDbTask").then((dbTotalFee) => {
                     expect(summary.totalFee).to.eq(dbTotalFee.total_fee);
                 });
             });
@@ -53,7 +53,7 @@ describe("Fee API", () => {
                     });
                 });
 
-                cy.task("saveFeeId", response.body.fee.id);
+                cy.saveFeeId(response.body.fee.id);
             });
         });
 
@@ -142,7 +142,7 @@ describe("Fee API", () => {
                     });
                 });
 
-                cy.task("saveFeeId", response.body.fee.id);
+                cy.saveFeeId(response.body.fee.id);
             });
         });
 

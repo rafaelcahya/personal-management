@@ -17,7 +17,10 @@ export async function getTradeFromDb(supabase, tradeId) {
     return toTradeDto(data);
 }
 
-export async function getProgressOverviewSummaryFromDb(supabase, metric = "totalTrades") {
+export async function getProgressOverviewSummaryFromDb(
+    supabase,
+    metric = "totalTrades"
+) {
     let query = supabase
         .from("trade_list")
         .select("realized_gain", { count: "exact" })

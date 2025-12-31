@@ -18,4 +18,6 @@ import "./common/commands";
 import "./common/trade/commands";
 import "./common/fee/commands";
 import "./common/event/commands";
+import "./common/trading-management/product/commands";
+import "./common/trading-management/product-brand/commands";
 import "./common/helper";

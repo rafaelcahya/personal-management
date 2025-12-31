@@ -40,7 +40,7 @@ export default function CardDemo() {
                 </CardHeader>
                 <CardFooter>
                     <Link
-                        href="/main/landing/trading-management/dashboard"
+                        href="/main/landing/inventory-management/dashboard"
                         prefetch={false}
                         id="inventoryBtnLandingPage"
                     >

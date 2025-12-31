@@ -65,3 +65,43 @@ Cypress.Commands.add("Login", ({ username, password }) => {
         cy.get("#loginBtn").click();
     });
 });
+
+Cypress.Commands.add("saveProductId", (productId) => {
+    cy.task("saveProductId", productId);
+});
+
+Cypress.Commands.add("getRandomProductId", () => {
+    return cy.task("getRandomProductId");
+});
+
+Cypress.Commands.add("saveEventId", (eventId) => {
+    cy.task("saveEventId", eventId);
+});
+
+Cypress.Commands.add("getRandomEventId", () => {
+    return cy.task("getRandomEventId");
+});
+
+Cypress.Commands.add("saveFeeId", (feeId) => {
+    cy.task("saveFeeId", feeId);
+});
+
+Cypress.Commands.add("getRandomFeeId", () => {
+    return cy.task("getRandomFeeId");
+});
+
+Cypress.Commands.add("saveTradeId", (tradeId) => {
+    cy.task("saveTradeId", tradeId);
+});
+
+Cypress.Commands.add("getRandomTradeId", () => {
+    return cy.task("getRandomTradeId");
+});
+
+Cypress.Commands.add("saveProductBrandId", (productBrandId) => {
+    cy.task("saveProductBrandId", productBrandId);
+});
+
+Cypress.Commands.add("getRandomProductBrandId", () => {
+    return cy.task("getRandomProductBrandId");
+});

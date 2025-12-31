@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 
+const FIXTURE_DIR = path.resolve("cypress/fixtures");
+
 export function randomString(length = 8, mode = "alphanumeric") {
     let chars = "";
 
@@ -26,97 +28,40 @@ export function randomString(length = 8, mode = "alphanumeric") {
     return result;
 }
 
-export function saveTradeId(tradeId) {
-    const filePath = path.resolve("cypress/fixtures/tradeIds.json");
+export function saveFixture(filename, data) {
+    const filePath = path.join(FIXTURE_DIR, filename);
 
-    let data = [];
+    let array = [];
     if (fs.existsSync(filePath)) {
-        const raw = fs.readFileSync(filePath);
         try {
-            data = JSON.parse(raw.toString());
+            const raw = fs.readFileSync(filePath, "utf-8");
+            array = JSON.parse(raw);
         } catch (err) {
-            data = [];
+            console.warn(`Fixture ${filename} corrupted, starting fresh`);
         }
     }
 
-    data.push(tradeId);
+    if (!Array.isArray(array)) array = [];
 
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    return data;
+    array.push(data);
+    fs.writeFileSync(filePath, JSON.stringify(array, null, 2));
+    return array;
 }
 
-export function getRandomTradeId() {
-    const filePath = path.resolve("cypress/fixtures/tradeIds.json");
+export function getRandomFixture(filename) {
+    const filePath = path.join(FIXTURE_DIR, filename);
+
+    if (!fs.existsSync(filePath)) {
+        throw new Error(`Fixture ${filename} does not exist`);
+    }
+
     const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
 
     if (!Array.isArray(data) || data.length === 0) {
-        throw new Error("tradeIds.json is empty or invalid");
+        throw new Error(`${filename} is empty or invalid`);
     }
 
-    const randomId = data[Math.floor(Math.random() * data.length)];
-    return randomId;
-}
-
-export function saveFeeId(feeId) {
-    const filePath = path.resolve("cypress/fixtures/feeIds.json");
-
-    let data = [];
-    if (fs.existsSync(filePath)) {
-        const raw = fs.readFileSync(filePath);
-        try {
-            data = JSON.parse(raw.toString());
-        } catch (err) {
-            data = [];
-        }
-    }
-
-    data.push(feeId);
-
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    return data;
-}
-
-export function getRandomFeeId() {
-    const filePath = path.resolve("cypress/fixtures/feeIds.json");
-    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
-    if (!Array.isArray(data) || data.length === 0) {
-        throw new Error("feeIds.json is empty or invalid");
-    }
-
-    const randomId = data[Math.floor(Math.random() * data.length)];
-    return randomId;
-}
-
-export function saveEventId(eventId) {
-    const filePath = path.resolve("cypress/fixtures/eventIds.json");
-
-    let data = [];
-    if (fs.existsSync(filePath)) {
-        const raw = fs.readFileSync(filePath);
-        try {
-            data = JSON.parse(raw.toString());
-        } catch (err) {
-            data = [];
-        }
-    }
-
-    data.push(eventId);
-
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    return data;
-}
-
-export function getRandomEventId() {
-    const filePath = path.resolve("cypress/fixtures/eventIds.json");
-    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
-    if (!Array.isArray(data) || data.length === 0) {
-        throw new Error("eventIds.json is empty or invalid");
-    }
-
-    const randomId = data[Math.floor(Math.random() * data.length)];
-    return randomId;
+    return data[Math.floor(Math.random() * data.length)];
 }
 
 export function clearFixtureFile(filename) {

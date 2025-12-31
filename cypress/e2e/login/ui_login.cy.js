@@ -50,7 +50,7 @@ describe("Login page", () => {
                 });
                 cy.get("#loginBtn").click();
                 cy.verifyToastMessage("Login successful!");
-                cy.url().should("include", "/main/dashboard");
+                cy.url().should("include", "/main/landing");
             }
         );
     });

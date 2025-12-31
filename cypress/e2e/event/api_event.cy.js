@@ -39,11 +39,11 @@ describe("Event API", () => {
                         });
                     });
                 });
-                cy.task("saveEventId", response.body.event.id);
+                cy.saveEventId(response.body.event.id);
             });
         });
 
-        it("should ensure deleted_at is null after successfully adding a new event", () => {
+        it("should fail to add new event with missing required fields", () => {
             const request = {
                 event_description: "",
                 impact_direction: "",
@@ -106,7 +106,7 @@ describe("Event API", () => {
                     });
                 });
 
-                cy.task("saveEventId", response.body.event.id);
+                cy.saveEventId(response.body.event.id);
             });
         });
     });

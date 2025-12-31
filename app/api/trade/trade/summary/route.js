@@ -13,27 +13,27 @@ export async function GET() {
             ? trades.map((trade) => stringToNumber(trade.realized_gain))
             : [];
 
-		const profitsArr = realizedGains.filter((g) => g > 0);
+        const profitsArr = realizedGains.filter((g) => g > 0);
 
-		const totalWins = profitsArr.length;
+        const totalWins = profitsArr.length;
 
-		const lossesArr = realizedGains.filter((g) => g < 0);
+        const lossesArr = realizedGains.filter((g) => g < 0);
 
-		const totalLosses = lossesArr.length;
+        const totalLosses = lossesArr.length;
 
-		const stockTypeSummary = trades.reduce((acc, trade) => {
+        const stockTypeSummary = trades.reduce((acc, trade) => {
             const type = trade.stock_type_option;
             acc[type] = (acc[type] || 0) + 1;
             return acc;
         }, {});
 
-		const entrySessionSummary = trades.reduce((acc, trade) => {
+        const entrySessionSummary = trades.reduce((acc, trade) => {
             const type = trade.entry_session_option;
             acc[type] = (acc[type] || 0) + 1;
             return acc;
         }, {});
 
-		const entryOccasionSummary = trades.reduce((acc, trade) => {
+        const entryOccasionSummary = trades.reduce((acc, trade) => {
             const type = trade.entry_occasion_option;
             acc[type] = (acc[type] || 0) + 1;
             return acc;
@@ -46,8 +46,8 @@ export async function GET() {
                 totalWins,
                 totalLosses,
                 stockTypeSummary,
-				entrySessionSummary,
-				entryOccasionSummary
+                entrySessionSummary,
+                entryOccasionSummary,
             },
         });
     } catch (err) {

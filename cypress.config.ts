@@ -16,12 +16,13 @@ import {
 } from "./cypress/support/db/fee/getFeeFromDb";
 import { getEventFromDb } from "./cypress/support/db/event/getEventFromDb";
 import {
-    getRandomTradeId,
-    saveTradeId,
-    getRandomFeeId,
-    saveFeeId,
-    getRandomEventId,
-    saveEventId,
+    getProductListFromDb,
+    getTotalProductSummaryFromDb,
+} from "./cypress/support/db/trading-management/product/getProductListFromDb";
+import { getProductBrandListFromDb } from "./cypress/support/db/trading-management/brand/getProductBrandListFromDb";
+import {
+    saveFixture,
+    getRandomFixture,
     clearFixtureFile,
 } from "./cypress/support/common/helper";
 import { decryptPassword } from "./lib/utils/decryptedPassword";
@@ -48,7 +49,7 @@ export default defineConfig({
                     const trade = await getTradeFromDb(supabase, tradeId);
                     return trade ? JSON.parse(JSON.stringify(trade)) : null;
                 },
-                async getProgressOverviewSummaryFromDb(metric) {
+                async getProgressOverviewSummaryFromDbTask(metric) {
                     const progressOverviews =
                         await getProgressOverviewSummaryFromDb(
                             supabase,
@@ -56,21 +57,21 @@ export default defineConfig({
                         );
                     return progressOverviews;
                 },
-                async getTotalStockTypeFromDb(stockType) {
+                async getTotalStockTypeFromDbTask(stockType) {
                     const stockTypes = await getTotalStockTypeFromDb(
                         supabase,
                         stockType
                     );
                     return stockTypes;
                 },
-                async getTotalEntrySessionFromDb(entrySession) {
+                async getTotalEntrySessionFromDbTask(entrySession) {
                     const entrySessions = await getTotalEntrySessionFromDb(
                         supabase,
                         entrySession
                     );
                     return entrySessions;
                 },
-                async getTotalEntryOccasionFromDb(entryOccasion) {
+                async getTotalEntryOccasionFromDbTask(entryOccasion) {
                     const entryOccasions = await getTotalEntryOccasionFromDb(
                         supabase,
                         entryOccasion
@@ -81,13 +82,13 @@ export default defineConfig({
                     const fee = await getFeeFromDb(supabase, feeId);
                     return fee ? JSON.parse(JSON.stringify(fee)) : null;
                 },
-                async getTotalTransactionsFromDb() {
+                async getTotalTransactionsFromDbTask() {
                     const totalTransactions = await getTotalTransactionsFromDb(
                         supabase
                     );
                     return totalTransactions;
                 },
-                async getTotalFeeFromDb() {
+                async getTotalFeeFromDbTask() {
                     const totalFee = await getTotalFeeFromDb(supabase);
                     return totalFee;
                 },
@@ -95,24 +96,46 @@ export default defineConfig({
                     const event = await getEventFromDb(supabase, eventId);
                     return event ? JSON.parse(JSON.stringify(event)) : null;
                 },
-                saveTradeId(tradeId) {
-                    return saveTradeId(tradeId);
+                async getProductListFromDbTask(productId) {
+                    const productList = await getProductListFromDb(
+                        supabase,
+                        productId
+                    );
+                    return productList
+                        ? JSON.parse(JSON.stringify(productList))
+                        : null;
                 },
-                getRandomTradeId() {
-                    return getRandomTradeId();
+                async getTotalProductSummaryFromDbTask(metric) {
+                    const totalProdicts = await getTotalProductSummaryFromDb(
+                        supabase,
+                        metric
+                    );
+                    return totalProdicts;
                 },
-                saveFeeId(feeId) {
-                    return saveFeeId(feeId);
+                async getProductBrandListFromDbTask(productBrandId) {
+                    const productBrandList = await getProductBrandListFromDb(
+                        supabase,
+                        productBrandId
+                    );
+                    return productBrandList
+                        ? JSON.parse(JSON.stringify(productBrandList))
+                        : null;
                 },
-                getRandomFeeId() {
-                    return getRandomFeeId();
-                },
-                saveEventId(eventId) {
-                    return saveEventId(eventId);
-                },
-                getRandomEventId() {
-                    return getRandomEventId();
-                },
+                saveFixture: (args) => saveFixture(args.filename, args.data),
+                getRandomFixture: (filename) => getRandomFixture(filename),
+                saveFeeId: (feeId) => saveFixture("feeIds.json", feeId),
+                getRandomFeeId: () => getRandomFixture("feeIds.json"),
+                saveTradeId: (tradeId) => saveFixture("tradeIds.json", tradeId),
+                getRandomTradeId: () => getRandomFixture("tradeIds.json"),
+                saveEventId: (eventId) => saveFixture("eventIds.json", eventId),
+                getRandomEventId: () => getRandomFixture("eventIds.json"),
+                saveProductId: (productId) =>
+                    saveFixture("productIds.json", productId),
+                getRandomProductId: () => getRandomFixture("productIds.json"),
+                saveProductBrandId: (productBrandId) =>
+                    saveFixture("productBrandIds.json", productBrandId),
+                getRandomProductBrandId: () =>
+                    getRandomFixture("productBrandIds.json"),
                 clearFixtureFile,
             });
             return config;
