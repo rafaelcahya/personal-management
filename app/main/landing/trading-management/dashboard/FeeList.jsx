@@ -22,7 +22,7 @@ function FeeList() {
         fetch("/api/trade/fee/list")
             .then((r) => r.json())
             .then((d) => {
-                d.success && setFeeList(d.feeList);
+                d.success && setFeeList(d.fees);
             })
             .catch(toast.error)
             .finally(() => setLoading(false));

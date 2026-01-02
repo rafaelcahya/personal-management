@@ -5,7 +5,12 @@ export async function GET() {
     try {
         const stockTypeOptions = await getStockTypeOptions();
         return NextResponse.json(
-            { success: true, option: stockTypeOptions },
+            {
+                success: true,
+                options: Array.isArray(stockTypeOptions)
+                    ? stockTypeOptions
+                    : [],
+            },
             { status: 200 }
         );
     } catch (err) {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getListSettings } from "@/lib/services/settings/getListSettings";
 import { getListTrade } from "@/lib/services/trade/getListTrade";
-import { sum, getPercentageChange } from "@/lib/utils/metrics";
+import { sum } from "@/lib/utils/metrics";
 import { stringToNumber } from "@/lib/utils/common";
 import { calculateAccountMetrics } from "@/lib/utils/accountValueMetricsDetails";
 import { calculateProfitFactor } from "./component/profitFactor";

@@ -1,0 +1,61 @@
+import { NextResponse } from "next/server";
+import { getCreateProductName } from "../../../../../../lib/services/inventory/product/name/getCreateProductName";
+
+export async function POST(req) {
+    try {
+        let body;
+        try {
+            body = await req.json();
+        } catch (parseError) {
+            return NextResponse.json(
+                { success: false, error: "Invalid JSON in request body" },
+                { status: 400 }
+            );
+        }
+
+        if (!body) {
+            return NextResponse.json(
+                { success: false, error: "Request body is required" },
+                { status: 400 }
+            );
+        }
+
+        const requiredFields = ["product_name", "product_name_status"];
+
+        const validationErrors = [];
+        requiredFields.forEach((field) => {
+            if (!body[field] || body[field].toString().trim() === "") {
+                validationErrors.push(
+                    `${field.replaceAll("_", " ")} is required`
+                );
+            }
+        });
+
+        if (validationErrors.length > 0) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: validationErrors,
+                },
+                { status: 400 }
+            );
+        }
+
+        const newProductname = await getCreateProductName(
+            body.product_name,
+            body.product_name_status,
+            body.note
+        );
+
+        return NextResponse.json(
+            { success: true, productName: newProductname },
+            { status: 200 }
+        );
+    } catch (err) {
+        console.error("POST /api/inventory/product/name/create error:", err);
+        return NextResponse.json(
+            { success: false, error: "Internal server error" },
+            { status: 500 }
+        );
+    }
+}

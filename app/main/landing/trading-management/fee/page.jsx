@@ -16,7 +16,7 @@ export default function FeePage() {
                     cache: "no-store",
                 });
                 const data = await res.json();
-                if (data.success) setFees(data.feeList);
+                if (data.success) setFees(data.fees);
             } catch (err) {
                 toast.error("Failed to fetch fees:", err);
             } finally {

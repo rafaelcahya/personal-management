@@ -24,7 +24,7 @@ function EventList() {
             .then((r) => r.json())
             .then((d) => {
                 if (d.success) {
-                    setEventList(d.eventList);
+                    setEventList(d.events);
                     // Simple random colors
                     const indices = Array.from(
                         { length: 5 },

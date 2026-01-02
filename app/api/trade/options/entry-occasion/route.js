@@ -7,7 +7,9 @@ export async function GET() {
         return NextResponse.json(
             {
                 success: true,
-                option: entryOccasionOptions,
+                options: Array.isArray(entryOccasionOptions)
+                    ? entryOccasionOptions
+                    : [],
             },
             { status: 200 }
         );

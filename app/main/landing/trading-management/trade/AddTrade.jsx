@@ -25,13 +25,6 @@ import {
     FormDescription,
 } from "@/components/ui/form";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
     Popover,
     PopoverContent,
     PopoverTrigger,
@@ -47,18 +40,8 @@ import { tradeSchema } from "@/schemas/trade";
 import { addTrade } from "@/lib/api/trade";
 
 import { formatRupiah } from "@/lib/utils/currencyFormatter";
-
-const CurrencyInputField = ({ field, fieldState, placeholder }) => (
-    <Input
-        type="text"
-        value={formatRupiah(field.value)}
-        placeholder={placeholder}
-        className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-            fieldState.error ? "border-rose-500" : ""
-        }`}
-        onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ""))}
-    />
-);
+import CurrencyField from "../../../../../components/ui/common/CurrencyField";
+import DynamicSelectField from "../../../../../components/ui/common/DynamicSelectField";
 
 const OPTION_APIS = {
     stockType: "/api/trade/options/stock-type",
@@ -67,6 +50,44 @@ const OPTION_APIS = {
     buyReason: "/api/trade/options/buy-reason",
     sellReason: "/api/trade/options/sell-reason",
 };
+
+const SELECT_CONFIG = [
+    {
+        name: "stock_type_option",
+        label: "Stock Type",
+        apiKey: "stockType",
+        displayField: "stock_type_option",
+        message: "stockTypeOptionMessage",
+    },
+    {
+        name: "entry_session_option",
+        label: "Entry Session",
+        apiKey: "entrySession",
+        displayField: "entry_session_option",
+        message: "entrySessionOptionMessage",
+    },
+    {
+        name: "entry_occasion_option",
+        label: "Entry Occasion",
+        apiKey: "entryOccasion",
+        displayField: "entry_occasion_option",
+        message: "entryOccasionOptionMessage",
+    },
+    {
+        name: "buy_reason_option",
+        label: "Buy Reason",
+        apiKey: "buyReason",
+        displayField: "buy_reason_option",
+        message: "buyReasonOptionMessage",
+    },
+    {
+        name: "sell_reason_option",
+        label: "Sell Reason",
+        apiKey: "sellReason",
+        displayField: "sell_reason_option",
+        message: "sellReasonOptionMessage",
+    },
+];
 
 export default function AddNewTrade({ onAdded }) {
     const [open, setOpen] = useState(false);
@@ -134,18 +155,21 @@ export default function AddNewTrade({ onAdded }) {
     const fetchOptionType = useCallback(async (type) => {
         try {
             setOptionsLoading((prev) => ({ ...prev, [type]: true }));
-
             const response = await fetch(OPTION_APIS[type]);
             const data = await response.json();
+            console.log(`[${type}] API data:`, data); // ← ADD THIS
+            console.log(
+                `[${type}] options:`,
+                data.options || data.option || []
+            );
 
-            if (data.success) {
-                setOptions((prev) => ({
-                    ...prev,
-                    [type]: data.option,
-                }));
-            }
+            setOptions((prev) => ({
+                ...prev,
+                [type]: data.options || data.option || [],
+            }));
         } catch (error) {
-            toast.error(`Failed to load ${type} options`);
+            toast.error(`Failed to load ${type}`);
+            setOptions((prev) => ({ ...prev, [type]: [] }));
         } finally {
             setOptionsLoading((prev) => ({ ...prev, [type]: false }));
         }
@@ -288,58 +312,20 @@ export default function AddNewTrade({ onAdded }) {
                             )}
                         />
 
-                        {/* Margin */}
-                        <FormField
+                        <CurrencyField
                             control={control}
-                            id="margin"
                             name="margin"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Margin
-                                    </FormLabel>
-                                    <FormControl>
-                                        <CurrencyInputField
-                                            field={field}
-                                            fieldState={fieldState}
-                                            placeholder="e.g. 1000"
-                                        />
-                                    </FormControl>
-                                    <FormMessage
-                                        id="marginMessage"
-                                        className="font-medium"
-                                    >
-                                        {fieldState.error?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
+                            label="Margin"
+                            placeholder="1000"
+                            message="marginMessage"
                         />
 
-                        {/* Proceeds */}
-                        <FormField
+                        <CurrencyField
                             control={control}
-                            id="proceeds"
                             name="proceeds"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Proceeds
-                                    </FormLabel>
-                                    <FormControl>
-                                        <CurrencyInputField
-                                            field={field}
-                                            fieldState={fieldState}
-                                            placeholder="e.g. 2000"
-                                        />
-                                    </FormControl>
-                                    <FormMessage
-                                        id="proceedsMessage"
-                                        className="font-medium"
-                                    >
-                                        {fieldState.error?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
+                            label="Proceeds"
+                            placeholder="2000"
+                            message="proceedsMessage"
                         />
 
                         {/* Realized Gain */}
@@ -386,131 +372,21 @@ export default function AddNewTrade({ onAdded }) {
                             )}
                         />
 
-                        {/* Dropdown Options */}
-                        {[
-                            {
-                                name: "stock_type_option",
-                                label: "Stock Type",
-                                options: options.stockType,
-                                loading: optionsLoading.stockType,
-                                optionKey: "stock_type_option",
-                                id_message: "stockTypeOptionMessage",
-                            },
-                            {
-                                name: "entry_session_option",
-                                label: "Entry Session",
-                                options: options.entrySession,
-                                loading: optionsLoading.entrySession,
-                                optionKey: "entry_session_options",
-                                id_message: "entrySessionOptionMessage",
-                            },
-                            {
-                                name: "entry_occasion_option",
-                                label: "Entry Occasion",
-                                options: options.entryOccasion,
-                                loading: optionsLoading.entryOccasion,
-                                optionKey: "entry_occasion_option",
-                                id_message: "entryOccasionOptionMessage",
-                            },
-                            {
-                                name: "buy_reason_option",
-                                label: "Buy Reason",
-                                options: options.buyReason,
-                                loading: optionsLoading.buyReason,
-                                optionKey: "buy_reason_options",
-                                id_message: "buyReasonOptionMessage",
-                            },
-                            {
-                                name: "sell_reason_option",
-                                label: "Sell Reason",
-                                options: options.sellReason,
-                                loading: optionsLoading.sellReason,
-                                optionKey: "sell_reason_options",
-                                id_message: "sellReasonOptionMessage",
-                            },
-                        ].map(
-                            ({
-                                name,
-                                label,
-                                options: optData,
-                                loading,
-                                optionKey,
-                                id_message,
-                            }) => (
-                                <FormField
+                        {SELECT_CONFIG.map(
+                            ({ name, label, apiKey, displayField, message }) => (
+                                <DynamicSelectField
                                     key={name}
                                     control={control}
                                     name={name}
-                                    render={({ field, fieldState }) => (
-                                        <FormItem>
-                                            <FormLabel className="font-medium">
-                                                {label}
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Select
-                                                    onValueChange={
-                                                        field.onChange
-                                                    }
-                                                    value={field.value}
-                                                >
-                                                    <SelectTrigger className="min-w-full font-medium">
-                                                        <SelectValue
-                                                            placeholder={
-                                                                loading
-                                                                    ? "Loading..."
-                                                                    : `Select ${label}`
-                                                            }
-                                                        />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="w-auto max-w-[90vw] min-w-[200px]">
-                                                        {loading ? (
-                                                            <div className="p-8 text-center text-muted-foreground">
-                                                                Loading
-                                                                options...
-                                                            </div>
-                                                        ) : optData.length ===
-                                                          0 ? (
-                                                            <SelectItem
-                                                                value=""
-                                                                disabled
-                                                            >
-                                                                No options
-                                                                available
-                                                            </SelectItem>
-                                                        ) : (
-                                                            optData.map(
-                                                                (opt) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            opt.id
-                                                                        }
-                                                                        value={
-                                                                            opt[
-                                                                                optionKey
-                                                                            ]
-                                                                        }
-                                                                        className="whitespace-normal break-words font-medium"
-                                                                    >
-                                                                        {
-                                                                            opt[
-                                                                                optionKey
-                                                                            ]
-                                                                        }
-                                                                    </SelectItem>
-                                                                )
-                                                            )
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                            <FormMessage id={id_message}>
-                                                {fieldState.error?.message}
-                                            </FormMessage>
-                                        </FormItem>
-                                    )}
+                                    label={label}
+                                    options={options[apiKey]}
+                                    loading={optionsLoading[apiKey]}
+                                    displayField={displayField}
+                                    message={message}
                                 />
                             )
                         )}
+
                         {/* Notes */}
                         <FormField
                             control={control}

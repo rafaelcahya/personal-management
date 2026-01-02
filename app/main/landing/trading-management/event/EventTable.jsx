@@ -39,7 +39,7 @@ function EventTable({ events: initialEvents }) {
                 cache: "no-store",
             });
             const data = await res.json();
-            if (data.success) setEventList(data.eventList);
+            if (data.success) setEventList(data.events);
         } catch (err) {
             toast.error("Failed to fetch events:", err);
         }

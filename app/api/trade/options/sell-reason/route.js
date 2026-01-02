@@ -5,7 +5,12 @@ export async function GET() {
     try {
         const sellReasonOptions = await getSellReasonOptions();
         return NextResponse.json(
-            { success: true, option: sellReasonOptions },
+            {
+                success: true,
+                options: Array.isArray(sellReasonOptions)
+                    ? sellReasonOptions
+                    : [],
+            },
             { status: 200 }
         );
     } catch (err) {

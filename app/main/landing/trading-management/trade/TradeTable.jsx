@@ -30,7 +30,7 @@ export default function TradeTable({ trades: initialTrades }) {
                 cache: "no-store",
             });
             const data = await res.json();
-            if (data.success) setListTrade(data.trade);
+            if (data.success) setListTrade(data.trades);
         } catch (err) {
             toast.error("Failed to fetch fees:", err);
         }

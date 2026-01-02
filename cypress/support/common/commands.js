@@ -105,3 +105,11 @@ Cypress.Commands.add("saveProductBrandId", (productBrandId) => {
 Cypress.Commands.add("getRandomProductBrandId", () => {
     return cy.task("getRandomProductBrandId");
 });
+
+Cypress.Commands.add("saveProductNameId", (productNameId) => {
+    cy.task("saveProductNameId", productNameId);
+});
+
+Cypress.Commands.add("getRandomProductNameId", () => {
+    return cy.task("getRandomProductNameId");
+});

@@ -12,11 +12,9 @@ export default function EventPage() {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const res = await fetch("/api/trade/event/list", {
-                    cache: "no-store",
-                });
+                const res = await fetch("/api/trade/event/list");
                 const data = await res.json();
-                if (data.success) setEvents(data.eventList);
+                if (data.success) setEvents(data.events);
             } catch (err) {
                 toast.error("Failed to fetch events:", err);
             } finally {

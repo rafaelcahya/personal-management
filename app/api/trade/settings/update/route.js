@@ -19,18 +19,12 @@ export async function PUT(req) {
 
         return (
             NextResponse.json({ success: true, settings }),
-            {
-                status: 200,
-                headers: { "Content-Type": "application/json" },
-            }
+            { status: 200 }
         );
     } catch (err) {
         return (
             NextResponse.json({ error: err.message }),
-            {
-                status: 401,
-                headers: { "Content-Type": "application/json" },
-            }
+            { status: 401 }
         );
     }
 }

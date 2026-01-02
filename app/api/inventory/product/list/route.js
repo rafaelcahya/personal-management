@@ -5,7 +5,7 @@ export async function GET() {
     try {
         const listProduct = await getListProduct();
         return NextResponse.json(
-            { success: true, product: listProduct },
+            { success: true, products: listProduct },
             { status: 200 }
         );
     } catch (err) {

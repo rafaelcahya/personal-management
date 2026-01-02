@@ -22,7 +22,7 @@ function TradeList() {
         fetch("/api/trade/trade/list")
             .then((r) => r.json())
             .then((d) => {
-                d.success && setTradeList(d.trade);
+                d.success && setTradeList(d.trades);
             })
             .catch(toast.error)
             .finally(() => setLoading(false));

@@ -5,7 +5,12 @@ export async function GET() {
     try {
         const buyReasonOptions = await getBuyReasonOptions();
         return NextResponse.json(
-            { success: true, option: buyReasonOptions },
+            {
+                success: true,
+                options: Array.isArray(buyReasonOptions)
+                    ? buyReasonOptions
+                    : [],
+            },
             { status: 200 }
         );
     } catch (err) {

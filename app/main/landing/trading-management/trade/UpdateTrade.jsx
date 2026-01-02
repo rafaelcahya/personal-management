@@ -1,5 +1,13 @@
 "use client";
 
+import { useEffect, useState, useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import safeDate from "@/lib/utils/safeDate";
+
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -11,8 +19,6 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import {
     Form,
     FormControl,
@@ -23,13 +29,6 @@ import {
     FormDescription,
 } from "@/components/ui/form";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
     Popover,
     PopoverContent,
     PopoverTrigger,
@@ -37,20 +36,65 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { toast } from "sonner";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "@/lib/utils";
-import safeDate from "@/lib/utils/safeDate";
-import TradeDelete from "./DeleteTrade";
 
 import { tradeSchema } from "@/schemas/trade";
-import { fetchTradeOptions } from "@/lib/api/options";
 import { updateTrade } from "@/lib/api/trade";
+import { formatRupiah } from "@/lib/utils/currencyFormatter";
+
+import CurrencyField from "@/components/ui/common/CurrencyField";
+import DynamicSelectField from "@/components/ui/common/DynamicSelectField";
+import TradeDelete from "./DeleteTrade";
+
+const OPTION_APIS = {
+    stockType: "/api/trade/options/stock-type",
+    entrySession: "/api/trade/options/entry-session",
+    entryOccasion: "/api/trade/options/entry-occasion",
+    buyReason: "/api/trade/options/buy-reason",
+    sellReason: "/api/trade/options/sell-reason",
+};
+
+const SELECT_CONFIG = [
+    {
+        name: "stock_type_option",
+        label: "Stock Type",
+        apiKey: "stockType",
+        displayField: "stock_type_option",
+    },
+    {
+        name: "entry_session_option",
+        label: "Entry Session",
+        apiKey: "entrySession",
+        displayField: "entry_session_option",
+    },
+    {
+        name: "entry_occasion_option",
+        label: "Entry Occasion",
+        apiKey: "entryOccasion",
+        displayField: "entry_occasion_option",
+    },
+    {
+        name: "buy_reason_option",
+        label: "Buy Reason",
+        apiKey: "buyReason",
+        displayField: "buy_reason_option",
+    },
+    {
+        name: "sell_reason_option",
+        label: "Sell Reason",
+        apiKey: "sellReason",
+        displayField: "sell_reason_option",
+    },
+];
 
 export default function TradeUpdate({ trade, onClose, onUpdated }) {
     const [loading, setLoading] = useState(false);
-
+    const [optionsLoading, setOptionsLoading] = useState({
+        stockType: false,
+        entrySession: false,
+        entryOccasion: false,
+        buyReason: false,
+        sellReason: false,
+    });
     const [options, setOptions] = useState({
         stockType: [],
         entrySession: [],
@@ -66,9 +110,38 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
 
     const { watch, setValue, control, handleSubmit, reset } = form;
 
+    // Fetch individual option type
+    const fetchOptionType = useCallback(async (type) => {
+        try {
+            setOptionsLoading((prev) => ({ ...prev, [type]: true }));
+            const response = await fetch(OPTION_APIS[type]);
+            const data = await response.json();
+
+            setOptions((prev) => ({
+                ...prev,
+                [type]: data.options || data.option || [],
+            }));
+        } catch (error) {
+            console.error(`Failed to load ${type}:`, error);
+            setOptions((prev) => ({ ...prev, [type]: [] }));
+        } finally {
+            setOptionsLoading((prev) => ({ ...prev, [type]: false }));
+        }
+    }, []);
+
+    // Fetch all options on mount
+    useEffect(() => {
+        const optionTypes = Object.keys(OPTION_APIS);
+        Promise.all(optionTypes.map(fetchOptionType));
+    }, [fetchOptionType]);
+
+    // Populate form when trade changes
     useEffect(() => {
         if (trade) {
-            reset({
+            console.log("=== POPULATING FORM ===");
+            console.log("Trade data:", trade);
+
+            const formData = {
                 trade_date: safeDate(trade.trade_date),
                 ticker: trade.ticker ?? "",
                 margin: trade.margin?.toString() ?? "",
@@ -81,13 +154,16 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                 buy_reason_option: trade.buy_reason_option ?? "",
                 sell_reason_option: trade.sell_reason_option ?? "",
                 notes: trade.notes ?? "",
-            });
+            };
+
+            console.log("Form data to reset:", formData);
+            reset(formData);
         }
     }, [trade, reset]);
 
+    // Auto-calculation realized gain
     const margin = watch("margin");
     const proceeds = watch("proceeds");
-    const realized_gain = watch("realized_gain");
 
     useEffect(() => {
         const marginNum = parseFloat(margin);
@@ -98,6 +174,9 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
             setValue("realized_gain", "");
         }
     }, [margin, proceeds, setValue]);
+
+    // Auto-calculation return %
+    const realized_gain = watch("realized_gain");
 
     useEffect(() => {
         const marginNum = parseFloat(margin);
@@ -112,13 +191,6 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
         }
     }, [realized_gain, margin, setValue]);
 
-    useEffect(() => {
-        (async () => {
-            const data = await fetchTradeOptions();
-            setOptions(data);
-        })();
-    }, []);
-
     const handleUpdate = async (values) => {
         setLoading(true);
         try {
@@ -128,13 +200,16 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                     ? format(values.trade_date, "yyyy-MM-dd")
                     : null,
             };
+
+            console.log("API payload:", payload);
+
             await updateTrade(trade.id, payload);
             toast.success("Trade updated successfully!");
             onClose();
             onUpdated?.();
         } catch (err) {
-            toast.error(err);
-            toast.error(err.message);
+            console.error("Update error:", err);
+            toast.error(err.message || "Something went wrong");
         } finally {
             setLoading(false);
         }
@@ -158,6 +233,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                         onSubmit={handleSubmit(handleUpdate)}
                         className="space-y-6"
                     >
+                        {/* Trade Date */}
                         <FormField
                             control={control}
                             name="trade_date"
@@ -173,16 +249,14 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                                 className={cn(
                                                     "w-[240px] pl-3 text-left font-medium",
                                                     fieldState.error &&
-                                                        "border-rose-500 text-trade-loss",
+                                                        "border-rose-500",
                                                     !field.value &&
                                                         "text-slate-500"
                                                 )}
                                             >
-                                                {field.value ? (
-                                                    format(field.value, "PPP")
-                                                ) : (
-                                                    <span>Pick a date</span>
-                                                )}
+                                                {field.value
+                                                    ? format(field.value, "PPP")
+                                                    : "Pick a date"}
                                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                             </Button>
                                         </PopoverTrigger>
@@ -199,7 +273,9 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                             />
                                         </PopoverContent>
                                     </Popover>
-                                    <FormMessage />
+                                    <FormMessage>
+                                        {fieldState.error?.message}
+                                    </FormMessage>
                                 </FormItem>
                             )}
                         />
@@ -224,93 +300,27 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                             }`}
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage>
+                                        {fieldState.error?.message}
+                                    </FormMessage>
                                 </FormItem>
                             )}
                         />
 
                         {/* Margin */}
-                        <FormField
+                        <CurrencyField
                             control={control}
                             name="margin"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Margin
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            value={
-                                                field.value
-                                                    ? `Rp. ${Number(
-                                                          field.value
-                                                      ).toLocaleString(
-                                                          "id-ID"
-                                                      )}`
-                                                    : ""
-                                            }
-                                            placeholder="e.g. 1000"
-                                            className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                                                fieldState.error
-                                                    ? "border-rose-500"
-                                                    : ""
-                                            }`}
-                                            onChange={(e) =>
-                                                field.onChange(
-                                                    e.target.value.replace(
-                                                        /\D/g,
-                                                        ""
-                                                    )
-                                                )
-                                            }
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            label="Margin"
+                            placeholder="1000"
                         />
 
                         {/* Proceeds */}
-                        <FormField
+                        <CurrencyField
                             control={control}
                             name="proceeds"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Proceeds
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            value={
-                                                field.value
-                                                    ? `Rp. ${Number(
-                                                          field.value
-                                                      ).toLocaleString(
-                                                          "id-ID"
-                                                      )}`
-                                                    : ""
-                                            }
-                                            placeholder="e.g. 1000"
-                                            className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                                                fieldState.error
-                                                    ? "border-rose-500"
-                                                    : ""
-                                            }`}
-                                            onChange={(e) =>
-                                                field.onChange(
-                                                    e.target.value.replace(
-                                                        /\D/g,
-                                                        ""
-                                                    )
-                                                )
-                                            }
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            label="Proceeds"
+                            placeholder="2000"
                         />
 
                         {/* Realized Gain */}
@@ -322,26 +332,17 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <FormLabel className="font-medium">
                                         Realized Gain
                                     </FormLabel>
-                                    <FormDescription className="font-medium text-slate-500">
-                                        This value is calculated automatically
-                                        based on Margin and Proceeds.
+                                    <FormDescription className="font-medium">
+                                        Calculated automatically from Margin &
+                                        Proceeds
                                     </FormDescription>
                                     <FormControl>
                                         <Input
-                                            className="font-medium text-slate-900"
-                                            value={
-                                                field.value
-                                                    ? `Rp. ${Number(
-                                                          field.value
-                                                      ).toLocaleString(
-                                                          "id-ID"
-                                                      )}`
-                                                    : ""
-                                            }
+                                            value={formatRupiah(field.value)}
                                             disabled
+                                            className="font-medium"
                                         />
                                     </FormControl>
-                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
@@ -355,220 +356,35 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <FormLabel className="font-medium">
                                         Return %
                                     </FormLabel>
-                                    <FormDescription className="font-medium text-slate-500">
-                                        This value is calculated automatically
-                                        based on Margin and Realized Gain.
+                                    <FormDescription className="font-medium">
+                                        Calculated automatically from Margin &
+                                        Realized Gain
                                     </FormDescription>
                                     <FormControl>
                                         <Input
                                             value={field.value}
                                             disabled
-                                            className="font-medium text-slate-900"
+                                            className="font-medium"
                                         />
                                     </FormControl>
-                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
 
-                        {/* Stock Type Option */}
-                        <FormField
-                            control={control}
-                            name="stock_type_option"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Stock Type Option
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <SelectTrigger className="min-w-full font-medium">
-                                                <SelectValue placeholder="Select entry session" />
-                                            </SelectTrigger>
-                                            <SelectContent className="font-medium">
-                                                {options.stockType.map(
-                                                    (opt) => (
-                                                        <SelectItem
-                                                            key={opt.id}
-                                                            value={
-                                                                opt.stock_type_option
-                                                            }
-                                                        >
-                                                            {
-                                                                opt.stock_type_option
-                                                            }
-                                                        </SelectItem>
-                                                    )
-                                                )}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Entry Session Option */}
-                        <FormField
-                            control={control}
-                            name="entry_session_option"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Entry Session Option
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <SelectTrigger className="min-w-full font-medium">
-                                                <SelectValue placeholder="Select entry session" />
-                                            </SelectTrigger>
-                                            <SelectContent className="font-medium">
-                                                {options.entrySession.map(
-                                                    (opt) => (
-                                                        <SelectItem
-                                                            key={opt.id}
-                                                            value={
-                                                                opt.entry_session_options
-                                                            }
-                                                        >
-                                                            {
-                                                                opt.entry_session_options
-                                                            }
-                                                        </SelectItem>
-                                                    )
-                                                )}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        {/* Entry Occasion Option */}
-                        <FormField
-                            control={control}
-                            name="entry_occasion_option"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Entry Occasion Option
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <SelectTrigger className="min-w-full font-medium">
-                                                <SelectValue placeholder="Select entry occasion" />
-                                            </SelectTrigger>
-                                            <SelectContent className="font-medium">
-                                                {options.entryOccasion.map(
-                                                    (opt) => (
-                                                        <SelectItem
-                                                            key={opt.id}
-                                                            value={
-                                                                opt.entry_occasion_option
-                                                            }
-                                                        >
-                                                            {
-                                                                opt.entry_occasion_option
-                                                            }
-                                                        </SelectItem>
-                                                    )
-                                                )}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Buy Reason */}
-                        <FormField
-                            control={control}
-                            name="buy_reason_option"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Buy Reason
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <SelectTrigger className="min-w-full whitespace-normal text-left font-medium">
-                                                <SelectValue placeholder="Select buy reason" />
-                                            </SelectTrigger>
-                                            <SelectContent className="font-medium">
-                                                {options.buyReason.map(
-                                                    (opt) => (
-                                                        <SelectItem
-                                                            key={opt.id}
-                                                            value={
-                                                                opt.buy_reason_options
-                                                            }
-                                                        >
-                                                            {
-                                                                opt.buy_reason_options
-                                                            }
-                                                        </SelectItem>
-                                                    )
-                                                )}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Sell Reason */}
-                        <FormField
-                            control={control}
-                            name="sell_reason_option"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Sell Reason
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <SelectTrigger className="min-w-full whitespace-normal text-left font-medium">
-                                                <SelectValue placeholder="Select sell reason" />
-                                            </SelectTrigger>
-                                            <SelectContent className="font-medium">
-                                                {options.sellReason.map(
-                                                    (opt) => (
-                                                        <SelectItem
-                                                            key={opt.id}
-                                                            value={
-                                                                opt.sell_reason_options
-                                                            }
-                                                        >
-                                                            {
-                                                                opt.sell_reason_options
-                                                            }
-                                                        </SelectItem>
-                                                    )
-                                                )}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        {/* Dynamic Select Fields */}
+                        {SELECT_CONFIG.map(
+                            ({ name, label, apiKey, displayField }) => (
+                                <DynamicSelectField
+                                    key={name}
+                                    control={control}
+                                    name={name}
+                                    label={label}
+                                    options={options[apiKey]}
+                                    loading={optionsLoading[apiKey]}
+                                    displayField={displayField}
+                                />
+                            )
+                        )}
 
                         {/* Notes */}
                         <FormField
@@ -586,7 +402,6 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                             className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                                         />
                                     </FormControl>
-                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
@@ -602,7 +417,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <DialogClose asChild>
                                         <Button
                                             type="button"
-                                            className="text-secondary-foreground bg-transparent hover:bg-secondary-hover font-medium"
+                                            className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
                                         >
                                             Cancel
                                         </Button>
@@ -610,7 +425,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="font-medium bg-primary hover:bg-primary-hover"
+                                        className="bg-primary hover:bg-primary-hover"
                                     >
                                         {loading
                                             ? "Updating..."

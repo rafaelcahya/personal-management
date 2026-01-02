@@ -18,8 +18,9 @@ import { getEventFromDb } from "./cypress/support/db/event/getEventFromDb";
 import {
     getProductListFromDb,
     getTotalProductSummaryFromDb,
-} from "./cypress/support/db/trading-management/product/getProductListFromDb";
-import { getProductBrandListFromDb } from "./cypress/support/db/trading-management/brand/getProductBrandListFromDb";
+} from "./cypress/support/db/inventory/product/getProductListFromDb";
+import { getProductBrandListFromDb } from "./cypress/support/db/inventory/product/brand/getProductBrandListFromDb";
+import { getProductNameListFromDb } from "./cypress/support/db/inventory/product/name/getProductNameListFromDb";
 import {
     saveFixture,
     getRandomFixture,
@@ -121,6 +122,15 @@ export default defineConfig({
                         ? JSON.parse(JSON.stringify(productBrandList))
                         : null;
                 },
+                async getProductNameListFromDbTask(productNameId) {
+                    const productNameList = await getProductNameListFromDb(
+                        supabase,
+                        productNameId
+                    );
+                    return productNameList
+                        ? JSON.parse(JSON.stringify(productNameList))
+                        : null;
+                },
                 saveFixture: (args) => saveFixture(args.filename, args.data),
                 getRandomFixture: (filename) => getRandomFixture(filename),
                 saveFeeId: (feeId) => saveFixture("feeIds.json", feeId),
@@ -134,6 +144,10 @@ export default defineConfig({
                 getRandomProductId: () => getRandomFixture("productIds.json"),
                 saveProductBrandId: (productBrandId) =>
                     saveFixture("productBrandIds.json", productBrandId),
+                getRandomProductNameId: () =>
+                    getRandomFixture("productNameIds.json"),
+                saveProductNameId: (productNameId) =>
+                    saveFixture("productNameIds.json", productNameId),
                 getRandomProductBrandId: () =>
                     getRandomFixture("productBrandIds.json"),
                 clearFixtureFile,
