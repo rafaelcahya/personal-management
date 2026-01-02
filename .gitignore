@@ -13,6 +13,11 @@
 # testing
 /coverage
 user.json
+eventIds.json
+feeIds.json
+productBrandIds.json
+productNameIds.json
+tradeIds.json
 
 # next.js
 /.next/
