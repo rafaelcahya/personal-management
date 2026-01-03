@@ -5,13 +5,13 @@ Cypress.Commands.add("OpenPersonalManagement", () => {
 Cypress.Commands.add("OpenTradingManagement", () => {
     cy.url().should("include", "/main/landing");
     cy.get("#tradeBtnLandingPage").click();
-    cy.url().should("include", "/main/landing");
+    cy.url().should("include", "/trading-management/dashboard");
 });
 
 Cypress.Commands.add("OpenInventoryManagement", () => {
     cy.url().should("include", "/main/landing");
     cy.get("#inventoryBtnLandingPage").click();
-    cy.url().should("include", "/main/trading-management/dashboard");
+    cy.url().should("include", "/inventory-management/dashboard");
 });
 
 Cypress.Commands.add("verifyToastMessage", (message) => {

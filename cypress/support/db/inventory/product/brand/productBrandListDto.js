@@ -10,6 +10,5 @@ export function toProductBrandListDto(db) {
         brand: db.brand,
         note: db.note,
         brandStatus: db.brand_status,
-        brandImage: db.brand_image,
     };
 }

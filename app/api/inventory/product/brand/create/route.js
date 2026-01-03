@@ -20,7 +20,7 @@ export async function POST(req) {
             );
         }
 
-        const requiredFields = ["brand", "note", "brand_status", "brand_image"];
+        const requiredFields = ["brand"];
 
         const validationErrors = [];
         requiredFields.forEach((field) => {
@@ -30,6 +30,14 @@ export async function POST(req) {
                 );
             }
         });
+
+        if (body.brand_status === "deleted") {
+            if (!body.deleted_at) {
+                body.deleted_at = new Date().toISOString();
+            } else if (isNaN(Date.parse(body.deleted_at))) {
+                validationErrors.push("deleted_at must be valid ISO date");
+            }
+        }
 
         if (validationErrors.length > 0) {
             return NextResponse.json(
@@ -45,7 +53,7 @@ export async function POST(req) {
             body.brand,
             body.note,
             body.brand_status,
-            body.brand_image
+            body.deleted_at
         );
 
         return NextResponse.json(
@@ -55,7 +63,7 @@ export async function POST(req) {
     } catch (err) {
         console.error("POST /api/inventory/product/brand/create error:", err);
         return NextResponse.json(
-            { success: false, error: "Internal server error" },
+            { success: false, error: err.message },
             { status: 500 }
         );
     }

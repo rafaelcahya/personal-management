@@ -29,7 +29,7 @@ export async function PUT(req, { params }) {
             );
         }
 
-        const requiredFields = ["brand", "note", "brand_status", "brand_image"];
+        const requiredFields = ["brand", "brand_status"];
 
         const validationErrors = [];
         requiredFields.forEach((field) => {
@@ -39,6 +39,14 @@ export async function PUT(req, { params }) {
                 );
             }
         });
+
+        if (body.brand_status === "deleted") {
+            if (!body.deleted_at) {
+                body.deleted_at = new Date().toISOString();
+            } else if (isNaN(Date.parse(body.deleted_at))) {
+                validationErrors.push("deleted_at must be valid ISO date");
+            }
+        }
 
         if (validationErrors.length > 0) {
             return NextResponse.json(

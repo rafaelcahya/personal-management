@@ -19,7 +19,10 @@ import {
     getProductListFromDb,
     getTotalProductSummaryFromDb,
 } from "./cypress/support/db/inventory/product/getProductListFromDb";
-import { getProductBrandListFromDb } from "./cypress/support/db/inventory/product/brand/getProductBrandListFromDb";
+import {
+    getProductBrandListFromDb,
+    getProductBrandSummaryFromDb,
+} from "./cypress/support/db/inventory/product/brand/getProductBrandListFromDb";
 import { getProductNameListFromDb } from "./cypress/support/db/inventory/product/name/getProductNameListFromDb";
 import {
     saveFixture,
@@ -117,6 +120,14 @@ export default defineConfig({
                     const productBrandList = await getProductBrandListFromDb(
                         supabase,
                         productBrandId
+                    );
+                    return productBrandList
+                        ? JSON.parse(JSON.stringify(productBrandList))
+                        : null;
+                },
+                async getProductBrandSummaryFromDbTask() {
+                    const productBrandList = await getProductBrandSummaryFromDb(
+                        supabase
                     );
                     return productBrandList
                         ? JSON.parse(JSON.stringify(productBrandList))

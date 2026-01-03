@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getListProduct } from "@/lib/services/inventory/product/getListProduct";
+import { getProductList } from "@/lib/services/inventory/product/getProductList";
 
 export async function GET() {
     try {
-        const products = await getListProduct();
+        const products = await getProductList();
 
         const totalProducts = Array.isArray(products) ? products.length : 0;
 

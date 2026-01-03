@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
     try {
-        const listProductName = await getProductNameList();
+        const productNameList = await getProductNameList();
         return NextResponse.json(
-            { success: true, productNames: listProductName },
+            { success: true, productNames: productNameList },
             { status: 200 }
         );
     } catch (err) {

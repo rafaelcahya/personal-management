@@ -64,7 +64,6 @@ export default function AddFee({ onAdded }) {
             reset();
         } catch (err) {
             toast.error(err.message || "Something went wrong");
-            toast.error(err);
         } finally {
             setLoading(false);
         }

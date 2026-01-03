@@ -31,32 +31,46 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-
-// Schema validation
-const formSchema = z.object({
-    product_brand: z.string().min(1, "Please select a product brand"),
-    type: z.string().min(1, "Please select a type"),
-    product_name: z.string().min(1, "Please select a product name"),
-});
+import { productSchema } from "@/schemas/product";
 
 export default function AddProduct({ onAdded }) {
     const [open, setOpen] = useState(false);
     const [productBrands, setProductBrands] = useState([]);
     const [productNames, setProductNames] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [imagePreview, setImagePreview] = useState(null);
 
     const form = useForm({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(productSchema),
         defaultValues: {
+            image: null,
             product_brand: "",
             product_name: "",
             type: "",
+            quantity: "",
+            notes: "",
+            product_status: "active",
         },
     });
 
     const { watch, setValue, control, handleSubmit, reset } = form;
+    const image = watch("image");
+
+    useEffect(() => {
+        if (image && image[0]) {
+            const file = image[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setImagePreview(null);
+        }
+    }, [image]);
 
     // Fetch product brands
     const fetchProductBrands = async () => {
@@ -99,17 +113,28 @@ export default function AddProduct({ onAdded }) {
     const onSubmit = async (values) => {
         setLoading(true);
         try {
+            const formData = new FormData();
+            Object.entries(values).forEach(([key, value]) => {
+                if (key === "image" && value && value[0]) {
+                    formData.append("image", value[0]);
+                } else if (
+                    value !== null &&
+                    value !== undefined &&
+                    value !== ""
+                ) {
+                    formData.append(key, value);
+                }
+            });
             const res = await fetch("/api/inventory/products", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(values),
+                body: formData,
             });
 
             if (res.ok) {
                 toast.success("Product added successfully");
                 setOpen(false);
                 form.reset();
-                onAdded?.(); // Refresh list
+                onAdded?.();
             } else {
                 toast.error("Failed to add product");
             }
@@ -138,6 +163,42 @@ export default function AddProduct({ onAdded }) {
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-4"
                     >
+                        <FormField
+                            control={control}
+                            name="image"
+                            render={({ field, fieldState }) => (
+                                <FormItem>
+                                    <FormLabel className="font-medium">
+                                        Product Image
+                                    </FormLabel>
+                                    <FormControl className=" cursor-pointer">
+                                        <Input
+                                            id="image"
+                                            type="file"
+                                            accept="image/*"
+                                            className="text-sm font-medium"
+                                            onChange={(e) => {
+                                                const files = e.target.files;
+                                                field.onChange(files);
+                                            }}
+                                        />
+                                    </FormControl>
+                                    {/* Image Preview */}
+                                    {imagePreview && (
+                                        <div className="mt-2">
+                                            <img
+                                                src={imagePreview}
+                                                alt="Preview"
+                                                className="w-24 h-24 object-cover rounded-md border"
+                                            />
+                                        </div>
+                                    )}
+                                    <FormMessage>
+                                        {fieldState.error?.message}
+                                    </FormMessage>
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="product_brand"
@@ -266,6 +327,56 @@ export default function AddProduct({ onAdded }) {
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={control}
+                            id="quantity"
+                            name="quantity"
+                            render={({ field, fieldState }) => (
+                                <FormItem>
+                                    <FormLabel className="font-medium">
+                                        Quantity
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            placeholder="e.g. 10"
+                                            type="number"
+                                            className={` text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                                                fieldState.error
+                                                    ? "border-rose-500"
+                                                    : ""
+                                            }`}
+                                        />
+                                    </FormControl>
+                                    <FormMessage
+                                        id="typeMessage"
+                                        className="font-medium"
+                                    >
+                                        {fieldState.error?.message}
+                                    </FormMessage>
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={control}
+                            name="notes"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="font-medium">
+                                        Notes
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            {...field}
+                                            placeholder="Additional notes"
+                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
+                                        />
+                                    </FormControl>
                                 </FormItem>
                             )}
                         />

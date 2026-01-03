@@ -51,7 +51,7 @@ export default function ProductsTable({ products: initialProducts }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <Link
-                        href="/main/landing/trading-management/dashboard"
+                        href="/main/landing/inventory-management/dashboard"
                         className="hidden sm:block"
                     >
                         <Button className="bg-transparent hover:bg-secondary text-secondary-foreground font-medium">

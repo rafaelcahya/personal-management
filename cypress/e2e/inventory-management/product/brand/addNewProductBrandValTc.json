@@ -1,0 +1,7 @@
+[
+    {
+        "description": "should show error when Product Brand is empty",
+        "fields": {},
+        "expectedMsg": { "#productBrandMessage": "Product brand cannot be empty" }
+    }
+]
