@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { randomString } from "../../support/common/helper";
 
 describe("Event API", () => {
@@ -7,15 +8,10 @@ describe("Event API", () => {
 
     describe("Create", () => {
         it("should successfully add new event", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(4, "text").toUpperCase(),
-            };
-
             const request = {
-                event_description: testData.text,
-                impact_direction: testData.text,
-                event_date: testData.date,
+                event_description: faker.food.dish(),
+                impact_direction: faker.food.dish(),
+                event_date: faker.date.recent(),
             };
 
             cy.AddNewEvent(request).then((response) => {
@@ -80,16 +76,10 @@ describe("Event API", () => {
         });
 
         it("should ensure deleted_at is null after successfully adding a new event", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(10, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                event_description: testData.text,
-                impact_direction: testData.text,
-                event_date: testData.date,
+                event_description: faker.food.dish(),
+                impact_direction: faker.food.dish(),
+                event_date: faker.date.recent(),
             };
 
             cy.AddNewEvent(request).then((response) => {
@@ -113,16 +103,10 @@ describe("Event API", () => {
 
     describe("Update", () => {
         it("should successfully update event", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(10, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                event_description: testData.text,
-                impact_direction: testData.text,
-                event_date: testData.date,
+                event_description: faker.food.dish(),
+                impact_direction: faker.food.dish(),
+                event_date: faker.date.recent(),
             };
 
             cy.task("getRandomEventId")
@@ -204,16 +188,10 @@ describe("Event API", () => {
         });
 
         it("should ensure deleted_at is null after successfully updating a event", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(10, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                event_description: testData.text,
-                impact_direction: testData.text,
-                event_date: testData.date,
+                event_description: faker.food.dish(),
+                impact_direction: faker.food.dish(),
+                event_date: faker.date.recent(),
             };
 
             let apiEvent;
@@ -258,16 +236,10 @@ describe("Event API", () => {
 
     describe("Delete", () => {
         it("should successfully delete event", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(10, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                event_description: testData.text,
-                impact_direction: testData.text,
-                event_date: testData.date,
+                event_description: faker.food.dish(),
+                impact_direction: faker.food.dish(),
+                event_date: faker.date.recent(),
             };
 
             cy.AddNewEvent(request)

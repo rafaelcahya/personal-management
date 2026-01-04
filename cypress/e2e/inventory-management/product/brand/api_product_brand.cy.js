@@ -70,6 +70,64 @@ describe("Product Brand API", () => {
             });
         });
 
+        it("should total active product brand is increase by 1 after add new product brand with active status", () => {
+            const request = {
+                brand: faker.company.name(),
+                note: faker.commerce.productDescription(),
+                brand_status: "active",
+            };
+
+            cy.GetProductBrandSummary()
+                .then((summary) => {
+                    cy.wrap(summary.totalStatus.active).as(
+                        "initialTotalActive"
+                    );
+                })
+
+                .then(() => cy.AddNewProductBrand(request))
+
+                .then(() =>
+                    cy.GetProductBrandSummary().then((finalSummary) => {
+                        cy.get("@initialTotalActive").then(
+                            (initialTotalActive) => {
+                                expect(finalSummary.totalStatus.active).to.eq(
+                                    initialTotalActive + 1
+                                );
+                            }
+                        );
+                    })
+                );
+        });
+
+        it("should total product brand is increase by 1 after add new product brand with active status", () => {
+            const request = {
+                brand: faker.company.name(),
+                note: faker.commerce.productDescription(),
+                brand_status: "active",
+            };
+
+            cy.GetProductBrandSummary()
+                .then((summary) => {
+                    cy.wrap(summary.totalProductBrands).as(
+                        "initialTotalProductBrands"
+                    );
+                })
+
+                .then(() => cy.AddNewProductBrand(request))
+
+                .then(() =>
+                    cy.GetProductBrandSummary().then((finalSummary) => {
+                        cy.get("@initialTotalProductBrands").then(
+                            (initialTotalProductBrands) => {
+                                expect(finalSummary.totalProductBrands).to.eq(
+                                    initialTotalProductBrands + 1
+                                );
+                            }
+                        );
+                    })
+                );
+        });
+
         it("should successfully add new product brand with inactive status", () => {
             const request = {
                 brand: faker.company.name(),
@@ -110,6 +168,62 @@ describe("Product Brand API", () => {
             });
         });
 
+        it("should total active product brand is increase by 1 after add new product brand with inactive status", () => {
+            const request = {
+                brand: faker.company.name(),
+                note: faker.commerce.productDescription(),
+                brand_status: "inactive",
+            };
+
+            cy.GetProductBrandSummary()
+                .then((summary) => {
+                    cy.wrap(summary.totalStatus.inactive).as("initialTotalInactive");
+                })
+
+                .then(() => cy.AddNewProductBrand(request))
+
+                .then(() =>
+                    cy.GetProductBrandSummary().then((finalSummary) => {
+                        cy.get("@initialTotalInactive").then(
+                            (initialTotalInactive) => {
+                                expect(finalSummary.totalStatus.inactive).to.eq(
+                                    initialTotalInactive + 1
+                                );
+                            }
+                        );
+                    })
+                );
+        });
+
+        it("should total product brand is increase by 1 after add new product brand with inactive status", () => {
+            const request = {
+                brand: faker.company.name(),
+                note: faker.commerce.productDescription(),
+                brand_status: "inactive",
+            };
+
+            cy.GetProductBrandSummary()
+                .then((summary) => {
+                    cy.wrap(summary.totalProductBrands).as(
+                        "initialTotalProductBrands"
+                    );
+                })
+
+                .then(() => cy.AddNewProductBrand(request))
+
+                .then(() =>
+                    cy.GetProductBrandSummary().then((finalSummary) => {
+                        cy.get("@initialTotalProductBrands").then(
+                            (initialTotalProductBrands) => {
+                                expect(finalSummary.totalProductBrands).to.eq(
+                                    initialTotalProductBrands + 1
+                                );
+                            }
+                        );
+                    })
+                );
+        });
+
         it("should successfully add new product brand with deleted status", () => {
             const request = {
                 brand: faker.company.name(),
@@ -148,6 +262,64 @@ describe("Product Brand API", () => {
 
                 cy.saveProductBrandId(response.body.productBrand.id);
             });
+        });
+
+        it("should total active product brand is increase by 1 after add new product brand with deleted status", () => {
+            const request = {
+                brand: faker.company.name(),
+                note: faker.commerce.productDescription(),
+                brand_status: "deleted",
+            };
+
+            cy.GetProductBrandSummary()
+                .then((summary) => {
+                    cy.wrap(summary.totalStatus.deleted).as(
+                        "initialTotalDeleted"
+                    );
+                })
+
+                .then(() => cy.AddNewProductBrand(request))
+
+                .then(() =>
+                    cy.GetProductBrandSummary().then((finalSummary) => {
+                        cy.get("@initialTotalDeleted").then(
+                            (initialTotalDeleted) => {
+                                expect(finalSummary.totalStatus.deleted).to.eq(
+                                    initialTotalDeleted + 1
+                                );
+                            }
+                        );
+                    })
+                );
+        });
+
+        it("should total product brand is increase by 1 after add new product brand with deleted status", () => {
+            const request = {
+                brand: faker.company.name(),
+                note: faker.commerce.productDescription(),
+                brand_status: "deleted",
+            };
+
+            cy.GetProductBrandSummary()
+                .then((summary) => {
+                    cy.wrap(summary.totalProductBrands).as(
+                        "initialTotalProductBrands"
+                    );
+                })
+
+                .then(() => cy.AddNewProductBrand(request))
+
+                .then(() =>
+                    cy.GetProductBrandSummary().then((finalSummary) => {
+                        cy.get("@initialTotalProductBrands").then(
+                            (initialTotalProductBrands) => {
+                                expect(finalSummary.totalProductBrands).to.eq(
+                                    initialTotalProductBrands + 1
+                                );
+                            }
+                        );
+                    })
+                );
         });
 
         it("should fail to add new product brand with missing required fields", () => {
@@ -526,7 +698,8 @@ describe("Product Brand API", () => {
                             expect(deleteResponse.status).to.eq(200);
                             cy.task("getProductBrandListFromDbTask", id).then(
                                 (dbProductBrand) => {
-                                    expect(dbProductBrand.deletedAt).to.be.not.null;
+                                    expect(dbProductBrand.deletedAt).to.be.not
+                                        .null;
                                 }
                             );
                         });

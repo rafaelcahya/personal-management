@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { randomString } from "../../../../support/common/helper";
 
 describe("Product Name API", () => {
@@ -7,14 +8,10 @@ describe("Product Name API", () => {
 
     describe("Create", () => {
         it("should successfully add new product name", () => {
-            const testData = {
-                text: randomString(10, "text"),
-            };
-
             const request = {
-                product_name: testData.text,
-                product_name_status: testData.text,
-                note: testData.text,
+                product_name: faker.book.title(),
+                product_name_status: faker.book.genre(),
+                note: faker.book.format(),
             };
 
             cy.AddNewProductName(request).then((response) => {
@@ -30,9 +27,9 @@ describe("Product Name API", () => {
                                 expect(apiProductName.product_name).to.eq(
                                     dbProductName.productName
                                 );
-                                expect(apiProductName.product_name_status).to.eq(
-                                    dbProductName.productNameStatus
-                                );
+                                expect(
+                                    apiProductName.product_name_status
+                                ).to.eq(dbProductName.productNameStatus);
                                 expect(apiProductName.note).to.eq(
                                     dbProductName.note
                                 );
@@ -41,7 +38,7 @@ describe("Product Name API", () => {
                     );
                 });
 
-                cy.saveProductBrandId(response.body.productName.id);
+                cy.saveProductNameId(response.body.productName.id);
             });
         });
 
@@ -80,14 +77,10 @@ describe("Product Name API", () => {
         });
 
         it("should ensure deleted_at is null after successfully adding a new product name", () => {
-            const testData = {
-                text: randomString(10, "text"),
-            };
-
             const request = {
-                product_name: testData.text,
-                product_name_status: testData.text,
-                note: testData.text,
+                product_name: faker.book.title(),
+                product_name_status: faker.book.genre(),
+                note: faker.book.format(),
             };
 
             cy.AddNewProductName(request).then((response) => {
@@ -124,43 +117,33 @@ describe("Product Name API", () => {
         });
 
         it("should successfully update product name", () => {
-            const testData = {
-                text: randomString(10, "text"),
-            };
-
             const request = {
-                product_name: testData.text,
-                product_name_status: testData.text,
-                note: testData.text,
+                product_name: faker.book.title(),
+                product_name_status: faker.book.genre(),
+                note: faker.book.format(),
             };
 
-            cy.task("getRandomProductBrandId")
+            let apiProductName;
+
+            cy.task("getRandomProductNameId")
                 .then((id) => cy.UpdateProductName(id, request))
                 .then((response) => {
                     expect(response.status).to.eq(200);
 
-                    const apiProductName = response.body.productName;
-                    cy.wrap(apiProductName).as("apiProductName");
-                    cy.wrap(apiProductName.id).as("productNameId");
-                })
-                .then(() => {
-                    cy.get("@productNameId").then((productNameId) => {
-                        return cy.task(
-                            "getProductNameListFromDbTask",
-                            productNameId
-                        );
-                    });
+                    apiProductName = response.body.productName;
+                    return cy.task(
+                        "getProductNameListFromDbTask",
+                        apiProductName.id
+                    );
                 })
                 .then((dbProductName) => {
-                    cy.get("@apiProductName").then((apiProductName) => {
-                        expect(apiProductName.product_name).to.eq(
-                            dbProductName.productName
-                        );
-                        expect(apiProductName.product_name_status).to.eq(
-                            dbProductName.productNameStatus
-                        );
-                        expect(apiProductName.note).to.eq(dbProductName.note);
-                    });
+                    expect(apiProductName.product_name).to.eq(
+                        dbProductName.productName
+                    );
+                    expect(apiProductName.product_name_status).to.eq(
+                        dbProductName.productNameStatus
+                    );
+                    expect(apiProductName.note).to.eq(dbProductName.note);
                 });
         });
 
@@ -170,7 +153,7 @@ describe("Product Name API", () => {
                 product_name_status: "",
             };
 
-            cy.task("getRandomProductBrandId").then((randomId) => {
+            cy.task("getRandomProductNameId").then((randomId) => {
                 cy.UpdateProductName(randomId, request).then((response) => {
                     expect(response.status).to.eq(400);
 
@@ -187,19 +170,15 @@ describe("Product Name API", () => {
         });
 
         it("should ensure deleted_at is null after successfully updating a product name", () => {
-            const testData = {
-                text: randomString(10, "text"),
-            };
-
             const request = {
-                product_name: testData.text,
-                product_name_status: testData.text,
-                note: testData.text,
+                product_name: faker.book.title(),
+                product_name_status: faker.book.genre(),
+                note: faker.book.format(),
             };
 
             let apiProductName;
 
-            cy.task("getRandomProductBrandId")
+            cy.task("getRandomProductNameId")
                 .then((id) => cy.UpdateProductName(id, request))
                 .then((response) => {
                     expect(response.status).to.eq(200);
@@ -218,7 +197,7 @@ describe("Product Name API", () => {
         });
 
         it("should fail to update product name with invalid JSON", () => {
-            cy.task("getRandomProductBrandId").then((randomId) => {
+            cy.task("getRandomProductNameId").then((randomId) => {
                 cy.UpdateProductName(randomId).then((response) => {
                     expect(response.status).to.eq(400);
                     expect(response.body.error).to.include(
@@ -231,14 +210,10 @@ describe("Product Name API", () => {
 
     describe("Delete", () => {
         it("should successfully delete product name", () => {
-            const testData = {
-                text: randomString(10, "text"),
-            };
-
             const request = {
-                product_name: testData.text,
-                product_name_status: testData.text,
-                note: testData.text,
+                product_name: faker.book.title(),
+                product_name_status: faker.book.genre(),
+                note: faker.book.format(),
             };
 
             cy.AddNewProductName(request)

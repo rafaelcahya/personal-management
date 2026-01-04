@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { randomString } from "../../support/common/helper";
 
 describe("Trade API", () => {
@@ -67,25 +68,19 @@ describe("Trade API", () => {
 
     describe("Create", () => {
         it("should successfully add new trade", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(4, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
+                realized_gain: faker.string.numeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.AddNewTrade(request).then((response) => {
@@ -187,25 +182,19 @@ describe("Trade API", () => {
         });
 
         it("should fail to add new trade with invalid ticker", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                number: randomString(5, "number"),
-                invalidTicker: "TICKER!@#",
-            };
-
             const request = {
-                trade_date: new Date().toISOString().replace("Z", "+00:00"),
-                ticker: testData.invalidTicker,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: faker.string.symbol(5),
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
+                realized_gain: faker.string.numeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.AddNewTrade(request).then((response) => {
@@ -217,25 +206,19 @@ describe("Trade API", () => {
         });
 
         it("should fail to add new trade with invalid number fields", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                invalidNumber: "123ABC",
-            };
-
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.invalidNumber,
-                proceeds: testData.invalidNumber,
-                return_percent: testData.invalidNumber,
-                realized_gain: testData.invalidNumber,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.alphanumeric(5),
+                proceeds: faker.string.alphanumeric(5),
+                return_percent: faker.string.alphanumeric(5),
+                realized_gain: faker.string.alphanumeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.AddNewTrade(request).then((response) => {
@@ -255,25 +238,19 @@ describe("Trade API", () => {
         });
 
         it("should ensure deleted_at is null after successfully adding a new trade", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
+                realized_gain: faker.string.numeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.AddNewTrade(request).then((response) => {
@@ -293,25 +270,19 @@ describe("Trade API", () => {
         });
 
         it("should Total Trades increase by 1 after adding a new trade", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
+                realized_gain: faker.string.numeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.GetTradeSummary()
@@ -335,24 +306,19 @@ describe("Trade API", () => {
         });
 
         it("should Total Win Trades increase by 1 after adding a new winning trade", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                number: randomString(5, "number"),
-            };
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
                 realized_gain: "10",
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
             cy.GetTradeSummary()
                 .then((summary) => {
@@ -372,24 +338,19 @@ describe("Trade API", () => {
         });
 
         it("should Total Loss Trades increase by 1 after adding a new winning trade", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                number: randomString(5, "number"),
-            };
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
                 realized_gain: "-10",
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
             cy.GetTradeSummary()
                 .then((summary) => {
@@ -425,25 +386,19 @@ describe("Trade API", () => {
         });
 
         it("should successfully update trade", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(4, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
+                realized_gain: faker.string.numeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.task("getRandomTradeId")
@@ -534,25 +489,19 @@ describe("Trade API", () => {
         });
 
         it("should fail to update trade with invalid ticker", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                number: randomString(5, "number"),
-                invalidTicker: "TICKER!@#",
-            };
-
             const request = {
-                trade_date: new Date().toISOString().replace("Z", "+00:00"),
-                ticker: testData.invalidTicker,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: faker.string.symbol(5),
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
+                realized_gain: faker.string.numeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.task("getRandomTradeId").then((randomId) => {
@@ -566,25 +515,19 @@ describe("Trade API", () => {
         });
 
         it("should fail to update trade with invalid number fields", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                invalidNumber: "123ABC",
-            };
-
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.invalidNumber,
-                proceeds: testData.invalidNumber,
-                return_percent: testData.invalidNumber,
-                realized_gain: testData.invalidNumber,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.alphanumeric(5),
+                proceeds: faker.string.alphanumeric(5),
+                return_percent: faker.string.alphanumeric(5),
+                realized_gain: faker.string.alphanumeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.task("getRandomTradeId").then((randomId) => {
@@ -606,25 +549,19 @@ describe("Trade API", () => {
         });
 
         it("should ensure deleted_at is null after successfully updating a event", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(4, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
+                realized_gain: faker.string.numeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             let apiTrade;
@@ -643,40 +580,34 @@ describe("Trade API", () => {
         });
 
         it("should Total Win Trades increase by 1 after updating a losing trade", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                number: randomString(5, "number"),
-            };
-
             const requestCreate = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
                 realized_gain: "-10",
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             const requestUpdate = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
                 realized_gain: "10",
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.GetTradeSummary().then((summary) => {
@@ -699,40 +630,34 @@ describe("Trade API", () => {
         });
 
         it("should Total Lose Trades increase by 1 after updating a winning trade", () => {
-            const testData = {
-                text: randomString(4, "text").toUpperCase(),
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                number: randomString(5, "number"),
-            };
-
             const requestCreate = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
                 realized_gain: "10",
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             const requestUpdate = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
                 realized_gain: "-10",
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.GetTradeSummary().then((summary) => {
@@ -770,25 +695,19 @@ describe("Trade API", () => {
 
     describe("Delete", () => {
         it("should successfully delete trade", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(4, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
+                realized_gain: faker.string.numeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.AddNewTrade(request)
@@ -812,25 +731,19 @@ describe("Trade API", () => {
         it("should Total Trades decrease by 1 after deleting a trade", () => {
             let baselineotalTrades;
 
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(4, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                trade_date: testData.date,
-                ticker: testData.text,
-                margin: testData.number,
-                proceeds: testData.number,
-                return_percent: testData.number,
-                realized_gain: testData.number,
-                stock_type_option: testData.text,
-                entry_session_option: testData.text,
-                entry_occasion_option: testData.text,
-                buy_reason_option: testData.text,
-                sell_reason_option: testData.text,
-                notes: testData.text,
+                trade_date: faker.date.recent(),
+                ticker: "TEST",
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
+                realized_gain: faker.string.numeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.animal.snake(),
             };
 
             cy.GetTradeSummary()

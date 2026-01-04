@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { randomString } from "../../../support/common/helper";
 
 describe("Product API", () => {
@@ -22,20 +23,15 @@ describe("Product API", () => {
 
     describe("Create", () => {
         it("should successfully add new product", () => {
-            const testData = {
-                text: randomString(10, "text"),
-                number: randomString(10, "number"),
-            };
-
             const request = {
-                product: testData.text,
-                brand: testData.text,
-                type: testData.text,
-                product_status: testData.text,
-                quantity: testData.number,
-                on_hand_quantity: testData.number,
-                note: testData.text,
-                product_image: testData.text,
+                product: faker.company.name(),
+                brand: faker.commerce.product(),
+                type: faker.commerce.productAdjective(),
+                product_status: "active",
+                quantity: faker.string.numeric(),
+                on_hand_quantity: faker.string.numeric(),
+                note: faker.commerce.productDescription(),
+                product_image: faker.image.urlPicsumPhotos(),
             };
 
             cy.AddNewProduct(request).then((response) => {
@@ -120,21 +116,15 @@ describe("Product API", () => {
         });
 
         it("should fail to add new product with invalid number fields", () => {
-            const testData = {
-                text: randomString(10, "text"),
-                number: randomString(10, "number"),
-                invalidNumber: "123ABC",
-            };
-
             const request = {
-                product: testData.text,
-                brand: testData.text,
-                type: testData.text,
-                product_status: testData.text,
-                quantity: testData.invalidNumber,
-                on_hand_quantity: testData.invalidNumber,
-                note: testData.text,
-                product_image: testData.text,
+                product: faker.company.name(),
+                brand: faker.commerce.product(),
+                type: faker.commerce.productAdjective(),
+                product_status: "active",
+                quantity: faker.string.alphanumeric(5),
+                on_hand_quantity: faker.string.alphanumeric(5),
+                note: faker.commerce.productDescription(),
+                product_image: faker.image.urlPicsumPhotos(),
             };
 
             cy.AddNewProduct(request).then((response) => {
@@ -152,20 +142,15 @@ describe("Product API", () => {
         });
 
         it("should ensure deleted_at is null after successfully adding a new product", () => {
-            const testData = {
-                text: randomString(10, "text"),
-                number: randomString(10, "number"),
-            };
-
             const request = {
-                product: testData.text,
-                brand: testData.text,
-                type: testData.text,
-                product_status: testData.text,
-                quantity: testData.number,
-                on_hand_quantity: testData.number,
-                note: testData.text,
-                product_image: testData.text,
+                product: faker.company.name(),
+                brand: faker.commerce.product(),
+                type: faker.commerce.productAdjective(),
+                product_status: "active",
+                quantity: faker.string.numeric(),
+                on_hand_quantity: faker.string.numeric(),
+                note: faker.commerce.productDescription(),
+                product_image: faker.image.urlPicsumPhotos(),
             };
 
             cy.AddNewProduct(request).then((response) => {
@@ -185,20 +170,15 @@ describe("Product API", () => {
         });
 
         it("should Total Products increase by 1 after adding a new product", () => {
-            const testData = {
-                text: randomString(10, "text"),
-                number: randomString(10, "number"),
-            };
-
             const request = {
-                product: testData.text,
-                brand: testData.text,
-                type: testData.text,
-                product_status: testData.text,
-                quantity: testData.number,
-                on_hand_quantity: testData.number,
-                note: testData.text,
-                product_image: testData.text,
+                product: faker.company.name(),
+                brand: faker.commerce.product(),
+                type: faker.commerce.productAdjective(),
+                product_status: "active",
+                quantity: faker.string.numeric(),
+                on_hand_quantity: faker.string.numeric(),
+                note: faker.commerce.productDescription(),
+                product_image: faker.image.urlPicsumPhotos(),
             };
 
             cy.GetProductSummary()
@@ -236,20 +216,15 @@ describe("Product API", () => {
         });
 
         it("should successfully update product", () => {
-            const testData = {
-                text: randomString(10, "text"),
-                number: randomString(10, "number"),
-            };
-
             const request = {
-                product: testData.text,
-                brand: testData.text,
-                type: testData.text,
-                product_status: testData.text,
-                quantity: testData.number,
-                on_hand_quantity: testData.number,
-                note: testData.text,
-                product_image: testData.text,
+                product: faker.company.name(),
+                brand: faker.commerce.product(),
+                type: faker.commerce.productAdjective(),
+                product_status: "active",
+                quantity: faker.string.numeric(),
+                on_hand_quantity: faker.string.numeric(),
+                note: faker.commerce.productDescription(),
+                product_image: faker.image.urlPicsumPhotos(),
             };
 
             cy.task("getRandomProductId")
@@ -320,20 +295,18 @@ describe("Product API", () => {
 
         it("should fail to update product with invalid number fields", () => {
             const testData = {
-                text: randomString(10, "text"),
-                number: randomString(10, "number"),
                 invalidNumber: "123ABC",
             };
 
             const request = {
-                product: testData.text,
-                brand: testData.text,
-                type: testData.text,
-                product_status: testData.text,
-                quantity: testData.invalidNumber,
-                on_hand_quantity: testData.invalidNumber,
-                note: testData.text,
-                product_image: testData.text,
+                product: faker.company.name(),
+                brand: faker.commerce.product(),
+                type: faker.commerce.productAdjective(),
+                product_status: "active",
+                quantity: faker.string.alphanumeric(5),
+                on_hand_quantity: faker.string.alphanumeric(5),
+                note: faker.commerce.productDescription(),
+                product_image: faker.image.urlPicsumPhotos(),
             };
 
             cy.task("getRandomProductId").then((randomId) => {
@@ -353,20 +326,15 @@ describe("Product API", () => {
         });
 
         it("should ensure deleted_at is null after successfully updating a product", () => {
-            const testData = {
-                text: randomString(10, "text"),
-                number: randomString(10, "number"),
-            };
-
             const request = {
-                product: testData.text,
-                brand: testData.text,
-                type: testData.text,
-                product_status: testData.text,
-                quantity: testData.number,
-                on_hand_quantity: testData.number,
-                note: testData.text,
-                product_image: testData.text,
+                product: faker.company.name(),
+                brand: faker.commerce.product(),
+                type: faker.commerce.productAdjective(),
+                product_status: "active",
+                quantity: faker.string.numeric(),
+                on_hand_quantity: faker.string.numeric(),
+                note: faker.commerce.productDescription(),
+                product_image: faker.image.urlPicsumPhotos(),
             };
 
             let apiProduct;
@@ -398,20 +366,15 @@ describe("Product API", () => {
 
     describe("Delete", () => {
         it("should successfully delete product", () => {
-            const testData = {
-                text: randomString(10, "text"),
-                number: randomString(10, "number"),
-            };
-
             const request = {
-                product: testData.text,
-                brand: testData.text,
-                type: testData.text,
-                product_status: testData.text,
-                quantity: testData.number,
-                on_hand_quantity: testData.number,
-                note: testData.text,
-                product_image: testData.text,
+                product: faker.company.name(),
+                brand: faker.commerce.product(),
+                type: faker.commerce.productAdjective(),
+                product_status: "active",
+                quantity: faker.string.numeric(),
+                on_hand_quantity: faker.string.numeric(),
+                note: faker.commerce.productDescription(),
+                product_image: faker.image.urlPicsumPhotos(),
             };
 
             cy.AddNewProduct(request)
@@ -435,20 +398,15 @@ describe("Product API", () => {
         it("should Total Products decrease by 1 after deleting a product", () => {
             let baselineTotalProducts;
 
-            const testData = {
-                text: randomString(10, "text"),
-                number: randomString(10, "number"),
-            };
-
             const request = {
-                product: testData.text,
-                brand: testData.text,
-                type: testData.text,
-                product_status: testData.text,
-                quantity: testData.number,
-                on_hand_quantity: testData.number,
-                note: testData.text,
-                product_image: testData.text,
+                product: faker.company.name(),
+                brand: faker.commerce.product(),
+                type: faker.commerce.productAdjective(),
+                product_status: "active",
+                quantity: faker.string.numeric(),
+                on_hand_quantity: faker.string.numeric(),
+                note: faker.commerce.productDescription(),
+                product_image: faker.image.urlPicsumPhotos(),
             };
 
             cy.GetProductSummary()

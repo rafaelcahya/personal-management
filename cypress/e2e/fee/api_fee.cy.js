@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { randomString } from "../../support/common/helper";
 
 describe("Fee API", () => {
@@ -25,16 +26,10 @@ describe("Fee API", () => {
 
     describe("Create", () => {
         it("should successfully add new fee", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(10, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                fee_name: testData.text,
-                fee_date: testData.date,
-                fee: testData.number,
+                fee_name: faker.food.dish(),
+                fee_date: faker.date.recent(),
+                fee: faker.string.numeric(5),
             };
 
             cy.AddNewFee(request).then((response) => {
@@ -101,9 +96,9 @@ describe("Fee API", () => {
             };
 
             const request = {
-                fee_name: testData.text,
-                fee_date: testData.date,
-                fee: testData.invalidNumber,
+                fee_name: faker.food.dish(),
+                fee_date: faker.date.recent(),
+                fee: faker.string.alphanumeric(5),
             };
 
             cy.AddNewFee(request).then((response) => {
@@ -123,9 +118,9 @@ describe("Fee API", () => {
             };
 
             const request = {
-                fee_name: testData.text,
-                fee_date: testData.date,
-                fee: testData.number,
+                fee_name: faker.food.dish(),
+                fee_date: faker.date.recent(),
+                fee: faker.string.numeric(5),
             };
 
             cy.AddNewFee(request).then((response) => {
@@ -147,16 +142,10 @@ describe("Fee API", () => {
         });
 
         it("should Total Transactions in summary increase by 1 after adding a new fee", () => {
-            const testData = {
-                date: new Date().toISOString().replace("Z", "+00:00"),
-                text: randomString(10, "text").toUpperCase(),
-                number: randomString(5, "number"),
-            };
-
             const request = {
-                fee_name: testData.text,
-                fee_date: testData.date,
-                fee: testData.number,
+                fee_name: faker.food.dish(),
+                fee_date: faker.date.recent(),
+                fee: faker.string.numeric(5),
             };
 
             cy.GetFeeSummary()
@@ -183,8 +172,8 @@ describe("Fee API", () => {
             };
 
             const request = {
-                fee_name: testData.text,
-                fee_date: testData.date,
+                fee_name: faker.food.dish(),
+                fee_date: faker.date.recent(),
                 fee: testData.number.toString(),
             };
 
@@ -211,16 +200,10 @@ describe("Fee API", () => {
 
 describe("Update", () => {
     it("should successfully update fee", () => {
-        const testData = {
-            date: new Date().toISOString().replace("Z", "+00:00"),
-            text: randomString(10, "text").toUpperCase(),
-            number: randomString(5, "number"),
-        };
-
         const request = {
-            fee_name: testData.text,
-            fee_date: testData.date,
-            fee: testData.number,
+            fee_name: faker.food.dish(),
+            fee_date: faker.date.recent(),
+            fee: faker.string.numeric(5),
         };
 
         cy.task("getRandomFeeId")
@@ -297,16 +280,10 @@ describe("Update", () => {
     });
 
     it("should fail to update fee with invalid number fields", () => {
-        const testData = {
-            text: randomString(4, "text").toUpperCase(),
-            date: new Date().toISOString().replace("Z", "+00:00"),
-            invalidNumber: "123ABC",
-        };
-
         const request = {
-            fee_name: testData.text,
-            fee_date: testData.date,
-            fee: testData.invalidNumber,
+            fee_name: faker.food.dish(),
+            fee_date: faker.date.recent(),
+            fee: faker.string.alphanumeric(5),
         };
 
         cy.task("getRandomFeeId").then((randomId) => {
@@ -321,16 +298,10 @@ describe("Update", () => {
     });
 
     it("should ensure deleted_at is null after successfully updating a event", () => {
-        const testData = {
-            date: new Date().toISOString().replace("Z", "+00:00"),
-            text: randomString(10, "text").toUpperCase(),
-            number: randomString(5, "number"),
-        };
-
         const request = {
-            fee_name: testData.text,
-            fee_date: testData.date,
-            fee: testData.number,
+            fee_name: faker.food.dish(),
+            fee_date: faker.date.recent(),
+            fee: faker.string.numeric(5),
         };
 
         let apiFee;
@@ -375,16 +346,10 @@ describe("Update", () => {
 
 describe("Delete", () => {
     it("should successfully delete fee", () => {
-        const testData = {
-            date: new Date().toISOString().replace("Z", "+00:00"),
-            text: randomString(10, "text").toUpperCase(),
-            number: randomString(5, "number"),
-        };
-
         const request = {
-            fee_name: testData.text,
-            fee_date: testData.date,
-            fee: testData.number,
+            fee_name: faker.food.dish(),
+            fee_date: faker.date.recent(),
+            fee: faker.string.numeric(5),
         };
 
         cy.AddNewFee(request)
@@ -405,17 +370,11 @@ describe("Delete", () => {
 
     it("should Total Transactions in summary decrease by 1 after deleting a fee", () => {
         let baselineTotalFees;
-
-        const testData = {
-            date: new Date().toISOString().replace("Z", "+00:00"),
-            text: randomString(10, "text").toUpperCase(),
-            number: randomString(5, "number"),
-        };
-
+        
         const request = {
-            fee_name: testData.text,
-            fee_date: testData.date,
-            fee: testData.number,
+            fee_name: faker.food.dish(),
+            fee_date: faker.date.recent(),
+            fee: faker.string.numeric(5),
         };
 
         cy.GetFeeSummary()
