@@ -23,7 +23,6 @@ export async function getProductBrandSummaryFromDb(supabase) {
 
     if (totalError) throw new Error(totalError.message);
 
-    // Three separate efficient count queries (no .group() needed)
     const [activeRes, inactiveRes, deletedRes] = await Promise.all([
         supabase
             .from("product_brand")

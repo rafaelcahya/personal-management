@@ -20,7 +20,7 @@ export async function POST(req) {
             );
         }
 
-        const requiredFields = ["product_name", "product_name_status"];
+        const requiredFields = ["product_name"];
 
         const validationErrors = [];
         requiredFields.forEach((field) => {
@@ -30,6 +30,14 @@ export async function POST(req) {
                 );
             }
         });
+
+        if (body.product_name_status === "deleted") {
+            if (!body.deleted_at) {
+                body.deleted_at = new Date().toISOString();
+            } else if (isNaN(Date.parse(body.deleted_at))) {
+                validationErrors.push("deleted_at must be valid ISO date");
+            }
+        }
 
         if (validationErrors.length > 0) {
             return NextResponse.json(
@@ -44,7 +52,8 @@ export async function POST(req) {
         const newProductname = await getCreateProductName(
             body.product_name,
             body.product_name_status,
-            body.note
+            body.note,
+            body.deleted_at
         );
 
         return NextResponse.json(

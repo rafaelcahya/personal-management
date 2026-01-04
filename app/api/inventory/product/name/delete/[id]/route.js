@@ -21,11 +21,14 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        return NextResponse.json({ success: true }, { status: 200 });
+        return NextResponse.json(
+            { success: true, data: deletedProductName },
+            { status: 200 }
+        );
     } catch (err) {
         console.error("DELETE /api/inventory/product/name/delete error:", err);
         return NextResponse.json(
-            { success: false, error: "Internal server error" },
+            { success: false, error: err.message },
             { status: 500 }
         );
     }

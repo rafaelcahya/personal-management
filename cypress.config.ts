@@ -23,7 +23,7 @@ import {
     getProductBrandListFromDb,
     getProductBrandSummaryFromDb,
 } from "./cypress/support/db/inventory/product/brand/getProductBrandListFromDb";
-import { getProductNameListFromDb } from "./cypress/support/db/inventory/product/name/getProductNameListFromDb";
+import { getProductNameListFromDb, getProductNameSummaryFromDb } from "./cypress/support/db/inventory/product/name/getProductNameListFromDb";
 import {
     saveFixture,
     getRandomFixture,
@@ -140,6 +140,14 @@ export default defineConfig({
                     );
                     return productNameList
                         ? JSON.parse(JSON.stringify(productNameList))
+                        : null;
+                },
+                async getProductNameSummaryFromDbTask() {
+                    const productBrandList = await getProductNameSummaryFromDb(
+                        supabase
+                    );
+                    return productBrandList
+                        ? JSON.parse(JSON.stringify(productBrandList))
                         : null;
                 },
                 saveFixture: (args) => saveFixture(args.filename, args.data),

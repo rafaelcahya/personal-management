@@ -47,3 +47,15 @@ Cypress.Commands.add("UpdateProductName", (id, request) => {
             return cy.wrap(response);
         });
 });
+
+Cypress.Commands.add("GetProductNameSummary", () => {
+    return cy
+        .request({
+            method: "GET",
+            url: "/api/inventory/product/name/summary",
+            failOnStatusCode: false,
+        })
+        .then((response) => {
+            return response.body.data;
+        });
+});

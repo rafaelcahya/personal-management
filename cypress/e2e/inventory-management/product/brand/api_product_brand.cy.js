@@ -177,7 +177,9 @@ describe("Product Brand API", () => {
 
             cy.GetProductBrandSummary()
                 .then((summary) => {
-                    cy.wrap(summary.totalStatus.inactive).as("initialTotalInactive");
+                    cy.wrap(summary.totalStatus.inactive).as(
+                        "initialTotalInactive"
+                    );
                 })
 
                 .then(() => cy.AddNewProductBrand(request))
@@ -676,14 +678,10 @@ describe("Product Brand API", () => {
 
     describe("Delete", () => {
         it("should successfully delete product brand", () => {
-            const testData = {
-                text: randomString(10, "text"),
-            };
-
             const request = {
                 brand: faker.company.name(),
                 note: faker.commerce.productDescription(),
-                brand_status: testData.text,
+                brand_status: "active",
             };
 
             cy.AddNewProductBrand(request)

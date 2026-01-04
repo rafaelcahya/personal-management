@@ -29,7 +29,7 @@ export async function PUT(req, { params }) {
             );
         }
 
-        const requiredFields = ["product_name", "product_name_status"];
+        const requiredFields = ["product_name"];
 
         const validationErrors = [];
         requiredFields.forEach((field) => {
@@ -39,6 +39,14 @@ export async function PUT(req, { params }) {
                 );
             }
         });
+
+        if (body.product_name === "deleted") {
+            if (!body.deleted_at) {
+                body.deleted_at = new Date().toISOString();
+            } else if (isNaN(Date.parse(body.deleted_at))) {
+                validationErrors.push("deleted_at must be valid ISO date");
+            }
+        }
 
         if (validationErrors.length > 0) {
             return NextResponse.json(

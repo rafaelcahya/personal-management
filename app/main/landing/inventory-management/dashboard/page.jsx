@@ -7,10 +7,16 @@ function page() {
             <Link href="/main/landing/inventory-management/product-list">
                 <Button>Product List</Button>
             </Link>
-            <Link href="/main/landing/inventory-management/product-brand" id="productBrandBtn">
+            <Link
+                href="/main/landing/inventory-management/product-brand"
+                id="productBrandBtn"
+            >
                 <Button>Product Brand</Button>
             </Link>
-            <Link href="/main/landing/inventory-management/product-name">
+            <Link
+                href="/main/landing/inventory-management/product-name"
+                id="productNameBtn"
+            >
                 <Button>Product Name</Button>
             </Link>
             <Link href="/main/landing/inventory-management/product-history">
