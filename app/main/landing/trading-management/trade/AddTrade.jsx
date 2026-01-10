@@ -219,7 +219,7 @@ export default function AddNewTrade({ onAdded }) {
             >
                 <DialogHeader className="text-left font-medium">
                     <DialogTitle>Add New Trade</DialogTitle>
-                    <DialogDescription className="font-normal text-gray-foreground">
+                    <DialogDescription className="font-normal text-slate-foreground">
                         Record your latest trade details to keep track of
                         performance and insights.
                     </DialogDescription>
@@ -373,7 +373,13 @@ export default function AddNewTrade({ onAdded }) {
                         />
 
                         {SELECT_CONFIG.map(
-                            ({ name, label, apiKey, displayField, message }) => (
+                            ({
+                                name,
+                                label,
+                                apiKey,
+                                displayField,
+                                message,
+                            }) => (
                                 <DynamicSelectField
                                     key={name}
                                     control={control}

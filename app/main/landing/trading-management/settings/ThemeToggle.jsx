@@ -23,7 +23,7 @@ export default function ThemeToggle() {
             {/* Header */}
             <div className="px-5 py-4">
                 <p className="font-medium">Theme</p>
-                <p className="text-sm font-medium text-gray-foreground">
+                <p className="text-sm font-medium text-slate-foreground">
                     Choose how the interface looks. Select light, dark, or
                     system default.
                 </p>

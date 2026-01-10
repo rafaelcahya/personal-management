@@ -47,7 +47,7 @@ export default function TradeTable({ trades: initialTrades }) {
                     <Breadcrumbs />
                     <div>
                         <p className="text-lg font-semibold">Trade List</p>
-                        <p className="text-sm text-gray-foreground">
+                        <p className="text-sm text-slate-foreground">
                             Quick peek at your trading history — see what’s
                             winning and what’s not.
                         </p>
@@ -77,40 +77,40 @@ export default function TradeTable({ trades: initialTrades }) {
                     <Table noWrapper>
                         <TableHeader className="bg-gray-50 rounded-xl sticky top-0 z-10">
                             <TableRow className="border-none">
-                                <TableHead className="font-medium text-gray-foreground pr-6 rounded-l-lg">
+                                <TableHead className="font-medium text-slate-foreground pr-6 rounded-l-lg">
                                     Date
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground px-6">
+                                <TableHead className="font-medium text-slate-foreground px-6">
                                     Ticker
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground px-6 text-right">
+                                <TableHead className="font-medium text-slate-foreground px-6 text-right">
                                     Margin
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground px-6 text-right">
+                                <TableHead className="font-medium text-slate-foreground px-6 text-right">
                                     Proceeds
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground px-6">
+                                <TableHead className="font-medium text-slate-foreground px-6">
                                     Return %
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground px-6">
+                                <TableHead className="font-medium text-slate-foreground px-6">
                                     Realized Gain
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground px-6">
+                                <TableHead className="font-medium text-slate-foreground px-6">
                                     Stock Type
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground px-6">
+                                <TableHead className="font-medium text-slate-foreground px-6">
                                     Entry Session
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground px-6">
+                                <TableHead className="font-medium text-slate-foreground px-6">
                                     Entry Occasion
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground px-6 w-[300px] min-w-[300px] max-w-[300px]">
+                                <TableHead className="font-medium text-slate-foreground px-6 w-[300px] min-w-[300px] max-w-[300px]">
                                     Buy Reason
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground px-6 w-[300px] min-w-[300px] max-w-[300px]">
+                                <TableHead className="font-medium text-slate-foreground px-6 w-[300px] min-w-[300px] max-w-[300px]">
                                     Sell Reason
                                 </TableHead>
-                                <TableHead className="font-medium text-gray-foreground pl-6 rounded-r-lg w-[300px] min-w-[300px] max-w-[300px]">
+                                <TableHead className="font-medium text-slate-foreground pl-6 rounded-r-lg w-[300px] min-w-[300px] max-w-[300px]">
                                     Notes
                                 </TableHead>
                             </TableRow>

@@ -112,14 +112,14 @@ function OverallPerformance() {
                         className={`px-3 py-1 rounded-md text-sm font-medium ${
                             percentType === "change"
                                 ? "bg-secondary text-secondary-foreground"
-                                : "bg-transparent text-gray-foreground"
+                                : "bg-transparent text-slate-foreground"
                         }`}
                     >
                         <HoverCard>
                             <HoverCardTrigger>Change %</HoverCardTrigger>
                             <HoverCardContent
                                 sideOffset={10}
-                                className="w-72 text-sm font-medium text-gray-foreground border-none rounded-xl shadow-xl shadow-black/5"
+                                className="w-72 text-sm font-medium text-slate-foreground border-none rounded-xl shadow-xl shadow-black/5"
                             >
                                 Shows the percentage difference between the
                                 current value and the previous baseline. A value
@@ -134,7 +134,7 @@ function OverallPerformance() {
                         className={`px-3 py-1 rounded-md text-sm font-medium ${
                             percentType === "compare"
                                 ? "bg-secondary text-secondary-foreground"
-                                : "bg-transparent text-gray-foreground"
+                                : "bg-transparent text-slate-foreground"
                         }`}
                     >
                         <HoverCard>
@@ -242,7 +242,7 @@ function OverallPerformance() {
                                         displayMode="number"
                                     />
                                     <div className="bg-slate-200 h-px sm:h-10 w-full sm:w-px"></div>
-                                    <p className="font-medium text-gray-foreground text-sm sm:w-1/2 w-full">
+                                    <p className="font-medium text-slate-foreground text-sm sm:w-1/2 w-full">
                                         This data was obtained since 07 August
                                         2025
                                     </p>

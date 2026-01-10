@@ -222,7 +222,7 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
             <DialogContent className="sm:max-w-2xl max-h-[90svh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Update Trade</DialogTitle>
-                    <DialogDescription className="font-medium text-gray-foreground">
+                    <DialogDescription className="font-medium text-slate-foreground">
                         Edit your trade details to keep performance insights
                         accurate.
                     </DialogDescription>

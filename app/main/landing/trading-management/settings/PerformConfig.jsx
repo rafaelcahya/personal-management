@@ -77,7 +77,7 @@ export default function PerformConfig() {
         <div className="flex flex-col h-full w-full max-w-lg">
             <div className="px-5 py-4">
                 <p className="font-medium">Performance Configurations</p>
-                <p className="text-sm font-medium text-gray-foreground">
+                <p className="text-sm font-medium text-slate-foreground">
                     Configure Initial Margin and Risk-Free Rate to keep your
                     trading metrics accurate.
                 </p>

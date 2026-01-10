@@ -73,7 +73,7 @@ export default function Profile() {
         <div className="flex flex-col h-full w-full max-w-lg">
             <div className="px-5 py-4">
                 <p className="font-semibold">Profile</p>
-                <p className="text-sm font-medium text-gray-foreground">
+                <p className="text-sm font-medium text-slate-foreground">
                     Update your profile to keep your account info accurate.
                 </p>
             </div>

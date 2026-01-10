@@ -69,14 +69,17 @@ function EventTable({ events: initialEvents }) {
                     <Breadcrumbs />
                     <div>
                         <p className="text-lg font-semibold">Event List</p>
-                        <p className="text-sm text-gray-foreground">
+                        <p className="text-sm text-slate-foreground">
                             Track key political, economic, and global events
                             that move the market.
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-5">
-                    <Link href="/main/landing/trading-management/dashboard" className="hidden sm:block">
+                    <Link
+                        href="/main/landing/trading-management/dashboard"
+                        className="hidden sm:block"
+                    >
                         <Button className="font-medium bg-transparent hover:bg-purple-50 dark:hover:bg-purple-500/5 text-purple-600">
                             Back
                         </Button>
@@ -122,13 +125,13 @@ function EventTable({ events: initialEvents }) {
                 <Table noWrapper>
                     <TableHeader className="bg-gray-50 dark:bg-[#0e0f11] sticky top-0 z-10">
                         <TableRow className="border-none">
-                            <TableHead className="font-medium text-gray-foreground min-w-[400px] rounded-l-lg">
+                            <TableHead className="font-medium text-slate-foreground min-w-[400px] rounded-l-lg">
                                 Event Description
                             </TableHead>
-                            <TableHead className="font-medium text-gray-foreground w-[200px] min-w-[200px]">
+                            <TableHead className="font-medium text-slate-foreground w-[200px] min-w-[200px]">
                                 Impact Direction
                             </TableHead>
-                            <TableHead className="font-medium text-gray-foreground w-[200px] min-w-[200px] rounded-r-lg">
+                            <TableHead className="font-medium text-slate-foreground w-[200px] min-w-[200px] rounded-r-lg">
                                 Event Date
                             </TableHead>
                         </TableRow>

@@ -20,7 +20,9 @@ import SummaryProductName from "./SummaryProductName";
 import AddProductName from "./AddProductName";
 import ProductNameUpdate from "./UpdateProductName";
 
-export default function ProductNamesTable({ productNames: initialProductNames }) {
+export default function ProductNamesTable({
+    productNames: initialProductNames,
+}) {
     const [productNameList, setProductNameList] = useState(
         initialProductNames || []
     );
@@ -84,7 +86,7 @@ export default function ProductNamesTable({ productNames: initialProductNames })
                         <p className="text-lg font-semibold">
                             Product Name List
                         </p>
-                        <p className="text-sm text-gray-foreground">
+                        <p className="text-sm text-slate-foreground">
                             Manage all your product names in one place — track
                             status, monitor inventory, and keep your stock
                             organized.
@@ -142,16 +144,16 @@ export default function ProductNamesTable({ productNames: initialProductNames })
                             <Table noWrapper>
                                 <TableHeader className="bg-gray-100 dark:bg-[#0e0f11] sticky top-0 z-10">
                                     <TableRow className="border-none">
-                                        <TableHead className="font-medium text-gray-foreground pl-5 rounded-l-xl w-[5%]">
+                                        <TableHead className="font-medium text-slate-foreground pl-5 rounded-l-xl w-[5%]">
                                             #
                                         </TableHead>
-                                        <TableHead className="font-medium text-gray-foreground w-1/3">
+                                        <TableHead className="font-medium text-slate-foreground w-1/3">
                                             Product name
                                         </TableHead>
-                                        <TableHead className="font-medium text-gray-foreground w-1/3">
+                                        <TableHead className="font-medium text-slate-foreground w-1/3">
                                             Product name status
                                         </TableHead>
-                                        <TableHead className="font-medium text-gray-foreground pr-5 rounded-r-xl w-1/3">
+                                        <TableHead className="font-medium text-slate-foreground pr-5 rounded-r-xl w-1/3">
                                             Notes
                                         </TableHead>
                                     </TableRow>

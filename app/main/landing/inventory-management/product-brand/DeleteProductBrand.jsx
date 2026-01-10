@@ -47,7 +47,7 @@ export default function ProductBrandDelete({
                     <AlertDialogTitle className="font-semibold">
                         Delete Product Brand
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="font-medium text-gray-foreground">
+                    <AlertDialogDescription className="font-medium text-slate-foreground">
                         Are you sure you want to delete this product brand? This
                         action cannot be undone.
                     </AlertDialogDescription>

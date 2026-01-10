@@ -30,7 +30,9 @@ export default function CircleStatConic({
 
             <div className="text-center">
                 <p className="font-medium">{count}</p>
-                <p className="text-xs font-medium uppercase text-gray-foreground">{label}</p>
+                <p className="text-xs font-medium uppercase text-slate-foreground">
+                    {label}
+                </p>
             </div>
         </div>
     );

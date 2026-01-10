@@ -38,12 +38,16 @@ function TradeList() {
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-semibold">Trade List</p>
-                    <p className="text-sm text-gray-foreground">
+                    <p className="text-sm text-slate-foreground">
                         Quick peek at your trading history — see what’s winning
                         and what’s not.
                     </p>
                 </div>
-                <Link href="/main/landing/trading-management/trade" prefetch={false} id="tradeBtn">
+                <Link
+                    href="/main/landing/trading-management/trade"
+                    prefetch={false}
+                    id="tradeBtn"
+                >
                     <Button className="bg-primary hover:bg-primary-hover font-medium">
                         Trade
                     </Button>
@@ -55,22 +59,22 @@ function TradeList() {
                 <Table>
                     <TableHeader className="bg-gray-50 rounded-xl">
                         <TableRow className="border-none">
-                            <TableHead className="font-medium pr-6 rounded-l-lg text-gray-foreground">
+                            <TableHead className="font-medium pr-6 rounded-l-lg text-slate-foreground">
                                 Date
                             </TableHead>
-                            <TableHead className="font-medium px-6 text-gray-foreground">
+                            <TableHead className="font-medium px-6 text-slate-foreground">
                                 Ticker
                             </TableHead>
-                            <TableHead className="font-medium px-6 text-right text-gray-foreground">
+                            <TableHead className="font-medium px-6 text-right text-slate-foreground">
                                 Margin
                             </TableHead>
-                            <TableHead className="font-medium px-6 text-right text-gray-foreground">
+                            <TableHead className="font-medium px-6 text-right text-slate-foreground">
                                 Proceeds
                             </TableHead>
-                            <TableHead className="font-medium px-6 text-gray-foreground">
+                            <TableHead className="font-medium px-6 text-slate-foreground">
                                 Return %
                             </TableHead>
-                            <TableHead className="font-medium pl-6 text-right rounded-r-lg text-gray-foreground">
+                            <TableHead className="font-medium pl-6 text-right rounded-r-lg text-slate-foreground">
                                 Realized Gain
                             </TableHead>
                         </TableRow>

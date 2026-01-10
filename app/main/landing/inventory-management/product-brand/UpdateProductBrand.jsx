@@ -89,7 +89,7 @@ export default function ProductBrandUpdate({
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>Update Product Brand</DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-slate-foreground">
                         Edit brand details including name, status, and notes.
                     </DialogDescription>
                 </DialogHeader>

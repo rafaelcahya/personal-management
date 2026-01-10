@@ -22,8 +22,8 @@ export default {
                     foreground: "hsl(var(--popover-foreground))",
                 },
                 black: "hsl(var(--black))",
-                gray: {
-                    foreground: "hsl(var(--gray-foreground))",
+                slate: {
+                    foreground: "hsl(var(--slate-foreground))",
                 },
                 primary: {
                     DEFAULT: "hsl(var(--primary))",

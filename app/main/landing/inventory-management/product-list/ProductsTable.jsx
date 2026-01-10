@@ -43,7 +43,7 @@ export default function ProductsTable({ products: initialProducts }) {
                     <Breadcrumbs />
                     <div>
                         <p className="text-lg font-semibold">Product List</p>
-                        <p className="text-sm text-gray-foreground">
+                        <p className="text-sm text-slate-foreground">
                             Quick peek at your trading history — see what’s
                             winning and what’s not.
                         </p>

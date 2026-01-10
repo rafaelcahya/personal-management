@@ -46,7 +46,7 @@ function FeeTable({ fees: initialFees }) {
                         <p className="text-lg font-semibold tracking-[0.010em]">
                             Fee List
                         </p>
-                        <p className="text-sm text-gray-foreground">
+                        <p className="text-sm text-slate-foreground">
                             Keep track of commissions and fees — the little
                             things that add up.
                         </p>
@@ -69,13 +69,13 @@ function FeeTable({ fees: initialFees }) {
                 <Table noWrapper>
                     <TableHeader className="bg-gray-50 dark:bg-[#0e0f11] sticky top-0 z-10">
                         <TableRow className="border-none">
-                            <TableHead className="font-medium text-gray-foreground rounded-l-lg">
+                            <TableHead className="font-medium text-slate-foreground rounded-l-lg">
                                 Fee Date
                             </TableHead>
-                            <TableHead className="font-medium text-gray-foreground">
+                            <TableHead className="font-medium text-slate-foreground">
                                 Fee Name
                             </TableHead>
-                            <TableHead className="font-medium text-gray-foreground text-right rounded-r-lg">
+                            <TableHead className="font-medium text-slate-foreground text-right rounded-r-lg">
                                 Fee
                             </TableHead>
                         </TableRow>

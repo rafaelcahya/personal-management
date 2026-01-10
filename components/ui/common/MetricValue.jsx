@@ -13,8 +13,7 @@ export default function MetricValue({
     unit,
 }) {
     const getIndicatorColor = (val) => {
-        if (val > 10)
-            return "text-trade-profit-foreground bg-trade-profit";
+        if (val > 10) return "text-trade-profit-foreground bg-trade-profit";
         if (val > 0) return "text-trade-warning-foreground bg-trade-warning";
         if (val === 0) return "text-slate-500 bg-slate-200 dark:bg-slate-500/5";
         return "text-trade-loss-foreground bg-trade-loss";
@@ -37,7 +36,7 @@ export default function MetricValue({
 
     return (
         <div className="space-y-2">
-            <div className="flex items-center gap-2 font-semibold text-sm whitespace-nowrap text-gray-foreground">
+            <div className="flex items-center gap-2 font-semibold text-sm whitespace-nowrap text-slate-foreground">
                 {icon && <span>{icon}</span>}
             </div>
 
@@ -55,7 +54,7 @@ export default function MetricValue({
                             </span>
                         )}
                     </div>
-                    <p className="text-xs font-medium text-gray-foreground uppercase tracking-wide">
+                    <p className="text-xs font-medium text-slate-foreground uppercase tracking-wide">
                         {label}
                     </p>
                 </div>
@@ -73,7 +72,7 @@ export default function MetricValue({
                             )}
                             {indicator1}%
                         </span>
-                        <p className="text-xs text-gray-foreground">{unit}</p>
+                        <p className="text-xs text-slate-foreground">{unit}</p>
                     </div>
                 )}
             </div>

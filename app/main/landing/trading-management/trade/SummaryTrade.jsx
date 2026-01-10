@@ -48,7 +48,7 @@ function SummaryTrade() {
     const SummaryContent = () => (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 my-4">
             <div className="p-4 border-gray-200 border bg-white rounded-xl w-full">
-                <p className="text-sm font-medium text-gray-foreground mb-1">
+                <p className="text-sm font-medium text-slate-foreground mb-1">
                     Progress Overview
                 </p>
                 <ul className="text-sm space-y-1">
@@ -68,7 +68,7 @@ function SummaryTrade() {
             </div>
 
             <div className="p-4 border-gray-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
-                <p className="text-sm font-medium text-gray-foreground mb-1">
+                <p className="text-sm font-medium text-slate-foreground mb-1">
                     Stock Type
                 </p>
                 <ul className="text-sm space-y-1">
@@ -87,7 +87,7 @@ function SummaryTrade() {
             </div>
 
             <div className="p-4 border-gray-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
-                <p className="text-sm font-medium text-gray-foreground mb-1">
+                <p className="text-sm font-medium text-slate-foreground mb-1">
                     Entry Session
                 </p>
                 <ul className="text-sm space-y-1">
@@ -103,7 +103,7 @@ function SummaryTrade() {
             </div>
 
             <div className="p-4 border-gray-200 border dark:border-none bg-white dark:bg-[#1c1d21] rounded-xl w-full">
-                <p className="text-sm font-medium text-gray-foreground mb-1">
+                <p className="text-sm font-medium text-slate-foreground mb-1">
                     Entry Occasion
                 </p>
                 <ul className="text-sm space-y-1">

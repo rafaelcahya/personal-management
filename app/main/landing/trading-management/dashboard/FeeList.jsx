@@ -33,12 +33,16 @@ function FeeList() {
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div>
                     <p className="text-lg font-semibold">Fee List</p>
-                    <p className="text-sm text-gray-foreground">
+                    <p className="text-sm text-slate-foreground">
                         Keep track of commissions and fees — the little things
                         that add up.
                     </p>
                 </div>
-                <Link href="/main/landing/trading-management/fee" prefetch={false} id="feeBtn">
+                <Link
+                    href="/main/landing/trading-management/fee"
+                    prefetch={false}
+                    id="feeBtn"
+                >
                     <Button className="bg-primary hover:bg-primary-hover font-medium">
                         Fee
                     </Button>
@@ -50,13 +54,13 @@ function FeeList() {
                 <Table>
                     <TableHeader className="bg-gray-50 rounded-xl">
                         <TableRow className="border-none">
-                            <TableHead className="font-medium rounded-l-lg text-gray-foreground">
+                            <TableHead className="font-medium rounded-l-lg text-slate-foreground">
                                 Date
                             </TableHead>
-                            <TableHead className="font-medium text-gray-foreground">
+                            <TableHead className="font-medium text-slate-foreground">
                                 Fee Name
                             </TableHead>
-                            <TableHead className="font-medium text-right rounded-r-lg text-gray-foreground">
+                            <TableHead className="font-medium text-right rounded-r-lg text-slate-foreground">
                                 Fee
                             </TableHead>
                         </TableRow>

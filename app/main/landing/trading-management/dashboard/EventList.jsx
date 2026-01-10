@@ -45,12 +45,15 @@ function EventList() {
                     <p className="text-lg font-semibold text-foreground">
                         Event List
                     </p>
-                    <p className="text-sm text-gray-foreground">
+                    <p className="text-sm text-slate-foreground">
                         Track key political, economic, and global events that
                         move the market.
                     </p>
                 </div>
-                <Link href="/main/landing/trading-management/event" id="eventBtn">
+                <Link
+                    href="/main/landing/trading-management/event"
+                    id="eventBtn"
+                >
                     <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
                         Event
                     </Button>

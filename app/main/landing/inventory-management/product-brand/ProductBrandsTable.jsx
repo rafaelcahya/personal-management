@@ -69,7 +69,7 @@ export default function ProductBrandsTable({
             case "inactive":
                 return "bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200";
             default:
-                return "bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200";
+                return "bg-slate-100 text-gray-800 border-gray-200 hover:bg-gray-200";
         }
     };
 
@@ -78,15 +78,15 @@ export default function ProductBrandsTable({
     }, [initialProductBrands]);
 
     return (
-        <div className="flex flex-col flex-1 gap-y-6" id="productBrandTable">
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
+        <div className="flex flex-col h-full gap-y-3" id="productBrandTable">
+            <header className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20 flex-shrink-0 pb-4">
                 <div className="space-y-2">
                     <Breadcrumbs />
                     <div>
                         <p className="text-lg font-semibold">
                             Product Brand List
                         </p>
-                        <p className="text-sm text-gray-foreground">
+                        <p className="text-sm text-slate-foreground">
                             Manage all your product brands in one place — track
                             status, monitor inventory, and keep your stock
                             organized.
@@ -104,15 +104,15 @@ export default function ProductBrandsTable({
                     </Link>
                     <AddProductBrand onAdded={refreshAll} />
                 </div>
-            </div>
-            <div className="space-y-3">
+            </header>
+            <div className="space-y-3 flex-1 min-h-0 flex flex-col">
                 <SummaryProductBrand
                     onFilter={handleFilter}
                     activeFilter={filterStatus}
                     onRefresh={refreshRef}
                     loading={isRefreshing}
                 />
-                <div className="relative w-full flex-1 overflow-y-auto border shadow shadow-gray-200 rounded-2xl p-2">
+                <div className="flex-1 min-h-0 relative border shadow shadow-gray-200 rounded-2xl overflow-hidden flex flex-col">
                     {filteredBrands.length === 0 ? (
                         <div className="space-y-2 text-center py-12">
                             <div>
@@ -140,65 +140,73 @@ export default function ProductBrandsTable({
                             </Button>
                         </div>
                     ) : (
-                        <div className="relative w-full flex-1 overflow-y-auto">
-                            <Table noWrapper>
-                                <TableHeader className="bg-gray-100 dark:bg-[#0e0f11] sticky top-0 z-10">
-                                    <TableRow className="border-none">
-                                        <TableHead className="font-medium text-gray-foreground pl-5 rounded-l-xl w-[5%]">
-                                            #
-                                        </TableHead>
-                                        <TableHead className="font-medium text-gray-foreground w-1/3">
-                                            Product brand
-                                        </TableHead>
-                                        <TableHead className="font-medium text-gray-foreground w-1/3">
-                                            Product brand status
-                                        </TableHead>
-                                        <TableHead className="font-medium text-gray-foreground pr-5 rounded-r-xl w-1/3">
-                                            Notes
-                                        </TableHead>
-                                    </TableRow>
-                                </TableHeader>
+                        <div className="flex flex-col h-full overflow-hidden">
+                            <div className="sticky top-0 z-20 bg-slate-100">
+                                <Table className="w-full table-auto">
+                                    <TableHeader>
+                                        <TableRow className="border-none">
+                                            <TableHead className="py-2 text-slate-foreground text-center w-[50px] max-w-[50px]">
+                                                #
+                                            </TableHead>
+                                            <TableHead className="text-slate-foreground w-[250px] max-w-[250px]">
+                                                Product brand
+                                            </TableHead>
+                                            <TableHead className="text-slate-foreground w-[100px] max-w-[100px]">
+                                                Status
+                                            </TableHead>
+                                            <TableHead className="text-slate-foreground w-[350px] max-w-[350px]">
+                                                Notes
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                </Table>
+                            </div>
 
-                                <TableBody>
-                                    {filteredBrands.map(
-                                        (productBrand, index) => (
-                                            <TableRow
-                                                key={productBrand.id}
-                                                className="font-medium border-dashed hover:bg-gray-100 dark:hover:bg-[#0e0f11] cursor-pointer"
-                                                onClick={() =>
-                                                    setSelectedBrand(
-                                                        productBrand
-                                                    )
-                                                }
-                                            >
-                                                <TableCell className="pl-5">
-                                                    {index + 1}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {productBrand.brand}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge
-                                                        className={cn(
-                                                            "capitalize",
-                                                            getStatusClasses(
+                            <div className="flex-1 overflow-y-auto overflow-x-hidden">
+                                <Table className="w-full table-auto">
+                                    <TableBody>
+                                        {filteredBrands.map(
+                                            (productBrand, index) => (
+                                                <TableRow
+                                                    key={productBrand.id}
+                                                    className="border-dashed border-b last:border-b-0 hover:bg-slate-100 border-slate-200 transition-colors cursor-pointer"
+                                                    onClick={() =>
+                                                        setSelectedBrand(
+                                                            productBrand
+                                                        )
+                                                    }
+                                                >
+                                                    <TableCell className="text-slate-foreground text-center text-sm font-mono w-[50px] min-w-[50px]">
+                                                        {index + 1}
+                                                    </TableCell>
+                                                    <TableCell className="w-[250px] max-w-[250px]">
+                                                        {productBrand.brand}
+                                                    </TableCell>
+                                                    <TableCell className="w-[100px] max-w-[100px]">
+                                                        <Badge
+                                                            className={cn(
+                                                                "capitalize",
+                                                                getStatusClasses(
+                                                                    productBrand.brand_status
+                                                                )
+                                                            )}
+                                                        >
+                                                            {
                                                                 productBrand.brand_status
-                                                            )
-                                                        )}
-                                                    >
-                                                        {
-                                                            productBrand.brand_status
-                                                        }
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="pr-5">
-                                                    {productBrand.note}
-                                                </TableCell>
-                                            </TableRow>
-                                        )
-                                    )}
-                                </TableBody>
-                            </Table>
+                                                            }
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="w-[350px] max-w-[350px]">
+                                                        <p className="whitespace-normal line-clamp-3">
+                                                            {productBrand.note}
+                                                        </p>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
                         </div>
                     )}
 

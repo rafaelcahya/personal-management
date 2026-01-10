@@ -14,11 +14,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { deleteProductName } from "@/lib/api/productName";
 
-export default function DeleteProductName({
-    productName,
-    onDeleted,
-    onClose,
-}) {
+export default function DeleteProductName({ productName, onDeleted, onClose }) {
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async () => {
@@ -47,7 +43,7 @@ export default function DeleteProductName({
                     <AlertDialogTitle className="font-semibold">
                         Delete Product Name
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="font-medium text-gray-foreground">
+                    <AlertDialogDescription className="font-medium text-slate-foreground">
                         Are you sure you want to delete this product name? This
                         action cannot be undone.
                     </AlertDialogDescription>

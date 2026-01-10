@@ -70,7 +70,7 @@ export default function AddProduct({ onAdded }) {
             >
                 <DialogHeader>
                     <DialogTitle>Add New Product Brand</DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-slate-foreground">
                         Create a new product brand to organize your inventory —
                         keep stock levels accurate and operations smooth.
                     </DialogDescription>
