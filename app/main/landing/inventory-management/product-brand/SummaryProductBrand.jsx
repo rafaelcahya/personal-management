@@ -173,7 +173,7 @@ function SummaryProductBrand({
                                 <TabsTrigger
                                     key={value}
                                     value={value}
-                                    className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary flex items-center gap-1.5 justify-center w-max"
+                                    className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-primary/10 flex items-center gap-1.5 justify-center w-max transition duration-200"
                                 >
                                     <span className="text-sm font-medium capitalize">
                                         {label}
