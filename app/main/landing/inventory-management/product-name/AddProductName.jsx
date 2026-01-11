@@ -70,7 +70,7 @@ export default function AddProductName({ onAdded }) {
             >
                 <DialogHeader>
                     <DialogTitle>Add New Product Name</DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-slate-foreground">
                         Create a new product name to organize your inventory —
                         keep stock levels accurate and operations smooth.
                     </DialogDescription>

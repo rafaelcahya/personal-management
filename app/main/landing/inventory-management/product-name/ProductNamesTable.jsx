@@ -69,7 +69,7 @@ export default function ProductNamesTable({
             case "inactive":
                 return "bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200";
             default:
-                return "bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200";
+                return "bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200";
         }
     };
 
@@ -78,8 +78,8 @@ export default function ProductNamesTable({
     }, [initialProductNames]);
 
     return (
-        <div className="flex flex-col flex-1 gap-y-6" id="productBrandTable">
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
+        <div className="flex flex-col h-full gap-y-3" id="productBrandTable">
+            <header className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20 flex-shrink-0 pb-4">
                 <div className="space-y-2">
                     <Breadcrumbs />
                     <div>
@@ -104,15 +104,15 @@ export default function ProductNamesTable({
                     </Link>
                     <AddProductName onAdded={refreshAll} />
                 </div>
-            </div>
-            <div className="space-y-3">
+            </header>
+            <div className="space-y-3 flex-1 min-h-0 flex flex-col">
                 <SummaryProductName
                     onFilter={handleFilter}
                     activeFilter={filterStatus}
                     onRefresh={refreshRef}
                     loading={isRefreshing}
                 />
-                <div className="relative w-full flex-1 overflow-y-auto border shadow shadow-gray-200 rounded-2xl p-2">
+                <div className="flex-1 min-h-0 relative border shadow shadow-gray-200 rounded-2xl overflow-hidden flex flex-col">
                     {filteredNames.length === 0 ? (
                         <div className="space-y-2 text-center py-12">
                             <div>
@@ -140,20 +140,20 @@ export default function ProductNamesTable({
                             </Button>
                         </div>
                     ) : (
-                        <div className="relative w-full flex-1 overflow-y-auto">
-                            <Table noWrapper>
-                                <TableHeader className="bg-gray-100 dark:bg-[#0e0f11] sticky top-0 z-10">
+                        <div className="flex flex-col h-full overflow-hidden">
+                            <Table className="w-full table-auto">
+                                <TableHeader className="bg-slate-100 sticky top-0 z-20">
                                     <TableRow className="border-none">
-                                        <TableHead className="font-medium text-slate-foreground pl-5 rounded-l-xl w-[5%]">
+                                        <TableHead className="py-2 text-slate-foreground text-center w-[30px] min-w-[30px] max-w-[30px]">
                                             #
                                         </TableHead>
-                                        <TableHead className="font-medium text-slate-foreground w-1/3">
+                                        <TableHead className="text-slate-foreground w-[150px] min-w-[150px] max-w-[150px]">
                                             Product name
                                         </TableHead>
-                                        <TableHead className="font-medium text-slate-foreground w-1/3">
+                                        <TableHead className="text-slate-foreground w-[100px] min-w-[100px] max-w-[100px]">
                                             Product name status
                                         </TableHead>
-                                        <TableHead className="font-medium text-slate-foreground pr-5 rounded-r-xl w-1/3">
+                                        <TableHead className="text-slate-foreground min-w-[250px] w-[250px] max-w-[250px]">
                                             Notes
                                         </TableHead>
                                     </TableRow>
@@ -163,18 +163,18 @@ export default function ProductNamesTable({
                                     {filteredNames.map((productName, index) => (
                                         <TableRow
                                             key={productName.id}
-                                            className="font-medium border-dashed hover:bg-gray-100 dark:hover:bg-[#0e0f11] cursor-pointer"
+                                            className="border-dashed border-b last:border-b-0 hover:bg-slate-100 border-slate-200 transition-colors cursor-pointer"
                                             onClick={() =>
                                                 setSelectedName(productName)
                                             }
                                         >
-                                            <TableCell className="pl-5">
+                                            <TableCell className="text-slate-foreground text-center text-sm font-mono w-[30px] min-w-[30px] max-w-[30px]">
                                                 {index + 1}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="w-[150px] min-w-[150px] max-w-[150px] whitespace-normal">
                                                 {productName.product_name}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="w-[100px] min-w-[100px] max-w-[100px]">
                                                 <Badge
                                                     className={cn(
                                                         "capitalize",
@@ -188,8 +188,10 @@ export default function ProductNamesTable({
                                                     }
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="pr-5">
-                                                {productName.note}
+                                            <TableCell className="min-w-[250px] w-[250px] max-w-[250px]">
+                                                <p className="whitespace-normal line-clamp-3">
+                                                    {productName.note}
+                                                </p>
                                             </TableCell>
                                         </TableRow>
                                     ))}

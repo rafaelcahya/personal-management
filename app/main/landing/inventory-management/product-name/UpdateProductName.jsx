@@ -86,7 +86,7 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>Update Product Name</DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-slate-foreground">
                         Edit name details including name, status, and notes.
                     </DialogDescription>
                 </DialogHeader>
@@ -168,8 +168,8 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
                                     </Select>
                                     <FormMessage>
                                         {
-                                            form.formState.errors.product_name_status
-                                                ?.message
+                                            form.formState.errors
+                                                .product_name_status?.message
                                         }
                                     </FormMessage>
                                 </FormItem>

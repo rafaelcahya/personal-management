@@ -1,9 +1,25 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuShortcut,
+} from "@/components/ui/dropdown-menu";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
 import { getProductNameSummary } from "../../../../../lib/api/productName";
+import { RefreshCcwIcon } from "lucide-react";
+
+const STATUSES = [
+    { key: null, label: "All products" },
+    { key: "active", label: "Active" },
+    { key: "inactive", label: "Inactive" },
+    { key: "deleted", label: "Deleted" },
+];
 
 function SummaryProductName({
     onFilter,
@@ -15,40 +31,6 @@ function SummaryProductName({
     const [loading, setLoading] = useState(true);
     const containerRef = useRef(null);
     const activeLineRef = useRef(null);
-
-    useGSAP(() => {
-        if (!activeLineRef.current) return;
-
-        gsap.set(activeLineRef.current, {
-            scaleX: 0,
-            transformOrigin: "left center",
-        });
-
-        return () => {
-            gsap.killTweensOf(activeLineRef.current);
-        };
-    }, [activeFilter]);
-
-    useGSAP(() => {
-        if (activeLineRef.current && containerRef.current && summary) {
-            const activeLi = containerRef.current.querySelector(
-                "[data-active='true']"
-            );
-            if (activeLi) {
-                const rect = activeLi.getBoundingClientRect();
-                const containerRect =
-                    containerRef.current.getBoundingClientRect();
-
-                gsap.to(activeLineRef.current, {
-                    scaleX: 1,
-                    x: rect.left - containerRect.left,
-                    width: rect.width,
-                    duration: 0.4,
-                    ease: "back.out(1.7)",
-                });
-            }
-        }
-    }, [activeFilter, summary]);
 
     const refreshSummary = useCallback(async () => {
         setLoading(true);
@@ -62,7 +44,7 @@ function SummaryProductName({
         }
     }, []);
 
-    // Initial load
+    // Initial + refresh triggers
     useEffect(() => {
         refreshSummary();
     }, [refreshSummary]);
@@ -81,6 +63,8 @@ function SummaryProductName({
         }
         refreshSummary();
     }, [onRefresh, refreshSummary]);
+
+    const handleFilter = (status) => onFilter(status);
 
     if (loading) {
         return (
@@ -115,92 +99,113 @@ function SummaryProductName({
 
     const { totalProductNames, totalStatus } = summary;
 
-    const isActiveFilter = (status) => activeFilter === status;
-    const handleStatusClick = (status) => onFilter(status);
-
     return (
-        <div className="relative pb-2">
-            <ul ref={containerRef} className="flex gap-5 sm:gap-10 relative">
-                {/* All */}
-                <li
-                    data-active={isActiveFilter(null)}
-                    className={cn(
-                        "flex gap-2 items-center cursor-pointer transition-all hover:text-primary",
-                        isActiveFilter(null) ? "text-primary" : "text-gray-700"
-                    )}
-                    onClick={() => onFilter(null)}
-                >
-                    <p className="text-sm font-medium">All products</p>
-                    <div className={cn(isActiveFilter(null))}>
-                        <span className="text-sm font-medium">
-                            {totalProductNames || 0}
-                        </span>
-                    </div>
-                </li>
+        <div className="space-y-4">
+            {/* Filter Controls */}
+            <div className="flex sm:hidden justify-between gap-3">
+                <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="gap-1">
+                            Filter status:
+                            {activeFilter === null ? (
+                                <span className="text-primary capitalize">
+                                    All products
+                                </span>
+                            ) : (
+                                <>
+                                    <span className="text-primary capitalize">
+                                        {activeFilter}
+                                    </span>
+                                </>
+                            )}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="start">
+                        <DropdownMenuGroup>
+                            {STATUSES.map(({ key, label }) => {
+                                const count =
+                                    key === null
+                                        ? totalProductNames
+                                        : totalStatus[key];
+                                return (
+                                    <DropdownMenuItem key={key ?? "all"}>
+                                        <button
+                                            className="w-full text-left"
+                                            onClick={() => handleFilter(key)}
+                                        >
+                                            {label}
+                                        </button>
+                                        <DropdownMenuShortcut>
+                                            {count || 0}
+                                        </DropdownMenuShortcut>
+                                    </DropdownMenuItem>
+                                );
+                            })}
+                        </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
 
-                {/* Active */}
-                <li
-                    data-active={isActiveFilter("active")}
-                    className={cn(
-                        "flex gap-2 items-center cursor-pointer transition-all hover:text-primary",
-                        isActiveFilter("active")
-                            ? "text-primary"
-                            : "text-gray-700"
-                    )}
-                    onClick={() => handleStatusClick("active")}
+                <Button
+                    size="sm"
+                    onClick={handleManualRefresh}
+                    disabled={loading}
+                    className="bg-secondary text-secondary-foreground hover:bg-secondary-hover w-max group"
                 >
-                    <p className="text-sm font-medium">Active</p>
-                    <div className={cn(isActiveFilter("active"))}>
-                        <span className="text-sm font-medium">
-                            {totalStatus.active || 0}
-                        </span>
-                    </div>
-                </li>
+                    <span className="group-hover:rotate-45 duration-200">
+                        <RefreshCcwIcon />
+                    </span>
+                    Refresh
+                </Button>
+            </div>
 
-                {/* Inactive */}
-                <li
-                    data-active={isActiveFilter("inactive")}
-                    className={cn(
-                        "flex gap-2 items-center cursor-pointer transition-all hover:text-primary",
-                        isActiveFilter("inactive")
-                            ? "text-primary"
-                            : "text-gray-700"
-                    )}
-                    onClick={() => handleStatusClick("inactive")}
+            {/* Tabs */}
+            <div className="flex justify-between gap-3">
+                <Tabs
+                    value={activeFilter ?? "all"}
+                    onValueChange={(value) => {
+                        const status = value === "all" ? null : value;
+                        handleFilter(status);
+                    }}
+                    className="hidden sm:block w-full"
                 >
-                    <p className="text-sm font-medium">Inactive</p>
-                    <div className={cn(isActiveFilter("inactive"))}>
-                        <span className="text-sm font-medium">
-                            {totalStatus.inactive || 0}
-                        </span>
-                    </div>
-                </li>
+                    <TabsList className="flex gap-2 bg-slate-100">
+                        {STATUSES.map(({ key, label }) => {
+                            const value = key ?? "all";
+                            const count =
+                                key === null
+                                    ? totalProductNames
+                                    : totalStatus[key];
 
-                {/* Deleted */}
-                <li
-                    data-active={isActiveFilter("deleted")}
-                    className={cn(
-                        "flex gap-2 items-center cursor-pointer transition-all hover:text-primary",
-                        isActiveFilter("deleted")
-                            ? "text-primary"
-                            : "text-gray-700"
-                    )}
-                    onClick={() => handleStatusClick("deleted")}
+                            return (
+                                <TabsTrigger
+                                    key={value}
+                                    value={value}
+                                    className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-primary/10 flex items-center gap-1.5 justify-center w-max transition duration-200"
+                                >
+                                    <span className="text-sm font-medium capitalize">
+                                        {label}
+                                    </span>
+                                    <span className="text-xs bg-muted/80 data-[state=active]:bg-primary/20 px-1.5 py-0.5 rounded-md font-mono">
+                                        {count || 0}
+                                    </span>
+                                </TabsTrigger>
+                            );
+                        })}
+                    </TabsList>
+                </Tabs>
+
+                <Button
+                    size="sm"
+                    onClick={handleManualRefresh}
+                    disabled={loading}
+                    className="hidden sm:flex items-center bg-secondary text-secondary-foreground hover:bg-secondary-hover w-max group"
                 >
-                    <p className="text-sm font-medium">Deleted</p>
-                    <div className={cn(isActiveFilter("deleted"))}>
-                        <span className="text-sm font-medium">
-                            {totalStatus.deleted || 0}
-                        </span>
-                    </div>
-                </li>
-            </ul>
-
-            {/* GSAP Animated Line */}
-            <div
-                ref={activeLineRef}
-                className="absolute bottom-0 left-0 h-0.5 bg-primary"
-            />
+                    <span className="group-hover:rotate-45 duration-200">
+                        <RefreshCcwIcon />
+                    </span>
+                    Refresh
+                </Button>
+            </div>
         </div>
     );
 }

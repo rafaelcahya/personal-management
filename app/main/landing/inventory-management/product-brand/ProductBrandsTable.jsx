@@ -147,7 +147,7 @@ export default function ProductBrandsTable({
                                         <TableHead className="py-2 text-slate-foreground text-center w-[30px] min-w-[30px] max-w-[30px]">
                                             #
                                         </TableHead>
-                                        <TableHead className="text-slate-500 w-[150px] min-w-[150px] max-w-[150px]">
+                                        <TableHead className="text-slate-foreground w-[150px] min-w-[150px] max-w-[150px]">
                                             Product brand
                                         </TableHead>
                                         <TableHead className="text-slate-foreground w-[100px] min-w-[100px] max-w-[100px]">

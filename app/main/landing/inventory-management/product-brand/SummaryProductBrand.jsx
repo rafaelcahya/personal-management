@@ -28,6 +28,8 @@ function SummaryProductBrand({
 }) {
     const [summary, setSummary] = useState(null);
     const [loading, setLoading] = useState(true);
+        const containerRef = useRef(null);
+        const activeLineRef = useRef(null);
 
     const refreshSummary = useCallback(async () => {
         setLoading(true);
@@ -46,12 +48,14 @@ function SummaryProductBrand({
         refreshSummary();
     }, [refreshSummary]);
 
+    // Refresh trigger
     useEffect(() => {
         if (parentLoading) {
             refreshSummary();
         }
     }, [parentLoading, refreshSummary]);
 
+    // Manual refresh call (AddProductName, etc)
     const handleManualRefresh = useCallback(() => {
         onRefresh?.current?.();
         refreshSummary();

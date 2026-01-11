@@ -38,7 +38,7 @@ export default function ProductBrandDelete({
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500 font-medium">
+                <Button className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500">
                     Delete
                 </Button>
             </AlertDialogTrigger>
@@ -47,19 +47,19 @@ export default function ProductBrandDelete({
                     <AlertDialogTitle className="font-semibold">
                         Delete Product Brand
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="font-medium text-slate-foreground">
+                    <AlertDialogDescription className="text-slate-foreground">
                         Are you sure you want to delete this product brand? This
                         action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="font-medium bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none">
+                    <AlertDialogCancel className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none">
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleDelete}
                         disabled={loading}
-                        className="bg-rose-600 hover:bg-rose-700 dark:text-white font-medium"
+                        className="bg-rose-600 hover:bg-rose-700 dark:text-white"
                     >
                         {loading ? "Deleting..." : "Delete"}
                     </AlertDialogAction>
