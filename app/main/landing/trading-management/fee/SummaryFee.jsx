@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 function SummaryFee() {
     const [summary, setSummary] = useState(null);
@@ -10,7 +9,7 @@ function SummaryFee() {
             .then(([summaryRes]) => {
                 if (summaryRes.success) setSummary(summaryRes.data);
             })
-            .catch(toast.error)
+            .catch(console.error)
             .finally(() => setLoading(false));
     }, []);
 

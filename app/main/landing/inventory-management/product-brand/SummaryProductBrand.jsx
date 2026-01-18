@@ -9,8 +9,7 @@ import {
     DropdownMenuShortcut,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
-import { getProductBrandSummary } from "../../../../../lib/api/productBrand";
+import { getProductBrandSummary } from "@/lib/api/productBrand";
 import { RefreshCcwIcon } from "lucide-react";
 
 const STATUSES = [
@@ -28,8 +27,6 @@ function SummaryProductBrand({
 }) {
     const [summary, setSummary] = useState(null);
     const [loading, setLoading] = useState(true);
-        const containerRef = useRef(null);
-        const activeLineRef = useRef(null);
 
     const refreshSummary = useCallback(async () => {
         setLoading(true);
@@ -37,7 +34,7 @@ function SummaryProductBrand({
             const data = await getProductBrandSummary();
             setSummary(data);
         } catch (err) {
-            toast.error("Failed to refresh summary");
+            console.error("Failed to refresh summary");
         } finally {
             setLoading(false);
         }

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -25,7 +24,7 @@ function SummaryTrade() {
             .then(([summaryRes]) => {
                 if (summaryRes.success) setSummary(summaryRes.data);
             })
-            .catch(toast.error)
+            .catch(console.error)
             .finally(() => setLoading(false));
     }, []);
 

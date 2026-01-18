@@ -1,31 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useCallback, useEffect, useState } from "react";
 import LoadingComponent from "../../../../LoadingComponent";
 import ProductBrandsTable from "./ProductBrandsTable";
+import { getProductBrandList } from "@/lib/services/inventory/product/brand/getProductBrandList";
 
 export default function ProductPage() {
     const [productBrands, setProductBrands] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchProductBrands = async () => {
-            try {
-                const res = await fetch("/api/inventory/product/brand/list", {
-                    cache: "no-store",
-                });
-                const data = await res.json();
-                if (data.success) setProductBrands(data.productBrands);
-            } catch (err) {
-                toast.error("Failed to fetch product brand:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProductBrands();
+    const fetchProductBrands = useCallback(async () => {
+        setLoading(true);
+        try {
+            const brands = await getProductBrandList();
+            setProductBrands(brands || []);
+        } catch (err) {
+            console.error(
+                "Fetch error:",
+                err || "Failed to fetch product brands"
+            );
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchProductBrands();
+    }, [fetchProductBrands]);
 
     return (
         <main className="flex flex-col h-screen w-full mx-auto px-3 py-6 xl:py-20 max-w-full md:max-w-5xl xl:max-w-7xl overflow-hidden">

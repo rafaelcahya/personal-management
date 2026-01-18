@@ -12,7 +12,6 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
 import AddProductBrand from "./AddProductBrand";
@@ -41,7 +40,7 @@ export default function ProductBrandsTable({
             const brands = await getProductBrandList();
             setProductBrandList(brands);
         } catch (err) {
-            toast.error("Failed to fetch product brands:", err);
+            console.error("Failed to fetch product brands:", err);
         }
     };
 

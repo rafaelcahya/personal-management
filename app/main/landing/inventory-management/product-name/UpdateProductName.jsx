@@ -71,7 +71,7 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
             onUpdated();
             onClose();
         } catch (err) {
-            toast.error(err.message || "Failed to update product name");
+            console.error(err.message || "Failed to update product name");
         } finally {
             setLoading(false);
         }
@@ -226,7 +226,7 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
                                         )}
                                         {loading
                                             ? "Updating..."
-                                            : "Update Product Brand"}
+                                            : "Update Product Name"}
                                     </Button>
                                 </div>
                             </div>

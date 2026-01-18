@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import FeeTable from "./FeeTable";
 import LoadingComponent from "../../../../LoadingComponent";
 
@@ -18,7 +17,7 @@ export default function FeePage() {
                 const data = await res.json();
                 if (data.success) setFees(data.fees);
             } catch (err) {
-                toast.error("Failed to fetch fees:", err);
+                console.error("Failed to fetch fees:", err);
             } finally {
                 setLoading(false);
             }

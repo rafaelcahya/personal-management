@@ -6,7 +6,7 @@ describe("Product API", () => {
         cy.task("clearFixtureFile", "productIds.json");
     });
 
-	describe("Summary", () => {
+    describe("Summary", () => {
         it("should display correct total products summary", () => {
             cy.GetProductSummary().then((summary) => {
                 const metrics = ["totalProducts"];
@@ -29,7 +29,7 @@ describe("Product API", () => {
                 type: faker.commerce.productAdjective(),
                 product_status: "active",
                 quantity: faker.string.numeric(),
-                on_hand_quantity: faker.string.numeric(),
+                usage_quantity: faker.string.numeric(),
                 note: faker.commerce.productDescription(),
                 product_image: faker.image.urlPicsumPhotos(),
             };
@@ -55,7 +55,7 @@ describe("Product API", () => {
                                 expect(apiProduct.quantity).to.eq(
                                     dbProduct.quantity
                                 );
-                                expect(apiProduct.on_hand_quantity).to.eq(
+                                expect(apiProduct.usage_quantity).to.eq(
                                     dbProduct.onHandQuantity
                                 );
                                 expect(apiProduct.note).to.eq(dbProduct.note);
@@ -78,7 +78,7 @@ describe("Product API", () => {
                 type: "",
                 product_status: "",
                 quantity: "",
-                on_hand_quantity: "",
+                usage_quantity: "",
                 product_image: "",
             };
 
@@ -122,7 +122,7 @@ describe("Product API", () => {
                 type: faker.commerce.productAdjective(),
                 product_status: "active",
                 quantity: faker.string.alphanumeric(5),
-                on_hand_quantity: faker.string.alphanumeric(5),
+                usage_quantity: faker.string.alphanumeric(5),
                 note: faker.commerce.productDescription(),
                 product_image: faker.image.urlPicsumPhotos(),
             };
@@ -148,7 +148,7 @@ describe("Product API", () => {
                 type: faker.commerce.productAdjective(),
                 product_status: "active",
                 quantity: faker.string.numeric(),
-                on_hand_quantity: faker.string.numeric(),
+                usage_quantity: faker.string.numeric(),
                 note: faker.commerce.productDescription(),
                 product_image: faker.image.urlPicsumPhotos(),
             };
@@ -176,7 +176,7 @@ describe("Product API", () => {
                 type: faker.commerce.productAdjective(),
                 product_status: "active",
                 quantity: faker.string.numeric(),
-                on_hand_quantity: faker.string.numeric(),
+                usage_quantity: faker.string.numeric(),
                 note: faker.commerce.productDescription(),
                 product_image: faker.image.urlPicsumPhotos(),
             };
@@ -222,7 +222,7 @@ describe("Product API", () => {
                 type: faker.commerce.productAdjective(),
                 product_status: "active",
                 quantity: faker.string.numeric(),
-                on_hand_quantity: faker.string.numeric(),
+                usage_quantity: faker.string.numeric(),
                 note: faker.commerce.productDescription(),
                 product_image: faker.image.urlPicsumPhotos(),
             };
@@ -250,7 +250,7 @@ describe("Product API", () => {
                             dbProduct.productStatus
                         );
                         expect(apiProduct.quantity).to.eq(dbProduct.quantity);
-                        expect(apiProduct.on_hand_quantity).to.eq(
+                        expect(apiProduct.usage_quantity).to.eq(
                             dbProduct.onHandQuantity
                         );
                         expect(apiProduct.note).to.eq(dbProduct.note);
@@ -268,7 +268,7 @@ describe("Product API", () => {
                 type: "",
                 product_status: "",
                 quantity: "",
-                on_hand_quantity: "",
+                usage_quantity: "",
                 product_image: "",
             };
 
@@ -304,7 +304,7 @@ describe("Product API", () => {
                 type: faker.commerce.productAdjective(),
                 product_status: "active",
                 quantity: faker.string.alphanumeric(5),
-                on_hand_quantity: faker.string.alphanumeric(5),
+                usage_quantity: faker.string.alphanumeric(5),
                 note: faker.commerce.productDescription(),
                 product_image: faker.image.urlPicsumPhotos(),
             };
@@ -332,7 +332,7 @@ describe("Product API", () => {
                 type: faker.commerce.productAdjective(),
                 product_status: "active",
                 quantity: faker.string.numeric(),
-                on_hand_quantity: faker.string.numeric(),
+                usage_quantity: faker.string.numeric(),
                 note: faker.commerce.productDescription(),
                 product_image: faker.image.urlPicsumPhotos(),
             };
@@ -372,7 +372,7 @@ describe("Product API", () => {
                 type: faker.commerce.productAdjective(),
                 product_status: "active",
                 quantity: faker.string.numeric(),
-                on_hand_quantity: faker.string.numeric(),
+                usage_quantity: faker.string.numeric(),
                 note: faker.commerce.productDescription(),
                 product_image: faker.image.urlPicsumPhotos(),
             };
@@ -404,7 +404,7 @@ describe("Product API", () => {
                 type: faker.commerce.productAdjective(),
                 product_status: "active",
                 quantity: faker.string.numeric(),
-                on_hand_quantity: faker.string.numeric(),
+                usage_quantity: faker.string.numeric(),
                 note: faker.commerce.productDescription(),
                 product_image: faker.image.urlPicsumPhotos(),
             };
@@ -427,7 +427,9 @@ describe("Product API", () => {
         it("should fail with invalid ID", () => {
             cy.DeleteProduct("abc").then((response) => {
                 expect(response.status).to.eq(400);
-                expect(response.body.error).to.eq("Invalid product ID provided");
+                expect(response.body.error).to.eq(
+                    "Invalid product ID provided"
+                );
             });
         });
     });

@@ -15,7 +15,7 @@ export async function middleware(request) {
 
     if (pathname.startsWith("/main")) {
         if (!token) {
-            console.log("No token, redirecting...");
+            console.error("No token, redirecting...");
             return NextResponse.redirect(new URL("/auth/login", request.url));
         }
 

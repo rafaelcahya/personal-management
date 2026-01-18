@@ -1,0 +1,30 @@
+import { getProductHistoryByProductListId } from "@/lib/services/inventory/product/history/getProductHistoryByProductListId";
+import { NextResponse } from "next/server";
+
+export async function GET(req, context) {
+    try {
+        const params = await context.params;
+        const productListId = params.id;
+
+        if (!productListId) {
+            return NextResponse.json(
+                { success: false, error: "Product list ID is required" },
+                { status: 400 }
+            );
+        }
+
+        const listProductHistory = await getProductHistoryByProductListId(
+            productListId
+        );
+
+        return NextResponse.json(
+            { success: true, products: listProductHistory },
+            { status: 200 }
+        );
+    } catch (err) {
+        return NextResponse.json(
+            { success: false, error: err.message },
+            { status: 500 }
+        );
+    }
+}

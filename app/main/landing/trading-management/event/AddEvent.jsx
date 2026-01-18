@@ -69,7 +69,7 @@ export default function AddEvent({ onAdded }) {
             onAdded?.();
             reset();
         } catch (err) {
-            toast.error(err.message || "Something went wrong");
+            console.error(err.message || "Something went wrong");
         } finally {
             setLoading(false);
         }

@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { toast } from "sonner";
 import MetricValue from "@/components/ui/common/MetricValue";
 import CommentedMetric from "@/components/ui/common/CommentedMetric";
 import CircleStatConic from "@/components/ui/common/CircleStatConic";
@@ -40,7 +39,7 @@ function OverallPerformance() {
             .then((d) => {
                 if (d.success) setMetrics(d.data);
             })
-            .catch(toast.error)
+            .catch(console.error)
             .finally(() => setLoading(false));
     }, []);
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import TradeTable from "./TradeTable";
 import LoadingComponent from "../../../../LoadingComponent";
 
@@ -18,7 +17,7 @@ export default function TradePage() {
                 const data = await res.json();
                 if (data.success) setTrades(data.trades);
             } catch (err) {
-                toast.error("Failed to fetch trades:", err);
+                console.error("Failed to fetch trades:", err);
             } finally {
                 setLoading(false);
             }

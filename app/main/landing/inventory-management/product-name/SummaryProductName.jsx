@@ -1,4 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+"use client";
+
+import React, { useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -9,9 +11,6 @@ import {
     DropdownMenuShortcut,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { getProductNameSummary } from "../../../../../lib/api/productName";
 import { RefreshCcwIcon } from "lucide-react";
 
 const STATUSES = [
@@ -22,77 +21,60 @@ const STATUSES = [
 ];
 
 function SummaryProductName({
+    productNames,
     onFilter,
     activeFilter,
     onRefresh,
-    loading: parentLoading,
+    loading,
 }) {
-    const [summary, setSummary] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const containerRef = useRef(null);
-    const activeLineRef = useRef(null);
-
-    const refreshSummary = useCallback(async () => {
-        setLoading(true);
-        try {
-            const data = await getProductNameSummary();
-            setSummary(data);
-        } catch (err) {
-            toast.error("Failed to refresh summary");
-        } finally {
-            setLoading(false);
+    // Calculate summary dari productNames props (real-time)
+    const summary = useMemo(() => {
+        if (!productNames || productNames.length === 0) {
+            return {
+                totalProductNames: 0,
+                totalStatus: {
+                    active: 0,
+                    inactive: 0,
+                    deleted: 0,
+                },
+            };
         }
-    }, []);
 
-    // Initial + refresh triggers
-    useEffect(() => {
-        refreshSummary();
-    }, [refreshSummary]);
+        const totalStatus = {
+            active: 0,
+            inactive: 0,
+            deleted: 0,
+        };
 
-    // Refresh trigger
-    useEffect(() => {
-        if (parentLoading) {
-            refreshSummary();
-        }
-    }, [parentLoading, refreshSummary]);
+        productNames.forEach((product) => {
+            const status = product.product_name_status;
+            if (totalStatus.hasOwnProperty(status)) {
+                totalStatus[status]++;
+            }
+        });
 
-    // Manual refresh call (AddProductName, etc)
+        return {
+            totalProductNames: productNames.length,
+            totalStatus,
+        };
+    }, [productNames]);
+
     const handleManualRefresh = useCallback(() => {
-        if (onRefresh?.current) {
-            onRefresh.current();
+        if (onRefresh) {
+            onRefresh();
         }
-        refreshSummary();
-    }, [onRefresh, refreshSummary]);
+    }, [onRefresh]);
 
     const handleFilter = (status) => onFilter(status);
 
+    // Loading skeleton
     if (loading) {
         return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {Array(4)
-                    .fill(0)
-                    .map((_, i) => (
-                        <div
-                            key={i}
-                            className="h-20 bg-muted rounded-lg animate-pulse"
-                        />
-                    ))}
-            </div>
-        );
-    }
-
-    if (!summary) {
-        return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {Array(4)
-                    .fill("No data")
-                    .map((text, i) => (
-                        <div key={i} className="h-20 p-4 border rounded-lg">
-                            <p className="text-sm text-muted-foreground">
-                                {text}
-                            </p>
-                        </div>
-                    ))}
+            <div className="space-y-4">
+                <div className="flex justify-between gap-3">
+                    <div className="h-10 bg-muted rounded-lg animate-pulse flex-1" />
+                    <div className="h-10 w-24 bg-muted rounded-lg animate-pulse" />
+                </div>
             </div>
         );
     }
@@ -101,7 +83,7 @@ function SummaryProductName({
 
     return (
         <div className="space-y-4">
-            {/* Filter Controls */}
+            {/* Mobile Filter Dropdown */}
             <div className="flex sm:hidden justify-between gap-3">
                 <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
@@ -112,11 +94,9 @@ function SummaryProductName({
                                     All products
                                 </span>
                             ) : (
-                                <>
-                                    <span className="text-primary capitalize">
-                                        {activeFilter}
-                                    </span>
-                                </>
+                                <span className="text-primary capitalize">
+                                    {activeFilter}
+                                </span>
                             )}
                         </Button>
                     </DropdownMenuTrigger>
@@ -128,13 +108,11 @@ function SummaryProductName({
                                         ? totalProductNames
                                         : totalStatus[key];
                                 return (
-                                    <DropdownMenuItem key={key ?? "all"}>
-                                        <button
-                                            className="w-full text-left"
-                                            onClick={() => handleFilter(key)}
-                                        >
-                                            {label}
-                                        </button>
+                                    <DropdownMenuItem
+                                        key={key ?? "all"}
+                                        onClick={() => handleFilter(key)}
+                                    >
+                                        <span className="flex-1">{label}</span>
                                         <DropdownMenuShortcut>
                                             {count || 0}
                                         </DropdownMenuShortcut>
@@ -152,13 +130,13 @@ function SummaryProductName({
                     className="bg-secondary text-secondary-foreground hover:bg-secondary-hover w-max group"
                 >
                     <span className="group-hover:rotate-45 duration-200">
-                        <RefreshCcwIcon />
+                        <RefreshCcwIcon className="h-4 w-4" />
                     </span>
                     Refresh
                 </Button>
             </div>
 
-            {/* Tabs */}
+            {/* Desktop Tabs */}
             <div className="flex justify-between gap-3">
                 <Tabs
                     value={activeFilter ?? "all"}
@@ -201,7 +179,7 @@ function SummaryProductName({
                     className="hidden sm:flex items-center bg-secondary text-secondary-foreground hover:bg-secondary-hover w-max group"
                 >
                     <span className="group-hover:rotate-45 duration-200">
-                        <RefreshCcwIcon />
+                        <RefreshCcwIcon className="h-4 w-4" />
                     </span>
                     Refresh
                 </Button>

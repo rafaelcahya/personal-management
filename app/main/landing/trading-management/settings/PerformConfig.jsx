@@ -46,7 +46,7 @@ export default function PerformConfig() {
                     });
                 }
             } catch (err) {
-                toast.error(err.message || "Failed to load settings");
+                console.error(err.message || "Failed to load settings");
             }
         }
         fetchSettings();
@@ -61,13 +61,12 @@ export default function PerformConfig() {
                 body: JSON.stringify(values),
             });
             const data = await res.json();
-            if (!res.ok) toast.error(data.error || "Failed");
+            if (!res.ok) console.error(data.error || "Failed");
             else {
                 toast.success("Changes applied successfully!");
             }
         } catch (err) {
-            toast.error("Something went wrong");
-            toast.error(err.message);
+            console.error(err.message);
         } finally {
             setLoading(false);
         }

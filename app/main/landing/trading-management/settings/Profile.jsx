@@ -36,7 +36,7 @@ export default function Profile() {
                 setAvatarPreview(avatarUrl);
             }
         } catch (err) {
-            toast.error(err.message);
+            console.error(err.message);
         }
     };
 
@@ -63,7 +63,7 @@ export default function Profile() {
 
             toast.success("Profile updated successfully");
         } catch (err) {
-            toast.error(err.message);
+            console.error(err.message);
         } finally {
             setLoading(false);
         }

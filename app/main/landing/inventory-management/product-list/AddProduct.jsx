@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -35,6 +34,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { productSchema } from "@/schemas/product";
+import { createProduct } from "@/lib/api/product";
+import { getProductBrands } from "@/lib/api/productBrand";
+import { getProductNames } from "@/lib/api/productName";
 
 export default function AddProduct({ onAdded }) {
     const [open, setOpen] = useState(false);
@@ -51,12 +53,12 @@ export default function AddProduct({ onAdded }) {
             product_name: "",
             type: "",
             quantity: "",
-            notes: "",
+            note: "",
             product_status: "active",
         },
     });
 
-    const { watch, setValue, control, handleSubmit, reset } = form;
+    const { watch, control } = form;
     const image = watch("image");
 
     useEffect(() => {
@@ -75,37 +77,26 @@ export default function AddProduct({ onAdded }) {
     // Fetch product brands
     const fetchProductBrands = async () => {
         try {
-            const res = await fetch("/api/inventory/product/brand/list");
-            const data = await res.json();
-            if (data.success) {
-                setProductBrands(data.productBrands || []);
-            }
+            const brands = await getProductBrands();
+            setProductBrands(brands);
         } catch (err) {
-            toast.error("Failed to load product brands");
+            console.error(err.message);
+        }
+    };
+
+    // Fetch product names
+    const fetchProductNames = async () => {
+        try {
+            const names = await getProductNames();
+            setProductNames(names);
+        } catch (err) {
+            console.error(err.message);
         }
     };
 
     useEffect(() => {
         if (open) {
             fetchProductBrands();
-        }
-    }, [open]);
-
-    // Fetch product names
-    const fetchProductNames = async () => {
-        try {
-            const res = await fetch("/api/inventory/product/name/list");
-            const data = await res.json();
-            if (data.success) {
-                setProductNames(data.productNames || []);
-            }
-        } catch (err) {
-            toast.error("Failed to load product names");
-        }
-    };
-
-    useEffect(() => {
-        if (open) {
             fetchProductNames();
         }
     }, [open]);
@@ -113,33 +104,25 @@ export default function AddProduct({ onAdded }) {
     const onSubmit = async (values) => {
         setLoading(true);
         try {
-            const formData = new FormData();
-            Object.entries(values).forEach(([key, value]) => {
-                if (key === "image" && value && value[0]) {
-                    formData.append("image", value[0]);
-                } else if (
-                    value !== null &&
-                    value !== undefined &&
-                    value !== ""
-                ) {
-                    formData.append(key, value);
-                }
-            });
-            const res = await fetch("/api/inventory/products", {
-                method: "POST",
-                body: formData,
+            await createProduct({
+                product_id: values.product_name,
+                brand_id: values.product_brand,
+                type: values.type,
+                product_status: values.product_status,
+                quantity: values.quantity,
+                usage_quantity: 0,
+                product_image: "",
+                usage_date: new Date().toISOString(),
+                note: values.note || "",
             });
 
-            if (res.ok) {
-                toast.success("Product added successfully");
-                setOpen(false);
-                form.reset();
-                onAdded?.();
-            } else {
-                toast.error("Failed to add product");
-            }
+            toast.success("Product added successfully");
+            setOpen(false);
+            form.reset();
+            setImagePreview(null);
+            onAdded?.();
         } catch (err) {
-            toast.error("Network error");
+            console.error("Submit error:", err);
         } finally {
             setLoading(false);
         }
@@ -171,7 +154,7 @@ export default function AddProduct({ onAdded }) {
                                     <FormLabel className="font-medium">
                                         Product Image
                                     </FormLabel>
-                                    <FormControl className=" cursor-pointer">
+                                    <FormControl className="cursor-pointer">
                                         <Input
                                             id="image"
                                             type="file"
@@ -183,7 +166,6 @@ export default function AddProduct({ onAdded }) {
                                             }}
                                         />
                                     </FormControl>
-                                    {/* Image Preview */}
                                     {imagePreview && (
                                         <div className="mt-2">
                                             <img
@@ -199,6 +181,7 @@ export default function AddProduct({ onAdded }) {
                                 </FormItem>
                             )}
                         />
+
                         <FormField
                             control={form.control}
                             name="product_brand"
@@ -211,26 +194,16 @@ export default function AddProduct({ onAdded }) {
                                     >
                                         <FormControl>
                                             <SelectTrigger className="min-w-full font-medium">
-                                                <SelectValue
-                                                    placeholder={
-                                                        loading
-                                                            ? "Loading..."
-                                                            : "Select product brand"
-                                                    }
-                                                />
+                                                <SelectValue placeholder="Select product brand" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {loading ? (
-                                                <div className="p-8 text-center text-muted-foreground">
-                                                    Loading options...
-                                                </div>
-                                            ) : productBrands.length === 0 ? (
+                                            {productBrands?.length === 0 ? (
                                                 <div className="p-8 text-center text-muted-foreground">
                                                     No product brands available
                                                 </div>
                                             ) : (
-                                                productBrands.map(
+                                                productBrands?.map(
                                                     (productBrand) => (
                                                         <SelectItem
                                                             key={
@@ -252,36 +225,6 @@ export default function AddProduct({ onAdded }) {
 
                         <FormField
                             control={control}
-                            id="type"
-                            name="type"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Type
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            placeholder="e.g. Whitening"
-                                            className={` text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                                                fieldState.error
-                                                    ? "border-rose-500"
-                                                    : ""
-                                            }`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage
-                                        id="typeMessage"
-                                        className="font-medium"
-                                    >
-                                        {fieldState.error?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
                             name="product_name"
                             render={({ field }) => (
                                 <FormItem>
@@ -292,26 +235,16 @@ export default function AddProduct({ onAdded }) {
                                     >
                                         <FormControl>
                                             <SelectTrigger className="min-w-full font-medium">
-                                                <SelectValue
-                                                    placeholder={
-                                                        loading
-                                                            ? "Loading..."
-                                                            : "Select product name"
-                                                    }
-                                                />
+                                                <SelectValue placeholder="Select product name" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {loading ? (
-                                                <div className="p-8 text-center text-muted-foreground">
-                                                    Loading options...
-                                                </div>
-                                            ) : productNames.length === 0 ? (
+                                            {productNames?.length === 0 ? (
                                                 <div className="p-8 text-center text-muted-foreground">
                                                     No product names available
                                                 </div>
                                             ) : (
-                                                productNames.map(
+                                                productNames?.map(
                                                     (productName) => (
                                                         <SelectItem
                                                             key={productName.id}
@@ -333,7 +266,32 @@ export default function AddProduct({ onAdded }) {
 
                         <FormField
                             control={control}
-                            id="quantity"
+                            name="type"
+                            render={({ field, fieldState }) => (
+                                <FormItem>
+                                    <FormLabel className="font-medium">
+                                        Type
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            placeholder="e.g. Whitening"
+                                            className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                                                fieldState.error
+                                                    ? "border-rose-500"
+                                                    : ""
+                                            }`}
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="font-medium">
+                                        {fieldState.error?.message}
+                                    </FormMessage>
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={control}
                             name="quantity"
                             render={({ field, fieldState }) => (
                                 <FormItem>
@@ -345,17 +303,14 @@ export default function AddProduct({ onAdded }) {
                                             {...field}
                                             placeholder="e.g. 10"
                                             type="number"
-                                            className={` text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                                            className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
                                                 fieldState.error
                                                     ? "border-rose-500"
                                                     : ""
                                             }`}
                                         />
                                     </FormControl>
-                                    <FormMessage
-                                        id="typeMessage"
-                                        className="font-medium"
-                                    >
+                                    <FormMessage className="font-medium">
                                         {fieldState.error?.message}
                                     </FormMessage>
                                 </FormItem>
@@ -364,7 +319,7 @@ export default function AddProduct({ onAdded }) {
 
                         <FormField
                             control={control}
-                            name="notes"
+                            name="note"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="font-medium">

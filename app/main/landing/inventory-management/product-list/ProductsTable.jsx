@@ -1,40 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
     Card,
-    CardContent,
+    CardFooter,
     CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import background from "../../../../assets/background.jpg";
 import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
 import Image from "next/image";
 import AddProduct from "./AddProduct";
+import StockAdjustment from "./StockAdjustment";
+import { getProductList } from "@/lib/services/inventory/product/getProductList";
 
 export default function ProductsTable({ products: initialProducts }) {
     const [listProduct, setListProduct] = useState(initialProducts || []);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
+        setLoading(true);
         try {
-            const res = await fetch("/api/inventory/product/list", {
-                cache: "no-store",
-            });
-            const data = await res.json();
-            if (data.success) setListProduct(data.products);
+            const products = await getProductList();
+            setListProduct(products || []);
         } catch (err) {
-            toast.error("Failed to fetch products:", err);
+            console.error("Fetch error:", err);
+        } finally {
+            setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        setListProduct(initialProducts);
-    }, [initialProducts]);
+        if (initialProducts && initialProducts.length > 0) {
+            setListProduct(initialProducts);
+        } else {
+            fetchProducts();
+        }
+    }, [initialProducts, fetchProducts]);
 
     return (
         <div>
@@ -62,63 +70,116 @@ export default function ProductsTable({ products: initialProducts }) {
                 </div>
             </div>
 
-            {/* <SummaryTrade /> */}
-
-            <div className="relative w-full flex-1 overflow-y-auto">
+            <div className="relative w-full flex-1 overflow-y-auto z-20">
                 {listProduct?.length === 0 ? (
-                    <p className="text-center font-medium text-gray-foregroundpy-10">
+                    <p className="text-center font-medium text-slate-foreground py-10">
                         No products yet. Start by adding a new product 🚀
                     </p>
                 ) : (
-                    <div className="grid grid-cols-4 gap-5">
-                        {listProduct?.map((product) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 z-20">
+                        {listProduct.map((product) => (
                             <Card
                                 key={product.id}
-                                className="w-full max-w-xs flex-1 pt-0"
+                                className="w-full max-w-xs flex-1 border-none shadow-xl shadow-slate-200"
                             >
-                                <Image
-                                    src={background}
-                                    className="w-full h-32 rounded-t-xl"
-                                    alt="test"
-                                />
-                                <CardHeader>
-                                    <CardTitle>
-                                        <span className="">
-                                            {product.brand} {product.type}{" "}
-                                            {product.product}
-                                        </span>
-                                    </CardTitle>
-                                    <CardDescription>
-                                        <div className="flex justify-between">
-                                            <p>Product Status</p>
-                                            <p>{product.product_status}</p>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <p>Quantity</p>
-                                            <p>{product.quantity}</p>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <p>On hand quantity</p>
-                                            <p>{product.on_hand_quantity}</p>
-                                        </div>
-                                    </CardDescription>
+                                <CardHeader className="flex items-center justify-between">
+                                    <p className="text-sm font-semibold text-slate-foreground">
+                                        {product.type}
+                                    </p>
+                                    <Image
+                                        src={background}
+                                        className="w-10 h-10 rounded-xl"
+                                        alt="Product"
+                                    />
                                 </CardHeader>
-                                <CardContent>
-                                    <p>{product.note}</p>
-                                </CardContent>
+
+                                <CardTitle className="px-6">
+                                    <span className="leading-tight">
+                                        {product.brand} {product.type}{" "}
+                                        {product.product}
+                                    </span>
+                                </CardTitle>
+
+                                <CardDescription className="space-y-2 px-6">
+                                    <div className="flex justify-between">
+                                        <p className="text-slate-foreground">
+                                            Quantity
+                                        </p>
+                                        <p className="text-slate-800 font-medium font-mono text-center">
+                                            {product.quantity}
+                                        </p>
+                                    </div>
+
+                                    <Separator className="bg-slate-200" />
+
+                                    <div className="flex justify-between">
+                                        <p className="text-slate-foreground whitespace-nowrap">
+                                            On hand quantity
+                                        </p>
+                                        <p className="text-slate-800 font-medium font-mono text-center">
+                                            {product.usage_quantity}
+                                        </p>
+                                    </div>
+
+                                    <Separator className="bg-slate-200" />
+
+                                    <div className="flex justify-between">
+                                        <p className="text-slate-foreground">
+                                            Usage date
+                                        </p>
+                                        <p className="text-xs text-slate-600 font-mono">
+                                            {product.usage_date
+                                                ? new Date(
+                                                      product.usage_date
+                                                  ).toLocaleDateString()
+                                                : "-"}
+                                        </p>
+                                    </div>
+
+                                    <Separator className="bg-slate-200" />
+
+                                    <div className="flex justify-between">
+                                        <p className="text-slate-foreground whitespace-nowrap">
+                                            Product status
+                                        </p>
+                                        <Badge
+                                            className={`${
+                                                product.product_status ===
+                                                "active"
+                                                    ? "bg-green-100 text-green-600 capitalize"
+                                                    : "bg-red-100 text-red-600 capitalize"
+                                            }`}
+                                        >
+                                            {product.product_status}
+                                        </Badge>
+                                    </div>
+                                </CardDescription>
+
+                                <CardFooter className="flex justify-end">
+                                    <Button
+                                        size="sm"
+                                        onClick={() =>
+                                            setSelectedProduct(product)
+                                        }
+                                    >
+                                        Update Product
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         ))}
                     </div>
                 )}
 
-                {/* Modal Update */}
-                {/* {selectedTrade && (
-                    <TradeUpdate
-                        trade={selectedTrade}
-                        onClose={() => setSelectedTrade(null)}
-                        onUpdated={fetchTrades}
+                {selectedProduct && (
+                    <StockAdjustment
+                        product={selectedProduct}
+                        onClose={() => setSelectedProduct(null)}
+                        onUpdated={async () => {
+                            await fetchProducts();
+                            setSelectedProduct(null);
+                        }}
                     />
-                )} */}
+                )}
             </div>
         </div>
     );

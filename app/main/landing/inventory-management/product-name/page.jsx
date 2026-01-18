@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import LoadingComponent from "../../../../LoadingComponent";
 import ProductNamesTable from "./ProductNamesTable";
+import { getProductNameList } from "@/lib/services/inventory/product/name/getProductNameList";
 
 export default function ProductNamePage() {
     const [productNames, setProductNames] = useState([]);
@@ -12,13 +12,10 @@ export default function ProductNamePage() {
     useEffect(() => {
         const fetchProductNames = async () => {
             try {
-                const res = await fetch("/api/inventory/product/name/list", {
-                    cache: "no-store",
-                });
-                const data = await res.json();
-                if (data.success) setProductNames(data.productNames);
+                const names = await getProductNameList();
+                setProductNames(names || []);
             } catch (err) {
-                toast.error("Failed to fetch product name:", err);
+                console.error("Fetch error:", err);
             } finally {
                 setLoading(false);
             }

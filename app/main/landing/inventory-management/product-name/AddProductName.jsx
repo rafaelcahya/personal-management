@@ -53,7 +53,7 @@ export default function AddProductName({ onAdded }) {
             onAdded?.();
             reset();
         } catch (err) {
-            toast.error(err.message || "Something went wrong");
+            console.error(err.message || "Something went wrong");
         } finally {
             setLoading(false);
         }

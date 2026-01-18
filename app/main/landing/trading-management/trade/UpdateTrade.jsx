@@ -138,9 +138,6 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
     // Populate form when trade changes
     useEffect(() => {
         if (trade) {
-            console.log("=== POPULATING FORM ===");
-            console.log("Trade data:", trade);
-
             const formData = {
                 trade_date: safeDate(trade.trade_date),
                 ticker: trade.ticker ?? "",
@@ -156,7 +153,6 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                 notes: trade.notes ?? "",
             };
 
-            console.log("Form data to reset:", formData);
             reset(formData);
         }
     }, [trade, reset]);
@@ -201,15 +197,12 @@ export default function TradeUpdate({ trade, onClose, onUpdated }) {
                     : null,
             };
 
-            console.log("API payload:", payload);
-
             await updateTrade(trade.id, payload);
             toast.success("Trade updated successfully!");
             onClose();
             onUpdated?.();
         } catch (err) {
             console.error("Update error:", err);
-            toast.error(err.message || "Something went wrong");
         } finally {
             setLoading(false);
         }

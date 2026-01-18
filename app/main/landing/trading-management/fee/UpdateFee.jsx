@@ -74,8 +74,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
             onUpdated?.();
             onClose();
         } catch (err) {
-            toast.error(err);
-            toast.error(err.message || "Something went wrong");
+            console.error(err);
         } finally {
             setLoading(false);
         }

@@ -10,7 +10,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import LoadingComponent from "@/app/LoadingComponent";
 
@@ -24,7 +23,7 @@ function TradeList() {
             .then((d) => {
                 d.success && setTradeList(d.trades);
             })
-            .catch(toast.error)
+            .catch(console.error)
             .finally(() => setLoading(false));
     }, []);
 

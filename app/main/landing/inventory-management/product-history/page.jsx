@@ -1,30 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import React, { useEffect, useState } from "react";
+import ProductHistoryTable from "./ProductHistoryTable";
+import { getProductHistoryList } from "@/lib/services/inventory/product/history/getProductHistoryList";
 import LoadingComponent from "../../../../LoadingComponent";
-import ProductsTable from "./ProductsTable";
 
-export default function ProductPage() {
-    const [products, setProducts] = useState([]);
+function page() {
+    const [productHistories, setProductHistories] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchProductHistories = async () => {
             try {
-                const res = await fetch("/api/inventory/product/list", {
-                    cache: "no-store",
-                });
-                const data = await res.json();
-                if (data.success) setProducts(data.products);
+                const productHistories = await getProductHistoryList();
+                setProductHistories(productHistories || []);
             } catch (err) {
-                toast.error("Failed to fetch products:", err);
+                console.error("Fetch error:", err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProducts();
+        fetchProductHistories();
     }, []);
 
     return (
@@ -37,8 +34,10 @@ export default function ProductPage() {
                     <LoadingComponent description="Loading all products..." />
                 </div>
             ) : (
-                <ProductsTable products={products} />
+                <ProductHistoryTable productHistories={productHistories} />
             )}
         </main>
     );
 }
+
+export default page;

@@ -74,7 +74,7 @@ export default function ProductBrandUpdate({
             onUpdated();
             onClose();
         } catch (err) {
-            toast.error(err.message || "Failed to update product brand");
+            console.error(err.message || "Failed to update product brand");
         } finally {
             setLoading(false);
         }

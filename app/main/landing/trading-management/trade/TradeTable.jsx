@@ -10,7 +10,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import AddNewTrade from "./AddTrade";
 import TradeUpdate from "./UpdateTrade";
@@ -32,7 +31,7 @@ export default function TradeTable({ trades: initialTrades }) {
             const data = await res.json();
             if (data.success) setListTrade(data.trades);
         } catch (err) {
-            toast.error("Failed to fetch fees:", err);
+            console.error("Failed to fetch fees:", err);
         }
     };
 

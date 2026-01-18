@@ -11,7 +11,7 @@ export function toProductListDto(db) {
         brand: db.brand,
         type: db.type,
         quantity: db.quantity,
-        onHandQuantity: db.on_hand_quantity,
+        onHandQuantity: db.usage_quantity,
         note: db.note,
         productImage: db.product_image,
         productStatus: db.product_status,

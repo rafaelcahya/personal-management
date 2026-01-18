@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import EventTable from "./EventTable";
 import LoadingComponent from "../../../../LoadingComponent";
 
@@ -16,7 +15,7 @@ export default function EventPage() {
                 const data = await res.json();
                 if (data.success) setEvents(data.events);
             } catch (err) {
-                toast.error("Failed to fetch events:", err);
+                console.error("Failed to fetch events:", err);
             } finally {
                 setLoading(false);
             }

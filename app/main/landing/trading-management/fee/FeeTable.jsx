@@ -11,7 +11,6 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import AddFee from "./AddFee";
 import UpdateFee from "./UpdateFee";
 import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
@@ -29,7 +28,7 @@ function FeeTable({ fees: initialFees }) {
             const data = await res.json();
             if (data.success) setFeeList(data.feeList);
         } catch (err) {
-            toast.error("Failed to fetch fees:", err);
+            console.error("Failed to fetch fees:", err);
         }
     };
 

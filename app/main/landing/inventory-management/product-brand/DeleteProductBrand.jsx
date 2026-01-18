@@ -29,7 +29,7 @@ export default function ProductBrandDelete({
             onDeleted?.();
             onClose?.();
         } catch (err) {
-            toast.error(err.message || err);
+            console.error(err.message || err);
         } finally {
             setLoading(false);
         }

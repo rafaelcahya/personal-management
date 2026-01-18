@@ -18,7 +18,6 @@ import {
     SelectItem,
     SelectGroup,
 } from "@/components/ui/select";
-import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import AddEvent from "./AddEvent";
@@ -41,7 +40,7 @@ function EventTable({ events: initialEvents }) {
             const data = await res.json();
             if (data.success) setEventList(data.events);
         } catch (err) {
-            toast.error("Failed to fetch events:", err);
+            console.error("Failed to fetch events:", err);
         }
     };
 

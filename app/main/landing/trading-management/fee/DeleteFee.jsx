@@ -25,8 +25,7 @@ export default function DeleteFee({ fee, onDeleted, onClose }) {
             onDeleted?.();
             onClose?.();
         } catch (err) {
-            toast.error(err);
-            toast.error("Something went wrong");
+            console.error(err);
         } finally {
             setLoading(false);
         }

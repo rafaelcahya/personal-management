@@ -58,10 +58,7 @@ export async function PUT(req, { params }) {
             );
         }
 
-        const updateProductName = await getUpdateProductName(
-            Number(id),
-            body
-        );
+        const updateProductName = await getUpdateProductName(Number(id), body);
 
         if (!updateProductName) {
             return NextResponse.json(

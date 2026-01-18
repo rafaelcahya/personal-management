@@ -157,18 +157,13 @@ export default function AddNewTrade({ onAdded }) {
             setOptionsLoading((prev) => ({ ...prev, [type]: true }));
             const response = await fetch(OPTION_APIS[type]);
             const data = await response.json();
-            console.log(`[${type}] API data:`, data); // ← ADD THIS
-            console.log(
-                `[${type}] options:`,
-                data.options || data.option || []
-            );
 
             setOptions((prev) => ({
                 ...prev,
                 [type]: data.options || data.option || [],
             }));
         } catch (error) {
-            toast.error(`Failed to load ${type}`);
+            console.error(`Failed to load ${type}`);
             setOptions((prev) => ({ ...prev, [type]: [] }));
         } finally {
             setOptionsLoading((prev) => ({ ...prev, [type]: false }));
@@ -197,7 +192,7 @@ export default function AddNewTrade({ onAdded }) {
             onAdded?.();
             reset();
         } catch (err) {
-            toast.error(err.message || "Something went wrong");
+            console.error(err.message || "Something went wrong");
         } finally {
             setLoading(false);
         }

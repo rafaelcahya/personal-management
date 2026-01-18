@@ -12,10 +12,9 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
-import { getProductNameList } from "../../../../../lib/services/inventory/product/name/getProductNameList";
+import Breadcrumbs from "@/components/ui/common/Breadcrumbs";
+import { getProductNameList } from "@/lib/services/inventory/product/name/getProductNameList";
 import SummaryProductName from "./SummaryProductName";
 import AddProductName from "./AddProductName";
 import ProductNameUpdate from "./UpdateProductName";
@@ -36,19 +35,21 @@ export default function ProductNamesTable({
         return productName.product_name_status === filterStatus;
     });
 
+    // Memoize fetch function
     const fetchProductNames = async () => {
         try {
             const names = await getProductNameList();
             setProductNameList(names);
         } catch (err) {
-            toast.error("Failed to fetch product names:", err);
+            console.error("Fetch error:", err);
         }
     };
 
+    // Memoize refresh function
     const refreshAll = useCallback(async () => {
         setIsRefreshing(true);
         try {
-            await Promise.allSettled([fetchProductNames()]);
+            await fetchProductNames();
         } finally {
             setIsRefreshing(false);
         }
@@ -107,6 +108,7 @@ export default function ProductNamesTable({
             </header>
             <div className="space-y-3 flex-1 min-h-0 flex flex-col">
                 <SummaryProductName
+                    productNames={productNameList}
                     onFilter={handleFilter}
                     activeFilter={filterStatus}
                     onRefresh={refreshRef}

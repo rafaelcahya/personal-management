@@ -20,14 +20,14 @@ export async function POST(req) {
             );
         }
 
+        // Update field names to match frontend
         const requiredFields = [
-            "product",
-            "brand",
+            "product_id",
+            "brand_id",
             "type",
             "product_status",
             "quantity",
-            "on_hand_quantity",
-            "product_image",
+            "usage_date",
         ];
 
         const validationErrors = [];
@@ -40,14 +40,14 @@ export async function POST(req) {
         });
 
         const isValidNumber = (value) =>
-            /^\d+(\.\d+)?$/.test(value.replace(/^-/, ""));
+            /^\d+(\.\d+)?$/.test(value.toString().replace(/^-/, ""));
 
         if (body.quantity && !isValidNumber(body.quantity)) {
             validationErrors.push("quantity must be a valid number");
         }
 
-        if (body.on_hand_quantity && !isValidNumber(body.on_hand_quantity)) {
-            validationErrors.push("on hand quantity must be a valid number");
+        if (body.usage_quantity && !isValidNumber(body.usage_quantity)) {
+            validationErrors.push("usage quantity must be a valid number");
         }
 
         if (validationErrors.length > 0) {
@@ -61,14 +61,13 @@ export async function POST(req) {
         }
 
         const newProduct = await getCreateProduct(
-            body.product,
-            body.brand,
+            body.product_id,
+            body.brand_id,
             body.type,
             body.product_status,
             body.quantity,
-            body.on_hand_quantity,
-            body.product_image,
-            body.note
+            body.product_image || "",
+            body.note || ""
         );
 
         return NextResponse.json(
@@ -78,7 +77,7 @@ export async function POST(req) {
     } catch (err) {
         console.error("POST /api/inventory/product/create error:", err);
         return NextResponse.json(
-            { success: false, error: "Internal server error" },
+            { success: false, error: err.message || "Internal server error" },
             { status: 500 }
         );
     }
