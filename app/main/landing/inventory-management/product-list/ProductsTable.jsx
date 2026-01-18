@@ -57,17 +57,7 @@ export default function ProductsTable({ products: initialProducts }) {
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-5">
-                    <Link
-                        href="/main/landing/inventory-management/dashboard"
-                        className="hidden sm:block"
-                    >
-                        <Button className="bg-transparent hover:bg-secondary text-secondary-foreground font-medium">
-                            Back
-                        </Button>
-                    </Link>
-                    <AddProduct onAdded={fetchProducts} />
-                </div>
+                <AddProduct onAdded={fetchProducts} />
             </div>
 
             <div className="relative w-full flex-1 overflow-y-auto z-20">
@@ -130,7 +120,7 @@ export default function ProductsTable({ products: initialProducts }) {
                                         <p className="text-xs text-slate-600 font-mono">
                                             {product.usage_date
                                                 ? new Date(
-                                                      product.usage_date
+                                                      product.usage_date,
                                                   ).toLocaleDateString()
                                                 : "-"}
                                         </p>
