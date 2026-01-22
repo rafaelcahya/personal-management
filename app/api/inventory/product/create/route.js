@@ -26,7 +26,6 @@ export async function POST(req) {
             "brand_id",
             "type",
             "product_status",
-            "quantity",
             "usage_date",
         ];
 
@@ -41,10 +40,6 @@ export async function POST(req) {
 
         const isValidNumber = (value) =>
             /^\d+(\.\d+)?$/.test(value.toString().replace(/^-/, ""));
-
-        if (body.quantity && !isValidNumber(body.quantity)) {
-            validationErrors.push("quantity must be a valid number");
-        }
 
         if (body.usage_quantity && !isValidNumber(body.usage_quantity)) {
             validationErrors.push("usage quantity must be a valid number");
@@ -65,7 +60,6 @@ export async function POST(req) {
             body.brand_id,
             body.type,
             body.product_status,
-            body.quantity,
             body.product_image || "",
             body.note || ""
         );

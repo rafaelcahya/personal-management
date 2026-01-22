@@ -109,7 +109,6 @@ export default function AddProduct({ onAdded }) {
                 brand_id: values.product_brand,
                 type: values.type,
                 product_status: values.product_status,
-                quantity: values.quantity,
                 usage_quantity: 0,
                 product_image: "",
                 usage_date: new Date().toISOString(),
@@ -276,33 +275,6 @@ export default function AddProduct({ onAdded }) {
                                         <Input
                                             {...field}
                                             placeholder="e.g. Whitening"
-                                            className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                                                fieldState.error
-                                                    ? "border-rose-500"
-                                                    : ""
-                                            }`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="font-medium">
-                                        {fieldState.error?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={control}
-                            name="quantity"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Quantity
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            placeholder="e.g. 10"
-                                            type="number"
                                             className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
                                                 fieldState.error
                                                     ? "border-rose-500"

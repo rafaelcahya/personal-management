@@ -18,6 +18,7 @@ import Image from "next/image";
 import AddProduct from "./AddProduct";
 import StockAdjustment from "./StockAdjustment";
 import { getProductList } from "@/lib/services/inventory/product/getProductList";
+import AddQuantity from "./AddQuantity";
 
 export default function ProductsTable({ products: initialProducts }) {
     const [listProduct, setListProduct] = useState(initialProducts || []);
@@ -145,7 +146,11 @@ export default function ProductsTable({ products: initialProducts }) {
                                     </div>
                                 </CardDescription>
 
-                                <CardFooter className="flex justify-end">
+                                <CardFooter className="flex justify-between gap-2">
+                                    <AddQuantity
+                                        product={product}
+                                        onAdded={fetchProducts}
+                                    />
                                     <Button
                                         size="sm"
                                         onClick={() =>
