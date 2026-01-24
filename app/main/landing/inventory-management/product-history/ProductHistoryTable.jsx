@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 
 function ProductHistoryTable({ initialProductHistories }) {
     const [listProductHistory, setListProductHistory] = useState(
-        initialProductHistories || []
+        initialProductHistories || [],
     );
     const [loading, setLoading] = useState(false);
 
@@ -89,7 +89,10 @@ function ProductHistoryTable({ initialProductHistories }) {
                                         Quantity
                                     </TableHead>
                                     <TableHead className="text-slate-foreground">
-                                        Usage Date
+                                        Start Usage Date
+                                    </TableHead>
+                                    <TableHead className="text-slate-foreground">
+                                        End Usage Date
                                     </TableHead>
                                     <TableHead className="text-slate-foreground min-w-[250px] w-[250px] max-w-[250px]">
                                         Note
@@ -125,12 +128,26 @@ function ProductHistoryTable({ initialProductHistories }) {
                                         </TableCell>
                                         <TableCell className="font-mono text-sm">
                                             {new Date(
-                                                history.usage_date,
+                                                history.start_usage_date,
                                             ).toLocaleDateString("id-ID", {
                                                 day: "2-digit",
                                                 month: "short",
                                                 year: "numeric",
                                             })}
+                                        </TableCell>
+                                        <TableCell className="font-mono text-sm">
+                                            {history.end_usage_date
+                                                ? new Date(
+                                                      history.end_usage_date,
+                                                  ).toLocaleDateString(
+                                                      "id-ID",
+                                                      {
+                                                          day: "2-digit",
+                                                          month: "short",
+                                                          year: "numeric",
+                                                      },
+                                                  )
+                                                : "-"}
                                         </TableCell>
                                         <TableCell className="text-sm text-slate-600">
                                             {history.note || "-"}

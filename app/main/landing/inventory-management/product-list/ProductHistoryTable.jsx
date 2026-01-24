@@ -6,14 +6,16 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import HistoryRow from "./HistoryRow";
 
-export default function ProductHistoryTable({ history }) {
+export default function ProductHistoryTable({ history, onUpdate }) {
     return (
         <div className="border rounded-lg">
             <Table>
                 <TableHeader className="bg-slate-50">
                     <TableRow>
-                        <TableHead>Usage Date</TableHead>
+                        <TableHead>Start Usage Date</TableHead>
+                        <TableHead>End Usage Date</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Quantity</TableHead>
                     </TableRow>
@@ -25,36 +27,16 @@ export default function ProductHistoryTable({ history }) {
                                 colSpan={4}
                                 className="text-center text-muted-foreground py-8"
                             >
-                                No history available
+                                No usage history recorded yet
                             </TableCell>
                         </TableRow>
                     ) : (
                         history.map((item) => (
-                            <TableRow key={item.id}>
-                                <TableCell className="font-mono text-sm">
-                                    {new Date(
-                                        item.usage_date
-                                    ).toLocaleDateString("id-ID", {
-                                        day: "2-digit",
-                                        month: "long",
-                                        year: "numeric",
-                                    })}
-                                </TableCell>
-                                <TableCell>
-                                    <span
-                                        className={`px-2 py-0.5 rounded-md text-xs font-semibold capitalize ${
-                                            item.status === "active"
-                                                ? "bg-green-100 text-green-700"
-                                                : "bg-orange-100 text-orange-700"
-                                        }`}
-                                    >
-                                        {item.status}
-                                    </span>
-                                </TableCell>
-                                <TableCell className="font-mono">
-                                    {item.quantity}
-                                </TableCell>
-                            </TableRow>
+                            <HistoryRow
+                                key={item.id}
+                                item={item}
+                                onUpdate={onUpdate}
+                            />
                         ))
                     )}
                 </TableBody>

@@ -11,6 +11,16 @@ export const productSchema = z.object({
 
 export const stockAdjustmentSchema = z.object({
     usage_quantity: z.number().min(0, "Quantity must be 0 or more"),
-    usage_date: z.date({ required_error: "Date is required" }),
+    start_usage_date: z.date({ required_error: "Date is required" }),
     note: z.string().optional(),
+});
+
+export const endUsageSchema = z.object({
+    depleted_quantity: z.coerce
+        .number()
+        .min(1, "Quantity must be at least 1")
+        .positive("Quantity must be positive"),
+    end_usage_date: z.date({
+        required_error: "End date is required",
+    }),
 });

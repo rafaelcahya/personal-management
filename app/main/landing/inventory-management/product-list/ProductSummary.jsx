@@ -4,26 +4,26 @@ export default function ProductSummary({ product }) {
     if (!product) return null;
 
     return (
-        <div className="space-y-2 p-3 bg-slate-50 rounded-lg border text-sm">
-            <div className="flex justify-between">
+        <div className="space-y-2 p-3 bg-slate-50 rounded-lg border text-sm w-1/3">
+            <div className="space-y-1">
                 <p className="text-slate-500">Product</p>
                 <p className="font-medium text-slate-800 text-right">
                     {product.brand} {product.type} {product.product}
                 </p>
             </div>
-            <div className="flex justify-between">
+            <div className="space-y-1">
                 <p className="text-slate-500">Total Quantity</p>
                 <p className="font-mono font-semibold text-slate-900">
                     {product.quantity}
                 </p>
             </div>
-            <div className="flex justify-between">
+            <div className="space-y-1">
                 <p className="text-slate-500">Current Usage</p>
                 <p className="font-mono font-semibold text-slate-900">
                     {product.usage_quantity}
                 </p>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="space-y-1 items-center">
                 <p className="text-slate-500">Status</p>
                 <span
                     className={cn(

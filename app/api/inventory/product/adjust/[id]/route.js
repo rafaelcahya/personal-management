@@ -32,7 +32,7 @@ export async function PATCH(req, { params }) {
         }
 
         // Validate required fields
-        const requiredFields = ["usage_quantity", "usage_date"];
+        const requiredFields = ["usage_quantity", "start_usage_date"];
         const validationErrors = [];
 
         requiredFields.forEach((field) => {
@@ -54,8 +54,8 @@ export async function PATCH(req, { params }) {
         }
 
         // Validate date
-        if (body.usage_date && isNaN(Date.parse(body.usage_date))) {
-            validationErrors.push("usage date must be valid ISO date");
+        if (body.start_usage_date && isNaN(Date.parse(body.start_usage_date))) {
+            validationErrors.push("start usage date must be valid ISO date");
         }
 
         if (validationErrors.length > 0) {
@@ -73,7 +73,7 @@ export async function PATCH(req, { params }) {
         const payload = {
             usage_quantity: usageQty,
             product_status: newStatus,
-            usage_date: body.usage_date,
+            usage_date: body.start_usage_date,
             note: body.note || null,
         };
 
