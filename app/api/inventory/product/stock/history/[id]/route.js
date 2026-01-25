@@ -17,10 +17,7 @@ export async function GET(req, context) {
 
         return NextResponse.json({ success: true, history }, { status: 200 });
     } catch (err) {
-        console.error(
-            "GET /api/inventory/product/quantity/history error:",
-            err,
-        );
+        console.error("GET /api/inventory/product/stock/history error:", err);
         return NextResponse.json(
             { success: false, error: err.message },
             { status: 500 },

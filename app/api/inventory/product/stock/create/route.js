@@ -16,17 +16,17 @@ export async function POST(req) {
         requiredFields.forEach((field) => {
             if (!body[field]) {
                 validationErrors.push(
-                    `${field.replaceAll("_", " ")} is required`,
+                    `${field.charAt(0).toUpperCase() + field.slice(1).toLowerCase().replaceAll("_", " ")} is required`,
                 );
             }
         });
 
         if (body.quantity_added && body.quantity_added <= 0) {
-            validationErrors.push("quantity added must be greater than 0");
+            validationErrors.push("Quantity added must be greater than 0");
         }
 
         if (body.price && body.price < 0) {
-            validationErrors.push("price cannot be negative");
+            validationErrors.push("Price cannot be negative");
         }
 
         if (validationErrors.length > 0) {
@@ -43,10 +43,7 @@ export async function POST(req) {
             { status: 200 },
         );
     } catch (err) {
-        console.error(
-            "POST /api/inventory/product/quantity/create error:",
-            err,
-        );
+        console.error("POST /api/inventory/product/stock/create error:", err);
         return NextResponse.json(
             { success: false, error: err.message },
             { status: 500 },

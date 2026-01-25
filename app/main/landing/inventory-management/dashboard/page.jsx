@@ -29,7 +29,7 @@ export default function page() {
 
     return (
         <main className="flex flex-col gap-5 h-screen w-full mx-auto px-3 py-6 xl:py-20 max-w-full md:max-w-5xl xl:max-w-7xl">
-            <div>
+            {/* <div>
                 <Link
                     href="/main/landing/inventory-management/product-brand"
                     id="productBrandBtn"
@@ -48,7 +48,7 @@ export default function page() {
             </div>
             <div className="fixed inset-0 min-h-svh w-full pointer-events-none -z-10">
                 <div className="absolute inset-0 bg-slate-50"></div>
-            </div>
+            </div> */}
             {loading ? (
                 <div className="flex flex-1 items-center justify-center">
                     <LoadingComponent description="Loading all products..." />

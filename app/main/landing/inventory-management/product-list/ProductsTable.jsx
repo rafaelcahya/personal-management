@@ -18,7 +18,7 @@ import Image from "next/image";
 import AddProduct from "./AddProduct";
 import StockAdjustment from "./StockAdjustment";
 import { getProductList } from "@/lib/services/inventory/product/getProductList";
-import AddQuantity from "./AddQuantity";
+import AddStock from "./AddStock";
 
 export default function ProductsTable({ products: initialProducts }) {
     const [listProduct, setListProduct] = useState(initialProducts || []);
@@ -49,7 +49,8 @@ export default function ProductsTable({ products: initialProducts }) {
         <div>
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20">
                 <div className="space-y-2">
-                    <Breadcrumbs />
+                    {/* TODO: Add and fix breadcrumbs */}
+                    {/* <Breadcrumbs /> */}
                     <div>
                         <p className="text-lg font-semibold">Product List</p>
                         <p className="text-sm text-slate-foreground">
@@ -147,7 +148,7 @@ export default function ProductsTable({ products: initialProducts }) {
                                 </CardDescription>
 
                                 <CardFooter className="flex justify-between gap-2">
-                                    <AddQuantity
+                                    <AddStock
                                         product={product}
                                         onAdded={fetchProducts}
                                     />
