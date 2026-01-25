@@ -38,7 +38,7 @@ import { createProduct } from "@/lib/api/product";
 import { getProductBrands } from "@/lib/api/productBrand";
 import { getProductNames } from "@/lib/api/productName";
 
-export default function AddProduct({ onAdded }) {
+export default function AddProductForm({ onAdded }) {
     const [open, setOpen] = useState(false);
     const [productBrands, setProductBrands] = useState([]);
     const [productNames, setProductNames] = useState([]);
@@ -133,10 +133,10 @@ export default function AddProduct({ onAdded }) {
                 <Button>Add New Product</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle>Add New Product</DialogTitle>
+                <DialogHeader className="text-left">
+                    <DialogTitle>🛍️ Add New Product</DialogTitle>
                     <DialogDescription>
-                        Select brand and details
+                        Got a new item? Let's add it to your inventory!
                     </DialogDescription>
                 </DialogHeader>
 
@@ -177,6 +177,10 @@ export default function AddProduct({ onAdded }) {
                                     <FormMessage>
                                         {fieldState.error?.message}
                                     </FormMessage>
+                                    <p className="text-xs text-muted-foreground">
+                                        Add a photo to easily identify this
+                                        product later 🖼️
+                                    </p>
                                 </FormItem>
                             )}
                         />
@@ -196,7 +200,7 @@ export default function AddProduct({ onAdded }) {
                                                 <SelectValue placeholder="Select product brand" />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent>
+                                        <SelectContent className="max-h-60 overflow-y-auto">
                                             {productBrands?.length === 0 ? (
                                                 <div className="p-8 text-center text-muted-foreground">
                                                     No product brands available
@@ -212,11 +216,14 @@ export default function AddProduct({ onAdded }) {
                                                         >
                                                             {productBrand.brand}
                                                         </SelectItem>
-                                                    )
+                                                    ),
                                                 )
                                             )}
                                         </SelectContent>
                                     </Select>
+                                    <p className="text-xs text-muted-foreground">
+                                        Which brand is this from? 🏷️
+                                    </p>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -237,7 +244,7 @@ export default function AddProduct({ onAdded }) {
                                                 <SelectValue placeholder="Select product name" />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent>
+                                        <SelectContent className="max-h-60 overflow-y-auto">
                                             {productNames?.length === 0 ? (
                                                 <div className="p-8 text-center text-muted-foreground">
                                                     No product names available
@@ -253,11 +260,14 @@ export default function AddProduct({ onAdded }) {
                                                                 productName.product_name
                                                             }
                                                         </SelectItem>
-                                                    )
+                                                    ),
                                                 )
                                             )}
                                         </SelectContent>
                                     </Select>
+                                    <p className="text-xs text-muted-foreground">
+                                        What's the product called? 📦
+                                    </p>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -274,7 +284,7 @@ export default function AddProduct({ onAdded }) {
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            placeholder="e.g. Whitening"
+                                            placeholder="e.g. Whitening, Hydrating, SPF 50"
                                             className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
                                                 fieldState.error
                                                     ? "border-rose-500"
@@ -282,6 +292,10 @@ export default function AddProduct({ onAdded }) {
                                             }`}
                                         />
                                     </FormControl>
+                                    <p className="text-xs text-muted-foreground">
+                                        What kind is it? (serum, lotion, toner,
+                                        etc.) 💡
+                                    </p>
                                     <FormMessage className="font-medium">
                                         {fieldState.error?.message}
                                     </FormMessage>
@@ -300,7 +314,7 @@ export default function AddProduct({ onAdded }) {
                                     <FormControl>
                                         <Textarea
                                             {...field}
-                                            placeholder="Additional notes"
+                                            placeholder="Any details worth remembering..."
                                             className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
                                         />
                                     </FormControl>
@@ -310,7 +324,12 @@ export default function AddProduct({ onAdded }) {
 
                         <DialogFooter>
                             <DialogClose asChild>
-                                <Button type="button" variant="outline">
+                                <Button
+                                    type="button"
+                                    className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                                    id="cancelBtn-addStockPopup"
+                                    disabled={loading}
+                                >
                                     Cancel
                                 </Button>
                             </DialogClose>

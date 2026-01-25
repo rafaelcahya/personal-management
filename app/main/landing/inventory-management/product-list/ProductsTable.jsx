@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import {
     Card,
     CardFooter,
@@ -13,9 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import background from "../../../../assets/background.jpg";
-import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
 import Image from "next/image";
-import AddProduct from "./AddProduct";
+import AddProductForm from "./AddProductForm";
 import StockAdjustment from "./StockAdjustment";
 import { getProductList } from "@/lib/services/inventory/product/getProductList";
 import AddStockForm from "./AddStockForm";
@@ -55,7 +53,7 @@ export default function ProductsTable({ products: initialProducts }) {
                         </p>
                     </div>
                 </div>
-                <AddProduct onAdded={fetchProducts} />
+                <AddProductForm onAdded={fetchProducts} />
             </div>
 
             <div className="relative w-full flex-1 overflow-y-auto z-20">
