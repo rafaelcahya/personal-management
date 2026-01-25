@@ -17,14 +17,11 @@ export async function PUT(req) {
             margin_of_error
         );
 
-        return (
-            NextResponse.json({ success: true, settings }),
-            { status: 200 }
-        );
+        return NextResponse.json({ success: true, settings }, { status: 200 });
     } catch (err) {
-        return (
-            NextResponse.json({ error: err.message }),
-            { status: 401 }
+        return NextResponse.json(
+            { success: false, error: err.message },
+            { status: 500 },
         );
     }
 }
