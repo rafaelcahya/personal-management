@@ -56,7 +56,10 @@ export async function POST(req) {
             { status: 200 }
         );
     } catch (err) {
-        console.error("POST /api/tradetradefee/create error:", err);
-        return NextResponse.json({ error: err.message }), { status: 401 };
+        console.error("POST /api/trade/create error:", err);
+        return NextResponse.json(
+            { success: false, error: err.message },
+            { status: 500 },
+        );
     }
 }
