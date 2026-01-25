@@ -9,22 +9,22 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getProductHistoryByProductListId } from "@/lib/api/productHistory";
+import { getProductLogByProductListId } from "@/lib/api/productHistory";
 import ProductSummary from "./ProductSummary";
-import ProductHistoryTable from "./ProductHistoryTable";
-import RecordUsage from "./RecordUsage";
+import ProductUsageLog from "./ProductUsageLog";
+import RecordUsageForm from "./RecordUsageForm";
 
 export default function StockAdjustment({ product, onClose, onUpdated }) {
-    const [productHistory, setProductHistory] = useState([]);
+    const [productLog, setProductLog] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     const fetchProductHistory = async (productId) => {
         try {
             setIsRefreshing(true);
-            const history = await getProductHistoryByProductListId(productId);
-            setProductHistory(history);
+            const log = await getProductLogByProductListId(productId);
+            setProductLog(log);
         } catch (err) {
-            console.error("Failed to fetch history:", err.message);
+            console.error("Failed to fetch log:", err.message);
         } finally {
             setIsRefreshing(false);
         }
@@ -50,62 +50,95 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
 
     return (
         <Dialog open={!!product} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-4xl min-h-[600px] max-h-[90vh] overflow-y-auto flex flex-col gap-6">
-                <DialogHeader>
-                    <DialogTitle>📦 Stock Adjustment</DialogTitle>
+            <DialogContent className="sm:max-w-lg md:max-w-3xl lg:max-w-4xl flex flex-col max-h-[90vh]">
+                <DialogHeader className="text-left shrink-0">
+                    <DialogTitle>📦 Track Product Usage</DialogTitle>
                     <DialogDescription className="text-slate-foreground">
-                        Record when you start using this product
+                        Let's track when you started using this product 🎯
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex gap-10 w-full">
-                    {/* Product Summary */}
-                    <ProductSummary product={product} />
+                <div className="flex-1 overflow-y-auto">
+                    <div className="flex flex-col sm:flex-row gap-5 w-full">
+                        {/* Product Summary */}
+                        <ProductSummary product={product} />
 
-                    <Tabs
-                        defaultValue="recordUsageLog"
-                        className="w-2/3 space-y-5"
-                    >
-                        <TabsList>
-                            <TabsTrigger value="recordUsageLog">
-                                Usage History
-                            </TabsTrigger>
-                            <TabsTrigger value="recordUsage">
-                                Record New Usage
-                            </TabsTrigger>
-                        </TabsList>
+                        <Tabs
+                            defaultValue="productUsageLog"
+                            className="w-full sm:w-2/3 space-y-5"
+                        >
+                            <TabsList className="bg-violet-50/75 w-full flex flex-col sm:flex-row sm:grid sm:grid-cols-2 h-auto gap-1">
+                                <TabsTrigger
+                                    value="productUsageLog"
+                                    id="productUsageLogTab"
+                                    className="text-sm sm:text-sm py-2.5 px-4 w-full justify-start sm:justify-center"
+                                >
+                                    <div>📊 Product Usage Log</div>
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="recordNewUsage"
+                                    id="recordNewUsageTab"
+                                    className="text-sm sm:text-sm py-2.5 px-4 w-full justify-start sm:justify-center"
+                                >
+                                    <div>➕ Record New Usage</div>
+                                </TabsTrigger>
+                            </TabsList>
 
-                        <TabsContent value="recordUsageLog">
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-sm font-semibold text-slate-700">
-                                        Product Usage Log
-                                    </h3>
-                                    {isRefreshing && (
-                                        <span className="text-xs text-muted-foreground">
-                                            Refreshing...
-                                        </span>
-                                    )}
+                            <TabsContent value="productUsageLog">
+                                <div className="space-y-5">
+                                    <div>
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-sm font-semibold text-slate-700">
+                                                📋 Product Usage Log
+                                            </h3>
+                                            {isRefreshing && (
+                                                <span className="text-xs text-muted-foreground">
+                                                    Refreshing...
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            See when this product was activated,
+                                            how long it lasted, and usage notes
+                                            🔍
+                                        </p>
+                                    </div>
+                                    <ProductUsageLog
+                                        log={productLog}
+                                        onUpdate={handleUpdated}
+                                    />
                                 </div>
-                                <p className="text-xs text-muted-foreground">
-                                    See when this product was activated, how
-                                    long it lasted, and usage notes
-                                </p>
-                                <ProductHistoryTable
-                                    history={productHistory}
-                                    onUpdate={handleUpdated}
-                                />
-                            </div>
-                        </TabsContent>
+                            </TabsContent>
 
-                        <TabsContent value="recordUsage">
-                            <RecordUsage
-                                product={product}
-                                onUpdated={handleUpdated}
-                                onClose={onClose}
-                            />
-                        </TabsContent>
-                    </Tabs>
+                            <TabsContent value="recordNewUsage">
+                                <div className="space-y-5">
+                                    <div>
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-sm font-semibold text-slate-700">
+                                                📋 Let's Log Your Usage!
+                                            </h3>
+                                            {isRefreshing && (
+                                                <span className="text-xs text-muted-foreground">
+                                                    Refreshing...
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            Pop in the details below so we can
+                                            track when you opened this. Super
+                                            helpful for knowing how fast you go
+                                            through stuff! 💡
+                                        </p>
+                                    </div>
+                                    <RecordUsageForm
+                                        product={product}
+                                        onUpdated={handleUpdated}
+                                        onClose={onClose}
+                                    />
+                                </div>
+                            </TabsContent>
+                        </Tabs>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

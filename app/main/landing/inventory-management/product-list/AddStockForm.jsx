@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/popover";
 import { createQuantityUpdate } from "@/lib/api/productQuantity";
 
-export default function AddStock({ product, onAdded }) {
+export default function AddStockForm({ product, onAdded }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState(null);

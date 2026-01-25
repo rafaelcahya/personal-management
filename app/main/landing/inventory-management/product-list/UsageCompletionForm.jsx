@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -21,12 +20,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
-import { endUsageSchema } from "@/schemas/product";
 import { updateProductUsage } from "@/lib/api/productHistory";
+import { useState } from "react";
 
-export default function UpdateUsageForm({ historyItem, onUpdate, onCancel }) {
+export default function UsageCompletionForm({ historyItem, onUpdate, onCancel }) {
+    const [serverError, setServerError] = useState(null);
+
     const form = useForm({
-        resolver: zodResolver(endUsageSchema),
         defaultValues: {
             depleted_quantity: historyItem.quantity || 0,
             end_usage_date: historyItem.end_usage_date
@@ -49,13 +49,12 @@ export default function UpdateUsageForm({ historyItem, onUpdate, onCancel }) {
             await onUpdate?.();
             onCancel?.();
         } catch (err) {
-            console.error("Update error:", err);
-            toast.error("Failed to update usage record");
+                setServerError(err.message || "Failed to update usage record.");
         }
     };
 
     return (
-        <div className="max-w-2xl">
+        <div>
             <div className="mb-4">
                 <h4 className="text-sm font-semibold text-slate-900">
                     {historyItem.status === "active"
@@ -70,7 +69,11 @@ export default function UpdateUsageForm({ historyItem, onUpdate, onCancel }) {
             </div>
 
             <Form {...form}>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="space-y-4"
+                    id="usageCompletionForm"
+                >
                     <div className="grid grid-cols-2 gap-4">
                         {/* Depleted Quantity */}
                         <FormField
@@ -85,7 +88,19 @@ export default function UpdateUsageForm({ historyItem, onUpdate, onCancel }) {
                                     <FormControl>
                                         <Input
                                             type="number"
-                                            className="font-mono"
+                                            id="depletedQuantityField-usageCompletionForm"
+                                            {...field}
+                                            value={field.value ?? ""}
+                                            onChange={(e) => {
+                                                const val =
+                                                    e.target.value === ""
+                                                        ? 0
+                                                        : Number(
+                                                              e.target.value,
+                                                          );
+                                                field.onChange(val);
+                                            }}
+                                            className="font-mono bg-white focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
                                             min={1}
                                             max={historyItem.remaining_quantity}
                                         />
@@ -155,17 +170,38 @@ export default function UpdateUsageForm({ historyItem, onUpdate, onCancel }) {
                         />
                     </div>
 
+                    {/* Server Error */}
+                    {serverError && (
+                        <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
+                            <div className="flex gap-3">
+                                <div className="flex-1">
+                                    <p className="text-sm font-semibold text-red-900 mb-1">
+                                        ⚠️ Unable to Record Usage
+                                    </p>
+                                    <p className="text-sm text-red-800" id="serverErrorMsg-usageCompletionForm">
+                                        {serverError}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex justify-end gap-2 pt-2">
                         <Button
                             type="button"
-                            variant="outline"
-                            size="sm"
+                            className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
                             onClick={onCancel}
                             disabled={isSubmitting}
+                            id="cancelBtn-usageCompletionForm"
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" size="sm" disabled={isSubmitting}>
+                        <Button
+                            type="submit"
+                            size="sm"
+                            disabled={isSubmitting}
+                            id="updateRecordBtn-usageCompletionForm"
+                        >
                             {isSubmitting && (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             )}

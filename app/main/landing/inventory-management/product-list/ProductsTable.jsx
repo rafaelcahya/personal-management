@@ -18,22 +18,18 @@ import Image from "next/image";
 import AddProduct from "./AddProduct";
 import StockAdjustment from "./StockAdjustment";
 import { getProductList } from "@/lib/services/inventory/product/getProductList";
-import AddStock from "./AddStock";
+import AddStockForm from "./AddStockForm";
 
 export default function ProductsTable({ products: initialProducts }) {
     const [listProduct, setListProduct] = useState(initialProducts || []);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [loading, setLoading] = useState(false);
 
     const fetchProducts = useCallback(async () => {
-        setLoading(true);
         try {
             const products = await getProductList();
             setListProduct(products || []);
         } catch (err) {
             console.error("Fetch error:", err);
-        } finally {
-            setLoading(false);
         }
     }, []);
 
@@ -148,7 +144,7 @@ export default function ProductsTable({ products: initialProducts }) {
                                 </CardDescription>
 
                                 <CardFooter className="flex justify-between gap-2">
-                                    <AddStock
+                                    <AddStockForm
                                         product={product}
                                         onAdded={fetchProducts}
                                     />
@@ -158,7 +154,7 @@ export default function ProductsTable({ products: initialProducts }) {
                                             setSelectedProduct(product)
                                         }
                                     >
-                                        Update Product
+                                        Update Usage
                                     </Button>
                                 </CardFooter>
                             </Card>

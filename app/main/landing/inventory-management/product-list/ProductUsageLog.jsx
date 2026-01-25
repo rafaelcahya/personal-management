@@ -6,14 +6,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import HistoryRow from "./HistoryRow";
+import LogRow from "./LogRow";
 
-export default function ProductHistoryTable({ history, onUpdate }) {
+export default function ProductUsageLog({ log, onUpdate }) {
     return (
         <div className="border rounded-lg">
             <Table>
-                <TableHeader className="bg-slate-50">
+                <TableHeader className="bg-violet-50/75">
                     <TableRow>
+                        <TableHead>⚙️</TableHead>
                         <TableHead>Start Usage Date</TableHead>
                         <TableHead>End Usage Date</TableHead>
                         <TableHead>Status</TableHead>
@@ -21,18 +22,21 @@ export default function ProductHistoryTable({ history, onUpdate }) {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {!history || history.length === 0 ? (
+                    {!log || log.length === 0 ? (
                         <TableRow>
                             <TableCell
-                                colSpan={4}
+                                colSpan={5}
                                 className="text-center text-muted-foreground py-8"
                             >
-                                No usage history recorded yet
+                                <p className="font-semibold">
+                                    📭 Nothing tracked yet!
+                                </p>
+                                <p>Hit "Record New Usage" to get started! 🚀</p>
                             </TableCell>
                         </TableRow>
                     ) : (
-                        history.map((item) => (
-                            <HistoryRow
+                        log.map((item) => (
+                            <LogRow
                                 key={item.id}
                                 item={item}
                                 onUpdate={onUpdate}

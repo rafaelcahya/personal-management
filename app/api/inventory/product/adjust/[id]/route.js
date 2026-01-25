@@ -9,7 +9,7 @@ export async function PATCH(req, { params }) {
         if (!id || isNaN(Number(id))) {
             return NextResponse.json(
                 { success: false, error: "Invalid product ID provided" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -20,14 +20,14 @@ export async function PATCH(req, { params }) {
         } catch (parseError) {
             return NextResponse.json(
                 { success: false, error: "Invalid JSON in request body" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
         if (!body) {
             return NextResponse.json(
                 { success: false, error: "Request body is required" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -38,30 +38,37 @@ export async function PATCH(req, { params }) {
         requiredFields.forEach((field) => {
             if (body[field] === undefined || body[field] === null) {
                 validationErrors.push(
-                    `${field.replaceAll("_", " ")} is required`
+                    `${field.replaceAll("_", " ")} is required`,
                 );
             }
         });
 
-        // Validate qty
-        if (body.usage_quantity !== undefined) {
+        // Validate usage_quantity
+        if (body.usage_quantity !== undefined && body.usage_quantity !== null) {
             const qty = Number(body.usage_quantity);
-            if (isNaN(qty) || qty < 0) {
+
+            if (isNaN(qty)) {
+                validationErrors.push("Usage quantity must be a valid number");
+            } else if (qty < 0) {
+                validationErrors.push("Usage quantity cannot be negative");
+            } else if (qty === 0) {
                 validationErrors.push(
-                    "usage quantity must be 0 or positive number"
+                    "Usage quantity must be greater than 0. You need to enter a quantity to start tracking.",
                 );
+            } else if (!Number.isInteger(qty)) {
+                validationErrors.push("Usage quantity must be a whole number");
             }
         }
 
         // Validate date
         if (body.start_usage_date && isNaN(Date.parse(body.start_usage_date))) {
-            validationErrors.push("start usage date must be valid ISO date");
+            validationErrors.push("Start usage date must be valid ISO date");
         }
 
         if (validationErrors.length > 0) {
             return NextResponse.json(
                 { success: false, error: validationErrors },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -83,7 +90,7 @@ export async function PATCH(req, { params }) {
         if (!updatedProduct) {
             return NextResponse.json(
                 { success: false, error: `Product with ID ${id} not found` },
-                { status: 404 }
+                { status: 404 },
             );
         }
 
@@ -94,9 +101,9 @@ export async function PATCH(req, { params }) {
                 message:
                     usageQty > 0
                         ? "Product activated"
-                        : "roduct marked as out of stock",
+                        : "Product marked as out of stock",
             },
-            { status: 200 }
+            { status: 200 },
         );
     } catch (err) {
         console.error("PATCH /api/inventory/product/update/[id] error:", err);
