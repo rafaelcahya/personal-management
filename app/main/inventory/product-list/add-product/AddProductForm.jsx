@@ -157,7 +157,18 @@ export default function AddProductForm({ onAdded }) {
 
                 <Form {...form}>
                     <form
-                        onSubmit={form.handleSubmit(onSubmit)}
+                        onSubmit={form.handleSubmit(
+                            (values) => {
+                                console.log("✅ Validation passed:", values);
+                                onSubmit(values);
+                            },
+                            (errors) => {
+                                console.log("❌ Validation errors:", errors);
+                                toast.error(
+                                    "Please fill in all required fields",
+                                );
+                            },
+                        )}
                         className="space-y-4"
                     >
                         <FormField
