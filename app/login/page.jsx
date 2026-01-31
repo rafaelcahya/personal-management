@@ -39,7 +39,7 @@ export default function LoginPage() {
             localStorage.setItem("tradform-user", JSON.stringify(data.user));
 
             toast.success("Login successful!");
-            router.replace("/main/landing");
+            router.replace("/main");
         } catch (err) {
             toast.error("Invalid username or password");
         } finally {

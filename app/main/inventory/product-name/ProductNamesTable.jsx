@@ -13,45 +13,45 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
-import AddProductBrand from "./AddProductBrand";
-import SummaryProductBrand from "./SummaryProductBrand";
-import ProductBrandUpdate from "./UpdateProductBrand";
-import { getProductBrandList } from "../../../../../lib/services/inventory/product/brand/getProductBrandList";
+import Breadcrumbs from "@/components/ui/common/Breadcrumbs";
+import { getProductNameList } from "@/lib/services/inventory/product/name/getProductNameList";
+import SummaryProductName from "./SummaryProductName";
+import AddProductName from "./AddProductName";
+import ProductNameUpdate from "./UpdateProductName";
 
-export default function ProductBrandsTable({
-    productBrands: initialProductBrands,
+export default function ProductNamesTable({
+    productNames: initialProductNames,
 }) {
-    const [productBrandList, setProductBrandList] = useState(
-        initialProductBrands || []
+    const [productNameList, setProductNameList] = useState(
+        initialProductNames || [],
     );
-    const [selectedBrand, setSelectedBrand] = useState(null);
+    const [selectedName, setSelectedName] = useState(null);
     const [filterStatus, setFilterStatus] = useState(null);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const refreshRef = useRef();
 
-    const filteredBrands = productBrandList.filter((brand) => {
+    const filteredNames = productNameList.filter((productName) => {
         if (!filterStatus) return true;
-        return brand.brand_status === filterStatus;
+        return productName.product_name_status === filterStatus;
     });
 
-    const fetchProductBrands = async () => {
+    const fetchProductNames = async () => {
         try {
-            const brands = await getProductBrandList();
-            setProductBrandList(brands);
+            const names = await getProductNameList();
+            setProductNameList(names);
         } catch (err) {
-            console.error("Failed to fetch product brands:", err);
+            console.error("Fetch error:", err);
         }
     };
 
     const refreshAll = useCallback(async () => {
         setIsRefreshing(true);
         try {
-            await Promise.allSettled([fetchProductBrands()]);
+            await fetchProductNames();
         } finally {
             setIsRefreshing(false);
         }
-    }, [fetchProductBrands]);
+    }, [fetchProductNames]);
 
     refreshRef.current = refreshAll;
 
@@ -68,13 +68,13 @@ export default function ProductBrandsTable({
             case "inactive":
                 return "bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200";
             default:
-                return "bg-slate-100 text-gray-800 border-gray-200 hover:bg-gray-200";
+                return "bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200";
         }
     };
 
     useEffect(() => {
-        setProductBrandList(initialProductBrands);
-    }, [initialProductBrands]);
+        setProductNameList(initialProductNames);
+    }, [initialProductNames]);
 
     return (
         <div className="flex flex-col h-full gap-y-3" id="productBrandTable">
@@ -83,10 +83,10 @@ export default function ProductBrandsTable({
                     <Breadcrumbs />
                     <div>
                         <p className="text-lg font-semibold">
-                            Product Brand List
+                            Product Name List
                         </p>
                         <p className="text-sm text-slate-foreground">
-                            Manage all your product brands in one place — track
+                            Manage all your product names in one place — track
                             status, monitor inventory, and keep your stock
                             organized.
                         </p>
@@ -101,18 +101,19 @@ export default function ProductBrandsTable({
                             Back
                         </Button>
                     </Link>
-                    <AddProductBrand onAdded={refreshAll} />
+                    <AddProductName onAdded={refreshAll} />
                 </div>
             </header>
             <div className="space-y-3 flex-1 min-h-0 flex flex-col">
-                <SummaryProductBrand
+                <SummaryProductName
+                    productNames={productNameList}
                     onFilter={handleFilter}
                     activeFilter={filterStatus}
                     onRefresh={refreshRef}
                     loading={isRefreshing}
                 />
                 <div className="flex-1 min-h-0 relative border shadow shadow-gray-200 rounded-2xl overflow-hidden flex flex-col">
-                    {filteredBrands.length === 0 ? (
+                    {filteredNames.length === 0 ? (
                         <div className="space-y-2 text-center py-12">
                             <div>
                                 <p className="text-lg font-medium text-muted-foreground">
@@ -122,13 +123,13 @@ export default function ProductBrandsTable({
                                                   .charAt(0)
                                                   .toUpperCase() +
                                               filterStatus.slice(1)
-                                          } brands not found`
-                                        : "No product brands"}
+                                          } names not found`
+                                        : "No product names"}
                                 </p>
                                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                                     {filterStatus
-                                        ? "No brands match this filter. Try another status or add new brands."
-                                        : "Get started by adding your first product brand."}
+                                        ? "No product names match this filter. Try another status or add new names."
+                                        : "Get started by adding your first product name."}
                                 </p>
                             </div>
                             <Button
@@ -141,16 +142,16 @@ export default function ProductBrandsTable({
                     ) : (
                         <div className="flex flex-col h-full overflow-hidden">
                             <Table className="w-full table-auto">
-                                <TableHeader className="sticky top-0 z-20 bg-slate-100">
+                                <TableHeader className="bg-slate-100 sticky top-0 z-20">
                                     <TableRow className="border-none">
                                         <TableHead className="py-2 text-slate-foreground text-center w-[30px] min-w-[30px] max-w-[30px]">
                                             #
                                         </TableHead>
                                         <TableHead className="text-slate-foreground w-[150px] min-w-[150px] max-w-[150px]">
-                                            Product brand
+                                            Product name
                                         </TableHead>
                                         <TableHead className="text-slate-foreground w-[100px] min-w-[100px] max-w-[100px]">
-                                            Status
+                                            Product name status
                                         </TableHead>
                                         <TableHead className="text-slate-foreground min-w-[250px] w-[250px] max-w-[250px]">
                                             Notes
@@ -159,53 +160,49 @@ export default function ProductBrandsTable({
                                 </TableHeader>
 
                                 <TableBody>
-                                    {filteredBrands.map(
-                                        (productBrand, index) => (
-                                            <TableRow
-                                                key={productBrand.id}
-                                                className="border-dashed border-b last:border-b-0 hover:bg-slate-100 border-slate-200 transition-colors cursor-pointer"
-                                                onClick={() =>
-                                                    setSelectedBrand(
-                                                        productBrand
-                                                    )
-                                                }
-                                            >
-                                                <TableCell className="text-slate-foreground text-center text-sm font-mono w-[30px] min-w-[30px] max-w-[30px]">
-                                                    {index + 1}
-                                                </TableCell>
-                                                <TableCell className="w-[150px] min-w-[150px] max-w-[150px] whitespace-normal">
-                                                    {productBrand.brand}
-                                                </TableCell>
-                                                <TableCell className="w-[100px] min-w-[100px] max-w-[100px]">
-                                                    <Badge
-                                                        className={cn(
-                                                            "capitalize",
-                                                            getStatusClasses(
-                                                                productBrand.brand_status
-                                                            )
-                                                        )}
-                                                    >
-                                                        {
-                                                            productBrand.brand_status
-                                                        }
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="min-w-[250px] w-[250px] max-w-[250px]">
-                                                    <p className="whitespace-normal line-clamp-3">
-                                                        {productBrand.note}
-                                                    </p>
-                                                </TableCell>
-                                            </TableRow>
-                                        )
-                                    )}
+                                    {filteredNames.map((productName, index) => (
+                                        <TableRow
+                                            key={productName.id}
+                                            className="border-dashed border-b last:border-b-0 hover:bg-slate-100 border-slate-200 transition-colors cursor-pointer"
+                                            onClick={() =>
+                                                setSelectedName(productName)
+                                            }
+                                        >
+                                            <TableCell className="text-slate-foreground text-center text-sm font-mono w-[30px] min-w-[30px] max-w-[30px]">
+                                                {index + 1}
+                                            </TableCell>
+                                            <TableCell className="w-[150px] min-w-[150px] max-w-[150px] whitespace-normal">
+                                                {productName.product_name}
+                                            </TableCell>
+                                            <TableCell className="w-[100px] min-w-[100px] max-w-[100px]">
+                                                <Badge
+                                                    className={cn(
+                                                        "capitalize",
+                                                        getStatusClasses(
+                                                            productName.product_name_status,
+                                                        ),
+                                                    )}
+                                                >
+                                                    {
+                                                        productName.product_name_status
+                                                    }
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="min-w-[250px] w-[250px] max-w-[250px]">
+                                                <p className="whitespace-normal line-clamp-3">
+                                                    {productName.note}
+                                                </p>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                         </div>
                     )}
 
-                    <ProductBrandUpdate
-                        productBrand={selectedBrand}
-                        onClose={() => setSelectedBrand(null)}
+                    <ProductNameUpdate
+                        productName={selectedName}
+                        onClose={() => setSelectedName(null)}
                         onUpdated={refreshAll}
                     />
                 </div>

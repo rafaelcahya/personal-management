@@ -9,12 +9,12 @@ export default function CatchAll() {
 	useEffect(() => {
 		const user = localStorage.getItem("user");
 		if (!user) {
-			router.replace("/auth/login");
+			router.replace("/login");
 			localStorage.removeItem("user");
 			return;
 		}
 
-		router.replace("/auth/login");
+		router.replace("/login");
 		toast.error("Session expired");
 		localStorage.removeItem("user");
 	}, [router]);

@@ -88,11 +88,10 @@ export default function AddStockForm({ product, onAdded }) {
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button
-                    size="sm"
-                    className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                    size="xs"
+                    className="bg-white text-black text-left w-max p-0"
                     id="addStockBtn-productList"
                 >
-                    <Plus className="h-4 w-4" />
                     Add Stock
                 </Button>
             </DialogTrigger>

@@ -9,20 +9,20 @@ export async function middleware(request) {
     const token = request.cookies.get("authToken")?.value;
     const { pathname } = request.nextUrl;
 
-    if (pathname.startsWith("/auth") || pathname.startsWith("/api")) {
+    if (pathname.startsWith("/login") || pathname.startsWith("/api")) {
         return NextResponse.next();
     }
 
     if (pathname.startsWith("/main")) {
         if (!token) {
             console.error("No token, redirecting...");
-            return NextResponse.redirect(new URL("/auth/login", request.url));
+            return NextResponse.redirect(new URL("/login", request.url));
         }
 
         try {
             await jwtVerify(token, secret);
         } catch (err) {
-            return NextResponse.redirect(new URL("/auth/login", request.url));
+            return NextResponse.redirect(new URL("/login", request.url));
         }
     }
 

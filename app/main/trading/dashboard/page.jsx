@@ -19,7 +19,7 @@ export default function Page() {
         async function fetchUser() {
             const res = await fetch("/api/auth/me", { credentials: "include" });
             if (!res.ok) {
-                router.replace("/auth/login");
+                router.replace("/login");
                 return;
             }
             const data = await res.json();

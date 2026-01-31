@@ -10,7 +10,7 @@ export default function Logout() {
     const handleLogout = async () => {
         try {
             await fetch("/api/auth/logout", { method: "POST" });
-            router.replace("/auth/login");
+            router.replace("/login");
         } catch (err) {
             console.error("Logout error:", err);
         }
