@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCreateProduct } from "../../../../../lib/services/inventory/product/getCreateProduct";
+import { getCreateProduct } from "@/lib/services/inventory/product/getCreateProduct";
 
 export async function POST(req) {
     try {
@@ -9,31 +9,30 @@ export async function POST(req) {
         } catch (parseError) {
             return NextResponse.json(
                 { success: false, error: "Invalid JSON in request body" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
         if (!body) {
             return NextResponse.json(
                 { success: false, error: "Request body is required" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
-        // Update field names to match frontend
+        // Required fields validation
         const requiredFields = [
             "product_id",
             "brand_id",
             "type",
             "product_status",
-            "usage_date",
         ];
 
         const validationErrors = [];
         requiredFields.forEach((field) => {
             if (!body[field] || body[field].toString().trim() === "") {
                 validationErrors.push(
-                    `${field.replaceAll("_", " ")} is required`
+                    `${field.replaceAll("_", " ")} is required`,
                 );
             }
         });
@@ -41,7 +40,10 @@ export async function POST(req) {
         const isValidNumber = (value) =>
             /^\d+(\.\d+)?$/.test(value.toString().replace(/^-/, ""));
 
-        if (body.usage_quantity && !isValidNumber(body.usage_quantity)) {
+        if (
+            body.usage_quantity !== undefined &&
+            !isValidNumber(body.usage_quantity)
+        ) {
             validationErrors.push("usage quantity must be a valid number");
         }
 
@@ -51,28 +53,33 @@ export async function POST(req) {
                     success: false,
                     error: validationErrors,
                 },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
-        const newProduct = await getCreateProduct(
-            body.product_id,
-            body.brand_id,
-            body.type,
-            body.product_status,
-            body.product_image || "",
-            body.note || ""
-        );
+        // Prepare payload with all fields
+        const payload = {
+            product_id: body.product_id,
+            brand_id: body.brand_id,
+            type: body.type,
+            product_status: body.product_status,
+            usage_quantity: body.usage_quantity || 0,
+            product_image: body.product_image || "",
+            note: body.note || "",
+            usage_date: body.usage_date || new Date().toISOString(),
+        };
+
+        const newProduct = await getCreateProduct(payload);
 
         return NextResponse.json(
             { success: true, product: newProduct },
-            { status: 200 }
+            { status: 200 },
         );
     } catch (err) {
         console.error("POST /api/inventory/product/create error:", err);
         return NextResponse.json(
             { success: false, error: err.message || "Internal server error" },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

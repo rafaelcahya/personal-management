@@ -54,7 +54,7 @@ export default function AddProductForm({ onAdded }) {
             type: "",
             quantity: "",
             note: "",
-            product_status: "active",
+            product_status: "inactive",
         },
     });
 
@@ -104,16 +104,31 @@ export default function AddProductForm({ onAdded }) {
     const onSubmit = async (values) => {
         setLoading(true);
         try {
-            await createProduct({
+            let imageBase64 = "";
+
+            if (values.image && values.image[0]) {
+                const file = values.image[0];
+                imageBase64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // Create payload dengan semua field dari form
+            const payload = {
                 product_id: values.product_name,
                 brand_id: values.product_brand,
                 type: values.type,
-                product_status: values.product_status,
+                product_status: "inactive",
                 usage_quantity: 0,
-                product_image: "",
-                usage_date: new Date().toISOString(),
+                product_image: imageBase64,
+                usage_date: null,
                 note: values.note || "",
-            });
+            };
+
+            await createProduct(payload);
 
             toast.success("Product added successfully");
             setOpen(false);
@@ -314,10 +329,14 @@ export default function AddProductForm({ onAdded }) {
                                     <FormControl>
                                         <Textarea
                                             {...field}
+                                            value={field.value || ""}
                                             placeholder="Any details worth remembering..."
                                             className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
                                         />
                                     </FormControl>
+                                    <p className="text-xs text-muted-foreground">
+                                        Optional notes about this product 📝
+                                    </p>
                                 </FormItem>
                             )}
                         />

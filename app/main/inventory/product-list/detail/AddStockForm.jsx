@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { CalendarIcon, Loader2, Plus } from "lucide-react";
@@ -87,13 +86,13 @@ export default function AddStockForm({ product, onAdded }) {
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button
-                    size="xs"
-                    className="bg-white text-black text-left w-max p-0"
+                <button
+                    className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded-sm transition-colors text-left"
                     id="addStockBtn-productList"
                 >
+                    <Plus className="h-4 w-4 mr-2" />
                     Add Stock
-                </Button>
+                </button>
             </DialogTrigger>
             <DialogContent
                 className="sm:max-w-md flex flex-col max-h-[90vh]"

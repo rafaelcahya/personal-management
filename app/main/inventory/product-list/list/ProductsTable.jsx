@@ -171,9 +171,8 @@ export default function ProductsTable({
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuItem
                                             onSelect={(e) => e.preventDefault()}
-                                            className="outline-none"
+                                            className="p-0"
                                         >
-                                            <Plus className="h-4 w-4 mr-2" />
                                             <AddStockForm
                                                 product={product}
                                                 onAdded={onRefresh}
