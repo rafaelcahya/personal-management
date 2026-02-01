@@ -2,7 +2,7 @@ import InventoryNavigation from "./InventoryNavigation";
 
 export default function InventoryLayout({ children }) {
     return (
-        <div className="flex flex-col gap-5 h-screen w-full mx-auto px-3 py-6 xl:py-20 max-w-full md:max-w-5xl xl:max-w-7xl">
+        <div className="flex flex-col gap-5 h-screen w-full mx-auto px-3 py-6 xl:py-10 max-w-full md:max-w-5xl xl:max-w-7xl">
             {/* Background */}
             <div className="fixed inset-0 min-h-svh w-full pointer-events-none -z-10">
                 <div className="absolute inset-0 bg-slate-50"></div>
