@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { deleteFee } from "../../../../../lib/api/fee";
+import { deleteFee } from "@/lib/api/fee";
 
 export default function DeleteFee({ fee, onDeleted, onClose }) {
     const [loading, setLoading] = useState(false);

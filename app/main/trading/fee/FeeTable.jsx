@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import AddFee from "./AddFee";
 import UpdateFee from "./UpdateFee";
-import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
+import Breadcrumbs from "@/components/ui/common/Breadcrumbs";
 import SummaryFee from "./SummaryFee";
 
 function FeeTable({ fees: initialFees }) {

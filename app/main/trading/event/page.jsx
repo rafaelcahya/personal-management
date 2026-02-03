@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import EventTable from "./EventTable";
-import LoadingComponent from "../../../../LoadingComponent";
+import LoadingComponent from "../../../LoadingComponent";
 
 export default function EventPage() {
     const [events, setEvents] = useState([]);
