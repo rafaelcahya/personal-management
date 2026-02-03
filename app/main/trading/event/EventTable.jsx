@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import AddEvent from "./AddEvent";
 import UpdateEvent from "./UpdateEvent";
 import { highlightKeyword } from "@/lib/utils/highlightKeyword";
-import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
+import Breadcrumbs from "@/components/ui/common/Breadcrumbs";
 import { TrendingDown, TrendingUp } from "lucide-react";
 
 function EventTable({ events: initialEvents }) {

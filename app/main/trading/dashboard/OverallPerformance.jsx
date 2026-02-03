@@ -6,21 +6,18 @@ import CommentedMetric from "@/components/ui/common/CommentedMetric";
 import CircleStatConic from "@/components/ui/common/CircleStatConic";
 import {
     ArrowDownRight,
-    ArrowUpDown,
     ArrowUpRight,
     Blend,
     ChartBarStacked,
     ChartNoAxesGantt,
     HandCoins,
-    History,
-    Hourglass,
     Sliders,
     TrendingDown,
     TrendingUp,
     TrendingUpDown,
     Wallet,
 } from "lucide-react";
-import SkeletonBlock from "../../../../../components/ui/common/SkeletonBlock";
+import SkeletonBlock from "@/components/ui/common/SkeletonBlock";
 import { Separator } from "@/components/ui/separator";
 import {
     HoverCard,
