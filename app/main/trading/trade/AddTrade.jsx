@@ -40,8 +40,8 @@ import { tradeSchema } from "@/schemas/trade";
 import { addTrade } from "@/lib/api/trade";
 
 import { formatRupiah } from "@/lib/utils/currencyFormatter";
-import CurrencyField from "../../../../../components/ui/common/CurrencyField";
-import DynamicSelectField from "../../../../../components/ui/common/DynamicSelectField";
+import CurrencyField from "@/components/ui/common/CurrencyField";
+import DynamicSelectField from "@/components/ui/common/DynamicSelectField";
 
 const OPTION_APIS = {
     stockType: "/api/trade/options/stock-type",

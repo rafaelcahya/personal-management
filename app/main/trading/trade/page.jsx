@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import TradeTable from "./TradeTable";
-import LoadingComponent from "../../../../LoadingComponent";
+import LoadingComponent from "../../../LoadingComponent";
 
 export default function TradePage() {
     const [trades, setTrades] = useState([]);

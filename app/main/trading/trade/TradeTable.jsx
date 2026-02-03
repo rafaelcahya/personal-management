@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import AddNewTrade from "./AddTrade";
 import TradeUpdate from "./UpdateTrade";
-import Breadcrumbs from "../../../../../components/ui/common/Breadcrumbs";
+import Breadcrumbs from "@/components/ui/common/Breadcrumbs";
 import SummaryTrade from "./SummaryTrade";
 
 const profitLossColor = (value) =>
