@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import { jwtVerify } from "jose";
 
 const secret = new TextEncoder().encode(
-    process.env.JWT_SECRET || "default-secret"
+    process.env.JWT_SECRET || "default-secret",
 );
 
 async function getUserIdFromReq(req) {

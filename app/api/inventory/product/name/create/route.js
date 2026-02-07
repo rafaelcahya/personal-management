@@ -1,22 +1,37 @@
 import { NextResponse } from "next/server";
 import { getCreateProductName } from "../../../../../../lib/services/inventory/product/name/getCreateProductName";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req) {
     try {
+        // Get authenticated user
+        const supabase = createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
         let body;
         try {
             body = await req.json();
         } catch (parseError) {
             return NextResponse.json(
                 { success: false, error: "Invalid JSON in request body" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
         if (!body) {
             return NextResponse.json(
                 { success: false, error: "Request body is required" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -26,7 +41,7 @@ export async function POST(req) {
         requiredFields.forEach((field) => {
             if (!body[field] || body[field].toString().trim() === "") {
                 validationErrors.push(
-                    `${field.replaceAll("_", " ")} is required`
+                    `${field.replaceAll("_", " ")} is required`,
                 );
             }
         });
@@ -45,26 +60,28 @@ export async function POST(req) {
                     success: false,
                     error: validationErrors,
                 },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
+        // Pass user.id to service
         const newProductname = await getCreateProductName(
+            user.id, // ← Pass authenticated user ID
             body.product_name,
             body.product_name_status,
             body.note,
-            body.deleted_at
+            body.deleted_at,
         );
 
         return NextResponse.json(
             { success: true, productName: newProductname },
-            { status: 200 }
+            { status: 200 },
         );
     } catch (err) {
         console.error("POST /api/inventory/product/name/create error:", err);
         return NextResponse.json(
             { success: false, error: "Internal server error" },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
