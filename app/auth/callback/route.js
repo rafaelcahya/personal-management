@@ -28,7 +28,6 @@ export async function GET(request) {
             },
         );
 
-        console.log("🔄 Exchanging code for session...");
         const { data, error } =
             await supabase.auth.exchangeCodeForSession(code);
 

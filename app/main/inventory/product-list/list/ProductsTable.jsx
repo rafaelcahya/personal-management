@@ -97,7 +97,6 @@ export default function ProductsTable({
                 </TableHeader>
                 <TableBody>
                     {products.map((product) => {
-                        console.log("🔍 Table product:", product);
                         return (
                             <TableRow
                                 key={product.id}

@@ -128,8 +128,6 @@ export default function AddProductForm({ onAdded }) {
                 note: values.note || "",
             };
 
-            console.log("📤 Sending payload:", payload);
-
             await createProduct(payload);
 
             toast.success("Product added successfully");
@@ -161,11 +159,9 @@ export default function AddProductForm({ onAdded }) {
                     <form
                         onSubmit={form.handleSubmit(
                             (values) => {
-                                console.log("✅ Validation passed:", values);
                                 onSubmit(values);
                             },
                             (errors) => {
-                                console.log("❌ Validation errors:", errors);
                                 toast.error("Mohon isi semua field yang wajib");
                             },
                         )}

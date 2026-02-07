@@ -55,9 +55,6 @@ export default function AddStockForm({ product, onAdded }) {
         setLoading(true);
         setServerError(null);
 
-        console.log("🔍 Product object:", product);
-        console.log("🔍 Product ID:", product.id);
-
         try {
             const payload = {
                 product_list_id: product.id,
@@ -65,9 +62,7 @@ export default function AddStockForm({ product, onAdded }) {
                 price: values.price,
                 purchase_date: values.purchase_date.toISOString(),
                 note: values.note,
-            };
-
-            console.log("📤 Payload:", payload);
+            }
 
             await createQuantityUpdate(payload);
 
