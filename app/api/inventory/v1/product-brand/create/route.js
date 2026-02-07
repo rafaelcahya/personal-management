@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server";
-import { getUpdateProductBrand } from "@/lib/services/inventory/product/brand/getUpdateProductBrand";
+import { createProductBrand } from "@/lib/services/inventory/product/brand/createProductBrand";
+import { createClient } from "@/lib/supabase/server";
 
-export async function PUT(req, { params }) {
+export async function POST(req) {
     try {
-        const { id } = await params;
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
 
-        if (!id || isNaN(Number(id))) {
+        if (authError || !user) {
             return NextResponse.json(
-                { success: false, error: "Invalid product brand ID provided" },
-                { status: 400 }
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
             );
         }
 
@@ -18,24 +23,24 @@ export async function PUT(req, { params }) {
         } catch (parseError) {
             return NextResponse.json(
                 { success: false, error: "Invalid JSON in request body" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
         if (!body) {
             return NextResponse.json(
                 { success: false, error: "Request body is required" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
-        const requiredFields = ["brand", "brand_status"];
+        const requiredFields = ["brand"];
 
         const validationErrors = [];
         requiredFields.forEach((field) => {
             if (!body[field] || body[field].toString().trim() === "") {
                 validationErrors.push(
-                    `${field.replaceAll("_", " ")} is required`
+                    `${field.replaceAll("_", " ")} is required`,
                 );
             }
         });
@@ -54,40 +59,30 @@ export async function PUT(req, { params }) {
                     success: false,
                     error: validationErrors,
                 },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
-        const updateProductBrand = await getUpdateProductBrand(
-            Number(id),
-            body
+        const newProductBrand = await createProductBrand(
+            user.id,
+            body.brand,
+            body.note,
+            body.brand_status,
+            body.deleted_at,
         );
 
-        if (!updateProductBrand) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: `Product brand with ID ${id} not found`,
-                },
-                { status: 404 }
-            );
-        }
-
         return NextResponse.json(
-            {
-                success: true,
-                productBrand: updateProductBrand,
-            },
-            { status: 200 }
+            { success: true, productBrand: newProductBrand },
+            { status: 200 },
         );
     } catch (err) {
-        console.error("PUT /api/inventory/product/brand/update error:", err);
+        console.error(
+            "POST /api/inventory/v1/product-brand/create error:",
+            err,
+        );
         return NextResponse.json(
-            {
-                success: false,
-                error: "Internal Server Error",
-            },
-            { status: 500 }
+            { success: false, error: err.message },
+            { status: 500 },
         );
     }
 }

@@ -5,6 +5,7 @@ import { updateProductName } from "@/lib/services/inventory/product/name/updateP
 export async function PUT(req, { params }) {
     try {
         const supabase = await createClient();
+        
         const {
             data: { user },
             error: authError,

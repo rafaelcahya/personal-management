@@ -3,9 +3,13 @@ import { requireAuth } from "@/lib/auth/utils";
 import ProductNamesPageClient from "./ProductNamesPageClient";
 
 export default async function ProductNamePage() {
-    await requireAuth();
+    const user = await requireAuth();
 
-    const names = await getProductNameList();
+    if (!user || !user.id) {
+        throw new Error("User ID is missing after authentication");
+    }
+
+    const names = await getProductNameList(user.id);
 
     return <ProductNamesPageClient initialNames={names} />;
 }

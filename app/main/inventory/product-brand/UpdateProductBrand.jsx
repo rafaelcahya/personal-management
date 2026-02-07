@@ -71,10 +71,10 @@ export default function ProductBrandUpdate({
         try {
             await updateProductBrand(productBrand.id, values);
             toast.success("Product brand updated successfully!");
-            onUpdated();
+            onUpdated?.();
             onClose();
         } catch (err) {
-            console.error(err.message || "Failed to update product brand");
+            toast.error(err.message || "Failed to update product name");
         } finally {
             setLoading(false);
         }
@@ -115,7 +115,7 @@ export default function ProductBrandUpdate({
                                             className={cn(
                                                 "text-sm font-medium capitalize focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500",
                                                 fieldState.error &&
-                                                    "border-red-500 focus-visible:ring-red-500"
+                                                    "border-red-500 focus-visible:ring-red-500",
                                             )}
                                         />
                                     </FormControl>
@@ -205,7 +205,7 @@ export default function ProductBrandUpdate({
                             <div
                                 className={cn(
                                     "flex justify-between w-full",
-                                    isDeleted && "justify-end"
+                                    isDeleted && "justify-end",
                                 )}
                             >
                                 {!isDeleted && (

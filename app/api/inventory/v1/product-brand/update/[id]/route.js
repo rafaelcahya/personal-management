@@ -1,8 +1,32 @@
 import { NextResponse } from "next/server";
-import { getCreateProductBrand } from "../../../../../../../lib/services/inventory/product/brand/getCreateProductBrand";
+import { createClient } from "@/lib/supabase/server";
+import { updateProductBrand } from "@/lib/services/inventory/product/brand/updateProductBrand";
 
-export async function POST(req) {
+export async function PUT(req, { params }) {
     try {
+        const supabase = await createClient();
+
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const { id } = await params;
+
+        if (!id || isNaN(Number(id))) {
+            return NextResponse.json(
+                { success: false, error: "Invalid product brand ID provided" },
+                { status: 400 },
+            );
+        }
+
         let body;
         try {
             body = await req.json();
@@ -20,7 +44,7 @@ export async function POST(req) {
             );
         }
 
-        const requiredFields = ["brand"];
+        const requiredFields = ["brand", "brand_status"];
 
         const validationErrors = [];
         requiredFields.forEach((field) => {
@@ -49,21 +73,36 @@ export async function POST(req) {
             );
         }
 
-        const newProductBrand = await getCreateProductBrand(
-            body.brand,
-            body.note,
-            body.brand_status,
-            body.deleted_at,
+        const updatedProductBrand = await updateProductBrand(
+            Number(id),
+            body,
+            user.id,
         );
 
+        if (!updatedProductBrand) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: `Product brand with ID ${id} not found`,
+                },
+                { status: 404 },
+            );
+        }
+
         return NextResponse.json(
-            { success: true, productBrand: newProductBrand },
+            {
+                success: true,
+                productBrand: updatedProductBrand,
+            },
             { status: 200 },
         );
     } catch (err) {
-        console.error("POST /api/inventory/product/brand/create error:", err);
+        console.error("PUT /api/inventory/v1/product-brand/update error:", err);
         return NextResponse.json(
-            { success: false, error: err.message },
+            {
+                success: false,
+                error: "Internal Server Error",
+            },
             { status: 500 },
         );
     }

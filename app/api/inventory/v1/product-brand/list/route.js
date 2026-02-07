@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getProductNameList } from "@/lib/services/inventory/product/name/getProductNameList";
+import { getProductBrandList } from "@/lib/services/inventory/product/brand/getProductBrandList";
 
 export async function GET() {
     try {
@@ -18,14 +18,14 @@ export async function GET() {
             );
         }
 
-        const productNamesList = await getProductNameList(user.id);
+        const productBrandList = await getProductBrandList(user.id);
 
         return NextResponse.json(
-            { success: true, data: productNamesList },
+            { success: true, data: productBrandList },
             { status: 200 },
         );
     } catch (err) {
-        console.error("GET /api/inventory/v1/product-name error:", err);
+        console.error("GET /api/inventory/v1/product-brand error:", err);
         return NextResponse.json(
             { success: false, error: err.message || "Internal server error" },
             { status: 500 },

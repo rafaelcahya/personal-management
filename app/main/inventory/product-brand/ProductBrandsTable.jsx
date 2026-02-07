@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import AddProductBrand from "./AddProductBrand";
 import SummaryProductBrand from "./SummaryProductBrand";
 import ProductBrandUpdate from "./UpdateProductBrand";
-import { getProductBrandList } from "@/lib/services/inventory/product/brand/getProductBrandList";
+import { fetchProductBrand } from "@/lib/api/productBrand";
 
 export default function ProductBrandsTable({
     productBrands: initialProductBrands,
@@ -36,7 +36,7 @@ export default function ProductBrandsTable({
 
     const fetchProductBrands = async () => {
         try {
-            const brands = await getProductBrandList();
+            const brands = await fetchProductBrand();
             setProductBrandList(brands || []);
         } catch (err) {
             console.error("Failed to fetch product brands:", err);
@@ -46,11 +46,13 @@ export default function ProductBrandsTable({
     const refreshAll = useCallback(async () => {
         setIsRefreshing(true);
         try {
-            await Promise.allSettled([fetchProductBrands()]);
+            await fetchProductBrands();
+        } catch (err) {
+            console.error("Refresh error:", err);
         } finally {
             setIsRefreshing(false);
         }
-    }, [fetchProductBrands]);
+    }, []);
 
     refreshRef.current = refreshAll;
 

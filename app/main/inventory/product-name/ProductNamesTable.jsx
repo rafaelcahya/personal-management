@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { fetchProductNames } from "@/lib/api/productName";
+import { fetchProductName } from "@/lib/api/productName";
 import SummaryProductName from "./SummaryProductName";
 import AddProductName from "./AddProductName";
 import ProductNameUpdate from "./UpdateProductName";
@@ -29,24 +29,24 @@ export default function ProductNamesTable({
     const [isRefreshing, setIsRefreshing] = useState(false);
     const refreshRef = useRef();
 
-    const filteredNames = productNameList.filter((productName) => {
+    const filteredNames = (productNameList || []).filter((productName) => {
         if (!filterStatus) return true;
         return productName.product_name_status === filterStatus;
     });
 
-    const fetchData = async () => {
+    const fetchProductNames = async () => {
         try {
-            const names = await fetchProductNames();
+            const names = await fetchProductName();
             setProductNameList(names);
         } catch (err) {
-            console.error("Fetch error:", err);
+            console.error("Failed to fetch product names:", err);
         }
     };
 
     const refreshAll = useCallback(async () => {
         setIsRefreshing(true);
         try {
-            await fetchData();
+            await fetchProductNames();
         } catch (err) {
             console.error("Refresh error:", err);
         } finally {

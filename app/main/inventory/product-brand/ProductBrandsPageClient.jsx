@@ -6,5 +6,5 @@ import ProductBrandsTable from "./ProductBrandsTable";
 export default function ProductBrandsPageClient({ initialBrands }) {
     const [brands, setBrands] = useState(initialBrands);
 
-    return <ProductBrandsTable brands={brands} />;
+    return <ProductBrandsTable productBrands={brands} />;
 }

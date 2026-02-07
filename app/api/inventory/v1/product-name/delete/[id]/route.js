@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { deleteProductName } from "@/lib/services/inventory/product/name/deleteProductName";
 
 export async function DELETE(req, { params }) {
     try {
@@ -26,35 +27,10 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        const { data, error } = await supabase
-            .from("product_name")
-            .update({
-                product_name_status: "deleted",
-                deleted_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-            })
-            .eq("id", Number(id))
-            .eq("user_id", user.id)
-            .select()
-            .single();
-
-        if (error) {
-            console.error("Delete error:", error);
-            throw new Error(error.message);
-        }
-
-        if (!data) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: "Product name not found or unauthorized",
-                },
-                { status: 404 },
-            );
-        }
+        const deletedProductName = await deleteProductName(Number(id), user.id);
 
         return NextResponse.json(
-            { success: true, productName: data },
+            { success: true, productName: deletedProductName },
             { status: 200 },
         );
     } catch (err) {
@@ -62,6 +38,17 @@ export async function DELETE(req, { params }) {
             "DELETE /api/inventory/v1/product-name/delete error:",
             err,
         );
+
+        if (
+            err.message.includes("not found") ||
+            err.message.includes("unauthorized")
+        ) {
+            return NextResponse.json(
+                { success: false, error: err.message },
+                { status: 404 },
+            );
+        }
+
         return NextResponse.json(
             { success: false, error: err.message || "Internal server error" },
             { status: 500 },

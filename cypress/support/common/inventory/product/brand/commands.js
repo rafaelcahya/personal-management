@@ -2,7 +2,7 @@ Cypress.Commands.add("GetSingleProductBrand", (id) => {
     return cy
         .request({
             method: "GET",
-            url: `/api/inventory/product/brand/list/${id}`,
+            url: `/api/inventory/v1/product-brand/list/${id}`,
             failOnStatusCode: false,
         })
         .then((response) => {
@@ -14,7 +14,7 @@ Cypress.Commands.add("AddNewProductBrand", (request) => {
     return cy
         .request({
             method: "POST",
-            url: "/api/inventory/product/brand/create",
+            url: "/api/inventory/v1/product-brand/create",
             body: request,
             failOnStatusCode: false,
         })
@@ -27,7 +27,7 @@ Cypress.Commands.add("DeleteProductBrand", (id) => {
     return cy
         .request({
             method: "DELETE",
-            url: `/api/inventory/product/brand/delete/${id}`,
+            url: `/api/inventory/v1/product-brand/delete/${id}`,
             failOnStatusCode: false,
         })
         .then((response) => {
@@ -39,7 +39,7 @@ Cypress.Commands.add("UpdateProductBrand", (id, request) => {
     return cy
         .request({
             method: "PUT",
-            url: `/api/inventory/product/brand/update/${id}`,
+            url: `/api/inventory/v1/product-brand/update/${id}`,
             body: request,
             failOnStatusCode: false,
         })
@@ -52,7 +52,7 @@ Cypress.Commands.add("GetProductBrandSummary", () => {
     return cy
         .request({
             method: "GET",
-            url: "/api/inventory/product/brand/summary",
+            url: "/api/inventory/v1/product-brand/summary",
             failOnStatusCode: false,
         })
         .then((response) => {
