@@ -1,31 +1,46 @@
 import { NextResponse } from "next/server";
-import { getDeleteProduct } from "@/lib/services/inventory/product/getDeleteProduct";
+import { createClient } from "@/lib/supabase/server";
+import { deleteProduct } from "@/lib/services/inventory/product/deleteProduct";
 
 export async function DELETE(req, { params }) {
     try {
-        const { id } = await params;
+        const supabase = await createClient();
 
-        if (!id || isNaN(Number(id))) {
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
             return NextResponse.json(
-                { success: false, error: "Invalid product ID provided" },
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const productId = parseInt(params.id);
+
+        if (!productId || isNaN(productId)) {
+            return NextResponse.json(
+                { success: false, error: "Invalid product ID" },
                 { status: 400 },
             );
         }
 
-        const deletedProduct = await getDeleteProduct(id);
+        const deletedProduct = await deleteProduct(user.id, productId);
 
-        if (!deletedProduct) {
-            return NextResponse.json(
-                { success: false, error: "Product not found" },
-                { status: 404 },
-            );
-        }
-
-        return NextResponse.json({ success: true }, { status: 200 });
-    } catch (err) {
-        console.error("DELETE /api/inventory/v1/product/delete error:", err);
         return NextResponse.json(
-            { success: false, error: "Internal server error" },
+            {
+                success: true,
+                data: deletedProduct,
+                message: "Product deleted successfully",
+            },
+            { status: 200 },
+        );
+    } catch (err) {
+        console.error("DELETE product error:", err);
+        return NextResponse.json(
+            { success: false, error: err.message || "Internal server error" },
             { status: 500 },
         );
     }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getUpdateProduct } from "@/lib/services/inventory/product/getUpdateProduct";
+import { updateProduct } from "@/lib/services/inventory/product/updateProduct";
 
 export async function PATCH(req, { params }) {
     try {
@@ -85,7 +85,7 @@ export async function PATCH(req, { params }) {
         };
 
         // Update via service
-        const updatedProduct = await getUpdateProduct(Number(id), payload);
+        const updatedProduct = await updateProduct(Number(id), payload);
 
         if (!updatedProduct) {
             return NextResponse.json(

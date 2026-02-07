@@ -1,75 +1,54 @@
 import { NextResponse } from "next/server";
-import { getFavoriteProduct } from "@/lib/services/inventory/product/getFavoriteProduct";
+import { createClient } from "@/lib/supabase/server";
+import { favoriteProduct } from "@/lib/services/inventory/product/favoriteProduct";
 
 export async function PATCH(req, { params }) {
     try {
-        const { id } = await params;
+        const supabase = await createClient();
 
-        // Validate ID
-        if (!id || isNaN(Number(id))) {
+        // Autentikasi user
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
             return NextResponse.json(
-                { success: false, error: "Invalid product ID provided" },
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        // Get product ID from URL params
+        const productId = parseInt(params.id);
+
+        if (!productId || isNaN(productId)) {
+            return NextResponse.json(
+                { success: false, error: "Invalid product ID" },
                 { status: 400 },
             );
         }
 
-        // Parse body
-        let body;
-        try {
-            body = await req.json();
-        } catch (parseError) {
+        // Parse request body
+        const body = await req.json();
+        const { isFavorite } = body;
+
+        if (typeof isFavorite !== "boolean") {
             return NextResponse.json(
-                { success: false, error: "Invalid JSON in request body" },
+                { success: false, error: "isFavorite must be a boolean" },
                 { status: 400 },
             );
         }
 
-        if (!body) {
-            return NextResponse.json(
-                { success: false, error: "Request body is required" },
-                { status: 400 },
-            );
-        }
-
-        // Validate required field
-        if (body.isFavorite === undefined || body.isFavorite === null) {
-            return NextResponse.json(
-                { success: false, error: "isFavorite field is required" },
-                { status: 400 },
-            );
-        }
-
-        // Validate isFavorite type
-        if (typeof body.isFavorite !== "boolean") {
-            return NextResponse.json(
-                { success: false, error: "isFavorite must be a boolean value" },
-                { status: 400 },
-            );
-        }
-
-        // Prepare payload
-        const payload = {
-            is_favorite: body.isFavorite,
-        };
-
-        // Update via service
-        const updatedProduct = await getFavoriteProduct(Number(id), payload);
-
-        if (!updatedProduct) {
-            return NextResponse.json(
-                { success: false, error: `Product with ID ${id} not found` },
-                { status: 404 },
-            );
-        }
+        // Call service
+        const updatedProduct = await favoriteProduct(
+            user.id,
+            productId,
+            isFavorite,
+        );
 
         return NextResponse.json(
-            {
-                success: true,
-                product: updatedProduct,
-                message: body.isFavorite
-                    ? "Added to favorites"
-                    : "Removed from favorites",
-            },
+            { success: true, data: updatedProduct },
             { status: 200 },
         );
     } catch (err) {
@@ -78,7 +57,7 @@ export async function PATCH(req, { params }) {
             err,
         );
         return NextResponse.json(
-            { success: false, error: err.message || "Internal Server Error" },
+            { success: false, error: err.message || "Internal server error" },
             { status: 500 },
         );
     }

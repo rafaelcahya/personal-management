@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { favoriteProduct } from "@/lib/api/product";
 import AddStockForm from "../detail/AddStockForm";
 import StockAdjustment from "../detail/StockAdjustment";
+import DeleteProductDialog from "./component/DeleteProductDialog";
 
 export default function ProductsTable({
     products,
@@ -211,6 +212,18 @@ export default function ProductsTable({
                                                 {product.is_favorite
                                                     ? "Remove from Favorites"
                                                     : "Add to Favorites"}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                onSelect={(e) =>
+                                                    e.preventDefault()
+                                                }
+                                                className="p-0"
+                                            >
+                                                <DeleteProductDialog
+                                                    product={product}
+                                                    onDeleted={onRefresh}
+                                                />
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
