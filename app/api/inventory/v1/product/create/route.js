@@ -1,8 +1,25 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { createProduct } from "@/lib/services/inventory/product/createProduct";
 
 export async function POST(req) {
     try {
+        const supabase = await createClient();
+
+        // Autentikasi user
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { success: false, error: "Tidak terautentikasi" },
+                { status: 401 },
+            );
+        }
+
+        // Parse request body
         let body;
         try {
             body = await req.json();
@@ -20,13 +37,8 @@ export async function POST(req) {
             );
         }
 
-        // Required fields validation
-        const requiredFields = [
-            "product_id",
-            "brand_id",
-            "type",
-            "product_status",
-        ];
+        // Validasi required fields
+        const requiredFields = ["product_id", "brand_id", "type"];
 
         const validationErrors = [];
         requiredFields.forEach((field) => {
@@ -36,16 +48,6 @@ export async function POST(req) {
                 );
             }
         });
-
-        const isValidNumber = (value) =>
-            /^\d+(\.\d+)?$/.test(value.toString().replace(/^-/, ""));
-
-        if (
-            body.usage_quantity !== undefined &&
-            !isValidNumber(body.usage_quantity)
-        ) {
-            validationErrors.push("usage quantity must be a valid number");
-        }
 
         if (validationErrors.length > 0) {
             return NextResponse.json(
@@ -57,19 +59,18 @@ export async function POST(req) {
             );
         }
 
-        // Prepare payload with all fields
+        // Prepare payload
         const payload = {
-            product_id: body.product_id,
-            brand_id: body.brand_id,
+            product_id: parseInt(body.product_id),
+            brand_id: parseInt(body.brand_id),
             type: body.type,
-            product_status: body.product_status,
-            usage_quantity: body.usage_quantity || 0,
+            usage_quantity: parseInt(body.usage_quantity) || 0,
             product_image: body.product_image || "",
             note: body.note || "",
-            usage_date: body.usage_date || new Date().toISOString(),
         };
 
-        const newProduct = await createProduct(payload);
+        // Call service dengan user.id
+        const newProduct = await createProduct(user.id, payload);
 
         return NextResponse.json(
             { success: true, product: newProduct },

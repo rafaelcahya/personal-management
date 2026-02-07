@@ -1,10 +1,27 @@
 import { NextResponse } from "next/server";
-import { createQuantityUpdate } from "@/lib/services/inventory/product/quantity/getCreateQuantity";
+import { createClient } from "@/lib/supabase/server";
+import { createQuantityUpdate } from "@/lib/services/inventory/product/quantity/createQuantityUpdate";
 
 export async function POST(req) {
     try {
+        const supabase = await createClient();
+
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        // Parse request body
         const body = await req.json();
 
+        // Validasi required fields
         const requiredFields = [
             "product_list_id",
             "quantity_added",
@@ -36,7 +53,7 @@ export async function POST(req) {
             );
         }
 
-        const result = await createQuantityUpdate(body);
+        const result = await createQuantityUpdate(user.id, body);
 
         return NextResponse.json(
             { success: true, data: result },
@@ -48,7 +65,7 @@ export async function POST(req) {
             err,
         );
         return NextResponse.json(
-            { success: false, error: err.message },
+            { success: false, error: err.message || "Internal server error" },
             { status: 500 },
         );
     }

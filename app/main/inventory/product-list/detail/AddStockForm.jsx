@@ -55,25 +55,35 @@ export default function AddStockForm({ product, onAdded }) {
         setLoading(true);
         setServerError(null);
 
+        console.log("🔍 Product object:", product);
+        console.log("🔍 Product ID:", product.id);
+
         try {
-            await createQuantityUpdate({
-                product_list_id: product.product_list_id,
+            const payload = {
+                product_list_id: product.id,
                 quantity_added: values.quantity_added,
                 price: values.price,
                 purchase_date: values.purchase_date.toISOString(),
                 note: values.note,
-            });
+            };
+
+            console.log("📤 Payload:", payload);
+
+            await createQuantityUpdate(payload);
 
             toast.success("Quantity updated successfully!");
             setOpen(false);
             reset();
             onAdded?.();
         } catch (err) {
+            console.error("Add stock error:", err);
             setServerError(err.message || "Failed to update quantity");
+            toast.error(err.message || "Failed to update quantity");
         } finally {
             setLoading(false);
         }
     };
+
 
     const handleOpenChange = (isOpen) => {
         setOpen(isOpen);

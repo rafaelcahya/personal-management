@@ -1,14 +1,34 @@
 import { getProductList } from "@/lib/services/inventory/product/getProductList";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET() {
     try {
-        const listProduct = await getProductList();
+        const supabase = await createClient();
+
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const productList = await getProductList(user.id);
+
         return NextResponse.json(
-            { success: true, products: listProduct },
-            { status: 200 }
+            { success: true, data: productList },
+            { status: 200 },
         );
     } catch (err) {
-        return NextResponse.json({ error: err.message }, { status: 401 });
+        console.error("GET /api/inventory/v1/product error:", err);
+        return NextResponse.json(
+            { success: false, error: err.message || "Internal server error" },
+            { status: 500 },
+        );
     }
 }

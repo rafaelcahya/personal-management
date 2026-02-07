@@ -35,8 +35,8 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { productSchema } from "@/schemas/product";
 import { createProduct } from "@/lib/api/product";
-import { getProductBrands } from "@/lib/api/productBrand";
-import { getProductNames } from "@/lib/api/productName";
+import { fetchProductBrand } from "@/lib/api/productBrand";
+import { fetchProductName } from "@/lib/api/productName";
 
 export default function AddProductForm({ onAdded }) {
     const [open, setOpen] = useState(false);
@@ -52,15 +52,14 @@ export default function AddProductForm({ onAdded }) {
             product_brand: "",
             product_name: "",
             type: "",
-            quantity: "",
             note: "",
-            product_status: "inactive",
         },
     });
 
     const { watch, control } = form;
     const image = watch("image");
 
+    // Preview image
     useEffect(() => {
         if (image && image[0]) {
             const file = image[0];
@@ -75,37 +74,40 @@ export default function AddProductForm({ onAdded }) {
     }, [image]);
 
     // Fetch product brands
-    const fetchProductBrands = async () => {
+    const loadProductBrands = async () => {
         try {
-            const brands = await getProductBrands();
-            setProductBrands(brands);
+            const brands = await fetchProductBrand();
+            setProductBrands(brands || []);
         } catch (err) {
-            console.error(err.message);
+            console.error("Fetch brands error:", err);
         }
     };
 
     // Fetch product names
-    const fetchProductNames = async () => {
+    const loadProductNames = async () => {
         try {
-            const names = await getProductNames();
-            setProductNames(names);
+            const names = await fetchProductName();
+            setProductNames(names || []);
         } catch (err) {
-            console.error(err.message);
+            console.error("Fetch names error:", err);
         }
     };
 
+    // Load data saat dialog dibuka
     useEffect(() => {
         if (open) {
-            fetchProductBrands();
-            fetchProductNames();
+            loadProductBrands();
+            loadProductNames();
         }
     }, [open]);
 
     const onSubmit = async (values) => {
         setLoading(true);
+
         try {
             let imageBase64 = "";
 
+            // Convert image to base64 jika ada
             if (values.image && values.image[0]) {
                 const file = values.image[0];
                 imageBase64 = await new Promise((resolve, reject) => {
@@ -116,17 +118,17 @@ export default function AddProductForm({ onAdded }) {
                 });
             }
 
-            // Create payload dengan semua field dari form
+            // Prepare payload
             const payload = {
                 product_id: values.product_name,
                 brand_id: values.product_brand,
                 type: values.type,
-                product_status: "inactive",
                 usage_quantity: 0,
                 product_image: imageBase64,
-                usage_date: null,
                 note: values.note || "",
             };
+
+            console.log("📤 Sending payload:", payload);
 
             await createProduct(payload);
 
@@ -145,9 +147,9 @@ export default function AddProductForm({ onAdded }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>Add New Product</Button>
+                <Button>Tambah Produk</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
                 <DialogHeader className="text-left">
                     <DialogTitle>🛍️ Add New Product</DialogTitle>
                     <DialogDescription>
@@ -164,13 +166,12 @@ export default function AddProductForm({ onAdded }) {
                             },
                             (errors) => {
                                 console.log("❌ Validation errors:", errors);
-                                toast.error(
-                                    "Please fill in all required fields",
-                                );
+                                toast.error("Mohon isi semua field yang wajib");
                             },
                         )}
                         className="space-y-4"
                     >
+                        {/* Image Upload */}
                         <FormField
                             control={control}
                             name="image"
@@ -211,6 +212,7 @@ export default function AddProductForm({ onAdded }) {
                             )}
                         />
 
+                        {/* Product Brand */}
                         <FormField
                             control={form.control}
                             name="product_brand"
@@ -223,7 +225,7 @@ export default function AddProductForm({ onAdded }) {
                                     >
                                         <FormControl>
                                             <SelectTrigger className="min-w-full font-medium">
-                                                <SelectValue placeholder="Select product brand" />
+                                                <SelectValue placeholder="Pilih brand produk" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent className="max-h-60 overflow-y-auto">
@@ -255,6 +257,7 @@ export default function AddProductForm({ onAdded }) {
                             )}
                         />
 
+                        {/* Product Name */}
                         <FormField
                             control={control}
                             name="product_name"
@@ -267,7 +270,7 @@ export default function AddProductForm({ onAdded }) {
                                     >
                                         <FormControl>
                                             <SelectTrigger className="min-w-full font-medium">
-                                                <SelectValue placeholder="Select product name" />
+                                                <SelectValue placeholder="Pilih nama produk" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent className="max-h-60 overflow-y-auto">
@@ -299,6 +302,7 @@ export default function AddProductForm({ onAdded }) {
                             )}
                         />
 
+                        {/* Type */}
                         <FormField
                             control={control}
                             name="type"
@@ -329,6 +333,7 @@ export default function AddProductForm({ onAdded }) {
                             )}
                         />
 
+                        {/* Notes */}
                         <FormField
                             control={control}
                             name="note"
@@ -341,7 +346,7 @@ export default function AddProductForm({ onAdded }) {
                                         <Textarea
                                             {...field}
                                             value={field.value || ""}
-                                            placeholder="Any details worth remembering..."
+                                            placeholder="Detail yang perlu diingat..."
                                             className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
                                         />
                                     </FormControl>
@@ -357,7 +362,6 @@ export default function AddProductForm({ onAdded }) {
                                 <Button
                                     type="button"
                                     className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
-                                    id="cancelBtn-addStockPopup"
                                     disabled={loading}
                                 >
                                     Cancel
