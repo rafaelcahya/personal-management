@@ -53,7 +53,7 @@ export async function GET() {
             data: summary,
         });
     } catch (err) {
-        console.error("GET /api/inventory/product/summary error:", err);
+        console.error("GET /api/inventory/v1/product/summary error:", err);
         return NextResponse.json(
             { success: false, error: err?.message || "Internal Server Error" },
             { status: 500 },

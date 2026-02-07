@@ -73,7 +73,10 @@ export async function PATCH(req, { params }) {
             { status: 200 },
         );
     } catch (err) {
-        console.error("PATCH /api/inventory/product/[id]/favorite error:", err);
+        console.error(
+            "PATCH /api/inventory/v1/product/[id]/favorite error:",
+            err,
+        );
         return NextResponse.json(
             { success: false, error: err.message || "Internal Server Error" },
             { status: 500 },

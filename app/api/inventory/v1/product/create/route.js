@@ -76,7 +76,7 @@ export async function POST(req) {
             { status: 200 },
         );
     } catch (err) {
-        console.error("POST /api/inventory/product/create error:", err);
+        console.error("POST /api/inventory/v1/product/create error:", err);
         return NextResponse.json(
             { success: false, error: err.message || "Internal server error" },
             { status: 500 },

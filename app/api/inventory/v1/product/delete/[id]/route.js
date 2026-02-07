@@ -8,7 +8,7 @@ export async function DELETE(req, { params }) {
         if (!id || isNaN(Number(id))) {
             return NextResponse.json(
                 { success: false, error: "Invalid product ID provided" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -17,16 +17,16 @@ export async function DELETE(req, { params }) {
         if (!deletedProduct) {
             return NextResponse.json(
                 { success: false, error: "Product not found" },
-                { status: 404 }
+                { status: 404 },
             );
         }
 
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (err) {
-        console.error("DELETE /api/inventory/product/delete error:", err);
+        console.error("DELETE /api/inventory/v1/product/delete error:", err);
         return NextResponse.json(
             { success: false, error: "Internal server error" },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

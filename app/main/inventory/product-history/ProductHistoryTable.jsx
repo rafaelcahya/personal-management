@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getProductHistory } from "@/lib/api/productHistory";
+import { fetchProductHistory } from "@/lib/api/productHistory";
 import {
     Table,
     TableBody,
@@ -12,7 +12,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/ui/common/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 
-function ProductHistoryTable({ initialProductHistories }) {
+function ProductHistoryTable({ productHistories: initialProductHistories }) {
     const [listProductHistory, setListProductHistory] = useState(
         initialProductHistories || [],
     );
@@ -21,7 +21,7 @@ function ProductHistoryTable({ initialProductHistories }) {
     const fetchProductHistories = async () => {
         setLoading(true);
         try {
-            const histories = await getProductHistory();
+            const histories = await fetchProductHistory();
             setListProductHistory(histories);
         } catch (err) {
             console.error("Failed to fetch product histories:", err);

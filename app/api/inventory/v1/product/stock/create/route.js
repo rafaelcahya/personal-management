@@ -43,7 +43,10 @@ export async function POST(req) {
             { status: 200 },
         );
     } catch (err) {
-        console.error("POST /api/inventory/product/stock/create error:", err);
+        console.error(
+            "POST /api/inventory/v1/product/stock/create error:",
+            err,
+        );
         return NextResponse.json(
             { success: false, error: err.message },
             { status: 500 },
