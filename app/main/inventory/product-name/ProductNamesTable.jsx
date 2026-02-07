@@ -13,8 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Breadcrumbs from "@/components/ui/common/Breadcrumbs";
-import { getProductNameList } from "@/lib/services/inventory/product/name/getProductNameList";
+import { fetchProductNames } from "@/lib/api/productName";
 import SummaryProductName from "./SummaryProductName";
 import AddProductName from "./AddProductName";
 import ProductNameUpdate from "./UpdateProductName";
@@ -35,9 +34,9 @@ export default function ProductNamesTable({
         return productName.product_name_status === filterStatus;
     });
 
-    const fetchProductNames = async () => {
+    const fetchData = async () => {
         try {
-            const names = await getProductNameList();
+            const names = await fetchProductNames();
             setProductNameList(names);
         } catch (err) {
             console.error("Fetch error:", err);
@@ -47,11 +46,13 @@ export default function ProductNamesTable({
     const refreshAll = useCallback(async () => {
         setIsRefreshing(true);
         try {
-            await fetchProductNames();
+            await fetchData();
+        } catch (err) {
+            console.error("Refresh error:", err);
         } finally {
             setIsRefreshing(false);
         }
-    }, [fetchProductNames]);
+    }, []);
 
     refreshRef.current = refreshAll;
 
@@ -80,7 +81,6 @@ export default function ProductNamesTable({
         <div className="flex flex-col h-full gap-y-3" id="productBrandTable">
             <header className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-20 flex-shrink-0 pb-4">
                 <div className="space-y-2">
-                    <Breadcrumbs />
                     <div>
                         <p className="text-lg font-semibold">
                             Product Name List

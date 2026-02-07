@@ -27,7 +27,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { productNameSchema } from "@/schemas/productName";
-import { addProductName } from "@/lib/api/productName";
+import { createProductName } from "@/lib/api/productName";
 
 export default function AddProductName({ onAdded }) {
     const [open, setOpen] = useState(false);
@@ -43,17 +43,17 @@ export default function AddProductName({ onAdded }) {
     });
 
     const { control, handleSubmit, reset } = form;
-
     const handleAddNewProductName = async (values) => {
         setLoading(true);
         try {
-            await addProductName(values);
-            toast.success("New product name added successfully!");
+            await createProductName(values);
+            toast.success("New product name created successfully!");
             setOpen(false);
-            onAdded?.();
+            await onAdded?.();
+
             reset();
         } catch (err) {
-            console.error(err.message || "Something went wrong");
+            toast.error(err.message || "Failed to create product name");
         } finally {
             setLoading(false);
         }

@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { getCreateProductName } from "../../../../../../lib/services/inventory/product/name/getCreateProductName";
 import { createClient } from "@/lib/supabase/server";
+import { updateProductName } from "@/lib/services/inventory/product/name/updateProductName";
 
-export async function POST(req) {
+export async function PUT(req, { params }) {
     try {
-        // Get authenticated user
-        const supabase = createClient();
+        const supabase = await createClient();
         const {
             data: { user },
             error: authError,
@@ -15,6 +14,15 @@ export async function POST(req) {
             return NextResponse.json(
                 { success: false, error: "Unauthorized" },
                 { status: 401 },
+            );
+        }
+
+        const { id } = await params;
+
+        if (!id || isNaN(Number(id))) {
+            return NextResponse.json(
+                { success: false, error: "Invalid product name ID provided" },
+                { status: 400 },
             );
         }
 
@@ -64,23 +72,36 @@ export async function POST(req) {
             );
         }
 
-        // Pass user.id to service
-        const newProductname = await getCreateProductName(
-            user.id, // ← Pass authenticated user ID
-            body.product_name,
-            body.product_name_status,
-            body.note,
-            body.deleted_at,
+        const updatedProductName = await updateProductName(
+            Number(id),
+            body,
+            user.id,
         );
 
+        if (!updatedProductName) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: `Product name with ID ${id} not found or unauthorized`,
+                },
+                { status: 404 },
+            );
+        }
+
         return NextResponse.json(
-            { success: true, productName: newProductname },
+            {
+                success: true,
+                productName: updatedProductName,
+            },
             { status: 200 },
         );
     } catch (err) {
-        console.error("POST /api/inventory/product/name/create error:", err);
+        console.error("PUT /api/inventory/v1/product-name/update error:", err);
         return NextResponse.json(
-            { success: false, error: "Internal server error" },
+            {
+                success: false,
+                error: err.message || "Internal Server Error",
+            },
             { status: 500 },
         );
     }

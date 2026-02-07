@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCreateProduct } from "@/lib/services/inventory/product/getCreateProduct";
+import { createProduct } from "@/lib/services/inventory/product/createProduct";
 
 export async function POST(req) {
     try {
@@ -69,7 +69,7 @@ export async function POST(req) {
             usage_date: body.usage_date || new Date().toISOString(),
         };
 
-        const newProduct = await getCreateProduct(payload);
+        const newProduct = await createProduct(payload);
 
         return NextResponse.json(
             { success: true, product: newProduct },
