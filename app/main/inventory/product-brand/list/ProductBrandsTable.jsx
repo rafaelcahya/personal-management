@@ -17,7 +17,6 @@ import { fetchProductBrand } from "@/lib/api/productBrand";
 export default function ProductBrandsTable({
     productBrands: initialProductBrands,
     filterStatus,
-    onFilterChange,
 }) {
     const [productBrandList, setProductBrandList] = useState(
         initialProductBrands || [],

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FilePenLine, MoreHorizontalIcon, Plus, StarIcon } from "lucide-react";
+import { FilePenLine, MoreHorizontalIcon, StarIcon } from "lucide-react";
 import { toast } from "sonner";
 import { favoriteProduct } from "@/lib/api/product";
 import AddStockForm from "../detail/AddStockForm";

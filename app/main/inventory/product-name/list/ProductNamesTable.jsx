@@ -17,7 +17,6 @@ import ProductNameUpdate from "../UpdateProductName";
 export default function ProductNamesTable({
     productNames: initialProductNames,
     filterStatus,
-    onFilterChange,
 }) {
     const [productNameList, setProductNameList] = useState(
         initialProductNames || [],

@@ -24,11 +24,6 @@ export default function ProductBrandsPageClient({ initialBrands }) {
         setFilterStatus(status);
     };
 
-    const filteredBrands = (brands || []).filter((brand) => {
-        if (!filterStatus) return true;
-        return brand.brand_status === filterStatus;
-    });
-
     return (
         <div className="flex-1 min-h-0 relative border rounded-xl overflow-hidden flex flex-col p-5 bg-white">
             <div className="flex flex-col gap-5 sm:gap-0 h-full overflow-hidden">

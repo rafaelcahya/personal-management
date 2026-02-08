@@ -24,11 +24,6 @@ export default function ProductNamesPageClient({ initialNames }) {
         setFilterStatus(status);
     };
 
-    const filteredNames = (names || []).filter((name) => {
-        if (!filterStatus) return true;
-        return name.product_name_status === filterStatus;
-    });
-
     return (
         <div className="flex-1 min-h-0 relative border rounded-xl overflow-hidden flex flex-col p-5 bg-white">
             <div className="flex flex-col gap-5 sm:gap-0 h-full overflow-hidden">
