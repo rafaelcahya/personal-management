@@ -2,18 +2,6 @@ Cypress.Commands.add("OpenPersonalManagement", () => {
     cy.visit("/auth/login");
 });
 
-Cypress.Commands.add("OpenTradingManagement", () => {
-    cy.url().should("include", "/main/landing");
-    cy.get("#tradeBtnLandingPage").click();
-    cy.url().should("include", "/trading-management/dashboard");
-});
-
-Cypress.Commands.add("OpenInventoryManagement", () => {
-    cy.url().should("include", "/main/landing");
-    cy.get("#inventoryBtnLandingPage").click();
-    cy.url().should("include", "/inventory-management/dashboard");
-});
-
 Cypress.Commands.add("verifyToastMessage", (message) => {
     cy.get("#toast").contains(message).should("be.visible");
 });
@@ -54,16 +42,6 @@ Cypress.Commands.add("fillField", (fields, value) => {
         });
         return cy.wrap(filledValues);
     }
-});
-
-Cypress.Commands.add("Login", ({ username, password }) => {
-    cy.task("decryptPasswordTask", password).then((decryptedPassword) => {
-        cy.fillField({
-            "#username": username,
-            "#password": decryptedPassword,
-        });
-        cy.get("#loginBtn").click();
-    });
 });
 
 Cypress.Commands.add("saveProductId", (productId) => {
