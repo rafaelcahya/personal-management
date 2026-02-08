@@ -1,9 +1,24 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { getProductNameList } from "@/lib/services/inventory/product/name/getProductNameList";
 
 export async function GET() {
     try {
-        const productNames = await getProductNameList();
+        const supabase = await createClient();
+
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const productNames = await getProductNameList(user.id);
 
         const totalProductNames = Array.isArray(productNames)
             ? productNames.length
@@ -23,9 +38,13 @@ export async function GET() {
             },
         });
     } catch (err) {
+        console.error(
+            "GET /api/inventory/v1/product-brand/summary error:",
+            err,
+        );
         return NextResponse.json(
-            { success: false, error: err?.message || String(err) },
-            { status: 500 }
+            { success: false, error: err?.message || "Internal Server Error" },
+            { status: 500 },
         );
     }
 }

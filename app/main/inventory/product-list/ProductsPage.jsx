@@ -3,17 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchProductList } from "@/lib/api/product";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { Settings2 } from "lucide-react";
-import ProductListHeader from "./list/component/ProductListHeader";
 import ProductListSummary from "./list/component/ProductListSummary";
 import ProductTableHeader from "./list/component/ProductTableHeader";
 import ProductsTable from "./list/ProductsTable";
@@ -25,7 +14,6 @@ const FILTER_STORAGE_KEY = "product-list-filter";
 export default function ProductsPageClient({ initialProducts }) {
     const [listProduct, setListProduct] = useState(initialProducts || []);
     const [filter, setFilter] = useState(null);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     // Load filter from localStorage on mount
     useEffect(() => {
@@ -122,31 +110,15 @@ export default function ProductsPageClient({ initialProducts }) {
         toast[toastType](message);
     };
 
-    // Get filter display name
-    const getFilterDisplayName = (filterValue) => {
-        const names = {
-            null: "All",
-            active: "Active",
-            inactive: "Inactive",
-            favorite: "Favorites",
-            "low-stock": "Low Stock",
-            "out-stock": "Out of Stock",
-            "never-used": "Never Used",
-        };
-        return names[filterValue] || "All";
-    };
-
     return (
         <div className="flex flex-col h-full gap-5">
-            <ProductListHeader />
-
             <ProductListSummary products={listProduct} />
 
             <div className="flex-1 min-h-0 relative border rounded-xl overflow-hidden flex flex-col p-5 bg-white">
                 <div className="flex flex-col gap-5 sm:gap-0 h-full overflow-hidden">
                     <div className="flex flex-col sm:flex-row justify-between mb-3 sm:mb-4 gap-3">
                         <div className="max-w-[500px]">
-                            <ProductTableHeader listProduct={listProduct} />
+                            <ProductTableHeader />
                         </div>
 
                         <div className="flex items-center justify-between sm:justify-end gap-2 w-full">
@@ -161,12 +133,9 @@ export default function ProductsPageClient({ initialProducts }) {
                     </div>
 
                     {listProduct.length === 0 ? (
-                        <div className="text-center font-medium text-slate-foreground py-10">
-                            <p>
-                                No products yet. Start by adding a new product
-                                🚀
-                            </p>
-                        </div>
+                        <p className="text-center font-medium text-slate-foreground py-10">
+                            No products yet. Start by adding a new product 🚀
+                        </p>
                     ) : (
                         <ProductsTable
                             products={filteredProducts}
