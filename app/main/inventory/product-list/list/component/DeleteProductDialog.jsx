@@ -62,7 +62,10 @@ export default function DeleteProductDialog({ product, onDeleted }) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={loading}>
+                    <AlertDialogCancel
+                        disabled={loading}
+                        className="text-violet-600 hover:text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium border-none"
+                    >
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction

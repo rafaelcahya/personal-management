@@ -1,9 +1,28 @@
 "use client";
+import { getProductSummary } from "@/lib/api/product";
+import { useEffect, useState } from "react";
 
 export default function ProductTableHeader({ listProduct }) {
+    const [summary, setSummary] = useState({
+        activeProducts: 0,
+        favoriteProducts: 0,
+    });
+
+    useEffect(() => {
+        async function fetchSummary() {
+            try {
+                const data = await getProductSummary();
+                setSummary(data);
+            } catch (err) {
+                console.error("Failed to fetch summary:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchSummary();
+    }, []);
     return (
         <>
-            {/* Info Bar */}
             <div className="space-y-2 mb-4">
                 <div>
                     <p className="text-lg font-semibold">Product List</p>
@@ -14,19 +33,22 @@ export default function ProductTableHeader({ listProduct }) {
                     </p>
                 </div>
 
-                {/* Dynamic Status Bar */}
                 <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-2">
                     <span className="flex items-center gap-1">
-                        📦 <p className="font-medium">{listProduct.length}</p>{" "}
-                        total products
+                        📦{" "}
+                        <p className="font-medium">{summary.activeProducts}</p>{" "}
+                        total active{" "}
+                        {summary.activeProducts <= 1 ? "product" : "products"}
                     </span>
                     <p>•</p>
                     <span className="flex items-center gap-1">
                         ⭐{" "}
                         <p className="font-medium">
-                            {listProduct.filter((p) => p.is_favorite).length}
+                            {summary.favoriteProducts}
                         </p>{" "}
-                        favorites
+                        {summary.favoriteProducts <= 1
+                            ? "favorite"
+                            : "favorites"}
                     </span>
                 </div>
             </div>

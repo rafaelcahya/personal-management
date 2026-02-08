@@ -162,7 +162,7 @@ export default function ProductsTable({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="size-8 mx-auto outline-none"
+                                                className="size-8 mx-auto outline-none hover:bg-slate-200"
                                             >
                                                 <MoreHorizontalIcon />
                                                 <span className="sr-only">
@@ -175,7 +175,7 @@ export default function ProductsTable({
                                                 onSelect={(e) =>
                                                     e.preventDefault()
                                                 }
-                                                className="p-0"
+                                                className="p-0 hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
                                             >
                                                 <AddStockForm
                                                     product={product}
@@ -186,6 +186,7 @@ export default function ProductsTable({
                                                 onClick={() =>
                                                     setSelectedProduct(product)
                                                 }
+                                                className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
                                             >
                                                 <FilePenLine className="h-4 w-4 mr-2" />
                                                 Update Usage
@@ -201,6 +202,7 @@ export default function ProductsTable({
                                                     loadingFavorite ===
                                                     product.id
                                                 }
+                                                className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
                                             >
                                                 <StarIcon
                                                     className={`size-4 mr-2 ${
@@ -213,18 +215,25 @@ export default function ProductsTable({
                                                     ? "Remove from Favorites"
                                                     : "Add to Favorites"}
                                             </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem
-                                                onSelect={(e) =>
-                                                    e.preventDefault()
-                                                }
-                                                className="p-0"
-                                            >
-                                                <DeleteProductDialog
-                                                    product={product}
-                                                    onDeleted={onRefresh}
-                                                />
-                                            </DropdownMenuItem>
+
+                                            {!product.deleted_at && (
+                                                <>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem
+                                                        onSelect={(e) =>
+                                                            e.preventDefault()
+                                                        }
+                                                        className="p-0"
+                                                    >
+                                                        <DeleteProductDialog
+                                                            product={product}
+                                                            onDeleted={
+                                                                onRefresh
+                                                            }
+                                                        />
+                                                    </DropdownMenuItem>
+                                                </>
+                                            )}
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>

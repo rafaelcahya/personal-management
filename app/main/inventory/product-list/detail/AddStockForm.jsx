@@ -73,7 +73,6 @@ export default function AddStockForm({ product, onAdded }) {
         } catch (err) {
             console.error("Add stock error:", err);
             setServerError(err.message || "Failed to update quantity");
-            toast.error(err.message || "Failed to update quantity");
         } finally {
             setLoading(false);
         }
@@ -92,7 +91,7 @@ export default function AddStockForm({ product, onAdded }) {
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <button
-                    className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded-sm transition-colors text-left"
+                    className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-violet-50 rounded-sm transition-colors text-left"
                     id="addStockBtn-productList"
                 >
                     <Plus className="h-4 w-4 mr-2" />

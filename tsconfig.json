@@ -36,7 +36,6 @@
     ".next/types/**/*.ts",
     "app/login/page.jsx",
     "app/page.jsx",
-    "middleware.js",
     "lib/supabase/client.js",
     "app/[...catchall]/page.jsx",
     "app/main/landing/trading-management/dashboard/page.jsx"

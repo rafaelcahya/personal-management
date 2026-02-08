@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, PlusIcon } from "lucide-react";
 import { productSchema } from "@/schemas/product";
 import { createProduct } from "@/lib/api/product";
 import { fetchProductBrand } from "@/lib/api/productBrand";
@@ -73,21 +73,30 @@ export default function AddProductForm({ onAdded }) {
         }
     }, [image]);
 
-    // Fetch product brands
+    // Fetch product brands (active only)
     const loadProductBrands = async () => {
         try {
             const brands = await fetchProductBrand();
-            setProductBrands(brands || []);
+            // Filter only active brands
+            const activeBrands =
+                brands?.filter((brand) => brand.brand_status === "active") ||
+                [];
+            setProductBrands(activeBrands);
         } catch (err) {
             console.error("Fetch brands error:", err);
         }
     };
 
-    // Fetch product names
+    // Fetch product names (active only)
     const loadProductNames = async () => {
         try {
             const names = await fetchProductName();
-            setProductNames(names || []);
+            // Filter only active product names
+            const activeNames =
+                names?.filter(
+                    (name) => name.product_name_status === "active",
+                ) || [];
+            setProductNames(activeNames);
         } catch (err) {
             console.error("Fetch names error:", err);
         }
@@ -145,7 +154,10 @@ export default function AddProductForm({ onAdded }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>Tambah Produk</Button>
+                <Button>
+                    <PlusIcon />
+                    <span>Add Product</span>
+                </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
                 <DialogHeader className="text-left">
@@ -221,13 +233,14 @@ export default function AddProductForm({ onAdded }) {
                                     >
                                         <FormControl>
                                             <SelectTrigger className="min-w-full font-medium">
-                                                <SelectValue placeholder="Pilih brand produk" />
+                                                <SelectValue placeholder="Select brand" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent className="max-h-60 overflow-y-auto">
                                             {productBrands?.length === 0 ? (
                                                 <div className="p-8 text-center text-muted-foreground">
-                                                    No product brands available
+                                                    No active product brands
+                                                    available
                                                 </div>
                                             ) : (
                                                 productBrands?.map(
@@ -266,13 +279,14 @@ export default function AddProductForm({ onAdded }) {
                                     >
                                         <FormControl>
                                             <SelectTrigger className="min-w-full font-medium">
-                                                <SelectValue placeholder="Pilih nama produk" />
+                                                <SelectValue placeholder="Select name" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent className="max-h-60 overflow-y-auto">
                                             {productNames?.length === 0 ? (
                                                 <div className="p-8 text-center text-muted-foreground">
-                                                    No product names available
+                                                    No active product names
+                                                    available
                                                 </div>
                                             ) : (
                                                 productNames?.map(
@@ -342,7 +356,7 @@ export default function AddProductForm({ onAdded }) {
                                         <Textarea
                                             {...field}
                                             value={field.value || ""}
-                                            placeholder="Detail yang perlu diingat..."
+                                            placeholder="Additional details or reminders..."
                                             className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
                                         />
                                     </FormControl>

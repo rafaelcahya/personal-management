@@ -12,12 +12,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Filter, Settings2 } from "lucide-react";
+import { Settings2 } from "lucide-react";
 import ProductListHeader from "./list/component/ProductListHeader";
 import ProductListSummary from "./list/component/ProductListSummary";
 import ProductTableHeader from "./list/component/ProductTableHeader";
 import ProductsTable from "./list/ProductsTable";
 import AddProductForm from "./add-product/AddProductForm";
+import ProductFilterDropdown from "./list/component/ProductFilterDropdown";
 
 const FILTER_STORAGE_KEY = "product-list-filter";
 
@@ -93,7 +94,6 @@ export default function ProductsPageClient({ initialProducts }) {
     // Handle filter change with feedback
     const handleFilterChange = (newFilter) => {
         setFilter(newFilter);
-        setIsDialogOpen(false);
 
         // Toast messages
         const messages = {
@@ -144,211 +144,19 @@ export default function ProductsPageClient({ initialProducts }) {
 
             <div className="flex-1 min-h-0 relative border rounded-xl overflow-hidden flex flex-col p-5 bg-white">
                 <div className="flex flex-col gap-5 sm:gap-0 h-full overflow-hidden">
-                    <div className="flex justify-between items-center mb-3 sm:mb-4 gap-10">
-                        <div className="flex-1">
-                            <div className="sm:hidden">
-                                <p className="text-sm font-semibold text-slate-700">
-                                    Products
-                                </p>
-                                <p className="text-xs text-slate-500">
-                                    {filteredProducts.length} of{" "}
-                                    {listProduct.length} items
-                                    {filter && (
-                                        <span className="text-violet-600 font-medium">
-                                            {" "}
-                                            • {getFilterDisplayName(filter)}
-                                        </span>
-                                    )}
-                                </p>
-                            </div>
-
-                            <div className="hidden sm:block max-w-[500px]">
-                                <ProductTableHeader listProduct={listProduct} />
-                            </div>
+                    <div className="flex flex-col sm:flex-row justify-between mb-3 sm:mb-4 gap-3">
+                        <div className="max-w-[500px]">
+                            <ProductTableHeader listProduct={listProduct} />
                         </div>
 
-                        <div className="flex flex-col items-end gap-2">
-                            <div className="hidden sm:block">
-                                <AddProductForm onAdded={fetchProducts} />
-                            </div>
+                        <div className="flex items-center justify-between sm:justify-end gap-2 w-full">
+                            <ProductFilterDropdown
+                                filter={filter}
+                                onFilterChange={handleFilterChange}
+                                products={listProduct}
+                            />
 
-                            <Dialog
-                                open={isDialogOpen}
-                                onOpenChange={setIsDialogOpen}
-                            >
-                                <DialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="gap-2"
-                                    >
-                                        <Settings2 className="size-4" />
-                                        <span className="hidden sm:inline">
-                                            Manage
-                                        </span>
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-sm max-h-[85vh] overflow-y-auto">
-                                    <DialogHeader className="text-left">
-                                        <DialogTitle>
-                                            📦 Product Manager
-                                        </DialogTitle>
-                                        <DialogDescription>
-                                            Find exactly what you're looking for
-                                            with filters and quick actions
-                                        </DialogDescription>
-                                    </DialogHeader>
-
-                                    <div className="space-y-4 py-4 sm:py-0">
-                                        <div className="space-y-2 sm:hidden">
-                                            <h4 className="text-sm font-semibold">
-                                                Quick Actions
-                                            </h4>
-                                            <AddProductForm
-                                                onAdded={() => {
-                                                    fetchProducts();
-                                                    setIsDialogOpen(false);
-                                                }}
-                                            />
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <div className="flex items-center justify-between">
-                                                <h4 className="text-sm font-semibold">
-                                                    Filter By
-                                                </h4>
-                                                {filter && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="h-7 text-xs"
-                                                        onClick={() =>
-                                                            handleFilterChange(
-                                                                null,
-                                                            )
-                                                        }
-                                                    >
-                                                        Clear
-                                                    </Button>
-                                                )}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Button
-                                                    variant={
-                                                        filter === null
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    size="sm"
-                                                    className="w-full justify-start"
-                                                    onClick={() =>
-                                                        handleFilterChange(null)
-                                                    }
-                                                >
-                                                    📦 All Products (
-                                                    {listProduct.length})
-                                                </Button>
-                                                <Button
-                                                    variant={
-                                                        filter === "active"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    size="sm"
-                                                    className="w-full justify-start"
-                                                    onClick={() =>
-                                                        handleFilterChange(
-                                                            "active",
-                                                        )
-                                                    }
-                                                >
-                                                    ✅ Active Products
-                                                </Button>
-                                                <Button
-                                                    variant={
-                                                        filter === "inactive"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    size="sm"
-                                                    className="w-full justify-start"
-                                                    onClick={() =>
-                                                        handleFilterChange(
-                                                            "inactive",
-                                                        )
-                                                    }
-                                                >
-                                                    ⏸️ Inactive Products
-                                                </Button>
-                                                <Button
-                                                    variant={
-                                                        filter === "favorite"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    size="sm"
-                                                    className="w-full justify-start"
-                                                    onClick={() =>
-                                                        handleFilterChange(
-                                                            "favorite",
-                                                        )
-                                                    }
-                                                >
-                                                    ⭐ Favorite Products
-                                                </Button>
-                                                <Button
-                                                    variant={
-                                                        filter === "low-stock"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    size="sm"
-                                                    className="w-full justify-start"
-                                                    onClick={() =>
-                                                        handleFilterChange(
-                                                            "low-stock",
-                                                        )
-                                                    }
-                                                >
-                                                    ⚠️ Low Stock
-                                                </Button>
-                                                <Button
-                                                    variant={
-                                                        filter === "out-stock"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    size="sm"
-                                                    className="w-full justify-start"
-                                                    onClick={() =>
-                                                        handleFilterChange(
-                                                            "out-stock",
-                                                        )
-                                                    }
-                                                >
-                                                    ❌ Out of Stock
-                                                </Button>
-                                                <Button
-                                                    variant={
-                                                        filter === "never-used"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    size="sm"
-                                                    className="w-full justify-start"
-                                                    onClick={() =>
-                                                        handleFilterChange(
-                                                            "never-used",
-                                                        )
-                                                    }
-                                                >
-                                                    🆕 Never Used
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
+                            <AddProductForm onAdded={fetchProducts} />
                         </div>
                     </div>
 

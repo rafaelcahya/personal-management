@@ -11,8 +11,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
     metadataBase: new URL(defaultUrl),
-    title: "Trading Performance",
-    description: "Trading Performance",
+    title: "Personal Management",
+    description: "Personal Management",
 };
 
 const geist = Figtree({
@@ -35,7 +35,7 @@ export default function RootLayout({
                 <div className="relative z-10">
                     <ThemeProvider
                         attribute="class"
-                        defaultTheme="system"
+                        defaultTheme="light"
                         enableSystem
                         disableTransitionOnChange
                     >
