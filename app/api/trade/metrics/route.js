@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getListSettings } from "@/lib/services/settings/getListSettings";
-import { getListTrade } from "@/lib/services/trade/getListTrade";
+import { getTradeList } from "@/lib/services/trade/getTradeList";
 import { sum } from "@/lib/utils/metrics";
 import { stringToNumber } from "@/lib/utils/common";
 import { calculateAccountMetrics } from "@/lib/utils/accountValueMetricsDetails";
@@ -17,12 +17,12 @@ import {
 export async function GET() {
     try {
         const settingsData = await getListSettings();
-        const trades = await getListTrade();
+        const trades = await getTradeList();
         const initialMargin = Number(settingsData.initial_margin || 0);
         const biSharpeRatio = Number(settingsData.bi_risk_free_rate || 0);
         const moe = Number(settingsData.margin_of_error || 0);
         const personalSharpeRatio = Number(
-            settingsData.personal_risk_free_rate || 0
+            settingsData.personal_risk_free_rate || 0,
         );
 
         const realizedGains = Array.isArray(trades)
@@ -82,7 +82,7 @@ export async function GET() {
         const avgLoss =
             lossesArr.length > 0
                 ? Math.abs(
-                      parseFloat((totalLoss / lossesArr.length).toFixed(2))
+                      parseFloat((totalLoss / lossesArr.length).toFixed(2)),
                   )
                 : 0;
 
@@ -97,16 +97,16 @@ export async function GET() {
 
         const { profitFactor, profitFactorComment } = calculateProfitFactor(
             totalProfit,
-            totalLoss
+            totalLoss,
         );
 
         const { payoffRatio, payoffComment } = calculatePayOffRatio(
             avgProfit,
-            avgLoss
+            avgLoss,
         );
 
         const returnPercents = trades.map((trade) =>
-            stringToNumber(trade.return_percent)
+            stringToNumber(trade.return_percent),
         );
 
         const {
@@ -117,7 +117,7 @@ export async function GET() {
         } = calculateSharpeRatio(
             returnPercents,
             biSharpeRatio,
-            personalSharpeRatio
+            personalSharpeRatio,
         );
 
         const { stdDevRupiah, stdDevRatio, stdDevComment } =
@@ -126,18 +126,14 @@ export async function GET() {
         const { safeZoneWithoutMoe, safeZoneWithMoe } = safeZoneMean(
             realizedGains,
             stdDevRupiah,
-            moe
+            moe,
         );
 
-        const { safeZoneAvgProfitWithoutMoe, safeZoneAvgProfitWithMoe } = safeZoneAvgProfit(
-            avgProfit,
-            moe
-        );
+        const { safeZoneAvgProfitWithoutMoe, safeZoneAvgProfitWithMoe } =
+            safeZoneAvgProfit(avgProfit, moe);
 
-        const { safeZoneAvgLossWithoutMoe, safeZoneAvgLossWithMoe } = safeZoneAvgLoss(
-            avgLoss,
-            moe
-        );
+        const { safeZoneAvgLossWithoutMoe, safeZoneAvgLossWithMoe } =
+            safeZoneAvgLoss(avgLoss, moe);
 
         const timesToZeroWithoutMoe = pnl / safeZoneAvgLossWithoutMoe;
         const timesToZeroWithMoe = pnl / safeZoneAvgLossWithMoe;
@@ -198,7 +194,7 @@ export async function GET() {
     } catch (err) {
         return NextResponse.json(
             { success: false, error: err?.message || String(err) },
-            { status: 500, headers: { "Content-Type": "application/json" } }
+            { status: 500, headers: { "Content-Type": "application/json" } },
         );
     }
 }

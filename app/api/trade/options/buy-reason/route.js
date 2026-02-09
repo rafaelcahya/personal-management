@@ -1,19 +1,16 @@
-import { getBuyReasonOptions } from "@/lib/options/buyReasonOptions";
 import { NextResponse } from "next/server";
+import { getBuyReasonOptions } from "@/lib/services/trade/options/getBuyReasonOptions";
 
 export async function GET() {
     try {
-        const buyReasonOptions = await getBuyReasonOptions();
-        return NextResponse.json(
-            {
-                success: true,
-                options: Array.isArray(buyReasonOptions)
-                    ? buyReasonOptions
-                    : [],
-            },
-            { status: 200 }
-        );
+        const options = await getBuyReasonOptions();
+
+        return NextResponse.json({ success: true, options }, { status: 200 });
     } catch (err) {
-        return NextResponse.json({ error: err.message }, { status: 401 });
+        console.error("GET /api/trade/options/buy-reason error:", err);
+        return NextResponse.json(
+            { success: false, error: err.message || "Internal server error" },
+            { status: 500 },
+        );
     }
 }

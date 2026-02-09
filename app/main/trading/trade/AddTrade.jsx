@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -12,9 +15,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { cn } from "@/lib/utils";
 import {
     Form,
     FormControl,
@@ -24,32 +24,22 @@ import {
     FormMessage,
     FormDescription,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import { toast } from "sonner";
-import { zodResolver } from "@hookform/resolvers/zod";
-
+import { Loader2, PlusIcon, CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { tradeSchema } from "@/schemas/trade";
-import { addTrade } from "@/lib/api/trade";
-
+import { createTrade, fetchTradeOptions } from "@/lib/api/trade";
 import { formatRupiah } from "@/lib/utils/currencyFormatter";
 import CurrencyField from "@/components/ui/common/CurrencyField";
 import DynamicSelectField from "@/components/ui/common/DynamicSelectField";
-
-const OPTION_APIS = {
-    stockType: "/api/trade/options/stock-type",
-    entrySession: "/api/trade/options/entry-session",
-    entryOccasion: "/api/trade/options/entry-occasion",
-    buyReason: "/api/trade/options/buy-reason",
-    sellReason: "/api/trade/options/sell-reason",
-};
 
 const SELECT_CONFIG = [
     {
@@ -57,41 +47,42 @@ const SELECT_CONFIG = [
         label: "Stock Type",
         apiKey: "stockType",
         displayField: "stock_type_option",
-        message: "stockTypeOptionMessage",
+        placeholder: "Select stock type",
     },
     {
         name: "entry_session_option",
         label: "Entry Session",
         apiKey: "entrySession",
         displayField: "entry_session_option",
-        message: "entrySessionOptionMessage",
+        placeholder: "Select entry session",
     },
     {
         name: "entry_occasion_option",
         label: "Entry Occasion",
         apiKey: "entryOccasion",
         displayField: "entry_occasion_option",
-        message: "entryOccasionOptionMessage",
+        placeholder: "Select entry occasion",
     },
     {
         name: "buy_reason_option",
         label: "Buy Reason",
         apiKey: "buyReason",
         displayField: "buy_reason_option",
-        message: "buyReasonOptionMessage",
+        placeholder: "Why did you buy?",
     },
     {
         name: "sell_reason_option",
         label: "Sell Reason",
         apiKey: "sellReason",
         displayField: "sell_reason_option",
-        message: "sellReasonOptionMessage",
+        placeholder: "Why did you sell?",
     },
 ];
 
-export default function AddNewTrade({ onAdded }) {
+export default function AddTrade({ onAdded }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState(null);
     const [optionsLoading, setOptionsLoading] = useState({
         stockType: false,
         entrySession: false,
@@ -99,7 +90,6 @@ export default function AddNewTrade({ onAdded }) {
         buyReason: false,
         sellReason: false,
     });
-
     const [options, setOptions] = useState({
         stockType: [],
         entrySession: [],
@@ -125,9 +115,10 @@ export default function AddNewTrade({ onAdded }) {
             notes: "",
         },
     });
-    const { watch, setValue, control, handleSubmit, reset } = form;
 
-    // Hitung otomatis realized gain & return%
+    const { watch, setValue, control, reset } = form;
+
+    // Auto-calculate realized gain & return%
     const margin = watch("margin");
     const proceeds = watch("proceeds");
 
@@ -142,7 +133,7 @@ export default function AddNewTrade({ onAdded }) {
             if (marginNum !== 0) {
                 setValue(
                     "return_percent",
-                    ((gain / marginNum) * 100).toFixed(2) + "%"
+                    ((gain / marginNum) * 100).toFixed(2) + "%",
                 );
             }
         } else {
@@ -155,24 +146,26 @@ export default function AddNewTrade({ onAdded }) {
     const fetchOptionType = useCallback(async (type) => {
         try {
             setOptionsLoading((prev) => ({ ...prev, [type]: true }));
-            const response = await fetch(OPTION_APIS[type]);
-            const data = await response.json();
-
-            setOptions((prev) => ({
-                ...prev,
-                [type]: data.options || data.option || [],
-            }));
+            const data = await fetchTradeOptions(type);
+            setOptions((prev) => ({ ...prev, [type]: data || [] }));
         } catch (error) {
-            console.error(`Failed to load ${type}`);
+            console.error(`Failed to load ${type}:`, error);
+            toast.error(`Failed to load ${type} options`);
             setOptions((prev) => ({ ...prev, [type]: [] }));
         } finally {
             setOptionsLoading((prev) => ({ ...prev, [type]: false }));
         }
     }, []);
 
-    // Fetch semua options saat dialog open
+    // Fetch all options when dialog opens
     const fetchAllOptions = useCallback(async () => {
-        const optionTypes = Object.keys(OPTION_APIS);
+        const optionTypes = [
+            "stockType",
+            "entrySession",
+            "entryOccasion",
+            "buyReason",
+            "sellReason",
+        ];
         await Promise.all(optionTypes.map(fetchOptionType));
     }, [fetchOptionType]);
 
@@ -182,249 +175,299 @@ export default function AddNewTrade({ onAdded }) {
         }
     }, [open, fetchAllOptions]);
 
-    // Submit handler
-    const handleAddNewTrade = async (values) => {
+    useEffect(() => {
+        if (open) {
+            fetchAllOptions();
+        }
+    }, [open, fetchAllOptions]);
+
+    const onSubmit = async (values) => {
         setLoading(true);
+        setServerError(null);
+
         try {
-            await addTrade(values);
-            toast.success("New trade added successfully!");
+            const payload = {
+                ...values,
+                trade_date: values.trade_date.toISOString().split("T")[0],
+            };
+
+            await createTrade(payload);
+
+            toast.success("Trade added successfully! 📈");
             setOpen(false);
-            onAdded?.();
             reset();
+            onAdded?.();
         } catch (err) {
-            console.error(err.message || "Something went wrong");
+            console.error("Submit error:", err);
+            setServerError(err.message || "Failed to create trade");
         } finally {
             setLoading(false);
         }
     };
 
+    const handleOpenChange = (isOpen) => {
+        setOpen(isOpen);
+        if (!isOpen) {
+            setServerError(null);
+            reset();
+        }
+    };
+
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button
-                    id="addNewTradeBtn"
-                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium"
-                >
-                    Add New Trade
+                <Button>
+                    <PlusIcon />
+                    <span>Add Trade</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent
-                id="addNewTradeDialogForm"
-                className="sm:max-w-2xl max-h-[90svh] overflow-y-auto space-y-5"
-            >
-                <DialogHeader className="text-left font-medium">
-                    <DialogTitle>Add New Trade</DialogTitle>
-                    <DialogDescription className="font-normal text-slate-foreground">
-                        Record your latest trade details to keep track of
-                        performance and insights.
+            <DialogContent className="sm:max-w-2xl flex flex-col max-h-[90vh]">
+                <DialogHeader className="text-left shrink-0">
+                    <DialogTitle>📊 Add New Trade</DialogTitle>
+                    <DialogDescription>
+                        Record your trade details to track performance and learn
+                        from every position
                     </DialogDescription>
                 </DialogHeader>
 
                 <Form {...form}>
                     <form
-                        onSubmit={handleSubmit(handleAddNewTrade)}
-                        className="space-y-6"
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="flex flex-col flex-1 min-h-0"
                     >
-                        {/* Trade Date */}
-                        <FormField
-                            control={control}
-                            name="trade_date"
-                            render={({ field, fieldState }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel className="font-medium">
-                                        Trade Date
-                                    </FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                className={cn(
-                                                    "w-[240px] pl-3 text-left font-medium",
-                                                    fieldState.error &&
-                                                        "border-rose-500 text-trade-loss-foreground",
-                                                    !field.value &&
-                                                        "text-slate-500"
-                                                )}
+                        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+                            {/* Trade Date */}
+                            <FormField
+                                control={control}
+                                name="trade_date"
+                                render={({ field, fieldState }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel className="font-medium">
+                                            Trade Date
+                                        </FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        className={cn(
+                                                            "w-full pl-3 text-left font-medium",
+                                                            fieldState.error &&
+                                                                "border-rose-500",
+                                                            !field.value &&
+                                                                "text-slate-500",
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(
+                                                                field.value,
+                                                                "PPP",
+                                                            )
+                                                        ) : (
+                                                            <span>
+                                                                Pick a date
+                                                            </span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent
+                                                className="w-auto p-0"
+                                                align="start"
                                             >
-                                                {field.value
-                                                    ? format(field.value, "PPP")
-                                                    : "Pick a date"}
-                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent
-                                            className="w-auto p-0"
-                                            align="start"
-                                        >
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={(date) =>
-                                                    field.onChange(
-                                                        date || new Date()
-                                                    )
-                                                }
-                                                initialFocus
-                                                className="calendar-02"
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <p className="text-xs text-muted-foreground">
+                                            When did you execute this trade? 📅
+                                        </p>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Ticker */}
+                            <FormField
+                                control={control}
+                                name="ticker"
+                                render={({ field, fieldState }) => (
+                                    <FormItem>
+                                        <FormLabel className="font-medium">
+                                            Ticker
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                                placeholder="e.g., BBCA, GOTO"
+                                                className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                                                    fieldState.error
+                                                        ? "border-rose-500"
+                                                        : ""
+                                                }`}
                                             />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage>
-                                        {fieldState.error?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
+                                        </FormControl>
+                                        <p className="text-xs text-muted-foreground">
+                                            Stock symbol you traded 🏷️
+                                        </p>
+                                        <FormMessage className="font-medium">
+                                            {fieldState.error?.message}
+                                        </FormMessage>
+                                    </FormItem>
+                                )}
+                            />
 
-                        {/* Ticker */}
-                        <FormField
-                            control={control}
-                            id="ticker"
-                            name="ticker"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Ticker
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            placeholder="e.g. AAPL"
-                                            className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                                                fieldState.error
-                                                    ? "border-rose-500"
-                                                    : ""
-                                            }`}
-                                        />
-                                    </FormControl>
-                                    <FormMessage
-                                        id="tickerMessage"
-                                        className="font-medium"
-                                    >
-                                        {fieldState.error?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-
-                        <CurrencyField
-                            control={control}
-                            name="margin"
-                            label="Margin"
-                            placeholder="1000"
-                            message="marginMessage"
-                        />
-
-                        <CurrencyField
-                            control={control}
-                            name="proceeds"
-                            label="Proceeds"
-                            placeholder="2000"
-                            message="proceedsMessage"
-                        />
-
-                        {/* Realized Gain */}
-                        <FormField
-                            control={control}
-                            name="realized_gain"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Realized Gain
-                                    </FormLabel>
-                                    <FormDescription className="font-medium">
-                                        Calculated automatically from Margin &
-                                        Proceeds
-                                    </FormDescription>
-                                    <FormControl>
-                                        <Input
-                                            value={formatRupiah(field.value)}
-                                            disabled
-                                            className="font-medium"
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Return % */}
-                        <FormField
-                            control={control}
-                            name="return_percent"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Return %
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            value={field.value}
-                                            disabled
-                                            className="font-medium"
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-
-                        {SELECT_CONFIG.map(
-                            ({
-                                name,
-                                label,
-                                apiKey,
-                                displayField,
-                                message,
-                            }) => (
-                                <DynamicSelectField
-                                    key={name}
+                            {/* Margin & Proceeds Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <CurrencyField
                                     control={control}
-                                    name={name}
-                                    label={label}
-                                    options={options[apiKey]}
-                                    loading={optionsLoading[apiKey]}
-                                    displayField={displayField}
-                                    message={message}
+                                    name="margin"
+                                    label="Margin (Capital)"
+                                    placeholder="e.g., 1000000"
+                                    description="Total capital deployed 💰"
                                 />
-                            )
-                        )}
 
-                        {/* Notes */}
-                        <FormField
-                            control={control}
-                            name="notes"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Notes
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            {...field}
-                                            placeholder="Additional notes"
-                                            className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
-                                        />
-                                    </FormControl>
-                                </FormItem>
+                                <CurrencyField
+                                    control={control}
+                                    name="proceeds"
+                                    label="Proceeds (Return)"
+                                    placeholder="e.g., 1200000"
+                                    description="Total amount received 💵"
+                                />
+                            </div>
+
+                            {/* Auto-calculated fields */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FormField
+                                    control={control}
+                                    name="realized_gain"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="font-medium">
+                                                Realized Gain/Loss
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    value={formatRupiah(
+                                                        field.value,
+                                                    )}
+                                                    disabled
+                                                    className="font-medium bg-slate-50"
+                                                />
+                                            </FormControl>
+                                            <FormDescription className="text-xs">
+                                                Auto-calculated 🧮
+                                            </FormDescription>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={control}
+                                    name="return_percent"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="font-medium">
+                                                Return %
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    value={field.value}
+                                                    disabled
+                                                    className="font-medium bg-slate-50"
+                                                />
+                                            </FormControl>
+                                            <FormDescription className="text-xs">
+                                                Auto-calculated 📊
+                                            </FormDescription>
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            {/* Dynamic Select Fields */}
+                            {SELECT_CONFIG.map(
+                                ({
+                                    name,
+                                    label,
+                                    apiKey,
+                                    displayField,
+                                    placeholder,
+                                }) => (
+                                    <DynamicSelectField
+                                        key={name}
+                                        control={control}
+                                        name={name}
+                                        label={label}
+                                        options={options[apiKey]}
+                                        loading={optionsLoading[apiKey]}
+                                        displayField={displayField}
+                                        placeholder={placeholder}
+                                    />
+                                ),
                             )}
-                        />
 
-                        <DialogFooter>
+                            {/* Notes */}
+                            <FormField
+                                control={control}
+                                name="notes"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="font-medium">
+                                            Notes (Optional)
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                {...field}
+                                                placeholder="Trade insights, emotions, market conditions..."
+                                                className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium min-h-[80px]"
+                                            />
+                                        </FormControl>
+                                        <p className="text-xs text-muted-foreground">
+                                            Document your thought process 📝
+                                        </p>
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Server Error Display */}
+                            {serverError && (
+                                <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
+                                    <div className="flex gap-3">
+                                        <div className="flex-1">
+                                            <p className="text-sm font-semibold text-red-900 mb-1">
+                                                ⚠️ Unable to Add Trade
+                                            </p>
+                                            <p className="text-sm text-red-800">
+                                                {serverError}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <DialogFooter className="shrink-0 pt-4">
                             <DialogClose asChild>
                                 <Button
-                                    id="cancelNewTradeBtn"
                                     type="button"
                                     className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                                    disabled={loading}
                                 >
                                     Cancel
                                 </Button>
                             </DialogClose>
-                            <Button
-                                id="submitNewTradeBtn"
-                                type="submit"
-                                disabled={loading}
-                                className="bg-primary hover:bg-primary-hover dark:text-white font-medium"
-                            >
-                                {loading ? "Submitting..." : "Submit new trade"}
+                            <Button type="submit" disabled={loading}>
+                                {loading && (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                )}
+                                {loading ? "Adding..." : "Add Trade"}
                             </Button>
                         </DialogFooter>
                     </form>

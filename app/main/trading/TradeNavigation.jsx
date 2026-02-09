@@ -31,9 +31,9 @@ const navigationItems = [
         icon: Calendar,
     },
     {
-        name: "Analytics",
-        value: "analytics",
-        href: "/main/trading/analytics",
+        name: "Trades",
+        value: "trades",
+        href: "/main/trading/trade",
         icon: BarChart3,
     },
 ];

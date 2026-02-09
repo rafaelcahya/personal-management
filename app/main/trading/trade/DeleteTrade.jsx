@@ -1,31 +1,34 @@
+"use client";
+
 import { useState } from "react";
 import {
     AlertDialog,
-    AlertDialogTrigger,
-    AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogFooter,
-    AlertDialogTitle,
-    AlertDialogDescription,
-    AlertDialogCancel,
     AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { Trash2, Loader2 } from "lucide-react";
 import { deleteTrade } from "@/lib/api/trade";
+import { toast } from "sonner";
 
-export default function TradeDelete({ trade, onDeleted, onClose }) {
+export default function DeleteTrade({ trade, onDeleted, onClose }) {
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async () => {
         setLoading(true);
         try {
             await deleteTrade(trade.id);
-            toast.success("Trade deleted successfully!");
+            toast.success("Trade deleted successfully! 🗑️");
             onDeleted?.();
             onClose?.();
-        } catch (err) {
-            console.error(err);
+        } catch (error) {
+            toast.error(error.message || "Failed to delete trade");
         } finally {
             setLoading(false);
         }
@@ -34,29 +37,38 @@ export default function TradeDelete({ trade, onDeleted, onClose }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500 font-medium">
+                <Button
+                    type="button"
+                    variant="ghost"
+                    className="text-red-600 hover:text-red-600 hover:bg-red-50"
+                >
+                    <Trash2 className="h-4 w-4" />
                     Delete
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle className="font-medium">
-                        Delete Trade
-                    </AlertDialogTitle>
-                    <AlertDialogDescription className="font-medium text-slate-500">
-                        Are you sure you want to delete this trade? This action
-                        cannot be undone.
+                    <AlertDialogTitle>Delete Trade?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete this trade record from your trading journal.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="font-medium bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none">
+                    <AlertDialogCancel
+                        disabled={loading}
+                        className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
+                    >
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleDelete}
                         disabled={loading}
-                        className="bg-rose-600 hover:bg-rose-700 dark:text-white font-medium"
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
+                        {loading && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
                         {loading ? "Deleting..." : "Delete"}
                     </AlertDialogAction>
                 </AlertDialogFooter>

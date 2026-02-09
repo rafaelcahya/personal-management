@@ -1,19 +1,16 @@
-import { getStockTypeOptions } from "@/lib/options/stockTypeOptions";
 import { NextResponse } from "next/server";
+import { getStockTypeOptions } from "@/lib/services/trade/options/getStockTypeOptions";
 
 export async function GET() {
     try {
-        const stockTypeOptions = await getStockTypeOptions();
-        return NextResponse.json(
-            {
-                success: true,
-                options: Array.isArray(stockTypeOptions)
-                    ? stockTypeOptions
-                    : [],
-            },
-            { status: 200 }
-        );
+        const options = await getStockTypeOptions();
+
+        return NextResponse.json({ success: true, options }, { status: 200 });
     } catch (err) {
-        return NextResponse.json({ error: err.message }, { status: 401 });
+        console.error("GET /api/trade/options/stock-type error:", err);
+        return NextResponse.json(
+            { success: false, error: err.message || "Internal server error" },
+            { status: 500 },
+        );
     }
 }

@@ -1,19 +1,16 @@
-import { getEntryOccasionOptions } from "@/lib/options/entryOccasionOptions";
 import { NextResponse } from "next/server";
+import { getEntryOccasionOptions } from "@/lib/services/trade/options/getEntryOccasionOptions";
 
 export async function GET() {
     try {
-        const entryOccasionOptions = await getEntryOccasionOptions();
-        return NextResponse.json(
-            {
-                success: true,
-                options: Array.isArray(entryOccasionOptions)
-                    ? entryOccasionOptions
-                    : [],
-            },
-            { status: 200 }
-        );
+        const options = await getEntryOccasionOptions();
+
+        return NextResponse.json({ success: true, options }, { status: 200 });
     } catch (err) {
-        return NextResponse.json({ error: err.message }, { status: 401 });
+        console.error("GET /api/trade/options/entry-occasion error:", err);
+        return NextResponse.json(
+            { success: false, error: err.message || "Internal server error" },
+            { status: 500 },
+        );
     }
 }

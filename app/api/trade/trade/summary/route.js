@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { getListTrade } from "@/lib/services/trade/getListTrade";
+import { getTradeList } from "@/lib/services/trade/getTradeList";
 
 import { stringToNumber } from "@/lib/utils/common";
 
 export async function GET() {
     try {
-        const trades = await getListTrade();
+        const trades = await getTradeList();
 
         const totalTrades = Array.isArray(trades) ? trades.length : 0;
 
@@ -53,7 +53,7 @@ export async function GET() {
     } catch (err) {
         return NextResponse.json(
             { success: false, error: err?.message || String(err) },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
