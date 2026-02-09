@@ -1,31 +1,33 @@
+"use client";
+
 import { useState } from "react";
 import {
     AlertDialog,
-    AlertDialogTrigger,
-    AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogFooter,
-    AlertDialogTitle,
-    AlertDialogDescription,
-    AlertDialogCancel,
     AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { Trash2, Loader2 } from "lucide-react";
 import { deleteEvent } from "@/lib/api/event";
+import { toast } from "sonner";
 
-export default function DeleteEvent({ event, onDeleted, onClose }) {
+export default function DeleteEvent({ event, onDeleted }) {
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async () => {
         setLoading(true);
         try {
             await deleteEvent(event.id);
-            toast.success("Event deleted successfully!");
-            onDeleted?.();
-            onClose?.();
-        } catch (err) {
-            console.error(err);
+            toast.success("Event deleted successfully");
+            onDeleted();
+        } catch (error) {
+            toast.error(error.message || "Failed to delete event");
         } finally {
             setLoading(false);
         }
@@ -34,28 +36,36 @@ export default function DeleteEvent({ event, onDeleted, onClose }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button className="font-medium bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500">
-                    Delete
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-50"
+                >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Event
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
-                <AlertDialogHeader className="font-medium">
-                    <AlertDialogTitle>Remove Event</AlertDialogTitle>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Event?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Deleting this event will remove it from your performance
-                        records permanently.
+                        This action cannot be undone. This will permanently
+                        delete this event from your records.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="font-medium text-secondary-foreground bg-transparent hover:bg-secondary-hover hover:text-secondary-foreground border-none">
+                    <AlertDialogCancel disabled={loading} className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none">
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleDelete}
                         disabled={loading}
-                        className="font-medium bg-rose-600 hover:bg-rose-700 dark:text-white"
+                        className="bg-rose-600 hover:bg-rose-700 dark:text-white"
                     >
-                        {loading ? "Deleting..." : "Delete"}
+                        {loading && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        Delete
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

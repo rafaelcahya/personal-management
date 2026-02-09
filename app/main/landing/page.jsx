@@ -52,7 +52,7 @@ export default async function LandingPage() {
                             </CardHeader>
                             <CardFooter className="relative">
                                 <Link
-                                    href="/main/landing/trading-management/dashboard"
+                                    href="/main/trading/dashboard"
                                     prefetch={false}
                                     id="tradeBtnLandingPage"
                                     className="w-full"

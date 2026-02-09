@@ -1,35 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { toast } from "sonner";
-
-import { eventSchema } from "@/schemas/event";
-import { updateEvent } from "@/lib/api/event";
-import safeDate from "@/lib/utils/safeDate";
-import { cn } from "@/lib/utils";
-
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectTrigger,
-    SelectValue,
-    SelectContent,
-    SelectItem,
-} from "@/components/ui/select";
 import {
     Form,
     FormControl,
@@ -39,48 +22,70 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import DeleteEvent from "./DeleteEvent";
+import { toast } from "sonner";
+import { Loader2, CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { eventSchema } from "@/schemas/event";
+import { updateEvent } from "@/lib/api/event";
 
 export default function UpdateEvent({ event, onClose, onUpdated }) {
     const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState(null);
 
     const form = useForm({
         resolver: zodResolver(eventSchema),
-        defaultValues: {},
+        defaultValues: {
+            event_description: "",
+            impact_direction: "UP",
+            event_date: new Date(),
+        },
     });
 
-    const { control, handleSubmit, reset } = form;
+    const { control, reset } = form;
 
+    // Reset form saat event berubah
     useEffect(() => {
         if (event) {
             reset({
-                event_description: event.event_description?.toString() ?? "",
-                impact_direction: event.impact_direction ?? "",
-                event_date: safeDate(event.event_date),
+                event_description: event.event_description,
+                impact_direction: event.impact_direction,
+                event_date: new Date(event.event_date),
             });
+            setServerError(null);
         }
     }, [event, reset]);
 
-    const handleUpdate = async (values) => {
+    const onSubmit = async (values) => {
         setLoading(true);
+        setServerError(null);
+
         try {
             const payload = {
-                ...values,
-                event_date: values.event_date
-                    ? format(values.event_date, "yyyy-MM-dd")
-                    : null,
+                event_description: values.event_description,
+                impact_direction: values.impact_direction,
+                event_date: values.event_date.toISOString().split("T")[0],
             };
+
             await updateEvent(event.id, payload);
-            toast.success("Event updated successfully!");
+
+            toast.success("Event updated successfully! ✅");
             onUpdated?.();
-            onClose();
         } catch (err) {
-            console.error(err);
+            console.error("Update error:", err);
+            setServerError(err.message || "Failed to update event");
         } finally {
             setLoading(false);
         }
@@ -90,164 +95,176 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
 
     return (
         <Dialog open={!!event} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-lg overflow-y-auto font-medium">
-                <DialogHeader>
-                    <DialogTitle>Update Event</DialogTitle>
+            <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
+                <DialogHeader className="text-left shrink-0">
+                    <DialogTitle>✏️ Update Event</DialogTitle>
                     <DialogDescription>
-                        Adjust event information to reflect the latest market
-                        impact and refine your trading analysis.
+                        Modify event details or mark as important
                     </DialogDescription>
                 </DialogHeader>
 
                 <Form {...form}>
                     <form
-                        onSubmit={handleSubmit(handleUpdate)}
-                        className="space-y-6"
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="flex flex-col flex-1 min-h-0"
                     >
-                        {/* Event Description */}
-                        <FormField
-                            control={control}
-                            name="event_description"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Event description
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            {...field}
-                                            placeholder="e.g. Event description"
-                                            className={cn(
-                                                "text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 h-[150px]",
-                                                fieldState.error &&
-                                                    "border-rose-500"
-                                            )}
-                                        />
-                                    </FormControl>
-                                    <FormMessage>
-                                        {fieldState.error?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Impact Direction */}
-                        <FormField
-                            control={control}
-                            name="impact_direction"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="font-medium">
-                                        Impact Direction
-                                    </FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                        value={field.value}
-                                    >
+                        <div className="flex-1 overflow-y-auto space-y-4">
+                            {/* Event Description */}
+                            <FormField
+                                control={control}
+                                name="event_description"
+                                render={({ field, fieldState }) => (
+                                    <FormItem>
+                                        <FormLabel className="font-medium">
+                                            Event Description
+                                        </FormLabel>
                                         <FormControl>
-                                            <SelectTrigger
-                                                className={cn(
-                                                    "text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 w-full",
-                                                    fieldState.error &&
-                                                        "border-rose-500"
-                                                )}
-                                            >
-                                                <SelectValue placeholder="Select impact" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="UP">
-                                                Up
-                                            </SelectItem>
-                                            <SelectItem value="DOWN">
-                                                Down
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage>
-                                        {fieldState.error?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Event Date */}
-                        <FormField
-                            control={control}
-                            name="event_date"
-                            render={({ field, fieldState }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel className="font-medium">
-                                        Event Date
-                                    </FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                className={cn(
-                                                    "w-[240px] pl-3 text-left font-medium",
-                                                    fieldState.error &&
-                                                        "border-rose-500 text-trade-loss",
-                                                    !field.value &&
-                                                        "text-muted-foreground"
-                                                )}
-                                            >
-                                                {field.value ? (
-                                                    format(field.value, "PPP")
-                                                ) : (
-                                                    <span>Pick a date</span>
-                                                )}
-                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent
-                                            className="w-auto p-0"
-                                            align="start"
-                                        >
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                initialFocus
-                                                className="calendar-02"
+                                            <Textarea
+                                                {...field}
+                                                placeholder="Event description"
+                                                className={`focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium ${
+                                                    fieldState.error
+                                                        ? "border-rose-500"
+                                                        : ""
+                                                }`}
+                                                rows={4}
                                             />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage>
-                                        {fieldState.error?.message}
-                                    </FormMessage>
-                                </FormItem>
-                            )}
-                        />
+                                        </FormControl>
+                                        <p className="text-xs text-muted-foreground">
+                                            What's happening in the market? 📰
+                                        </p>
+                                        <FormMessage className="font-medium">
+                                            {fieldState.error?.message}
+                                        </FormMessage>
+                                    </FormItem>
+                                )}
+                            />
 
-                        <DialogFooter>
-                            <div className="flex justify-between w-full">
-                                <DeleteEvent
-                                    event={event}
-                                    onDeleted={onUpdated}
-                                    onClose={onClose}
-                                />
-                                <div className="space-x-2">
-                                    <DialogClose asChild>
-                                        <Button
-                                            type="button"
-                                            className="font-medium text-secondary-foreground bg-transparent hover:bg-secondary-hover"
+                            {/* Impact Direction */}
+                            <FormField
+                                control={control}
+                                name="impact_direction"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="font-medium">
+                                            Impact Direction
+                                        </FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
                                         >
-                                            Cancel
-                                        </Button>
-                                    </DialogClose>
-                                    <Button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="font-medium bg-primary hover:bg-primary-hover text-primary-foreground"
-                                    >
-                                        {loading
-                                            ? "Updating..."
-                                            : "Update Event"}
-                                    </Button>
+                                            <FormControl>
+                                                <SelectTrigger className="min-w-full font-medium">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="UP">
+                                                    📈 Bullish (UP)
+                                                </SelectItem>
+                                                <SelectItem value="DOWN">
+                                                    📉 Bearish (DOWN)
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <p className="text-xs text-muted-foreground">
+                                            How will this affect the market? 🎯
+                                        </p>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Event Date */}
+                            <FormField
+                                control={control}
+                                name="event_date"
+                                render={({ field, fieldState }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel className="font-medium">
+                                            Event Date
+                                        </FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        className={cn(
+                                                            "w-full pl-3 text-left font-medium",
+                                                            fieldState.error &&
+                                                                "border-rose-500",
+                                                            !field.value &&
+                                                                "text-slate-500",
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(
+                                                                field.value,
+                                                                "PPP",
+                                                            )
+                                                        ) : (
+                                                            <span>
+                                                                Pick a date
+                                                            </span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent
+                                                className="w-auto p-0"
+                                                align="start"
+                                            >
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <p className="text-xs text-muted-foreground">
+                                            When is this event happening? 📅
+                                        </p>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Server Error Display */}
+                            {serverError && (
+                                <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
+                                    <div className="flex gap-3">
+                                        <div className="flex-1">
+                                            <p className="text-sm font-semibold text-red-900 mb-1">
+                                                ⚠️ Unable to Update Event
+                                            </p>
+                                            <p className="text-sm text-red-800">
+                                                {serverError}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+                        </div>
+
+                        <DialogFooter className="shrink-0 pt-4">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={onClose}
+                                disabled={loading}
+                                className="text-violet-600 hover:bg-violet-100"
+                            >
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={loading}>
+                                {loading && (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                )}
+                                {loading ? "Updating..." : "Update Event"}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>

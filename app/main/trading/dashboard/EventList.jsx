@@ -50,7 +50,7 @@ function EventList() {
                     </p>
                 </div>
                 <Link
-                    href="/main/landing/trading-management/event"
+                    href="/main/trading/event"
                     id="eventBtn"
                 >
                     <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
