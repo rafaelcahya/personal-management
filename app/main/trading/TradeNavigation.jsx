@@ -19,9 +19,9 @@ const navigationItems = [
         icon: LayoutDashboard,
     },
     {
-        name: "Trade List",
-        value: "trade-list",
-        href: "/main/trading/trade-list",
+        name: "Fee",
+        value: "fees",
+        href: "/main/trading/fee",
         icon: TrendingUp,
     },
     {

@@ -255,7 +255,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                                 variant="outline"
                                 onClick={onClose}
                                 disabled={loading}
-                                className="text-violet-600 hover:bg-violet-100"
+                                className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
                             >
                                 Cancel
                             </Button>
