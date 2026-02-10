@@ -1,53 +1,68 @@
 "use client";
 
-import { Card, CardContent, CardTitle } from "../card";
+import { Badge } from "@/components/ui/badge";
+
+const colorConfig = {
+    green: {
+        bg: "bg-green-50",
+        text: "text-green-600",
+        border: "border-green-200",
+    },
+    red: {
+        bg: "bg-red-50",
+        text: "text-red-600",
+        border: "border-red-200",
+    },
+    violet: {
+        bg: "bg-violet-50",
+        text: "text-violet-600",
+        border: "border-violet-200",
+    },
+    blue: {
+        bg: "bg-blue-50",
+        text: "text-blue-600",
+        border: "border-blue-200",
+    },
+};
 
 export default function MetricCard({
-    title,
+    label,
     value,
-    format = "number",
-    comment,
-    className = "",
-    highlight = false,
-    valueClassName = "",
-    showComment = true,
+    format = "text",
+    description,
+    color = "violet",
+    badge,
 }) {
-    const formatValue = () => {
-        const num = Number(value) || 0;
+    const colors = colorConfig[color];
 
-        switch (format) {
-            case "currency":
-                return `Rp. ${num.toLocaleString("id-ID")}`;
-            case "percent":
-                return `${num.toFixed(2)}%`;
-            case "decimal":
-                return `${num.toFixed(2)}`;
-            default:
-                return num;
+    const formatValue = () => {
+        if (format === "currency") {
+            return `Rp ${value?.toLocaleString("id-ID") || 0}`;
         }
+        if (format === "number") {
+            return value?.toLocaleString("id-ID") || 0;
+        }
+        return value || "-";
     };
 
-    const commentStyleVal = (val, threshold = 1) =>
-        val >= threshold ? "text-violet-700" : "text-rose-700";
-
-    const commentStyle = highlight ? commentStyleVal(value) : "";
-
     return (
-        <Card className={className}>
-            <CardContent className="space-y-4 p-6">
-                <div>
-                    <CardTitle className="text-sm text-gray-500 tracking-[0.015em] font-normal">
-                        {title}
-                    </CardTitle>
-                    <p className={`${valueClassName}`}>{formatValue()}</p>
-                </div>
-
-                {showComment && comment && (
-                    <div className={`${commentStyle}`}>
-                        <p className="text-sm">{comment}</p>
-                    </div>
+        <div
+            className={`p-4 rounded-lg ${colors.bg} border-2 ${colors.border}`}
+        >
+            <div className="flex items-start justify-between mb-2">
+                <p className="text-sm font-semibold text-slate-700">{label}</p>
+                {badge && (
+                    <Badge variant="secondary" className="text-xs">
+                        {badge}
+                    </Badge>
                 )}
-            </CardContent>
-        </Card>
+            </div>
+            <p className={`text-2xl font-bold ${colors.text}`}>
+                {formatValue()}
+            </p>
+            {description && (
+                <p className="text-xs text-slate-500 mt-2">{description}</p>
+            )}
+        </div>
     );
 }
