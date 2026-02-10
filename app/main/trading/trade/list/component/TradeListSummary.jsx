@@ -100,7 +100,7 @@ export default function TradeListSummary({ trades }) {
                     return (
                         <Card key={index} className="p-0 shadow-none">
                             <CardContent className="px-4 py-4">
-                                <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm font-medium text-slate-600 mb-1">
                                             {stat.title}

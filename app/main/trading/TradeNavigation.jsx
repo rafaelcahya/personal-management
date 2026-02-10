@@ -105,7 +105,7 @@ export default function TradeNavigation() {
                             onClick={() => handleNavigation(item.href)}
                             className={cn(
                                 "group relative overflow-hidden rounded-lg border transition-all duration-200",
-                                "hover:scale-[1.01] hover:shadow-md active:scale-[0.99]",
+                                " hover:shadow-md active:scale-[0.99]",
                                 isActive
                                     ? `${colors.border} shadow-sm ${colors.ring}`
                                     : "border-slate-200 hover:border-slate-300",
@@ -122,18 +122,18 @@ export default function TradeNavigation() {
                             )}
 
                             {/* Content */}
-                            <div className="relative p-3 text-left">
-                                <div className="flex items-center gap-2.5 mb-1.5">
-                                    <div
-                                        className={cn(
-                                            "p-2 rounded-lg transition-all duration-200",
-                                            isActive
-                                                ? `${colors.activeBg} text-white shadow-md`
-                                                : `${colors.bg} ${colors.text} group-hover:scale-105`,
-                                        )}
-                                    >
-                                        <Icon className="size-4" />
-                                    </div>
+                            <div className="relative p-3 text-left flex items-center gap-2.5 bg-white">
+                                <div
+                                    className={cn(
+                                        "p-2 rounded-lg transition-all duration-200",
+                                        isActive
+                                            ? `${colors.activeBg} text-white shadow-md`
+                                            : `${colors.bg} ${colors.text} group-hover:scale-105`,
+                                    )}
+                                >
+                                    <Icon className="size-4" />
+                                </div>
+                                <div>
                                     <h3
                                         className={cn(
                                             "font-semibold text-sm transition-colors",
@@ -144,10 +144,10 @@ export default function TradeNavigation() {
                                     >
                                         {item.name}
                                     </h3>
+                                    <p className="text-xs text-slate-500">
+                                        {item.description}
+                                    </p>
                                 </div>
-                                <p className="text-xs text-slate-500 ml-10">
-                                    {item.description}
-                                </p>
                             </div>
                         </button>
                     );
@@ -185,7 +185,7 @@ export default function TradeNavigation() {
 
             {/* Breadcrumb Context - Subtle */}
             {activeItem && (
-                <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+                <div className="mt-5 flex items-center gap-2 text-xs text-slate-500">
                     <LayoutDashboard className="size-3.5" />
                     <ChevronRight className="size-3" />
                     <span className="font-medium text-slate-700">
