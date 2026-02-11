@@ -56,8 +56,8 @@ export default function StatCard({
     };
 
     return (
-        <Card className={`border-2 ${colors.bg}`}>
-            <CardContent className="p-5">
+        <Card className={`shadow-none ${colors.bg}`}>
+            <CardContent>
                 <div className="flex items-start justify-between mb-3">
                     <div className={`p-2.5 rounded-lg ${colors.icon}`}>
                         <div className={colors.text}>{icon}</div>

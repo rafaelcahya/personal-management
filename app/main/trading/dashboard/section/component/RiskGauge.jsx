@@ -70,20 +70,20 @@ export default function RiskGauge({ stdDev, comment, timesToZero }) {
             {/* Risk Stats */}
             <div className="grid grid-cols-3 gap-3">
                 <div
-                    className={`p-3 rounded-lg border-2 ${colors.border} bg-white`}
+                    className={`p-3 rounded-lg border ${colors.border} bg-white`}
                 >
                     <p className="text-xs text-slate-500 mb-1">Risk Level</p>
                     <p className={`text-lg font-bold ${colors.text}`}>
                         {risk.level}
                     </p>
                 </div>
-                <div className="p-3 rounded-lg border-2 border-slate-200 bg-white">
+                <div className="p-3 rounded-lg border border-slate-200 bg-white">
                     <p className="text-xs text-slate-500 mb-1">Volatility</p>
                     <p className="text-lg font-bold text-slate-700">
                         {comment}
                     </p>
                 </div>
-                <div className="p-3 rounded-lg border-2 border-slate-200 bg-white">
+                <div className="p-3 rounded-lg border border-slate-200 bg-white">
                     <p className="text-xs text-slate-500 mb-1">Buffer</p>
                     <p className="text-lg font-bold text-violet-600">
                         {timesToZero}x

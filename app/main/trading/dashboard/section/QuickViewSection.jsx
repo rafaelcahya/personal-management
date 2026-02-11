@@ -2,16 +2,21 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
     TrendingUp,
     Calendar,
     Receipt,
     ArrowRight,
     RefreshCw,
+    Activity,
+    TrendingDown,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import EmptyState from "../../../../../components/ui/common/EmptyState";
+import QuickStat from "./component/QuickStatCard";
 
 export default function QuickViewSection({ initialData = null, onRefresh }) {
     const [recentTrades, setRecentTrades] = useState(initialData?.trades || []);
@@ -42,124 +47,219 @@ export default function QuickViewSection({ initialData = null, onRefresh }) {
         }
     };
 
+    // Calculate quick stats
+    const totalTradesCount = recentTrades.length;
+    const totalEventsCount = recentEvents.length;
+    const totalFeesAmount = recentFees.reduce(
+        (sum, fee) => sum + Number(fee.fee || 0),
+        0,
+    );
+    const recentPnL = recentTrades.reduce(
+        (sum, trade) => sum + Number(trade.realized_gain || 0),
+        0,
+    );
+
     return (
-        <div className="space-y-6">
-            {/* Refresh Button */}
-            <div className="flex justify-end">
-                <Button
-                    onClick={handleRefresh}
-                    disabled={loading}
-                    variant="outline"
-                    size="sm"
-                    className="gap-2"
-                >
-                    <RefreshCw
-                        className={`size-4 ${loading ? "animate-spin" : ""}`}
+        <div className="space-y-4">
+            <Button
+                onClick={handleRefresh}
+                disabled={loading}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+            >
+                <RefreshCw
+                    className={`size-4 ${loading ? "animate-spin" : ""}`}
+                />
+                <span className="hidden sm:inline">Refresh</span>
+            </Button>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div className="grid grid-cols-3 gap-3 flex-1">
+                    <QuickStat
+                        label="Recent Trades"
+                        value={totalTradesCount}
+                        color="violet"
+                        icon={<Activity className="size-3.5" />}
                     />
-                    Refresh
-                </Button>
+                    <QuickStat
+                        label="Active Events"
+                        value={totalEventsCount}
+                        color="amber"
+                        icon={<Calendar className="size-3.5" />}
+                    />
+                    <QuickStat
+                        label="Total Fees"
+                        value={`Rp ${totalFeesAmount.toLocaleString("id-ID")}`}
+                        color="red"
+                        icon={<Receipt className="size-3.5" />}
+                    />
+                </div>
             </div>
 
-            {/* Recent Trades */}
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-3">
-                    <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="size-5 text-violet-600" />
-                        Recent Trades
-                    </CardTitle>
-                    <Link href="/main/trading/trade">
-                        <Button variant="ghost" size="sm" className="gap-2">
-                            View All
-                            <ArrowRight className="size-4" />
-                        </Button>
-                    </Link>
+            {/* Recent Trades - Compact */}
+            <Card className="border shadow-none">
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm flex items-center gap-2">
+                            <div className="p-1.5 bg-violet-100 rounded-lg">
+                                <TrendingUp className="size-4 text-violet-600" />
+                            </div>
+                            Recent Trades
+                            <Badge variant="secondary" className="text-xs">
+                                {totalTradesCount}
+                            </Badge>
+                        </CardTitle>
+                        <Link href="/main/trading/trade">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="gap-1.5 h-8"
+                            >
+                                <span className="text-xs">View All</span>
+                                <ArrowRight className="size-3.5" />
+                            </Button>
+                        </Link>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     {loading ? (
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             {[...Array(3)].map((_, i) => (
                                 <div
                                     key={i}
-                                    className="h-16 bg-slate-100 rounded animate-pulse"
+                                    className="h-14 bg-slate-100 rounded-lg animate-pulse"
                                 />
                             ))}
                         </div>
                     ) : recentTrades.length > 0 ? (
                         <div className="space-y-2">
-                            {recentTrades.map((trade) => (
-                                <div
-                                    key={trade.id}
-                                    className="flex items-center justify-between p-3 rounded-lg border hover:bg-slate-50 transition-colors"
-                                >
-                                    <div>
-                                        <p className="font-semibold text-sm">
-                                            {trade.ticker}
-                                        </p>
-                                        <p className="text-xs text-slate-500">
-                                            {new Date(
-                                                trade.trade_date,
-                                            ).toLocaleDateString("id-ID")}
-                                        </p>
+                            {recentTrades.map((trade) => {
+                                const gain = Number(trade.realized_gain) || 0;
+                                const isProfit = gain >= 0;
+
+                                return (
+                                    <div
+                                        key={trade.id}
+                                        className="flex items-center justify-between p-2.5 rounded-lg border hover:bg-slate-50 transition-colors group"
+                                    >
+                                        <div className="flex items-center gap-2.5">
+                                            <div
+                                                className={`p-1.5 rounded-lg ${
+                                                    isProfit
+                                                        ? "bg-green-100"
+                                                        : "bg-red-100"
+                                                }`}
+                                            >
+                                                {isProfit ? (
+                                                    <TrendingUp className="size-4 text-green-600" />
+                                                ) : (
+                                                    <TrendingDown className="size-4 text-red-600" />
+                                                )}
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-sm leading-tight">
+                                                    {trade.ticker}
+                                                </p>
+                                                <p className="text-xs text-slate-500">
+                                                    {new Date(
+                                                        trade.trade_date,
+                                                    ).toLocaleDateString(
+                                                        "id-ID",
+                                                        {
+                                                            day: "2-digit",
+                                                            month: "short",
+                                                            year: "numeric",
+                                                        },
+                                                    )}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p
+                                                className={`font-bold text-sm ${
+                                                    isProfit
+                                                        ? "text-green-600"
+                                                        : "text-red-600"
+                                                }`}
+                                            >
+                                                {isProfit ? "+" : ""}
+                                                Rp{" "}
+                                                {gain.toLocaleString("id-ID")}
+                                            </p>
+                                            <p className="text-xs text-slate-500">
+                                                {trade.return_percent}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="text-right">
-                                        <p
-                                            className={`font-bold ${
-                                                Number(trade.realized_gain) >= 0
-                                                    ? "text-green-600"
-                                                    : "text-red-600"
-                                            }`}
-                                        >
-                                            {Number(trade.realized_gain) >= 0
-                                                ? "+"
-                                                : ""}
-                                            Rp{" "}
-                                            {Number(
-                                                trade.realized_gain,
-                                            ).toLocaleString("id-ID")}
-                                        </p>
-                                        <p className="text-xs text-slate-500">
-                                            {trade.return_percent}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
-                        <div className="text-center py-8">
-                            <p className="text-slate-500 mb-2">No trades yet</p>
-                            <Link href="/main/trading/trade">
-                                <Button variant="outline" size="sm">
-                                    Add Your First Trade
-                                </Button>
-                            </Link>
+                        <EmptyState
+                            title="No trades yet"
+                            description="Start tracking your trades"
+                            actionLabel="Add First Trade"
+                            actionHref="/main/trading/trade"
+                        />
+                    )}
+
+                    {/* Summary Footer */}
+                    {recentTrades.length > 0 && (
+                        <div className="mt-3 pt-3 border-t">
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="text-slate-600 font-medium">
+                                    Recent P/L
+                                </span>
+                                <span
+                                    className={`font-bold ${
+                                        recentPnL >= 0
+                                            ? "text-green-600"
+                                            : "text-red-600"
+                                    }`}
+                                >
+                                    {recentPnL >= 0 ? "+" : ""}
+                                    Rp {recentPnL.toLocaleString("id-ID")}
+                                </span>
+                            </div>
                         </div>
                     )}
                 </CardContent>
             </Card>
 
-            {/* Recent Events & Fees Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Events & Fees Grid - Compact */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Recent Events */}
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-3">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                            <Calendar className="size-5 text-amber-600" />
-                            Recent Events
-                        </CardTitle>
-                        <Link href="/main/trading/event">
-                            <Button variant="ghost" size="sm" className="gap-2">
-                                View All
-                                <ArrowRight className="size-4" />
-                            </Button>
-                        </Link>
+                <Card className="border shadow-none">
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm flex items-center gap-2">
+                                <div className="p-1.5 bg-amber-100 rounded-lg">
+                                    <Calendar className="size-4 text-amber-600" />
+                                </div>
+                                Market Events
+                                <Badge variant="secondary" className="text-xs">
+                                    {totalEventsCount}
+                                </Badge>
+                            </CardTitle>
+                            <Link href="/main/trading/event">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="gap-1.5 h-8"
+                                >
+                                    <span className="text-xs">View All</span>
+                                    <ArrowRight className="size-3.5" />
+                                </Button>
+                            </Link>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         {loading ? (
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 {[...Array(3)].map((_, i) => (
                                     <div
                                         key={i}
-                                        className="h-16 bg-slate-100 rounded animate-pulse"
+                                        className="h-14 bg-slate-100 rounded-lg animate-pulse"
                                     />
                                 ))}
                             </div>
@@ -168,61 +268,81 @@ export default function QuickViewSection({ initialData = null, onRefresh }) {
                                 {recentEvents.map((event) => (
                                     <div
                                         key={event.id}
-                                        className="p-3 rounded-lg border hover:bg-slate-50 transition-colors"
+                                        className="p-2.5 rounded-lg border hover:bg-slate-50 transition-colors"
                                     >
-                                        <p className="text-sm font-medium text-slate-700 line-clamp-2 mb-2">
-                                            {event.event_description}
+                                        <div className="flex items-start justify-between gap-2 mb-1.5">
+                                            <p className="text-sm font-medium text-slate-700 line-clamp-2 flex-1 leading-tight">
+                                                {event.event_description}
+                                            </p>
+                                            <Badge
+                                                variant={
+                                                    event.impact_direction ===
+                                                    "UP"
+                                                        ? "success"
+                                                        : "destructive"
+                                                }
+                                                className="text-xs shrink-0"
+                                            >
+                                                {event.impact_direction === "UP"
+                                                    ? "🐂"
+                                                    : "🐻"}
+                                            </Badge>
+                                        </div>
+                                        <p className="text-xs text-slate-500">
+                                            {new Date(
+                                                event.created_at || Date.now(),
+                                            ).toLocaleDateString("id-ID", {
+                                                day: "2-digit",
+                                                month: "short",
+                                            })}
                                         </p>
-                                        <span
-                                            className={`text-xs px-2 py-1 rounded-full font-semibold ${
-                                                event.impact_direction === "UP"
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-red-100 text-red-700"
-                                            }`}
-                                        >
-                                            {event.impact_direction === "UP"
-                                                ? "Bullish"
-                                                : "Bearish"}
-                                        </span>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-8">
-                                <p className="text-slate-500 mb-2">
-                                    No events yet
-                                </p>
-                                <Link href="/main/trading/event">
-                                    <Button variant="outline" size="sm">
-                                        Add Market Event
-                                    </Button>
-                                </Link>
-                            </div>
+                            <EmptyState
+                                title="No events tracked"
+                                description="Add market events"
+                                actionLabel="Add Event"
+                                actionHref="/main/trading/event"
+                                compact
+                            />
                         )}
                     </CardContent>
                 </Card>
 
                 {/* Recent Fees */}
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-3">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                            <Receipt className="size-5 text-red-600" />
-                            Recent Fees
-                        </CardTitle>
-                        <Link href="/main/trading/fee">
-                            <Button variant="ghost" size="sm" className="gap-2">
-                                View All
-                                <ArrowRight className="size-4" />
-                            </Button>
-                        </Link>
+                <Card className="border shadow-none">
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm flex items-center gap-2">
+                                <div className="p-1.5 bg-red-100 rounded-lg">
+                                    <Receipt className="size-4 text-red-600" />
+                                </div>
+                                Trading Fees
+                                <Badge variant="secondary" className="text-xs">
+                                    {recentFees.length}
+                                </Badge>
+                            </CardTitle>
+                            <Link href="/main/trading/fee">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="gap-1.5 h-8"
+                                >
+                                    <span className="text-xs">View All</span>
+                                    <ArrowRight className="size-3.5" />
+                                </Button>
+                            </Link>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         {loading ? (
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 {[...Array(3)].map((_, i) => (
                                     <div
                                         key={i}
-                                        className="h-16 bg-slate-100 rounded animate-pulse"
+                                        className="h-14 bg-slate-100 rounded-lg animate-pulse"
                                     />
                                 ))}
                             </div>
@@ -231,20 +351,24 @@ export default function QuickViewSection({ initialData = null, onRefresh }) {
                                 {recentFees.map((fee) => (
                                     <div
                                         key={fee.id}
-                                        className="flex items-center justify-between p-3 rounded-lg border hover:bg-slate-50 transition-colors"
+                                        className="flex items-center justify-between p-2.5 rounded-lg border hover:bg-slate-50 transition-colors"
                                     >
                                         <div>
-                                            <p className="font-semibold text-sm">
+                                            <p className="font-semibold text-sm leading-tight">
                                                 {fee.fee_name}
                                             </p>
                                             <p className="text-xs text-slate-500">
                                                 {new Date(
                                                     fee.fee_date,
-                                                ).toLocaleDateString("id-ID")}
+                                                ).toLocaleDateString("id-ID", {
+                                                    day: "2-digit",
+                                                    month: "short",
+                                                    year: "numeric",
+                                                })}
                                             </p>
                                         </div>
-                                        <p className="font-bold text-red-600">
-                                            Rp{" "}
+                                        <p className="font-bold text-red-600 text-sm">
+                                            -Rp{" "}
                                             {Number(fee.fee).toLocaleString(
                                                 "id-ID",
                                             )}
@@ -253,15 +377,29 @@ export default function QuickViewSection({ initialData = null, onRefresh }) {
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-8">
-                                <p className="text-slate-500 mb-2">
-                                    No fees yet
-                                </p>
-                                <Link href="/main/trading/fee">
-                                    <Button variant="outline" size="sm">
-                                        Add Fee
-                                    </Button>
-                                </Link>
+                            <EmptyState
+                                title="No fees recorded"
+                                description="Track your fees"
+                                actionLabel="Add Fee"
+                                actionHref="/main/trading/fee"
+                                compact
+                            />
+                        )}
+
+                        {/* Total Fees Footer */}
+                        {recentFees.length > 0 && (
+                            <div className="mt-3 pt-3 border-t">
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-slate-600 font-medium">
+                                        Total Fees
+                                    </span>
+                                    <span className="font-bold text-red-600">
+                                        -Rp{" "}
+                                        {totalFeesAmount.toLocaleString(
+                                            "id-ID",
+                                        )}
+                                    </span>
+                                </div>
                             </div>
                         )}
                     </CardContent>

@@ -37,10 +37,11 @@ export default function MetricCard({
 
     const formatValue = () => {
         if (format === "currency") {
-            return `Rp ${value?.toLocaleString("id-ID") || 0}`;
+            const num = Number(value) || 0;
+            return `Rp ${Math.floor(num).toLocaleString("id-ID")}`;
         }
         if (format === "number") {
-            return value?.toLocaleString("id-ID") || 0;
+            return Math.floor(value || 0).toLocaleString("id-ID");
         }
         return value || "-";
     };

@@ -8,6 +8,7 @@ import PerformanceSection from "./section/PerformanceSection";
 import RiskSection from "./section/RiskSection";
 import QuickViewSection from "./section/QuickViewSection";
 import DashboardHeader from "./component/DashboardHeader";
+import TradingFooter from "../TradingFooter"
 
 export default function TradingDashboard() {
     const [metrics, setMetrics] = useState(null);
@@ -143,6 +144,8 @@ export default function TradingDashboard() {
                     />
                 </TabsContent>
             </Tabs>
+
+            <TradingFooter/>
         </main>
     );
 }
