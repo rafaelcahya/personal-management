@@ -251,7 +251,7 @@ export default function AddFee({ onAdded }) {
                                 variant="outline"
                                 onClick={() => setOpen(false)}
                                 disabled={loading}
-                                className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                                className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
                             >
                                 Cancel
                             </Button>

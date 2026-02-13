@@ -41,7 +41,7 @@ export default function DeleteEvent({ event, onDeleted, onClose }) {
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-50 font-medium"
+                    className="justify-start text-red-600 hover:text-red-600 hover:bg-red-50 font-medium"
                 >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete Event
@@ -59,7 +59,7 @@ export default function DeleteEvent({ event, onDeleted, onClose }) {
                 <AlertDialogFooter>
                     <AlertDialogCancel
                         disabled={loading}
-                        className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                        className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
                     >
                         Cancel
                     </AlertDialogCancel>
