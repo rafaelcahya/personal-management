@@ -1,14 +1,19 @@
-import { getUpdateEvent } from "@/lib/services/event/getUpdateEvent";
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { createEvent } from "@/lib/services/event/createEvent";
 
-export async function PUT(req, { params }) {
+export async function POST(req) {
     try {
-        const { id } = await params;
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
 
-        if (!id || isNaN(Number(id))) {
+        if (authError || !user) {
             return NextResponse.json(
-                { success: false, error: "Invalid event ID provided" },
-                { status: 400 }
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
             );
         }
 
@@ -18,52 +23,51 @@ export async function PUT(req, { params }) {
         } catch (parseError) {
             return NextResponse.json(
                 { success: false, error: "Invalid JSON in request body" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
         if (!body) {
             return NextResponse.json(
                 { success: false, error: "Request body is required" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
+        // Validation
         const requiredFields = [
             "event_description",
             "impact_direction",
             "event_date",
         ];
-
         const validationErrors = [];
+
         requiredFields.forEach((field) => {
             if (!body[field] || body[field].toString().trim() === "") {
                 validationErrors.push(
-                    `${field.replaceAll("_", " ")} is required`
+                    `${field.replace(/_/g, " ")} is required`,
                 );
             }
         });
 
         if (validationErrors.length > 0) {
             return NextResponse.json(
-                {
-                    success: false,
-                    error: validationErrors,
-                },
-                { status: 400 }
+                { success: false, error: validationErrors },
+                { status: 400 },
             );
         }
 
-        const updateEvent = await getUpdateEvent(id, body);
+        const newEvent = await createEvent(user.id, body);
 
         return NextResponse.json(
-            { success: true, event: updateEvent },
-            { status: 200 }
+            { success: true, event: newEvent },
+            { status: 201 },
         );
     } catch (err) {
+        console.error("POST /api/event/v1/event/create error:", err);
         return NextResponse.json(
             { success: false, error: err.message },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

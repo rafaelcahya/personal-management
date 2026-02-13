@@ -30,6 +30,7 @@ import {
     StarIcon,
     TrendingUp,
     TrendingDown,
+    Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { favoriteEvent } from "@/lib/api/event";
@@ -66,13 +67,13 @@ export default function EventTable({
 
         try {
             await favoriteEvent(event.id, newFavoriteStatus);
-
             toast.success(
                 newFavoriteStatus
-                    ? "Event added to favorites"
+                    ? "Event added to favorites ⭐"
                     : "Event removed from favorites",
             );
         } catch (error) {
+            console.error("Favorite error:", error);
             // Rollback on error
             onEventsChange(previousState);
             toast.error(error.message || "Failed to update favorite status");
@@ -101,162 +102,179 @@ export default function EventTable({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {events.map((event) => {
-                        const isUpcoming =
-                            new Date(event.event_date) >= new Date();
-                        const isBullish = event.impact_direction === "UP";
-                        const isLongDescription =
-                            event.event_description.length > 120;
-
-                        return (
-                            <TableRow
-                                key={event.id}
-                                className="hover:bg-slate-100"
+                    {events.length === 0 ? (
+                        <TableRow>
+                            <TableCell
+                                colSpan={4}
+                                className="text-center py-8 text-slate-500"
                             >
-                                <TableCell className="w-[50%] py-3">
-                                    <TooltipProvider>
-                                        <Tooltip delayDuration={300}>
-                                            <TooltipTrigger asChild>
-                                                <div className="flex items-start gap-3 cursor-help">
-                                                    {event.is_favorite && (
-                                                        <StarIcon className="size-4 fill-yellow-400 text-yellow-400 flex-shrink-0 mt-0.5" />
-                                                    )}
-                                                    <div className="min-w-0 flex-1">
-                                                        <p className="font-medium text-sm leading-relaxed line-clamp-3 whitespace-normal">
+                                No events found. Add your first market event to
+                                start tracking! 📅
+                            </TableCell>
+                        </TableRow>
+                    ) : (
+                        events.map((event) => {
+                            const isUpcoming =
+                                new Date(event.event_date) >= new Date();
+                            const isBullish = event.impact_direction === "UP";
+                            const isLongDescription =
+                                event.event_description.length > 120;
+
+                            return (
+                                <TableRow
+                                    key={event.id}
+                                    className="hover:bg-slate-100"
+                                >
+                                    <TableCell className="w-[50%] py-3">
+                                        <TooltipProvider>
+                                            <Tooltip delayDuration={300}>
+                                                <TooltipTrigger asChild>
+                                                    <div className="flex items-start gap-3 cursor-help">
+                                                        {event.is_favorite && (
+                                                            <StarIcon className="size-4 fill-yellow-400 text-yellow-400 flex-shrink-0 mt-0.5" />
+                                                        )}
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="font-medium text-sm leading-relaxed line-clamp-3 whitespace-normal">
+                                                                {
+                                                                    event.event_description
+                                                                }
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </TooltipTrigger>
+                                                {isLongDescription && (
+                                                    <TooltipContent
+                                                        side="bottom"
+                                                        align="start"
+                                                        className="max-w-md p-3"
+                                                    >
+                                                        <p className="text-sm whitespace-pre-wrap">
                                                             {
                                                                 event.event_description
                                                             }
                                                         </p>
-                                                    </div>
-                                                </div>
-                                            </TooltipTrigger>
-                                            {isLongDescription && (
-                                                <TooltipContent
-                                                    side="bottom"
-                                                    align="start"
-                                                    className="max-w-md p-3"
+                                                    </TooltipContent>
+                                                )}
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </TableCell>
+                                    <TableCell className="text-center w-[15%]">
+                                        <div className="flex items-center justify-center">
+                                            <Badge
+                                                variant="outline"
+                                                className={`font-medium ${
+                                                    isBullish
+                                                        ? "bg-green-50 text-green-700 border-green-200"
+                                                        : "bg-red-50 text-red-700 border-red-200"
+                                                }`}
+                                            >
+                                                {isBullish ? (
+                                                    <TrendingUp className="h-3 w-3 mr-1" />
+                                                ) : (
+                                                    <TrendingDown className="h-3 w-3 mr-1" />
+                                                )}
+                                                {isBullish
+                                                    ? "Bullish"
+                                                    : "Bearish"}
+                                            </Badge>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-center text-sm w-[20%]">
+                                        <div>
+                                            <p className="font-medium">
+                                                {new Date(
+                                                    event.event_date,
+                                                ).toLocaleDateString("id-ID", {
+                                                    day: "2-digit",
+                                                    month: "short",
+                                                    year: "numeric",
+                                                })}
+                                            </p>
+                                            <p
+                                                className={`text-xs mt-0.5 font-medium ${
+                                                    isUpcoming
+                                                        ? "text-blue-600"
+                                                        : "text-slate-500"
+                                                }`}
+                                            >
+                                                {isUpcoming
+                                                    ? "Upcoming"
+                                                    : "Past"}
+                                            </p>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-center w-[15%]">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="size-8 mx-auto outline-none hover:bg-slate-200"
                                                 >
-                                                    <p className="text-sm whitespace-pre-wrap">
-                                                        {
-                                                            event.event_description
-                                                        }
-                                                    </p>
-                                                </TooltipContent>
-                                            )}
-                                        </Tooltip>
-                                    </TooltipProvider>
-                                </TableCell>
-                                <TableCell className="text-center w-[15%]">
-                                    <div className="flex items-center justify-center">
-                                        <Badge
-                                            variant="outline"
-                                            className={`${
-                                                isBullish
-                                                    ? "bg-green-50 text-green-700 border-green-200"
-                                                    : "bg-red-50 text-red-700 border-red-200"
-                                            }`}
-                                        >
-                                            {isBullish ? (
-                                                <TrendingUp className="h-3 w-3 mr-1" />
-                                            ) : (
-                                                <TrendingDown className="h-3 w-3 mr-1" />
-                                            )}
-                                            {isBullish ? "Bullish" : "Bearish"}
-                                        </Badge>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-center text-sm w-[20%]">
-                                    <div>
-                                        <p className="font-medium">
-                                            {new Date(
-                                                event.event_date,
-                                            ).toLocaleDateString("id-ID", {
-                                                day: "2-digit",
-                                                month: "short",
-                                                year: "numeric",
-                                            })}
-                                        </p>
-                                        <p
-                                            className={`text-xs mt-0.5 ${
-                                                isUpcoming
-                                                    ? "text-blue-600 font-medium"
-                                                    : "text-slate-500"
-                                            }`}
-                                        >
-                                            {isUpcoming ? "Upcoming" : "Past"}
-                                        </p>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-center w-[15%]">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="size-8 mx-auto outline-none hover:bg-slate-200"
-                                            >
-                                                <MoreHorizontalIcon />
-                                                <span className="sr-only">
-                                                    Open menu
-                                                </span>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem
-                                                onClick={() =>
-                                                    setSelectedEvent(event)
-                                                }
-                                                className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
-                                            >
-                                                <FilePenLine className="h-4 w-4 mr-2" />
-                                                Update Event
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem
-                                                onClick={() =>
-                                                    handleToggleFavorite(event)
-                                                }
-                                                disabled={
-                                                    loadingFavorite === event.id
-                                                }
-                                                className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
-                                            >
-                                                <StarIcon
-                                                    className={`size-4 mr-2 ${
-                                                        event.is_favorite
-                                                            ? "fill-yellow-400 text-yellow-400"
-                                                            : ""
-                                                    }`}
-                                                />
-                                                {event.is_favorite
-                                                    ? "Remove from Favorites"
-                                                    : "Add to Favorites"}
-                                            </DropdownMenuItem>
-
-                                            {!event.deleted_at && (
-                                                <>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) =>
-                                                            e.preventDefault()
-                                                        }
-                                                        className="p-0"
-                                                    >
-                                                        <DeleteEvent
-                                                            event={event}
-                                                            onDeleted={
-                                                                onRefresh
-                                                            }
+                                                    <MoreHorizontalIcon className="size-4" />
+                                                    <span className="sr-only">
+                                                        Open menu
+                                                    </span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem
+                                                    onClick={() =>
+                                                        setSelectedEvent(event)
+                                                    }
+                                                    className="hover:bg-violet-50 focus:bg-violet-50 cursor-pointer font-medium"
+                                                >
+                                                    <FilePenLine className="h-4 w-4 mr-2" />
+                                                    Update Event
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem
+                                                    onClick={() =>
+                                                        handleToggleFavorite(
+                                                            event,
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        loadingFavorite ===
+                                                        event.id
+                                                    }
+                                                    className="hover:bg-violet-50 focus:bg-violet-50 cursor-pointer font-medium"
+                                                >
+                                                    {loadingFavorite ===
+                                                    event.id ? (
+                                                        <Loader2 className="size-4 mr-2 animate-spin" />
+                                                    ) : (
+                                                        <StarIcon
+                                                            className={`size-4 mr-2 ${
+                                                                event.is_favorite
+                                                                    ? "fill-yellow-400 text-yellow-400"
+                                                                    : ""
+                                                            }`}
                                                         />
-                                                    </DropdownMenuItem>
-                                                </>
-                                            )}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                        );
-                    })}
+                                                    )}
+                                                    {event.is_favorite
+                                                        ? "Remove from Favorites"
+                                                        : "Add to Favorites"}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem
+                                                    onSelect={(e) =>
+                                                        e.preventDefault()
+                                                    }
+                                                    className="p-0"
+                                                >
+                                                    <DeleteEvent
+                                                        event={event}
+                                                        onDeleted={onRefresh}
+                                                    />
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })
+                    )}
                 </TableBody>
             </Table>
 

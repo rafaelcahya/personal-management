@@ -17,16 +17,18 @@ import { Trash2, Loader2 } from "lucide-react";
 import { deleteEvent } from "@/lib/api/event";
 import { toast } from "sonner";
 
-export default function DeleteEvent({ event, onDeleted }) {
+export default function DeleteEvent({ event, onDeleted, onClose }) {
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async () => {
         setLoading(true);
         try {
             await deleteEvent(event.id);
-            toast.success("Event deleted successfully");
-            onDeleted();
+            toast.success("Event deleted successfully 🗑️");
+            onClose?.();
+            onDeleted?.();
         } catch (error) {
+            console.error("Delete error:", error);
             toast.error(error.message || "Failed to delete event");
         } finally {
             setLoading(false);
@@ -39,7 +41,7 @@ export default function DeleteEvent({ event, onDeleted }) {
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-50"
+                    className="w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-50 font-medium"
                 >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete Event
@@ -48,24 +50,28 @@ export default function DeleteEvent({ event, onDeleted }) {
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Delete Event?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete this event from your records.
+                    <AlertDialogDescription className="text-slate-600">
+                        This will remove the event from your active list. You
+                        can still access deleted events from your archived
+                        records if needed.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={loading} className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none">
+                    <AlertDialogCancel
+                        disabled={loading}
+                        className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                    >
                         Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleDelete}
                         disabled={loading}
-                        className="bg-rose-600 hover:bg-rose-700 dark:text-white"
+                        className="bg-rose-600 hover:bg-rose-700 text-white font-medium"
                     >
                         {loading && (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         )}
-                        Delete
+                        {loading ? "Deleting..." : "Delete"}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
