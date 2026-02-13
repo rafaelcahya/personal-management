@@ -1,8 +1,10 @@
+"use client";
+
 import {
+    FormControl,
     FormField,
     FormItem,
     FormLabel,
-    FormControl,
     FormMessage,
 } from "@/components/ui/form";
 import {
@@ -12,70 +14,68 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Loader2 } from "lucide-react";
 
 export default function DynamicSelectField({
     control,
     name,
     label,
-    options,
-    loading,
-    displayField = "name",
-    message
+    options = [],
+    loading = false,
+    displayField,
+    placeholder = "Select an option",
 }) {
     return (
         <FormField
             control={control}
             name={name}
             render={({ field, fieldState }) => (
-                <FormItem>
+                <FormItem className="w-full">
                     <FormLabel className="font-medium">{label}</FormLabel>
                     <Select
                         onValueChange={field.onChange}
-                        value={String(field.value || "")} // ✅ Force string + handle null
+                        value={field.value || ""}
+                        disabled={loading}
                     >
                         <FormControl>
-                            <SelectTrigger className="min-w-full font-medium">
-                                <SelectValue
-                                    placeholder={
-                                        loading
-                                            ? "Loading..."
-                                            : `Select ${label}`
-                                    }
-                                />
+                            <SelectTrigger
+                                className={`w-full text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                                    fieldState.error ? "border-rose-500" : ""
+                                }`}
+                            >
+                                {loading ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader2 className="size-4 animate-spin" />
+                                        <span className="text-slate-500">
+                                            Loading...
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <SelectValue placeholder={placeholder} />
+                                )}
                             </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="w-auto max-w-[90vw] min-w-[200px]">
-                            {loading || !options?.length ? (
-                                <div className="p-8 text-center text-muted-foreground">
-                                    {loading
-                                        ? "Loading options..."
-                                        : "No options available"}
+                        <SelectContent className="max-h-[300px]">
+                            {!loading && options.length === 0 ? (
+                                <div className="p-4 text-sm text-slate-500 text-center">
+                                    No options available
                                 </div>
                             ) : (
-                                options
-                                    .filter(
-                                        (opt) => opt?.id && opt[displayField]
-                                    )
-                                    .map((opt) => {
-                                        const displayText =
-                                            opt[displayField] ||
-                                            `ID: ${opt.id}`;
-                                        return (
-                                            <SelectItem
-                                                key={opt.id}
-                                                value={String(
-                                                    opt[displayField]
-                                                )} // ✅ Use displayField value
-                                                className="font-medium"
-                                            >
-                                                {displayText}
-                                            </SelectItem>
-                                        );
-                                    })
+                                options.map((option) => (
+                                    <SelectItem
+                                        key={option.id}
+                                        value={option[displayField]}
+                                        className="text-sm font-medium cursor-pointer"
+                                    >
+                                        {option[displayField]}
+                                    </SelectItem>
+                                ))
                             )}
                         </SelectContent>
                     </Select>
-                    <FormMessage id={message}>{fieldState.error?.message}</FormMessage>
+                    <FormMessage className="font-medium">
+                        {fieldState.error?.message}
+                    </FormMessage>
                 </FormItem>
             )}
         />
