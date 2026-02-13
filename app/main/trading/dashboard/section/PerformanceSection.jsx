@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -20,7 +21,43 @@ import EfficiencyCard from "./component/EfficiencyCard";
 import QuickStatCard from "./component/QuickStatCard";
 
 export default function PerformanceSection({ metrics, loading }) {
-    if (loading) {
+    const [config, setConfig] = useState({
+        bi_risk_free_rate: 0,
+        personal_risk_free_rate: 0,
+        margin_of_error: 10,
+    });
+    const [configLoading, setConfigLoading] = useState(true);
+
+    // Fetch configuration settings
+    useEffect(() => {
+        async function fetchConfig() {
+            try {
+                const res = await fetch("/api/trade/settings/list");
+                const data = await res.json();
+
+                if (res.ok && data?.settingsList) {
+                    setConfig({
+                        bi_risk_free_rate:
+                            parseFloat(data.settingsList.bi_risk_free_rate) ||
+                            0,
+                        personal_risk_free_rate:
+                            parseFloat(
+                                data.settingsList.personal_risk_free_rate,
+                            ) || 0,
+                        margin_of_error:
+                            parseFloat(data.settingsList.margin_of_error) || 10,
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to fetch config:", err);
+            } finally {
+                setConfigLoading(false);
+            }
+        }
+        fetchConfig();
+    }, []);
+
+    if (loading || configLoading) {
         return <SkeletonGrid count={3} />;
     }
 
@@ -63,8 +100,6 @@ export default function PerformanceSection({ metrics, loading }) {
         sharpePersonal,
         sharpeBIComment,
         sharpePersonalComment,
-        biSharpeRatio,
-        personalSharpeRatio,
         winCount,
         loseCount,
         totalTrades,
@@ -228,7 +263,7 @@ export default function PerformanceSection({ metrics, loading }) {
                         />
                         <RatioCard
                             icon={<Shield className="size-4" />}
-                            label={`Sharpe (BI ${biSharpeRatio}%)`}
+                            label={`Sharpe (BI ${config.bi_risk_free_rate}%)`}
                             value={sharpeBI}
                             comment={sharpeBIComment}
                             threshold={1}
@@ -236,7 +271,7 @@ export default function PerformanceSection({ metrics, loading }) {
                         />
                         <RatioCard
                             icon={<Shield className="size-4" />}
-                            label={`Personal (${personalSharpeRatio}%)`}
+                            label={`Personal (${config.personal_risk_free_rate}%)`}
                             value={sharpePersonal}
                             comment={sharpePersonalComment}
                             threshold={1}
@@ -249,10 +284,15 @@ export default function PerformanceSection({ metrics, loading }) {
             {/* Trade Efficiency - New Section */}
             <Card className="border shadow-none bg-gradient-to-br from-slate-50 to-gray-50">
                 <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                        <BarChart3 className="size-4 text-slate-600" />
-                        Trade Efficiency Metrics
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm flex items-center gap-2">
+                            <BarChart3 className="size-4 text-slate-600" />
+                            Trade Efficiency Metrics
+                        </CardTitle>
+                        <Badge variant="outline" className="text-xs">
+                            MoE: {config.margin_of_error}%
+                        </Badge>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

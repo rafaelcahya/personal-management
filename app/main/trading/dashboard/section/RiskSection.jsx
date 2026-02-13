@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -20,7 +21,33 @@ import RiskStatCard from "./component/RiskStatCard";
 import ComparisonCard from "./component/ComparisonCard";
 
 export default function RiskSection({ metrics, loading }) {
-    if (loading) {
+    const [config, setConfig] = useState({
+        margin_of_error: 10,
+    });
+    const [configLoading, setConfigLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchConfig() {
+            try {
+                const res = await fetch("/api/trade/settings/list");
+                const data = await res.json();
+
+                if (res.ok && data?.settingsList) {
+                    setConfig({
+                        margin_of_error:
+                            parseFloat(data.settingsList.margin_of_error) || 10,
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to fetch config:", err);
+            } finally {
+                setConfigLoading(false);
+            }
+        }
+        fetchConfig();
+    }, []);
+
+    if (loading || configLoading) {
         return <SkeletonGrid count={2} />;
     }
 
@@ -117,12 +144,17 @@ export default function RiskSection({ metrics, loading }) {
             {/* Risk Overview with Gauge */}
             <Card className="border shadow-none bg-gradient-to-br from-amber-50/50 to-orange-50/50 border-amber-200">
                 <CardHeader>
-                    <CardTitle className="text-sm flex items-center gap-2">
-                        <div className="p-2 bg-amber-100 rounded-lg">
-                            <Shield className="size-4 text-amber-600" />
-                        </div>
-                        Risk Assessment
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm flex items-center gap-2">
+                            <div className="p-2 bg-amber-100 rounded-lg">
+                                <Shield className="size-4 text-amber-600" />
+                            </div>
+                            Risk Assessment
+                        </CardTitle>
+                        <Badge variant="outline" className="text-xs">
+                            MoE: {config.margin_of_error}%
+                        </Badge>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <RiskGauge
@@ -162,7 +194,7 @@ export default function RiskSection({ metrics, loading }) {
                             label="Conservative TP"
                             value={safeZoneAvgProfitWithMoe}
                             format="currency"
-                            description="With 10% buffer"
+                            description={`With ${config.margin_of_error}% buffer`}
                             color="green"
                             badge="Recommended"
                         />
@@ -212,7 +244,7 @@ export default function RiskSection({ metrics, loading }) {
                             label="Conservative SL"
                             value={safeZoneAvgLossWithMoe}
                             format="currency"
-                            description="With 10% buffer"
+                            description={`With ${config.margin_of_error}% buffer`}
                             color="red"
                             badge="Recommended"
                         />
@@ -328,7 +360,7 @@ export default function RiskSection({ metrics, loading }) {
                                     Safe Buffer (Adjusted)
                                 </span>
                                 <Badge variant="default" className="text-xs">
-                                    Protected
+                                    +{config.margin_of_error}% MoE
                                 </Badge>
                             </div>
                             <p className="text-sm font-bold text-violet-700">
