@@ -16,6 +16,7 @@ import {
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -38,7 +39,6 @@ import DeleteFee from "./DeleteFee";
 
 export default function UpdateFee({ fee, onClose, onUpdated }) {
     const [loading, setLoading] = useState(false);
-    const [serverError, setServerError] = useState(null);
 
     const form = useForm({
         resolver: zodResolver(feeSchema),
@@ -49,23 +49,21 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
         },
     });
 
-    const { control, reset } = form;
+    const { control, reset, handleSubmit } = form;
 
-    // Reset form saat fee berubah
+    // Reset form when fee changes
     useEffect(() => {
         if (fee) {
             reset({
-                fee_name: fee.fee_name,
+                fee_name: fee.fee_name || "",
                 fee: fee.fee?.toString() || "",
                 fee_date: new Date(fee.fee_date),
             });
-            setServerError(null);
         }
     }, [fee, reset]);
 
     const onSubmit = async (values) => {
         setLoading(true);
-        setServerError(null);
 
         try {
             const payload = {
@@ -75,12 +73,11 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
             };
 
             await updateFee(fee.id, payload);
-
             toast.success("Fee updated successfully! ✅");
             onUpdated?.();
         } catch (err) {
             console.error("Update error:", err);
-            setServerError(err.message || "Failed to update fee");
+            toast.error(err.message || "Failed to update fee");
         } finally {
             setLoading(false);
         }
@@ -93,7 +90,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
             <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
                 <DialogHeader className="text-left shrink-0">
                     <DialogTitle>✏️ Update Fee</DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-slate-600">
                         Adjust your fee details to keep your records accurate
                         and reliable
                     </DialogDescription>
@@ -101,96 +98,103 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
 
                 <Form {...form}>
                     <form
-                        onSubmit={form.handleSubmit(onSubmit)}
+                        onSubmit={handleSubmit(onSubmit)}
                         className="flex flex-col flex-1 min-h-0"
                     >
-                        <div className="flex-1 overflow-y-auto space-y-4">
-                            {/* Fee Date */}
-                            <FormField
-                                control={control}
-                                name="fee_date"
-                                render={({ field, fieldState }) => (
-                                    <FormItem className="flex flex-col">
-                                        <FormLabel className="font-medium">
-                                            Fee Date
-                                        </FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <FormControl>
-                                                    <Button
-                                                        type="button"
-                                                        variant="outline"
-                                                        className={cn(
-                                                            "w-full pl-3 text-left font-medium",
-                                                            fieldState.error &&
-                                                                "border-rose-500",
-                                                            !field.value &&
-                                                                "text-slate-500",
-                                                        )}
-                                                    >
-                                                        {field.value ? (
-                                                            format(
-                                                                field.value,
-                                                                "PPP",
-                                                            )
-                                                        ) : (
-                                                            <span>
-                                                                Pick a date
-                                                            </span>
-                                                        )}
-                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                    </Button>
-                                                </FormControl>
-                                            </PopoverTrigger>
-                                            <PopoverContent
-                                                className="w-auto p-0"
-                                                align="start"
-                                            >
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                        <p className="text-xs text-muted-foreground">
-                                            When was this fee charged? 📅
-                                        </p>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+                            {/* Fee Date & Fee Name Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Fee Date */}
+                                <FormField
+                                    control={control}
+                                    name="fee_date"
+                                    render={({ field, fieldState }) => (
+                                        <FormItem className="flex flex-col">
+                                            <FormLabel className="font-medium">
+                                                Fee Date
+                                            </FormLabel>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <FormControl>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            className={cn(
+                                                                "w-full pl-3 text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600",
+                                                                fieldState.error &&
+                                                                    "border-rose-500",
+                                                                !field.value &&
+                                                                    "text-slate-500",
+                                                            )}
+                                                        >
+                                                            {field.value ? (
+                                                                format(
+                                                                    field.value,
+                                                                    "PPP",
+                                                                )
+                                                            ) : (
+                                                                <span>
+                                                                    Pick a date
+                                                                </span>
+                                                            )}
+                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                        </Button>
+                                                    </FormControl>
+                                                </PopoverTrigger>
+                                                <PopoverContent
+                                                    className="w-auto p-0"
+                                                    align="start"
+                                                >
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={field.value}
+                                                        onSelect={
+                                                            field.onChange
+                                                        }
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                            <FormDescription className="text-xs">
+                                                When was this fee charged? 📅
+                                            </FormDescription>
+                                            <FormMessage className="font-medium">
+                                                {fieldState.error?.message}
+                                            </FormMessage>
+                                        </FormItem>
+                                    )}
+                                />
 
-                            {/* Fee Name */}
-                            <FormField
-                                control={control}
-                                name="fee_name"
-                                render={({ field, fieldState }) => (
-                                    <FormItem>
-                                        <FormLabel className="font-medium">
-                                            Fee Name
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                placeholder="e.g., Admin Fee, Trading Commission"
-                                                className={`focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium ${
-                                                    fieldState.error
-                                                        ? "border-rose-500"
-                                                        : ""
-                                                }`}
-                                            />
-                                        </FormControl>
-                                        <p className="text-xs text-muted-foreground">
-                                            What type of fee is this? 🏷️
-                                        </p>
-                                        <FormMessage className="font-medium">
-                                            {fieldState.error?.message}
-                                        </FormMessage>
-                                    </FormItem>
-                                )}
-                            />
+                                {/* Fee Name */}
+                                <FormField
+                                    control={control}
+                                    name="fee_name"
+                                    render={({ field, fieldState }) => (
+                                        <FormItem>
+                                            <FormLabel className="font-medium">
+                                                Fee Name
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    placeholder="e.g., Admin Fee"
+                                                    className={`focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium ${
+                                                        fieldState.error
+                                                            ? "border-rose-500"
+                                                            : ""
+                                                    }`}
+                                                />
+                                            </FormControl>
+                                            <FormDescription className="text-xs">
+                                                What type of fee is this? 🏷️
+                                            </FormDescription>
+                                            <FormMessage className="font-medium">
+                                                {fieldState.error?.message}
+                                            </FormMessage>
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
 
                             {/* Fee Amount */}
                             <FormField
@@ -227,31 +231,15 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                                                 }
                                             />
                                         </FormControl>
-                                        <p className="text-xs text-muted-foreground">
+                                        <FormDescription className="text-xs">
                                             How much did you pay? 💸
-                                        </p>
+                                        </FormDescription>
                                         <FormMessage className="font-medium">
                                             {fieldState.error?.message}
                                         </FormMessage>
                                     </FormItem>
                                 )}
                             />
-
-                            {/* Server Error Display */}
-                            {serverError && (
-                                <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
-                                    <div className="flex gap-3">
-                                        <div className="flex-1">
-                                            <p className="text-sm font-semibold text-red-900 mb-1">
-                                                ⚠️ Unable to Update Fee
-                                            </p>
-                                            <p className="text-sm text-red-800">
-                                                {serverError}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
                         <DialogFooter className="shrink-0 pt-4 flex-col sm:flex-row gap-2">
@@ -267,7 +255,7 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                                     variant="outline"
                                     onClick={onClose}
                                     disabled={loading}
-                                    className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
+                                    className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
                                 >
                                     Cancel
                                 </Button>

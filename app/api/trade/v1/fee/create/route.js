@@ -1,65 +1,69 @@
-import { getCreateFee } from "@/lib/services/fee/getCreateFee";
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { createFee } from "@/lib/services/fee/createFee";
 
 export async function POST(req) {
     try {
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user || !user.id) {
+            return NextResponse.json(
+                { success: false, error: "User not authenticated" },
+                { status: 401 },
+            );
+        }
+
         let body;
         try {
             body = await req.json();
         } catch (parseError) {
             return NextResponse.json(
                 { success: false, error: "Invalid JSON in request body" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
         if (!body) {
             return NextResponse.json(
                 { success: false, error: "Request body is required" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
+        // Validation
         const requiredFields = ["fee_name", "fee", "fee_date"];
         const validationErrors = [];
 
         requiredFields.forEach((field) => {
             if (!body[field] || body[field].toString().trim() === "") {
                 validationErrors.push(
-                    `${field.replaceAll("_", " ")} is required`
+                    `${field.replace(/_/g, " ")} is required`,
                 );
             }
         });
 
-        const isValidNumber = (value) =>
-            /^\d+(\.\d+)?$/.test(value.replace(/^-/, ""));
-
-        if (body.fee && !isValidNumber(body.fee)) {
-            validationErrors.push("fee must be a valid number");
-        }
-
         if (validationErrors.length > 0) {
             return NextResponse.json(
                 { success: false, error: validationErrors },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
-        const newFee = await getCreateFee(
-            body.fee_name,
-            body.fee,
-            body.fee_date
-        );
+        const newFee = await createFee(user.id, body);
 
         return NextResponse.json(
             { success: true, fee: newFee },
-            { status: 200 }
+            { status: 201 },
         );
     } catch (err) {
-        console.error("POST /api/trade/fee/create error:", err);
+        console.error("POST /api/trade/v1/fee/create error:", err);
         return NextResponse.json(
-            { success: false, error: "Internal server error" },
-            { status: 500 }
+            { success: false, error: err.message },
+            { status: 500 },
         );
     }
 }

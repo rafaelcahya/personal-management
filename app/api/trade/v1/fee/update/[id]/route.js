@@ -1,73 +1,44 @@
-import { getUpdateFee } from "@/lib/services/fee/getUpdateFee";
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { updateFee } from "@/lib/services/fee/updateFee";
 
 export async function PUT(req, { params }) {
     try {
-        const { id } = await params;
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
 
-        if (!id || isNaN(Number(id))) {
+        if (authError || !user || !user.id) {
             return NextResponse.json(
-                { success: false, error: "Invalid fee ID provided" },
-                { status: 400 }
+                { success: false, error: "User not authenticated" },
+                { status: 401 },
             );
         }
 
-        let body;
-        try {
-            body = await req.json();
-        } catch (parseError) {
+        const { id } = params;
+
+        if (!id) {
             return NextResponse.json(
-                { success: false, error: "Invalid JSON in request body" },
-                { status: 400 }
+                { success: false, error: "Fee ID is required" },
+                { status: 400 },
             );
         }
 
-        if (!body) {
-            return NextResponse.json(
-                { success: false, error: "Request body is required" },
-                { status: 400 }
-            );
-        }
+        const body = await req.json();
 
-        const requiredFields = ["fee_name", "fee", "fee_date"];
-
-        const validationErrors = [];
-        requiredFields.forEach((field) => {
-            if (!body[field] || body[field].toString().trim() === "") {
-                validationErrors.push(
-                    `${field.replaceAll("_", " ")} is required`
-                );
-            }
-        });
-
-        const isValidNumber = (value) =>
-            /^\d+(\.\d+)?$/.test(value.replace(/^-/, ""));
-
-        if (body.fee && !isValidNumber(body.fee)) {
-            validationErrors.push("fee must be a valid number");
-        }
-
-        if (validationErrors.length > 0) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: validationErrors,
-                },
-                { status: 400 }
-            );
-        }
-
-        const updateFee = await getUpdateFee(id, body);
+        const updatedFee = await updateFee(user.id, id, body);
 
         return NextResponse.json(
-            { success: true, fee: updateFee },
-            { status: 200 }
+            { success: true, fee: updatedFee },
+            { status: 200 },
         );
     } catch (err) {
-        console.error("PUT /api/trade/fee/update error:", err);
+        console.error("PUT /api/trade/v1/fee/update error:", err);
         return NextResponse.json(
-            { success: false, error: "Internal server error" },
-            { status: 500 }
+            { success: false, error: err.message },
+            { status: 500 },
         );
     }
 }

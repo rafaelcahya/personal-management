@@ -1,32 +1,42 @@
 import { NextResponse } from "next/server";
-import { getDeleteFee } from "@/lib/services/fee/getDeleteFee";
+import { createClient } from "@/lib/supabase/server";
+import { deleteFee } from "@/lib/services/fee/deleteFee";
 
 export async function DELETE(req, { params }) {
     try {
-        const { id } = await params;
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
 
-        if (!id || isNaN(Number(id))) {
+        if (authError || !user || !user.id) {
             return NextResponse.json(
-                { success: false, error: "Invalid fee ID provided" },
-                { status: 400 }
+                { success: false, error: "User not authenticated" },
+                { status: 401 },
             );
         }
 
-        const deletedFee = await getDeleteFee(id);
+        const { id } = params;
 
-        if (!deletedFee) {
+        if (!id) {
             return NextResponse.json(
-                { success: false, error: "Fee not found" },
-                { status: 404 }
+                { success: false, error: "Fee ID is required" },
+                { status: 400 },
             );
         }
 
-        return NextResponse.json({ success: true }, { status: 200 });
-    } catch (err) {
-        console.error("DELETE /api/trade/fee/delete error:", err);
+        await deleteFee(user.id, id);
+
         return NextResponse.json(
-            { success: false, error: "Internal server error" },
-            { status: 500 }
+            { success: true, message: "Fee deleted successfully" },
+            { status: 200 },
+        );
+    } catch (err) {
+        console.error("DELETE /api/trade/v1/fee/delete error:", err);
+        return NextResponse.json(
+            { success: false, error: err.message },
+            { status: 500 },
         );
     }
 }

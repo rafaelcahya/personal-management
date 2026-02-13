@@ -1,28 +1,34 @@
 import { NextResponse } from "next/server";
-import { getFeeList } from "@/lib/services/fee/getFeeList";
+import { createClient } from "@/lib/supabase/server";
+import { getFeeSummary } from "@/lib/services/fee/getFeeSummary";
 
 export async function GET() {
     try {
-        const fee = await getFeeList();
+        const supabase = await createClient();
 
-        const feeCount = fee.length;
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
 
-        const totalFee = fee.reduce(
-            (sum, item) => sum + Number(item.fee || 0),
-            0,
-        );
+        if (authError || !user || !user.id) {
+            return NextResponse.json(
+                { success: false, error: "User not authenticated" },
+                { status: 401 },
+            );
+        }
 
-        return NextResponse.json({
-            success: true,
-            data: {
-                feeCount,
-                totalFee,
-            },
-        });
-    } catch (err) {
+        const summary = await getFeeSummary(user.id);
+
         return NextResponse.json(
-            { success: false, error: err?.message || String(err) },
-            { status: 500, headers: { "Content-Type": "application/json" } },
+            { success: true, ...summary },
+            { status: 200 },
+        );
+    } catch (err) {
+        console.error("GET /api/trade/v1/fee/summary error:", err);
+        return NextResponse.json(
+            { success: false, error: err.message || "Internal server error" },
+            { status: 500 },
         );
     }
 }
