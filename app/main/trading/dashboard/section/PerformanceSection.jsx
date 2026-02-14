@@ -56,10 +56,10 @@ export default function PerformanceSection({ metrics, loading }) {
 
     if (!metrics || metrics.totalTrades === 0) {
         return (
-            <Card>
+            <Card className="border-0 shadow-md shadow-slate-200/50">
                 <CardContent className="p-8 text-center">
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
                             <BarChart3 className="size-8 text-slate-400" />
                         </div>
                         <div>
@@ -115,14 +115,14 @@ export default function PerformanceSection({ metrics, loading }) {
 
     return (
         <div className="space-y-4">
-            {/* Profit vs Loss Analysis - Cleaner */}
+            {/* Profit vs Loss Analysis */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Profit Card - Compact */}
-                <Card className="border shadow-none border-green-200 bg-gradient-to-br from-green-50/50 to-emerald-50/50">
+                {/* Profit Card */}
+                <Card className="border-0 shadow-md shadow-slate-200/50">
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-sm flex items-center gap-2">
-                                <div className="p-2 bg-green-100 rounded-lg">
+                                <div className="p-1.5 bg-green-100 rounded-lg">
                                     <TrendingUp className="size-4 text-green-600" />
                                 </div>
                                 Profit Breakdown
@@ -145,7 +145,7 @@ export default function PerformanceSection({ metrics, loading }) {
                             format="currency"
                             icon="✨"
                         />
-                        <Separator className="bg-green-200" />
+                        <Separator />
                         <MetricRow
                             label="Total Profit"
                             value={totalProfit}
@@ -159,12 +159,13 @@ export default function PerformanceSection({ metrics, loading }) {
                             format="currency"
                             icon="📊"
                         />
-                        <div className="pt-2 mt-2 border-t border-green-200">
+                        <Separator />
+                        <div className="pt-1">
                             <div className="flex justify-between text-xs">
-                                <span className="text-green-600 font-medium">
+                                <span className="text-slate-600 font-medium">
                                     Per Trade Impact
                                 </span>
-                                <span className="font-bold text-green-700">
+                                <span className="font-bold text-green-600">
                                     +Rp {profitPerTrade.toLocaleString("id-ID")}
                                 </span>
                             </div>
@@ -172,12 +173,12 @@ export default function PerformanceSection({ metrics, loading }) {
                     </CardContent>
                 </Card>
 
-                {/* Loss Card - Compact */}
-                <Card className="border shadow-none border-red-200 bg-gradient-to-br from-red-50/50 to-rose-50/50">
+                {/* Loss Card */}
+                <Card className="border-0 shadow-md shadow-slate-200/50">
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-sm flex items-center gap-2">
-                                <div className="p-2 bg-red-100 rounded-lg">
+                                <div className="p-1.5 bg-red-100 rounded-lg">
                                     <TrendingDown className="size-4 text-red-600" />
                                 </div>
                                 Loss Breakdown
@@ -187,7 +188,7 @@ export default function PerformanceSection({ metrics, loading }) {
                             </Badge>
                         </div>
                     </CardHeader>
-                    <CardContent className="space-y-2.5">
+                    <CardContent className="space-y-2">
                         <MetricRow
                             label="Biggest Loss"
                             value={biggestLoss}
@@ -200,7 +201,7 @@ export default function PerformanceSection({ metrics, loading }) {
                             format="currency"
                             icon="📉"
                         />
-                        <Separator className="bg-red-200" />
+                        <Separator />
                         <MetricRow
                             label="Total Loss"
                             value={totalLoss}
@@ -214,12 +215,13 @@ export default function PerformanceSection({ metrics, loading }) {
                             format="currency"
                             icon="📊"
                         />
-                        <div className="pt-2 mt-2 border-t border-red-200">
+                        <Separator />
+                        <div className="pt-1">
                             <div className="flex justify-between text-xs">
-                                <span className="text-red-600 font-medium">
+                                <span className="text-slate-600 font-medium">
                                     Per Trade Impact
                                 </span>
-                                <span className="font-bold text-red-700">
+                                <span className="font-bold text-red-600">
                                     -Rp {lossPerTrade.toLocaleString("id-ID")}
                                 </span>
                             </div>
@@ -228,11 +230,13 @@ export default function PerformanceSection({ metrics, loading }) {
                 </Card>
             </div>
 
-            {/* Performance Ratios - Compact Grid */}
-            <Card className="border shadow-none">
-                <CardHeader className="pb-3">
+            {/* Performance Ratios */}
+            <Card className="border-0 shadow-md shadow-slate-200/50">
+                <CardHeader>
                     <CardTitle className="text-sm flex items-center gap-2">
-                        <Zap className="size-4 text-violet-600" />
+                        <div className="p-1.5 bg-slate-100 rounded-lg">
+                            <Zap className="size-4 text-slate-700" />
+                        </div>
                         Performance Ratios
                     </CardTitle>
                 </CardHeader>
@@ -274,12 +278,14 @@ export default function PerformanceSection({ metrics, loading }) {
                 </CardContent>
             </Card>
 
-            {/* Trade Efficiency - New Section */}
-            <Card className="border shadow-none bg-gradient-to-br from-slate-50 to-gray-50">
-                <CardHeader className="pb-3">
+            {/* Trade Efficiency */}
+            <Card className="border-0 shadow-md shadow-slate-200/50">
+                <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-sm flex items-center gap-2">
-                            <BarChart3 className="size-4 text-slate-600" />
+                            <div className="p-1.5 bg-slate-100 rounded-lg">
+                                <BarChart3 className="size-4 text-slate-700" />
+                            </div>
                             Trade Efficiency Metrics
                         </CardTitle>
                         <Badge variant="outline" className="text-xs">

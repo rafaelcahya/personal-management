@@ -2,10 +2,10 @@
 
 export default function EfficiencyCard({ label, value, color, subtitle }) {
     const colorClasses = {
-        green: "bg-green-50/50 border-green-200",
-        red: "bg-red-50/50 border-red-200",
-        blue: "bg-blue-50/50 border-blue-200",
-        violet: "bg-violet-50/50 border-violet-200",
+        green: "bg-green-50 border-none",
+        red: "bg-red-50 border-none",
+        blue: "bg-blue-50 border-none",
+        violet: "bg-violet-50 border-none",
     };
 
     return (

@@ -30,15 +30,9 @@ export default function RatioCard({
         return "bg-red-50/70";
     };
 
-    const getBorderColor = () => {
-        if (value >= threshold * 1.5) return "border-green-200";
-        if (value >= threshold) return "border-blue-200";
-        return "border-red-200";
-    };
-
     return (
         <div
-            className={`p-3 rounded-lg border shadow-none ${getBorderColor()} ${getBgColor()}`}
+            className={`p-3 rounded-lg border-none ${getBgColor()}`}
         >
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
@@ -66,7 +60,7 @@ export default function RatioCard({
                     {comment}
                 </Badge>
             </div>
-            <p className={`text-2xl font-bold ${getColor()} mb-2`}>{value}</p>
+            <p className={`text-xl font-semibold ${getColor()} mb-2`}>{value}</p>
             <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
                 <div
                     className={`h-full transition-all duration-500 ${isGood ? "bg-green-500" : "bg-red-500"}`}

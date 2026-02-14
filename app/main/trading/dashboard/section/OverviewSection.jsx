@@ -59,7 +59,7 @@ export default function OverviewSection({ metrics, loading }) {
     const netGain = accountValue - initialMargin;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Primary Metrics - Clean Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard
@@ -110,17 +110,19 @@ export default function OverviewSection({ metrics, loading }) {
             </div>
 
             {/* Performance Overview - Modern Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Win/Loss Distribution */}
-                <Card className="shadow-none">
-                    <CardHeader className="pb-4">
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <Target className="size-5 text-violet-600" />
+                <Card className="border-0 shadow-md shadow-slate-200/50">
+                    <CardHeader>
+                        <CardTitle className="text-sm flex items-center gap-2">
+                            <div className="p-1.5 bg-slate-100 rounded-lg">
+                                <Target className="size-4 text-slate-700" />
+                            </div>
                             Performance Distribution
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-2 gap-6 mb-6">
+                        <div className="grid grid-cols-2 gap-6 mb-4">
                             <WinRateCircle
                                 label="Win Rate"
                                 count={winCount}
@@ -137,26 +139,24 @@ export default function OverviewSection({ metrics, loading }) {
                             />
                         </div>
 
-                        <Separator className="my-4" />
-
                         {/* Quick Stats */}
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                        <div className="grid grid-cols-2 gap-3 mt-4">
+                            <div className="p-3 rounded-lg bg-green-50">
                                 <p className="text-xs text-green-600 font-medium mb-1">
                                     Avg Win
                                 </p>
-                                <p className="text-base font-bold text-green-700">
+                                <p className="text-sm font-bold text-green-700">
                                     Rp{" "}
                                     {avgProfit?.toLocaleString("id-ID", {
                                         maximumFractionDigits: 0,
                                     })}
                                 </p>
                             </div>
-                            <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                            <div className="p-3 rounded-lg bg-red-50">
                                 <p className="text-xs text-red-600 font-medium mb-1">
                                     Avg Loss
                                 </p>
-                                <p className="text-base font-bold text-red-700">
+                                <p className="text-sm font-bold text-red-700">
                                     Rp{" "}
                                     {Math.abs(avgLoss || 0).toLocaleString(
                                         "id-ID",
@@ -171,45 +171,48 @@ export default function OverviewSection({ metrics, loading }) {
                 </Card>
 
                 {/* Capital & Growth */}
-                <Card className="bg-gradient-to-br from-violet-50 via-white to-purple-50 shadow-none">
-                    <CardHeader className="pb-4">
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <Wallet className="size-5 text-violet-600" />
+                <Card className="border-0 shadow-md shadow-slate-200/50">
+                    <CardHeader>
+                        <CardTitle className="text-sm flex items-center gap-2">
+                            <div className="p-1.5 bg-slate-100 rounded-lg">
+                                <Wallet className="size-4 text-slate-700" />
+                            </div>
                             Capital & Growth
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-3">
                         {/* Initial vs Current */}
-                        <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                             <div>
                                 <p className="text-xs text-slate-500 mb-1">
                                     Initial Margin
                                 </p>
-                                <p className="text-base font-bold text-slate-700">
+                                <p className="text-sm font-bold text-slate-900">
                                     Rp {initialMargin?.toLocaleString("id-ID")}
                                 </p>
                             </div>
-                            <ArrowRight className="size-5 text-slate-400" />
+                            <ArrowRight className="size-4 text-slate-400" />
                             <div className="text-right">
                                 <p className="text-xs text-slate-500 mb-1">
                                     Current Value
                                 </p>
-                                <p className="text-base font-bold text-violet-600">
+                                <p className="text-sm font-bold text-slate-900">
                                     Rp {accountValue?.toLocaleString("id-ID")}
                                 </p>
                             </div>
                         </div>
 
                         {/* Net Gain */}
-                        <div className="p-4 bg-white rounded-lg shadow-none border border-violet-200">
+                        <div className="p-3 bg-slate-50 rounded-lg">
                             <div className="flex items-center justify-between mb-2">
-                                <p className="text-sm font-medium text-slate-600">
+                                <p className="text-xs text-slate-600 font-medium">
                                     Net Gain
                                 </p>
                                 <Badge
                                     variant={
                                         netGain >= 0 ? "success" : "destructive"
                                     }
+                                    className="text-xs"
                                 >
                                     {portfolioGrowth >= 0 ? "+" : ""}
                                     {portfolioGrowth}%
@@ -217,22 +220,22 @@ export default function OverviewSection({ metrics, loading }) {
                             </div>
                             <div className="flex items-baseline gap-2">
                                 <p
-                                    className={`text-2xl font-bold ${netGain >= 0 ? "text-green-600" : "text-red-600"}`}
+                                    className={`text-lg font-bold ${netGain >= 0 ? "text-green-600" : "text-red-600"}`}
                                 >
                                     {netGain >= 0 ? "+" : ""}Rp{" "}
                                     {netGain?.toLocaleString("id-ID")}
                                 </p>
                                 {netGain >= 0 ? (
-                                    <ArrowUpRight className="size-5 text-green-600" />
+                                    <ArrowUpRight className="size-4 text-green-600" />
                                 ) : (
-                                    <ArrowDownRight className="size-5 text-red-600" />
+                                    <ArrowDownRight className="size-4 text-red-600" />
                                 )}
                             </div>
                         </div>
 
                         {/* Average P/L & Payoff Ratio */}
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="p-3 bg-white rounded-lg border">
+                            <div className="p-2.5 bg-slate-50 rounded-lg">
                                 <p className="text-xs text-slate-500 mb-1">
                                     Avg P/L
                                 </p>
@@ -245,11 +248,11 @@ export default function OverviewSection({ metrics, loading }) {
                                     })}
                                 </p>
                             </div>
-                            <div className="p-3 bg-white rounded-lg border">
+                            <div className="p-2.5 bg-slate-50 rounded-lg">
                                 <p className="text-xs text-slate-500 mb-1">
                                     Payoff Ratio
                                 </p>
-                                <p className="text-sm font-bold text-violet-600">
+                                <p className="text-sm font-bold text-slate-900">
                                     {payoffRatio?.toFixed(2)}
                                 </p>
                             </div>
@@ -259,10 +262,12 @@ export default function OverviewSection({ metrics, loading }) {
             </div>
 
             {/* Key Performance Indicators */}
-            <Card className="shadow-none">
+            <Card className="border-0 shadow-md shadow-slate-200/50">
                 <CardHeader>
-                    <CardTitle className="text-base flex items-center gap-2">
-                        <Zap className="size-5 text-amber-600" />
+                    <CardTitle className="text-sm flex items-center gap-2">
+                        <div className="p-1.5 bg-slate-100 rounded-lg">
+                            <Zap className="size-4 text-slate-700" />
+                        </div>
                         Key Performance Indicators
                     </CardTitle>
                 </CardHeader>

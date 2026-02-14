@@ -10,6 +10,8 @@ import {
     TrendingDown,
     Calendar,
     DollarSign,
+    ArrowUpRight,
+    ArrowDownRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import SkeletonGrid from "@/components/ui/common/SkeletonGrid";
@@ -57,176 +59,232 @@ export default function QuickViewSection({ initialData, onRefresh }) {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Header with Refresh */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h3 className="text-lg font-semibold">Quick Overview</h3>
-                    <p className="text-sm text-slate-600">
-                        Recent activity across your portfolio
+                    <h3 className="text-base font-semibold">Quick Overview</h3>
+                    <p className="text-xs text-slate-500">
+                        A comprehensive snapshot of your latest trading
+                        activities, market insights, and associated fees
                     </p>
                 </div>
+
                 <Button
                     onClick={handleRefresh}
                     disabled={loading}
-                    variant="outline"
                     size="sm"
+                    className="h-8 bg-violet-50 hover:bg-violet-100 text-violet-500"
                 >
                     <RefreshCw
-                        className={`size-4 mr-2 ${loading ? "animate-spin" : ""}`}
+                        className={`size-4 ${loading ? "animate-spin" : ""}`}
                     />
                     Refresh
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Recent Trades */}
-                <Card className="shadow-none">
-                    <CardHeader className="pb-4">
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <TrendingUp className="size-5 text-violet-600" />
-                            Recent Trades
-                        </CardTitle>
+                <Card className="border-0 shadow-md shadow-slate-200/50">
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-violet-100 rounded-md">
+                                <TrendingUp className="size-4 text-violet-600" />
+                            </div>
+                            <CardTitle className="text-sm font-medium">
+                                Recent Trades
+                            </CardTitle>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         {data.trades?.length === 0 ? (
-                            <p className="text-sm text-slate-500 text-center py-4">
-                                No trades yet
-                            </p>
+                            <div className="py-8 text-center">
+                                <p className="text-xs text-slate-400">
+                                    No trades yet
+                                </p>
+                            </div>
                         ) : (
-                            <div className="space-y-3">
-                                {data.trades?.map((trade) => (
-                                    <div
-                                        key={trade.id}
-                                        className="p-3 bg-slate-50 rounded-lg border hover:border-violet-200 transition-colors"
-                                    >
-                                        <div className="flex items-center justify-between mb-1">
-                                            <p className="text-sm font-semibold text-slate-700">
-                                                {trade.stock_name}
-                                            </p>
-                                            <Badge
-                                                variant={
-                                                    Number(
-                                                        trade.realized_gain,
-                                                    ) >= 0
-                                                        ? "success"
-                                                        : "destructive"
-                                                }
-                                                className="text-xs"
-                                            >
-                                                {Number(trade.realized_gain) >=
-                                                0
-                                                    ? "Win"
-                                                    : "Loss"}
-                                            </Badge>
+                            <div className="space-y-2">
+                                {data.trades?.map((trade) => {
+                                    const isWin =
+                                        Number(trade.realized_gain) >= 0;
+                                    return (
+                                        <div
+                                            key={trade.id}
+                                            className="group p-3 bg-slate-50 hover:bg-slate-100/80 rounded-lg transition-colors"
+                                        >
+                                            <div className="flex items-start justify-between gap-2 mb-1.5">
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-semibold text-slate-900 uppercase">
+                                                        {trade.ticker}
+                                                    </p>
+                                                    <p className="text-xs text-slate-500">
+                                                        {new Date(
+                                                            trade.trade_date,
+                                                        ).toLocaleDateString(
+                                                            "id-ID",
+                                                            {
+                                                                day: "numeric",
+                                                                month: "short",
+                                                                year: "numeric",
+                                                            },
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                <div className="text-right flex-shrink-0">
+                                                    <div className="flex items-center gap-1">
+                                                        {isWin ? (
+                                                            <ArrowUpRight className="size-3 text-green-600" />
+                                                        ) : (
+                                                            <ArrowDownRight className="size-3 text-red-600" />
+                                                        )}
+                                                        <p
+                                                            className={`text-sm font-semibold ${
+                                                                isWin
+                                                                    ? "text-green-600"
+                                                                    : "text-red-600"
+                                                            }`}
+                                                        >
+                                                            Rp{" "}
+                                                            {Number(
+                                                                trade.realized_gain,
+                                                            ).toLocaleString(
+                                                                "id-ID",
+                                                            )}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center justify-between">
-                                            <p className="text-xs text-slate-500">
-                                                {new Date(
-                                                    trade.exit_date,
-                                                ).toLocaleDateString("id-ID")}
-                                            </p>
-                                            <p
-                                                className={`text-sm font-bold ${
-                                                    Number(
-                                                        trade.realized_gain,
-                                                    ) >= 0
-                                                        ? "text-green-600"
-                                                        : "text-red-600"
-                                                }`}
-                                            >
-                                                Rp{" "}
-                                                {Number(
-                                                    trade.realized_gain,
-                                                ).toLocaleString("id-ID")}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                     </CardContent>
                 </Card>
 
                 {/* Recent Events */}
-                <Card className="shadow-none">
-                    <CardHeader className="pb-4">
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <Calendar className="size-5 text-blue-600" />
-                            Market Events
-                        </CardTitle>
+                <Card className="border-0 shadow-md shadow-slate-200/50">
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-blue-100 rounded-md">
+                                <Calendar className="size-4 text-blue-600" />
+                            </div>
+                            <CardTitle className="text-sm font-medium">
+                                Market Events
+                            </CardTitle>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         {data.events?.length === 0 ? (
-                            <p className="text-sm text-slate-500 text-center py-4">
-                                No events yet
-                            </p>
+                            <div className="py-8 text-center">
+                                <p className="text-xs text-slate-400">
+                                    No events yet
+                                </p>
+                            </div>
                         ) : (
-                            <div className="space-y-3">
-                                {data.events?.map((event) => (
-                                    <div
-                                        key={event.id}
-                                        className="p-3 bg-slate-50 rounded-lg border hover:border-blue-200 transition-colors"
-                                    >
-                                        <div className="flex items-start justify-between gap-2 mb-1">
-                                            <p className="text-sm font-medium text-slate-700 line-clamp-2">
-                                                {event.event_description}
-                                            </p>
-                                            {event.impact_direction === "UP" ? (
-                                                <TrendingUp className="size-4 text-green-600 flex-shrink-0" />
-                                            ) : (
-                                                <TrendingDown className="size-4 text-red-600 flex-shrink-0" />
-                                            )}
+                            <div className="space-y-2">
+                                {data.events?.map((event) => {
+                                    const isUp =
+                                        event.impact_direction === "UP";
+                                    return (
+                                        <div
+                                            key={event.id}
+                                            className="group p-3 bg-slate-50 hover:bg-slate-100/80 rounded-lg transition-colors"
+                                        >
+                                            <div className="flex items-start gap-2">
+                                                <div
+                                                    className={`mt-0.5 p-1 rounded ${
+                                                        isUp
+                                                            ? "bg-green-100"
+                                                            : "bg-red-100"
+                                                    }`}
+                                                >
+                                                    {isUp ? (
+                                                        <TrendingUp className="size-3 text-green-600" />
+                                                    ) : (
+                                                        <TrendingDown className="size-3 text-red-600" />
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm text-slate-700 line-clamp-2 leading-snug mb-1">
+                                                        {
+                                                            event.event_description
+                                                        }
+                                                    </p>
+                                                    <p className="text-xs text-slate-500">
+                                                        {new Date(
+                                                            event.event_date,
+                                                        ).toLocaleDateString(
+                                                            "id-ID",
+                                                            {
+                                                                day: "numeric",
+                                                                month: "short",
+                                                                year: "numeric",
+                                                            },
+                                                        )}
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <p className="text-xs text-slate-500">
-                                            {new Date(
-                                                event.event_date,
-                                            ).toLocaleDateString("id-ID")}
-                                        </p>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                     </CardContent>
                 </Card>
 
                 {/* Recent Fees */}
-                <Card className="shadow-none">
-                    <CardHeader className="pb-4">
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <DollarSign className="size-5 text-amber-600" />
-                            Recent Fees
-                        </CardTitle>
+                <Card className="border-0 shadow-md shadow-slate-200/50">
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-amber-100 rounded-md">
+                                <DollarSign className="size-4 text-amber-600" />
+                            </div>
+                            <CardTitle className="text-sm font-medium">
+                                Recent Fees
+                            </CardTitle>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         {data.fees?.length === 0 ? (
-                            <p className="text-sm text-slate-500 text-center py-4">
-                                No fees yet
-                            </p>
+                            <div className="py-8 text-center">
+                                <p className="text-xs text-slate-400">
+                                    No fees yet
+                                </p>
+                            </div>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 {data.fees?.map((fee) => (
                                     <div
                                         key={fee.id}
-                                        className="p-3 bg-slate-50 rounded-lg border hover:border-amber-200 transition-colors"
+                                        className="group p-3 bg-slate-50 hover:bg-slate-100/80 rounded-lg transition-colors"
                                     >
-                                        <div className="flex items-center justify-between mb-1">
-                                            <p className="text-sm font-semibold text-slate-700">
-                                                {fee.fee_name}
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <p className="text-xs text-slate-500">
-                                                {new Date(
-                                                    fee.fee_date,
-                                                ).toLocaleDateString("id-ID")}
-                                            </p>
-                                            <p className="text-sm font-bold text-red-600">
-                                                Rp{" "}
-                                                {Number(fee.fee).toLocaleString(
-                                                    "id-ID",
-                                                )}
-                                            </p>
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-slate-900 truncate">
+                                                    {fee.fee_name}
+                                                </p>
+                                                <p className="text-xs text-slate-500">
+                                                    {new Date(
+                                                        fee.fee_date,
+                                                    ).toLocaleDateString(
+                                                        "id-ID",
+                                                        {
+                                                            day: "numeric",
+                                                            month: "short",
+                                                        },
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <div className="text-right flex-shrink-0">
+                                                <p className="text-sm font-semibold text-red-600">
+                                                    Rp{" "}
+                                                    {Number(
+                                                        fee.fee,
+                                                    ).toLocaleString("id-ID")}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

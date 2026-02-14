@@ -2,10 +2,10 @@ import { Badge } from "@/components/ui/badge";
 
 export default function KPICard({ icon, label, value, color, badge }) {
     const colorClasses = {
-        green: "bg-green-50 text-green-600 border-green-200",
-        red: "bg-red-50 text-red-600 border-red-200",
-        blue: "bg-blue-50 text-blue-600 border-blue-200",
-        violet: "bg-violet-50 text-violet-600 border-violet-200",
+        green: "bg-green-50 text-green-600 border-none",
+        red: "bg-red-50 text-red-600 border-none",
+        blue: "bg-blue-50 text-blue-600 border-none",
+        violet: "bg-violet-50 text-violet-600 border-none",
     };
 
     return (

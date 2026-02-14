@@ -51,11 +51,11 @@ export default function RiskSection({ metrics, loading }) {
 
     if (!metrics || metrics.totalTrades === 0) {
         return (
-            <Card>
+            <Card className="border-0 shadow-md shadow-slate-200/50">
                 <CardContent className="p-8 text-center">
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
-                            <Shield className="size-8 text-amber-600" />
+                        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
+                            <Shield className="size-8 text-slate-400" />
                         </div>
                         <div>
                             <h3 className="font-semibold text-base mb-1">
@@ -95,7 +95,7 @@ export default function RiskSection({ metrics, loading }) {
     const riskPercentage =
         accountValue > 0 ? ((riskPerTrade / accountValue) * 100).toFixed(2) : 0;
     const maxRiskCapital =
-        accountValue > 0 ? Math.floor(accountValue * 0.02) : 0; // 2% rule - floor
+        accountValue > 0 ? Math.floor(accountValue * 0.02) : 0;
     const positionSizing =
         maxRiskCapital > 0 && riskPerTrade > 0
             ? Math.floor(maxRiskCapital / riskPerTrade)
@@ -140,12 +140,12 @@ export default function RiskSection({ metrics, loading }) {
             </div>
 
             {/* Risk Overview with Gauge */}
-            <Card className="border shadow-none bg-gradient-to-br from-amber-50/50 to-orange-50/50 border-amber-200">
+            <Card className="border-0 shadow-md shadow-slate-200/50">
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-sm flex items-center gap-2">
-                            <div className="p-2 bg-amber-100 rounded-lg">
-                                <Shield className="size-4 text-amber-600" />
+                            <div className="p-1.5 bg-slate-100 rounded-lg">
+                                <Shield className="size-4 text-slate-700" />
                             </div>
                             Risk Assessment
                         </CardTitle>
@@ -166,11 +166,11 @@ export default function RiskSection({ metrics, loading }) {
             {/* TP/SL Suggestions - Compact */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Take Profit Card */}
-                <Card className="border shadow-none border-green-200 bg-gradient-to-br from-green-50/50 to-emerald-50/50">
+                <Card className="border-0 shadow-md shadow-slate-200/50">
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-sm flex items-center gap-2">
-                                <div className="p-2 bg-green-100 rounded-lg">
+                                <div className="p-1.5 bg-green-100 rounded-lg">
                                     <ArrowUpRight className="size-4 text-green-600" />
                                 </div>
                                 Take Profit Targets
@@ -196,13 +196,13 @@ export default function RiskSection({ metrics, loading }) {
                             color="green"
                             badge="Recommended"
                         />
-                        <Separator className="bg-green-200" />
+                        <Separator />
                         <div className="pt-1">
                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-green-600 font-medium">
+                                <span className="text-slate-600 font-medium">
                                     Expected Gain
                                 </span>
-                                <span className="font-bold text-green-700">
+                                <span className="font-bold text-green-600">
                                     +
                                     {(
                                         (rewardPerTrade / accountValue) *
@@ -216,11 +216,11 @@ export default function RiskSection({ metrics, loading }) {
                 </Card>
 
                 {/* Stop Loss Card */}
-                <Card className="border border-red-200 bg-gradient-to-br from-red-50/50 to-rose-50/50">
+                <Card className="border-0 shadow-md shadow-slate-200/50">
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-sm flex items-center gap-2">
-                                <div className="p-2 bg-red-100 rounded-lg">
+                                <div className="p-1.5 bg-red-100 rounded-lg">
                                     <ArrowDownRight className="size-4 text-red-600" />
                                 </div>
                                 Stop Loss Levels
@@ -246,13 +246,13 @@ export default function RiskSection({ metrics, loading }) {
                             color="red"
                             badge="Recommended"
                         />
-                        <Separator className="bg-red-200" />
+                        <Separator />
                         <div className="pt-1">
                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-red-600 font-medium">
+                                <span className="text-slate-600 font-medium">
                                     Max Risk/Trade
                                 </span>
-                                <span className="font-bold text-red-700">
+                                <span className="font-bold text-red-600">
                                     -{riskPercentage}%
                                 </span>
                             </div>
@@ -264,28 +264,28 @@ export default function RiskSection({ metrics, loading }) {
             {/* Risk Management Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Capital Protection */}
-                <Card className="border shadow-none">
+                <Card className="border-0 shadow-md shadow-slate-200/50">
                     <CardHeader>
                         <CardTitle className="text-sm flex items-center gap-2">
-                            <div className="bg-violet-100 p-2 rounded-lg">
-                                <Shield className="size-4 text-violet-600" />
+                            <div className="bg-slate-100 p-1.5 rounded-lg">
+                                <Shield className="size-4 text-slate-700" />
                             </div>
                             Capital Protection
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2.5">
-                        <div className="flex justify-between items-center p-2.5 bg-slate-50 rounded-lg">
+                    <CardContent className="space-y-2">
+                        <div className="flex justify-between items-center p-2.5 bg-slate-50 hover:bg-slate-100/80 transition-colors rounded-lg">
                             <span className="text-xs text-slate-600">
                                 Current Capital
                             </span>
-                            <span className="text-sm font-bold text-violet-600">
+                            <span className="text-sm font-bold text-slate-900">
                                 Rp{" "}
                                 {Math.floor(accountValue).toLocaleString(
                                     "id-ID",
                                 )}
                             </span>
                         </div>
-                        <div className="flex justify-between items-center p-2.5 bg-slate-50 rounded-lg">
+                        <div className="flex justify-between items-center p-2.5 bg-slate-50 hover:bg-slate-100/80 transition-colors rounded-lg">
                             <span className="text-xs text-slate-600">
                                 Max Risk (2% Rule)
                             </span>
@@ -293,7 +293,7 @@ export default function RiskSection({ metrics, loading }) {
                                 Rp {maxRiskCapital.toLocaleString("id-ID")}
                             </span>
                         </div>
-                        <div className="flex justify-between items-center p-2.5 bg-slate-50 rounded-lg">
+                        <div className="flex justify-between items-center p-2.5 bg-slate-50 hover:bg-slate-100/80 transition-colors rounded-lg">
                             <span className="text-xs text-slate-600">
                                 Risk per Trade
                             </span>
@@ -304,7 +304,7 @@ export default function RiskSection({ metrics, loading }) {
                                 )}
                             </span>
                         </div>
-                        <div className="flex justify-between items-center p-2.5 bg-slate-50 rounded-lg">
+                        <div className="flex justify-between items-center p-2.5 bg-slate-50 hover:bg-slate-100/80 transition-colors rounded-lg">
                             <span className="text-xs text-slate-600">
                                 Suggested Position Size
                             </span>
@@ -316,16 +316,16 @@ export default function RiskSection({ metrics, loading }) {
                 </Card>
 
                 {/* Risk Tolerance */}
-                <Card className="border shadow-none">
+                <Card className="border-0 shadow-md shadow-slate-200/50">
                     <CardHeader>
                         <CardTitle className="text-sm flex items-center gap-2">
-                            <div className="bg-amber-100 rounded-lg p-2">
-                                <Gauge className="size-4 text-amber-600" />
+                            <div className="bg-slate-100 rounded-lg p-1.5">
+                                <Gauge className="size-4 text-slate-700" />
                             </div>
                             Risk Tolerance
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2.5">
+                    <CardContent className="space-y-2">
                         <div className="p-2.5 bg-slate-50 rounded-lg">
                             <div className="flex justify-between items-center mb-1">
                                 <span className="text-xs text-slate-600">
@@ -335,7 +335,7 @@ export default function RiskSection({ metrics, loading }) {
                                     {stdDevComment}
                                 </Badge>
                             </div>
-                            <p className="text-sm font-bold text-slate-700">
+                            <p className="text-sm font-bold text-slate-900">
                                 Rp{" "}
                                 {Math.floor(stdDevRupiah).toLocaleString(
                                     "id-ID",
@@ -348,20 +348,20 @@ export default function RiskSection({ metrics, loading }) {
                                     Lose Streak Buffer (Base)
                                 </span>
                             </div>
-                            <p className="text-sm font-bold text-slate-700">
+                            <p className="text-sm font-bold text-slate-900">
                                 {timesToZeroWithoutMoe}x consecutive losses
                             </p>
                         </div>
-                        <div className="p-2.5 bg-violet-50 rounded-lg border border-violet-200">
+                        <div className="p-2.5 bg-slate-100 rounded-lg">
                             <div className="flex justify-between items-center mb-1">
-                                <span className="text-xs text-violet-600 font-medium">
+                                <span className="text-xs text-slate-700 font-medium">
                                     Safe Buffer (Adjusted)
                                 </span>
                                 <Badge variant="default" className="text-xs">
                                     +{config.margin_of_error}% MoE
                                 </Badge>
                             </div>
-                            <p className="text-sm font-bold text-violet-700">
+                            <p className="text-sm font-bold text-slate-900">
                                 {timesToZeroWithMoe}x consecutive losses
                             </p>
                         </div>
@@ -370,10 +370,12 @@ export default function RiskSection({ metrics, loading }) {
             </div>
 
             {/* Risk vs Reward Comparison */}
-            <Card className="border shadow-none bg-gradient-to-br from-slate-50 to-gray-50">
+            <Card className="border-0 shadow-md shadow-slate-200/50">
                 <CardHeader>
                     <CardTitle className="text-sm flex items-center gap-2">
-                        <TrendingUpDown className="size-4 text-slate-600" />
+                        <div className="bg-slate-100 rounded-lg p-1.5">
+                            <TrendingUpDown className="size-4 text-slate-700" />
+                        </div>
                         Risk vs Reward Analysis
                     </CardTitle>
                 </CardHeader>
@@ -383,12 +385,12 @@ export default function RiskSection({ metrics, loading }) {
                         <div className="space-y-2">
                             <div className="flex justify-between text-xs text-slate-600">
                                 <span>Risk</span>
-                                <span className="font-bold text-violet-600">
+                                <span className="font-bold text-slate-900">
                                     1:{riskRewardRatio} R:R
                                 </span>
                                 <span>Reward</span>
                             </div>
-                            <div className="h-8 bg-slate-200 rounded-lg overflow-hidden flex">
+                            <div className="h-8 bg-slate-100 rounded-lg overflow-hidden flex">
                                 <div
                                     className="bg-red-500 flex items-center justify-center text-white text-xs font-bold"
                                     style={{ width: "33.33%" }}
@@ -403,8 +405,6 @@ export default function RiskSection({ metrics, loading }) {
                                 </div>
                             </div>
                         </div>
-
-                        <Separator />
 
                         {/* Comparison Grid */}
                         <div className="grid grid-cols-3 gap-3">
@@ -429,13 +429,13 @@ export default function RiskSection({ metrics, loading }) {
                         </div>
 
                         {/* Expectancy Calculation */}
-                        <div className="p-3 bg-violet-50 rounded-lg border border-violet-200">
+                        <div className="p-3 bg-slate-50 rounded-lg">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-xs text-violet-600 font-medium mb-1">
+                                    <p className="text-xs text-slate-700 font-medium mb-1">
                                         Expected Value per Trade
                                     </p>
-                                    <p className="text-sm text-slate-600">
+                                    <p className="text-xs text-slate-500">
                                         (Win% × Avg Win) - (Loss% × Avg Loss)
                                     </p>
                                 </div>

@@ -9,26 +9,31 @@ const colorConfig = {
         bg: "bg-violet-50",
         icon: "bg-violet-100",
         text: "text-violet-600",
+        shadow: "shadow-violet-200/50",
     },
     green: {
         bg: "bg-green-50",
         icon: "bg-green-100",
         text: "text-green-600",
+        shadow: "shadow-green-200/50",
     },
     red: {
         bg: "bg-red-50",
         icon: "bg-red-100",
         text: "text-red-600",
+        shadow: "shadow-red-200/50",
     },
     blue: {
         bg: "bg-blue-50",
         icon: "bg-blue-100",
         text: "text-blue-600",
+        shadow: "shadow-blue-200/50",
     },
     amber: {
         bg: "bg-amber-50",
         icon: "bg-amber-100",
         text: "text-amber-600",
+        shadow: "shadow-amber-200/50",
     },
 };
 
@@ -56,7 +61,7 @@ export default function StatCard({
     };
 
     return (
-        <Card className={`shadow-none ${colors.bg}`}>
+        <Card className={`shadow-md ${colors.shadow} border-none ${colors.bg}`}>
             <CardContent>
                 <div className="flex items-start justify-between mb-3">
                     <div className={`p-2.5 rounded-lg ${colors.icon}`}>

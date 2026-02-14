@@ -2,9 +2,9 @@
 
 export default function ComparisonCard({ label, value, percentage, color }) {
     const colorClasses = {
-        red: "bg-red-50 border-red-200",
-        green: "bg-green-50 border-green-200",
-        blue: "bg-blue-50 border-blue-200",
+        red: "bg-red-50 border-none",
+        green: "bg-green-50 border-none",
+        blue: "bg-blue-50 border-none",
     };
 
     return (

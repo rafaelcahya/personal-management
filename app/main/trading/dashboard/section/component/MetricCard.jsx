@@ -6,22 +6,22 @@ const colorConfig = {
     green: {
         bg: "bg-green-50",
         text: "text-green-600",
-        border: "border-green-200",
+        border: "border-none",
     },
     red: {
         bg: "bg-red-50",
         text: "text-red-600",
-        border: "border-red-200",
+        border: "border-none",
     },
     violet: {
         bg: "bg-violet-50",
         text: "text-violet-600",
-        border: "border-violet-200",
+        border: "border-none",
     },
     blue: {
         bg: "bg-blue-50",
         text: "text-blue-600",
-        border: "border-blue-200",
+        border: "border-none",
     },
 };
 
@@ -58,7 +58,7 @@ export default function MetricCard({
                     </Badge>
                 )}
             </div>
-            <p className={`text-2xl font-bold ${colors.text}`}>
+            <p className={`text-lg font-bold ${colors.text}`}>
                 {formatValue()}
             </p>
             {description && (
