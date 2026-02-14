@@ -5,6 +5,7 @@ import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TradeNavigation from "./TradeNavigation";
 import SettingsDialog from "./settings/SettingsDialog";
+import TradingFooter from "../trading/TradingFooter"
 
 export default function TradingManagementLayout({ children }) {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -59,6 +60,8 @@ export default function TradingManagementLayout({ children }) {
                 onOpenChange={setIsSettingsOpen}
                 onUpdated={handleSettingsUpdated}
             />
+
+            <TradingFooter />
         </div>
     );
 }

@@ -118,7 +118,7 @@ export default function PerformanceSection({ metrics, loading }) {
             {/* Profit vs Loss Analysis */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Profit Card */}
-                <Card className="border-0 shadow-md shadow-slate-200/50">
+                <Card className="border border-slate-200/50 shadow-slate-100">
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-sm flex items-center gap-2">
@@ -174,7 +174,7 @@ export default function PerformanceSection({ metrics, loading }) {
                 </Card>
 
                 {/* Loss Card */}
-                <Card className="border-0 shadow-md shadow-slate-200/50">
+                <Card className="border border-slate-200/50 shadow-slate-100">
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-sm flex items-center gap-2">
@@ -231,7 +231,7 @@ export default function PerformanceSection({ metrics, loading }) {
             </div>
 
             {/* Performance Ratios */}
-            <Card className="border-0 shadow-md shadow-slate-200/50">
+            <Card className="border border-slate-200/50 shadow-slate-100">
                 <CardHeader>
                     <CardTitle className="text-sm flex items-center gap-2">
                         <div className="p-1.5 bg-slate-100 rounded-lg">
@@ -279,7 +279,7 @@ export default function PerformanceSection({ metrics, loading }) {
             </Card>
 
             {/* Trade Efficiency */}
-            <Card className="border-0 shadow-md shadow-slate-200/50">
+            <Card className="border border-slate-200/50 shadow-slate-100">
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-sm flex items-center gap-2">

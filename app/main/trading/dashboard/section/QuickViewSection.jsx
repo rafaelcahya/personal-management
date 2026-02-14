@@ -85,7 +85,7 @@ export default function QuickViewSection({ initialData, onRefresh }) {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Recent Trades */}
-                <Card className="border-0 shadow-md shadow-slate-200/50">
+                <Card className="border border-slate-200/50 shadow-slate-100">
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <div className="p-1.5 bg-violet-100 rounded-md">
@@ -164,7 +164,7 @@ export default function QuickViewSection({ initialData, onRefresh }) {
                 </Card>
 
                 {/* Recent Events */}
-                <Card className="border-0 shadow-md shadow-slate-200/50">
+                <Card className="border border-slate-200/50 shadow-slate-100">
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <div className="p-1.5 bg-blue-100 rounded-md">
@@ -235,7 +235,7 @@ export default function QuickViewSection({ initialData, onRefresh }) {
                 </Card>
 
                 {/* Recent Fees */}
-                <Card className="border-0 shadow-md shadow-slate-200/50">
+                <Card className="border border-slate-200/50 shadow-slate-100">
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <div className="p-1.5 bg-amber-100 rounded-md">

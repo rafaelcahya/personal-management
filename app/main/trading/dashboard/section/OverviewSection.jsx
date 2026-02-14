@@ -112,7 +112,7 @@ export default function OverviewSection({ metrics, loading }) {
             {/* Performance Overview - Modern Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Win/Loss Distribution */}
-                <Card className="border-0 shadow-md shadow-slate-200/50">
+                <Card className="border border-slate-200/50 shadow-slate-100">
                     <CardHeader>
                         <CardTitle className="text-sm flex items-center gap-2">
                             <div className="p-1.5 bg-slate-100 rounded-lg">
@@ -171,7 +171,7 @@ export default function OverviewSection({ metrics, loading }) {
                 </Card>
 
                 {/* Capital & Growth */}
-                <Card className="border-0 shadow-md shadow-slate-200/50">
+                <Card className="border border-slate-200/50 shadow-slate-100">
                     <CardHeader>
                         <CardTitle className="text-sm flex items-center gap-2">
                             <div className="p-1.5 bg-slate-100 rounded-lg">
@@ -262,7 +262,7 @@ export default function OverviewSection({ metrics, loading }) {
             </div>
 
             {/* Key Performance Indicators */}
-            <Card className="border-0 shadow-md shadow-slate-200/50">
+            <Card className="border border-slate-200/50 shadow-slate-100">
                 <CardHeader>
                     <CardTitle className="text-sm flex items-center gap-2">
                         <div className="p-1.5 bg-slate-100 rounded-lg">

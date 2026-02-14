@@ -9,7 +9,6 @@ import PerformanceSection from "./section/PerformanceSection";
 import RiskSection from "./section/RiskSection";
 import QuickViewSection from "./section/QuickViewSection";
 import DashboardHeader from "./component/DashboardHeader";
-import TradingFooter from "../TradingFooter";
 import { fetchMetrics, fetchQuickView } from "@/lib/api/dashboard";
 
 export default function TradingDashboard() {
@@ -132,8 +131,6 @@ export default function TradingDashboard() {
                     />
                 </TabsContent>
             </Tabs>
-
-            <TradingFooter />
         </main>
     );
 }
