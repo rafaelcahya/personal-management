@@ -114,7 +114,7 @@ export default function ProductsPageClient({ initialProducts }) {
         <div className="flex flex-col h-full gap-5">
             <ProductListSummary products={listProduct} />
 
-            <div className="flex-1 min-h-0 relative border rounded-xl overflow-hidden flex flex-col p-5 bg-white">
+            <div className="flex-1 min-h-0 relative border border-slate-200/50 shadow-slate-100 rounded-xl overflow-hidden flex flex-col p-5 bg-white">
                 <div className="flex flex-col gap-5 sm:gap-0 h-full overflow-hidden">
                     <div className="flex flex-col sm:flex-row justify-between mb-3 sm:mb-4 gap-3">
                         <div className="max-w-[500px]">

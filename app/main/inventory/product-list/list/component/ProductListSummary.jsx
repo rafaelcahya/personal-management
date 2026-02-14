@@ -113,7 +113,10 @@ function ProductListSummary() {
                 {stats.map((stat, index) => {
                     const Icon = stat.icon;
                     return (
-                        <Card key={index} className="p-0 shadow-none">
+                        <Card
+                            key={index}
+                            className="p-0 border border-slate-200/50 shadow-slate-100"
+                        >
                             <CardContent className="px-4 py-4">
                                 <div className="flex items-center justify-between mb-2">
                                     <p className="text-sm font-medium text-slate-600">
