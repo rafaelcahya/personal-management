@@ -12,13 +12,13 @@ import {
     Zap,
     BarChart3,
     Activity,
-    Percent,
 } from "lucide-react";
+import { toast } from "sonner";
 import MetricRow from "./component/MetricRow";
 import RatioCard from "./component/RatioCard";
 import SkeletonGrid from "../../../../../components/ui/common/SkeletonGrid";
 import EfficiencyCard from "./component/EfficiencyCard";
-import QuickStatCard from "./component/QuickStatCard";
+import { getTradeSettings } from "@/lib/api/tradeSettings";
 
 export default function PerformanceSection({ metrics, loading }) {
     const [config, setConfig] = useState({
@@ -32,24 +32,17 @@ export default function PerformanceSection({ metrics, loading }) {
     useEffect(() => {
         async function fetchConfig() {
             try {
-                const res = await fetch("/api/trade/settings/list");
-                const data = await res.json();
-
-                if (res.ok && data?.settingsList) {
-                    setConfig({
-                        bi_risk_free_rate:
-                            parseFloat(data.settingsList.bi_risk_free_rate) ||
-                            0,
-                        personal_risk_free_rate:
-                            parseFloat(
-                                data.settingsList.personal_risk_free_rate,
-                            ) || 0,
-                        margin_of_error:
-                            parseFloat(data.settingsList.margin_of_error) || 10,
-                    });
-                }
+                const settings = await getTradeSettings();
+                setConfig({
+                    bi_risk_free_rate:
+                        parseFloat(settings.bi_risk_free_rate) || 0,
+                    personal_risk_free_rate:
+                        parseFloat(settings.personal_risk_free_rate) || 0,
+                    margin_of_error: parseFloat(settings.margin_of_error) || 10,
+                });
             } catch (err) {
                 console.error("Failed to fetch config:", err);
+                toast.error("Failed to load settings");
             } finally {
                 setConfigLoading(false);
             }

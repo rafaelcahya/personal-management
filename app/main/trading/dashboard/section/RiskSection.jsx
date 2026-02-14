@@ -14,11 +14,13 @@ import {
     Activity,
     Gauge,
 } from "lucide-react";
+import { toast } from "sonner";
 import MetricCard from "./component/MetricCard";
 import RiskGauge from "./component/RiskGauge";
 import SkeletonGrid from "../../../../../components/ui/common/SkeletonGrid";
 import RiskStatCard from "./component/RiskStatCard";
 import ComparisonCard from "./component/ComparisonCard";
+import { getTradeSettings } from "@/lib/api/tradeSettings";
 
 export default function RiskSection({ metrics, loading }) {
     const [config, setConfig] = useState({
@@ -29,17 +31,13 @@ export default function RiskSection({ metrics, loading }) {
     useEffect(() => {
         async function fetchConfig() {
             try {
-                const res = await fetch("/api/trade/settings/list");
-                const data = await res.json();
-
-                if (res.ok && data?.settingsList) {
-                    setConfig({
-                        margin_of_error:
-                            parseFloat(data.settingsList.margin_of_error) || 10,
-                    });
-                }
+                const settings = await getTradeSettings();
+                setConfig({
+                    margin_of_error: parseFloat(settings.margin_of_error) || 10,
+                });
             } catch (err) {
                 console.error("Failed to fetch config:", err);
+                toast.error("Failed to load settings");
             } finally {
                 setConfigLoading(false);
             }

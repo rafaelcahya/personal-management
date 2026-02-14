@@ -19,7 +19,8 @@ import {
 import StatCard from "./component/StatCard";
 import WinRateCircle from "./component/WinRateCircle";
 import KPICard from "./component/KPICard";
-import SkeletonGrid from "../../../../../components/ui/common/SkeletonGrid";
+import SkeletonGrid from "@/components/ui/common/SkeletonGrid";
+import EmptyState from "@/components/ui/common/EmptyState";
 
 export default function OverviewSection({ metrics, loading }) {
     if (loading) {
@@ -28,24 +29,10 @@ export default function OverviewSection({ metrics, loading }) {
 
     if (!metrics || metrics.totalTrades === 0) {
         return (
-            <Card>
-                <CardContent className="p-12 text-center">
-                    <div className="flex flex-col items-center gap-4">
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center">
-                            <Activity className="size-10 text-violet-600" />
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-xl mb-2">
-                                No Trading Data Yet
-                            </h3>
-                            <p className="text-sm text-slate-500 max-w-md">
-                                Start adding trades to see your performance
-                                metrics, win rate, and portfolio growth
-                            </p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+            <EmptyState
+                title="No Trading Data Yet"
+                description="Start adding trades to see your performance metrics, win rate, and portfolio growth"
+            />
         );
     }
 
@@ -63,14 +50,13 @@ export default function OverviewSection({ metrics, loading }) {
         totalProfit,
         totalLoss,
         profitFactor,
+        avgProfit,
+        avgLoss,
+        payoffRatio,
     } = metrics;
 
-    // Calculate additional stats
-    const averageWin = winCount > 0 ? totalProfit / winCount : 0;
-    const averageLoss = loseCount > 0 ? totalLoss / loseCount : 0;
+    // Calculate net gain
     const netGain = accountValue - initialMargin;
-    const riskRewardRatio =
-        Math.abs(averageLoss) > 0 ? averageWin / Math.abs(averageLoss) : 0;
 
     return (
         <div className="space-y-6">
@@ -118,7 +104,7 @@ export default function OverviewSection({ metrics, loading }) {
                     value={totalTrades}
                     format="number"
                     icon={<Activity className="size-5" />}
-                    subtitle={`Since Aug 2025`}
+                    subtitle={`Active trading`}
                     color="amber"
                 />
             </div>
@@ -161,7 +147,7 @@ export default function OverviewSection({ metrics, loading }) {
                                 </p>
                                 <p className="text-base font-bold text-green-700">
                                     Rp{" "}
-                                    {averageWin.toLocaleString("id-ID", {
+                                    {avgProfit?.toLocaleString("id-ID", {
                                         maximumFractionDigits: 0,
                                     })}
                                 </p>
@@ -172,9 +158,11 @@ export default function OverviewSection({ metrics, loading }) {
                                 </p>
                                 <p className="text-base font-bold text-red-700">
                                     Rp{" "}
-                                    {Math.abs(averageLoss).toLocaleString(
+                                    {Math.abs(avgLoss || 0).toLocaleString(
                                         "id-ID",
-                                        { maximumFractionDigits: 0 },
+                                        {
+                                            maximumFractionDigits: 0,
+                                        },
                                     )}
                                 </p>
                             </div>
@@ -242,7 +230,7 @@ export default function OverviewSection({ metrics, loading }) {
                             </div>
                         </div>
 
-                        {/* Average P/L */}
+                        {/* Average P/L & Payoff Ratio */}
                         <div className="grid grid-cols-2 gap-3">
                             <div className="p-3 bg-white rounded-lg border">
                                 <p className="text-xs text-slate-500 mb-1">
@@ -252,26 +240,19 @@ export default function OverviewSection({ metrics, loading }) {
                                     className={`text-sm font-bold ${averagePnL >= 0 ? "text-green-600" : "text-red-600"}`}
                                 >
                                     Rp{" "}
-                                    {averagePnL.toLocaleString("id-ID", {
+                                    {averagePnL?.toLocaleString("id-ID", {
                                         maximumFractionDigits: 0,
                                     })}
                                 </p>
                             </div>
                             <div className="p-3 bg-white rounded-lg border">
                                 <p className="text-xs text-slate-500 mb-1">
-                                    R:R Ratio
+                                    Payoff Ratio
                                 </p>
                                 <p className="text-sm font-bold text-violet-600">
-                                    1:{riskRewardRatio.toFixed(2)}
+                                    {payoffRatio?.toFixed(2)}
                                 </p>
                             </div>
-                        </div>
-
-                        {/* Tracking Info */}
-                        <div className="text-center pt-2 border-t">
-                            <p className="text-xs text-slate-400">
-                                📅 Tracking since Aug 07, 2025
-                            </p>
                         </div>
                     </CardContent>
                 </Card>
@@ -290,13 +271,20 @@ export default function OverviewSection({ metrics, loading }) {
                         <KPICard
                             icon={<DollarSign className="size-4" />}
                             label="Total Profit"
-                            value={`Rp ${totalProfit?.toLocaleString("id-ID", { maximumFractionDigits: 0 })}`}
+                            value={`Rp ${totalProfit?.toLocaleString("id-ID", {
+                                maximumFractionDigits: 0,
+                            })}`}
                             color="green"
                         />
                         <KPICard
                             icon={<TrendingDown className="size-4" />}
                             label="Total Loss"
-                            value={`Rp ${Math.abs(totalLoss)?.toLocaleString("id-ID", { maximumFractionDigits: 0 })}`}
+                            value={`Rp ${Math.abs(totalLoss)?.toLocaleString(
+                                "id-ID",
+                                {
+                                    maximumFractionDigits: 0,
+                                },
+                            )}`}
                             color="red"
                         />
                         <KPICard
@@ -304,13 +292,7 @@ export default function OverviewSection({ metrics, loading }) {
                             label="Profit Factor"
                             value={profitFactor?.toFixed(2)}
                             color="blue"
-                            badge={
-                                profitFactor >= 1.5
-                                    ? "Excellent"
-                                    : profitFactor >= 1
-                                      ? "Good"
-                                      : "Poor"
-                            }
+                            badge={metrics.profitFactorComment}
                         />
                         <KPICard
                             icon={<Target className="size-4" />}

@@ -3,12 +3,14 @@
 import { useEffect, useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Activity, BarChart3, Shield, List } from "lucide-react";
+import { toast } from "sonner";
 import OverviewSection from "./section/OverviewSection";
 import PerformanceSection from "./section/PerformanceSection";
 import RiskSection from "./section/RiskSection";
 import QuickViewSection from "./section/QuickViewSection";
 import DashboardHeader from "./component/DashboardHeader";
-import TradingFooter from "../TradingFooter"
+import TradingFooter from "../TradingFooter";
+import { fetchMetrics, fetchQuickView } from "@/lib/api/dashboard";
 
 export default function TradingDashboard() {
     const [metrics, setMetrics] = useState(null);
@@ -18,7 +20,7 @@ export default function TradingDashboard() {
     const [activeTab, setActiveTab] = useState("overview");
 
     useEffect(() => {
-        fetchMetrics();
+        fetchDashboardMetrics();
     }, []);
 
     // Fetch quick view data only when tab is active
@@ -26,24 +28,19 @@ export default function TradingDashboard() {
         if (activeTab === "quick" && !quickViewData) {
             fetchQuickViewData();
         }
-    }, [activeTab]);
+    }, [activeTab, quickViewData]);
 
-    const fetchMetrics = async () => {
+    const fetchDashboardMetrics = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            const response = await fetch("/api/trade/metrics");
-            const result = await response.json();
-
-            if (!result.success) {
-                throw new Error(result.error || "Failed to fetch metrics");
-            }
-
-            setMetrics(result.data);
+            const data = await fetchMetrics();
+            setMetrics(data);
         } catch (err) {
             console.error("Fetch metrics error:", err);
             setError(err.message);
+            toast.error(err.message || "Failed to fetch metrics");
         } finally {
             setLoading(false);
         }
@@ -51,20 +48,11 @@ export default function TradingDashboard() {
 
     const fetchQuickViewData = async () => {
         try {
-            const response = await fetch(
-                "/api/trade/dashboard/quick-view?limit=5",
-            );
-            const result = await response.json();
-
-            if (!result.success) {
-                throw new Error(
-                    result.error || "Failed to fetch quick view data",
-                );
-            }
-
-            setQuickViewData(result.data);
+            const data = await fetchQuickView(5);
+            setQuickViewData(data);
         } catch (err) {
             console.error("Fetch quick view error:", err);
+            toast.error(err.message || "Failed to fetch quick view data");
             // Don't set global error, let QuickViewSection handle it
         }
     };
@@ -145,7 +133,7 @@ export default function TradingDashboard() {
                 </TabsContent>
             </Tabs>
 
-            <TradingFooter/>
+            <TradingFooter />
         </main>
     );
 }
