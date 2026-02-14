@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { getEntrySessionOptions } from "@/lib/services/trade/options/getEntrySessionOptions";
+import { getBuyReasonOptions } from "@/lib/services/trade/options/getBuyReasonOptions";
 
 export async function GET() {
     try {
-        const options = await getEntrySessionOptions();
+        const options = await getBuyReasonOptions();
 
         return NextResponse.json({ success: true, options }, { status: 200 });
     } catch (err) {
-        console.error("GET /api/trade/options/entry-session error:", err);
+        console.error("GET /api/trade/v1/options/buy-reason error:", err);
         return NextResponse.json(
             { success: false, error: err.message || "Internal server error" },
             { status: 500 },
