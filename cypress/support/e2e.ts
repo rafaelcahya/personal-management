@@ -15,7 +15,10 @@
 
 // Import commands.js using ES2015 syntax:
 import "./common/commands";
-import "./common/trade/commands";
+import "./common/auth/ui-commands";
+import "./common/auth/api-commands";
+import "./common/trade/api-commands";
+import "./common/trade/db-commands";
 import "./common/fee/commands";
 import "./common/event/commands";
 import "./common/inventory/product/commands";

@@ -186,7 +186,7 @@ export default function AddTrade({ onAdded }) {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild id="addNewTradeBtn">
+            <DialogTrigger asChild id="addNewTradeBtn_tradePage">
                 <Button>
                     <PlusIcon />
                     <span>Add Trade</span>
@@ -194,7 +194,7 @@ export default function AddTrade({ onAdded }) {
             </DialogTrigger>
             <DialogContent
                 className="sm:max-w-2xl flex flex-col max-h-[90vh]"
-                id="addNewTradeDialogForm"
+                id="addNewTradeForm_tradePage"
             >
                 <DialogHeader className="text-left shrink-0">
                     <DialogTitle>📊 Add New Trade</DialogTitle>
@@ -233,7 +233,7 @@ export default function AddTrade({ onAdded }) {
                                                         <Button
                                                             type="button"
                                                             variant="outline"
-                                                            id="tradeDateField"
+                                                            id="tradeDateField_tradePage"
                                                             className={cn(
                                                                 "w-full pl-3 text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600",
                                                                 fieldState.error &&
@@ -274,7 +274,7 @@ export default function AddTrade({ onAdded }) {
                                                 When did you execute this trade?
                                                 📅
                                             </FormDescription>
-                                            <FormMessage className="font-medium">
+                                            <FormMessage id="tradeDateField_errorMessage_tradePage" className="font-medium">
                                                 {fieldState.error?.message}
                                             </FormMessage>
                                         </FormItem>
@@ -294,7 +294,7 @@ export default function AddTrade({ onAdded }) {
                                                 <Input
                                                     {...field}
                                                     placeholder="e.g., BBCA, GOTO"
-                                                    id="tickerField"
+                                                    id="tickerField_tradePage"
                                                     className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
                                                         fieldState.error
                                                             ? "border-rose-500"
@@ -305,7 +305,7 @@ export default function AddTrade({ onAdded }) {
                                             <FormDescription className="text-xs">
                                                 Stock symbol you traded 🏷️
                                             </FormDescription>
-                                            <FormMessage className="font-medium">
+                                            <FormMessage id="tickerField_errorMessage_tradePage" className="font-medium">
                                                 {fieldState.error?.message}
                                             </FormMessage>
                                         </FormItem>
@@ -316,6 +316,8 @@ export default function AddTrade({ onAdded }) {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <CurrencyField
                                         control={control}
+                                        idField="marginField_tradePage"
+                                        message="marginField_errorMessage_tradePage"
                                         name="margin"
                                         label="Margin (Capital)"
                                         placeholder="e.g., 1000000"
@@ -324,6 +326,8 @@ export default function AddTrade({ onAdded }) {
 
                                     <CurrencyField
                                         control={control}
+                                        idField="proceedsField_tradePage"
+                                        message="proceedsField_errorMessage_tradePage"
                                         name="proceeds"
                                         label="Proceeds (Return)"
                                         placeholder="e.g., 1200000"
@@ -415,7 +419,7 @@ export default function AddTrade({ onAdded }) {
                                                 <Textarea
                                                     {...field}
                                                     placeholder="Trade insights, emotions, market conditions..."
-                                                    id="notesField"
+                                                    id="notesField_tradePage"
                                                     className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium min-h-[80px]"
                                                 />
                                             </FormControl>
@@ -432,7 +436,7 @@ export default function AddTrade({ onAdded }) {
                                     <Button
                                         type="button"
                                         className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
-                                        id="cancelNewTradeBtn"
+                                        id="cancelNewTradeBtn_tradePage"
                                         disabled={loading}
                                     >
                                         Cancel
@@ -441,7 +445,7 @@ export default function AddTrade({ onAdded }) {
                                 <Button
                                     type="submit"
                                     disabled={loading}
-                                    id="submitNewTradeBtn"
+                                    id="submitNewTradeBtn_tradePage"
                                 >
                                     {loading && (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

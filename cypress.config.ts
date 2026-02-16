@@ -3,12 +3,14 @@ import { defineConfig } from "cypress";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { createEngine } from "./cypress/support/engine/createEngine.js";
 import {
-    getProgressOverviewSummaryFromDb,
-    getTotalEntryOccasionFromDb,
-    getTotalEntrySessionFromDb,
-    getTotalStockTypeFromDb,
-    getTradeFromDb,
-} from "./cypress/support/db/trading/trade/getTradeFromDb.js";
+    getTradesFromDb,
+    getTotalTradesFromDb,
+    getTotalWinsFromDb,
+    getTotalLossesFromDb,
+    getStockTypeSummaryFromDb,
+    getEntrySessionSummaryFromDb,
+    getEntryOccasionSummaryFromDb,
+} from "./cypress/support/db/trading/trade/tradeDb.js";
 import {
     getFeeFromDb,
     getTotalFeeFromDb,
@@ -184,38 +186,57 @@ export default defineConfig({
                 decryptPasswordTask(encrypted: string) {
                     return decryptPassword(encrypted);
                 },
-                async getTradeFromDbTask(tradeId: string) {
-                    const trade = await getTradeFromDb(supabase, tradeId);
-                    return trade ? JSON.parse(JSON.stringify(trade)) : null;
+                async getTradesFromDb(userId: string) {
+                    const trades = await getTradesFromDb(supabaseAdmin, userId);
+                    return trades;
                 },
-                async getProgressOverviewSummaryFromDbTask(metric: string) {
-                    const progressOverviews =
-                        await getProgressOverviewSummaryFromDb(
-                            supabase,
-                            metric,
-                        );
-                    return progressOverviews;
-                },
-                async getTotalStockTypeFromDbTask(stockType: string) {
-                    const stockTypes = await getTotalStockTypeFromDb(
-                        supabase,
-                        stockType,
+
+                async getTotalTradesFromDb(userId: string) {
+                    const total = await getTotalTradesFromDb(
+                        supabaseAdmin,
+                        userId,
                     );
-                    return stockTypes;
+                    return total;
                 },
-                async getTotalEntrySessionFromDbTask(entrySession: string) {
-                    const entrySessions = await getTotalEntrySessionFromDb(
-                        supabase,
-                        entrySession,
+
+                async getTotalWinsFromDb(userId: string) {
+                    const total = await getTotalWinsFromDb(
+                        supabaseAdmin,
+                        userId,
                     );
-                    return entrySessions;
+                    return total;
                 },
-                async getTotalEntryOccasionFromDbTask(entryOccasion: string) {
-                    const entryOccasions = await getTotalEntryOccasionFromDb(
-                        supabase,
-                        entryOccasion,
+
+                async getTotalLossesFromDb(userId: string) {
+                    const total = await getTotalLossesFromDb(
+                        supabaseAdmin,
+                        userId,
                     );
-                    return entryOccasions;
+                    return total;
+                },
+
+                async getStockTypeSummaryFromDb(userId: string) {
+                    const summary = await getStockTypeSummaryFromDb(
+                        supabaseAdmin,
+                        userId,
+                    );
+                    return summary;
+                },
+
+                async getEntrySessionSummaryFromDb(userId: string) {
+                    const summary = await getEntrySessionSummaryFromDb(
+                        supabaseAdmin,
+                        userId,
+                    );
+                    return summary;
+                },
+
+                async getEntryOccasionSummaryFromDb(userId: string) {
+                    const summary = await getEntryOccasionSummaryFromDb(
+                        supabaseAdmin,
+                        userId,
+                    );
+                    return summary;
                 },
                 async getFeeFromDbTask(feeId: string) {
                     const fee = await getFeeFromDb(supabase, feeId);

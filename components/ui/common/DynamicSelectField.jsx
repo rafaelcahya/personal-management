@@ -64,6 +64,7 @@ export default function DynamicSelectField({
                                 options.map((option) => (
                                     <SelectItem
                                         key={option.id}
+                                        id={`${name}-option-${option.id}`}
                                         value={option[displayField]}
                                         className="text-sm font-medium cursor-pointer"
                                     >
@@ -73,7 +74,7 @@ export default function DynamicSelectField({
                             )}
                         </SelectContent>
                     </Select>
-                    <FormMessage className="font-medium">
+                    <FormMessage id={`${name}-errorMessage`} className="font-medium">
                         {fieldState.error?.message}
                     </FormMessage>
                 </FormItem>

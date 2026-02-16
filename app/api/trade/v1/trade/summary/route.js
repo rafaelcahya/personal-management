@@ -1,11 +1,25 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { getTradeList } from "@/lib/services/trade/getTradeList";
 
 import { stringToNumber } from "@/lib/utils/common";
 
 export async function GET() {
     try {
-        const trades = await getTradeList();
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const trades = await getTradeList(user.id);
 
         const totalTrades = Array.isArray(trades) ? trades.length : 0;
 

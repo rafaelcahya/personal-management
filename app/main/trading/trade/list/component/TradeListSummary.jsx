@@ -43,6 +43,7 @@ export default function TradeListSummary({ trades }) {
 
         return [
             {
+                id: "totalTradesSummary_tradePage",
                 title: "Total Trades",
                 value: totalTrades,
                 icon: Activity,
@@ -50,6 +51,7 @@ export default function TradeListSummary({ trades }) {
                 bgColor: "bg-blue-50",
             },
             {
+                id: "winRateSummary_tradePage",
                 title: "Win Rate",
                 value: `${winRate}%`,
                 subValue: `${wins}W / ${losses}L`,
@@ -58,6 +60,7 @@ export default function TradeListSummary({ trades }) {
                 bgColor: "bg-violet-50",
             },
             {
+                id: "totalProfitSummary_tradePage",
                 title: "Total Profit",
                 value: `Rp ${totalProfit.toLocaleString("id-ID")}`,
                 icon: TrendingUp,
@@ -65,6 +68,7 @@ export default function TradeListSummary({ trades }) {
                 bgColor: "bg-green-50",
             },
             {
+                id: "netPnLSummary_tradePage",
                 title: "Net P/L",
                 value: `Rp ${netPnL.toLocaleString("id-ID")}`,
                 icon: netPnL >= 0 ? TrendingUp : TrendingDown,
@@ -94,11 +98,15 @@ export default function TradeListSummary({ trades }) {
     return (
         <>
             {/* Desktop View - Always Visible Grid */}
-            <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div
+                id="tradeListSummaryDesktop_tradePage"
+                className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4"
+            >
                 {stats.map((stat, index) => {
                     const Icon = stat.icon;
                     return (
                         <Card
+                            id={`${stat.id}_desktopView`}
                             key={index}
                             className="p-0 border border-slate-200/50 shadow-slate-100"
                         >
@@ -108,11 +116,17 @@ export default function TradeListSummary({ trades }) {
                                         <p className="text-sm font-medium text-slate-600 mb-1">
                                             {stat.title}
                                         </p>
-                                        <p className="text-xl font-semibold">
+                                        <p
+                                            id={`${stat.id}_value_desktopView`}
+                                            className="text-xl font-semibold"
+                                        >
                                             {stat.value}
                                         </p>
                                         {stat.subValue && (
-                                            <p className="text-xs text-slate-400 mt-1">
+                                            <p
+                                                id={`${stat.id}_subValue_desktopView`}
+                                                className="text-xs text-slate-400 mt-1"
+                                            >
                                                 {stat.subValue}
                                             </p>
                                         )}
@@ -133,6 +147,7 @@ export default function TradeListSummary({ trades }) {
 
             {/* Mobile View - Collapsible */}
             <Collapsible
+                id="tradeSummaryCollapsible_tradePage"
                 open={isOpen}
                 onOpenChange={setIsOpen}
                 className="sm:hidden w-full"
@@ -142,10 +157,14 @@ export default function TradeListSummary({ trades }) {
                         {/* Header - Always Visible */}
                         <CollapsibleTrigger asChild>
                             <Button
+                                id="tradeSummaryCollapsibleTrigger_tradePage"
                                 variant="ghost"
                                 className="w-full flex items-center justify-between bg-white"
                             >
-                                <div className="flex items-center gap-3">
+                                <div
+                                    id="tradeSummaryCollapsibleDefault_tradePage"
+                                    className="flex items-center gap-3"
+                                >
                                     <div className="p-2 rounded-lg bg-violet-50">
                                         <Activity className="size-4 text-violet-600" />
                                     </div>
@@ -153,7 +172,7 @@ export default function TradeListSummary({ trades }) {
                                         <p className="text-sm font-semibold">
                                             Trade Summary
                                         </p>
-                                        <p
+                                        <span
                                             className={`text-xs font-medium ${
                                                 netPnL >= 0
                                                     ? "text-green-600"
@@ -161,8 +180,10 @@ export default function TradeListSummary({ trades }) {
                                             }`}
                                         >
                                             Net P/L: Rp{" "}
-                                            {netPnL.toLocaleString("id-ID")}
-                                        </p>
+                                            <p id="tradeSummaryNetPnL_tradePage_value_mobileView">
+                                                {netPnL.toLocaleString("id-ID")}
+                                            </p>
+                                        </span>
                                     </div>
                                 </div>
                                 {isOpen ? (
@@ -174,12 +195,16 @@ export default function TradeListSummary({ trades }) {
                         </CollapsibleTrigger>
 
                         {/* Collapsible Content */}
-                        <CollapsibleContent className="px-4 pt-2">
+                        <CollapsibleContent
+                            id="tradeSummaryCollapsibleContent_tradePage"
+                            className="px-4 pt-2"
+                        >
                             <div className="pt-2 grid grid-cols-2 gap-3">
                                 {stats.map((stat, index) => {
                                     const Icon = stat.icon;
                                     return (
                                         <div
+                                            id={`${stat.id}_mobileView`}
                                             key={index}
                                             className="p-3 rounded-lg border bg-slate-50/50"
                                         >
@@ -195,11 +220,14 @@ export default function TradeListSummary({ trades }) {
                                                     {stat.title}
                                                 </p>
                                             </div>
-                                            <p className="text-lg font-bold ml-0.5">
+                                            <p
+                                                id={`${stat.id}_value_mobileView`}
+                                                className="text-lg font-bold ml-0.5"
+                                            >
                                                 {stat.value}
                                             </p>
                                             {stat.subValue && (
-                                                <p className="text-xs text-slate-400 mt-1 ml-0.5">
+                                                <p id={`${stat.id}_subValue_mobileView`} className="text-xs text-slate-400 mt-1 ml-0.5">
                                                     {stat.subValue}
                                                 </p>
                                             )}

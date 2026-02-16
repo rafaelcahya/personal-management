@@ -8,7 +8,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { formatRupiah } from "@/lib/utils/currencyFormatter";
 
-export default function CurrencyField({ control, name, label, placeholder, message }) {
+export default function CurrencyField({
+    control,
+    idField,
+    name,
+    label,
+    placeholder,
+    message,
+}) {
     return (
         <FormField
             control={control}
@@ -18,6 +25,7 @@ export default function CurrencyField({ control, name, label, placeholder, messa
                     <FormLabel>{label}</FormLabel>
                     <FormControl>
                         <Input
+                            id={idField}
                             type="text"
                             value={formatRupiah(field.value)}
                             placeholder={placeholder}
@@ -26,7 +34,7 @@ export default function CurrencyField({ control, name, label, placeholder, messa
                             }`}
                             onChange={(e) =>
                                 field.onChange(
-                                    e.target.value.replace(/\D/g, "")
+                                    e.target.value.replace(/\D/g, ""),
                                 )
                             }
                         />

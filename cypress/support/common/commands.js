@@ -1,7 +1,59 @@
-Cypress.Commands.add("OpenPersonalManagement", () => {
-    cy.visit("/auth/login");
-});
+// cypress/support/commands.js
 
+/**
+ * ============================================================================
+ * AUTHENTICATION COMMANDS - UI Testing with Supabase
+ * ============================================================================
+ *
+ * Commands untuk UI testing dengan session management & bypass mechanism.
+ *
+ * SETUP:
+ * - Set env vars: TEST_EMAIL, TEST_PASSWORD, CYPRESS_AUTH_SECRET
+ * - Implement bypass mechanism di middleware/route
+ *
+ * USAGE PATTERNS:
+ *
+ * 1. Standard Login (UI Testing):
+ *    cy.login()
+ *    cy.visit("/dashboard")
+ *
+ * 2. Login with Bypass (Skip Auth Checks):
+ *    cy.loginWithBypass()
+ *    cy.visit("/protected-page")
+ *
+ * 3. Session Management:
+ *    cy.getSession() - Get current session
+ *    cy.getAuthToken() - Get access token
+ *    cy.clearAuth() - Logout
+ *
+ * 4. Bypass Control:
+ *    cy.enableBypass() - Enable auth bypass
+ *    cy.disableBypass() - Disable auth bypass
+ * ============================================================================
+ */
+
+/**
+ * Login user and create persistent session
+ * Uses cy.session() for caching across tests and specs
+ *
+ * Session is stored in localStorage for validation and reuse
+ *
+ * @param {string} email - Optional email (default: TEST_EMAIL env)
+ * @param {string} password - Optional password (default: TEST_PASSWORD env)
+ *
+ * @example
+ * // Login with default test user
+ * cy.login()
+ * cy.visit("/dashboard")
+ *
+ * // Login with custom user
+ * cy.login("user@example.com", "password123")
+ *
+ * // Use in beforeEach for consistent auth state
+ * beforeEach(() => {
+ *     cy.login()
+ * })
+ */
 Cypress.Commands.add("login", (email, password) => {
     const testEmail = email || Cypress.env("TEST_EMAIL");
     const testPassword = password || Cypress.env("TEST_PASSWORD");
@@ -23,11 +75,10 @@ Cypress.Commands.add("login", (email, password) => {
                     throw new Error(`Failed to get session for ${testEmail}`);
                 }
 
-                // Session is already an object here
                 cy.log("✅ Session obtained");
                 cy.log(`User ID: ${session.user?.id}`);
 
-                // Store the RAW session object (not encoded yet)
+                // Store session in localStorage for validation
                 cy.window().then((win) => {
                     win.localStorage.setItem(
                         "cypress-session",
@@ -45,6 +96,7 @@ Cypress.Commands.add("login", (email, password) => {
         {
             cacheAcrossSpecs: true,
             validate() {
+                // Validate session still exists and is valid
                 cy.window().then((win) => {
                     const sessionStr =
                         win.localStorage.getItem("cypress-session");
@@ -73,6 +125,20 @@ Cypress.Commands.add("login", (email, password) => {
     );
 });
 
+/**
+ * Enable authentication bypass mechanism
+ * Sets cookie that your middleware/route can check to skip auth
+ *
+ * Requires CYPRESS_AUTH_SECRET env var
+ *
+ * @example
+ * cy.enableBypass()
+ * cy.visit("/protected-page") // Will bypass auth checks
+ *
+ * // Use with login for full bypass
+ * cy.login()
+ * cy.enableBypass()
+ */
 Cypress.Commands.add("enableBypass", () => {
     const authSecret = Cypress.env("CYPRESS_AUTH_SECRET");
 
@@ -90,22 +156,46 @@ Cypress.Commands.add("enableBypass", () => {
     cy.log("✅ Bypass enabled");
 });
 
+/**
+ * Disable authentication bypass
+ * Removes bypass cookie - normal auth checks resume
+ *
+ * @example
+ * cy.disableBypass()
+ * cy.visit("/protected-page") // Normal auth required
+ *
+ * // Test auth behavior after bypass
+ * cy.enableBypass()
+ * cy.visit("/page")
+ * cy.disableBypass()
+ * cy.visit("/page") // Should redirect to login
+ */
 Cypress.Commands.add("disableBypass", () => {
     cy.clearCookie("cypress-bypass");
     cy.log("🗑️ Bypass disabled");
 });
 
-Cypress.Commands.add("getAuthToken", () => {
-    return cy.window().then((win) => {
-        const token = win.localStorage.getItem("cypress-access-token");
-        if (!token) {
-            cy.log("⚠️  No access token found in localStorage");
-            return null;
-        }
-        return token;
-    });
-});
-
+/**
+ * Get current session object from localStorage
+ *
+ * @returns {object|null} Supabase session object or null
+ *
+ * @example
+ * cy.getSession().then((session) => {
+ *     if (session) {
+ *         cy.log(`User: ${session.user.email}`)
+ *         cy.log(`Expires: ${session.expires_at}`)
+ *     }
+ * })
+ *
+ * // Verify session exists
+ * cy.getSession().should("exist")
+ *
+ * // Access session data
+ * cy.getSession().then((session) => {
+ *     expect(session.user.email).to.eq("test@example.com")
+ * })
+ */
 Cypress.Commands.add("getSession", () => {
     return cy.window().then((win) => {
         const sessionStr = win.localStorage.getItem("cypress-session");
@@ -123,6 +213,58 @@ Cypress.Commands.add("getSession", () => {
     });
 });
 
+/**
+ * Get access token from localStorage
+ *
+ * @returns {string|null} Access token or null
+ *
+ * @example
+ * cy.getAuthToken().then((token) => {
+ *     if (token) {
+ *         cy.log(`Token length: ${token.length}`)
+ *     }
+ * })
+ *
+ * // Use token for manual API call
+ * cy.getAuthToken().then((token) => {
+ *     cy.request({
+ *         url: "/api/endpoint",
+ *         headers: {
+ *             Authorization: `Bearer ${token}`
+ *         }
+ *     })
+ * })
+ */
+Cypress.Commands.add("getAuthToken", () => {
+    return cy.window().then((win) => {
+        const token = win.localStorage.getItem("cypress-access-token");
+        if (!token) {
+            cy.log("⚠️  No access token found in localStorage");
+            return null;
+        }
+        return token;
+    });
+});
+
+/**
+ * Clear all authentication data
+ * Removes session, tokens, and cookies - equivalent to logout
+ *
+ * @example
+ * // Logout after test
+ * afterEach(() => {
+ *     cy.clearAuth()
+ * })
+ *
+ * // Test logout flow
+ * it("should logout", () => {
+ *     cy.login()
+ *     cy.visit("/dashboard")
+ *     cy.clearAuth()
+ *     cy.visit("/dashboard")
+ *     cy.url().should("include", "/login")
+ * })
+ */
 Cypress.Commands.add("clearAuth", () => {
     cy.window().then((win) => {
         win.localStorage.removeItem("cypress-session");
@@ -132,97 +274,28 @@ Cypress.Commands.add("clearAuth", () => {
     cy.log("🗑️  Auth cleared");
 });
 
+/**
+ * Login user and enable bypass in one command
+ * Convenience method for quick authenticated testing
+ *
+ * @param {string} email - Optional email
+ * @param {string} password - Optional password
+ *
+ * @example
+ * // Quick setup for testing protected pages
+ * beforeEach(() => {
+ *     cy.loginWithBypass()
+ * })
+ *
+ * it("test protected page", () => {
+ *     cy.visit("/protected")
+ *     // Page loads without auth redirect
+ * })
+ *
+ * // Custom user with bypass
+ * cy.loginWithBypass("admin@test.com", "adminpass")
+ */
 Cypress.Commands.add("loginWithBypass", (email, password) => {
     cy.login(email, password);
     cy.enableBypass();
-});
-
-Cypress.Commands.add("verifyToastMessage", (message) => {
-    cy.get("#toast").contains(message).should("be.visible");
-});
-
-Cypress.Commands.add("verifyValidationMessage", (id, message) => {
-    cy.get(id).contains(message).should("be.visible");
-});
-
-Cypress.Commands.add("checkComponentVisible", (selectors) => {
-    if (Array.isArray(selectors)) {
-        selectors.forEach((selector) => {
-            cy.get(selector).should("be.visible");
-        });
-    } else {
-        cy.get(selectors).should("be.visible");
-    }
-});
-
-Cypress.Commands.add("checkComponentNotVisible", (selectors) => {
-    if (Array.isArray(selectors)) {
-        selectors.forEach((selector) => {
-            cy.get(selector).should("not.exist");
-        });
-    } else {
-        cy.get(selectors).should("not.exist");
-    }
-});
-
-Cypress.Commands.add("fillField", (fields, value) => {
-    if (typeof fields === "string") {
-        cy.get(fields).should("be.visible").clear().type(value);
-        return cy.wrap(value);
-    } else if (typeof fields === "object") {
-        const filledValues = {};
-        Object.entries(fields).forEach(([selector, value]) => {
-            cy.get(selector).should("be.visible").clear().type(value);
-            filledValues[selector] = value;
-        });
-        return cy.wrap(filledValues);
-    }
-});
-
-Cypress.Commands.add("saveProductId", (productId) => {
-    cy.task("saveProductId", productId);
-});
-
-Cypress.Commands.add("getRandomProductId", () => {
-    return cy.task("getRandomProductId");
-});
-
-Cypress.Commands.add("saveEventId", (eventId) => {
-    cy.task("saveEventId", eventId);
-});
-
-Cypress.Commands.add("getRandomEventId", () => {
-    return cy.task("getRandomEventId");
-});
-
-Cypress.Commands.add("saveFeeId", (feeId) => {
-    cy.task("saveFeeId", feeId);
-});
-
-Cypress.Commands.add("getRandomFeeId", () => {
-    return cy.task("getRandomFeeId");
-});
-
-Cypress.Commands.add("saveTradeId", (tradeId) => {
-    cy.task("saveTradeId", tradeId);
-});
-
-Cypress.Commands.add("getRandomTradeId", () => {
-    return cy.task("getRandomTradeId");
-});
-
-Cypress.Commands.add("saveProductBrandId", (productBrandId) => {
-    cy.task("saveProductBrandId", productBrandId);
-});
-
-Cypress.Commands.add("getRandomProductBrandId", () => {
-    return cy.task("getRandomProductBrandId");
-});
-
-Cypress.Commands.add("saveProductNameId", (productNameId) => {
-    cy.task("saveProductNameId", productNameId);
-});
-
-Cypress.Commands.add("getRandomProductNameId", () => {
-    return cy.task("getRandomProductNameId");
 });
