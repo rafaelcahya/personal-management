@@ -25,7 +25,10 @@ export default async function LandingPage() {
                     <div className="text-center space-y-2">
                         <h1 className="text-2xl md:text-3xl font-bold">
                             Good to see you,{" "}
-                            <span className="text-primary">
+                            <span
+                                id="fullNameAuth_landingPage"
+                                className="text-primary"
+                            >
                                 {user.user_metadata.full_name?.split(" ")[0] ||
                                     user.email.split("@")[0]}
                             </span>
@@ -36,7 +39,10 @@ export default async function LandingPage() {
                     </div>
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
-                        <Card className="w-full max-w-sm flex-1 md:max-w-sm hover:border-primary duration-200 group relative overflow-hidden">
+                        <Card
+                            id="tradeManagementCard_landingPage"
+                            className="w-full max-w-sm flex-1 md:max-w-sm hover:border-primary duration-200 group relative overflow-hidden"
+                        >
                             <div className="absolute -top-10 -right-10 w-20 h-20 bg-primary/10 rounded-full transition-all duration-500 group-hover:scale-150 group-hover:bg-primary/20" />
 
                             <CardHeader className="relative">
@@ -54,7 +60,7 @@ export default async function LandingPage() {
                                 <Link
                                     href="/main/trading/dashboard"
                                     prefetch={false}
-                                    id="tradeBtnLandingPage"
+                                    id="tradeBtn_landingPage"
                                     className="w-full"
                                 >
                                     <Button className="w-full">
@@ -64,7 +70,10 @@ export default async function LandingPage() {
                             </CardFooter>
                         </Card>
 
-                        <Card className="w-full max-w-sm flex-1 md:max-w-sm hover:border-primary duration-200 group relative overflow-hidden">
+                        <Card
+                            id="inventoryManagementCard_landingPage"
+                            className="w-full max-w-sm flex-1 md:max-w-sm hover:border-primary duration-200 group relative overflow-hidden"
+                        >
                             <div className="absolute -top-10 -right-10 w-20 h-20 bg-primary/10 rounded-full transition-all duration-500 group-hover:scale-150 group-hover:bg-primary/20" />
 
                             <CardHeader className="relative">
@@ -83,7 +92,7 @@ export default async function LandingPage() {
                                 <Link
                                     href="/main/inventory/product-list"
                                     prefetch={false}
-                                    id="inventoryBtnLandingPage"
+                                    id="inventoryBtn_landingPage"
                                     className="w-full"
                                 >
                                     <Button className="w-full">

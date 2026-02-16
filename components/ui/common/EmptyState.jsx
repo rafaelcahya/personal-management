@@ -1,8 +1,11 @@
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+
 export default function EmptyState({
-    title,
-    description,
-    actionLabel,
-    actionHref,
+    title = "No data available",
+    description = "Get started by adding new items",
+    actionLabel = "Add Item",
+    actionHref = "#",
     compact = false,
 }) {
     return (

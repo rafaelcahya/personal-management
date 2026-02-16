@@ -1,16 +1,27 @@
 import { faker } from "@faker-js/faker";
-import { randomString } from "../../support/common/helper";
 
 describe("Event API", () => {
     before(() => {
         cy.task("clearFixtureFile", "eventIds.json");
     });
 
+    describe("Read", () => {
+        it("should return 401 unauthorized when user is not authenticated", () => {
+            cy.getRandomEventId().then((eventId) => {
+                cy.GetSingleEventUnauthenticated(eventId).then((response) => {
+                    expect(response.status).to.eq(401);
+                    expect(response.body.success).to.eq(false);
+                    expect(response.body.error).to.eq("Unauthorized");
+                });
+            });
+        });
+    });
+
     describe("Create", () => {
         it("should successfully add new event", () => {
             const request = {
-                event_description: faker.food.dish(),
-                impact_direction: faker.food.dish(),
+                event_description: faker.word.words(25),
+                impact_direction: faker.word.verb(),
                 event_date: faker.date.recent(),
             };
 
@@ -24,18 +35,32 @@ describe("Event API", () => {
                     cy.task("getEventFromDbTask", id).then((dbEvent) => {
                         cy.get("@apiEvent").then((apiEvent) => {
                             expect(apiEvent.event_description).to.eq(
-                                dbEvent.eventDescription
+                                dbEvent.eventDescription,
                             );
                             expect(apiEvent.impact_direction).to.eq(
-                                dbEvent.impactDirection
+                                dbEvent.impactDirection,
                             );
                             expect(apiEvent.event_date).to.eq(
-                                dbEvent.eventDate
+                                dbEvent.eventDate,
                             );
                         });
                     });
                 });
                 cy.saveEventId(response.body.event.id);
+            });
+        });
+
+        it("should return 401 unauthorized when user is not authenticated", () => {
+            const request = {
+                event_description: faker.word.words(25),
+                impact_direction: faker.word.verb(),
+                event_date: faker.date.recent(),
+            };
+
+            cy.AddNewEventUnauthenticated(request).then((response) => {
+                expect(response.status).to.eq(401);
+                expect(apiEvent.error).to.eq("Unauthorized");
+                expect(apiEvent.success).to.eq(false);
             });
         });
 
@@ -70,15 +95,15 @@ describe("Event API", () => {
                 cy.wrap(response.body.event).as("apiEvent");
 
                 expect(response.body.error).to.include(
-                    "Invalid JSON in request body"
+                    "Invalid JSON in request body",
                 );
             });
         });
 
         it("should ensure deleted_at is null after successfully adding a new event", () => {
             const request = {
-                event_description: faker.food.dish(),
-                impact_direction: faker.food.dish(),
+                event_description: faker.word.words(25),
+                impact_direction: faker.word.verb(),
                 event_date: faker.date.recent(),
             };
 
@@ -90,7 +115,7 @@ describe("Event API", () => {
                 cy.get("@eventId").then((id) => {
                     cy.task("getEventFromDbTask", id).then((dbEvent) => {
                         expect(response.body.event.deleted_at).to.eq(
-                            dbEvent.deletedAt
+                            dbEvent.deletedAt,
                         );
                         expect(response.body.event.deleted_at).to.be.null;
                     });
@@ -104,16 +129,14 @@ describe("Event API", () => {
     describe("Update", () => {
         it("should successfully update event", () => {
             const request = {
-                event_description: faker.food.dish(),
-                impact_direction: faker.food.dish(),
+                event_description: faker.word.words(25),
+                impact_direction: faker.word.verb(),
                 event_date: faker.date.recent(),
             };
-
             cy.task("getRandomEventId")
                 .then((id) => cy.UpdateEvent(id, request))
                 .then((response) => {
                     expect(response.status).to.eq(200);
-
                     const apiEvent = response.body.event;
                     cy.wrap(apiEvent).as("apiEvent");
                     cy.wrap(apiEvent.id).as("eventId");
@@ -126,14 +149,28 @@ describe("Event API", () => {
                 .then((dbEvent) => {
                     cy.get("@apiEvent").then((apiEvent) => {
                         expect(apiEvent.event_description).to.eq(
-                            dbEvent.eventDescription
+                            dbEvent.eventDescription,
                         );
                         expect(apiEvent.impact_direction).to.eq(
-                            dbEvent.impactDirection
+                            dbEvent.impactDirection,
                         );
                         expect(apiEvent.event_date).to.eq(dbEvent.eventDate);
                     });
                 });
+        });
+
+        it("should return 401 unauthorized when user is not authenticated", () => {
+            const request = {
+                event_description: faker.word.words(25),
+                impact_direction: faker.word.verb(),
+                event_date: faker.date.recent(),
+            };
+
+            cy.UpdateEventUnauthenticated(request).then((response) => {
+                expect(response.status).to.eq(401);
+                expect(apiEvent.error).to.eq("Unauthorized");
+                expect(apiEvent.success).to.eq(false);
+            });
         });
 
         it("should fail to update event with missing required fields", () => {
@@ -142,19 +179,15 @@ describe("Event API", () => {
                 impact_direction: "",
                 event_date: "",
             };
-
             cy.task("getRandomEventId").then((randomId) => {
                 cy.UpdateEvent(randomId, request).then((response) => {
                     expect(response.status).to.eq(400);
-
                     cy.wrap(response.body.event).as("apiEvent");
-
                     const requiredErrors = [
                         "event description is required",
                         "impact direction is required",
                         "event date is required",
                     ];
-
                     requiredErrors.forEach((error) => {
                         expect(response.body.error).to.include(error);
                     });
@@ -168,9 +201,8 @@ describe("Event API", () => {
                 .then((response) => {
                     expect(response.status).to.eq(400);
                     cy.wrap(response.body.event).as("apiEvent");
-
                     expect(response.body.error).to.include(
-                        "Invalid JSON in request body"
+                        "Invalid JSON in request body",
                     );
                 });
         });
@@ -178,30 +210,26 @@ describe("Event API", () => {
         it("should fail to update event with invalid Id", () => {
             cy.UpdateEvent("qwe123").then((response) => {
                 expect(response.status).to.eq(400);
-
                 cy.wrap(response.body.event).as("apiEvent");
-
                 expect(response.body.error).to.include(
-                    "Invalid event ID provided"
+                    "Invalid event ID provided",
                 );
             });
         });
 
         it("should ensure deleted_at is null after successfully updating a event", () => {
             const request = {
-                event_description: faker.food.dish(),
-                impact_direction: faker.food.dish(),
+                event_description: faker.word.words(25),
+                impact_direction: faker.word.verb(),
                 event_date: faker.date.recent(),
             };
-
             let apiEvent;
-
             cy.task("getRandomEventId")
                 .then((id) => cy.UpdateEvent(id, request))
                 .then((response) => {
                     expect(response.status).to.eq(200);
                     apiEvent = response.body.event;
-                    return cy.task("getEventFromDbTask", apiEvent.id)
+                    return cy.task("getEventFromDbTask", apiEvent.id);
                 })
                 .then((dbEvent) => {
                     expect(apiEvent.deleted_at).to.eq(dbEvent.deletedAt);
@@ -210,14 +238,13 @@ describe("Event API", () => {
         });
 
         it("should fail to update event with invalid ID", () => {
-            const text = randomString(4, "text").toUpperCase();
+            const text = faker.word.verb();
             const invalidId = text;
-
             cy.UpdateEvent(invalidId).then((response) => {
                 expect(response.status).to.eq(400);
                 expect(response.body).to.have.property(
                     "error",
-                    "Invalid event ID provided"
+                    "Invalid event ID provided",
                 );
             });
         });
@@ -227,7 +254,7 @@ describe("Event API", () => {
                 cy.UpdateEvent(randomId).then((response) => {
                     expect(response.status).to.eq(400);
                     expect(response.body.error).to.include(
-                        "Invalid JSON in request body"
+                        "Invalid JSON in request body",
                     );
                 });
             });
@@ -237,11 +264,10 @@ describe("Event API", () => {
     describe("Delete", () => {
         it("should successfully delete event", () => {
             const request = {
-                event_description: faker.food.dish(),
-                impact_direction: faker.food.dish(),
+                event_description: faker.word.words(25),
+                impact_direction: faker.word.verb(),
                 event_date: faker.date.recent(),
             };
-
             cy.AddNewEvent(request)
                 .then((response) => {
                     cy.wrap(response.body.event.id).as("eventIdToDelete");
@@ -253,17 +279,47 @@ describe("Event API", () => {
                             cy.task("getEventFromDbTask", id).then(
                                 (dbEvent) => {
                                     expect(dbEvent).to.be.null;
-                                }
+                                },
                             );
                         });
                     });
                 });
         });
 
+        it("should return 401 unauthorized when user is not authenticated", () => {
+            const request = {
+                event_description: faker.word.words(25),
+                impact_direction: faker.word.verb(),
+                event_date: faker.date.recent(),
+            };
+
+            cy.DeleteEventUnauthenticated(request).then((response) => {
+                expect(response.status).to.eq(401);
+                expect(apiEvent.error).to.eq("Unauthorized");
+                expect(apiEvent.success).to.eq(false);
+            });
+        });
+
         it("should fail with invalid ID", () => {
             cy.DeleteEvent("abc").then((response) => {
                 expect(response.status).to.eq(400);
                 expect(response.body.error).to.eq("Invalid event ID provided");
+            });
+        });
+    });
+
+    describe("Favorite", () => {
+        it("should return 401 unauthorized when user is not authenticated", () => {
+            const request = {
+                event_description: faker.word.words(25),
+                impact_direction: faker.word.verb(),
+                event_date: faker.date.recent(),
+            };
+
+            cy.FavoriteEventUnauthenticated(request).then((response) => {
+                expect(response.status).to.eq(401);
+                expect(apiEvent.error).to.eq("Unauthorized");
+                expect(apiEvent.success).to.eq(false);
             });
         });
     });

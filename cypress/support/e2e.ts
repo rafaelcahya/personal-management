@@ -22,3 +22,18 @@ import "./common/inventory/product/commands";
 import "./common/inventory/product/brand/commands";
 import "./common/inventory/product/name/commands";
 import "./common/helper";
+
+beforeEach(() => {
+    Cypress.session.clearAllSavedSessions();
+});
+
+before(() => {
+    cy.task("log", "=== Starting Cypress Test Suite ===");
+});
+
+afterEach(function () {
+    const testTitle = this.currentTest?.title || "Unknown test";
+    const testState = this.currentTest?.state || "unknown";
+    cy.task("log", `Test "${testTitle}": ${testState}`);
+});
+

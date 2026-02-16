@@ -1,49 +1,64 @@
-Cypress.Commands.add("GetSingleEvent", (id) => {
+Cypress.Commands.add("GetSingleEventUnauthenticated", (id) => {
+    return cy.request({
+        method: "GET",
+        url: `/api/trade/v1/event/list/${id}`,
+        failOnStatusCode: false,
+    });
+});
+
+Cypress.Commands.add("AddNewEventUnauthenticated", (request) => {
+    return cy.request({
+        method: "POST",
+        url: "/api/trade/v1/event/create",
+        body: request,
+        failOnStatusCode: false,
+    });
+});
+
+Cypress.Commands.add("DeleteEventUnauthenticated", (id) => {
+    return cy.request({
+        method: "DELETE",
+        url: `/api/trade/v1/event/delete/${id}`,
+        failOnStatusCode: false,
+    });
+});
+
+Cypress.Commands.add("UpdateEventUnauthenticated", (id, request) => {
+    return cy.request({
+        method: "PUT",
+        url: `/api/trade/v1/event/update/${id}`,
+        body: request,
+        failOnStatusCode: false,
+    });
+});
+
+Cypress.Commands.add("FavoriteEventUnauthenticated", (id, request) => {
+    return cy.request({
+        method: "PATCH",
+        url: `/api/trade/v1/event/favorite/${id}`,
+        body: request,
+        failOnStatusCode: false,
+    });
+});
+
+Cypress.Commands.add("GetRandomEventId", () => {
     return cy
         .request({
             method: "GET",
-            url: `/api/trade/event/list/${id}`,
+            url: "/api/trade/v1/event/list",
+            headers: {
+                Authorization: `Bearer ${Cypress.env("authToken")}`,
+            },
             failOnStatusCode: false,
         })
         .then((response) => {
-            return response.body.data;
-        });
-});
+            expect(response.status).to.eq(200);
+            expect(response.body.events).to.be.an("array").and.not.be.empty;
 
-Cypress.Commands.add("AddNewEvent", (request) => {
-    return cy
-        .request({
-            method: "POST",
-            url: "/api/trade/event/create",
-            body: request,
-            failOnStatusCode: false,
-        })
-        .then((response) => {
-            return cy.wrap(response);
-        });
-});
+            const events = response.body.events;
+            const randomEvent =
+                events[Math.floor(Math.random() * events.length)];
 
-Cypress.Commands.add("DeleteEvent", (id) => {
-    return cy
-        .request({
-            method: "DELETE",
-            url: `/api/trade/event/delete/${id}`,
-            failOnStatusCode: false,
-        })
-        .then((response) => {
-            return cy.wrap(response);
-        });
-});
-
-Cypress.Commands.add("UpdateEvent", (id, request) => {
-    return cy
-        .request({
-            method: "PUT",
-            url: `/api/trade/event/update/${id}`,
-            body: request,
-            failOnStatusCode: false,
-        })
-        .then((response) => {
-            return cy.wrap(response);
+            return randomEvent.id;
         });
 });

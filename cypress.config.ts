@@ -1,182 +1,341 @@
 import * as dotenv from "dotenv";
 import { defineConfig } from "cypress";
-import { createEngine } from "./cypress/support/engine/createEngine";
-import { getUserFromDb } from "./cypress/support/db/users/getUserFromDb";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { createEngine } from "./cypress/support/engine/createEngine.js";
 import {
     getProgressOverviewSummaryFromDb,
     getTotalEntryOccasionFromDb,
     getTotalEntrySessionFromDb,
     getTotalStockTypeFromDb,
     getTradeFromDb,
-} from "./cypress/support/db/trade/getTradeFromDb";
+} from "./cypress/support/db/trading/trade/getTradeFromDb.js";
 import {
     getFeeFromDb,
     getTotalFeeFromDb,
     getTotalTransactionsFromDb,
-} from "./cypress/support/db/fee/getFeeFromDb";
-import { getEventFromDb } from "./cypress/support/db/event/getEventFromDb";
+} from "./cypress/support/db/trading/fee/getFeeFromDb.js";
+import { getEventFromDb } from "./cypress/support/db/trading/event/getEventFromDb.js";
 import {
     getProductListFromDb,
     getTotalProductSummaryFromDb,
-} from "./cypress/support/db/inventory/product/getProductListFromDb";
+} from "./cypress/support/db/inventory/product/getProductListFromDb.js";
 import {
     getProductBrandListFromDb,
     getProductBrandSummaryFromDb,
-} from "./cypress/support/db/inventory/product/brand/getProductBrandListFromDb";
-import { getProductNameListFromDb, getProductNameSummaryFromDb } from "./cypress/support/db/inventory/product/name/getProductNameListFromDb";
+} from "./cypress/support/db/inventory/product/brand/getProductBrandListFromDb.js";
+import {
+    getProductNameListFromDb,
+    getProductNameSummaryFromDb,
+} from "./cypress/support/db/inventory/product/name/getProductNameListFromDb.js";
 import {
     saveFixture,
     getRandomFixture,
     clearFixtureFile,
-} from "./cypress/support/common/helper";
-import { decryptPassword } from "./lib/utils/decryptedPassword";
+} from "./cypress/support/common/helper.js";
+import { decryptPassword } from "./lib/utils/decryptedPassword.js";
 
+// Load .env.local BEFORE anything else
 dotenv.config({ path: ".env.local" });
 
+// Debug log
+console.log("\n=== Cypress Environment Check ===");
+console.log(
+    "CYPRESS_AUTH_SECRET:",
+    process.env.CYPRESS_AUTH_SECRET ? "✓ Loaded" : "✗ Missing",
+);
+console.log(
+    "CYPRESS_TEST_EMAIL:",
+    process.env.CYPRESS_TEST_EMAIL ? "✓ Loaded" : "✗ Missing",
+);
+console.log(
+    "SUPABASE_URL:",
+    process.env.SUPABASE_URL ? "✓ Loaded" : "✗ Missing",
+);
+console.log("=================================\n");
+
 export default defineConfig({
-    projectId: "wjf13y",
     e2e: {
         setupNodeEvents(on, config) {
             const supabase = createEngine(
                 process.env.SUPABASE_URL || config.env.SUPABASE_URL,
                 process.env.SUPABASE_SERVICE_ROLE_KEY ||
-                    config.env.SUPABASE_SERVICE_ROLE_KEY
+                    config.env.SUPABASE_SERVICE_ROLE_KEY,
             );
+
+            const supabaseAdmin: SupabaseClient = createClient(
+                process.env.SUPABASE_URL || config.env.SUPABASE_URL || "",
+                process.env.SUPABASE_SERVICE_ROLE_KEY ||
+                    config.env.SUPABASE_SERVICE_ROLE_KEY ||
+                    "",
+                {
+                    auth: {
+                        autoRefreshToken: false,
+                        persistSession: false,
+                    },
+                },
+            );
+
             on("task", {
-                decryptPasswordTask(encrypted) {
+                // ============ AUTHENTICATION TASKS ============
+                async getSupabaseSession({
+                    email,
+                    password,
+                }: {
+                    email: string;
+                    password: string;
+                }) {
+                    try {
+                        console.log(`[Auth] Attempting to sign in: ${email}`);
+
+                        const { data, error } =
+                            await supabaseAdmin.auth.signInWithPassword({
+                                email,
+                                password,
+                            });
+
+                        if (error) {
+                            console.error(
+                                "[Auth] Supabase auth error:",
+                                error.message,
+                            );
+                            return null;
+                        }
+
+                        if (!data.session) {
+                            console.error("[Auth] No session returned");
+                            return null;
+                        }
+
+                        console.log("[Auth] Session obtained successfully");
+                        return data.session;
+                    } catch (err: any) {
+                        console.error("[Auth] Task failed:", err.message);
+                        return null;
+                    }
+                },
+
+                async createTestUser({
+                    email,
+                    password,
+                    metadata = {},
+                }: {
+                    email: string;
+                    password: string;
+                    metadata?: Record<string, any>;
+                }) {
+                    try {
+                        console.log(`[Auth] Creating/checking user: ${email}`);
+
+                        const { data: existingUsers, error: listError } =
+                            await supabaseAdmin.auth.admin.listUsers();
+
+                        if (listError) {
+                            console.error(
+                                "[Auth] List users error:",
+                                listError.message,
+                            );
+                            return null;
+                        }
+
+                        const existingUser = existingUsers?.users.find(
+                            (u) => u.email === email,
+                        );
+
+                        if (existingUser) {
+                            console.log(
+                                `[Auth] User already exists: ${existingUser.id}`,
+                            );
+                            return existingUser;
+                        }
+
+                        const { data, error } =
+                            await supabaseAdmin.auth.admin.createUser({
+                                email,
+                                password,
+                                email_confirm: true,
+                                user_metadata: metadata,
+                            });
+
+                        if (error) {
+                            console.error(
+                                "[Auth] Create user error:",
+                                error.message,
+                            );
+                            return null;
+                        }
+
+                        console.log(`[Auth] User created: ${data.user?.id}`);
+                        return data.user;
+                    } catch (err: any) {
+                        console.error(
+                            "[Auth] Create user failed:",
+                            err.message,
+                        );
+                        return null;
+                    }
+                },
+
+                log(message: string) {
+                    console.log(`[Cypress] ${message}`);
+                    return null;
+                },
+
+                // ============ EXISTING TASKS ============
+                decryptPasswordTask(encrypted: string) {
                     return decryptPassword(encrypted);
                 },
-                async getUserFromDbTask(userId) {
-                    return await getUserFromDb(supabase, userId);
-                },
-                async getTradeFromDbTask(tradeId) {
+                async getTradeFromDbTask(tradeId: string) {
                     const trade = await getTradeFromDb(supabase, tradeId);
                     return trade ? JSON.parse(JSON.stringify(trade)) : null;
                 },
-                async getProgressOverviewSummaryFromDbTask(metric) {
+                async getProgressOverviewSummaryFromDbTask(metric: string) {
                     const progressOverviews =
                         await getProgressOverviewSummaryFromDb(
                             supabase,
-                            metric
+                            metric,
                         );
                     return progressOverviews;
                 },
-                async getTotalStockTypeFromDbTask(stockType) {
+                async getTotalStockTypeFromDbTask(stockType: string) {
                     const stockTypes = await getTotalStockTypeFromDb(
                         supabase,
-                        stockType
+                        stockType,
                     );
                     return stockTypes;
                 },
-                async getTotalEntrySessionFromDbTask(entrySession) {
+                async getTotalEntrySessionFromDbTask(entrySession: string) {
                     const entrySessions = await getTotalEntrySessionFromDb(
                         supabase,
-                        entrySession
+                        entrySession,
                     );
                     return entrySessions;
                 },
-                async getTotalEntryOccasionFromDbTask(entryOccasion) {
+                async getTotalEntryOccasionFromDbTask(entryOccasion: string) {
                     const entryOccasions = await getTotalEntryOccasionFromDb(
                         supabase,
-                        entryOccasion
+                        entryOccasion,
                     );
                     return entryOccasions;
                 },
-                async getFeeFromDbTask(feeId) {
+                async getFeeFromDbTask(feeId: string) {
                     const fee = await getFeeFromDb(supabase, feeId);
                     return fee ? JSON.parse(JSON.stringify(fee)) : null;
                 },
                 async getTotalTransactionsFromDbTask() {
-                    const totalTransactions = await getTotalTransactionsFromDb(
-                        supabase
-                    );
+                    const totalTransactions =
+                        await getTotalTransactionsFromDb(supabase);
                     return totalTransactions;
                 },
                 async getTotalFeeFromDbTask() {
                     const totalFee = await getTotalFeeFromDb(supabase);
                     return totalFee;
                 },
-                async getEventFromDbTask(eventId) {
+                async getEventFromDbTask(eventId: string) {
                     const event = await getEventFromDb(supabase, eventId);
                     return event ? JSON.parse(JSON.stringify(event)) : null;
                 },
-                async getProductListFromDbTask(productId) {
+                async getProductListFromDbTask(productId: string) {
                     const productList = await getProductListFromDb(
                         supabase,
-                        productId
+                        productId,
                     );
                     return productList
                         ? JSON.parse(JSON.stringify(productList))
                         : null;
                 },
-                async getTotalProductSummaryFromDbTask(metric) {
+                async getTotalProductSummaryFromDbTask(metric: string) {
                     const totalProdicts = await getTotalProductSummaryFromDb(
                         supabase,
-                        metric
+                        metric,
                     );
                     return totalProdicts;
                 },
-                async getProductBrandListFromDbTask(productBrandId) {
+                async getProductBrandListFromDbTask(productBrandId: string) {
                     const productBrandList = await getProductBrandListFromDb(
                         supabase,
-                        productBrandId
+                        productBrandId,
                     );
                     return productBrandList
                         ? JSON.parse(JSON.stringify(productBrandList))
                         : null;
                 },
                 async getProductBrandSummaryFromDbTask() {
-                    const productBrandList = await getProductBrandSummaryFromDb(
-                        supabase
-                    );
+                    const productBrandList =
+                        await getProductBrandSummaryFromDb(supabase);
                     return productBrandList
                         ? JSON.parse(JSON.stringify(productBrandList))
                         : null;
                 },
-                async getProductNameListFromDbTask(productNameId) {
+                async getProductNameListFromDbTask(productNameId: string) {
                     const productNameList = await getProductNameListFromDb(
                         supabase,
-                        productNameId
+                        productNameId,
                     );
                     return productNameList
                         ? JSON.parse(JSON.stringify(productNameList))
                         : null;
                 },
                 async getProductNameSummaryFromDbTask() {
-                    const productBrandList = await getProductNameSummaryFromDb(
-                        supabase
-                    );
+                    const productBrandList =
+                        await getProductNameSummaryFromDb(supabase);
                     return productBrandList
                         ? JSON.parse(JSON.stringify(productBrandList))
                         : null;
                 },
-                saveFixture: (args) => saveFixture(args.filename, args.data),
-                getRandomFixture: (filename) => getRandomFixture(filename),
-                saveFeeId: (feeId) => saveFixture("feeIds.json", feeId),
+                saveFixture: (args: { filename: string; data: any }) =>
+                    saveFixture(args.filename, args.data),
+                getRandomFixture: (filename: string) =>
+                    getRandomFixture(filename),
+                saveFeeId: (feeId: string) => saveFixture("feeIds.json", feeId),
                 getRandomFeeId: () => getRandomFixture("feeIds.json"),
-                saveTradeId: (tradeId) => saveFixture("tradeIds.json", tradeId),
+                saveTradeId: (tradeId: string) =>
+                    saveFixture("tradeIds.json", tradeId),
                 getRandomTradeId: () => getRandomFixture("tradeIds.json"),
-                saveEventId: (eventId) => saveFixture("eventIds.json", eventId),
+                saveEventId: (eventId: string) =>
+                    saveFixture("eventIds.json", eventId),
                 getRandomEventId: () => getRandomFixture("eventIds.json"),
-                saveProductId: (productId) =>
+                saveProductId: (productId: string) =>
                     saveFixture("productIds.json", productId),
                 getRandomProductId: () => getRandomFixture("productIds.json"),
-                saveProductBrandId: (productBrandId) =>
+                saveProductBrandId: (productBrandId: string) =>
                     saveFixture("productBrandIds.json", productBrandId),
                 getRandomProductNameId: () =>
                     getRandomFixture("productNameIds.json"),
-                saveProductNameId: (productNameId) =>
+                saveProductNameId: (productNameId: string) =>
                     saveFixture("productNameIds.json", productNameId),
                 getRandomProductBrandId: () =>
                     getRandomFixture("productBrandIds.json"),
                 clearFixtureFile,
             });
+
+            // IMPORTANT: Merge env vars from process.env to config.env
+            config.env = {
+                ...config.env,
+                SUPABASE_URL: process.env.SUPABASE_URL,
+                SUPABASE_SERVICE_ROLE_KEY:
+                    process.env.SUPABASE_SERVICE_ROLE_KEY,
+                SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+                SUPABASE_PROJECT_REF: process.env.SUPABASE_URL
+                    ? new URL(process.env.SUPABASE_URL).hostname.split(".")[0]
+                    : "",
+                TEST_EMAIL: process.env.CYPRESS_TEST_EMAIL,
+                TEST_PASSWORD: process.env.CYPRESS_TEST_PASSWORD,
+                CYPRESS_AUTH_SECRET: process.env.CYPRESS_AUTH_SECRET,
+            };
+
             return config;
         },
         baseUrl: "http://localhost:3000",
         env: {
             SUPABASE_URL: process.env.SUPABASE_URL,
             SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+            SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            SUPABASE_PROJECT_REF: process.env.SUPABASE_URL
+                ? new URL(process.env.SUPABASE_URL).hostname.split(".")[0]
+                : "",
+            TEST_EMAIL: process.env.CYPRESS_TEST_EMAIL,
+            TEST_PASSWORD: process.env.CYPRESS_TEST_PASSWORD,
+            CYPRESS_AUTH_SECRET: process.env.CYPRESS_AUTH_SECRET,
         },
     },
 });

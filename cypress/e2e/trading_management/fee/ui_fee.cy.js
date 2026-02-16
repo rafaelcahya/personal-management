@@ -1,6 +1,6 @@
 let userData;
 import addFeeValidationTestCases from "./addNewFeeValTc.json";
-import { randomString } from "../../support/common/helper";
+import { randomString } from "../../../support/common/helper";
 
 describe("Navigation", () => {
     beforeEach(() => {

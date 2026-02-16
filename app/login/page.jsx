@@ -40,16 +40,21 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div
+            id="loginPage"
+            className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900"
+        >
             <Card className="w-full max-w-md">
                 <CardHeader>
                     <CardTitle>Welcome Back</CardTitle>
                     <CardDescription>
-                        Sign in to your inventory management system
+                        Sign in to access trading analytics, inventory
+                        forecasts. Let's get to work.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Button
+                        id="googleSignInBtn_loginPage"
                         onClick={handleGoogleLogin}
                         disabled={loading}
                         className="w-full"
