@@ -55,3 +55,23 @@ Cypress.Commands.add("GetTradeSummary", () => {
 Cypress.Commands.add("GetTradeSummaryNoAuth", () => {
     return cy.apiRequestNoAuth("GET", "/api/trade/v1/trade/summary");
 });
+
+Cypress.Commands.add("GetSingleTrade", (id) => {
+    return cy.apiRequestWithSession("GET", `/api/trade/v1/trade/${id}`);
+});
+
+Cypress.Commands.add("GetSingleTradeNoAuth", (id) => {
+    return cy.apiRequestNoAuth("GET", `/api/trade/v1/trade/${id}`);
+});
+
+Cypress.Commands.add("AddTrade", (request) => {
+    return cy.apiRequestWithSession("POST", "/api/trade/v1/trade/create", {
+        body: request,
+    });
+});
+
+Cypress.Commands.add("AddTradeNoAuth", (request) => {
+    return cy.apiRequestNoAuth("POST", "/api/trade/v1/trade/create", {
+        body: request,
+    });
+});

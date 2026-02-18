@@ -205,7 +205,10 @@ export default function AddTrade({ onAdded }) {
                 </DialogHeader>
 
                 {optionsLoading ? (
-                    <div className="flex flex-col items-center justify-center py-12 gap-3">
+                    <div
+                        id="loadingOptionsContainer_tradePage"
+                        className="flex flex-col items-center justify-center py-12 gap-3"
+                    >
                         <Loader2 className="size-8 animate-spin text-violet-600" />
                         <p className="text-sm text-slate-600">
                             Loading form options...
@@ -259,6 +262,7 @@ export default function AddTrade({ onAdded }) {
                                                 <PopoverContent
                                                     className="w-auto p-0"
                                                     align="start"
+                                                    id="tradeDatePicker_tradePage"
                                                 >
                                                     <Calendar
                                                         mode="single"
@@ -274,7 +278,10 @@ export default function AddTrade({ onAdded }) {
                                                 When did you execute this trade?
                                                 📅
                                             </FormDescription>
-                                            <FormMessage id="tradeDateField_errorMessage_tradePage" className="font-medium">
+                                            <FormMessage
+                                                id="tradeDateField_errorMessage_tradePage"
+                                                className="font-medium"
+                                            >
                                                 {fieldState.error?.message}
                                             </FormMessage>
                                         </FormItem>
@@ -305,7 +312,10 @@ export default function AddTrade({ onAdded }) {
                                             <FormDescription className="text-xs">
                                                 Stock symbol you traded 🏷️
                                             </FormDescription>
-                                            <FormMessage id="tickerField_errorMessage_tradePage" className="font-medium">
+                                            <FormMessage
+                                                id="tickerField_errorMessage_tradePage"
+                                                className="font-medium"
+                                            >
                                                 {fieldState.error?.message}
                                             </FormMessage>
                                         </FormItem>
@@ -339,6 +349,7 @@ export default function AddTrade({ onAdded }) {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <FormField
                                         control={control}
+                                        id="realizedGainField_tradePage"
                                         name="realized_gain"
                                         render={({ field }) => (
                                             <FormItem>
@@ -350,6 +361,7 @@ export default function AddTrade({ onAdded }) {
                                                         value={formatRupiah(
                                                             field.value,
                                                         )}
+                                                        id="realizedGainValue_realizedGainField_tradePage"
                                                         disabled
                                                         className="font-medium bg-slate-50"
                                                     />
@@ -363,6 +375,7 @@ export default function AddTrade({ onAdded }) {
 
                                     <FormField
                                         control={control}
+                                        id="returnPercentField_tradePage"
                                         name="return_percent"
                                         render={({ field }) => (
                                             <FormItem>
@@ -373,6 +386,7 @@ export default function AddTrade({ onAdded }) {
                                                     <Input
                                                         value={field.value}
                                                         disabled
+                                                        id="returnPercentValue_returnPercentField_tradePage"
                                                         className="font-medium bg-slate-50"
                                                     />
                                                 </FormControl>

@@ -14,6 +14,14 @@ Cypress.Commands.add("getTestUserId", () => {
             return session.user.id;
         });
 });
+/**
+ * Get single trade from database
+ */
+Cypress.Commands.add("getSingleTradeFromDb", (tradeId) => {
+    return cy.getTestUserId().then((userId) => {
+        return cy.task("getSingleTradeFromDb", { tradeId, userId });
+    });
+});
 
 /**
  * Get all trades from database

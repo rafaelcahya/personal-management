@@ -1,9 +1,27 @@
 const TABLE_NAME = "trade_list";
 
 /**
+ * Get single trades for a user from database
+ */
+export async function getSingleTradeFromDb(supabase, tradeId, userId) {
+    const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .select("*")
+        .eq("id", tradeId)
+        .eq("user_id", userId)
+        .is("deleted_at", null);
+
+    if (error) {
+        throw new Error(`DB query failed: ${error.message}`);
+    }
+
+    return data || [];
+}
+
+/**
  * Get all trades for a user from database
  */
-async function getTradesFromDb(supabase, userId) {
+export async function getTradesFromDb(supabase, userId) {
     const { data, error } = await supabase
         .from(TABLE_NAME)
         .select("*")
@@ -20,7 +38,7 @@ async function getTradesFromDb(supabase, userId) {
 /**
  * Get total trades count from database
  */
-async function getTotalTradesFromDb(supabase, userId) {
+export async function getTotalTradesFromDb(supabase, userId) {
     const { count, error } = await supabase
         .from(TABLE_NAME)
         .select("*", { count: "exact", head: true })
@@ -37,7 +55,7 @@ async function getTotalTradesFromDb(supabase, userId) {
 /**
  * Get total wins from database (realized_gain > 0)
  */
-async function getTotalWinsFromDb(supabase, userId) {
+export async function getTotalWinsFromDb(supabase, userId) {
     const trades = await getTradesFromDb(supabase, userId);
 
     const wins = trades.filter((trade) => {
@@ -51,7 +69,7 @@ async function getTotalWinsFromDb(supabase, userId) {
 /**
  * Get total losses from database (realized_gain < 0)
  */
-async function getTotalLossesFromDb(supabase, userId) {
+export async function getTotalLossesFromDb(supabase, userId) {
     const trades = await getTradesFromDb(supabase, userId);
 
     const losses = trades.filter((trade) => {
@@ -65,7 +83,7 @@ async function getTotalLossesFromDb(supabase, userId) {
 /**
  * Get stock type summary from database
  */
-async function getStockTypeSummaryFromDb(supabase, userId) {
+export async function getStockTypeSummaryFromDb(supabase, userId) {
     const { data, error } = await supabase
         .from(TABLE_NAME)
         .select("stock_type_option")
@@ -90,7 +108,7 @@ async function getStockTypeSummaryFromDb(supabase, userId) {
 /**
  * Get entry session summary from database
  */
-async function getEntrySessionSummaryFromDb(supabase, userId) {
+export async function getEntrySessionSummaryFromDb(supabase, userId) {
     const { data, error } = await supabase
         .from(TABLE_NAME)
         .select("entry_session_option")
@@ -115,7 +133,7 @@ async function getEntrySessionSummaryFromDb(supabase, userId) {
 /**
  * Get entry occasion summary from database
  */
-async function getEntryOccasionSummaryFromDb(supabase, userId) {
+export async function getEntryOccasionSummaryFromDb(supabase, userId) {
     const { data, error } = await supabase
         .from(TABLE_NAME)
         .select("entry_occasion_option")
@@ -136,13 +154,3 @@ async function getEntryOccasionSummaryFromDb(supabase, userId) {
 
     return summary;
 }
-
-module.exports = {
-    getTradesFromDb,
-    getTotalTradesFromDb,
-    getTotalWinsFromDb,
-    getTotalLossesFromDb,
-    getStockTypeSummaryFromDb,
-    getEntrySessionSummaryFromDb,
-    getEntryOccasionSummaryFromDb,
-};

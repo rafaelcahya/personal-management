@@ -3,6 +3,7 @@ import { defineConfig } from "cypress";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { createEngine } from "./cypress/support/engine/createEngine.js";
 import {
+    getSingleTradeFromDb,
     getTradesFromDb,
     getTotalTradesFromDb,
     getTotalWinsFromDb,
@@ -182,10 +183,22 @@ export default defineConfig({
                     return null;
                 },
 
-                // ============ EXISTING TASKS ============
                 decryptPasswordTask(encrypted: string) {
                     return decryptPassword(encrypted);
                 },
+
+                // ============ DATABASE TASKS ============ //
+                // Trading - Trade
+                async getSingleTradeFromDb(params: { tradeId: string; userId: string }) {
+                    const { tradeId, userId } = params;
+                    const trade = await getSingleTradeFromDb(
+                        supabaseAdmin,
+                        tradeId,
+                        userId,
+                    );
+                    return trade;
+                },
+
                 async getTradesFromDb(userId: string) {
                     const trades = await getTradesFromDb(supabaseAdmin, userId);
                     return trades;

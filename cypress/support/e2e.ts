@@ -39,4 +39,3 @@ afterEach(function () {
     const testState = this.currentTest?.state || "unknown";
     cy.task("log", `Test "${testTitle}": ${testState}`);
 });
-

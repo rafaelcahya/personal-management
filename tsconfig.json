@@ -39,7 +39,7 @@
     "lib/supabase/client.js",
     "app/[...catchall]/page.jsx",
     "app/main/landing/trading-management/dashboard/page.jsx"
-, "middleware.js"  ],
+, "middleware.js", "cypress/support/e2e.ts"  ],
   "exclude": [
     "node_modules"
   ]

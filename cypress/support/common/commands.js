@@ -1,5 +1,3 @@
-// cypress/support/commands.js
-
 /**
  * ============================================================================
  * AUTHENTICATION COMMANDS - UI Testing with Supabase

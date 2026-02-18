@@ -1,5 +1,3 @@
-"use client";
-
 import {
     FormControl,
     FormField,
@@ -39,6 +37,7 @@ export default function DynamicSelectField({
                     >
                         <FormControl>
                             <SelectTrigger
+                                id={`${name}Field_tradePage`}
                                 className={`w-full text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
                                     fieldState.error ? "border-rose-500" : ""
                                 }`}
@@ -55,7 +54,10 @@ export default function DynamicSelectField({
                                 )}
                             </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="max-h-[300px]">
+                        <SelectContent
+                            className="max-h-[300px]"
+                            id={`${name}Options_tradePage`}
+                        >
                             {!loading && options.length === 0 ? (
                                 <div className="p-4 text-sm text-slate-500 text-center">
                                     No options available
@@ -64,7 +66,7 @@ export default function DynamicSelectField({
                                 options.map((option) => (
                                     <SelectItem
                                         key={option.id}
-                                        id={`${name}-option-${option.id}`}
+                                        id={`${name}Option${option.id}_tradePage`}
                                         value={option[displayField]}
                                         className="text-sm font-medium cursor-pointer"
                                     >
@@ -74,7 +76,10 @@ export default function DynamicSelectField({
                             )}
                         </SelectContent>
                     </Select>
-                    <FormMessage id={`${name}-errorMessage`} className="font-medium">
+                    <FormMessage
+                        id={`${name}Field_errorMessage_tradePage`}
+                        className="font-medium"
+                    >
                         {fieldState.error?.message}
                     </FormMessage>
                 </FormItem>

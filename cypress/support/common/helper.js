@@ -79,3 +79,10 @@ export function clearFixtureFile(filename) {
         return false;
     }
 }
+
+export const formatToRupiah = (value) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return "Rp. 0";
+
+    return `Rp. ${num.toLocaleString("id-ID")}`;
+};
