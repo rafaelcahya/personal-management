@@ -18,7 +18,30 @@ export async function PUT(req, { params }) {
         }
 
         const { id } = params;
-        const body = await req.json();
+
+        if (!id || isNaN(id) || parseInt(id) <= 0) {
+            return NextResponse.json(
+                { success: false, error: "Invalid trade ID format" },
+                { status: 400 },
+            );
+        }
+
+        let body;
+        try {
+            body = await req.json();
+        } catch (parseError) {
+            return NextResponse.json(
+                { success: false, error: "Invalid JSON in request body" },
+                { status: 400 },
+            );
+        }
+
+        if (!body || Object.keys(body).length === 0) {
+            return NextResponse.json(
+                { success: false, error: ["Request body cannot be empty"] },
+                { status: 400 },
+            );
+        }
 
         const updatedTrade = await updateTrade(user.id, id, body);
 

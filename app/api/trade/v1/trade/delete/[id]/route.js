@@ -18,6 +18,14 @@ export async function DELETE(req, { params }) {
         }
 
         const { id } = params;
+
+        if (!id || isNaN(id) || parseInt(id) <= 0) {
+            return NextResponse.json(
+                { success: false, error: "Invalid trade ID format" },
+                { status: 400 },
+            );
+        }
+
         await deleteTrade(user.id, id);
 
         return NextResponse.json(

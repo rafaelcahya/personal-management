@@ -1,9 +1,23 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { getAllTradeOptions } from "@/lib/services/trade/options/getTradeOptions";
 
 export async function GET() {
     try {
-        const options = await getAllTradeOptions();
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const options = await getAllTradeOptions(user.id);
 
         return NextResponse.json({ success: true, options }, { status: 200 });
     } catch (err) {

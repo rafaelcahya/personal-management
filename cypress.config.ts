@@ -13,6 +13,13 @@ import {
     getEntryOccasionSummaryFromDb,
 } from "./cypress/support/db/trading/trade/tradeDb.js";
 import {
+    getBuyReasonOptionsFromDb,
+    getEntryOccasionOptionsFromDb,
+    getEntrySessionOptionsFromDb,
+    getStockTypeOptionsFromDb,
+    getSellReasonOptionsFromDb,
+} from "./cypress/support/db/trading/trade/optionDb.js";
+import {
     getFeeFromDb,
     getTotalFeeFromDb,
     getTotalTransactionsFromDb,
@@ -57,6 +64,8 @@ console.log(
 console.log("=================================\n");
 
 export default defineConfig({
+    projectId: process.env.CYPRESS_PROJECT_ID,
+
     e2e: {
         setupNodeEvents(on, config) {
             const supabase = createEngine(
@@ -189,7 +198,10 @@ export default defineConfig({
 
                 // ============ DATABASE TASKS ============ //
                 // Trading - Trade
-                async getSingleTradeFromDb(params: { tradeId: string; userId: string }) {
+                async getSingleTradeFromDb(params: {
+                    tradeId: string;
+                    userId: string;
+                }) {
                     const { tradeId, userId } = params;
                     const trade = await getSingleTradeFromDb(
                         supabaseAdmin,
@@ -251,6 +263,58 @@ export default defineConfig({
                     );
                     return summary;
                 },
+
+                async getOptionFromDbTask(params: {
+                    optionType: string;
+                    optionId: string;
+                    userId: string;
+                }) {
+                    const { optionType, optionId, userId } = params;
+
+                    let optionData = null;
+
+                    switch (optionType) {
+                        case "buyReason":
+                            optionData = await getBuyReasonOptionsFromDb(
+                                userId,
+                                optionId,
+                            );
+                            break;
+                        case "entryOccasion":
+                            optionData = await getEntryOccasionOptionsFromDb(
+                                userId,
+                                optionId,
+                            );
+                            break;
+                        case "entrySession":
+                            optionData = await getEntrySessionOptionsFromDb(
+                                userId,
+                                optionId,
+                            );
+                            break;
+                        case "stockType":
+                            optionData = await getStockTypeOptionsFromDb(
+                                userId,
+                                optionId,
+                            );
+                            break;
+                        case "sellReason":
+                            optionData = await getSellReasonOptionsFromDb(
+                                userId,
+                                optionId,
+                            );
+                            break;
+                        default:
+                            throw new Error(
+                                `Unknown option type: ${optionType}`,
+                            );
+                    }
+
+                    return optionData
+                        ? JSON.parse(JSON.stringify(optionData))
+                        : null;
+                },
+
                 async getFeeFromDbTask(feeId: string) {
                     const fee = await getFeeFromDb(supabase, feeId);
                     return fee ? JSON.parse(JSON.stringify(fee)) : null;
@@ -370,6 +434,13 @@ export default defineConfig({
             TEST_EMAIL: process.env.CYPRESS_TEST_EMAIL,
             TEST_PASSWORD: process.env.CYPRESS_TEST_PASSWORD,
             CYPRESS_AUTH_SECRET: process.env.CYPRESS_AUTH_SECRET,
+        },
+    },
+
+    component: {
+        devServer: {
+            framework: "next",
+            bundler: "webpack",
         },
     },
 });
