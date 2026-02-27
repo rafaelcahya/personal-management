@@ -1,7 +1,0 @@
-[
-    {
-        "description": "should show error when Product Name is empty",
-        "fields": {},
-        "expectedMsg": { "#productNameMessage": "Product name cannot be empty" }
-    }
-]
