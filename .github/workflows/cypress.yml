@@ -1,42 +1,54 @@
-name: Cypress Tests
+name: E2E Tests
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - setup-github-actions-configuration
+  pull_request:
+    branches:
+      - setup-github-actions-configuration
 
 jobs:
-  cypress-run:
+  e2e:
     runs-on: ubuntu-latest
+    env:
+      # FROM GITHUB SECRETS
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      CYPRESS_AUTH_SECRET: ${{ secrets.CYPRESS_AUTH_SECRET }}
+      CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
+      CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
+      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: "18"
+          cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build Next.js app
+      - name: Build Next.js
         run: npm run build
-        # pastikan di package.json ada: "build": "next build"
 
-      - name: Start server in background
-        run: npm run start &
-        # atau: npx next start &
-        # & biar server jalan di background
+      - name: Start server
+        run: npm start &
 
-      - name: Wait for server
-        run: |
-          sleep 10
-          # atau gunakan curl ping ke / setelah build
-
-      - name: Run Cypress tests
+      - name: Wait for server & Run Cypress + record to Cypress Cloud
         uses: cypress-io/github-action@v6
         with:
           wait-on: "http://localhost:3000"
-          start: npm run start
-          build: npm run build
+          record: true
+          parallel: true
+          # kamu bisa ganti group nama
+          group: "e2e-automation-testing"
+          # jika kamu pakai cypress.config.ts di root
+          config-file: "cypress.config.ts"
