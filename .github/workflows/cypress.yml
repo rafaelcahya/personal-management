@@ -2,9 +2,9 @@ name: E2E Tests (Cypress)
 
 on:
   push:
-    branches: [ setup-github-action-configuration ]
+    branches: [setup-github-action-configuration]
   pull_request:
-    branches: [ setup-github-action-configuration ]
+    branches: [setup-github-action-configuration]
 
 jobs:
   install:
@@ -17,7 +17,7 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Create .env
+      - name: Create .env (opsional, lihat Opsi A/B di atas)
         run: |
           cat > .env << EOF
           SUPABASE_URL=${{ secrets.SUPABASE_URL }}
@@ -35,6 +35,9 @@ jobs:
         with:
           runTests: false
           build: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Upload build
         uses: actions/upload-artifact@v4
@@ -49,13 +52,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        containers: [1, 2, 3] # pilih 2-5 biasanya cukup
+        containers: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: npm
 
       - name: Download build
@@ -63,20 +66,6 @@ jobs:
         with:
           name: next-build
           path: .next
-
-      - name: Create .env
-        run: |
-          cat > .env << EOF
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          CYPRESS_AUTH_SECRET=${{ secrets.CYPRESS_AUTH_SECRET }}
-          CYPRESS_TEST_EMAIL=${{ secrets.CYPRESS_TEST_EMAIL }}
-          CYPRESS_TEST_PASSWORD=${{ secrets.CYPRESS_TEST_PASSWORD }}
-          CYPRESS_PROJECT_ID=${{ secrets.CYPRESS_PROJECT_ID }}
-          CYPRESS_RECORD_KEY=${{ secrets.CYPRESS_RECORD_KEY }}
-          EOF
 
       - name: Cypress run (record + parallel)
         uses: cypress-io/github-action@v7
@@ -88,5 +77,13 @@ jobs:
           parallel: true
           group: "e2e-personal-management"
         env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          CYPRESS_AUTH_SECRET: ${{ secrets.CYPRESS_AUTH_SECRET }}
+          CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
+          CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
