@@ -3,10 +3,10 @@ name: E2E Tests
 on:
   push:
     branches:
-      - setup-github-actions-configuration
+      - setup-github-action-configuration
   pull_request:
     branches:
-      - setup-github-actions-configuration
+      - setup-github-action-configuration
 
 jobs:
   e2e:
