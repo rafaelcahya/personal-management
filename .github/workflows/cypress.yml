@@ -10,17 +10,6 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    env:
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      CYPRESS_AUTH_SECRET: ${{ secrets.CYPRESS_AUTH_SECRET }}
-      CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
-      CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
-      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,16 +23,31 @@ jobs:
       - name: Install deps
         run: npm ci
 
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          CYPRESS_AUTH_SECRET=${{ secrets.CYPRESS_AUTH_SECRET }}
+          CYPRESS_TEST_EMAIL=${{ secrets.CYPRESS_TEST_EMAIL }}
+          CYPRESS_TEST_PASSWORD=${{ secrets.CYPRESS_TEST_PASSWORD }}
+          CYPRESS_PROJECT_ID=${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_RECORD_KEY=${{ secrets.CYPRESS_RECORD_KEY }}
+          EOF
+        shell: bash
+
       - name: Build
         run: npm run build
 
       - name: Start server
         run: npm start &
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
-      - name: Wait & Run Cypress
+      - name: Run Cypress
         uses: cypress-io/github-action@v6
         with:
           wait-on: "http://localhost:3000"
@@ -51,3 +55,5 @@ jobs:
           parallel: true
           group: "e2e-personal-management"
           config-file: "cypress.config.ts"
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
