@@ -17,14 +17,13 @@ jobs:
           node-version: 20
           cache: npm
 
-      # Opsional: file .env hanya untuk konsistensi dengan lokal
-      - name: Create .env
+      - name: Create .env (CI only)
         run: |
           cat > .env << EOF
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           CYPRESS_AUTH_SECRET=${{ secrets.CYPRESS_AUTH_SECRET }}
           CYPRESS_TEST_EMAIL=${{ secrets.CYPRESS_TEST_EMAIL }}
           CYPRESS_TEST_PASSWORD=${{ secrets.CYPRESS_TEST_PASSWORD }}
@@ -36,9 +35,6 @@ jobs:
         with:
           runTests: false
           build: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Upload build
         uses: actions/upload-artifact@v4
