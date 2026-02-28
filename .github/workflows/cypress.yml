@@ -6,6 +6,18 @@ on:
   pull_request:
     branches: [setup-github-action-configuration]
 
+# Definisikan ENV di tingkat workflow agar tersedia di semua job
+env:
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  CYPRESS_AUTH_SECRET: ${{ secrets.CYPRESS_AUTH_SECRET }}
+  CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
+  CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
+  CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+
 jobs:
   install:
     runs-on: ubuntu-24.04
@@ -17,24 +29,12 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Create .env (CI only)
-        run: |
-          cat > .env << EOF
-          NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          CYPRESS_AUTH_SECRET=${{ secrets.CYPRESS_AUTH_SECRET }}
-          CYPRESS_TEST_EMAIL=${{ secrets.CYPRESS_TEST_EMAIL }}
-          CYPRESS_TEST_PASSWORD=${{ secrets.CYPRESS_TEST_PASSWORD }}
-          CYPRESS_PROJECT_ID=${{ secrets.CYPRESS_PROJECT_ID }}
-          EOF
-
       - name: Cypress install + build (no tests)
         uses: cypress-io/github-action@v7
         with:
           runTests: false
           build: npm run build
+        # Env vars otomatis terpakai dari definisi 'env' di atas
 
       - name: Upload build
         uses: actions/upload-artifact@v4
@@ -74,13 +74,4 @@ jobs:
           parallel: true
           group: "e2e-personal-management"
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          CYPRESS_AUTH_SECRET: ${{ secrets.CYPRESS_AUTH_SECRET }}
-          CYPRESS_TEST_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
-          CYPRESS_TEST_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
