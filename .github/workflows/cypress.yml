@@ -1,4 +1,3 @@
-# .github/workflows/e2e-cypress.yml
 name: E2E Tests (Cypress)
 
 on:
@@ -8,22 +7,64 @@ on:
     branches: [ setup-github-action-configuration ]
 
 jobs:
-  e2e:
-    runs-on: ubuntu-latest
+  install:
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Create .env
+        run: |
+          cat > .env << EOF
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          CYPRESS_AUTH_SECRET=${{ secrets.CYPRESS_AUTH_SECRET }}
+          CYPRESS_TEST_EMAIL=${{ secrets.CYPRESS_TEST_EMAIL }}
+          CYPRESS_TEST_PASSWORD=${{ secrets.CYPRESS_TEST_PASSWORD }}
+          CYPRESS_PROJECT_ID=${{ secrets.CYPRESS_PROJECT_ID }}
+          EOF
+
+      - name: Cypress install + build (no tests)
+        uses: cypress-io/github-action@v7
+        with:
+          runTests: false
+          build: npm run build
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: .next
+          if-no-files-found: error
+
+  e2e:
+    runs-on: ubuntu-24.04
+    needs: install
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2, 3] # pilih 2-5 biasanya cukup
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: "npm"
+          cache: npm
 
-      - name: Install deps
-        run: npm ci
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .next
 
-      - name: Create .env file
+      - name: Create .env
         run: |
           cat > .env << EOF
           SUPABASE_URL=${{ secrets.SUPABASE_URL }}
@@ -36,24 +77,16 @@ jobs:
           CYPRESS_PROJECT_ID=${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY=${{ secrets.CYPRESS_RECORD_KEY }}
           EOF
-        shell: bash
 
-      - name: Build
-        run: npm run build
-
-      - name: Start server
-        run: npm start &
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-
-      - name: Run Cypress
-        uses: cypress-io/github-action@v6
+      - name: Cypress run (record + parallel)
+        uses: cypress-io/github-action@v7
         with:
+          start: npm start
           wait-on: "http://localhost:3000"
+          wait-on-timeout: 120
           record: true
           parallel: true
           group: "e2e-personal-management"
-          config-file: "cypress.config.ts"
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

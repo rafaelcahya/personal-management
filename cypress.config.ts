@@ -1,5 +1,5 @@
 import { defineConfig } from "cypress";
-import cypressDotenv from "cypress-dotenv/plugin";
+import cypressDotenv from "cypress-dotenv";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { createEngine } from "./cypress/support/engine/createEngine.js";
 import {
