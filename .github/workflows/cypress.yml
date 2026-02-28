@@ -1,18 +1,16 @@
-name: E2E Tests
+# .github/workflows/e2e-cypress.yml
+name: E2E Tests (Cypress)
 
 on:
   push:
-    branches:
-      - setup-github-action-configuration
+    branches: [ setup-github-action-configuration ]
   pull_request:
-    branches:
-      - setup-github-action-configuration
+    branches: [ setup-github-action-configuration ]
 
 jobs:
   e2e:
     runs-on: ubuntu-latest
     env:
-      # FROM GITHUB SECRETS
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -30,25 +28,26 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: 18
           cache: "npm"
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
-      - name: Build Next.js
+      - name: Build
         run: npm run build
 
       - name: Start server
         run: npm start &
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
-      - name: Wait for server & Run Cypress + record to Cypress Cloud
+      - name: Wait & Run Cypress
         uses: cypress-io/github-action@v6
         with:
           wait-on: "http://localhost:3000"
           record: true
           parallel: true
-          # kamu bisa ganti group nama
-          group: "e2e-automation-testing"
-          # jika kamu pakai cypress.config.ts di root
+          group: "e2e-personal-management"
           config-file: "cypress.config.ts"

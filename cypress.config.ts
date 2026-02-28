@@ -45,7 +45,29 @@ import {
 import { decryptPassword } from "./lib/utils/decryptedPassword.js";
 
 // Load .env.local BEFORE anything else
-dotenv.config({ path: ".env.local" });
+// dotenv.config({ path: ".env.local" });
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+console.log("=== CYPRESS ENV DEBUG ===");
+console.log("SUPABASE_URL:", supabaseUrl ? "✓" : "✗ MISSING");
+console.log("SUPABASE_SERVICE_ROLE_KEY:", serviceKey ? "✓" : "✗ MISSING");
+console.log(
+    "NEXT_PUBLIC_SUPABASE_URL:",
+    process.env.NEXT_PUBLIC_SUPABASE_URL ? "✓" : "✗ MISSING",
+);
+console.log(
+    "CYPRESS_PROJECT_ID:",
+    process.env.CYPRESS_PROJECT_ID ? "✓" : "✗ MISSING",
+);
+console.log("=========================");
+
+if (!supabaseUrl || !serviceKey) {
+    throw new Error(
+        `Cypress fail: SUPABASE_URL=${!!supabaseUrl}, SERVICE_ROLE_KEY=${!!serviceKey}`,
+    );
+}
 
 // Debug log
 console.log("\n=== Cypress Environment Check ===");
