@@ -7,7 +7,7 @@
         "start": "next start",
         "lint": "next lint",
         "cypress:open": "cypress open",
-        "cy:run": "cypress run --config-file=cypress.config.ts --headless --browser chrome",
+        "cy:run": "cypress run --config-file=cypress.config.ts --headed --browser chrome",
         "cy:install": "cypress install",
         "cy:verify": "cypress verify"
     },
