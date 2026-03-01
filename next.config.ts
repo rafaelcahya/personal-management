@@ -35,9 +35,6 @@ const nextConfig: NextConfig = {
     // CI BUILD OPTIMIZATION
     swcMinify: true,
     poweredByHeader: false,
-
-    // OUTPUT UNTUK DOCKER/JENKINS
-    output: "standalone",
 };
 
 export default nextConfig;
