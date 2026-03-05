@@ -125,7 +125,6 @@ describe("Login - Auth Callback - Dekstop Interactions", () => {
     it("should handle successful OAuth callback", () => {
         const mockCode = "mock-oauth-code-12345";
 
-        // Intercept the code exchange
         cy.intercept("POST", "**/auth/v1/token*", {
             statusCode: 200,
             body: {
@@ -140,18 +139,14 @@ describe("Login - Auth Callback - Dekstop Interactions", () => {
             },
         }).as("tokenExchange");
 
-        // Visit callback URL with code
         cy.visit(`/auth/callback?code=${mockCode}`);
 
-        // Should redirect to landing page
         cy.url({ timeout: 10000 }).should("include", "/login");
     });
 
     it("should handle OAuth callback error", () => {
-        // Visit callback without code
         cy.visit("/auth/callback");
 
-        // Should redirect to login with error
         cy.url().should("include", "/login");
     });
 
@@ -179,13 +174,10 @@ describe("Login - Session Persistence - Dekstop Interactions", () => {
         cy.loginWithBypass();
         cy.visit("/main/landing");
 
-        // Verify logged in
         cy.url().should("include", "/main/landing");
 
-        // Reload page
         cy.reload();
 
-        // Should still be logged in
         cy.url().should("include", "/main/landing");
         cy.get("body").should("be.visible");
     });
@@ -295,7 +287,6 @@ describe("Login - Auth Callback - Mobile Interactions", () => {
     it("should handle successful OAuth callback", () => {
         const mockCode = "mock-oauth-code-12345";
 
-        // Intercept the code exchange
         cy.intercept("POST", "**/auth/v1/token*", {
             statusCode: 200,
             body: {
@@ -310,18 +301,14 @@ describe("Login - Auth Callback - Mobile Interactions", () => {
             },
         }).as("tokenExchange");
 
-        // Visit callback URL with code
         cy.visit(`/auth/callback?code=${mockCode}`);
 
-        // Should redirect to landing page
         cy.url({ timeout: 10000 }).should("include", "/login");
     });
 
     it("should handle OAuth callback error", () => {
-        // Visit callback without code
         cy.visit("/auth/callback");
 
-        // Should redirect to login with error
         cy.url().should("include", "/login");
     });
 
@@ -349,13 +336,10 @@ describe("Login - Session Persistence - Mobile Interactions", () => {
         cy.loginWithBypass();
         cy.visit("/main/landing");
 
-        // Verify logged in
         cy.url().should("include", "/main/landing");
 
-        // Reload page
         cy.reload();
 
-        // Should still be logged in
         cy.url().should("include", "/main/landing");
         cy.get("body").should("be.visible");
     });
@@ -465,7 +449,6 @@ describe("Login - Auth Callback - Tablet Interactions", () => {
     it("should handle successful OAuth callback", () => {
         const mockCode = "mock-oauth-code-12345";
 
-        // Intercept the code exchange
         cy.intercept("POST", "**/auth/v1/token*", {
             statusCode: 200,
             body: {
@@ -480,18 +463,14 @@ describe("Login - Auth Callback - Tablet Interactions", () => {
             },
         }).as("tokenExchange");
 
-        // Visit callback URL with code
         cy.visit(`/auth/callback?code=${mockCode}`);
 
-        // Should redirect to landing page
         cy.url({ timeout: 10000 }).should("include", "/login");
     });
 
     it("should handle OAuth callback error", () => {
-        // Visit callback without code
         cy.visit("/auth/callback");
 
-        // Should redirect to login with error
         cy.url().should("include", "/login");
     });
 
@@ -519,13 +498,10 @@ describe("Login - Session Persistence - Tablet Interactions", () => {
         cy.loginWithBypass();
         cy.visit("/main/landing");
 
-        // Verify logged in
         cy.url().should("include", "/main/landing");
 
-        // Reload page
         cy.reload();
 
-        // Should still be logged in
         cy.url().should("include", "/main/landing");
         cy.get("body").should("be.visible");
     });

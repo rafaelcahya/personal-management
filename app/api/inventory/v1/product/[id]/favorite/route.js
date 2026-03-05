@@ -6,7 +6,6 @@ export async function PATCH(req, { params }) {
     try {
         const supabase = await createClient();
 
-        // Autentikasi user
         const {
             data: { user },
             error: authError,
@@ -19,7 +18,6 @@ export async function PATCH(req, { params }) {
             );
         }
 
-        // Get product ID from URL params
         const productId = parseInt(params.id);
 
         if (!productId || isNaN(productId)) {
@@ -29,7 +27,6 @@ export async function PATCH(req, { params }) {
             );
         }
 
-        // Parse request body
         const body = await req.json();
         const { isFavorite } = body;
 
@@ -40,7 +37,6 @@ export async function PATCH(req, { params }) {
             );
         }
 
-        // Call service
         const updatedProduct = await favoriteProduct(
             user.id,
             productId,

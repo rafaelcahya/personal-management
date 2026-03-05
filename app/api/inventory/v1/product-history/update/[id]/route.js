@@ -8,7 +8,6 @@ export async function PATCH(request, { params }) {
 
         const { depleted_quantity, end_usage_date } = body;
 
-        // Validation
         if (!depleted_quantity || depleted_quantity <= 0) {
             return NextResponse.json(
                 { error: "Depleted quantity must be greater than 0" },
@@ -23,7 +22,6 @@ export async function PATCH(request, { params }) {
             );
         }
 
-        // Update history
         const updatedHistory = await updateProductUsage(id, {
             depleted_quantity: Number(depleted_quantity),
             end_usage_date,

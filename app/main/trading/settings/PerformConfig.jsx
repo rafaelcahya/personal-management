@@ -77,7 +77,7 @@ export default function PerformConfig({ onClose }) {
                 toast.error(data.error || "Failed to update settings");
             } else {
                 toast.success("Settings updated successfully!");
-                onClose?.(); // Close dialog after successful save
+                onClose?.()
             }
         } catch (err) {
             console.error(err);
@@ -135,7 +135,6 @@ export default function PerformConfig({ onClose }) {
                                                     : ""
                                             }
                                             onChange={(e) => {
-                                                // Remove all non-digit characters
                                                 const raw =
                                                     e.target.value.replace(
                                                         /\D/g,
@@ -171,7 +170,6 @@ export default function PerformConfig({ onClose }) {
                                             {...field}
                                             value={field.value}
                                             onChange={(e) => {
-                                                // Allow only numbers, dots, and commas
                                                 const cleaned =
                                                     e.target.value.replace(
                                                         /[^0-9.,]/g,

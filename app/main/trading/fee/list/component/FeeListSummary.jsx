@@ -38,7 +38,6 @@ export default function FeeListSummary({ fees }) {
         ];
     }, [fees]);
 
-    // Calculate primary stat for mobile header
     const totalAmount = useMemo(() => {
         return fees.reduce((sum, fee) => sum + Number(fee.fee || 0), 0);
     }, [fees]);

@@ -17,10 +17,8 @@ export async function GET(req, { params }) {
             );
         }
 
-        // Get trade ID from params
-        const { id } = params;
+        const { id } = await params;
 
-        // ✅ Updated validation logic
         if (!id) {
             return NextResponse.json(
                 { success: false, error: "Trade ID is required" },
@@ -37,7 +35,6 @@ export async function GET(req, { params }) {
         }
 
         if (!Number.isInteger(idNum)) {
-            // ✅ Test case specific error
             return NextResponse.json(
                 { success: false, error: "Trade ID must be an integer" },
                 { status: 400 },
@@ -56,7 +53,6 @@ export async function GET(req, { params }) {
 
         console.log(`Fetching trade with ID: ${idNum} for user: ${user.id}`);
 
-        // Get trade from database
         const trade = await getSingleTrade(user.id, idNum.toString());
 
         if (!trade) {

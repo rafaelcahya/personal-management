@@ -16,7 +16,6 @@ export default function EventsPageClient({ initialEvents }) {
     const [filter, setFilter] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Load filter from localStorage on mount
     useEffect(() => {
         try {
             const savedFilter = localStorage.getItem(FILTER_STORAGE_KEY);
@@ -28,7 +27,6 @@ export default function EventsPageClient({ initialEvents }) {
         }
     }, []);
 
-    // Save filter to localStorage whenever it changes
     useEffect(() => {
         try {
             localStorage.setItem(
@@ -61,7 +59,6 @@ export default function EventsPageClient({ initialEvents }) {
         }
     }, [initialEvents, fetchEvents]);
 
-    // Filter logic
     const filteredEvents = listEvent.filter((event) => {
         if (!filter) return true;
 
@@ -86,7 +83,6 @@ export default function EventsPageClient({ initialEvents }) {
         }
     });
 
-    // Handle filter change with feedback
     const handleFilterChange = (newFilter) => {
         setFilter(newFilter);
 

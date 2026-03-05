@@ -25,8 +25,8 @@ export default function DeleteFee({ fee, onDeleted, onClose }) {
         try {
             await deleteFee(fee.id);
             toast.success("Fee deleted successfully 🗑️");
-            onClose?.(); // Close update dialog if open
-            onDeleted?.(); // Refresh list
+            onClose?.();
+            onDeleted?.();
         } catch (error) {
             console.error("Delete error:", error);
             toast.error(error.message || "Failed to delete fee");

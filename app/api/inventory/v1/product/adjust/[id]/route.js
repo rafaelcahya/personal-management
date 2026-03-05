@@ -5,7 +5,6 @@ export async function PATCH(req, { params }) {
     try {
         const { id } = await params;
 
-        // Validate ID
         if (!id || isNaN(Number(id))) {
             return NextResponse.json(
                 { success: false, error: "Invalid product ID provided" },
@@ -13,7 +12,6 @@ export async function PATCH(req, { params }) {
             );
         }
 
-        // Parse body
         let body;
         try {
             body = await req.json();
@@ -31,7 +29,6 @@ export async function PATCH(req, { params }) {
             );
         }
 
-        // Validate required fields
         const requiredFields = ["usage_quantity", "start_usage_date"];
         const validationErrors = [];
 
@@ -43,7 +40,6 @@ export async function PATCH(req, { params }) {
             }
         });
 
-        // Validate usage_quantity
         if (body.usage_quantity !== undefined && body.usage_quantity !== null) {
             const qty = Number(body.usage_quantity);
 
@@ -60,7 +56,6 @@ export async function PATCH(req, { params }) {
             }
         }
 
-        // Validate date
         if (body.start_usage_date && isNaN(Date.parse(body.start_usage_date))) {
             validationErrors.push("Start usage date must be valid ISO date");
         }
@@ -72,11 +67,9 @@ export async function PATCH(req, { params }) {
             );
         }
 
-        // Auto-calculate status & date field
         const usageQty = Number(body.usage_quantity);
         const newStatus = usageQty > 0 ? "active" : "inactive";
 
-        // Prepare payload
         const payload = {
             usage_quantity: usageQty,
             product_status: newStatus,
@@ -84,7 +77,6 @@ export async function PATCH(req, { params }) {
             note: body.note || null,
         };
 
-        // Update via service
         const updatedProduct = await updateProduct(Number(id), payload);
 
         if (!updatedProduct) {

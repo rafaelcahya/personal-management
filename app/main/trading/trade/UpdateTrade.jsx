@@ -104,7 +104,6 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
 
     const { watch, setValue, control, reset } = form;
 
-    // Auto-calculate realized gain & return%
     const margin = watch("margin");
     const proceeds = watch("proceeds");
 
@@ -125,7 +124,6 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
         }
     }, [margin, proceeds, setValue]);
 
-    // Fetch options and populate form when trade changes
     useEffect(() => {
         if (trade) {
             loadTradeData();
@@ -136,11 +134,9 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
         try {
             setOptionsLoading(true);
 
-            // Fetch options first
             const allOptions = await fetchAllTradeOptions();
             setOptions(allOptions);
 
-            // Then populate form with trade data
             reset({
                 trade_date: new Date(trade.trade_date),
                 ticker: trade.ticker || "",

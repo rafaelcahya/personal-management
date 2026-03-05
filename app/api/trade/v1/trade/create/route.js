@@ -34,7 +34,6 @@ export async function POST(req) {
             );
         }
 
-        // Validation
         const requiredFields = ["trade_date", "ticker", "margin", "proceeds"];
         const validationErrors = [];
 

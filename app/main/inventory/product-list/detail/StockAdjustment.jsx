@@ -31,12 +31,10 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
     };
 
     const handleUpdated = async () => {
-        // Refresh history
         if (product?.id) {
             await fetchProductHistory(product.id);
         }
 
-        // Refresh parent product list
         await onUpdated?.();
     };
 

@@ -9,6 +9,9 @@ const defaultUrl = process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
     : "http://localhost:3000";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
     metadataBase: new URL(defaultUrl),
     title: "Personal Management",

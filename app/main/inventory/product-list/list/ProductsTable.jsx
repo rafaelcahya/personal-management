@@ -39,14 +39,12 @@ export default function ProductsTable({
         const previousState = [...allProducts];
         setLoadingFavorite(product.id);
 
-        // Optimistic update
         onProductsChange((prev) => {
             const updated = prev.map((p) =>
                 p.id === product.id
                     ? { ...p, is_favorite: newFavoriteStatus }
                     : p,
             );
-            // Sort: favorites first
             return updated.sort((a, b) => {
                 if (a.is_favorite === b.is_favorite) return 0;
                 return a.is_favorite ? -1 : 1;
@@ -62,7 +60,6 @@ export default function ProductsTable({
                     : `${product.brand} removed from favorites`,
             );
         } catch (error) {
-            // Rollback on error
             onProductsChange(previousState);
 
             toast.error(error.message || "Failed to update favorite status");

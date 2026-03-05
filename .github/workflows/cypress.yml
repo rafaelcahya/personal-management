@@ -22,12 +22,9 @@ jobs:
 
       - name: Build Next.js app
         run: npm run build
-        # pastikan di package.json ada: "build": "next build"
 
       - name: Start server in background
         run: npm run start &
-        # atau: npx next start &
-        # & biar server jalan di background
 
       - name: Wait for server
         run: |

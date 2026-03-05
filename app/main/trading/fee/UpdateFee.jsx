@@ -51,7 +51,6 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
 
     const { control, reset, handleSubmit } = form;
 
-    // Reset form when fee changes
     useEffect(() => {
         if (fee) {
             reset({

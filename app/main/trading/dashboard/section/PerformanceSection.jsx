@@ -28,7 +28,6 @@ export default function PerformanceSection({ metrics, loading }) {
     });
     const [configLoading, setConfigLoading] = useState(true);
 
-    // Fetch configuration settings
     useEffect(() => {
         async function fetchConfig() {
             try {
@@ -98,7 +97,6 @@ export default function PerformanceSection({ metrics, loading }) {
         totalTrades,
     } = metrics;
 
-    // Calculate additional stats with floor rounding
     const profitPerTrade =
         totalTrades > 0 ? Math.floor(totalProfit / totalTrades) : 0;
     const lossPerTrade =

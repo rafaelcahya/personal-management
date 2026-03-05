@@ -57,7 +57,6 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
 
     const { control, reset, handleSubmit } = form;
 
-    // Reset form when event changes
     useEffect(() => {
         if (event) {
             reset({

@@ -111,7 +111,6 @@ export default function AddTrade({ onAdded }) {
 
     const { watch, setValue, control, handleSubmit, reset } = form;
 
-    // Auto-calculate realized gain & return%
     const margin = watch("margin");
     const proceeds = watch("proceeds");
 
@@ -135,7 +134,6 @@ export default function AddTrade({ onAdded }) {
         }
     }, [margin, proceeds, setValue]);
 
-    // Fetch all options at once when dialog opens
     useEffect(() => {
         if (open) {
             fetchOptions();
@@ -150,7 +148,6 @@ export default function AddTrade({ onAdded }) {
         } catch (error) {
             console.error("Failed to load options:", error);
             toast.error("Failed to load form options");
-            // Keep empty arrays as fallback
             setOptions({
                 stockType: [],
                 entrySession: [],
