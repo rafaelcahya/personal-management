@@ -289,7 +289,6 @@ describe("Trade Summary API and Database Comparison", () => {
                         cy.GetTradeSummary().then((response3) => {
                             expect(response3.status).to.eq(200);
 
-                            // All responses should have same structure
                             expect(response1.body.data).to.have.all.keys(
                                 response2.body.data,
                             );
@@ -540,7 +539,6 @@ describe("Trade Summary API and Database Comparison", () => {
                     cy.log("API Full Response:", JSON.stringify(apiData));
                 });
 
-                // Verify all counts
                 cy.getTotalTradesFromDb().then((totalTrades) => {
                     expect(apiData.totalTrades, "Total Trades").to.eq(
                         totalTrades,
@@ -557,7 +555,6 @@ describe("Trade Summary API and Database Comparison", () => {
                     );
                 });
 
-                // Verify all summaries
                 cy.getStockTypeSummaryFromDb().then((stockTypeSummary) => {
                     expect(
                         apiData.stockTypeSummary,

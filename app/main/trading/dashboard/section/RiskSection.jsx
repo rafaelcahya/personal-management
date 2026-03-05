@@ -87,7 +87,6 @@ export default function RiskSection({ metrics, loading }) {
         winRate,
     } = metrics;
 
-    // Calculate additional risk metrics
     const riskPerTrade = Math.abs(safeZoneAvgLossWithMoe);
     const rewardPerTrade = safeZoneAvgProfitWithMoe;
     const riskRewardRatio =
@@ -101,7 +100,6 @@ export default function RiskSection({ metrics, loading }) {
             ? Math.floor(maxRiskCapital / riskPerTrade)
             : 0;
 
-    // Expected value calculation
     const expectedValue =
         (winRate / 100) * avgProfit + ((100 - winRate) / 100) * avgLoss;
 

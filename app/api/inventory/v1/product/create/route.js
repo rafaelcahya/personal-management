@@ -6,7 +6,6 @@ export async function POST(req) {
     try {
         const supabase = await createClient();
 
-        // Autentikasi user
         const {
             data: { user },
             error: authError,
@@ -19,7 +18,6 @@ export async function POST(req) {
             );
         }
 
-        // Parse request body
         let body;
         try {
             body = await req.json();
@@ -37,7 +35,6 @@ export async function POST(req) {
             );
         }
 
-        // Validasi required fields
         const requiredFields = ["product_id", "brand_id", "type"];
 
         const validationErrors = [];
@@ -59,7 +56,6 @@ export async function POST(req) {
             );
         }
 
-        // Prepare payload
         const payload = {
             product_id: parseInt(body.product_id),
             brand_id: parseInt(body.brand_id),
@@ -69,7 +65,6 @@ export async function POST(req) {
             note: body.note || "",
         };
 
-        // Call service dengan user.id
         const newProduct = await createProduct(user.id, payload);
 
         return NextResponse.json(

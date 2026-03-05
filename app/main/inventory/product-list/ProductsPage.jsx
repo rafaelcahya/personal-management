@@ -15,7 +15,6 @@ export default function ProductsPageClient({ initialProducts }) {
     const [listProduct, setListProduct] = useState(initialProducts || []);
     const [filter, setFilter] = useState(null);
 
-    // Load filter from localStorage on mount
     useEffect(() => {
         try {
             const savedFilter = localStorage.getItem(FILTER_STORAGE_KEY);
@@ -27,7 +26,6 @@ export default function ProductsPageClient({ initialProducts }) {
         }
     }, []);
 
-    // Save filter to localStorage whenever it changes
     useEffect(() => {
         try {
             localStorage.setItem(
@@ -57,7 +55,6 @@ export default function ProductsPageClient({ initialProducts }) {
         }
     }, [initialProducts, fetchProducts]);
 
-    // Filter logic
     const filteredProducts = listProduct.filter((product) => {
         if (!filter) return true;
 
@@ -79,11 +76,9 @@ export default function ProductsPageClient({ initialProducts }) {
         }
     });
 
-    // Handle filter change with feedback
     const handleFilterChange = (newFilter) => {
         setFilter(newFilter);
 
-        // Toast messages
         const messages = {
             null: "Showing all products",
             active: "Showing active products",

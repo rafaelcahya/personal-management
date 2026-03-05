@@ -6,13 +6,11 @@ export async function GET() {
     try {
         const supabase = await createClient();
 
-        // Get authenticated user
         const {
             data: { user },
             error: authError,
         } = await supabase.auth.getUser();
 
-        // Better error handling
         if (authError) {
             console.error("Auth error:", authError);
             return NextResponse.json(
@@ -29,7 +27,6 @@ export async function GET() {
             );
         }
 
-        // Fetch events with valid user ID
         const events = await getEventList(user.id);
 
         return NextResponse.json({ success: true, events }, { status: 200 });

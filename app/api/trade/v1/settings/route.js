@@ -6,7 +6,6 @@ export async function GET(request) {
     try {
         const supabase = await createClient();
 
-        // Get authenticated user
         const {
             data: { user },
             error: authError,
@@ -19,7 +18,6 @@ export async function GET(request) {
             );
         }
 
-        // Fetch settings
         const settingsList = await getSettings(user.id);
 
         return NextResponse.json(

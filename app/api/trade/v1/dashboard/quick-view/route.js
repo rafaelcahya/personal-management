@@ -18,7 +18,6 @@ export async function GET(req) {
             );
         }
 
-        // Get limit from query params
         const { searchParams } = new URL(req.url);
         const limit = parseInt(searchParams.get("limit") || "5", 10);
 

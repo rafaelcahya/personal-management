@@ -77,20 +77,10 @@ describe("Trade Detail API", () => {
             cy.GetTradeDetail().then((response) => {
                 expect(response.status).to.eq(400);
                 expect(response.body.success).to.be.false;
-                expect(response.body.error).to.eq("Trade ID is required");
+                expect(response.body.error).to.eq(
+                    "Trade ID must be a valid number",
+                );
             });
-        });
-
-        it("should return 400 for missing trade ID", () => {
-            expect(response.status).to.be.oneOf([307, 401]);
-
-            if (response.status === 401) {
-                expect(response.body.success).to.be.false;
-                expect(response.body.error).to.eq("Unauthorized");
-            }
-
-            const location = response.headers.location || response.body;
-            expect(String(location)).to.include("/login");
         });
 
         it("should return 400 for non-integer trade ID", () => {

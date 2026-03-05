@@ -6,7 +6,6 @@ export async function PUT(request) {
     try {
         const supabase = await createClient();
 
-        // Get authenticated user
         const {
             data: { user },
             error: authError,
@@ -19,10 +18,8 @@ export async function PUT(request) {
             );
         }
 
-        // Parse request body
         const body = await request.json();
 
-        // Validate required fields
         const {
             initial_margin,
             bi_risk_free_rate,
@@ -30,7 +27,6 @@ export async function PUT(request) {
             margin_of_error,
         } = body;
 
-        // Convert strings to numbers
         const settingsData = {
             initial_margin: parseFloat(initial_margin) || 0,
             bi_risk_free_rate: parseFloat(bi_risk_free_rate) || 0,
@@ -38,7 +34,6 @@ export async function PUT(request) {
             margin_of_error: parseFloat(margin_of_error) || 10,
         };
 
-        // Validate numeric values
         if (settingsData.initial_margin < 0) {
             return NextResponse.json(
                 { success: false, error: "Initial margin cannot be negative" },
@@ -85,7 +80,6 @@ export async function PUT(request) {
             );
         }
 
-        // Upsert settings (insert or update)
         const updatedSettings = await upsertSettings(user.id, settingsData);
 
         return NextResponse.json(

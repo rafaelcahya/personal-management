@@ -22,7 +22,6 @@ export default function TradingDashboard() {
         fetchDashboardMetrics();
     }, []);
 
-    // Fetch quick view data only when tab is active
     useEffect(() => {
         if (activeTab === "quick" && !quickViewData) {
             fetchQuickViewData();
@@ -52,7 +51,6 @@ export default function TradingDashboard() {
         } catch (err) {
             console.error("Fetch quick view error:", err);
             toast.error(err.message || "Failed to fetch quick view data");
-            // Don't set global error, let QuickViewSection handle it
         }
     };
 

@@ -51,14 +51,12 @@ export default function EventTable({
         const previousState = [...allEvents];
         setLoadingFavorite(event.id);
 
-        // Optimistic update
         onEventsChange((prev) => {
             const updated = prev.map((e) =>
                 e.id === event.id
                     ? { ...e, is_favorite: newFavoriteStatus }
                     : e,
             );
-            // Sort: favorites first
             return updated.sort((a, b) => {
                 if (a.is_favorite === b.is_favorite) return 0;
                 return a.is_favorite ? -1 : 1;
@@ -74,7 +72,6 @@ export default function EventTable({
             );
         } catch (error) {
             console.error("Favorite error:", error);
-            // Rollback on error
             onEventsChange(previousState);
             toast.error(error.message || "Failed to update favorite status");
         } finally {

@@ -6,7 +6,6 @@ export async function DELETE(req, { params }) {
     try {
         const supabase = await createClient();
 
-        // Authenticate user
         const {
             data: { user },
             error: authError,
@@ -28,7 +27,6 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        // Soft delete event
         await deleteEvent(user.id, id);
 
         return NextResponse.json(

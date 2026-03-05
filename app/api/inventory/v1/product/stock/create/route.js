@@ -18,10 +18,8 @@ export async function POST(req) {
             );
         }
 
-        // Parse request body
         const body = await req.json();
 
-        // Validasi required fields
         const requiredFields = [
             "product_list_id",
             "quantity_added",

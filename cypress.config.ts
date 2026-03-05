@@ -44,10 +44,8 @@ import {
 } from "./cypress/support/common/helper.js";
 import { decryptPassword } from "./lib/utils/decryptedPassword.js";
 
-// Load .env.local BEFORE anything else
 dotenv.config({ path: ".env.local" });
 
-// Debug log
 console.log("\n=== Cypress Environment Check ===");
 console.log(
     "CYPRESS_AUTH_SECRET:",

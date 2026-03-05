@@ -54,7 +54,6 @@ export default function OverviewSection({ metrics, loading }) {
         payoffRatio,
     } = metrics;
 
-    // Calculate net gain
     const netGain = accountValue - initialMargin;
 
     return (

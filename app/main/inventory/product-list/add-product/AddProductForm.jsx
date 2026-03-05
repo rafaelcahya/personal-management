@@ -60,7 +60,6 @@ export default function AddProductForm({ onAdded }) {
     const { watch, control, reset } = form;
     const image = watch("image");
 
-    // Preview image
     useEffect(() => {
         if (image && image[0]) {
             const file = image[0];
@@ -74,7 +73,6 @@ export default function AddProductForm({ onAdded }) {
         }
     }, [image]);
 
-    // Fetch product brands (active only)
     const loadProductBrands = async () => {
         try {
             const brands = await fetchProductBrand();
@@ -87,7 +85,6 @@ export default function AddProductForm({ onAdded }) {
         }
     };
 
-    // Fetch product names (active only)
     const loadProductNames = async () => {
         try {
             const names = await fetchProductName();
@@ -101,7 +98,6 @@ export default function AddProductForm({ onAdded }) {
         }
     };
 
-    // Load data saat dialog dibuka
     useEffect(() => {
         if (open) {
             loadProductBrands();
@@ -116,7 +112,6 @@ export default function AddProductForm({ onAdded }) {
         try {
             let imageBase64 = "";
 
-            // Convert image to base64 jika ada
             if (values.image && values.image[0]) {
                 const file = values.image[0];
                 imageBase64 = await new Promise((resolve, reject) => {
@@ -127,7 +122,6 @@ export default function AddProductForm({ onAdded }) {
                 });
             }
 
-            // Prepare payload
             const payload = {
                 product_id: values.product_name,
                 brand_id: values.product_brand,

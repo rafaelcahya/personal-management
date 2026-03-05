@@ -34,7 +34,6 @@ export async function POST(req) {
             );
         }
 
-        // Validation
         const requiredFields = [
             "event_description",
             "impact_direction",

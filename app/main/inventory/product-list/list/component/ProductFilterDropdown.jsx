@@ -59,7 +59,6 @@ export default function ProductFilterDropdown({
             try {
                 const data = await getProductSummary();
 
-                // Calculate additional counts from products
                 const lowStock = products.filter(
                     (p) => p.quantity < 5 && p.quantity > 0,
                 ).length;
@@ -85,7 +84,6 @@ export default function ProductFilterDropdown({
 
     const currentFilter = FILTER_OPTIONS.find((opt) => opt.value === filter);
 
-    // Get count for each filter option
     const getFilterCount = (filterValue) => {
         if (loading) return <Loader2 className="size-3 animate-spin" />;
 

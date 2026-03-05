@@ -62,7 +62,6 @@ export default function EventListSummary({ events }) {
         ];
     }, [events]);
 
-    // Calculate primary stats for mobile header
     const primaryStats = useMemo(() => {
         const bullishEvents = events.filter(
             (e) => e.impact_direction === "UP",

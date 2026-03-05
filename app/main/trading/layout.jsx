@@ -11,7 +11,6 @@ export default function TradingManagementLayout({ children }) {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const handleSettingsUpdated = () => {
-        // Refresh page or trigger re-fetch in child components
         window.location.reload();
     };
 

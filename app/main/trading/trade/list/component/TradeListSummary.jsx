@@ -78,7 +78,6 @@ export default function TradeListSummary({ trades }) {
         ];
     }, [trades]);
 
-    // Calculate primary stat for mobile header
     const netPnL = useMemo(() => {
         const totalProfit = trades.reduce(
             (sum, t) =>
