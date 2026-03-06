@@ -35,9 +35,9 @@ Cypress.Commands.add("getFeesFromDb", () => {
 /**
  * Get total transactions count from database
  */
-Cypress.Commands.add("getTotalTransactionsFromDb", () => {
+Cypress.Commands.add("getTotalFeesFromDb", () => {
     return cy.getTestUserId().then((userId) => {
-        return cy.task("getTotalTransactionsFromDb", userId);
+        return cy.task("getTotalFeesFromDb", userId);
     });
 });
 

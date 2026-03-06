@@ -22,7 +22,7 @@ import {
 import {
     getSingleFeeFromDb,
     getFeesFromDb,
-    getTotalTransactionsFromDb,
+    getTotalFeesFromDb,
     getTotalFeesPaidFromDb,
 } from "./cypress/support/db/trading/fee/feeDb.js";
 import { decryptPassword } from "./lib/utils/decryptedPassword.js";
@@ -315,8 +315,8 @@ export default defineConfig({
                     return fees;
                 },
 
-                async getTotalTransactionsFromDb(userId: string) {
-                    const total = await getTotalTransactionsFromDb(
+                async getTotalFeesFromDb(userId: string) {
+                    const total = await getTotalFeesFromDb(
                         supabaseAdmin,
                         userId,
                     );

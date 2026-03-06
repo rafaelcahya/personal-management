@@ -21,7 +21,7 @@ export async function GET() {
         const summary = await getFeeSummary(user.id);
 
         return NextResponse.json(
-            { success: true, ...summary },
+            { success: true, data: summary },
             { status: 200 },
         );
     } catch (err) {

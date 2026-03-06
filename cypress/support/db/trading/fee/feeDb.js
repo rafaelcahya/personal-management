@@ -36,9 +36,9 @@ export async function getFeesFromDb(supabase, userId) {
 }
 
 /**
- * Get total transactions from database
+ * Get total fees from database
  */
-export async function getTotalTransactionsFromDb(supabase, userId) {
+export async function getTotalFeesFromDb(supabase, userId) {
     const { count, error } = await supabase
         .from(TABLE_NAME)
         .select("*", { count: "exact", head: true })

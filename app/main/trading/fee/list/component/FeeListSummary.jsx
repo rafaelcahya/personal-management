@@ -15,6 +15,7 @@ export default function FeeListSummary({ feeCount, totalFee }) {
 
     const stats = [
         {
+            id: "totalTransactionsSummary_feePage",
             title: "Total Transactions",
             value: feeCount,
             icon: Receipt,
@@ -22,6 +23,7 @@ export default function FeeListSummary({ feeCount, totalFee }) {
             bgColor: "bg-blue-50",
         },
         {
+            id: "totalFeesPaidSummary_feePage",
             title: "Total Fees Paid",
             value: `Rp ${totalFee.toLocaleString("id-ID")}`,
             icon: DollarSign,
@@ -33,11 +35,15 @@ export default function FeeListSummary({ feeCount, totalFee }) {
     return (
         <>
             {/* Desktop View - Always Visible Grid */}
-            <div className="hidden sm:grid sm:grid-cols-2 gap-4">
+            <div
+                id="feeListSummaryDesktop_feePage"
+                className="hidden sm:grid sm:grid-cols-2 gap-4"
+            >
                 {stats.map((stat, index) => {
                     const Icon = stat.icon;
                     return (
                         <Card
+                            id={`${stat.id}_desktopView`}
                             key={index}
                             className="p-0 border border-slate-200/50 shadow-slate-100"
                         >
@@ -67,6 +73,7 @@ export default function FeeListSummary({ feeCount, totalFee }) {
 
             {/* Mobile View - Collapsible */}
             <Collapsible
+                id="feeSummaryCollapsible_feePage"
                 open={isOpen}
                 onOpenChange={setIsOpen}
                 className="sm:hidden w-full"
@@ -76,10 +83,14 @@ export default function FeeListSummary({ feeCount, totalFee }) {
                         {/* Header - Always Visible */}
                         <CollapsibleTrigger asChild>
                             <Button
+                                id="feeSummaryCollapsibleTrigger_feePage"
                                 variant="ghost"
                                 className="w-full flex items-center justify-between bg-white"
                             >
-                                <div className="flex items-center gap-3">
+                                <div
+                                    id="feeSummaryCollapsibleDefault_feePage"
+                                    className="flex items-center gap-3"
+                                >
                                     <div className="p-2 rounded-lg bg-red-50">
                                         <DollarSign className="size-4 text-red-600" />
                                     </div>
@@ -102,13 +113,17 @@ export default function FeeListSummary({ feeCount, totalFee }) {
                         </CollapsibleTrigger>
 
                         {/* Collapsible Content */}
-                        <CollapsibleContent className="px-4 pt-2">
+                        <CollapsibleContent
+                            id="feeSummaryCollapsibleContent_feePage"
+                            className="px-4 pt-2"
+                        >
                             <div className="pt-2 grid grid-cols-2 gap-3">
                                 {stats.map((stat, index) => {
                                     const Icon = stat.icon;
                                     return (
                                         <div
                                             key={index}
+                                            id={`${stat.id}_mobileView`}
                                             className="p-3 rounded-lg border bg-slate-50/50"
                                         >
                                             <div className="flex items-center gap-2 mb-2">
