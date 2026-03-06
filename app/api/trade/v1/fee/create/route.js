@@ -10,9 +10,9 @@ export async function POST(req) {
             error: authError,
         } = await supabase.auth.getUser();
 
-        if (authError || !user || !user.id) {
+        if (authError || !user) {
             return NextResponse.json(
-                { success: false, error: "User not authenticated" },
+                { success: false, error: "Unauthorized" },
                 { status: 401 },
             );
         }

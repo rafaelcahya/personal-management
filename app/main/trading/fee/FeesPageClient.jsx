@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { fetchFeeList } from "@/lib/api/fee";
+import { fetchFeeSummary, fetchFeeList } from "@/lib/api/fee";
 import { toast } from "sonner";
 import FeeListSummary from "./list/component/FeeListSummary";
 import FeeTableHeader from "./list/component/FeeTableHeader";
@@ -11,11 +11,21 @@ import AddFee from "./AddFee";
 export default function FeesPageClient({ initialFees }) {
     const [listFee, setListFee] = useState(initialFees || []);
     const [isLoading, setIsLoading] = useState(false);
+    const [summary, setSummary] = useState({ feeCount: 0, totalFee: 0 });
+
+    const fetchSummary = useCallback(async () => {
+        try {
+            const data = await fetchFeeSummary();
+            setSummary(data);
+        } catch (err) {
+            console.error("Summary fetch error:", err);
+        }
+    }, []);
 
     const fetchFees = useCallback(async () => {
         try {
             setIsLoading(true);
-            const fees = await fetchFeeList();
+            const [fees] = await Promise.all([fetchFeeList(), fetchSummary()]);
             setListFee(fees || []);
         } catch (err) {
             console.error("Fetch error:", err);
@@ -23,20 +33,23 @@ export default function FeesPageClient({ initialFees }) {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [fetchSummary]);
 
     useEffect(() => {
-        if (initialFees && initialFees.length > 0) {
-            setListFee(initialFees);
-        } else {
+        fetchSummary();
+
+        if (!initialFees || initialFees.length === 0) {
             fetchFees();
         }
-    }, [initialFees, fetchFees]);
+    }, []);
 
     return (
         <div className="flex flex-col h-full gap-5">
             {/* Summary Cards */}
-            <FeeListSummary fees={listFee} />
+            <FeeListSummary
+                feeCount={summary.feeCount}
+                totalFee={summary.totalFee}
+            />
 
             {/* Main Table Container */}
             <div className="flex-1 min-h-0 relative border border-slate-200/50 shadow-slate-100 rounded-xl overflow-hidden flex flex-col p-5 bg-white">

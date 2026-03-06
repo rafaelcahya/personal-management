@@ -20,28 +20,11 @@ import {
     getSellReasonOptionsFromDb,
 } from "./cypress/support/db/trading/trade/optionDb.js";
 import {
-    getFeeFromDb,
-    getTotalFeeFromDb,
+    getSingleFeeFromDb,
+    getFeesFromDb,
     getTotalTransactionsFromDb,
-} from "./cypress/support/db/trading/fee/getFeeFromDb.js";
-import { getEventFromDb } from "./cypress/support/db/trading/event/getEventFromDb.js";
-import {
-    getProductListFromDb,
-    getTotalProductSummaryFromDb,
-} from "./cypress/support/db/inventory/product/getProductListFromDb.js";
-import {
-    getProductBrandListFromDb,
-    getProductBrandSummaryFromDb,
-} from "./cypress/support/db/inventory/product/brand/getProductBrandListFromDb.js";
-import {
-    getProductNameListFromDb,
-    getProductNameSummaryFromDb,
-} from "./cypress/support/db/inventory/product/name/getProductNameListFromDb.js";
-import {
-    saveFixture,
-    getRandomFixture,
-    clearFixtureFile,
-} from "./cypress/support/common/helper.js";
+    getTotalFeesPaidFromDb,
+} from "./cypress/support/db/trading/fee/feeDb.js";
 import { decryptPassword } from "./lib/utils/decryptedPassword.js";
 
 dotenv.config({ path: ".env.local" });
@@ -313,95 +296,40 @@ export default defineConfig({
                         : null;
                 },
 
-                async getFeeFromDbTask(feeId: string) {
-                    const fee = await getFeeFromDb(supabase, feeId);
-                    return fee ? JSON.parse(JSON.stringify(fee)) : null;
-                },
-                async getTotalTransactionsFromDbTask() {
-                    const totalTransactions =
-                        await getTotalTransactionsFromDb(supabase);
-                    return totalTransactions;
-                },
-                async getTotalFeeFromDbTask() {
-                    const totalFee = await getTotalFeeFromDb(supabase);
-                    return totalFee;
-                },
-                async getEventFromDbTask(eventId: string) {
-                    const event = await getEventFromDb(supabase, eventId);
-                    return event ? JSON.parse(JSON.stringify(event)) : null;
-                },
-                async getProductListFromDbTask(productId: string) {
-                    const productList = await getProductListFromDb(
-                        supabase,
-                        productId,
+                // Trading - Fee
+                async getSingleFeeFromDb(params: {
+                    feeId: string;
+                    userId: string;
+                }) {
+                    const { feeId, userId } = params;
+                    const fee = await getSingleFeeFromDb(
+                        supabaseAdmin,
+                        feeId,
+                        userId,
                     );
-                    return productList
-                        ? JSON.parse(JSON.stringify(productList))
-                        : null;
+                    return fee;
                 },
-                async getTotalProductSummaryFromDbTask(metric: string) {
-                    const totalProdicts = await getTotalProductSummaryFromDb(
-                        supabase,
-                        metric,
+
+                async getFeesFromDb(userId: string) {
+                    const fees = await getFeesFromDb(supabaseAdmin, userId);
+                    return fees;
+                },
+
+                async getTotalTransactionsFromDb(userId: string) {
+                    const total = await getTotalTransactionsFromDb(
+                        supabaseAdmin,
+                        userId,
                     );
-                    return totalProdicts;
+                    return total;
                 },
-                async getProductBrandListFromDbTask(productBrandId: string) {
-                    const productBrandList = await getProductBrandListFromDb(
-                        supabase,
-                        productBrandId,
+
+                async getTotalFeesPaidFromDb(userId: string) {
+                    const total = await getTotalFeesPaidFromDb(
+                        supabaseAdmin,
+                        userId,
                     );
-                    return productBrandList
-                        ? JSON.parse(JSON.stringify(productBrandList))
-                        : null;
+                    return total;
                 },
-                async getProductBrandSummaryFromDbTask() {
-                    const productBrandList =
-                        await getProductBrandSummaryFromDb(supabase);
-                    return productBrandList
-                        ? JSON.parse(JSON.stringify(productBrandList))
-                        : null;
-                },
-                async getProductNameListFromDbTask(productNameId: string) {
-                    const productNameList = await getProductNameListFromDb(
-                        supabase,
-                        productNameId,
-                    );
-                    return productNameList
-                        ? JSON.parse(JSON.stringify(productNameList))
-                        : null;
-                },
-                async getProductNameSummaryFromDbTask() {
-                    const productBrandList =
-                        await getProductNameSummaryFromDb(supabase);
-                    return productBrandList
-                        ? JSON.parse(JSON.stringify(productBrandList))
-                        : null;
-                },
-                saveFixture: (args: { filename: string; data: any }) =>
-                    saveFixture(args.filename, args.data),
-                getRandomFixture: (filename: string) =>
-                    getRandomFixture(filename),
-                saveFeeId: (feeId: string) => saveFixture("feeIds.json", feeId),
-                getRandomFeeId: () => getRandomFixture("feeIds.json"),
-                saveTradeId: (tradeId: string) =>
-                    saveFixture("tradeIds.json", tradeId),
-                getRandomTradeId: () => getRandomFixture("tradeIds.json"),
-                saveEventId: (eventId: string) =>
-                    saveFixture("eventIds.json", eventId),
-                getRandomEventId: () => getRandomFixture("eventIds.json"),
-                saveProductId: (productId: string) =>
-                    saveFixture("productIds.json", productId),
-                getRandomProductId: () => getRandomFixture("productIds.json"),
-                saveProductBrandId: (productBrandId: string) =>
-                    saveFixture("productBrandIds.json", productBrandId),
-                getRandomProductNameId: () =>
-                    getRandomFixture("productNameIds.json"),
-                saveProductNameId: (productNameId: string) =>
-                    saveFixture("productNameIds.json", productNameId),
-                getRandomProductBrandId: () =>
-                    getRandomFixture("productBrandIds.json"),
-                clearFixtureFile,
             });
 
             // IMPORTANT: Merge env vars from process.env to config.env

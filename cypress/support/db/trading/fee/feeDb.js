@@ -36,9 +36,9 @@ export async function getFeesFromDb(supabase, userId) {
 }
 
 /**
- * Get total fees count from database
+ * Get total transactions from database
  */
-export async function getTotalFeesFromDb(supabase, userId) {
+export async function getTotalTransactionsFromDb(supabase, userId) {
     const { count, error } = await supabase
         .from(TABLE_NAME)
         .select("*", { count: "exact", head: true })
@@ -53,29 +53,14 @@ export async function getTotalFeesFromDb(supabase, userId) {
 }
 
 /**
- * Get total transactions from database
- */
-export async function getTotalTransactionsFromDb(supabase, userId) {
-    const trades = await getFeesFromDb(supabase, userId);
-
-    const wins = trades.filter((trade) => {
-        const gain = parseFloat(trade.realized_gain);
-        return !isNaN(gain) && gain > 0;
-    });
-
-    return wins.length;
-}
-
-/**
  * Get total fees paid from database
  */
-export async function getTotalFeesFromDb(supabase, userId) {
-    const trades = await getFeesFromDb(supabase, userId);
+export async function getTotalFeesPaidFromDb(supabase, userId) {
+    const fees = await getFeesFromDb(supabase, userId);
 
-    const losses = trades.filter((trade) => {
-        const gain = parseFloat(trade.realized_gain);
-        return !isNaN(gain) && gain < 0;
-    });
+    const totalFeesPaid = fees.reduce((sum, fee) => {
+        return sum + parseFloat(fee.fee || 0);
+    }, 0);
 
-    return losses.length;
+    return totalFeesPaid;
 }

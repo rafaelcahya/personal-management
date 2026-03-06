@@ -84,13 +84,16 @@ export default function AddFee({ onAdded }) {
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogTrigger asChild>
+            <DialogTrigger asChild id="addNewFeeBtn_feePage">
                 <Button>
                     <PlusIcon />
                     <span>Add Fee</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
+            <DialogContent
+                className="sm:max-w-md flex flex-col max-h-[90vh]"
+                id="addNewFeeForm_feePage"
+            >
                 <DialogHeader className="text-left shrink-0">
                     <DialogTitle>💳 Add New Fee</DialogTitle>
                     <DialogDescription className="text-slate-600">
@@ -122,6 +125,7 @@ export default function AddFee({ onAdded }) {
                                                         <Button
                                                             type="button"
                                                             variant="outline"
+                                                            id="feeDateField_feePage"
                                                             className={cn(
                                                                 "w-full pl-3 text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600",
                                                                 fieldState.error &&
@@ -147,6 +151,7 @@ export default function AddFee({ onAdded }) {
                                                 <PopoverContent
                                                     className="w-auto p-0"
                                                     align="start"
+                                                    id="feeDatePicker_feePage"
                                                 >
                                                     <Calendar
                                                         mode="single"
@@ -181,6 +186,7 @@ export default function AddFee({ onAdded }) {
                                                 <Input
                                                     {...field}
                                                     placeholder="e.g., Admin Fee"
+                                                    id="feeNameField_feePage"
                                                     className={`focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium ${
                                                         fieldState.error
                                                             ? "border-rose-500"
@@ -191,7 +197,8 @@ export default function AddFee({ onAdded }) {
                                             <FormDescription className="text-xs">
                                                 What type of fee is this? 🏷️
                                             </FormDescription>
-                                            <FormMessage className="font-medium">
+                                            <FormMessage 
+                                                id="feeNameField_errorMessage_feePage"className="font-medium">
                                                 {fieldState.error?.message}
                                             </FormMessage>
                                         </FormItem>
@@ -219,6 +226,7 @@ export default function AddFee({ onAdded }) {
                                                         : ""
                                                 }
                                                 placeholder="e.g., 10000"
+                                                    id="feeAmountField_feePage"
                                                 className={`focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium ${
                                                     fieldState.error
                                                         ? "border-rose-500"
@@ -237,7 +245,8 @@ export default function AddFee({ onAdded }) {
                                         <FormDescription className="text-xs">
                                             How much did you pay? 💸
                                         </FormDescription>
-                                        <FormMessage className="font-medium">
+                                        <FormMessage 
+                                        id="feeAmountField_errorMessage_feePage"className="font-medium">
                                             {fieldState.error?.message}
                                         </FormMessage>
                                     </FormItem>
@@ -252,10 +261,12 @@ export default function AddFee({ onAdded }) {
                                 onClick={() => setOpen(false)}
                                 disabled={loading}
                                 className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
+                                        id="cancelNewFeeBtn_feePage"
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading}>
+                            <Button type="submit" disabled={loading}
+                                    id="submitNewFeeBtn_feePage">
                                 {loading && (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 )}

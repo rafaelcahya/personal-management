@@ -10,37 +10,25 @@ import {
 } from "@/components/ui/collapsible";
 import { DollarSign, Receipt, ChevronDown, ChevronUp } from "lucide-react";
 
-export default function FeeListSummary({ fees }) {
+export default function FeeListSummary({ feeCount, totalFee }) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const stats = useMemo(() => {
-        const totalFees = fees.length;
-        const totalAmount = fees.reduce(
-            (sum, fee) => sum + Number(fee.fee || 0),
-            0,
-        );
-
-        return [
-            {
-                title: "Total Transactions",
-                value: totalFees,
-                icon: Receipt,
-                color: "text-blue-600",
-                bgColor: "bg-blue-50",
-            },
-            {
-                title: "Total Fees Paid",
-                value: `Rp ${totalAmount.toLocaleString("id-ID")}`,
-                icon: DollarSign,
-                color: "text-red-600",
-                bgColor: "bg-red-50",
-            },
-        ];
-    }, [fees]);
-
-    const totalAmount = useMemo(() => {
-        return fees.reduce((sum, fee) => sum + Number(fee.fee || 0), 0);
-    }, [fees]);
+    const stats = [
+        {
+            title: "Total Transactions",
+            value: feeCount,
+            icon: Receipt,
+            color: "text-blue-600",
+            bgColor: "bg-blue-50",
+        },
+        {
+            title: "Total Fees Paid",
+            value: `Rp ${totalFee.toLocaleString("id-ID")}`,
+            icon: DollarSign,
+            color: "text-red-600",
+            bgColor: "bg-red-50",
+        },
+    ];
 
     return (
         <>
@@ -101,9 +89,7 @@ export default function FeeListSummary({ fees }) {
                                         </p>
                                         <p className="text-xs font-medium text-red-600">
                                             Total: Rp{" "}
-                                            {totalAmount.toLocaleString(
-                                                "id-ID",
-                                            )}
+                                            {totalFee.toLocaleString("id-ID")}
                                         </p>
                                     </div>
                                 </div>

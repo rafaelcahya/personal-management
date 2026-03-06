@@ -1,0 +1,76 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { getSingleFee } from "@/lib/services/fee/getSingleFee";
+
+export async function GET(req, { params }) {
+    try {
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const { id } = await params;
+
+        if (!id) {
+            return NextResponse.json(
+                { success: false, error: "Fee ID is required" },
+                { status: 400 },
+            );
+        }
+
+        const idNum = Number(id);
+        if (isNaN(idNum)) {
+            return NextResponse.json(
+                { success: false, error: "Fee ID must be a valid number" },
+                { status: 400 },
+            );
+        }
+
+        if (!Number.isInteger(idNum)) {
+            return NextResponse.json(
+                { success: false, error: "Fee ID must be an integer" },
+                { status: 400 },
+            );
+        }
+
+        if (idNum <= 0) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Fee ID must be a positive integer",
+                },
+                { status: 400 },
+            );
+        }
+
+        console.log(`Fetching fee with ID: ${idNum} for user: ${user.id}`);
+
+        const fee = await getSingleFee(user.id, idNum.toString());
+
+        if (!fee) {
+            return NextResponse.json(
+                { success: false, error: "Fee not found" },
+                { status: 404 },
+            );
+        }
+
+        return NextResponse.json(
+            { success: true, data: fee },
+            { status: 200 },
+        );
+    } catch (err) {
+        console.error("GET /api/trade/v1/fee/[id] error:", err);
+        return NextResponse.json(
+            { success: false, error: err.message },
+            { status: 500 },
+        );
+    }
+}
