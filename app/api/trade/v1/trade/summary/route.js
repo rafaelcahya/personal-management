@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getTradeList } from "@/lib/services/trade/getTradeList";
-
-import { stringToNumber } from "@/lib/utils/common";
+import { getTradeSummary } from "@/lib/services/trade/getTradeSummary";
 
 export async function GET() {
     try {
@@ -19,51 +17,9 @@ export async function GET() {
             );
         }
 
-        const trades = await getTradeList(user.id);
+        const summary = await getTradeSummary(user.id);
 
-        const totalTrades = Array.isArray(trades) ? trades.length : 0;
-
-        const realizedGains = Array.isArray(trades)
-            ? trades.map((trade) => stringToNumber(trade.realized_gain))
-            : [];
-
-        const profitsArr = realizedGains.filter((g) => g > 0);
-
-        const totalWins = profitsArr.length;
-
-        const lossesArr = realizedGains.filter((g) => g < 0);
-
-        const totalLosses = lossesArr.length;
-
-        const stockTypeSummary = trades.reduce((acc, trade) => {
-            const type = trade.stock_type_option;
-            acc[type] = (acc[type] || 0) + 1;
-            return acc;
-        }, {});
-
-        const entrySessionSummary = trades.reduce((acc, trade) => {
-            const type = trade.entry_session_option;
-            acc[type] = (acc[type] || 0) + 1;
-            return acc;
-        }, {});
-
-        const entryOccasionSummary = trades.reduce((acc, trade) => {
-            const type = trade.entry_occasion_option;
-            acc[type] = (acc[type] || 0) + 1;
-            return acc;
-        }, {});
-
-        return NextResponse.json({
-            success: true,
-            data: {
-                totalTrades,
-                totalWins,
-                totalLosses,
-                stockTypeSummary,
-                entrySessionSummary,
-                entryOccasionSummary,
-            },
-        });
+        return NextResponse.json({ success: true, data: summary });
     } catch (err) {
         return NextResponse.json(
             { success: false, error: err?.message || String(err) },

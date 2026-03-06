@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,86 +17,59 @@ import {
     ChevronUp,
 } from "lucide-react";
 
-export default function TradeListSummary({ trades }) {
+export default function TradeListSummary({ summary }) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const stats = useMemo(() => {
-        const totalTrades = trades.length;
-        const wins = trades.filter((t) => Number(t.realized_gain) > 0).length;
-        const losses = trades.filter((t) => Number(t.realized_gain) < 0).length;
-        const winRate =
-            totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : 0;
+    const {
+        totalTrades = 0,
+        totalWins = 0,
+        totalLosses = 0,
+        totalProfit = 0,
+        netPnL = 0,
+    } = summary;
 
-        const totalProfit = trades.reduce(
-            (sum, t) =>
-                sum +
-                (Number(t.realized_gain) > 0 ? Number(t.realized_gain) : 0),
-            0,
-        );
-        const totalLoss = trades.reduce(
-            (sum, t) =>
-                sum +
-                (Number(t.realized_gain) < 0 ? Number(t.realized_gain) : 0),
-            0,
-        );
-        const netPnL = totalProfit + totalLoss;
+    const winRate =
+        totalTrades > 0 ? ((totalWins / totalTrades) * 100).toFixed(1) : 0;
 
-        return [
-            {
-                id: "totalTradesSummary_tradePage",
-                title: "Total Trades",
-                value: totalTrades,
-                icon: Activity,
-                color: "text-blue-600",
-                bgColor: "bg-blue-50",
-            },
-            {
-                id: "winRateSummary_tradePage",
-                title: "Win Rate",
-                value: `${winRate}%`,
-                subValue: `${wins}W / ${losses}L`,
-                icon: Target,
-                color: "text-violet-600",
-                bgColor: "bg-violet-50",
-            },
-            {
-                id: "totalProfitSummary_tradePage",
-                title: "Total Profit",
-                value: `Rp ${totalProfit.toLocaleString("id-ID")}`,
-                icon: TrendingUp,
-                color: "text-green-600",
-                bgColor: "bg-green-50",
-            },
-            {
-                id: "netPnLSummary_tradePage",
-                title: "Net P/L",
-                value: `Rp ${netPnL.toLocaleString("id-ID")}`,
-                icon: netPnL >= 0 ? TrendingUp : TrendingDown,
-                color: netPnL >= 0 ? "text-green-600" : "text-red-600",
-                bgColor: netPnL >= 0 ? "bg-green-50" : "bg-red-50",
-            },
-        ];
-    }, [trades]);
-
-    const netPnL = useMemo(() => {
-        const totalProfit = trades.reduce(
-            (sum, t) =>
-                sum +
-                (Number(t.realized_gain) > 0 ? Number(t.realized_gain) : 0),
-            0,
-        );
-        const totalLoss = trades.reduce(
-            (sum, t) =>
-                sum +
-                (Number(t.realized_gain) < 0 ? Number(t.realized_gain) : 0),
-            0,
-        );
-        return totalProfit + totalLoss;
-    }, [trades]);
+    const stats = [
+        {
+            id: "totalTradesSummary_tradePage",
+            title: "Total Trades",
+            value: totalTrades,
+            icon: Activity,
+            color: "text-blue-600",
+            bgColor: "bg-blue-50",
+        },
+        {
+            id: "winRateSummary_tradePage",
+            title: "Win Rate",
+            value: `${winRate}%`,
+            subValue: `${totalWins}W / ${totalLosses}L`,
+            icon: Target,
+            color: "text-violet-600",
+            bgColor: "bg-violet-50",
+        },
+        {
+            id: "totalProfitSummary_tradePage",
+            title: "Total Profit",
+            value: `Rp ${totalProfit.toLocaleString("id-ID")}`,
+            icon: TrendingUp,
+            color: "text-green-600",
+            bgColor: "bg-green-50",
+        },
+        {
+            id: "netPnLSummary_tradePage",
+            title: "Net P/L",
+            value: `Rp ${netPnL.toLocaleString("id-ID")}`,
+            icon: netPnL >= 0 ? TrendingUp : TrendingDown,
+            color: netPnL >= 0 ? "text-green-600" : "text-red-600",
+            bgColor: netPnL >= 0 ? "bg-green-50" : "bg-red-50",
+        },
+    ];
 
     return (
         <>
-            {/* Desktop View - Always Visible Grid */}
+            {/* Desktop View */}
             <div
                 id="tradeListSummaryDesktop_tradePage"
                 className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4"
@@ -144,7 +117,7 @@ export default function TradeListSummary({ trades }) {
                 })}
             </div>
 
-            {/* Mobile View - Collapsible */}
+            {/* Mobile View */}
             <Collapsible
                 id="tradeSummaryCollapsible_tradePage"
                 open={isOpen}
@@ -153,7 +126,6 @@ export default function TradeListSummary({ trades }) {
             >
                 <Card className="py-2">
                     <CardContent className="px-0">
-                        {/* Header - Always Visible */}
                         <CollapsibleTrigger asChild>
                             <Button
                                 id="tradeSummaryCollapsibleTrigger_tradePage"
@@ -172,11 +144,7 @@ export default function TradeListSummary({ trades }) {
                                             Trade Summary
                                         </p>
                                         <span
-                                            className={`text-xs font-medium ${
-                                                netPnL >= 0
-                                                    ? "text-green-600"
-                                                    : "text-red-600"
-                                            }`}
+                                            className={`text-xs font-medium ${netPnL >= 0 ? "text-green-600" : "text-red-600"}`}
                                         >
                                             Net P/L: Rp{" "}
                                             <p id="tradeSummaryNetPnL_tradePage_value_mobileView">
@@ -193,7 +161,6 @@ export default function TradeListSummary({ trades }) {
                             </Button>
                         </CollapsibleTrigger>
 
-                        {/* Collapsible Content */}
                         <CollapsibleContent
                             id="tradeSummaryCollapsibleContent_tradePage"
                             className="px-4 pt-2"
@@ -226,7 +193,10 @@ export default function TradeListSummary({ trades }) {
                                                 {stat.value}
                                             </p>
                                             {stat.subValue && (
-                                                <p id={`${stat.id}_subValue_mobileView`} className="text-xs text-slate-400 mt-1 ml-0.5">
+                                                <p
+                                                    id={`${stat.id}_subValue_mobileView`}
+                                                    className="text-xs text-slate-400 mt-1 ml-0.5"
+                                                >
                                                     {stat.subValue}
                                                 </p>
                                             )}
