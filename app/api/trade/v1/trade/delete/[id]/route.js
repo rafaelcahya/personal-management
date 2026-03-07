@@ -17,7 +17,7 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
 
         if (!id || isNaN(id) || parseInt(id) <= 0) {
             return NextResponse.json(

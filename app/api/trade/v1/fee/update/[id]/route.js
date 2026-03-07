@@ -10,23 +10,38 @@ export async function PUT(req, { params }) {
             error: authError,
         } = await supabase.auth.getUser();
 
-        if (authError || !user || !user.id) {
+        if (authError || !user) {
             return NextResponse.json(
-                { success: false, error: "User not authenticated" },
+                { success: false, error: "Unauthorized" },
                 { status: 401 },
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
 
-        if (!id) {
+        if (!id || isNaN(id) || parseInt(id) <= 0) {
             return NextResponse.json(
-                { success: false, error: "Fee ID is required" },
+                { success: false, error: "Invalid fee ID format" },
                 { status: 400 },
             );
         }
 
-        const body = await req.json();
+        let body;
+        try {
+            body = await req.json();
+        } catch (parseError) {
+            return NextResponse.json(
+                { success: false, error: "Invalid JSON in request body" },
+                { status: 400 },
+            );
+        }
+
+        if (!body || Object.keys(body).length === 0) {
+            return NextResponse.json(
+                { success: false, error: ["Request body cannot be empty"] },
+                { status: 400 },
+            );
+        }
 
         const updatedFee = await updateFee(user.id, id, body);
 

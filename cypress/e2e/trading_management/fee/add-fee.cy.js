@@ -381,7 +381,7 @@ describe("Fee Add API and Database Comparison", () => {
                     cy.log("API Fee:", JSON.stringify(apiFee));
                 });
 
-                cy.getSingleFeeFromDb(feeId).then((rows) => {
+                cy.getSingleFeeFromDb(feeId, userId).then((rows) => {
                     dbFee = rows[0];
                     cy.log("DB Fee:", JSON.stringify(dbFee));
                 });
