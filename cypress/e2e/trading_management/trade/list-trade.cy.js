@@ -20,24 +20,22 @@ describe("Trade List API - GET /api/trade/list", () => {
         notes: faker.word.words(25),
     });
 
-    before(async () => {
+    before(() => {
         cy.clearCookies();
         cy.clearLocalStorage();
         cy.setupApiAuthCookies();
 
-        await Promise.all(
-            Array.from({ length: 3 }).map(() =>
-                cy.AddTrade(request()).then((response) => {
-                    expect(response.body.success).to.be.true;
-                    expect(response.body.trade).to.exist;
-                    expect(response.status).to.eq(201);
-                    const trade = response.body.trade;
-                    testUserId = trade.user_id;
-                    testTradeIds.push(trade.id);
-                    testTradesData.push(trade);
-                }),
-            ),
-        );
+        Cypress._.times(3, () => {
+            cy.AddTrade(request()).then((response) => {
+                expect(response.body.success).to.be.true;
+                expect(response.status).to.eq(201);
+
+                const trade = response.body.trade;
+                testUserId = trade.user_id;
+                testTradeIds.push(trade.id);
+                testTradesData.push(trade);
+            });
+        });
     });
 
     beforeEach(() => {

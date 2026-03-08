@@ -17,7 +17,7 @@ export async function PUT(req, { params }) {
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
         const body = await req.json();
 
         const updatedEvent = await updateEvent(user.id, id, body);

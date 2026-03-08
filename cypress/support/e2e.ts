@@ -26,6 +26,7 @@ import "./common/inventory/product/commands";
 import "./common/inventory/product/brand/commands";
 import "./common/inventory/product/name/commands";
 import "./common/helper";
+import "cypress-mochawesome-reporter/register";
 
 beforeEach(() => {
     Cypress.session.clearAllSavedSessions();

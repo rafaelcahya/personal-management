@@ -6,7 +6,7 @@ describe("Fee Delete API", () => {
 
     before(() => {
         cy.setupApiAuthCookies();
-
+        
         const request = {
             fee_date: faker.date.recent(),
             fee: faker.string.numeric(5),

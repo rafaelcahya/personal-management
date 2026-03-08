@@ -17,7 +17,7 @@ export async function PATCH(req, { params }) {
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
         const { is_favorite } = await req.json();
 
         await favoriteEvent(user.id, id, is_favorite);

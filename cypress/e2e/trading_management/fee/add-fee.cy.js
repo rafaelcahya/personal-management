@@ -2,13 +2,13 @@ import { faker } from "@faker-js/faker";
 import { formatToRupiah } from "../../../support/common/helper";
 
 describe("Fee Add API and Database Comparison", () => {
-    describe('Fee Add API', () => {
-        beforeEach(() => {
-            cy.clearCookies();
-            cy.clearLocalStorage();
-            cy.setupApiAuthCookies();
-        });
+    beforeEach(() => {
+        cy.clearCookies();
+        cy.clearLocalStorage();
+        cy.setupApiAuthCookies();
+    });
 
+    describe('Fee Add API', () => {
     	describe("Authentication & Authorization", () => {
             it("should return 307 or 401 when user is not authenticated", () => {
                 cy.clearApiAuth();
@@ -352,10 +352,6 @@ describe("Fee Add API and Database Comparison", () => {
         let userId;
 
         beforeEach(() => {
-            cy.clearCookies();
-            cy.clearLocalStorage();
-            cy.setupApiAuthCookies();
-
             const request = {
                 fee_date: faker.date.recent(),
                 fee: faker.string.numeric(5),
@@ -471,111 +467,89 @@ describe("Fee Add API and Database Comparison", () => {
     });
 
     describe("Fee Creation - Summary Impact Tests", () => {
-        let feeId;
-        let userId;
-
-        beforeEach(() => {
-            cy.clearCookies();
-            cy.clearLocalStorage();
-            cy.setupApiAuthCookies();
-        });
-
         describe("Total Fees Count Impact", () => {
             it("should increment feeCount after creating a new fee", () => {
-                let initialCount;
-
                 cy.GetFeeSummary().then((response) => {
                     expect(response.status).to.eq(200);
-                    initialCount = response.body.feeCount;
-                    cy.log(`📊 Initial total fees: ${initialCount}`);
+                    cy.wrap(response.body.data.feeCount).as("initialCount");
+                    cy.log(`📊 Initial fee count: ${response.body.feeCount}`);
                 });
 
                 const request = {
-                    fee_date: faker.date.recent(),
+                    fee_date: faker.date.recent().toISOString().split("T")[0],
                     fee: faker.string.numeric(5),
                     fee_name: faker.animal.snake(),
                 };
 
                 cy.AddFee(request).then((response) => {
                     expect(response.status).to.eq(201);
-                    feeId = response.body.fee.id;
-                    userId = response.body.fee.user_id;
-                    cy.log(`Created test fee ID: ${feeId}`);
+                    cy.log(`Created test fee ID: ${response.body.fee.id}`);
                 });
 
-                cy.GetFeeSummary().then((response) => {
-                    const newCount = response.body.feeCount;
-
-                    expect(newCount).to.eq(initialCount + 1);
+                cy.GetFeeSummary().then(function (response) {
+                    const newCount = response.body.data.feeCount;
+                    expect(newCount).to.eq(this.initialCount + 1);
                     cy.log(
-                        `✅ Total fees increased: ${initialCount} → ${newCount}`,
+                        `✅ Fee count increased: ${this.initialCount} → ${newCount}`,
                     );
                 });
             });
 
             it("should match feeCount with database count", () => {
-                let apiTotal, dbTotal;
-
                 cy.GetFeeSummary().then((response) => {
-                    apiTotal = response.body.feeCount;
+                    expect(response.status).to.eq(200);
+                    cy.wrap(response.body.data.feeCount).as("apiCount");
                 });
 
-                cy.getTotalTransactionsFromDb().then((count) => {
-                    dbTotal = count;
+                cy.getTotalFeesFromDb().then((count) => {
+                    cy.wrap(count).as("dbCount");
                 });
 
-                cy.then(() => {
-                    expect(apiTotal).to.eq(dbTotal);
-                    cy.log(`✅ API and DB counts match: ${apiTotal}`);
+                cy.then(function () {
+                    expect(this.apiCount).to.eq(this.dbCount);
+                    cy.log(`✅ API and DB counts match: ${this.apiCount}`);
                 });
             });
         });
 
         describe("Total Fees Paid Impact", () => {
-            let feeId;
-            let userId;
-
             it("should increment totalFeesPaid after creating a new fee", () => {
                 cy.GetFeeSummary().then((response) => {
                     expect(response.status).to.eq(200);
                     expect(response.body.success).to.eq(true);
-
-                    const initialTotalFeesPaid = response.body.totalFee;
-                    cy.log(
-                        `📊 Initial total fees paid: ${initialTotalFeesPaid}`,
+                    cy.wrap(response.body.data.totalFee).as(
+                        "initialTotalFeesPaid",
                     );
+                    cy.log(
+                        `📊 Initial total fees paid: ${response.body.totalFee}`,
+                    );
+                });
 
-                    const request = {
-                        fee_date: faker.date
-                            .recent()
-                            .toISOString()
-                            .split("T")[0],
-                        fee: faker.string.numeric(5),
-                        fee_name: faker.animal.snake(),
-                    };
+                const request = {
+                    fee_date: faker.date.recent().toISOString().split("T")[0],
+                    fee: faker.string.numeric(5),
+                    fee_name: faker.animal.snake(),
+                };
 
-                    cy.AddFee(request).then((addResponse) => {
-                        expect(addResponse.status).to.eq(201);
+                cy.AddFee(request).then((addResponse) => {
+                    expect(addResponse.status).to.eq(201);
+                    const fee = parseFloat(addResponse.body.fee.fee);
+                    cy.wrap(fee).as("addedFee");
+                    cy.log(
+                        `✅ Created fee ID: ${addResponse.body.fee.id}, amount: ${fee}`,
+                    );
+                });
 
-                        const feeId = addResponse.body.fee.id;
-                        const fee = parseFloat(addResponse.body.fee.fee);
-                        cy.log(
-                            `✅ Created fee ID: ${feeId}, fee amount: ${fee}`,
-                        );
+                cy.GetFeeSummary().then(function (summaryResponse) {
+                    expect(summaryResponse.status).to.eq(200);
+                    const newTotalFeesPaid = summaryResponse.body.data.totalFee;
 
-                        cy.GetFeeSummary().then((summaryResponse) => {
-                            expect(summaryResponse.status).to.eq(200);
-
-                            const newTotalFeesPaid =
-                                summaryResponse.body.totalFee;
-                            expect(newTotalFeesPaid).to.eq(
-                                initialTotalFeesPaid + fee,
-                            );
-                            cy.log(
-                                `✅ Total fees paid increased: ${initialTotalFeesPaid} → ${newTotalFeesPaid}`,
-                            );
-                        });
-                    });
+                    expect(newTotalFeesPaid).to.eq(
+                        this.initialTotalFeesPaid + this.addedFee,
+                    );
+                    cy.log(
+                        `✅ Total fees paid increased: ${this.initialTotalFeesPaid} → ${newTotalFeesPaid}`,
+                    );
                 });
             });
 
@@ -583,21 +557,21 @@ describe("Fee Add API and Database Comparison", () => {
                 cy.GetFeeSummary().then((response) => {
                     expect(response.status).to.eq(200);
                     expect(response.body.success).to.eq(true);
+                    cy.wrap(response.body.data.totalFee).as("apiTotal");
                 });
 
-                cy.GetFeeSummary().as("summaryResponse");
-                cy.getTotalFeesPaidFromDb().as("dbCount");
+                cy.getTotalFeesPaidFromDb().then((count) => {
+                    cy.wrap(count).as("dbTotal");
+                });
 
-                cy.get("@summaryResponse").then((summaryResponse) => {
-                    cy.get("@dbCount").then((dbCount) => {
-                        const apiTotal = summaryResponse.body.totalFee;
-                        expect(apiTotal).to.eq(dbCount);
-                        cy.log(`✅ API and DB counts match: ${apiTotal}`);
-                    });
+                cy.then(function () {
+                    expect(this.apiTotal).to.eq(this.dbTotal);
+                    cy.log(`✅ API and DB totals match: ${this.apiTotal}`);
                 });
             });
         });
     });
+
 });
 
 describe("Add Fee Form - UI Tests", () => {

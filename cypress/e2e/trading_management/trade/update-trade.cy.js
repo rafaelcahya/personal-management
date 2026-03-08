@@ -345,17 +345,39 @@ describe("Trade Update API - PUT /api/trade/v1/trade/update/{id}", () => {
     });
 
     describe("Data Integrity - API vs Database Comparison", () => {
+        beforeEach(() => {
+            const request = {
+                trade_date: faker.date.recent(),
+                ticker: faker.word.noun(4).toUpperCase(),
+                margin: faker.string.numeric(5),
+                proceeds: faker.string.numeric(5),
+                return_percent: faker.string.numeric(),
+                realized_gain: faker.string.numeric(5),
+                stock_type_option: faker.animal.snake(),
+                entry_session_option: faker.animal.snake(),
+                entry_occasion_option: faker.animal.snake(),
+                buy_reason_option: faker.animal.snake(),
+                sell_reason_option: faker.animal.snake(),
+                notes: faker.word.words(25),
+            };
+
+            cy.UpdateTrade(testTradeId, request).then((response) => {
+                expect(response.status).to.eq(200);
+                cy.wrap(response.body.trade).as("tradeData");
+            });
+        });
         describe("Complete Field Comparison", () => {
             it("should match all fields between API and DB", () => {
+                const tradeId = this.tradeData.id;
                 let apiTrade, dbTrade;
 
-                cy.GetSingleTrade(testTradeId).then((response) => {
+                cy.GetSingleTrade(tradeId).then((response) => {
                     expect(response.status).to.eq(200);
                     apiTrade = response.body.data;
                     cy.log("API Trade:", JSON.stringify(apiTrade));
                 });
 
-                cy.getSingleTradeFromDb(testTradeId).then((trade) => {
+                cy.getSingleTradeFromDb(tradeId).then((trade) => {
                     dbTrade = trade[0];
                     cy.log("DB Trade:", JSON.stringify(dbTrade));
                 });
@@ -410,13 +432,14 @@ describe("Trade Update API - PUT /api/trade/v1/trade/update/{id}", () => {
             });
 
             it("should have identical field count", () => {
+                const tradeId = this.tradeData.id;
                 let apiTrade, dbTrade;
 
-                cy.GetSingleTrade(testTradeId).then((response) => {
+                cy.GetSingleTrade(tradeId).then((response) => {
                     apiTrade = response.body.data;
                 });
 
-                cy.getSingleTradeFromDb(testTradeId).then((trade) => {
+                cy.getSingleTradeFromDb(tradeId).then((trade) => {
                     dbTrade = trade[0];
                 });
 
@@ -430,13 +453,14 @@ describe("Trade Update API - PUT /api/trade/v1/trade/update/{id}", () => {
             });
 
             it("should have valid ISO timestamp formats", () => {
+                const tradeId = this.tradeData.id;
                 let apiTrade, dbTrade;
 
-                cy.GetSingleTrade(testTradeId).then((response) => {
+                cy.GetSingleTrade(tradeId).then((response) => {
                     apiTrade = response.body.data;
                 });
 
-                cy.getSingleTradeFromDb(testTradeId).then((trade) => {
+                cy.getSingleTradeFromDb(tradeId).then((trade) => {
                     dbTrade = trade[0];
                 });
 
@@ -454,13 +478,14 @@ describe("Trade Update API - PUT /api/trade/v1/trade/update/{id}", () => {
             });
 
             it("should match margin values with exact precision", () => {
+                const tradeId = this.tradeData.id;
                 let apiTrade, dbTrade;
 
-                cy.GetSingleTrade(testTradeId).then((response) => {
+                cy.GetSingleTrade(tradeId).then((response) => {
                     apiTrade = response.body.data;
                 });
 
-                cy.getSingleTradeFromDb(testTradeId).then((trade) => {
+                cy.getSingleTradeFromDb(tradeId).then((trade) => {
                     dbTrade = trade[0];
                 });
 
@@ -476,13 +501,14 @@ describe("Trade Update API - PUT /api/trade/v1/trade/update/{id}", () => {
             });
 
             it("should match proceeds values with exact precision", () => {
+                const tradeId = this.tradeData.id;
                 let apiTrade, dbTrade;
 
-                cy.GetSingleTrade(testTradeId).then((response) => {
+                cy.GetSingleTrade(tradeId).then((response) => {
                     apiTrade = response.body.data;
                 });
 
-                cy.getSingleTradeFromDb(testTradeId).then((trade) => {
+                cy.getSingleTradeFromDb(tradeId).then((trade) => {
                     dbTrade = trade[0];
                 });
 
@@ -498,13 +524,14 @@ describe("Trade Update API - PUT /api/trade/v1/trade/update/{id}", () => {
             });
 
             it("should match realized_gain including negative values", () => {
+                const tradeId = this.tradeData.id;
                 let apiTrade, dbTrade;
 
-                cy.GetSingleTrade(testTradeId).then((response) => {
+                cy.GetSingleTrade(tradeId).then((response) => {
                     apiTrade = response.body.data;
                 });
 
-                cy.getSingleTradeFromDb(testTradeId).then((trade) => {
+                cy.getSingleTradeFromDb(tradeId).then((trade) => {
                     dbTrade = trade[0];
                 });
 

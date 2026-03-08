@@ -11,24 +11,22 @@ describe("Fee List API", () => {
         fee_name: faker.animal.snake(),
     });
 
-    before(async () => {
+    before(() => {
         cy.clearCookies();
         cy.clearLocalStorage();
         cy.setupApiAuthCookies();
 
-        await Promise.all(
-            Array.from({ length: 3 }).map(() =>
-                cy.AddFee(request()).then((response) => {
-                    expect(response.body.success).to.be.true;
-                    expect(response.body.fee).to.exist;
-                    expect(response.status).to.eq(201);
-                    const fee = response.body.fee;
-                    testUserId = fee.user_id;
-                    testFeeIds.push(fee.id);
-                    testFeesData.push(fee);
-                }),
-            ),
-        );
+        Cypress._.times(3, () => {
+            cy.AddFee(request()).then((response) => {
+                expect(response.body.success).to.be.true;
+                expect(response.body.fee).to.exist;
+                expect(response.status).to.eq(201);
+                const fee = response.body.fee;
+                testUserId = fee.user_id;
+                testFeeIds.push(fee.id);
+                testFeesData.push(fee);
+            });
+        });
     });
 
     beforeEach(() => {
@@ -42,8 +40,7 @@ describe("Fee List API", () => {
             expect(response.body.fees).to.be.an("array");
             expect(response.body.fees.length).to.be.gte(testFeeIds.length);
             testFeeIds.forEach((id) => {
-                expect(response.body.fees.some((t) => t.id === id)).to.be
-                    .true;
+                expect(response.body.fees.some((t) => t.id === id)).to.be.true;
             });
         });
     });

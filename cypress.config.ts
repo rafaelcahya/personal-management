@@ -46,9 +46,12 @@ console.log("=================================\n");
 
 export default defineConfig({
     projectId: process.env.CYPRESS_PROJECT_ID,
+    reporter: "cypress-mochawesome-reporter",
 
     e2e: {
         setupNodeEvents(on, config) {
+            require("cypress-mochawesome-reporter/plugin")(on);
+            
             const supabase = createEngine(
                 process.env.SUPABASE_URL || config.env.SUPABASE_URL,
                 process.env.SUPABASE_SERVICE_ROLE_KEY ||
@@ -368,5 +371,13 @@ export default defineConfig({
             framework: "next",
             bundler: "webpack",
         },
+    },
+
+    reporterOptions: {
+        charts: true,
+        reportPageTitle: "Cypress Test Report",
+        embeddedScreenshots: true,
+        inlineAssets: true,
+        saveAllAttempts: false,
     },
 });

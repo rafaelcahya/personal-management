@@ -6,7 +6,7 @@ describe("Trade Delete API", () => {
 
     before(() => {
         cy.setupApiAuthCookies();
-
+        
         const request = {
             trade_date: faker.date.recent(),
             ticker: faker.word.noun(4).toUpperCase(),

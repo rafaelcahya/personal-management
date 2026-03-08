@@ -18,7 +18,7 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
 
         if (!id) {
             return NextResponse.json(
