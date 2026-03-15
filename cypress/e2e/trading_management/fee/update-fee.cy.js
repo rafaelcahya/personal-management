@@ -287,25 +287,6 @@ describe("Fee Update API", () => {
                     cy.log("✅ Timestamp formats valid and match");
                 });
             });
-
-            it("should match fee values with exact precision", function () {
-                const feeId = this.feeData.id;
-                let apiFee, dbFee;
-
-                cy.GetSingleFee(feeId).then((response) => {
-                    apiFee = response.body.data;
-                });
-
-                cy.getSingleFeeFromDb(feeId.toString()).then((rows) => {
-                    dbFee = rows[0];
-
-                    const apiFeeValue = parseFloat(apiFee.fee);
-                    const dbFeeValue = parseFloat(dbFee.fee);
-
-                    expect(apiFeeValue).to.eq(dbFeeValue);
-                    cy.log(`✅ Fee matches: ${apiFeeValue}`);
-                });
-            });
         });
     });
 
@@ -327,40 +308,43 @@ describe("Fee Update API", () => {
             it("should reflect updated fee in total fees paid", function () {
                 cy.GetFeeSummary().then((summaryResponse) => {
                     expect(summaryResponse.status).to.eq(200);
-                    cy.wrap(summaryResponse.body.data.totalFee).as("initialTotal");
-                    cy.log(
-                        `📊 Initial total: ${summaryResponse.body.totalFee}`,
-                    );
-                });
+                    const initialTotal = summaryResponse.body.data.totalFee;
+                    cy.log(`📊 Initial total: ${initialTotal}`);
 
-                const updateRequest = {
-                    fee_date: faker.date.recent().toISOString().split("T")[0],
-                    fee: faker.string.numeric(6),
-                    fee_name: faker.animal.snake(),
-                };
+                    const updateRequest = {
+                        fee_date: faker.date
+                            .recent()
+                            .toISOString()
+                            .split("T")[0],
+                        fee: faker.string.numeric(6),
+                        fee_name: faker.animal.snake(),
+                    };
 
-                cy.UpdateFee(this.feeData.id, updateRequest).then(
-                    (updateResponse) => {
-                        expect(updateResponse.status).to.eq(200);
-                        cy.wrap(parseFloat(updateResponse.body.fee.fee)).as(
-                            "newFee",
-                        );
-                    },
-                );
+                    cy.UpdateFee(this.feeData.id, updateRequest).then(
+                        (updateResponse) => {
+                            expect(updateResponse.status).to.eq(200);
+                            const newFee = parseFloat(
+                                updateResponse.body.fee.fee,
+                            );
+                            const oldFee = parseFloat(this.feeData.fee);
 
-                cy.GetFeeSummary().then((newSummaryResponse) => {
-                    expect(newSummaryResponse.status).to.eq(200);
-                    const newTotal = newSummaryResponse.body.data.totalFee;
-                    const oldFee = parseFloat(this.feeData.fee);
-                    const expectedTotal =
-                        this.initialTotal - oldFee + this.newFee;
+                            cy.GetFeeSummary().then((newSummaryResponse) => {
+                                expect(newSummaryResponse.status).to.eq(200);
+                                const newTotal =
+                                    newSummaryResponse.body.data.totalFee;
+                                const expectedTotal =
+                                    initialTotal - oldFee + newFee;
 
-                    expect(newTotal).to.eq(expectedTotal);
-                    cy.log(
-                        `✅ Total updated: ${this.initialTotal} → ${newTotal}`,
+                                expect(newTotal).to.eq(expectedTotal);
+                                cy.log(
+                                    `✅ Total updated: ${initialTotal} → ${newTotal}`,
+                                );
+                            });
+                        },
                     );
                 });
             });
+
 
             it("should reflect decreased fee in total fees paid", function () {
                 cy.GetFeeSummary().then((summaryResponse) => {

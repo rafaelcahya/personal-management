@@ -12,7 +12,9 @@ export async function getSingleTradeFromDb(supabase, tradeId, userId) {
         .is("deleted_at", null);
 
     if (error) {
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     return data || [];
@@ -29,7 +31,9 @@ export async function getTradesFromDb(supabase, userId) {
         .is("deleted_at", null);
 
     if (error) {
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     return data || [];
@@ -46,7 +50,9 @@ export async function getTotalTradesFromDb(supabase, userId) {
         .is("deleted_at", null);
 
     if (error) {
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     return count || 0;
@@ -91,7 +97,9 @@ export async function getStockTypeSummaryFromDb(supabase, userId) {
         .is("deleted_at", null);
 
     if (error) {
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     const summary = {};
@@ -116,7 +124,9 @@ export async function getEntrySessionSummaryFromDb(supabase, userId) {
         .is("deleted_at", null);
 
     if (error) {
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     const summary = {};
@@ -141,7 +151,9 @@ export async function getEntryOccasionSummaryFromDb(supabase, userId) {
         .is("deleted_at", null);
 
     if (error) {
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     const summary = {};

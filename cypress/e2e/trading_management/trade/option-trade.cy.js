@@ -88,8 +88,15 @@ describe("Trade All Options API", () => {
     it("should work without authentication", () => {
         cy.clearApiAuth();
         cy.GetOption("all").then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body.success).to.be.true;
+            expect(response.status).to.be.oneOf([307, 401]);
+
+            if (response.status === 401) {
+                expect(response.body.success).to.be.false;
+                expect(response.body.error).to.eq("Unauthorized");
+            }
+
+            const location = response.headers.location || response.body;
+            expect(String(location)).to.include("/login");
         });
     });
 });

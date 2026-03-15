@@ -2,18 +2,23 @@
  * Get test user ID from session
  */
 Cypress.Commands.add("getTestUserId", () => {
-    const email = Cypress.env("TEST_EMAIL");
-    const password = Cypress.env("TEST_PASSWORD");
-
-    return cy
-        .task("getSupabaseSession", { email, password })
-        .then((session) => {
-            if (!session) {
-                throw new Error("Failed to get test user session");
-            }
-            return session.user.id;
-        });
+    cy.env(["TEST_EMAIL", "TEST_PASSWORD"]).then(
+        ({ TEST_EMAIL, TEST_PASSWORD }) => {
+            return cy
+                .task("getSupabaseSession", {
+                    email: TEST_EMAIL,
+                    password: TEST_PASSWORD,
+                })
+                .then((session) => {
+                    if (!session) {
+                        throw new Error("Failed to get test user session");
+                    }
+                    return session.user.id;
+                });
+        },
+    );
 });
+
 /**
  * Get single fee from database
  */
@@ -37,7 +42,7 @@ Cypress.Commands.add("getFeesFromDb", () => {
  */
 Cypress.Commands.add("getTotalFeesFromDb", () => {
     return cy.getTestUserId().then((userId) => {
-        return cy.task("getTotalFeesFromDb", userId);
+        return cy.task("getTotalFeesFromDb", { userId });
     });
 });
 
@@ -46,6 +51,9 @@ Cypress.Commands.add("getTotalFeesFromDb", () => {
  */
 Cypress.Commands.add("getTotalFeesPaidFromDb", () => {
     return cy.getTestUserId().then((userId) => {
-        return cy.task("getTotalFeesPaidFromDb", userId);
+        cy.log(
+            `userId type: ${typeof userId}, value: ${JSON.stringify(userId)}`,
+        );
+        return cy.task("getTotalFeesPaidFromDb", { userId });
     });
 });

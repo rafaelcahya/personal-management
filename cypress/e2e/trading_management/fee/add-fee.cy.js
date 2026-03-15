@@ -8,8 +8,8 @@ describe("Fee Add API and Database Comparison", () => {
         cy.setupApiAuthCookies();
     });
 
-    describe('Fee Add API', () => {
-    	describe("Authentication & Authorization", () => {
+    describe("Fee Add API", () => {
+        describe("Authentication & Authorization", () => {
             it("should return 307 or 401 when user is not authenticated", () => {
                 cy.clearApiAuth();
 
@@ -47,7 +47,7 @@ describe("Fee Add API and Database Comparison", () => {
             });
         });
 
-    	describe("Request Body Validation", () => {
+        describe("Request Body Validation", () => {
             it("should return 400 when body is missing", () => {
                 cy.AddFee().then((response) => {
                     expect(response.status).to.eq(400);
@@ -107,9 +107,7 @@ describe("Fee Add API and Database Comparison", () => {
                     expect(response.status).to.eq(400);
                     expect(response.body.success).to.be.false;
                     expect(response.body.error).to.be.an("array");
-                    expect(response.body.error).to.include(
-                        "fee is required",
-                    );
+                    expect(response.body.error).to.include("fee is required");
                 });
             });
 
@@ -157,9 +155,7 @@ describe("Fee Add API and Database Comparison", () => {
                     expect(response.status).to.eq(400);
                     expect(response.body.success).to.be.false;
                     expect(response.body.error).to.be.an("array");
-                    expect(response.body.error).to.include(
-                        "fee is required",
-                    );
+                    expect(response.body.error).to.include("fee is required");
                 });
             });
 
@@ -208,9 +204,7 @@ describe("Fee Add API and Database Comparison", () => {
                     expect(response.status).to.eq(400);
                     expect(response.body.success).to.be.false;
                     expect(response.body.error).to.be.an("array");
-                    expect(response.body.error).to.include(
-                        "fee is required",
-                    );
+                    expect(response.body.error).to.include("fee is required");
                 });
             });
 
@@ -247,7 +241,7 @@ describe("Fee Add API and Database Comparison", () => {
                 });
             });
         });
-    	describe("Fee Object Structure Scenarios", () => {
+        describe("Fee Object Structure Scenarios", () => {
             it("should create fee with all required fields", () => {
                 const request = {
                     fee_date: faker.date.recent(),
@@ -495,7 +489,17 @@ describe("Fee Add API and Database Comparison", () => {
                 });
             });
 
-            it("should match feeCount with database count", () => {
+            it("should match feeCount with database count", function () {
+                const request = {
+                    fee_date: faker.date.recent().toISOString().split("T")[0],
+                    fee: faker.string.numeric(5),
+                    fee_name: faker.animal.snake(),
+                };
+
+                cy.AddFee(request).then((response) => {
+                    expect(response.status).to.eq(201);
+                });
+
                 cy.GetFeeSummary().then((response) => {
                     expect(response.status).to.eq(200);
                     cy.wrap(response.body.data.feeCount).as("apiCount");
@@ -507,7 +511,6 @@ describe("Fee Add API and Database Comparison", () => {
 
                 cy.then(function () {
                     expect(this.apiCount).to.eq(this.dbCount);
-                    cy.log(`✅ API and DB counts match: ${this.apiCount}`);
                 });
             });
         });
@@ -553,25 +556,38 @@ describe("Fee Add API and Database Comparison", () => {
                 });
             });
 
-            it("should match totalFeesPaid with database count", () => {
-                cy.GetFeeSummary().then((response) => {
-                    expect(response.status).to.eq(200);
-                    expect(response.body.success).to.eq(true);
-                    cy.wrap(response.body.data.totalFee).as("apiTotal");
-                });
+            it(
+                "should match totalFeesPaid with database count",
+                function () {
+                    const request = {
+                        fee_date: faker.date
+                            .recent()
+                            .toISOString()
+                            .split("T")[0],
+                        fee: faker.string.numeric(5),
+                        fee_name: faker.animal.snake(),
+                    };
 
-                cy.getTotalFeesPaidFromDb().then((count) => {
-                    cy.wrap(count).as("dbTotal");
-                });
+                    cy.AddFee(request).then((response) => {
+                        expect(response.status).to.eq(201);
+                    });
 
-                cy.then(function () {
-                    expect(this.apiTotal).to.eq(this.dbTotal);
-                    cy.log(`✅ API and DB totals match: ${this.apiTotal}`);
-                });
-            });
+                    cy.GetFeeSummary().then((response) => {
+                        expect(response.status).to.eq(200);
+                        cy.wrap(response.body.data.totalFee).as("apiTotal");
+                    });
+
+                    cy.getTotalFeesPaidFromDb().then((total) => {
+                        cy.wrap(total).as("dbTotal");
+                    });
+
+                    cy.then(function () {
+                        expect(this.apiTotal).to.eq(this.dbTotal);
+                    });
+                },
+            );
         });
     });
-
 });
 
 describe("Add Fee Form - UI Tests", () => {
@@ -585,9 +601,7 @@ describe("Add Fee Form - UI Tests", () => {
         describe("Dialog Behavior", () => {
             it("should open dialog when Add Fee button is clicked", () => {
                 cy.get("#addNewFeeForm_feePage").should("not.exist");
-                cy.get("#addNewFeeBtn_feePage")
-                    .should("be.visible")
-                    .click();
+                cy.get("#addNewFeeBtn_feePage").should("be.visible").click();
                 cy.get("#addNewFeeForm_feePage").should("be.visible");
             });
 
@@ -687,9 +701,7 @@ describe("Add Fee Form - UI Tests", () => {
             it("should format large numbers correctly", () => {
                 const largeValue = "50000000";
 
-                cy.get("#feeAmountField_feePage").type(
-                    largeValue,
-                );
+                cy.get("#feeAmountField_feePage").type(largeValue);
 
                 cy.get("#feeAmountField_feePage").should(
                     "have.value",
@@ -830,9 +842,7 @@ describe("Add Fee Form - UI Tests", () => {
             it("should format large numbers correctly", () => {
                 const largeValue = "50000000";
 
-                cy.get("#feeAmountField_feePage").type(
-                    largeValue,
-                );
+                cy.get("#feeAmountField_feePage").type(largeValue);
 
                 cy.get("#feeAmountField_feePage").should(
                     "have.value",
@@ -973,9 +983,7 @@ describe("Add Fee Form - UI Tests", () => {
             it("should format large numbers correctly", () => {
                 const largeValue = "50000000";
 
-                cy.get("#feeAmountField_feePage").type(
-                    largeValue,
-                );
+                cy.get("#feeAmountField_feePage").type(largeValue);
 
                 cy.get("#feeAmountField_feePage").should(
                     "have.value",

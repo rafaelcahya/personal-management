@@ -24,7 +24,9 @@ export async function getBuyReasonOptionsFromDb(userId, optionId) {
             );
             return null;
         }
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     return data;
@@ -48,7 +50,9 @@ export async function getEntryOccasionOptionsFromDb(userId, optionId) {
             );
             return null;
         }
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     return data;
@@ -72,7 +76,9 @@ export async function getEntrySessionOptionsFromDb(userId, optionId) {
             );
             return null;
         }
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     return data;
@@ -96,7 +102,9 @@ export async function getStockTypeOptionsFromDb(userId, optionId) {
             );
             return null;
         }
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     return data;
@@ -120,7 +128,9 @@ export async function getSellReasonOptionsFromDb(userId, optionId) {
             );
             return null;
         }
-        throw new Error(`DB query failed: ${error.message}`);
+        throw new Error(
+            `DB query failed: ${error.message || error.details || error.hint || JSON.stringify(error)}`,
+        );
     }
 
     return data;

@@ -1,5 +1,5 @@
 // ***********************************************************
-// This example support/e2e.ts is processed and
+// This example support/e2e.js is processed and
 // loaded automatically before your test files.
 //
 // This is a great place to put global configuration and
@@ -13,7 +13,6 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import commands.js using ES2015 syntax:
 import "./common/commands";
 import "./common/auth/ui-commands";
 import "./common/auth/api-commands";
@@ -27,6 +26,9 @@ import "./common/inventory/product/brand/commands";
 import "./common/inventory/product/name/commands";
 import "./common/helper";
 import "cypress-mochawesome-reporter/register";
+import registerCypressGrep from "@cypress/grep";
+
+registerCypressGrep();
 
 beforeEach(() => {
     Cypress.session.clearAllSavedSessions();

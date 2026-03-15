@@ -53,72 +53,79 @@
  * })
  */
 Cypress.Commands.add("login", (email, password) => {
-    const testEmail = email || Cypress.env("TEST_EMAIL");
-    const testPassword = password || Cypress.env("TEST_PASSWORD");
+    cy.env(["TEST_EMAIL", "TEST_PASSWORD"]).then(
+        ({ TEST_EMAIL, TEST_PASSWORD }) => {
+            const testEmail = email || TEST_EMAIL;
+            const testPassword = password || TEST_PASSWORD;
 
-    if (!testEmail || !testPassword) {
-        throw new Error("TEST_EMAIL and TEST_PASSWORD must be configured");
-    }
+            if (!testEmail || !testPassword) {
+                throw new Error(
+                    "TEST_EMAIL and TEST_PASSWORD must be configured",
+                );
+            }
 
-    cy.session(
-        [testEmail, testPassword],
-        () => {
-            cy.log(`🔐 Logging in as: ${testEmail}`);
+            return cy.session(
+                [testEmail, testPassword],
+                () => {
+                    // retry logic
+                    const attemptLogin = (attempt = 1) => {
+                        cy.task("getSupabaseSession", {
+                            email: testEmail,
+                            password: testPassword,
+                        }).then((session) => {
+                            if (!session && attempt < 3) {
+                                cy.log(
+                                    `⚠️ Attempt ${attempt} failed, retrying...`,
+                                );
+                                cy.wait(1000 * attempt);
+                                attemptLogin(attempt + 1);
+                                return;
+                            }
 
-            cy.task("getSupabaseSession", {
-                email: testEmail,
-                password: testPassword,
-            }).then((session) => {
-                if (!session) {
-                    throw new Error(`Failed to get session for ${testEmail}`);
-                }
+                            if (!session) {
+                                throw new Error(
+                                    `Failed to get session for ${testEmail} after 3 attempts`,
+                                );
+                            }
 
-                cy.log("✅ Session obtained");
-                cy.log(`User ID: ${session.user?.id}`);
+                            cy.log(`✅ Session obtained on attempt ${attempt}`);
 
-                // Store session in localStorage for validation
-                cy.window().then((win) => {
-                    win.localStorage.setItem(
-                        "cypress-session",
-                        JSON.stringify(session),
-                    );
-                    win.localStorage.setItem(
-                        "cypress-access-token",
-                        session.access_token,
-                    );
-                });
-
-                cy.log("✅ Session stored in localStorage");
-            });
-        },
-        {
-            cacheAcrossSpecs: true,
-            validate() {
-                // Validate session still exists and is valid
-                cy.window().then((win) => {
-                    const sessionStr =
-                        win.localStorage.getItem("cypress-session");
-                    if (!sessionStr) {
-                        throw new Error(
-                            "Session validation failed - no session in localStorage",
-                        );
-                    }
-
-                    try {
-                        const session = JSON.parse(sessionStr);
-                        if (!session.access_token) {
-                            throw new Error(
-                                "Session validation failed - no access token",
+                            cy.setCookie(
+                                "cypress-session-token",
+                                session.access_token,
+                                { path: "/", httpOnly: false },
                             );
-                        }
-                        cy.log("✅ Session validated");
-                    } catch (err) {
-                        throw new Error(
-                            `Session validation failed: ${err.message}`,
-                        );
-                    }
-                });
-            },
+
+                            cy.visit("/");
+                            cy.window().then((win) => {
+                                win.localStorage.setItem(
+                                    "cypress-session",
+                                    JSON.stringify(session),
+                                );
+                                win.localStorage.setItem(
+                                    "cypress-access-token",
+                                    session.access_token,
+                                );
+                            });
+                        });
+                    };
+
+                    attemptLogin();
+                },
+                {
+                    cacheAcrossSpecs: true,
+                    validate() {
+                        cy.getCookie("cypress-session-token").then((cookie) => {
+                            if (!cookie || !cookie.value) {
+                                throw new Error(
+                                    "Session validation failed - no token cookie",
+                                );
+                            }
+                            cy.log("✅ Session validated");
+                        });
+                    },
+                },
+            );
         },
     );
 });
@@ -138,21 +145,22 @@ Cypress.Commands.add("login", (email, password) => {
  * cy.enableBypass()
  */
 Cypress.Commands.add("enableBypass", () => {
-    const authSecret = Cypress.env("CYPRESS_AUTH_SECRET");
+    cy.env(["CYPRESS_AUTH_SECRET"]).then(({ CYPRESS_AUTH_SECRET }) => {
+        if (!CYPRESS_AUTH_SECRET) {
+            throw new Error("CYPRESS_AUTH_SECRET not configured in env");
+        }
 
-    if (!authSecret) {
-        throw new Error("CYPRESS_AUTH_SECRET not configured in env");
-    }
+        cy.setCookie("cypress-bypass", CYPRESS_AUTH_SECRET, {
+            path: "/",
+            httpOnly: false,
+            secure: false,
+            sameSite: "lax",
+        });
 
-    cy.setCookie("cypress-bypass", authSecret, {
-        path: "/",
-        httpOnly: false,
-        secure: false,
-        sameSite: "lax",
+        cy.log("✅ Bypass enabled");
     });
-
-    cy.log("✅ Bypass enabled");
 });
+
 
 /**
  * Disable authentication bypass

@@ -1,3 +1,5 @@
+import { faker } from "@faker-js/faker";
+
 describe("Fee Summary API and Database Comparison", () => {
     describe("Fee Summary API", () => {
         beforeEach(() => {
@@ -39,10 +41,7 @@ describe("Fee Summary API and Database Comparison", () => {
                 cy.GetFeeSummary().then((response) => {
                     const { data } = response.body;
 
-                    expect(data).to.have.all.keys(
-                        "feeCount",
-                        "totalFee",
-                    );
+                    expect(data).to.have.all.keys("feeCount", "totalFee");
                 });
             });
 
@@ -164,14 +163,25 @@ describe("Fee Summary API and Database Comparison", () => {
 
         describe("Total Counts Comparison", () => {
             it("API feeCount should match database count", () => {
-                let apiTotal, dbTotal;
+                let apiTotal, dbTotal, userId;
+
+                const request = {
+                    fee_date: faker.date.recent().toISOString().split("T")[0],
+                    fee: faker.string.numeric(5),
+                    fee_name: faker.animal.snake(),
+                };
+
+                cy.AddFee(request).then((response) => {
+                    expect(response.status).to.eq(201);
+                    userId = response.body.fee.user_id;
+                });
 
                 cy.GetFeeSummary().then((response) => {
                     apiTotal = response.body.data.feeCount;
                     cy.log(`API feeCount: ${apiTotal}`);
                 });
 
-                cy.getTotalFeesFromDb().then((count) => {
+                cy.getTotalFeesFromDb(userId).then((count) => {
                     dbTotal = count;
                     cy.log(`DB feeCount: ${dbTotal}`);
 
@@ -180,14 +190,25 @@ describe("Fee Summary API and Database Comparison", () => {
             });
 
             it("API totalFee should match database count", () => {
-                let apiWins, dbWins;
+                let apiWins, dbWins, userId;
+
+                const request = {
+                    fee_date: faker.date.recent().toISOString().split("T")[0],
+                    fee: faker.string.numeric(5),
+                    fee_name: faker.animal.snake(),
+                };
+
+                cy.AddFee(request).then((response) => {
+                    expect(response.status).to.eq(201);
+                    userId = response.body.fee.user_id;
+                });
 
                 cy.GetFeeSummary().then((response) => {
                     apiWins = response.body.data.totalFee;
                     cy.log(`API totalFee: ${apiWins}`);
                 });
 
-                cy.getTotalFeesPaidFromDb().then((count) => {
+                cy.getTotalFeesPaidFromDb(userId).then((count) => {
                     dbWins = count;
                     cy.log(`DB totalFee: ${dbWins}`);
 
@@ -198,21 +219,43 @@ describe("Fee Summary API and Database Comparison", () => {
 
         describe("Complete Data Integrity Check", () => {
             it("all API data should perfectly match database source", () => {
-                let apiData;
+                const request = {
+                    fee_date: faker.date.recent().toISOString().split("T")[0],
+                    fee: faker.string.numeric(5),
+                    fee_name: faker.animal.snake(),
+                };
+
+                cy.AddFee(request).then((response) => {
+                    expect(response.status).to.eq(201);
+                });
 
                 cy.GetFeeSummary().then((response) => {
-                    apiData = response.body.data;
-                    cy.log("API Full Response:", JSON.stringify(apiData));
+                    expect(response.status).to.eq(200);
+                    cy.wrap(response.body.data.feeCount).as("apiCount");
+                    cy.wrap(response.body.data.totalFee).as("apiTotal");
+                    cy.log(
+                        "API Full Response:",
+                        JSON.stringify(response.body.data),
+                    );
                 });
 
-                cy.getTotalFeesFromDb().then((totalFees) => {
-                    expect(apiData.feeCount, "Fee count").to.eq(totalFees);
+                cy.getTotalFeesFromDb().then((count) => {
+                    cy.wrap(count).as("dbCount");
+                    cy.log(`DB feeCount: ${count}`);
                 });
 
-                cy.getTotalFeesPaidFromDb().then((totalFee) => {
-                    expect(apiData.totalFee, "Total Fee").to.eq(totalFee);
+                cy.getTotalFeesPaidFromDb().then((total) => {
+                    cy.wrap(total).as("dbTotal");
+                    cy.log(`DB totalFee: ${total}`);
+                });
+
+                cy.then(function () {
+                    expect(this.apiCount, "feeCount").to.eq(this.dbCount);
+                    expect(this.apiTotal, "totalFee").to.eq(this.dbTotal);
+                    cy.log("✅ All API data matches database source");
                 });
             });
+
         });
     });
 });
@@ -231,9 +274,7 @@ describe("Fee List Summary - UI Tests", () => {
         });
 
         it("should hide desktop view and show collapsible on mobile", () => {
-            cy.get("#feeListSummaryDesktop_feePage").should(
-                "not.be.visible",
-            );
+            cy.get("#feeListSummaryDesktop_feePage").should("not.be.visible");
             cy.get("#feeSummaryCollapsible_feePage").should("be.visible");
         });
 
@@ -287,9 +328,7 @@ describe("Fee List Summary - UI Tests", () => {
 
         it("should show desktop grid view on tablet", () => {
             cy.get("#feeListSummaryDesktop_feePage").should("be.visible");
-            cy.get("#feeSummaryCollapsible_feePage").should(
-                "not.be.visible",
-            );
+            cy.get("#feeSummaryCollapsible_feePage").should("not.be.visible");
         });
 
         it("should display all 2 summary cards in grid", () => {
@@ -309,9 +348,7 @@ describe("Fee List Summary - UI Tests", () => {
 
         it("should show desktop grid view", () => {
             cy.get("#feeListSummaryDesktop_feePage").should("be.visible");
-            cy.get("#feeSummaryCollapsible_feePage").should(
-                "not.be.visible",
-            );
+            cy.get("#feeSummaryCollapsible_feePage").should("not.be.visible");
         });
 
         it("should display all 2 summary cards", () => {

@@ -42,23 +42,25 @@ Cypress.Commands.add("FavoriteEventUnauthenticated", (id, request) => {
 });
 
 Cypress.Commands.add("GetRandomEventId", () => {
-    return cy
-        .request({
-            method: "GET",
-            url: "/api/trade/v1/event/list",
-            headers: {
-                Authorization: `Bearer ${Cypress.env("authToken")}`,
-            },
-            failOnStatusCode: false,
-        })
-        .then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body.events).to.be.an("array").and.not.be.empty;
+    cy.env(["authToken"]).then(({ authToken }) => {
+        return cy
+            .request({
+                method: "GET",
+                url: "/api/trade/v1/event/list",
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                failOnStatusCode: false,
+            })
+            .then((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body.events).to.be.an("array").and.not.be.empty;
 
-            const events = response.body.events;
-            const randomEvent =
-                events[Math.floor(Math.random() * events.length)];
+                const events = response.body.events;
+                const randomEvent =
+                    events[Math.floor(Math.random() * events.length)];
 
-            return randomEvent.id;
-        });
+                return randomEvent.id;
+            });
+    });
 });

@@ -6,21 +6,25 @@ describe("Login - API & Authentication", () => {
     });
 
     it("should authenticate programmatically via Supabase API", () => {
-        const email = Cypress.env("TEST_EMAIL");
-        const password = Cypress.env("TEST_PASSWORD");
+        cy.env(["TEST_EMAIL", "TEST_PASSWORD"]).then(
+            ({ TEST_EMAIL, TEST_PASSWORD }) => {
+                cy.task("getSupabaseSession", {
+                    email: TEST_EMAIL,
+                    password: TEST_PASSWORD,
+                }).then((session) => {
+                    expect(session).to.not.be.null;
+                    expect(session).to.have.property("access_token");
+                    expect(session).to.have.property("refresh_token");
+                    expect(session).to.have.property("user");
 
-        cy.task("getSupabaseSession", { email, password }).then((session) => {
-            expect(session).to.not.be.null;
-            expect(session).to.have.property("access_token");
-            expect(session).to.have.property("refresh_token");
-            expect(session).to.have.property("user");
-
-            cy.log(
-                `✅ Access Token: ${session.access_token.substring(0, 20)}...`,
-            );
-            cy.log(`✅ User ID: ${session.user.id}`);
-            cy.log(`✅ User Email: ${session.user.email}`);
-        });
+                    cy.log(
+                        `✅ Access Token: ${session.access_token.substring(0, 20)}...`,
+                    );
+                    cy.log(`✅ User ID: ${session.user.id}`);
+                    cy.log(`✅ User Email: ${session.user.email}`);
+                });
+            },
+        );
     });
 
     it("should redirect unauthenticated user to login", () => {
@@ -72,9 +76,11 @@ describe("Login - API & Authentication", () => {
     it("should access protected route with bypass", () => {
         cy.loginWithBypass();
 
-        cy.getCookie("cypress-bypass").then((cookie) => {
-            expect(cookie).to.not.be.null;
-            expect(cookie.value).to.equal(Cypress.env("CYPRESS_AUTH_SECRET"));
+        cy.env(["CYPRESS_AUTH_SECRET"]).then(({ CYPRESS_AUTH_SECRET }) => {
+            cy.getCookie("cypress-bypass").then((cookie) => {
+                expect(cookie).to.not.be.null;
+                expect(cookie.value).to.equal(CYPRESS_AUTH_SECRET);
+            });
         });
 
         cy.visit("/main/landing");

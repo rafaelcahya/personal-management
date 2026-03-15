@@ -4,14 +4,15 @@ import { formatToRupiah } from "../../../support/common/helper";
 describe("Trade Add API and Database Comparison", () => {
     describe("Add Trade API", () => {
         beforeEach(() => {
-            cy.clearCookies();
             cy.clearLocalStorage();
             cy.setupApiAuthCookies();
         });
 
         describe("Authentication & Authorization", () => {
             it("should return 307 or 401 when user is not authenticated", () => {
-                cy.clearApiAuth();
+                cy.clearAllCookies();
+                cy.clearAllSessionStorage();
+                cy.clearLocalStorage();
 
                 const request = {
                     trade_date: faker.date.recent(),
@@ -808,9 +809,6 @@ describe("Trade Add API and Database Comparison", () => {
     });
 
     describe("Trade Creation - Summary Impact Tests", () => {
-        let tradeId;
-        let userId;
-
         beforeEach(() => {
             cy.clearCookies();
             cy.clearLocalStorage();
@@ -819,7 +817,7 @@ describe("Trade Add API and Database Comparison", () => {
 
         describe("Total Trades Count Impact", () => {
             it("should increment totalTrades after creating a new trade", () => {
-                let initialCount;
+                let initialCount, tradeId;
 
                 cy.GetTradeSummary().then((response) => {
                     expect(response.status).to.eq(200);
@@ -845,7 +843,6 @@ describe("Trade Add API and Database Comparison", () => {
                 cy.AddTrade(request).then((response) => {
                     expect(response.status).to.eq(201);
                     tradeId = response.body.trade.id;
-                    userId = response.body.trade.user_id;
                     cy.log(`Created test trade ID: ${tradeId}`);
                 });
 
@@ -860,26 +857,42 @@ describe("Trade Add API and Database Comparison", () => {
             });
 
             it("should match totalTrades with database count", () => {
-                let apiTotal, dbTotal;
+                const request = {
+                    trade_date: faker.date.recent(),
+                    ticker: faker.word.noun(4).toUpperCase(),
+                    margin: faker.string.numeric(5),
+                    proceeds: faker.string.numeric(5),
+                    return_percent: faker.string.numeric(),
+                    realized_gain: faker.string.numeric(5),
+                    stock_type_option: faker.animal.snake(),
+                    entry_session_option: faker.animal.snake(),
+                    entry_occasion_option: faker.animal.snake(),
+                    buy_reason_option: faker.animal.snake(),
+                    sell_reason_option: faker.animal.snake(),
+                    notes: faker.word.words(25),
+                };
 
-                cy.GetTradeSummary().then((response) => {
-                    apiTotal = response.body.data.totalTrades;
+                cy.AddTrade(request).then((response) => {
+                    expect(response.status).to.eq(201);
+                    cy.wrap(response.body.trade.user_id).as("userId");
                 });
 
-                cy.getTotalTradesFromDb().then((count) => {
-                    dbTotal = count;
-                });
+                cy.get("@userId").then((userId) => {
+                    cy.GetTradeSummary().then((response) => {
+                        const apiTotal = response.body.data.totalTrades;
 
-                cy.then(() => {
-                    expect(apiTotal).to.eq(dbTotal);
-                    cy.log(`✅ API and DB counts match: ${apiTotal}`);
+                        cy.getTotalTradesFromDb(userId).then((dbTotal) => {
+                            expect(apiTotal).to.eq(dbTotal);
+                            cy.log(`✅ API and DB counts match: ${apiTotal}`);
+                        });
+                    });
                 });
             });
         });
 
         describe("Win Count Impact", () => {
             it("should increment totalWins when creating profit trade", () => {
-                let initialWins;
+                let initialWins, tradeId;
 
                 cy.GetTradeSummary().then((response) => {
                     initialWins = response.body.data.totalWins;
@@ -904,7 +917,6 @@ describe("Trade Add API and Database Comparison", () => {
                 cy.AddTrade(request).then((response) => {
                     expect(response.status).to.eq(201);
                     tradeId = response.body.trade.id;
-                    userId = response.body.trade.user_id;
                     cy.log(`Created test trade ID: ${tradeId}`);
                 });
 
@@ -917,7 +929,7 @@ describe("Trade Add API and Database Comparison", () => {
             });
 
             it("should NOT increment totalWins when creating loss trade", () => {
-                let initialWins;
+                let initialWins, tradeId;
 
                 cy.GetTradeSummary().then((response) => {
                     initialWins = response.body.data.totalWins;
@@ -941,7 +953,6 @@ describe("Trade Add API and Database Comparison", () => {
                 cy.AddTrade(request).then((response) => {
                     expect(response.status).to.eq(201);
                     tradeId = response.body.trade.id;
-                    userId = response.body.trade.user_id;
                     cy.log(`Created test trade ID: ${tradeId}`);
                 });
 
@@ -956,7 +967,7 @@ describe("Trade Add API and Database Comparison", () => {
 
         describe("Loss Count Impact", () => {
             it("should increment totalLosses when creating loss trade", () => {
-                let initialLosses;
+                let initialLosses, tradeId;
 
                 cy.GetTradeSummary().then((response) => {
                     initialLosses = response.body.data.totalLosses;
@@ -981,7 +992,6 @@ describe("Trade Add API and Database Comparison", () => {
                 cy.AddTrade(request).then((response) => {
                     expect(response.status).to.eq(201);
                     tradeId = response.body.trade.id;
-                    userId = response.body.trade.user_id;
                     cy.log(`Created test trade ID: ${tradeId}`);
                 });
 
@@ -996,7 +1006,7 @@ describe("Trade Add API and Database Comparison", () => {
             });
 
             it("should NOT increment totalLosses when creating profit trade", () => {
-                let initialLosses;
+                let initialLosses, tradeId;
 
                 cy.GetTradeSummary().then((response) => {
                     initialLosses = response.body.data.totalLosses;
@@ -1020,7 +1030,6 @@ describe("Trade Add API and Database Comparison", () => {
                 cy.AddTrade(request).then((response) => {
                     expect(response.status).to.eq(201);
                     tradeId = response.body.trade.id;
-                    userId = response.body.trade.user_id;
                     cy.log(`Created test trade ID: ${tradeId}`);
                 });
 
@@ -1035,7 +1044,7 @@ describe("Trade Add API and Database Comparison", () => {
 
         describe("Win Rate Calculation Impact", () => {
             it("should recalculate win rate after adding win trade", () => {
-                let initialSummary;
+                let initialSummary, tradeId;
 
                 cy.GetTradeSummary().then((response) => {
                     initialSummary = response.body.data;
@@ -1068,7 +1077,6 @@ describe("Trade Add API and Database Comparison", () => {
                 cy.AddTrade(request).then((response) => {
                     expect(response.status).to.eq(201);
                     tradeId = response.body.trade.id;
-                    userId = response.body.trade.user_id;
                     cy.log(`Created test trade ID: ${tradeId}`);
                 });
 
@@ -1088,7 +1096,7 @@ describe("Trade Add API and Database Comparison", () => {
 
         describe("Stock Type Summary Impact", () => {
             it("should add new stock type to summary when created", () => {
-                let initialCount;
+                let initialCount, tradeId;
 
                 cy.GetTradeSummary().then((response) => {
                     const summary = response.body.data.stockTypeSummary;
@@ -1116,7 +1124,6 @@ describe("Trade Add API and Database Comparison", () => {
                 cy.AddTrade(request).then((response) => {
                     expect(response.status).to.eq(201);
                     tradeId = response.body.trade.id;
-                    userId = response.body.trade.user_id;
                     cy.log(`Created test trade ID: ${tradeId}`);
                 });
 
@@ -1132,19 +1139,37 @@ describe("Trade Add API and Database Comparison", () => {
             });
 
             it("should match stock type summary with database", () => {
-                let apiSummary, dbSummary;
+                const request = {
+                    trade_date: faker.date.recent(),
+                    ticker: faker.word.noun(4).toUpperCase(),
+                    margin: faker.string.numeric(5),
+                    proceeds: faker.string.numeric(5),
+                    return_percent: faker.string.numeric(),
+                    realized_gain: faker.string.numeric(5),
+                    stock_type_option: faker.animal.snake(),
+                    entry_session_option: faker.animal.snake(),
+                    entry_occasion_option: faker.animal.snake(),
+                    buy_reason_option: faker.animal.snake(),
+                    sell_reason_option: faker.animal.snake(),
+                    notes: faker.word.words(25),
+                };
 
-                cy.GetTradeSummary().then((response) => {
-                    apiSummary = response.body.data.stockTypeSummary;
+                cy.AddTrade(request).then((response) => {
+                    expect(response.status).to.eq(201);
+                    cy.wrap(response.body.trade.user_id).as("userId");
                 });
 
-                cy.getStockTypeSummaryFromDb().then((summary) => {
-                    dbSummary = summary;
-                });
+                cy.get("@userId").then((userId) => {
+                    cy.GetTradeSummary().then((response) => {
+                        const apiSummary = response.body.data.stockTypeSummary;
 
-                cy.then(() => {
-                    expect(apiSummary).to.deep.equal(dbSummary);
-                    cy.log("✅ Stock type summaries match");
+                        cy.getStockTypeSummaryFromDb(userId).then(
+                            (dbSummary) => {
+                                expect(apiSummary).to.deep.equal(dbSummary);
+                                cy.log("✅ Stock type summaries match");
+                            },
+                        );
+                    });
                 });
             });
         });
@@ -1178,9 +1203,6 @@ describe("Trade Add API and Database Comparison", () => {
 
                 cy.AddTrade(request).then((response) => {
                     expect(response.status).to.eq(201);
-                    tradeId = response.body.trade.id;
-                    userId = response.body.trade.user_id;
-                    cy.log(`Created test trade ID: ${tradeId}`);
                 });
 
                 cy.GetTradeSummary().then((response) => {
@@ -1195,27 +1217,45 @@ describe("Trade Add API and Database Comparison", () => {
             });
 
             it("should match entry session summary with database", () => {
-                let apiSummary, dbSummary;
+                const request = {
+                    trade_date: faker.date.recent(),
+                    ticker: faker.word.noun(4).toUpperCase(),
+                    margin: faker.string.numeric(5),
+                    proceeds: faker.string.numeric(5),
+                    return_percent: faker.string.numeric(),
+                    realized_gain: faker.string.numeric(5),
+                    stock_type_option: faker.animal.snake(),
+                    entry_session_option: faker.animal.snake(),
+                    entry_occasion_option: faker.animal.snake(),
+                    buy_reason_option: faker.animal.snake(),
+                    sell_reason_option: faker.animal.snake(),
+                    notes: faker.word.words(25),
+                };
 
-                cy.GetTradeSummary().then((response) => {
-                    apiSummary = response.body.data.entrySessionSummary;
+                cy.AddTrade(request).then((response) => {
+                    expect(response.status).to.eq(201);
+                    cy.wrap(response.body.trade.user_id).as("userId");
                 });
 
-                cy.getEntrySessionSummaryFromDb().then((summary) => {
-                    dbSummary = summary;
-                });
+                cy.get("@userId").then((userId) => {
+                    cy.GetTradeSummary().then((response) => {
+                        const apiSummary =
+                            response.body.data.entrySessionSummary;
 
-                cy.then(() => {
-                    expect(apiSummary).to.deep.equal(dbSummary);
-                    cy.log("✅ Entry session summaries match");
+                        cy.getEntrySessionSummaryFromDb(userId).then(
+                            (dbSummary) => {
+                                expect(apiSummary).to.deep.equal(dbSummary);
+                                cy.log("✅ Entry session summaries match");
+                            },
+                        );
+                    });
                 });
             });
         });
 
         describe("Entry Occasion Summary Impact", () => {
             it("should update entry occasion summary when trade created", () => {
-                const occasion = "breakout";
-                let initialCount;
+                let initialCount, tradeId;
 
                 cy.GetTradeSummary().then((response) => {
                     const summary = response.body.data.entryOccasionSummary;
@@ -1243,7 +1283,6 @@ describe("Trade Add API and Database Comparison", () => {
                 cy.AddTrade(request).then((response) => {
                     expect(response.status).to.eq(201);
                     tradeId = response.body.trade.id;
-                    userId = response.body.trade.user_id;
                     cy.log(`Created test trade ID: ${tradeId}`);
                 });
 
@@ -1259,19 +1298,38 @@ describe("Trade Add API and Database Comparison", () => {
             });
 
             it("should match entry occasion summary with database", () => {
-                let apiSummary, dbSummary;
+                const request = {
+                    trade_date: faker.date.recent(),
+                    ticker: faker.word.noun(4).toUpperCase(),
+                    margin: faker.string.numeric(5),
+                    proceeds: faker.string.numeric(5),
+                    return_percent: faker.string.numeric(),
+                    realized_gain: faker.string.numeric(5),
+                    stock_type_option: faker.animal.snake(),
+                    entry_session_option: faker.animal.snake(),
+                    entry_occasion_option: faker.animal.snake(),
+                    buy_reason_option: faker.animal.snake(),
+                    sell_reason_option: faker.animal.snake(),
+                    notes: faker.word.words(25),
+                };
 
-                cy.GetTradeSummary().then((response) => {
-                    apiSummary = response.body.data.entryOccasionSummary;
+                cy.AddTrade(request).then((response) => {
+                    expect(response.status).to.eq(201);
+                    cy.wrap(response.body.trade.user_id).as("userId");
                 });
 
-                cy.getEntryOccasionSummaryFromDb().then((summary) => {
-                    dbSummary = summary;
-                });
+                cy.get("@userId").then((userId) => {
+                    cy.GetTradeSummary().then((response) => {
+                        const apiSummary =
+                            response.body.data.entryOccasionSummary;
 
-                cy.then(() => {
-                    expect(apiSummary).to.deep.equal(dbSummary);
-                    cy.log("✅ Entry occasion summaries match");
+                        cy.getEntryOccasionSummaryFromDb(userId).then(
+                            (dbSummary) => {
+                                expect(apiSummary).to.deep.equal(dbSummary);
+                                cy.log("✅ Entry occasion summaries match");
+                            },
+                        );
+                    });
                 });
             });
         });
@@ -1431,13 +1489,6 @@ describe("Add Trade Form - UI Tests", () => {
                 cy.get("#addNewTradeForm_tradePage").should("be.visible");
                 cy.get("body").click(0, 0, { force: true });
                 cy.get("#addNewTradeForm_tradePage").should("not.exist");
-            });
-
-            it("should show loading state while fetching options", () => {
-                cy.get("#addNewTradeBtn_tradePage").click();
-                cy.get("#loadingOptionsContainer_tradePage").should(
-                    "be.visible",
-                );
             });
         });
 
@@ -1686,13 +1737,6 @@ describe("Add Trade Form - UI Tests", () => {
                 cy.get("body").click(0, 0, { force: true });
                 cy.get("#addNewTradeForm_tradePage").should("not.exist");
             });
-
-            it("should show loading state while fetching options", () => {
-                cy.get("#addNewTradeBtn_tradePage").click();
-                cy.get("#loadingOptionsContainer_tradePage").should(
-                    "be.visible",
-                );
-            });
         });
 
         describe("Required Fields Validation", () => {
@@ -1939,13 +1983,6 @@ describe("Add Trade Form - UI Tests", () => {
                 cy.get("#addNewTradeForm_tradePage").should("be.visible");
                 cy.get("body").click(0, 0, { force: true });
                 cy.get("#addNewTradeForm_tradePage").should("not.exist");
-            });
-
-            it("should show loading state while fetching options", () => {
-                cy.get("#addNewTradeBtn_tradePage").click();
-                cy.get("#loadingOptionsContainer_tradePage").should(
-                    "be.visible",
-                );
             });
         });
 

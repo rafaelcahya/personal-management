@@ -34,7 +34,7 @@
         "app/[...catchall]/page.jsx",
         "app/main/landing/trading-management/dashboard/page.jsx",
         "middleware.js",
-        "cypress/support/e2e.ts"
-    ],
+        "cypress/support/e2e.js"
+, "cypress.config.js"    ],
     "exclude": ["node_modules"]
 }
