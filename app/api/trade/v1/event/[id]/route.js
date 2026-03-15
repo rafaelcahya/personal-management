@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { updateEvent } from "@/lib/services/event/updateEvent";
+import { getSingleEvent } from "@/lib/services/event/getSingleEvent";
 
-export async function PUT(req, { params }) {
+export async function GET(req, { params }) {
     try {
         const supabase = await createClient();
         const {
@@ -26,59 +26,48 @@ export async function PUT(req, { params }) {
             );
         }
 
-        let body;
-        try {
-            body = await req.json();
-        } catch {
+        const idNum = Number(id);
+        if (isNaN(idNum)) {
             return NextResponse.json(
-                { success: false, error: "Invalid JSON in request body" },
+                { success: false, error: "Event ID must be a valid number" },
                 { status: 400 },
             );
         }
 
-        if (!body || Object.keys(body).length === 0) {
+        if (!Number.isInteger(idNum)) {
+            return NextResponse.json(
+                { success: false, error: "Event ID must be an integer" },
+                { status: 400 },
+            );
+        }
+
+        if (idNum <= 0) {
             return NextResponse.json(
                 {
                     success: false,
-                    error: [
-                        "event date is required",
-                        "impact direction is required",
-                        "event description is required",
-                    ],
+                    error: "Event ID must be a positive integer",
                 },
                 { status: 400 },
             );
         }
 
-        const requiredFields = [
-            "event_date",
-            "impact_direction",
-            "event_description",
-        ];
-        const missingFields = requiredFields.filter(
-            (field) => !body[field] || body[field].toString().trim() === "",
-        );
+        console.log(`Fetching Event with ID: ${idNum} for user: ${user.id}`);
 
-        if (missingFields.length > 0) {
+        const Event = await getSingleEvent(user.id, idNum.toString());
+
+        if (!Event) {
             return NextResponse.json(
-                {
-                    success: false,
-                    error: missingFields.map(
-                        (f) => `${f.replace(/_/g, " ")} is required`,
-                    ),
-                },
-                { status: 400 },
+                { success: false, error: "Event not found" },
+                { status: 404 },
             );
         }
-
-        const updatedEvent = await updateEvent(user.id, id, body);
 
         return NextResponse.json(
-            { success: true, event: updatedEvent },
+            { success: true, event: Event },
             { status: 200 },
         );
     } catch (err) {
-        console.error("PUT /api/event/v1/event/update error:", err);
+        console.error("GET /api/trade/v1/event/[id] error:", err);
         return NextResponse.json(
             { success: false, error: err.message },
             { status: 500 },

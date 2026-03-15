@@ -83,7 +83,7 @@ export default function AddEvent({ onAdded }) {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild id="addNewEventBtn">
+            <DialogTrigger asChild id="addNewEventBtn_eventPage">
                 <Button>
                     <PlusIcon />
                     <span>Add Event</span>
@@ -91,7 +91,7 @@ export default function AddEvent({ onAdded }) {
             </DialogTrigger>
             <DialogContent
                 className="sm:max-w-md flex flex-col max-h-[90vh]"
-                id="addNewEventDialogForm"
+                id="addNewEventForm_eventPage"
             >
                 <DialogHeader className="text-left shrink-0">
                     <DialogTitle>📅 Add Market Event</DialogTitle>
@@ -119,7 +119,7 @@ export default function AddEvent({ onAdded }) {
                                             <Textarea
                                                 {...field}
                                                 placeholder="e.g., Federal Reserve announces interest rate decision, impacting USD strength and global equity markets"
-                                                id="eventDescriptionField"
+                                                id="eventDescriptionField_eventPage"
                                                 className={`focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium ${
                                                     fieldState.error
                                                         ? "border-rose-500"
@@ -131,7 +131,10 @@ export default function AddEvent({ onAdded }) {
                                         <FormDescription className="text-xs">
                                             What's happening in the market? 📰
                                         </FormDescription>
-                                        <FormMessage className="font-medium">
+                                        <FormMessage
+                                            id="eventDescriptionField_errorMessage_eventPage"
+                                            className="font-medium"
+                                        >
                                             {fieldState.error?.message}
                                         </FormMessage>
                                     </FormItem>
@@ -200,7 +203,7 @@ export default function AddEvent({ onAdded }) {
                                                         <Button
                                                             type="button"
                                                             variant="outline"
-                                                            id="eventDateField"
+                                                            id="eventDateField_eventPage"
                                                             className={cn(
                                                                 "w-full pl-3 text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600",
                                                                 fieldState.error &&
@@ -226,6 +229,7 @@ export default function AddEvent({ onAdded }) {
                                                 <PopoverContent
                                                     className="w-auto p-0"
                                                     align="start"
+                                                    id="eventDatePicker_eventPage"
                                                 >
                                                     <Calendar
                                                         mode="single"
@@ -254,7 +258,7 @@ export default function AddEvent({ onAdded }) {
                                 <Button
                                     type="button"
                                     className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
-                                    id="cancelNewEventBtn"
+                                    id="cancelNewEventBtn_eventPage"
                                     disabled={loading}
                                 >
                                     Cancel
@@ -263,7 +267,7 @@ export default function AddEvent({ onAdded }) {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                id="submitNewEventBtn"
+                                id="submitNewEventBtn_eventPage"
                             >
                                 {loading && (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

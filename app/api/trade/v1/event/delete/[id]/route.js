@@ -27,6 +27,14 @@ export async function DELETE(req, { params }) {
             );
         }
 
+        const parsedId = Number(id);
+        if (!Number.isInteger(parsedId) || parsedId <= 0) {
+            return NextResponse.json(
+                { success: false, error: "Invalid event ID format" },
+                { status: 400 },
+            );
+        }
+
         await deleteEvent(user.id, id);
 
         return NextResponse.json(

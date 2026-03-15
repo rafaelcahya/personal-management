@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { fetchEventList } from "@/lib/api/event";
+import { fetchEventList, fetchEventSummary } from "@/lib/api/event";
 import { toast } from "sonner";
 import EventListSummary from "./component/EventListSummary";
 import EventTableHeader from "./component/EventTableHeader";
@@ -15,6 +15,12 @@ export default function EventsPageClient({ initialEvents }) {
     const [listEvent, setListEvent] = useState(initialEvents || []);
     const [filter, setFilter] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [summary, setSummary] = useState({
+        totalEvents: 0,
+        totalBullish: 0,
+        totalBearish: 0,
+        totalFavorite: 0,
+    });
 
     useEffect(() => {
         try {
@@ -38,10 +44,29 @@ export default function EventsPageClient({ initialEvents }) {
         }
     }, [filter]);
 
+    const fetchSummary = useCallback(async () => {
+        try {
+            const data = await fetchEventSummary();
+            setSummary(
+                data ?? {
+                    totalEvents: 0,
+                    totalBullish: 0,
+                    totalBearish: 0,
+                    totalFavorite: 0,
+                },
+            );
+        } catch (err) {
+            console.error("Failed to fetch summary:", err);
+        }
+    }, []);
+
     const fetchEvents = useCallback(async () => {
         try {
             setIsLoading(true);
-            const events = await fetchEventList();
+            const [events] = await Promise.all([
+                fetchEventList(),
+                fetchSummary(),
+            ]);
             setListEvent(events || []);
         } catch (err) {
             console.error("Fetch error:", err);
@@ -49,11 +74,12 @@ export default function EventsPageClient({ initialEvents }) {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [fetchSummary]);
 
     useEffect(() => {
         if (initialEvents && initialEvents.length > 0) {
             setListEvent(initialEvents);
+            fetchSummary();
         } else {
             fetchEvents();
         }
@@ -102,7 +128,7 @@ export default function EventsPageClient({ initialEvents }) {
     return (
         <div className="flex flex-col h-full gap-5">
             {/* Summary Cards */}
-            <EventListSummary events={listEvent} />
+            <EventListSummary summary={summary} />
 
             {/* Main Table Container */}
             <div className="flex-1 min-h-0 relative border border-slate-200/50 shadow-slate-100 rounded-xl overflow-hidden flex flex-col p-5 bg-white">

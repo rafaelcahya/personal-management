@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,76 +17,65 @@ import {
     ChevronUp,
 } from "lucide-react";
 
-export default function EventListSummary({ events }) {
+export default function EventListSummary({ summary }) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const stats = useMemo(() => {
-        const totalEvents = events.length;
-        const bullishEvents = events.filter(
-            (e) => e.impact_direction === "UP",
-        ).length;
-        const bearishEvents = events.filter(
-            (e) => e.impact_direction === "DOWN",
-        ).length;
-        const favoriteEvents = events.filter((e) => e.is_favorite).length;
+    if (!summary) return null;
 
-        return [
-            {
-                title: "Total Events",
-                value: totalEvents,
-                icon: Calendar,
-                color: "text-violet-600",
-                bgColor: "bg-violet-50",
-            },
-            {
-                title: "Bullish Impact",
-                value: bullishEvents,
-                icon: TrendingUp,
-                color: "text-green-600",
-                bgColor: "bg-green-50",
-            },
-            {
-                title: "Bearish Impact",
-                value: bearishEvents,
-                icon: TrendingDown,
-                color: "text-red-600",
-                bgColor: "bg-red-50",
-            },
-            {
-                title: "Favorites",
-                value: favoriteEvents,
-                icon: Star,
-                color: "text-yellow-600",
-                bgColor: "bg-yellow-50",
-            },
-        ];
-    }, [events]);
+    const stats = [
+        {
+            id: "totalEventsSummary_eventPage",
+            title: "Total Events",
+            value: summary.totalEvents,
+            icon: Calendar,
+            color: "text-violet-600",
+            bgColor: "bg-violet-50",
+        },
+        {
+            id: "totalBullishSummary_eventPage",
+            title: "Bullish Impact",
+            value: summary.totalBullish,
+            icon: TrendingUp,
+            color: "text-green-600",
+            bgColor: "bg-green-50",
+        },
+        {
+            id: "totalBearishSummary_eventPage",
+            title: "Bearish Impact",
+            value: summary.totalBearish,
+            icon: TrendingDown,
+            color: "text-red-600",
+            bgColor: "bg-red-50",
+        },
+        {
+            id: "totalFavoriteSummary_eventPage",
+            title: "Favorites",
+            value: summary.totalFavorite,
+            icon: Star,
+            color: "text-yellow-600",
+            bgColor: "bg-yellow-50",
+        },
+    ];
 
-    const primaryStats = useMemo(() => {
-        const bullishEvents = events.filter(
-            (e) => e.impact_direction === "UP",
-        ).length;
-        const bearishEvents = events.filter(
-            (e) => e.impact_direction === "DOWN",
-        ).length;
-        const totalEvents = events.length;
-
-        return {
-            bullish: bullishEvents,
-            bearish: bearishEvents,
-            total: totalEvents,
-        };
-    }, [events]);
+    const primaryStats = {
+        bullish: summary.totalBullish,
+        bearish: summary.totalBearish,
+        total: summary.totalEvents,
+    };
 
     return (
         <>
             {/* Desktop View - Always Visible Grid */}
-            <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div
+                id="eventListSummaryDesktop_eventPage"
+                className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4"
+            >
                 {stats.map((stat, index) => {
                     const Icon = stat.icon;
                     return (
                         <Card
                             key={index}
+                            id={`${stat.id}_desktopView`}
                             className="p-0 border border-slate-200/50 shadow-slate-100"
                         >
                             <CardContent className="px-4 py-4">
@@ -115,6 +104,7 @@ export default function EventListSummary({ events }) {
 
             {/* Mobile View - Collapsible */}
             <Collapsible
+                id="eventSummaryCollapsible_eventPage"
                 open={isOpen}
                 onOpenChange={setIsOpen}
                 className="sm:hidden w-full"
@@ -124,10 +114,14 @@ export default function EventListSummary({ events }) {
                         {/* Header - Always Visible */}
                         <CollapsibleTrigger asChild>
                             <Button
+                                id="eventSummaryCollapsibleTrigger_eventPage"
                                 variant="ghost"
                                 className="w-full flex items-center justify-between bg-white"
                             >
-                                <div className="flex items-center gap-3">
+                                <div
+                                    id="eventSummaryCollapsibleDefault_eventPage"
+                                    className="flex items-center gap-3"
+                                >
                                     <div className="p-2 rounded-lg bg-violet-50">
                                         <Calendar className="size-4 text-violet-600" />
                                     </div>
@@ -157,13 +151,17 @@ export default function EventListSummary({ events }) {
                         </CollapsibleTrigger>
 
                         {/* Collapsible Content */}
-                        <CollapsibleContent className="px-4 pt-2">
+                        <CollapsibleContent
+                            id="eventSummaryCollapsibleContent_eventPage"
+                            className="px-4 pt-2"
+                        >
                             <div className="pt-2 grid grid-cols-2 gap-3">
                                 {stats.map((stat, index) => {
                                     const Icon = stat.icon;
                                     return (
                                         <div
                                             key={index}
+                                            id={`${stat.id}_mobileView`}
                                             className="p-3 rounded-lg border bg-slate-50/50"
                                         >
                                             <div className="flex items-center gap-2 mb-2">
