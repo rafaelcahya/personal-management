@@ -73,7 +73,7 @@ export async function POST(req) {
 
         return NextResponse.json(
             { success: true, productBrand: newProductBrand },
-            { status: 200 },
+            { status: 201 },
         );
     } catch (err) {
         console.error(

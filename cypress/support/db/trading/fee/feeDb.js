@@ -90,10 +90,6 @@ export async function getFeeSummary(userId) {
     return { feeCount, totalFee };
 }
 
-
-/**
- * Get total fees from database
- */
 export async function getTotalFeesFromDb(supabase, userId) {
     const { count, error } = await supabase
         .from(TABLE_NAME)
@@ -110,9 +106,6 @@ export async function getTotalFeesFromDb(supabase, userId) {
     return count || 0;
 }
 
-/**
- * Get total fees paid from database
- */
 export async function getTotalFeesPaidFromDb(supabase, userId) {
     const fees = await getFeesFromDb(supabase, userId);
 

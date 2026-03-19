@@ -61,12 +61,12 @@ export default function AddProduct({ onAdded }) {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild id="addNewProductBrandBtn">
+            <DialogTrigger asChild id="addNewProductBrandBtn_productBrandPage">
                 <Button>Add New Product Brand</Button>
             </DialogTrigger>
             <DialogContent
                 className="sm:max-w-md"
-                id="addNewProductBrandDialogForm"
+                id="addNewProductBrandForm_productBrandPage"
             >
                 <DialogHeader>
                     <DialogTitle>Add New Product Brand</DialogTitle>
@@ -102,7 +102,7 @@ export default function AddProduct({ onAdded }) {
                                         />
                                     </FormControl>
                                     <FormMessage
-                                        id="productBrandMessage"
+                                        id="brandField_errorMessage_productBrandPage"
                                         className="font-medium"
                                     >
                                         {fieldState.error?.message}
@@ -136,7 +136,7 @@ export default function AddProduct({ onAdded }) {
                                 <Button
                                     type="button"
                                     className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
-                                    id="cancelNewProductBrandBtn"
+                                    id="cancelNewProductBrandBtn_productBrandPage"
                                 >
                                     Cancel
                                 </Button>
@@ -144,7 +144,7 @@ export default function AddProduct({ onAdded }) {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                id="submitNewProductBrandBtn"
+                                id="submitNewProductBrandBtn_productBrandPage"
                             >
                                 {loading && (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -198,7 +198,7 @@ export default function AddFee({ onAdded }) {
                                                 What type of fee is this? 🏷️
                                             </FormDescription>
                                             <FormMessage 
-                                                id="feeNameField_errorMessage_feePage"className="font-medium">
+                                                id="feeNameField_errorMessage_feePage" className="font-medium">
                                                 {fieldState.error?.message}
                                             </FormMessage>
                                         </FormItem>

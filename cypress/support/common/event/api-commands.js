@@ -43,7 +43,10 @@ Cypress.Commands.add("AddEventNoAuth", (request) => {
 });
 
 Cypress.Commands.add("DeleteEvent", (id) => {
-    return cy.apiRequestWithSession("DELETE", `/api/trade/v1/event/delete/${id}`);
+    return cy.apiRequestWithSession(
+        "DELETE",
+        `/api/trade/v1/event/delete/${id}`,
+    );
 });
 
 Cypress.Commands.add("DeleteEventNoAuth", (id) => {
@@ -63,9 +66,13 @@ Cypress.Commands.add("UpdateEventNoAuth", (id, request) => {
 });
 
 Cypress.Commands.add("FavoriteEvent", (id, request) => {
-    return cy.apiRequestWithSession("PATCH", `/api/trade/v1/event/favorite/${id}`, {
-        body: request,
-    });
+    return cy.apiRequestWithSession(
+        "PATCH",
+        `/api/trade/v1/event/favorite/${id}`,
+        {
+            body: request,
+        },
+    );
 });
 
 Cypress.Commands.add("FavoriteEventNoAuth", (id, request) => {
@@ -73,3 +80,4 @@ Cypress.Commands.add("FavoriteEventNoAuth", (id, request) => {
         body: request,
     });
 });
+

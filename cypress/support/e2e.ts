@@ -22,14 +22,10 @@ import "./common/fee/api-commands";
 import "./common/fee/db-commands";
 import "./common/event/api-commands";
 import "./common/event/db-commands";
-import "./common/inventory/product/commands";
-import "./common/inventory/product/brand/commands";
-import "./common/inventory/product/name/commands";
+import "./common/product_brand/api-commands";
+import "./common/product_brand/db-commands";
 import "./common/helper";
 import "cypress-mochawesome-reporter/register";
-import registerCypressGrep from "@cypress/grep";
-
-registerCypressGrep();
 
 beforeEach(() => {
     Cypress.session.clearAllSavedSessions();

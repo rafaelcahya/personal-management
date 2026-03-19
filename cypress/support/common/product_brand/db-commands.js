@@ -16,21 +16,17 @@ Cypress.Commands.add("getTestUserId", () => {
     );
 });
 
-Cypress.Commands.add("getSingleEventFromDb", (eventId) => {
+Cypress.Commands.add("getSingleProductBrandFromDb", (productBrandId) => {
     return cy.getTestUserId().then((userId) => {
-        return cy.task("getSingleEventFromDb", { eventId, userId });
+        return cy.task("getSingleProductBrandFromDb", {
+            productBrandId,
+            userId,
+        });
     });
 });
 
-Cypress.Commands.add("getEventsFromDb", () => {
+Cypress.Commands.add("getTotalProductBrandsFromDb", () => {
     return cy.getTestUserId().then((userId) => {
-        return cy.task("getEventsFromDb", userId);
+        return cy.task("getTotalProductBrandsFromDb", { userId });
     });
 });
-
-Cypress.Commands.add("getEventSummaryFromDb", () => {
-    return cy.getTestUserId().then((userId) => {
-        return cy.task("getEventSummaryFromDb", { userId });
-    });
-});
-
