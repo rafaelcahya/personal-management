@@ -44,7 +44,7 @@ export async function PUT(req, { params }) {
             );
         }
 
-        const requiredFields = ["product_name"];
+        const requiredFields = ["product_name", "product_name_status"];
 
         const validationErrors = [];
         requiredFields.forEach((field) => {

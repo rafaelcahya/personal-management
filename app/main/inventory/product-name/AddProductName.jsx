@@ -61,12 +61,12 @@ export default function AddProductName({ onAdded }) {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild id="addNewProductNameBtn">
+            <DialogTrigger asChild id="addNewProductNameBtn_productNamePage">
                 <Button>Add New Product Name</Button>
             </DialogTrigger>
             <DialogContent
                 className="sm:max-w-md"
-                id="addNewProductNameDialogForm"
+                id="addNewProductNameForm_productNamePage"
             >
                 <DialogHeader>
                     <DialogTitle>Add New Product Name</DialogTitle>
@@ -102,7 +102,7 @@ export default function AddProductName({ onAdded }) {
                                         />
                                     </FormControl>
                                     <FormMessage
-                                        id="productNameMessage"
+                                        id="productNameField_errorMessage_productNamePage"
                                         className="font-medium"
                                     >
                                         {fieldState.error?.message}
@@ -136,7 +136,7 @@ export default function AddProductName({ onAdded }) {
                                 <Button
                                     type="button"
                                     className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
-                                    id="cancelNewProductNameBtn"
+                                    id="cancelNewProductNameBtn_productNamePage"
                                 >
                                     Cancel
                                 </Button>
@@ -144,7 +144,7 @@ export default function AddProductName({ onAdded }) {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                id="submitNewProductNameBtn"
+                                id="submitNewProductNameBtn_productNamePage"
                             >
                                 {loading && (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

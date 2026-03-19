@@ -22,7 +22,16 @@ export async function DELETE(req, { params }) {
 
         if (!id || isNaN(Number(id))) {
             return NextResponse.json(
-                { success: false, error: "Invalid product name ID" },
+                { success: false, error: "Invalid product name ID provided" },
+                { status: 400 },
+            );
+        }
+
+        const idNum = Number(id);
+
+        if (idNum <= 0) {
+            return NextResponse.json(
+                { success: false, error: "Invalid product name ID format" },
                 { status: 400 },
             );
         }
@@ -30,7 +39,7 @@ export async function DELETE(req, { params }) {
         const deletedProductName = await deleteProductName(Number(id), user.id);
 
         return NextResponse.json(
-            { success: true, productName: deletedProductName },
+            { success: true, data: deletedProductName },
             { status: 200 },
         );
     } catch (err) {

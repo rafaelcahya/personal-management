@@ -98,23 +98,3 @@ Cypress.Commands.add("UpdateProductBrandNoAuth", (id, request) => {
         },
     );
 });
-
-Cypress.Commands.add("FavoriteProductBrand", (id, request) => {
-    return cy.apiRequestWithSession(
-        "PATCH",
-        `/api/inventory/v1/product-brand/favorite/${id}`,
-        {
-            body: request,
-        },
-    );
-});
-
-Cypress.Commands.add("FavoriteProductBrandNoAuth", (id, request) => {
-    return cy.apiRequestNoAuth(
-        "PATCH",
-        `/api/inventory/v1/product-brand/favorite/${id}`,
-        {
-            body: request,
-        },
-    );
-});

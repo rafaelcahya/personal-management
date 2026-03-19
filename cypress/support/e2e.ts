@@ -22,8 +22,10 @@ import "./common/fee/api-commands";
 import "./common/fee/db-commands";
 import "./common/event/api-commands";
 import "./common/event/db-commands";
-import "./common/product_brand/api-commands";
-import "./common/product_brand/db-commands";
+import "./common/inventory/product_brand/api-commands";
+import "./common/inventory/product_brand/db-commands";
+import "./common/inventory/product_name/api-commands";
+import "./common/inventory/product_name/db-commands";
 import "./common/helper";
 import "cypress-mochawesome-reporter/register";
 

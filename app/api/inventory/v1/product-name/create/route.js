@@ -73,12 +73,12 @@ export async function POST(req) {
 
         return NextResponse.json(
             { success: true, productName: newProductname },
-            { status: 200 },
+            { status: 201 },
         );
     } catch (err) {
         console.error("POST /api/inventory/v1/product-name/create error:", err);
         return NextResponse.json(
-            { success: false, error: "Internal server error" },
+            { success: false, error: err.message },
             { status: 500 },
         );
     }
