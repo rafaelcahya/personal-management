@@ -51,8 +51,6 @@ export async function GET(req, { params }) {
             );
         }
 
-        console.log(`Fetching fee with ID: ${idNum} for user: ${user.id}`);
-
         const fee = await getSingleFee(user.id, idNum.toString());
 
         if (!fee) {

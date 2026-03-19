@@ -51,8 +51,6 @@ export async function GET(req, { params }) {
             );
         }
 
-        console.log(`Fetching trade with ID: ${idNum} for user: ${user.id}`);
-
         const trade = await getSingleTrade(user.id, idNum.toString());
 
         if (!trade) {

@@ -44,7 +44,6 @@ export const authTasks = (supabaseAdmin) => ({
     },
 
     log(message) {
-        console.log(`[Cypress] ${message}`);
         return null;
     },
 

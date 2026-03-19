@@ -51,8 +51,6 @@ export async function GET(req, { params }) {
             );
         }
 
-        console.log(`Fetching Event with ID: ${idNum} for user: ${user.id}`);
-
         const Event = await getSingleEvent(user.id, idNum.toString());
 
         if (!Event) {

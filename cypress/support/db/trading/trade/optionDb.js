@@ -19,9 +19,6 @@ export async function getBuyReasonOptionsFromDb(userId, optionId) {
 
     if (error) {
         if (error.code === "PGRST116") {
-            console.log(
-                `Buy reason option ${optionId} not found for user ${userId}`,
-            );
             return null;
         }
         throw new Error(
@@ -45,9 +42,6 @@ export async function getEntryOccasionOptionsFromDb(userId, optionId) {
 
     if (error) {
         if (error.code === "PGRST116") {
-            console.log(
-                `Entry occasion option ${optionId} not found for user ${userId}`,
-            );
             return null;
         }
         throw new Error(
@@ -71,9 +65,6 @@ export async function getEntrySessionOptionsFromDb(userId, optionId) {
 
     if (error) {
         if (error.code === "PGRST116") {
-            console.log(
-                `Entry session option ${optionId} not found for user ${userId}`,
-            );
             return null;
         }
         throw new Error(
@@ -97,9 +88,6 @@ export async function getStockTypeOptionsFromDb(userId, optionId) {
 
     if (error) {
         if (error.code === "PGRST116") {
-            console.log(
-                `Stock type option ${optionId} not found for user ${userId}`,
-            );
             return null;
         }
         throw new Error(
@@ -123,9 +111,6 @@ export async function getSellReasonOptionsFromDb(userId, optionId) {
 
     if (error) {
         if (error.code === "PGRST116") {
-            console.log(
-                `Sell reason option ${optionId} not found for user ${userId}`,
-            );
             return null;
         }
         throw new Error(
