@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getSingleProductName } from "@/lib/services/inventory/product/name/getSingleProductName";
+import { getSingleProductName } from "@/lib/services/inventory/product_name/getSingleProductName";
 
 export async function GET(req, { params }) {
     try {
@@ -54,7 +54,10 @@ export async function GET(req, { params }) {
             );
         }
 
-        const productName = await getSingleProductName(user.id, idNum.toString());
+        const productName = await getSingleProductName(
+            user.id,
+            idNum.toString(),
+        );
 
         if (!productName) {
             return NextResponse.json(

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { deleteProductName } from "@/lib/services/inventory/product/name/deleteProductName";
+import { deleteProductName } from "@/lib/services/inventory/product_name/deleteProductName";
 
 export async function DELETE(req, { params }) {
     try {

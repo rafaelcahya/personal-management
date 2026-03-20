@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createProductBrand } from "@/lib/services/inventory/product/brand/createProductBrand";
+import { createProductBrand } from "@/lib/services/inventory/product_brand/createProductBrand";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req) {

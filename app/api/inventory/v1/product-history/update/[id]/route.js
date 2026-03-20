@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { updateProductUsage } from "@/lib/services/inventory/product/history/updateProductUsage";
+import { updateProductUsage } from "@/lib/services/inventory/product_history/updateProductUsage";
 
 export async function PATCH(request, { params }) {
     try {

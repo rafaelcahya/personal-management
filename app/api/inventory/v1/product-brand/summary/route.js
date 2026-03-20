@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getProductBrandList } from "@/lib/services/inventory/product/brand/getProductBrandList";
+import { getProductBrandList } from "@/lib/services/inventory/product_brand/getProductBrandList";
 
 export async function GET() {
     try {

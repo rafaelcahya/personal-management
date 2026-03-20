@@ -1,4 +1,4 @@
-import { getProductNameList } from "@/lib/services/inventory/product/name/getProductNameList";
+import { getProductNameList } from "@/lib/services/inventory/product_name/getProductNameList";
 import { requireAuth } from "@/lib/auth/utils";
 import ProductNamesPageClient from "./ProductNamesPageClient";
 

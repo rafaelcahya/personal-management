@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { updateProductBrand } from "@/lib/services/inventory/product/brand/updateProductBrand";
+import { updateProductBrand } from "@/lib/services/inventory/product_brand/updateProductBrand";
 
 export async function PUT(req, { params }) {
     try {

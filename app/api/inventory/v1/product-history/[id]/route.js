@@ -1,4 +1,4 @@
-import { getProductHistoryByProductListId } from "@/lib/services/inventory/product/history/getProductHistoryByProductListId";
+import { getProductHistoryByProductListId } from "@/lib/services/inventory/product_history/getProductHistoryByProductListId";
 import { NextResponse } from "next/server";
 
 export async function GET(req, context) {
