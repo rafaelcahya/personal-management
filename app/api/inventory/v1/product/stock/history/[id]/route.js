@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getQuantityHistoryByProductId } from "@/lib/services/inventory/product/quantity/getQuantityHistoryByProductId";
+import { getQuantityHistoryByProductId } from "@/lib/services/inventory/product_quantity/getQuantityHistoryByProductId";
 
 export async function GET(req, context) {
     try {

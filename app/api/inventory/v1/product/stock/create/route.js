@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createQuantityUpdate } from "@/lib/services/inventory/product/quantity/createQuantityUpdate";
+import { createQuantityUpdate } from "@/lib/services/inventory/product_quantity/createQuantityUpdate";
 
 export async function POST(req) {
     try {
