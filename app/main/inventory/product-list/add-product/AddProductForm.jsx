@@ -157,13 +157,16 @@ export default function AddProductForm({ onAdded }) {
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogTrigger asChild>
+            <DialogTrigger asChild id="addNewProductBtn_productPage">
                 <Button>
                     <PlusIcon />
                     <span>Add Product</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
+            <DialogContent
+                className="sm:max-w-md flex flex-col max-h-[90vh]"
+                id="addNewProductForm_productPage"
+            >
                 <DialogHeader className="text-left shrink-0">
                     <DialogTitle>🛍️ Add New Product</DialogTitle>
                     <DialogDescription>
@@ -188,7 +191,7 @@ export default function AddProductForm({ onAdded }) {
                                         </FormLabel>
                                         <FormControl className="cursor-pointer">
                                             <Input
-                                                id="image"
+                                                id="productImageField_productPage"
                                                 type="file"
                                                 accept="image/*"
                                                 className="text-sm font-medium"
@@ -202,13 +205,14 @@ export default function AddProductForm({ onAdded }) {
                                         {imagePreview && (
                                             <div className="mt-2">
                                                 <img
+                                                    id="imagePreview_productPage"
                                                     src={imagePreview}
                                                     alt="Preview"
                                                     className="w-24 h-24 object-cover rounded-md border"
                                                 />
                                             </div>
                                         )}
-                                        <FormMessage>
+                                        <FormMessage id="productImageField_errorMessage_productPage">
                                             {fieldState.error?.message}
                                         </FormMessage>
                                         <p className="text-xs text-muted-foreground">
@@ -231,7 +235,10 @@ export default function AddProductForm({ onAdded }) {
                                             value={field.value}
                                         >
                                             <FormControl>
-                                                <SelectTrigger className="min-w-full font-medium">
+                                                <SelectTrigger
+                                                    className="min-w-full font-medium"
+                                                    id="productBrandField_productPage"
+                                                >
                                                     <SelectValue placeholder="Select brand" />
                                                 </SelectTrigger>
                                             </FormControl>
@@ -262,7 +269,7 @@ export default function AddProductForm({ onAdded }) {
                                         <p className="text-xs text-muted-foreground">
                                             Which brand is this from? 🏷️
                                         </p>
-                                        <FormMessage />
+                                        <FormMessage id="productBrandField_errorMessage_productPage" />
                                     </FormItem>
                                 )}
                             />
@@ -279,7 +286,10 @@ export default function AddProductForm({ onAdded }) {
                                             value={field.value}
                                         >
                                             <FormControl>
-                                                <SelectTrigger className="min-w-full font-medium">
+                                                <SelectTrigger
+                                                    className="min-w-full font-medium"
+                                                    id="productNameField_productPage"
+                                                >
                                                     <SelectValue placeholder="Select name" />
                                                 </SelectTrigger>
                                             </FormControl>
@@ -310,7 +320,7 @@ export default function AddProductForm({ onAdded }) {
                                         <p className="text-xs text-muted-foreground">
                                             What's the product called? 📦
                                         </p>
-                                        <FormMessage />
+                                        <FormMessage id="productNameField_errorMessage_productPage" />
                                     </FormItem>
                                 )}
                             />
@@ -327,6 +337,7 @@ export default function AddProductForm({ onAdded }) {
                                         <FormControl>
                                             <Input
                                                 {...field}
+                                                id="typeField_productPage"
                                                 placeholder="e.g. Whitening, Hydrating, SPF 50"
                                                 className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
                                                     fieldState.error
@@ -339,7 +350,10 @@ export default function AddProductForm({ onAdded }) {
                                             What kind is it? (serum, lotion,
                                             toner, etc.) 💡
                                         </p>
-                                        <FormMessage className="font-medium">
+                                        <FormMessage
+                                            className="font-medium"
+                                            id="typeField_errorMessage_productPage"
+                                        >
                                             {fieldState.error?.message}
                                         </FormMessage>
                                     </FormItem>
@@ -358,6 +372,7 @@ export default function AddProductForm({ onAdded }) {
                                         <FormControl>
                                             <Textarea
                                                 {...field}
+                                                id="noteField_productPage"
                                                 value={field.value || ""}
                                                 placeholder="Additional details or reminders..."
                                                 className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
@@ -372,7 +387,10 @@ export default function AddProductForm({ onAdded }) {
 
                             {/* Server Error Display */}
                             {serverError && (
-                                <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
+                                <div
+                                    id="serverError_productPage"
+                                    className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200"
+                                >
                                     <div className="flex gap-3">
                                         <div className="flex-1">
                                             <p className="text-sm font-semibold text-red-900 mb-1">
@@ -391,13 +409,18 @@ export default function AddProductForm({ onAdded }) {
                             <DialogClose asChild>
                                 <Button
                                     type="button"
+                                    id="cancelBtn_productPage"
                                     className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
                                     disabled={loading}
                                 >
                                     Cancel
                                 </Button>
                             </DialogClose>
-                            <Button type="submit" disabled={loading}>
+                            <Button
+                                type="submit"
+                                disabled={loading}
+                                id="submitBtn_productPage"
+                            >
                                 {loading && (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 )}

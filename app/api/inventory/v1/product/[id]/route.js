@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getQuantityHistoryByProductId } from "@/lib/services/inventory/product/quantity/getQuantityHistoryByProductId";
+import { getProductById } from "@/lib/services/inventory/product/getProductById";
 
-export async function GET(req, context) {
+export async function GET(req, { params }) {
     try {
         const supabase = await createClient();
         const {
@@ -17,23 +17,26 @@ export async function GET(req, context) {
             );
         }
 
-        const params = await context.params;
-        const { id } = params;
-        const idNum = Number(id);
+        const { id } = await params;
 
-        if (!id || isNaN(idNum)) {
+        if (!id) {
             return NextResponse.json(
-                {
-                    success: false,
-                    error: "Product list ID must be a valid number",
-                },
+                { success: false, error: "Product ID is required" },
+                { status: 400 },
+            );
+        }
+
+        const idNum = Number(id);
+        if (isNaN(idNum)) {
+            return NextResponse.json(
+                { success: false, error: "Product ID must be a valid number" },
                 { status: 400 },
             );
         }
 
         if (!Number.isInteger(idNum)) {
             return NextResponse.json(
-                { success: false, error: "Product list ID must be an integer" },
+                { success: false, error: "Product ID must be an integer" },
                 { status: 400 },
             );
         }
@@ -42,28 +45,27 @@ export async function GET(req, context) {
             return NextResponse.json(
                 {
                     success: false,
-                    error: "Product list ID must be a positive integer",
+                    error: "Product ID must be a positive integer",
                 },
                 { status: 400 },
             );
         }
 
-        const history = await getQuantityHistoryByProductId(user.id, idNum);
+        const product = await getProductById(user.id, idNum.toString());
 
-        return NextResponse.json({ success: true, history }, { status: 200 });
-    } catch (err) {
-        console.error(
-            "GET /api/inventory/v1/product/stock/history/[id] error:",
-            err,
-        );
-
-        if (err.message.includes("not found")) {
+        if (!product) {
             return NextResponse.json(
-                { success: false, error: err.message },
+                { success: false, error: "Product not found" },
                 { status: 404 },
             );
         }
 
+        return NextResponse.json(
+            { success: true, data: product },
+            { status: 200 },
+        );
+    } catch (err) {
+        console.error("GET /api/inventory/v1/product/[id] error:", err);
         return NextResponse.json(
             { success: false, error: err.message },
             { status: 500 },

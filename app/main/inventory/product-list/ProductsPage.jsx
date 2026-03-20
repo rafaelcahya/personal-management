@@ -11,8 +11,8 @@ import ProductFilterDropdown from "./list/component/ProductFilterDropdown";
 
 const FILTER_STORAGE_KEY = "product-list-filter";
 
-export default function ProductsPageClient({ initialProducts }) {
-    const [listProduct, setListProduct] = useState(initialProducts || []);
+export default function ProductsPageClient() {
+    const [listProduct, setListProduct] = useState([]);
     const [filter, setFilter] = useState(null);
 
     useEffect(() => {
@@ -48,12 +48,8 @@ export default function ProductsPageClient({ initialProducts }) {
     }, []);
 
     useEffect(() => {
-        if (initialProducts && initialProducts.length > 0) {
-            setListProduct(initialProducts);
-        } else {
-            fetchProducts();
-        }
-    }, [initialProducts, fetchProducts]);
+        fetchProducts();
+    }, [fetchProducts]);
 
     const filteredProducts = listProduct.filter((product) => {
         if (!filter) return true;

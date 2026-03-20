@@ -18,17 +18,51 @@ export async function PATCH(req, { params }) {
             );
         }
 
-        const productId = parseInt(params.id);
+        const { id } = await params;
+        const idNum = Number(id);
 
-        if (!productId || isNaN(productId)) {
+        if (!id || isNaN(idNum)) {
             return NextResponse.json(
-                { success: false, error: "Invalid product ID" },
+                { success: false, error: "Product ID must be a valid number" },
                 { status: 400 },
             );
         }
 
-        const body = await req.json();
+        if (!Number.isInteger(idNum)) {
+            return NextResponse.json(
+                { success: false, error: "Product ID must be an integer" },
+                { status: 400 },
+            );
+        }
+
+        if (idNum <= 0) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Product ID must be a positive integer",
+                },
+                { status: 400 },
+            );
+        }
+
+        let body;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json(
+                { success: false, error: "Invalid JSON in request body" },
+                { status: 400 },
+            );
+        }
+
         const { isFavorite } = body;
+
+        if (isFavorite === undefined || isFavorite === null) {
+            return NextResponse.json(
+                { success: false, error: "isFavorite is required" },
+                { status: 400 },
+            );
+        }
 
         if (typeof isFavorite !== "boolean") {
             return NextResponse.json(
@@ -39,7 +73,7 @@ export async function PATCH(req, { params }) {
 
         const updatedProduct = await favoriteProduct(
             user.id,
-            productId,
+            idNum,
             isFavorite,
         );
 
@@ -52,6 +86,14 @@ export async function PATCH(req, { params }) {
             "PATCH /api/inventory/v1/product/[id]/favorite error:",
             err,
         );
+
+        if (err.message.includes("not found")) {
+            return NextResponse.json(
+                { success: false, error: err.message },
+                { status: 404 },
+            );
+        }
+
         return NextResponse.json(
             { success: false, error: err.message || "Internal server error" },
             { status: 500 },

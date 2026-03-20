@@ -18,16 +18,35 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        const productId = parseInt(params.id);
+        const { id } = await params;
 
-        if (!productId || isNaN(productId)) {
+        const idNum = Number(id);
+
+        if (!id || isNaN(idNum)) {
             return NextResponse.json(
-                { success: false, error: "Invalid product ID" },
+                { success: false, error: "Product ID must be a valid number" },
                 { status: 400 },
             );
         }
 
-        const deletedProduct = await deleteProduct(user.id, productId);
+        if (!Number.isInteger(idNum)) {
+            return NextResponse.json(
+                { success: false, error: "Product ID must be an integer" },
+                { status: 400 },
+            );
+        }
+
+        if (idNum <= 0) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Product ID must be a positive integer",
+                },
+                { status: 400 },
+            );
+        }
+
+        const deletedProduct = await deleteProduct(user.id, idNum);
 
         return NextResponse.json(
             {
@@ -39,6 +58,17 @@ export async function DELETE(req, { params }) {
         );
     } catch (err) {
         console.error("DELETE product error:", err);
+
+        if (
+            err.message.includes("not found") ||
+            err.message.includes("unauthorized")
+        ) {
+            return NextResponse.json(
+                { success: false, error: err.message },
+                { status: 404 },
+            );
+        }
+
         return NextResponse.json(
             { success: false, error: err.message || "Internal server error" },
             { status: 500 },

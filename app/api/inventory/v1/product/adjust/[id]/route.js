@@ -1,13 +1,45 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { updateProduct } from "@/lib/services/inventory/product/updateProduct";
 
 export async function PATCH(req, { params }) {
     try {
-        const { id } = await params;
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
 
-        if (!id || isNaN(Number(id))) {
+        if (authError || !user) {
             return NextResponse.json(
-                { success: false, error: "Invalid product ID provided" },
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const { id } = await params;
+        const idNum = Number(id);
+
+        if (!id || isNaN(idNum)) {
+            return NextResponse.json(
+                { success: false, error: "Product ID must be a valid number" },
+                { status: 400 },
+            );
+        }
+
+        if (!Number.isInteger(idNum)) {
+            return NextResponse.json(
+                { success: false, error: "Product ID must be an integer" },
+                { status: 400 },
+            );
+        }
+
+        if (idNum <= 0) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Product ID must be a positive integer",
+                },
                 { status: 400 },
             );
         }
@@ -15,7 +47,7 @@ export async function PATCH(req, { params }) {
         let body;
         try {
             body = await req.json();
-        } catch (parseError) {
+        } catch {
             return NextResponse.json(
                 { success: false, error: "Invalid JSON in request body" },
                 { status: 400 },
@@ -68,16 +100,15 @@ export async function PATCH(req, { params }) {
         }
 
         const usageQty = Number(body.usage_quantity);
-        const newStatus = usageQty > 0 ? "active" : "inactive";
 
         const payload = {
             usage_quantity: usageQty,
-            product_status: newStatus,
+            product_status: "active",
             usage_date: body.start_usage_date,
             note: body.note || null,
         };
 
-        const updatedProduct = await updateProduct(Number(id), payload);
+        const updatedProduct = await updateProduct(user.id, idNum, payload);
 
         if (!updatedProduct) {
             return NextResponse.json(
@@ -90,10 +121,7 @@ export async function PATCH(req, { params }) {
             {
                 success: true,
                 product: updatedProduct,
-                message:
-                    usageQty > 0
-                        ? "Product activated"
-                        : "Product marked as out of stock",
+                message: "Product activated",
             },
             { status: 200 },
         );
@@ -102,6 +130,21 @@ export async function PATCH(req, { params }) {
             "PATCH /api/inventory/v1/product/update/[id] error:",
             err,
         );
+
+        if (err.message.includes("not found")) {
+            return NextResponse.json(
+                { success: false, error: err.message },
+                { status: 404 },
+            );
+        }
+
+        if (err.message.includes("Insufficient stock")) {
+            return NextResponse.json(
+                { success: false, error: err.message },
+                { status: 422 },
+            );
+        }
+
         return NextResponse.json(
             { success: false, error: err.message || "Internal Server Error" },
             { status: 500 },

@@ -26,6 +26,12 @@ import "./common/inventory/product_brand/api-commands";
 import "./common/inventory/product_brand/db-commands";
 import "./common/inventory/product_name/api-commands";
 import "./common/inventory/product_name/db-commands";
+import "./common/inventory/product/api-commands";
+import "./common/inventory/product/db-commands";
+import "./common/inventory/product_stock/api-commands";
+import "./common/inventory/product_stock/db-commands";
+import "./common/inventory/product_stock_history/api-commands";
+import "./common/inventory/product_stock_history/db-commands";
 import "./common/helper";
 import "cypress-mochawesome-reporter/register";
 
