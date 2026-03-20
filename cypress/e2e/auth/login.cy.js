@@ -145,13 +145,13 @@ describe("Login - Auth Callback - Dekstop Interactions", () => {
             },
         }).as("tokenExchange");
 
-        cy.visit(`/auth/callback?code=${mockCode}`);
+        cy.visit(`/auth/v1/callback?code=${mockCode}`);
 
         cy.url({ timeout: 10000 }).should("include", "/login");
     });
 
     it("should handle OAuth callback error", () => {
-        cy.visit("/auth/callback");
+        cy.visit("/auth/v1/callback");
 
         cy.url().should("include", "/login");
     });
@@ -162,7 +162,7 @@ describe("Login - Auth Callback - Dekstop Interactions", () => {
             body: { error: "invalid_grant" },
         });
 
-        cy.visit("/auth/callback?code=invalid-code", {
+        cy.visit("/auth/v1/callback?code=invalid-code", {
             failOnStatusCode: false,
         });
 
@@ -307,13 +307,13 @@ describe("Login - Auth Callback - Mobile Interactions", () => {
             },
         }).as("tokenExchange");
 
-        cy.visit(`/auth/callback?code=${mockCode}`);
+        cy.visit(`/auth/v1/callback?code=${mockCode}`);
 
         cy.url({ timeout: 10000 }).should("include", "/login");
     });
 
     it("should handle OAuth callback error", () => {
-        cy.visit("/auth/callback");
+        cy.visit("/auth/v1/callback");
 
         cy.url().should("include", "/login");
     });
@@ -324,7 +324,7 @@ describe("Login - Auth Callback - Mobile Interactions", () => {
             body: { error: "invalid_grant" },
         });
 
-        cy.visit("/auth/callback?code=invalid-code", {
+        cy.visit("/auth/v1/callback?code=invalid-code", {
             failOnStatusCode: false,
         });
 
@@ -469,13 +469,13 @@ describe("Login - Auth Callback - Tablet Interactions", () => {
             },
         }).as("tokenExchange");
 
-        cy.visit(`/auth/callback?code=${mockCode}`);
+        cy.visit(`/auth/v1/callback?code=${mockCode}`);
 
         cy.url({ timeout: 10000 }).should("include", "/login");
     });
 
     it("should handle OAuth callback error", () => {
-        cy.visit("/auth/callback");
+        cy.visit("/auth/v1/callback");
 
         cy.url().should("include", "/login");
     });
@@ -486,7 +486,7 @@ describe("Login - Auth Callback - Tablet Interactions", () => {
             body: { error: "invalid_grant" },
         });
 
-        cy.visit("/auth/callback?code=invalid-code", {
+        cy.visit("/auth/v1/callback?code=invalid-code", {
             failOnStatusCode: false,
         });
 

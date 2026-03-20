@@ -27,7 +27,7 @@ export async function middleware(request) {
 
     // ============ SKIP AUTH ROUTES ============
     if (
-        path.startsWith("/auth/callback") ||
+        path.startsWith("/auth/v1/callback") ||
         path.startsWith("/login") ||
         path.startsWith("/_next") ||
         path.startsWith("/api/auth")
