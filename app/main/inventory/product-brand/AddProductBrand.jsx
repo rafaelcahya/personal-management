@@ -62,7 +62,7 @@ export default function AddProduct({ onAdded }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild id="addNewProductBrandBtn_productBrandPage">
-                <Button>Add New Product Brand</Button>
+                <Button>Add Product Brand</Button>
             </DialogTrigger>
             <DialogContent
                 className="sm:max-w-md"
