@@ -1,3 +1,5 @@
+"use client";
+
 import { useForm } from "react-hook-form";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -22,12 +24,18 @@ import { Calendar } from "@/components/ui/calendar";
 import { updateProductUsage } from "@/lib/api/productHistory";
 import { useState } from "react";
 
-export default function UsageCompletionForm({ historyItem, onUpdate, onCancel }) {
+export default function UsageCompletionForm({
+    historyItem,
+    onUpdate,
+    onCancel,
+}) {
     const [serverError, setServerError] = useState(null);
+
+    const remainingQty = Number(historyItem.remaining_quantity);
 
     const form = useForm({
         defaultValues: {
-            depleted_quantity: historyItem.quantity || 0,
+            depleted_quantity: "",
             end_usage_date: historyItem.end_usage_date
                 ? new Date(historyItem.end_usage_date)
                 : new Date(),
@@ -39,6 +47,7 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
 
     const onSubmit = async (values) => {
         try {
+            setServerError(null);
             await updateProductUsage(historyItem.id, {
                 depleted_quantity: Number(values.depleted_quantity),
                 end_usage_date: values.end_usage_date.toISOString(),
@@ -48,7 +57,7 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
             await onUpdate?.();
             onCancel?.();
         } catch (err) {
-                setServerError(err.message || "Failed to update usage record.");
+            setServerError(err.message || "Failed to update usage record.");
         }
     };
 
@@ -62,7 +71,7 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
                 </h4>
                 <p className="text-xs text-muted-foreground mt-1 whitespace-normal">
                     {historyItem.status === "active"
-                        ? `Currently ${historyItem.remaining_quantity || historyItem.quantity} units remaining. How many have been depleted?`
+                        ? `Currently ${remainingQty} ${remainingQty === 1 ? "unit" : "units"} remaining. How many have been depleted?`
                         : "This product usage has already been marked as depleted. You can update the details below."}
                 </p>
             </div>
@@ -78,6 +87,17 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
                         <FormField
                             control={control}
                             name="depleted_quantity"
+                            rules={{
+                                required: "Depleted quantity is required",
+                                min: {
+                                    value: 1,
+                                    message: "Minimum 1 unit",
+                                },
+                                max: {
+                                    value: remainingQty,
+                                    message: `Cannot exceed ${remainingQty} ${remainingQty === 1 ? "unit" : "units"}`,
+                                },
+                            }}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-xs font-medium">
@@ -89,11 +109,12 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
                                             type="number"
                                             id="depletedQuantityField-usageCompletionForm"
                                             {...field}
+                                            placeholder={remainingQty}
                                             value={field.value ?? ""}
                                             onChange={(e) => {
                                                 const val =
                                                     e.target.value === ""
-                                                        ? 0
+                                                        ? ""
                                                         : Number(
                                                               e.target.value,
                                                           );
@@ -101,12 +122,12 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
                                             }}
                                             className="font-mono bg-white focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
                                             min={1}
-                                            max={historyItem.remaining_quantity}
+                                            max={remainingQty}
                                         />
                                     </FormControl>
                                     <p className="text-xs text-muted-foreground">
-                                        Max: {historyItem.remaining_quantity}{" "}
-                                        units
+                                        Max: {remainingQty}{" "}
+                                        {remainingQty === 1 ? "unit" : "units"}
                                     </p>
                                     <FormMessage />
                                 </FormItem>
@@ -177,7 +198,10 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
                                     <p className="text-sm font-semibold text-red-900 mb-1">
                                         ⚠️ Unable to Record Usage
                                     </p>
-                                    <p className="text-sm text-red-800" id="serverErrorMsg-usageCompletionForm">
+                                    <p
+                                        className="text-sm text-red-800"
+                                        id="serverErrorMsg-usageCompletionForm"
+                                    >
                                         {serverError}
                                     </p>
                                 </div>
