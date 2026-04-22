@@ -433,45 +433,51 @@ describe("Add Product Brand Form - UI Tests", () => {
         });
         describe("Dialog Behavior", () => {
             it("should open dialog when Add Product Brand button is clicked", () => {
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "not.exist",
-                );
-                cy.get("#addNewProductBrandBtn_productBrandPage")
-                    .should("be.visible")
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("not.exist");
+                cy.get("#addNewProductBrandBtn_desktop_productBrandPage")
+                    .filter(":visible")
                     .click();
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "be.visible",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("be.visible");
             });
 
             it("should close dialog when Cancel button is clicked", () => {
-                cy.get("#addNewProductBrandBtn_productBrandPage").click();
+                cy.get(
+                    "#addNewProductBrandBtn_desktop_productBrandPage",
+                ).click();
                 cy.wait(1000);
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "be.visible",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("be.visible");
                 cy.get("#cancelNewProductBrandBtn_productBrandPage").click();
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "not.exist",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("not.exist");
             });
 
             it("should close dialog when clicking outside", () => {
-                cy.get("#addNewProductBrandBtn_productBrandPage").click();
+                cy.get(
+                    "#addNewProductBrandBtn_desktop_productBrandPage",
+                ).click();
                 cy.wait(1000);
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "be.visible",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("be.visible");
                 cy.get("body").click(0, 0, { force: true });
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "not.exist",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("not.exist");
             });
         });
 
         describe("Required Fields Validation", () => {
             beforeEach(() => {
-                cy.get("#addNewProductBrandBtn_productBrandPage").click();
+                cy.get(
+                    "#addNewProductBrandBtn_desktop_productBrandPage",
+                ).click();
                 cy.wait(1000);
             });
 
@@ -493,45 +499,51 @@ describe("Add Product Brand Form - UI Tests", () => {
         });
         describe("Dialog Behavior", () => {
             it("should open dialog when Add Product Brand button is clicked", () => {
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "not.exist",
-                );
-                cy.get("#addNewProductBrandBtn_productBrandPage")
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("not.exist");
+                cy.get("#addNewProductBrandBtn_desktop_productBrandPage")
                     .should("be.visible")
                     .click();
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "be.visible",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("be.visible");
             });
 
             it("should close dialog when Cancel button is clicked", () => {
-                cy.get("#addNewProductBrandBtn_productBrandPage").click();
+                cy.get(
+                    "#addNewProductBrandBtn_desktop_productBrandPage",
+                ).click();
                 cy.wait(1000);
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "be.visible",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("be.visible");
                 cy.get("#cancelNewProductBrandBtn_productBrandPage").click();
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "not.exist",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("not.exist");
             });
 
             it("should close dialog when clicking outside", () => {
-                cy.get("#addNewProductBrandBtn_productBrandPage").click();
+                cy.get(
+                    "#addNewProductBrandBtn_desktop_productBrandPage",
+                ).click();
                 cy.wait(1000);
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "be.visible",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("be.visible");
                 cy.get("body").click(0, 0, { force: true });
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "not.exist",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("not.exist");
             });
         });
 
         describe("Required Fields Validation", () => {
             beforeEach(() => {
-                cy.get("#addNewProductBrandBtn_productBrandPage").click();
+                cy.get(
+                    "#addNewProductBrandBtn_desktop_productBrandPage",
+                ).click();
                 cy.wait(1000);
             });
 
@@ -553,45 +565,51 @@ describe("Add Product Brand Form - UI Tests", () => {
         });
         describe("Dialog Behavior", () => {
             it("should open dialog when Add Product Brand button is clicked", () => {
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "not.exist",
-                );
-                cy.get("#addNewProductBrandBtn_productBrandPage")
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("not.exist");
+                cy.get("#addNewProductBrandBtn_desktop_productBrandPage")
                     .should("be.visible")
                     .click();
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "be.visible",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("be.visible");
             });
 
             it("should close dialog when Cancel button is clicked", () => {
-                cy.get("#addNewProductBrandBtn_productBrandPage").click();
+                cy.get(
+                    "#addNewProductBrandBtn_desktop_productBrandPage",
+                ).click();
                 cy.wait(1000);
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "be.visible",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("be.visible");
                 cy.get("#cancelNewProductBrandBtn_productBrandPage").click();
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "not.exist",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("not.exist");
             });
 
             it("should close dialog when clicking outside", () => {
-                cy.get("#addNewProductBrandBtn_productBrandPage").click();
+                cy.get(
+                    "#addNewProductBrandBtn_desktop_productBrandPage",
+                ).click();
                 cy.wait(1000);
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "be.visible",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("be.visible");
                 cy.get("body").click(0, 0, { force: true });
-                cy.get("#addNewProductBrandForm_productBrandPage").should(
-                    "not.exist",
-                );
+                cy.get(
+                    "#addNewProductBrandForm_desktop_productBrandPage",
+                ).should("not.exist");
             });
         });
 
         describe("Required Fields Validation", () => {
             beforeEach(() => {
-                cy.get("#addNewProductBrandBtn_productBrandPage").click();
+                cy.get(
+                    "#addNewProductBrandBtn_desktop_productBrandPage",
+                ).click();
                 cy.wait(1000);
             });
 

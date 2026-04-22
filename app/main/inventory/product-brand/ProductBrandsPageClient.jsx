@@ -68,7 +68,10 @@ export default function ProductBrandsPageClient({ initialBrands }) {
                             onFilterChange={handleFilter}
                             productBrands={brands}
                         />
-                        <AddProductBrand onAdded={fetchProductBrands} />
+                        <AddProductBrand
+                            onAdded={fetchProductBrands}
+                            context="mobile"
+                        />
                     </div>
                 </div>
             </div>
@@ -86,7 +89,10 @@ export default function ProductBrandsPageClient({ initialBrands }) {
                             onFilterChange={handleFilter}
                             productBrands={brands}
                         />
-                        <AddProductBrand onAdded={fetchProductBrands} />
+                        <AddProductBrand
+                            onAdded={fetchProductBrands}
+                            context="desktop"
+                        />
                     </div>
                 </div>
 

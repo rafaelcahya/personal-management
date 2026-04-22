@@ -29,7 +29,7 @@ import { Loader2 } from "lucide-react";
 import { productBrandSchema } from "@/schemas/productBrand";
 import { addProductBrand } from "@/lib/api/productBrand";
 
-export default function AddProduct({ onAdded }) {
+export default function AddProduct({ onAdded, context = "desktop" }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -61,12 +61,15 @@ export default function AddProduct({ onAdded }) {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild id="addNewProductBrandBtn_productBrandPage">
+            <DialogTrigger
+                asChild
+                id={`addNewProductBrandBtn_${context}_productBrandPage`}
+            >
                 <Button>Add Product Brand</Button>
             </DialogTrigger>
             <DialogContent
                 className="sm:max-w-md"
-                id="addNewProductBrandForm_productBrandPage"
+                id={`addNewProductBrandForm_${context}_productBrandPage`}
             >
                 <DialogHeader>
                     <DialogTitle>Add New Product Brand</DialogTitle>
