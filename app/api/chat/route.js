@@ -328,8 +328,17 @@ export async function POST(req) {
     const authClient = await createClient();
     const {
         data: { user },
+        error: authError,
     } = await authClient.auth.getUser();
-    const userId = user?.id;
+
+    if (authError || !user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+            status: 401,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
+
+    const userId = user.id;
 
     const [
         { data: productList },
@@ -507,11 +516,13 @@ Rules:
                     }
                 }
             } catch (err) {
-                console.error("Chat agentic loop error:", err);
+                const errMessage = err?.message ?? String(err);
+                console.error("Chat agentic loop error:", errMessage, err);
                 controller.enqueue(
                     encode({
                         type: "error",
                         message: "Terjadi kesalahan. Coba lagi.",
+                        detail: process.env.NODE_ENV === "development" ? errMessage : undefined,
                     }),
                 );
             }
