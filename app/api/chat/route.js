@@ -348,8 +348,8 @@ export async function POST(req) {
             .eq("user_id", userId)
             .order("created_at", { ascending: false })
             .limit(50),
-        supabase.from("product_brand").select("id,brand,brand_status").eq("user_id", userId),
-        supabase.from("product_name").select("id,product_name,product_name_status").eq("user_id", userId),
+        supabase.from("product_brand").select("id,brand,brand_status").eq("user_id", userId).limit(200),
+        supabase.from("product_name").select("id,product_name,product_name_status").eq("user_id", userId).limit(200),
     ]);
 
     const today = new Date().toISOString().split("T")[0];
