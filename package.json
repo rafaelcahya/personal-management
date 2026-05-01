@@ -12,6 +12,7 @@
         "cy:verify": "cypress verify"
     },
     "dependencies": {
+        "@anthropic-ai/sdk": "^0.91.1",
         "@gsap/react": "^2.1.2",
         "@hookform/resolvers": "^5.2.1",
         "@radix-ui/react-alert-dialog": "^1.1.15",
