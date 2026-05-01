@@ -28,7 +28,9 @@ export async function POST(req) {
     ] = await Promise.all([
         supabase
             .from("trade_list")
-            .select("trade_date,ticker,margin,proceeds,return_percent,realized_gain,entry_session_option,buy_reason_option,sell_reason_option,entry_occasion_option,stock_type_option,notes")
+            .select(
+                "trade_date,ticker,margin,proceeds,return_percent,realized_gain,entry_session_option,buy_reason_option,sell_reason_option,entry_occasion_option,stock_type_option,notes",
+            )
             .eq("user_id", userId)
             .is("deleted_at", null)
             .order("trade_date", { ascending: false })
@@ -49,7 +51,9 @@ export async function POST(req) {
             .limit(50),
         supabase
             .from("settings")
-            .select("initial_margin,bi_risk_free_rate,personal_risk_free_rate,margin_of_error")
+            .select(
+                "initial_margin,bi_risk_free_rate,personal_risk_free_rate,margin_of_error",
+            )
             .eq("user_id", userId)
             .limit(1)
             .single(),
@@ -83,7 +87,7 @@ Guidelines:
 - Format currency values clearly (e.g., +Rp 1,500,000 or -Rp 250,000)`;
 
     const stream = await anthropic.messages.stream({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-6",
         max_tokens: 1024,
         system: systemPrompt,
         messages: messages,

@@ -20,6 +20,9 @@ export async function middleware(request) {
         cypressAuthCookie === expectedSecret
     ) {
         console.log("✅ CYPRESS BYPASS ACTIVE - Skipping auth");
+        if (path === "/") {
+            return NextResponse.redirect(new URL("/main/landing", request.url));
+        }
         return NextResponse.next();
     }
 
@@ -77,7 +80,7 @@ export async function middleware(request) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    if (user && path === "/login") {
+    if (user && (path === "/login" || path === "/")) {
         console.log("✅ User exists - redirecting to /main/landing");
         return NextResponse.redirect(new URL("/main/landing", request.url));
     }

@@ -225,7 +225,8 @@ Cypress.Commands.add("apiRequestWithSession", (method, url, options = {}) => {
         const email = options.email || TEST_EMAIL;
         const sessionKey = `api-session-${email}`;
 
-        if (sessionKey) {
+        // Check if session was already set up for this email (Cypress.env, not the key string itself)
+        if (Cypress.env(sessionKey)) {
             return cy.request({
                 method,
                 url,

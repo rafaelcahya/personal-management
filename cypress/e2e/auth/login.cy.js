@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 
 describe("Login - API & Authentication", () => {
     before(() => {
-        cy.clearAuth();
+        cy.clearAllCookies();
     });
 
     it("should authenticate programmatically via Supabase API", () => {
@@ -33,6 +33,12 @@ describe("Login - API & Authentication", () => {
         cy.url().should("include", "/login");
     });
 
+    it("should redirect root '/' to login when unauthenticated", () => {
+        cy.clearAllCookies();
+        cy.visit("/", { failOnStatusCode: false });
+        cy.url().should("include", "/login");
+    });
+
     it("should fail login with invalid credentials", () => {
         cy.task("getSupabaseSession", {
             email: faker.internet.email(),
@@ -59,6 +65,29 @@ describe("Login - API & Authentication", () => {
         });
     });
 
+    it("should have non-expired token", () => {
+        cy.login();
+
+        cy.getSession().then((session) => {
+            expect(session).to.not.be.null;
+            const now = Math.floor(Date.now() / 1000);
+            expect(session.expires_at).to.be.greaterThan(now);
+            cy.log(`✅ Token expires at: ${new Date(session.expires_at * 1000).toISOString()}`);
+        });
+    });
+
+    it("should store session user email matching TEST_EMAIL", () => {
+        cy.env(["TEST_EMAIL"]).then(({ TEST_EMAIL }) => {
+            cy.login();
+
+            cy.getSession().then((session) => {
+                expect(session).to.not.be.null;
+                expect(session.user.email).to.equal(TEST_EMAIL);
+                cy.log(`✅ User email matches: ${session.user.email}`);
+            });
+        });
+    });
+
     it("should create session and store in localStorage", () => {
         cy.login();
 
@@ -70,6 +99,22 @@ describe("Login - API & Authentication", () => {
 
             cy.log(`✅ User: ${session.user.email}`);
             cy.log(`✅ User ID: ${session.user.id}`);
+        });
+    });
+
+    it("should clear session data from localStorage on clearAuth", () => {
+        cy.login();
+        cy.visit("/");
+
+        cy.window().then((win) => {
+            expect(win.localStorage.getItem("cypress-session")).to.not.be.null;
+        });
+
+        cy.clearAuth();
+
+        cy.window().then((win) => {
+            expect(win.localStorage.getItem("cypress-session")).to.be.null;
+            expect(win.localStorage.getItem("cypress-access-token")).to.be.null;
         });
     });
 
@@ -88,6 +133,12 @@ describe("Login - API & Authentication", () => {
         cy.url().should("include", "/main/landing");
         cy.url().should("not.include", "/login");
         cy.get("body").should("be.visible");
+    });
+
+    it("should redirect to landing when authenticated and visiting root '/'", () => {
+        cy.loginWithBypass();
+        cy.visit("/");
+        cy.url().should("include", "/main/landing");
     });
 
     it("should get valid access token", () => {
@@ -123,45 +174,31 @@ describe("Login Page - Desktop Interactions", () => {
     });
 });
 
-describe("Login - Auth Callback - Dekstop Interactions", () => {
+describe("Login - Auth Callback - Desktop Interactions", () => {
     beforeEach(() => {
         cy.viewport(1920, 1080);
     });
 
-    it("should handle successful OAuth callback", () => {
-        const mockCode = "mock-oauth-code-12345";
-
-        cy.intercept("POST", "**/auth/v1/token*", {
-            statusCode: 200,
-            body: {
-                access_token: "mock-access-token",
-                refresh_token: "mock-refresh-token",
-                expires_in: 3600,
-                token_type: "bearer",
-                user: {
-                    id: "test-user-id",
-                    email: "test@example.com",
-                },
-            },
-        }).as("tokenExchange");
-
-        cy.visit(`/auth/v1/callback?code=${mockCode}`);
+    it("should redirect to login when callback code cannot be exchanged", () => {
+        // The code exchange happens server-side (SSR), so a fake code will fail
+        // the Supabase exchange and redirect to /login?error=auth_failed
+        cy.visit("/auth/v1/callback?code=mock-oauth-code-12345", {
+            failOnStatusCode: false,
+        });
 
         cy.url({ timeout: 10000 }).should("include", "/login");
+        cy.url().should("include", "error=auth_failed");
     });
 
-    it("should handle OAuth callback error", () => {
-        cy.visit("/auth/v1/callback");
+    it("should redirect to landing when callback receives no code", () => {
+        // No code param → callback skips exchange → redirects to /main/landing
+        // Middleware then redirects unauthenticated user to /login
+        cy.visit("/auth/v1/callback", { failOnStatusCode: false });
 
         cy.url().should("include", "/login");
     });
 
-    it("should redirect to login on auth failure", () => {
-        cy.intercept("POST", "**/auth/v1/token*", {
-            statusCode: 400,
-            body: { error: "invalid_grant" },
-        });
-
+    it("should redirect to login with error param on invalid code", () => {
         cy.visit("/auth/v1/callback?code=invalid-code", {
             failOnStatusCode: false,
         });
@@ -290,40 +327,22 @@ describe("Login - Auth Callback - Mobile Interactions", () => {
         cy.viewport("iphone-x");
     });
 
-    it("should handle successful OAuth callback", () => {
-        const mockCode = "mock-oauth-code-12345";
-
-        cy.intercept("POST", "**/auth/v1/token*", {
-            statusCode: 200,
-            body: {
-                access_token: "mock-access-token",
-                refresh_token: "mock-refresh-token",
-                expires_in: 3600,
-                token_type: "bearer",
-                user: {
-                    id: "test-user-id",
-                    email: "test@example.com",
-                },
-            },
-        }).as("tokenExchange");
-
-        cy.visit(`/auth/v1/callback?code=${mockCode}`);
+    it("should redirect to login when callback code cannot be exchanged", () => {
+        cy.visit("/auth/v1/callback?code=mock-oauth-code-12345", {
+            failOnStatusCode: false,
+        });
 
         cy.url({ timeout: 10000 }).should("include", "/login");
+        cy.url().should("include", "error=auth_failed");
     });
 
-    it("should handle OAuth callback error", () => {
-        cy.visit("/auth/v1/callback");
+    it("should redirect to landing when callback receives no code", () => {
+        cy.visit("/auth/v1/callback", { failOnStatusCode: false });
 
         cy.url().should("include", "/login");
     });
 
-    it("should redirect to login on auth failure", () => {
-        cy.intercept("POST", "**/auth/v1/token*", {
-            statusCode: 400,
-            body: { error: "invalid_grant" },
-        });
-
+    it("should redirect to login with error param on invalid code", () => {
         cy.visit("/auth/v1/callback?code=invalid-code", {
             failOnStatusCode: false,
         });
@@ -452,40 +471,22 @@ describe("Login - Auth Callback - Tablet Interactions", () => {
         cy.viewport("ipad-2");
     });
 
-    it("should handle successful OAuth callback", () => {
-        const mockCode = "mock-oauth-code-12345";
-
-        cy.intercept("POST", "**/auth/v1/token*", {
-            statusCode: 200,
-            body: {
-                access_token: "mock-access-token",
-                refresh_token: "mock-refresh-token",
-                expires_in: 3600,
-                token_type: "bearer",
-                user: {
-                    id: "test-user-id",
-                    email: "test@example.com",
-                },
-            },
-        }).as("tokenExchange");
-
-        cy.visit(`/auth/v1/callback?code=${mockCode}`);
+    it("should redirect to login when callback code cannot be exchanged", () => {
+        cy.visit("/auth/v1/callback?code=mock-oauth-code-12345", {
+            failOnStatusCode: false,
+        });
 
         cy.url({ timeout: 10000 }).should("include", "/login");
+        cy.url().should("include", "error=auth_failed");
     });
 
-    it("should handle OAuth callback error", () => {
-        cy.visit("/auth/v1/callback");
+    it("should redirect to landing when callback receives no code", () => {
+        cy.visit("/auth/v1/callback", { failOnStatusCode: false });
 
         cy.url().should("include", "/login");
     });
 
-    it("should redirect to login on auth failure", () => {
-        cy.intercept("POST", "**/auth/v1/token*", {
-            statusCode: 400,
-            body: { error: "invalid_grant" },
-        });
-
+    it("should redirect to login with error param on invalid code", () => {
         cy.visit("/auth/v1/callback?code=invalid-code", {
             failOnStatusCode: false,
         });

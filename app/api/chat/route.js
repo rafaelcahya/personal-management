@@ -44,7 +44,8 @@ const TOOLS = [
                 },
                 usage_date: {
                     type: "string",
-                    description: "Usage date in YYYY-MM-DD format. Default to today.",
+                    description:
+                        "Usage date in YYYY-MM-DD format. Default to today.",
                 },
                 note: { type: "string", description: "Optional note" },
             },
@@ -72,7 +73,8 @@ const TOOLS = [
                 },
                 purchase_date: {
                     type: "string",
-                    description: "Purchase date in YYYY-MM-DD format. Default to today.",
+                    description:
+                        "Purchase date in YYYY-MM-DD format. Default to today.",
                 },
                 note: { type: "string", description: "Optional note" },
             },
@@ -100,7 +102,8 @@ const TOOLS = [
             properties: {
                 product_name: {
                     type: "string",
-                    description: "Product name to create (e.g. 'Sabun Mandi', 'Shampoo')",
+                    description:
+                        "Product name to create (e.g. 'Sabun Mandi', 'Shampoo')",
                 },
             },
             required: ["product_name"],
@@ -137,7 +140,9 @@ async function executeTool(name, input, userId) {
     if (name === "search_product") {
         const { data, error } = await supabase
             .from("product_list")
-            .select("id,product,brand,type,quantity,usage_quantity,product_status")
+            .select(
+                "id,product,brand,type,quantity,usage_quantity,product_status",
+            )
             .eq("user_id", userId)
             .is("deleted_at", null)
             .ilike("product", `%${input.query}%`)
@@ -189,7 +194,8 @@ async function executeTool(name, input, userId) {
     }
 
     if (name === "add_product_stock") {
-        const { product_list_id, quantity_added, price, purchase_date, note } = input;
+        const { product_list_id, quantity_added, price, purchase_date, note } =
+            input;
 
         const { error: stockError } = await supabase
             .from("product_quantity")
@@ -305,7 +311,12 @@ async function executeTool(name, input, userId) {
             .select("id,product,brand")
             .single();
         if (error) return { error: error.message };
-        return { success: true, id: data.id, product: data.product, brand: data.brand };
+        return {
+            success: true,
+            id: data.id,
+            product: data.product,
+            brand: data.brand,
+        };
     }
 
     return { error: `Unknown tool: ${name}` };
@@ -348,8 +359,16 @@ export async function POST(req) {
             .eq("user_id", userId)
             .order("created_at", { ascending: false })
             .limit(50),
-        supabase.from("product_brand").select("id,brand,brand_status").eq("user_id", userId).limit(200),
-        supabase.from("product_name").select("id,product_name,product_name_status").eq("user_id", userId).limit(200),
+        supabase
+            .from("product_brand")
+            .select("id,brand,brand_status")
+            .eq("user_id", userId)
+            .limit(200),
+        supabase
+            .from("product_name")
+            .select("id,product_name,product_name_status")
+            .eq("user_id", userId)
+            .limit(200),
     ]);
 
     const today = new Date().toISOString().split("T")[0];
@@ -415,7 +434,7 @@ Rules:
 
                 for (let i = 0; i < MAX_ITERATIONS; i++) {
                     const stream = await anthropic.messages.stream({
-                        model: "claude-sonnet-4-20250514",
+                        model: "claude-sonnet-4-6",
                         max_tokens: 1024,
                         system: systemPrompt,
                         tools: TOOLS,
@@ -428,7 +447,10 @@ Rules:
                             chunk.delta.type === "text_delta"
                         ) {
                             controller.enqueue(
-                                encode({ type: "text", chunk: chunk.delta.text }),
+                                encode({
+                                    type: "text",
+                                    chunk: chunk.delta.text,
+                                }),
                             );
                         }
                     }
@@ -476,7 +498,10 @@ Rules:
 
                         loopMessages = [
                             ...loopMessages,
-                            { role: "assistant", content: finalMessage.content },
+                            {
+                                role: "assistant",
+                                content: finalMessage.content,
+                            },
                             { role: "user", content: toolResults },
                         ];
                     }
