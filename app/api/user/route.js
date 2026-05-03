@@ -1,33 +1,22 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/client";
-import { jwtVerify } from "jose";
+import { createClient } from "@/lib/supabase/server";
 
-const secret = new TextEncoder().encode(
-    process.env.JWT_SECRET || "default-secret",
-);
-
-async function getUserIdFromReq(req) {
-    const cookieHeader = req.headers.get("cookie") || "";
-    const token = cookieHeader
-        .split(";")
-        .map((c) => c.trim())
-        .find((c) => c.startsWith("authToken="))
-        ?.split("=")[1];
-
-    if (!token) throw new Error("No token");
-
-    const { payload } = await jwtVerify(token, secret);
-    return payload.sub || payload.id;
-}
-
-export async function GET(req) {
+export async function GET() {
     try {
-        const userId = await getUserIdFromReq(req);
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { error: "UNAUTHORIZED", message: "Authentication required" },
+                { status: 401 },
+            );
+        }
 
         const { data, error } = await supabase
             .from("users")
             .select("id, username, nickname, avatar")
-            .eq("id", userId)
+            .eq("id", user.id)
             .single();
 
         if (error) throw error;
@@ -39,15 +28,27 @@ export async function GET(req) {
             data.avatar = avatarData.publicUrl;
         }
 
-        return NextResponse.json({ user: data });
+        return NextResponse.json({ data: { user: data }, message: "User fetched successfully" });
     } catch (err) {
-        return NextResponse.json({ error: err.message }, { status: 401 });
+        return NextResponse.json(
+            { error: "INTERNAL_ERROR", message: err.message },
+            { status: 500 },
+        );
     }
 }
 
 export async function PUT(req) {
     try {
-        const userId = await getUserIdFromReq(req);
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { error: "UNAUTHORIZED", message: "Authentication required" },
+                { status: 401 },
+            );
+        }
+
         const body = await req.json();
         const { username, nickname, avatar } = body;
 
@@ -59,12 +60,15 @@ export async function PUT(req) {
         const { error } = await supabase
             .from("users")
             .update(updateData)
-            .eq("id", userId);
+            .eq("id", user.id);
 
         if (error) throw error;
 
-        return NextResponse.json({ success: true, user: updateData });
+        return NextResponse.json({ data: { user: updateData }, message: "User updated successfully" });
     } catch (err) {
-        return NextResponse.json({ error: err.message }, { status: 400 });
+        return NextResponse.json(
+            { error: "INTERNAL_ERROR", message: err.message },
+            { status: 500 },
+        );
     }
 }

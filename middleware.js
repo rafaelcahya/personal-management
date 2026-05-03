@@ -7,28 +7,18 @@ export async function middleware(request) {
     const cypressAuthCookie = request.cookies.get("cypress-bypass")?.value;
     const expectedSecret = process.env.CYPRESS_AUTH_SECRET;
 
-    console.log("=== MIDDLEWARE DEBUG ===");
-    console.log("NODE_ENV:", process.env.NODE_ENV);
-    console.log("Path:", path);
-    console.log("Cookie 'cypress-bypass':", cypressAuthCookie || "NOT FOUND");
-    console.log("Expected secret:", expectedSecret || "NOT SET");
-
     if (
         process.env.NODE_ENV !== "production" &&
         cypressAuthCookie &&
         expectedSecret &&
         cypressAuthCookie === expectedSecret
     ) {
-        console.log("✅ CYPRESS BYPASS ACTIVE - Skipping auth");
         if (path === "/") {
             return NextResponse.redirect(new URL("/main/landing", request.url));
         }
         return NextResponse.next();
     }
 
-    console.log("⚠️  Bypass not active - running normal auth flow");
-
-    // ============ SKIP AUTH ROUTES ============
     if (
         path.startsWith("/auth/v1/callback") ||
         path.startsWith("/login") ||
@@ -38,7 +28,6 @@ export async function middleware(request) {
         return NextResponse.next();
     }
 
-    // ============ SUPABASE AUTH CHECK ============
     let response = NextResponse.next({
         request: { headers: request.headers },
     });
@@ -73,15 +62,17 @@ export async function middleware(request) {
         data: { user },
     } = await supabase.auth.getUser();
 
-    console.log("User authenticated:", !!user);
-
     if (!user && path !== "/login") {
-        console.log("❌ No user - redirecting to /login");
+        if (path.startsWith("/api/")) {
+            return NextResponse.json(
+                { error: "UNAUTHORIZED", message: "Authentication required" },
+                { status: 401 },
+            );
+        }
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
     if (user && (path === "/login" || path === "/")) {
-        console.log("✅ User exists - redirecting to /main/landing");
         return NextResponse.redirect(new URL("/main/landing", request.url));
     }
 

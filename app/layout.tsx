@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "sonner";
 import "./style/index.css";
+import { AuthListener } from "@/components/AuthListener";
 
 const defaultUrl = process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
@@ -42,6 +43,7 @@ export default function RootLayout({
                         enableSystem
                         disableTransitionOnChange
                     >
+                        <AuthListener />
                         {children}
                         <div id="toast">
                             <Toaster richColors position="top-center" />

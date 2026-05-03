@@ -1,35 +1,30 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/client";
-import { jwtVerify } from "jose";
-
-const secret = new TextEncoder().encode(
-    process.env.JWT_SECRET || "default-secret",
-);
-
-async function getUserIdFromReq(req) {
-    const cookieHeader = req.headers.get("cookie") || "";
-    const token = cookieHeader
-        .split(";")
-        .map((c) => c.trim())
-        .find((c) => c.startsWith("authToken="))
-        ?.split("=")[1];
-
-    if (!token) throw new Error("No token");
-
-    const { payload } = await jwtVerify(token, secret);
-    return payload.sub || payload.id;
-}
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req) {
     try {
-        const userId = await getUserIdFromReq(req);
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { error: "UNAUTHORIZED", message: "Authentication required" },
+                { status: 401 },
+            );
+        }
 
         const formData = await req.formData();
         const file = formData.get("file");
-        if (!file) throw new Error("No file provided");
+
+        if (!file) {
+            return NextResponse.json(
+                { error: "BAD_REQUEST", message: "No file provided" },
+                { status: 400 },
+            );
+        }
 
         const fileExt = file.name.split(".").pop();
-        const fileName = `${userId}-${Date.now()}.${fileExt}`;
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
         const filePath = `avatars/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
@@ -40,8 +35,14 @@ export async function POST(req) {
 
         const { data } = supabase.storage.from("avatar").getPublicUrl(filePath);
 
-        return NextResponse.json({ path: filePath });
+        return NextResponse.json(
+            { data: { path: filePath, url: data.publicUrl }, message: "Avatar uploaded successfully" },
+            { status: 201 },
+        );
     } catch (err) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json(
+            { error: "INTERNAL_ERROR", message: err.message },
+            { status: 500 },
+        );
     }
 }

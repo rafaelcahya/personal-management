@@ -7,6 +7,7 @@ import TradeNavigation from "./TradeNavigation";
 import SettingsDialog from "./settings/SettingsDialog";
 import TradingFooter from "../trading/TradingFooter";
 import TradeAIChat from "@/components/TradeAIChat";
+import { LogoutButton } from "@/app/login/components/Logout";
 
 export default function TradingManagementLayout({ children }) {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -35,17 +36,20 @@ export default function TradingManagementLayout({ children }) {
                         </p>
                     </div>
 
-                    {/* Settings Button */}
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsSettingsOpen(true)}
-                        className="gap-2 shrink-0"
-                        id="openSettingsBtn"
-                    >
-                        <Settings className="size-4" />
-                        <span className="hidden sm:inline">Settings</span>
-                    </Button>
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 shrink-0">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsSettingsOpen(true)}
+                            className="gap-2"
+                            id="openSettingsBtn"
+                        >
+                            <Settings className="size-4" aria-hidden="true" />
+                            <span className="hidden sm:inline">Settings</span>
+                        </Button>
+                        <LogoutButton />
+                    </div>
                 </div>
 
                 <TradeNavigation />

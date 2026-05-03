@@ -1,8 +1,22 @@
 import { getProductHistoryByProductListId } from "@/lib/services/inventory/product_history/getProductHistoryByProductListId";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(req, context) {
     try {
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json(
+                { success: false, error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
         const params = await context.params;
         const productListId = params.id;
 

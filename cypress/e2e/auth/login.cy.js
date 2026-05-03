@@ -190,12 +190,11 @@ describe("Login - Auth Callback - Desktop Interactions", () => {
         cy.url().should("include", "error=auth_failed");
     });
 
-    it("should redirect to landing when callback receives no code", () => {
-        // No code param → callback skips exchange → redirects to /main/landing
-        // Middleware then redirects unauthenticated user to /login
+    it("should redirect to login with error=no_code when callback receives no code", () => {
         cy.visit("/auth/v1/callback", { failOnStatusCode: false });
 
         cy.url().should("include", "/login");
+        cy.url().should("include", "error=no_code");
     });
 
     it("should redirect to login with error param on invalid code", () => {
@@ -336,10 +335,11 @@ describe("Login - Auth Callback - Mobile Interactions", () => {
         cy.url().should("include", "error=auth_failed");
     });
 
-    it("should redirect to landing when callback receives no code", () => {
+    it("should redirect to login with error=no_code when callback receives no code", () => {
         cy.visit("/auth/v1/callback", { failOnStatusCode: false });
 
         cy.url().should("include", "/login");
+        cy.url().should("include", "error=no_code");
     });
 
     it("should redirect to login with error param on invalid code", () => {
@@ -480,10 +480,11 @@ describe("Login - Auth Callback - Tablet Interactions", () => {
         cy.url().should("include", "error=auth_failed");
     });
 
-    it("should redirect to landing when callback receives no code", () => {
+    it("should redirect to login with error=no_code when callback receives no code", () => {
         cy.visit("/auth/v1/callback", { failOnStatusCode: false });
 
         cy.url().should("include", "/login");
+        cy.url().should("include", "error=no_code");
     });
 
     it("should redirect to login with error param on invalid code", () => {

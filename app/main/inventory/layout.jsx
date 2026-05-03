@@ -1,5 +1,6 @@
 import InventoryNavigation from "./InventoryNavigation";
 import ProductAIChat from "@/components/ProductAIChat";
+import { LogoutButton } from "@/app/login/components/Logout";
 
 export default function InventoryLayout({ children }) {
     return (
@@ -9,7 +10,10 @@ export default function InventoryLayout({ children }) {
                 <div className="absolute inset-0 bg-slate-50"></div>
             </div>
 
-            <InventoryNavigation />
+            <div className="flex items-center justify-between">
+                <InventoryNavigation />
+                <LogoutButton />
+            </div>
 
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
                 {children}

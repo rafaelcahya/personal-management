@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,17 +14,36 @@ import {
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function LoginPage() {
+const ERROR_MESSAGES = {
+    auth_failed: "Login failed. Please try again.",
+    no_code: "Invalid login attempt. Please try again.",
+    session_expired: "Your session has expired. Please login again.",
+};
+
+function LoginContent() {
     const [loading, setLoading] = useState(false);
     const supabase = createClient();
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const error = searchParams.get("error");
+        const reason = searchParams.get("reason");
+
+        if (error && ERROR_MESSAGES[error]) {
+            toast.error(ERROR_MESSAGES[error]);
+        } else if (reason === "session_expired") {
+            toast.error("Your session has expired. Please login again.");
+        }
+    }, [searchParams]);
 
     const handleGoogleLogin = async () => {
         setLoading(true);
         try {
+            const next = searchParams.get("next") || "/main/landing";
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: "google",
                 options: {
-                    redirectTo: `${window.location.origin}/auth/v1/callback`,
+                    redirectTo: `${window.location.origin}/auth/v1/callback?next=${encodeURIComponent(next)}`,
                     queryParams: {
                         access_type: "offline",
                         prompt: "consent",
@@ -49,7 +69,7 @@ export default function LoginPage() {
                     <CardTitle>Welcome Back</CardTitle>
                     <CardDescription>
                         Sign in to access trading analytics, inventory
-                        forecasts. Let's get to work.
+                        forecasts. Let&apos;s get to work.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -59,10 +79,11 @@ export default function LoginPage() {
                         disabled={loading}
                         className="w-full"
                         size="lg"
+                        aria-label="Continue with Google"
                     >
                         {loading ? (
                             <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
                                 Signing in...
                             </>
                         ) : (
@@ -70,6 +91,7 @@ export default function LoginPage() {
                                 <svg
                                     className="mr-2 h-5 w-5"
                                     viewBox="0 0 24 24"
+                                    aria-hidden="true"
                                 >
                                     <path
                                         fill="currentColor"
@@ -95,5 +117,13 @@ export default function LoginPage() {
                 </CardContent>
             </Card>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense>
+            <LoginContent />
+        </Suspense>
     );
 }
