@@ -1,137 +1,135 @@
 # Regression Testing Report
 **Date:** 2026-05-03
-**Scope:** API Auth Guard — Semua Endpoint (Auth, User, Chat, Inventory, Trade)
+**Scope:** Authentication Module — Login, Logout, Session Expiry
 **Tester:** QA Agent
-**Total Runs:** 4 (iterative fix cycle)
 
 ---
 
-## Final Summary
-
-| Spec File | Total Tests | Passed | Failed | Duration |
-|-----------|-------------|--------|--------|----------|
-| `auth-api.cy.js` | 6 | 6 | 0 | <1s |
-| `inventory-api.cy.js` | 24 | 24 | 0 | 1s |
-| `trade-api.cy.js` | 29 | 29 | 0 | 1s |
-| **TOTAL** | **59** | **59** | **0** | **3s** |
-
-> ✅ **59/59 All specs passed.**
+## Summary
+| Total Test Cases | Passed | Failed | Pass Rate |
+|-----------------|--------|--------|-----------|
+| 126 | 126 | 0 | **100%** |
 
 ---
 
-## Bug Log — Ditemukan & Diperbaiki Selama Run
-
-### Bug #1 — `POST /api/auth/logout` tidak return 401 saat unauthenticated
-- **Run ditemukan:** Run #1
-- **Symptom:** Expected 401, got 200
-- **Root Cause:** `supabase.auth.signOut()` tidak throw error meski tidak ada session aktif. Auth check tidak dilakukan sebelum signOut.
-- **Fix:** Tambah `supabase.auth.getUser()` sebelum `signOut()`. Jika tidak ada user → return 401.
-- **File:** `app/api/auth/logout/route.js`
-- **Status:** ✅ Fixed
+## Spec Results
+| # | Spec File | Tests | Passed | Failed | Duration |
+|---|-----------|-------|--------|--------|----------|
+| 1 | `logout.cy.js` | 35 | 35 | 0 | 53s |
+| 2 | `login.cy.js` | 70 | 70 | 0 | 45s |
+| 3 | `session.cy.js` | 21 | 21 | 0 | 13s |
 
 ---
 
-### Bug #2 — Semua `/api/*` routes return 307 redirect ke `/login` saat unauthenticated
-- **Run ditemukan:** Run #1 (inventory & trade tests)
-- **Symptom:** Expected 401, got 307
-- **Root Cause:** Middleware hanya melakukan redirect ke `/login` untuk semua unauthenticated request, termasuk API routes. API routes seharusnya return 401 JSON, bukan redirect HTML.
-- **Fix:** Tambahkan branch di middleware — jika path startsWith `/api/` dan tidak ada user, return `NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 })`.
-- **File:** `middleware.js`
-- **Status:** ✅ Fixed
+## Feature Test Results
+
+### Logout — API Endpoint
+| # | Test | Type | Status |
+|---|------|------|--------|
+| 1 | POST /api/auth/logout returns 200 when authenticated | Auto | ✅ PASS |
+| 2 | POST /api/auth/logout returns 401 when unauthenticated | Auto | ✅ PASS |
+| 3 | GET /api/auth/logout tidak diterima (method guard) | Auto | ✅ PASS |
+
+### Logout Button — Inventory & Trading Layout
+| # | Test | Viewport | Status |
+|---|------|----------|--------|
+| 4 | LogoutButton visible di inventory | Desktop | ✅ PASS |
+| 5 | Label "Sign out" benar | Desktop | ✅ PASS |
+| 6 | aria-label "Sign out from application" | Desktop | ✅ PASS |
+| 7 | Keyboard accessible (Tab + focus) | Desktop | ✅ PASS |
+| 8 | Loading state "Signing out..." saat API pending | Desktop | ✅ PASS |
+| 9 | Redirect ke /login setelah logout berhasil | Desktop | ✅ PASS |
+| 10 | Toast error saat API gagal (500) | Desktop | ✅ PASS |
+| 11 | Button kembali enabled setelah logout gagal | Desktop | ✅ PASS |
+| 12 | LogoutButton visible di trading | Desktop | ✅ PASS |
+| 13 | Label, aria-label, loading state (trading) | Desktop | ✅ PASS |
+| 14 | Redirect ke /login setelah logout (trading) | Desktop | ✅ PASS |
+| 15 | LogoutButton visible + label (inventory) | Mobile | ✅ PASS |
+| 16 | LogoutButton visible + label (trading) | Mobile | ✅ PASS |
+| 17 | LogoutButton visible (inventory, trading) | Tablet | ✅ PASS |
+
+### UserMenu — Landing Page
+| # | Test | Viewport | Status |
+|---|------|----------|--------|
+| 18 | UserMenu trigger button visible | Desktop | ✅ PASS |
+| 19 | aria-label "User menu" pada trigger | Desktop | ✅ PASS |
+| 20 | Avatar / inisial tampil di trigger | Desktop | ✅ PASS |
+| 21 | Dropdown terbuka saat di-klik | Desktop | ✅ PASS |
+| 22 | Email user tampil di dropdown | Desktop | ✅ PASS |
+| 23 | Opsi "Sign out" tampil di dropdown | Desktop | ✅ PASS |
+| 24 | Redirect ke /login setelah sign out dari UserMenu | Desktop | ✅ PASS |
+| 25 | Toast error saat sign out gagal dari UserMenu | Desktop | ✅ PASS |
+| 26 | Keyboard accessible (Enter membuka dropdown) | Desktop | ✅ PASS |
+| 27 | UserMenu visible + dropdown buka (mobile) | Mobile | ✅ PASS |
+| 28 | UserMenu visible + email + sign out (tablet) | Tablet | ✅ PASS |
+
+### Login — API & Session
+| # | Test | Status |
+|---|------|--------|
+| 29 | Autentikasi programatik via Supabase API | ✅ PASS |
+| 30 | Unauthenticated user redirect ke /login | ✅ PASS |
+| 31 | Root '/' redirect ke /login saat unauthenticated | ✅ PASS |
+| 32 | Login dengan credentials invalid → session null | ✅ PASS |
+| 33 | Session structure valid (access_token, refresh_token, user) | ✅ PASS |
+| 34 | Token tidak expired | ✅ PASS |
+| 35 | Session email sesuai TEST_EMAIL | ✅ PASS |
+| 36 | Session tersimpan di localStorage | ✅ PASS |
+| 37 | clearAuth membersihkan localStorage | ✅ PASS |
+| 38 | Bypass cookie mengizinkan akses protected route | ✅ PASS |
+| 39 | Authenticated user di '/' redirect ke /main/landing | ✅ PASS |
+| 40 | Access token valid (string, panjang > 100) | ✅ PASS |
+
+### Login Page — UI & Branding
+| # | Test | Viewport | Status |
+|---|------|----------|--------|
+| 41 | App identity "Personal Management" tampil | Desktop | ✅ PASS |
+| 42 | Google button label "Sign in with Google" | Desktop | ✅ PASS |
+| 43 | aria-label Google button sesuai | Desktop | ✅ PASS |
+| 44 | SVG Google 4-warna (≥ 4 paths) | Desktop | ✅ PASS |
+| 45 | App identity & button label (mobile) | Mobile | ✅ PASS |
+| 46 | UI elements tampil (desktop/mobile/tablet) | All | ✅ PASS |
+
+### Login — Auth Callback
+| # | Test | Viewport | Status |
+|---|------|----------|--------|
+| 47 | Callback tanpa code → /login?error=no_code | Desktop | ✅ PASS |
+| 48 | Callback dengan invalid code → /login?error=auth_failed | Desktop | ✅ PASS |
+| 49 | Callback tests (mobile, tablet) | Mobile/Tablet | ✅ PASS |
+
+### Login — ?next= Param Preservation (Middleware)
+| # | Test | Status |
+|---|------|--------|
+| 50 | Redirect dari inventory menyertakan ?next= | ✅ PASS |
+| 51 | Redirect dari trading menyertakan ?next= | ✅ PASS |
+| 52 | Redirect dari landing menyertakan ?next= | ✅ PASS |
+| 53 | Unauthenticated API request return 401 JSON (bukan redirect) | ✅ PASS |
+
+### Session — Toast Content
+| # | Test | Status |
+|---|------|--------|
+| 54 | ?reason=session_expired → toast "You've been signed out" | ✅ PASS |
+| 55 | ?error=auth_failed → toast "Login failed" | ✅ PASS |
+| 56 | ?error=no_code → toast "Invalid login attempt" | ✅ PASS |
+| 57 | Tidak ada toast saat /login tanpa params | ✅ PASS |
+| 58 | Tidak ada "session expired" toast saat intentional logout | ✅ PASS |
+
+### Session — API Security
+| # | Test | Status |
+|---|------|--------|
+| 59 | GET /api/user → 401 tanpa auth | ✅ PASS |
+| 60 | POST /api/auth/logout → 401 tanpa auth | ✅ PASS |
+| 61 | GET /api/inventory/v1/get-products → 401 tanpa auth | ✅ PASS |
+| 62 | GET /api/trade/v1/get-trades → 401 tanpa auth | ✅ PASS |
+
+### Session — Open Redirect Validation
+| # | Test | Status |
+|---|------|--------|
+| 63 | ?next=https://evil.com tanpa code → /login?error=no_code | ✅ PASS |
+| 64 | ?next=//evil.com tanpa code → /login?error=no_code | ✅ PASS |
 
 ---
 
-### Bug #3 — `GET /api/trade/v1/options/*` return 500 saat unauthenticated
-- **Run ditemukan:** Run #2 & #3
-- **Symptom:** Expected 200 (diasumsikan public), got 500
-- **Root Cause (investigasi):** Options routes menggunakan `createClient` dari `lib/supabase/server` yang membutuhkan session. Supabase RLS hanya mengizinkan akses ke tabel options untuk `authenticated` role — bukan anonymous/public.
-- **Keputusan:** Options routes diubah menjadi **wajib auth** karena hanya digunakan di form trade yang sudah login. Test diupdate dari `expect 200` ke `expect 401`.
-- **File:** `middleware.js` (hapus exception `/api/trade/v1/options`), `cypress/e2e/api-auth/trade-api.cy.js`
-- **Status:** ✅ Fixed
-
----
-
-## Semua Endpoint yang Ditest
-
-### Auth, User, Chat (6 endpoints)
-| Endpoint | Method | Expected | Actual | Status |
-|----------|--------|----------|--------|--------|
-| `/api/auth/logout` | POST | 401 | 401 | ✅ |
-| `/api/user` | GET | 401 | 401 | ✅ |
-| `/api/user` | PUT | 401 | 401 | ✅ |
-| `/api/user/avatar` | POST | 401 | 401 | ✅ |
-| `/api/chat` | POST | 401 | 401 | ✅ |
-| `/api/trade-chat` | POST | 401 | 401 | ✅ |
-
-### Inventory (24 endpoints)
-| Endpoint | Method | Expected | Actual | Status |
-|----------|--------|----------|--------|--------|
-| `/api/inventory/v1/product/list` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product/create` | POST | 401 | 401 | ✅ |
-| `/api/inventory/v1/product/[id]` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product/delete/[id]` | DELETE | 401 | 401 | ✅ |
-| `/api/inventory/v1/product/[id]/favorite` | PATCH | 401 | 401 | ✅ |
-| `/api/inventory/v1/product/adjust/[id]` | PATCH | 401 | 401 | ✅ |
-| `/api/inventory/v1/product/summary` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product/stock/create` | POST | 401 | 401 | ✅ |
-| `/api/inventory/v1/product/stock/history/[id]` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-brand/list` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-brand/create` | POST | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-brand/[id]` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-brand/update/[id]` | PUT | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-brand/delete/[id]` | DELETE | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-brand/summary` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-name/list` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-name/create` | POST | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-name/[id]` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-name/update/[id]` | PUT | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-name/delete/[id]` | DELETE | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-name/summary` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-history/list` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-history/[id]` | GET | 401 | 401 | ✅ |
-| `/api/inventory/v1/product-history/update/[id]` | PATCH | 401 | 401 | ✅ |
-
-> ✅ **Defense-in-depth applied:** 3 product-history routes sekarang memiliki `supabase.auth.getUser()` di dalam handler. `list/route.js` sudah ada sebelumnya; `[id]/route.js` dan `update/[id]/route.js` baru ditambahkan.
-
-### Trade (29 endpoints)
-| Endpoint | Method | Expected | Actual | Status |
-|----------|--------|----------|--------|--------|
-| `/api/trade/v1/dashboard/metrics` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/dashboard/quick-view` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/trade/list` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/trade/create` | POST | 401 | 401 | ✅ |
-| `/api/trade/v1/trade/[id]` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/trade/update/[id]` | PUT | 401 | 401 | ✅ |
-| `/api/trade/v1/trade/delete/[id]` | DELETE | 401 | 401 | ✅ |
-| `/api/trade/v1/trade/summary` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/trade/options/[type]` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/event/list` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/event/create` | POST | 401 | 401 | ✅ |
-| `/api/trade/v1/event/[id]` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/event/update/[id]` | PUT | 401 | 401 | ✅ |
-| `/api/trade/v1/event/delete/[id]` | DELETE | 401 | 401 | ✅ |
-| `/api/trade/v1/event/favorite/[id]` | PATCH | 401 | 401 | ✅ |
-| `/api/trade/v1/event/summary` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/fee/list` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/fee/create` | POST | 401 | 401 | ✅ |
-| `/api/trade/v1/fee/[id]` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/fee/update/[id]` | PUT | 401 | 401 | ✅ |
-| `/api/trade/v1/fee/delete/[id]` | DELETE | 401 | 401 | ✅ |
-| `/api/trade/v1/fee/summary` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/settings` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/settings/update` | PUT | 401 | 401 | ✅ |
-| `/api/trade/v1/options/buy-reason` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/options/sell-reason` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/options/entry-session` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/options/entry-occasion` | GET | 401 | 401 | ✅ |
-| `/api/trade/v1/options/stock-type` | GET | 401 | 401 | ✅ |
-
----
-
-## Action Items untuk Tim
-
-| Priority | Assignee | Action |
-|----------|----------|--------|
-| ~~P1~~ ✅ | **Backend** | ~~Tambahkan `supabase.auth.getUser()` di 3 product-history route handlers sebagai defense-in-depth~~ — **DONE** (`[id]/route.js` dan `update/[id]/route.js` diupdate) |
-| P1 | **Backend** | Verifikasi manual `GET /api/user` dan `PUT /api/user` dengan session Supabase valid |
-| P2 | **Backend** | Verifikasi Supabase Storage bucket `avatar` exist sebelum test avatar upload |
+## Notes
+- Semua test dijalankan headless dengan Cypress 15.11.0 + Electron 138
+- Bypass mode (`cypress-bypass` cookie) digunakan untuk UI tests — tidak membutuhkan real OAuth flow
+- Test intentional logout (`should NOT show 'session expired' toast`) menggunakan URL assertion sebagai primary signal + text check sebagai secondary, karena bypass mode tidak membuat real Supabase session sehingga Supabase client bisa emit event tak terduga

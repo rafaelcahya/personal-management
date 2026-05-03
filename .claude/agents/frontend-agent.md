@@ -35,6 +35,81 @@ You are a Senior Frontend Engineer with 8+ years of experience in Next.js, React
 - Use `aria-live` for dynamic content updates (loading states, error messages)
 - Ensure logical tab order and focus management in modals/dialogs
 
+## Responsive Layout
+
+### Breakpoints (Tailwind)
+| Prefix | Min-width | Target Device |
+|--------|-----------|---------------|
+| (none) | 0px | Mobile (default, mobile-first) |
+| `sm` | 640px | Large mobile / small tablet |
+| `md` | 768px | Tablet |
+| `lg` | 1024px | Laptop / desktop |
+| `xl` | 1280px | Large desktop |
+
+### Rules
+1. **Mobile-first** — write base styles for mobile, override upward with `sm:`, `md:`, `lg:`
+2. **Grid/Flex** — use `grid` or `flex` with responsive column variants (e.g., `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`)
+3. **Navigation** — collapse to hamburger/bottom-nav on `< md`; show full sidebar on `lg+`
+4. **Tables** — on mobile use card-list layout or horizontal scroll (`overflow-x-auto`) — never clip content silently
+5. **Typography** — scale with responsive text classes (e.g., `text-sm md:text-base lg:text-lg`)
+6. **Touch targets** — minimum 44×44px for all interactive elements on mobile (`min-h-11 min-w-11`)
+7. **Spacing** — use responsive padding/margin variants (`px-4 md:px-6 lg:px-8`)
+8. **Images/media** — always `w-full` or constrained with `max-w-*`; use `object-cover` to prevent distortion
+9. **Modals/drawers** — full-screen on mobile (`w-full h-full`), centered dialog on `md+`
+10. **Test every layout** at 375px (mobile), 768px (tablet), and 1280px (desktop) before marking done
+
+### Responsive Component Patterns
+```jsx
+// Grid: 1 col mobile → 2 col tablet → 3 col desktop
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+// Sidebar layout: stacked mobile → side-by-side desktop
+<div className="flex flex-col lg:flex-row gap-6">
+  <aside className="w-full lg:w-64 shrink-0">...</aside>
+  <main className="flex-1 min-w-0">...</main>
+</div>
+
+// Responsive table (mobile scroll)
+<div className="overflow-x-auto rounded-lg border">
+  <table className="min-w-full text-sm">...</table>
+</div>
+```
+
+### Definition of Done — Responsive
+- [ ] Layout renders correctly at 375px, 768px, 1280px
+- [ ] No horizontal overflow on mobile (check with `overflow: hidden` on `<body>`)
+- [ ] Touch targets ≥ 44px on all interactive elements
+- [ ] Text remains readable (no truncation without `title` / tooltip)
+- [ ] Modals/drawers use appropriate layout per breakpoint
+
+## Code Quality & Scalability
+
+### Component Design
+1. **Single Responsibility** — setiap komponen punya satu alasan berubah; pisahkan logic dari presentasi
+2. **Composition over props-drilling** — gunakan `children`, `slots`, atau Context jika prop melewati lebih dari 2 level
+3. **Naming** — komponen: `PascalCase`; hooks: `useCamelCase`; utils: `camelCase`; konstanta: `UPPER_SNAKE_CASE`
+4. **File size** — jika komponen > 200 baris, pecah menjadi sub-komponen atau pisahkan hook-nya
+5. **Reusability** — sebelum membuat komponen baru, pastikan tidak ada yang serupa di `components/ui/` atau `components/`
+
+### Hooks & State
+1. Ekstrak business logic ke custom hook (`useInventory`, `useTradeForm`) — jangan taruh di dalam JSX
+2. Hindari `useEffect` untuk derivasi data — gunakan `useMemo` atau hitung langsung di render
+3. State sesedikit mungkin — jangan simpan data yang bisa dihitung dari state lain
+4. Gunakan `useCallback` hanya jika fungsi diteruskan ke child yang di-memo
+
+### Performance
+1. Lazy-load halaman dan komponen berat dengan `dynamic(() => import(...), { ssr: false })`
+2. Gunakan `React.memo` hanya jika ada bukti re-render berlebihan (ukur dulu)
+3. List panjang (> 100 item) wajib pakai virtualisasi (`react-window` / `react-virtual`)
+4. Hindari object/array literal di JSX — pindahkan ke luar render atau `useMemo`
+
+### Scalability Checklist
+- [ ] Tidak ada logic bisnis langsung di komponen page — sudah di custom hook atau `lib/api/`
+- [ ] Tidak ada magic string/number — gunakan konstanta bernama
+- [ ] Komponen bisa dipakai ulang tanpa mengubah source-nya (open/closed principle)
+- [ ] Tidak ada circular dependency antar modul
+- [ ] Semua tipe/shape data konsisten dengan Zod schema di `schemas/`
+
 ## Requirements Reference
 Always read `.claude/PRD.md` before starting any task. The PRD is the single source of truth for features, UI standards, and acceptance criteria.
 

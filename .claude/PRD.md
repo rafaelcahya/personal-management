@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD)
 ## Personal Management App
 
-**Version:** 1.0  
+**Version:** 1.3  
 **Last Updated:** 2026-05-03  
 **Owner:** Rafael Cahya  
 **Stack:** Next.js 15 App Router · Supabase (PostgreSQL) · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6)
@@ -224,21 +224,130 @@ Aplikasi ini dilengkapi dengan **AI Chat** berbasis Claude untuk interaksi natur
 
 ### 3.3 Authentication Module
 
+---
+
+#### 3.3.0 Authentication Flow Overview
+
+> Baca bagian ini dulu sebelum membaca detail teknis. Ini adalah peta besar seluruh auth flow.
+
+---
+
+##### LOGIN FLOW
+
+```
+User buka halaman protected (misal: /main/trading)
+    │
+    ▼
+[Middleware] cek session
+    │
+    ├── ❌ Tidak ada session
+    │       │
+    │       ▼
+    │   Redirect → /login?next=/main/trading
+    │       │
+    │       ▼
+    │   [Login Page] User klik "Sign in with Google"
+    │       │
+    │       ▼
+    │   signInWithOAuth() → redirect ke Google
+    │       │
+    │       ▼
+    │   [Google Auth] User approve
+    │       │
+    │       ▼
+    │   Redirect ke /auth/v1/callback?code=xxx&next=/main/trading
+    │       │
+    │       ├── ❌ code tidak ada → /login?error=no_code
+    │       ├── ❌ code exchange gagal → /login?error=auth_failed
+    │       └── ✅ berhasil → redirect ke /main/trading (dari ?next=)
+    │
+    └── ✅ Ada session → lanjut ke halaman tujuan
+```
+
+---
+
+##### LOGOUT FLOW
+
+```
+User klik tombol "Sign out"
+    │
+    ▼
+[LogoutButton / UserMenu] set sessionStorage flag "intentional_logout"
+    │
+    ▼
+POST /api/auth/logout
+    │
+    ├── ❌ Gagal → hapus flag → tampilkan toast error → tetap di halaman
+    │
+    └── ✅ Berhasil → server clear session cookie
+            │
+            ▼
+        Redirect → /login
+            │
+            ▼
+        [AuthListener] deteksi SIGNED_OUT event
+            │
+            └── cek flag "intentional_logout" → ada → tidak tampilkan toast
+                (redirect sudah ditangani LogoutButton)
+```
+
+---
+
+##### SESSION EXPIRY FLOW
+
+```
+User sedang aktif di /main/* → session Supabase habis/expired
+    │
+    ▼
+[AuthListener] deteksi SIGNED_OUT event
+    │
+    └── cek flag "intentional_logout" → tidak ada
+            │
+            ▼
+        Redirect → /login?reason=session_expired
+        (tidak ada toast di sini — untuk menghindari double toast)
+            │
+            ▼
+        [Login Page] baca ?reason=session_expired
+            │
+            ▼
+        Tampilkan toast: "You've been signed out. Please sign in again to continue."
+```
+
+---
+
+##### ERROR MESSAGES QUICK REFERENCE
+
+| URL Param | Artinya | Pesan ke User |
+|-----------|---------|---------------|
+| `?error=auth_failed` | Google OAuth gagal | "Login failed. Please try again." |
+| `?error=no_code` | Callback tidak dapat code | "Invalid login attempt. Please try again." |
+| `?reason=session_expired` | Sesi habis otomatis | "You've been signed out. Please sign in again to continue." |
+
+---
+
 #### 3.3.1 Login (`/login`)
 
-**Deskripsi:** Halaman login dengan Google OAuth. Menangani error params dan session expiry messaging.
+**Deskripsi:** Halaman login dengan Google OAuth. Menangani error params dan session expiry messaging. Menampilkan app identity (logo + nama app) di atas card login.
 
 **Fitur:**
-- [DEPRECATED] ~~Form email + password~~
-- [DEPRECATED] ~~Validasi format email~~
-- [DEPRECATED] ~~Error message jika credentials salah~~
+- [DEPRECATED v1.1] ~~Form email + password~~ — diganti Google OAuth only
+- [DEPRECATED v1.1] ~~Validasi format email~~ — tidak relevan setelah OAuth only
+- [DEPRECATED v1.1] ~~Error message jika credentials salah~~ — tidak relevan setelah OAuth only
+- App identity ditampilkan di atas Card: icon `LayoutDashboard` + teks "Personal Management"
 - Login via Google OAuth (single sign-on button)
+- **Google button harus mengikuti Google branding guidelines:**
+  - Background putih (`bg-white`), border `border-slate-300`, teks `text-slate-700`
+  - SVG icon Google 4-warna (bukan `currentColor`): `#4285F4`, `#34A853`, `#FBBC05`, `#EA4335`
+  - Label button: `"Sign in with Google"` (bukan "Continue with Google")
 - Loading/disabled state pada Google button selama OAuth redirect berlangsung
+  - Loading text: `"Redirecting to Google..."`
 - Baca `?error=` query param dan tampilkan toast message:
-  - `?error=auth_failed` → "Authentication failed. Please try again."
-  - `?error=no_code` → "OAuth callback did not receive an authorization code."
+  - `?error=auth_failed` → `"Login failed. Please try again."`
+  - `?error=no_code` → `"Invalid login attempt. Please try again."`
 - Baca `?reason=` query param dan tampilkan toast message:
-  - `?reason=session_expired` → "Your session has expired. Please sign in again."
+  - `?reason=session_expired` → `"You've been signed out. Please sign in again to continue."`
+  - **Catatan:** Toast session expiry hanya ditampilkan di login page via `?reason=` param, BUKAN di `AuthListener` (untuk menghindari double toast)
 - `?next=` param diteruskan melalui OAuth flow untuk preservasi redirect tujuan
 - Halaman di-wrap dalam `<Suspense>` untuk kompatibilitas Next.js SSR
 
@@ -296,28 +405,44 @@ THEN redirect to /login?error=auth_failed
 
 #### 3.3.3 Logout
 
-**Deskripsi:** Logout terpusat via `LogoutButton` component. Satu canonical implementation.
+**Deskripsi:** Logout terpusat via dua komponen tergantung lokasi. Logout dilakukan **server-side** melalui API endpoint untuk memastikan session cookie benar-benar di-clear di server sebelum redirect.
 
-**Component:** `app/login/components/Logout.jsx` (`LogoutButton`)
+**Komponen:**
+- `app/login/components/Logout.jsx` → `LogoutButton` — dipakai di Inventory & Trading layout
+- `app/login/components/UserMenu.jsx` → `UserMenu` — dipakai di Landing page (menampilkan avatar + email user)
 
-**Fitur:**
-- Memanggil `supabase.auth.signOut()` client-side
-- Loading/disabled state selama proses logout
-- Toast error jika logout gagal
-- Redirect ke `/login` setelah logout berhasil
-- WCAG: `aria-label` pada button, keyboard accessible
+**`LogoutButton` — Fitur:**
+- Default `size="sm"` (bisa di-override via prop) — konsisten dengan tombol action lain di layout
+- Label: `"Sign out"` | Loading: `"Signing out..."`
+- Warna: neutral (`text-slate-500`, `hover:text-slate-700`) — bukan merah (logout bukan aksi destructive)
+- Set `sessionStorage` flag `intentional_logout` sebelum memanggil API
+- Panggil `POST /api/auth/logout` (server-side session termination)
+- Loading/disabled state selama proses
+- Toast error jika gagal: `"Couldn't sign you out — please try again."`
+- Redirect ke `/login` setelah berhasil
+- WCAG: `aria-label="Sign out from application"`, keyboard accessible
 
-**Lokasi button:**
-- Inventory layout (`app/main/inventory/layout.jsx`) — di header
-- Trading layout (`app/main/trading/layout.jsx`) — di samping Settings button
-- Landing page
+**`UserMenu` — Fitur:**
+- Tampilkan avatar Google user (foto profil dari `user_metadata.avatar_url`)
+- Fallback avatar: inisial huruf pertama nama user dengan background `bg-primary/10`
+- Tampilkan first name di sebelah avatar (hidden on mobile `sm:inline`)
+- Klik buka `DropdownMenu` yang menampilkan email user dan opsi "Sign out"
+- Logout logic sama dengan `LogoutButton` (API call + intentional flag + redirect)
+
+**Lokasi:**
+- Inventory layout (`app/main/inventory/layout.jsx`) → `LogoutButton`
+- Trading layout (`app/main/trading/layout.jsx`) → `LogoutButton` (di samping Settings button)
+- Landing page (`app/main/landing/page.jsx`) → `UserMenu` (dengan `user` prop dari `requireAuth()`)
 
 **API endpoint:** `POST /api/auth/logout`
+- Validasi session dulu — return 401 jika tidak authenticated
 - Server-side session termination via `supabase.auth.signOut()`
-- Response: `{ message: "Logged out successfully" }`
+- Clear session cookie di server
+- Response success: `{ message: "Logged out successfully" }` (200)
+- Response error: `{ error: "LOGOUT_FAILED", message: "..." }` (500)
 
 **User Story:**
-> As an authenticated user, I want to log out securely, so that my session is terminated and no one else can access my account.
+> As an authenticated user, I want to log out securely, so that my session is terminated on the server and no one else can access my account.
 
 **Acceptance Criteria:**
 ```
@@ -326,11 +451,11 @@ WHEN logout is processing
 THEN the button shows loading state and is disabled
 
 GIVEN logout completes successfully
-WHEN supabase.auth.signOut() resolves
-THEN I am redirected to /login
+WHEN POST /api/auth/logout returns 200
+THEN I am redirected to /login WITHOUT any "session expired" toast
 
 GIVEN logout fails due to a network error
-WHEN supabase.auth.signOut() rejects
+WHEN POST /api/auth/logout returns non-200
 THEN a toast error message is shown and I remain on the current page
 
 GIVEN I use a keyboard
@@ -349,8 +474,12 @@ THEN logout is triggered (keyboard accessible, aria-label present)
 **Behavior:**
 - Di-mount secara global di `app/layout.tsx`
 - Mendengarkan `supabase.auth.onAuthStateChange`
-- Saat event `SIGNED_OUT` terdeteksi → redirect ke `/login?reason=session_expired`
-- Login page membaca `?reason=session_expired` dan menampilkan toast message
+- Saat event `SIGNED_OUT` terdeteksi:
+  - Cek `sessionStorage` key `intentional_logout`
+  - Jika ada → intentional logout (sudah ditangani `LogoutButton`/`UserMenu`) → tidak lakukan apapun
+  - Jika tidak ada → session expired → redirect ke `/login?reason=session_expired`
+- Toast ditampilkan **hanya oleh login page** (bukan AuthListener) via `?reason=session_expired` param
+- **Mengapa tidak toast di AuthListener:** Untuk menghindari double toast — toast dari AuthListener bisa muncul sebelum redirect terjadi, lalu login page menampilkan toast kedua
 
 **User Story:**
 > As an authenticated user whose session has expired, I want to be automatically redirected to login with a clear message, so that I understand why I was logged out.
@@ -359,11 +488,17 @@ THEN logout is triggered (keyboard accessible, aria-label present)
 ```
 GIVEN I am on any /main/* page
 WHEN my Supabase session expires (SIGNED_OUT event fires)
+AND there is no "intentional_logout" flag in sessionStorage
 THEN I am automatically redirected to /login?reason=session_expired
 
 GIVEN I arrive at /login?reason=session_expired
 WHEN the page loads
-THEN a toast message is shown: "Your session has expired. Please sign in again."
+THEN a toast is shown: "You've been signed out. Please sign in again to continue."
+
+GIVEN I click the Logout button
+WHEN SIGNED_OUT event fires
+AND "intentional_logout" flag exists in sessionStorage
+THEN AuthListener does NOT redirect or show toast (LogoutButton handles the redirect)
 ```
 
 ---
@@ -422,7 +557,7 @@ THEN a toast message is shown: "Your session has expired. Please sign in again."
 
 ### Auth
 - Semua endpoint `/api/*` (kecuali `/api/auth/*`) harus validasi session
-- [DEPRECATED] ~~Gunakan JWT/authToken cookie untuk validasi auth di route handler~~
+- [DEPRECATED v1.1] ~~Gunakan JWT/authToken cookie untuk validasi auth di route handler~~ — diganti Supabase SSR `createClient()` + `supabase.auth.getUser()`
 - Semua `/api/*` route handler WAJIB menggunakan `lib/supabase/server.ts` `createClient()` + `supabase.auth.getUser()` untuk validasi session
 - Admin operations (misal: bypass RLS) menggunakan `createAdminClient()` dari `lib/supabase/admin.js` — bukan singleton, panggil sebagai fungsi setiap kali dibutuhkan
 - Endpoint auth:
@@ -490,3 +625,5 @@ Setiap perubahan requirement harus diupdate oleh PM Agent di file ini terlebih d
 |-------|---------|-----------|--------|
 | 1.0 | 2026-05-03 | Initial PRD — dokumentasi semua fitur existing | Rafael Cahya |
 | 1.1 | 2026-05-03 | Auth module security & UX fixes — see sprint log. Updated 3.3.1 (Login: Google OAuth only, error/reason param handling, ?next= flow, Suspense); Added 3.3.3 (Logout: LogoutButton, POST /api/auth/logout); Added 3.3.4 (Session Expiry: AuthListener); Updated 3.3.2 (Callback: no_code/auth_failed redirects, ?next= preservation); Updated 3.4 (User Settings APIs: GET/PUT /api/user, POST /api/user/avatar); Updated Section 4 Auth (removed JWT, added createAdminClient pattern, added /api/auth/logout); Updated Section 2 (Google OAuth only) | Rafael Cahya |
+| 1.2 | 2026-05-03 | Auth flow bug fixes & PRD clarity update. (1) Fixed: middleware sekarang preserve ?next= param saat redirect ke /login sehingga user kembali ke halaman tujuan setelah login. (2) Fixed: LogoutButton sekarang panggil POST /api/auth/logout (server-side canonical) bukan client-side signOut langsung — session di-clear di server sebelum redirect. (3) Fixed: AuthListener tidak lagi tampilkan toast "session expired" saat intentional logout — menggunakan sessionStorage flag untuk membedakan intentional logout vs session expiry. (4) Fixed: callback route validasi ?next= harus dimulai dengan "/" untuk keamanan. Added 3.3.0 Auth Flow Overview dengan visual flow diagram untuk login, logout, dan session expiry. | Rafael Cahya |
+| 1.3 | 2026-05-03 | Auth UI/UX overhaul berdasarkan frontend + UI/UX agent review. (1) Login page: tambah app identity (icon + "Personal Management" di atas Card); Google button sekarang ikut Google branding guidelines (bg putih, SVG 4-warna, label "Sign in with Google"); copy text diperbarui seluruhnya. (2) LogoutButton: default size="sm", warna neutral (bukan merah), label "Sign out". (3) Baru: UserMenu component di landing page — menampilkan avatar Google user + email di DropdownMenu dengan opsi Sign out. (4) Landing page: CTA buttons diubah ke "Go to Trading" / "Go to Inventory"; card descriptions diperbarui. (5) Double toast session expiry dihilangkan — toast hanya dari login page via ?reason= param. Updated 3.3.1, 3.3.3, 3.3.4 di PRD. PRD maintenance: header version diupdate ke 1.3; semua [DEPRECATED] diberi tag versi (v1.1); flow diagrams dan error messages table diselaraskan dengan implementasi aktual (SESSION EXPIRY FLOW: hapus toast dari AuthListener, update copy text; LOGIN FLOW: "Sign in with Google"; LOGOUT FLOW: "Sign out" + UserMenu). | Rafael Cahya |

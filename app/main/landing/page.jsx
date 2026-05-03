@@ -8,7 +8,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { requireAuth } from "@/lib/auth/utils";
-import { LogoutButton } from "../../login/components/Logout";
+import { UserMenu } from "../../login/components/UserMenu";
 import { TrendingUp, Package } from "lucide-react";
 
 export default async function LandingPage() {
@@ -17,7 +17,7 @@ export default async function LandingPage() {
     return (
         <div className="min-h-screen flex flex-col">
             <div className="absolute top-4 right-4 md:top-6 md:right-6">
-                <LogoutButton />
+                <UserMenu user={user} />
             </div>
 
             <div className="flex-1 flex items-center justify-center p-4 -mt-[12.5vh]">
@@ -52,8 +52,8 @@ export default async function LandingPage() {
 
                                 <CardTitle>Trade Management</CardTitle>
                                 <CardDescription>
-                                    Why trades win/lose. Fees, margins,
-                                    FCA/E-IPO patterns. Data drives profit.
+                                    Analyze your trades, track fees, and
+                                    understand what&apos;s working.
                                 </CardDescription>
                             </CardHeader>
                             <CardFooter className="relative">
@@ -64,7 +64,7 @@ export default async function LandingPage() {
                                     className="w-full"
                                 >
                                     <Button className="w-full">
-                                        Launch Trading Analytics
+                                        Go to Trading
                                     </Button>
                                 </Link>
                             </CardFooter>
@@ -83,9 +83,8 @@ export default async function LandingPage() {
 
                                 <CardTitle>Inventory Management</CardTitle>
                                 <CardDescription>
-                                    Predict demand before it happens. Your
-                                    inventory works smarter, so you don't have
-                                    to.
+                                    Track stock levels, monitor movement, and
+                                    get ahead of demand.
                                 </CardDescription>
                             </CardHeader>
                             <CardFooter className="relative">
@@ -96,7 +95,7 @@ export default async function LandingPage() {
                                     className="w-full"
                                 >
                                     <Button className="w-full">
-                                        Master Inventory Control
+                                        Go to Inventory
                                     </Button>
                                 </Link>
                             </CardFooter>

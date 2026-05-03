@@ -1,29 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LogOut, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export function LogoutButton() {
+export function LogoutButton({ size = "sm" }) {
     const router = useRouter();
-    const supabase = createClient();
     const [loading, setLoading] = useState(false);
 
     const handleLogout = async () => {
         setLoading(true);
-        const { error } = await supabase.auth.signOut();
+        sessionStorage.setItem("intentional_logout", "true");
 
-        if (error) {
-            toast.error("Failed to logout");
+        try {
+            const res = await fetch("/api/auth/logout", { method: "POST" });
+            if (!res.ok) throw new Error("Logout failed");
+            router.push("/login");
+            router.refresh();
+        } catch {
+            sessionStorage.removeItem("intentional_logout");
+            toast.error("Couldn't sign you out — please try again.");
             setLoading(false);
-            return;
         }
-
-        router.push("/login");
-        router.refresh();
     };
 
     return (
@@ -32,15 +32,16 @@ export function LogoutButton() {
             onClick={handleLogout}
             disabled={loading}
             variant="outline"
-            className="border-red-100 text-red-500 hover:bg-red-100 hover:text-red-500"
-            aria-label="Logout from application"
+            size={size}
+            className="border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700 gap-2"
+            aria-label="Sign out from application"
         >
             {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
             ) : (
-                <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
+                <LogOut className="h-4 w-4" aria-hidden="true" />
             )}
-            {loading ? "Logging out..." : "Logout"}
+            {loading ? "Signing out..." : "Sign out"}
         </Button>
     );
 }

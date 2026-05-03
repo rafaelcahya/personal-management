@@ -69,7 +69,9 @@ export async function middleware(request) {
                 { status: 401 },
             );
         }
-        return NextResponse.redirect(new URL("/login", request.url));
+        const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("next", path);
+        return NextResponse.redirect(loginUrl);
     }
 
     if (user && (path === "/login" || path === "/")) {

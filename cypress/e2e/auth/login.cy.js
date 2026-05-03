@@ -312,7 +312,7 @@ describe("Login Page - Mobile Interactions", () => {
     });
 
     it("should display Google login button", () => {
-        cy.contains("Continue with Google").should("be.visible");
+        cy.contains("Sign in with Google").should("be.visible");
         cy.get("#googleSignInBtn_loginPage").should("not.be.disabled");
     });
 
@@ -588,5 +588,93 @@ describe("Login - Session Persistence - Tablet Interactions", () => {
 
         cy.url().should("include", "/login");
         cy.get("#loginPage").should("be.visible");
+    });
+});
+
+// ------------------------------------------------------------
+// LOGIN PAGE — APP IDENTITY & BRANDING
+// ------------------------------------------------------------
+describe("Login Page - App Identity & Google Branding - Desktop", () => {
+    beforeEach(() => {
+        cy.viewport(1920, 1080);
+        cy.visit("/login");
+    });
+
+    it("should display app name 'Personal Management'", () => {
+        cy.contains("Personal Management").should("be.visible");
+    });
+
+    it("should show Google button with correct label 'Sign in with Google'", () => {
+        cy.get("#googleSignInBtn_loginPage")
+            .should("be.visible")
+            .and("contain.text", "Sign in with Google");
+    });
+
+    it("should have aria-label 'Sign in with Google' on Google button", () => {
+        cy.get("#googleSignInBtn_loginPage").should(
+            "have.attr",
+            "aria-label",
+            "Sign in with Google"
+        );
+    });
+
+    it("should have Google SVG icon with multiple colored paths", () => {
+        cy.get("#googleSignInBtn_loginPage svg path").should("have.length.gte", 4);
+    });
+});
+
+describe("Login Page - App Identity & Google Branding - Mobile", () => {
+    beforeEach(() => {
+        cy.viewport("iphone-x");
+        cy.visit("/login");
+    });
+
+    it("should display app name on mobile", () => {
+        cy.contains("Personal Management").should("be.visible");
+    });
+
+    it("should show correct Google button label on mobile", () => {
+        cy.get("#googleSignInBtn_loginPage").should("contain.text", "Sign in with Google");
+    });
+});
+
+// ------------------------------------------------------------
+// MIDDLEWARE — ?next= PARAM PRESERVATION
+// ------------------------------------------------------------
+describe("Login - Middleware ?next= Param Preservation - Desktop", () => {
+    beforeEach(() => {
+        cy.viewport(1920, 1080);
+        cy.clearAllCookies();
+    });
+
+    it("should preserve ?next= param when redirected from inventory page", () => {
+        cy.visit("/main/inventory/product-list", { failOnStatusCode: false });
+        cy.url().should("include", "/login");
+        cy.url().should("include", "next=");
+        cy.url().should("include", "inventory");
+    });
+
+    it("should preserve ?next= param when redirected from trading page", () => {
+        cy.visit("/main/trading/dashboard", { failOnStatusCode: false });
+        cy.url().should("include", "/login");
+        cy.url().should("include", "next=");
+        cy.url().should("include", "trading");
+    });
+
+    it("should preserve ?next= param when redirected from landing page", () => {
+        cy.visit("/main/landing", { failOnStatusCode: false });
+        cy.url().should("include", "/login");
+        cy.url().should("include", "next=");
+    });
+
+    it("should return 401 JSON for unauthenticated API calls (not redirect)", () => {
+        cy.request({
+            method: "GET",
+            url: "/api/user",
+            failOnStatusCode: false,
+        }).then((res) => {
+            expect(res.status).to.eq(401);
+            expect(res.body).to.have.property("error", "UNAUTHORIZED");
+        });
     });
 });
