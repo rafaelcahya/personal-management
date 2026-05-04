@@ -6,19 +6,21 @@
  * — tidak perlu auth, ditest terpisah untuk memastikan tetap accessible.
  */
 
+import { TRADE_ENDPOINTS } from "../../fixtures/api-endpoints.js";
+
 const FAKE_ID = "00000000-0000-0000-0000-000000000000";
 
 // ─── DASHBOARD ───────────────────────────────────────────────────────────────
 
 describe("API Auth Guard — Trade: Dashboard", () => {
-    it("GET /api/trade/v1/dashboard/metrics — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/dashboard/metrics").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.DASHBOARD_METRICS} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.DASHBOARD_METRICS).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/dashboard/quick-view — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/dashboard/quick-view").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.DASHBOARD_QUICK_VIEW} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.DASHBOARD_QUICK_VIEW).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
@@ -27,48 +29,48 @@ describe("API Auth Guard — Trade: Dashboard", () => {
 // ─── TRADE ───────────────────────────────────────────────────────────────────
 
 describe("API Auth Guard — Trade: Trade", () => {
-    it("GET /api/trade/v1/trade/list — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/trade/list").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.TRADE_LIST} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.TRADE_LIST).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("POST /api/trade/v1/trade/create — should return 401", () => {
-        cy.apiRequestNoAuth("POST", "/api/trade/v1/trade/create", {
+    it(`POST ${TRADE_ENDPOINTS.TRADE_CREATE} — should return 401`, () => {
+        cy.apiRequestNoAuth("POST", TRADE_ENDPOINTS.TRADE_CREATE, {
             body: { stock: "BBCA" },
         }).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/trade/[id] — should return 401", () => {
-        cy.apiRequestNoAuth("GET", `/api/trade/v1/trade/${FAKE_ID}`).then((res) => {
+    it(`GET /api/trade/v1/trade/[id] — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.TRADE_DETAIL(FAKE_ID)).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("PUT /api/trade/v1/trade/update/[id] — should return 401", () => {
-        cy.apiRequestNoAuth("PUT", `/api/trade/v1/trade/update/${FAKE_ID}`, {
+    it(`PUT /api/trade/v1/trade/update/[id] — should return 401`, () => {
+        cy.apiRequestNoAuth("PUT", TRADE_ENDPOINTS.TRADE_UPDATE(FAKE_ID), {
             body: { stock: "BBCA" },
         }).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("DELETE /api/trade/v1/trade/delete/[id] — should return 401", () => {
-        cy.apiRequestNoAuth("DELETE", `/api/trade/v1/trade/delete/${FAKE_ID}`).then((res) => {
+    it(`DELETE /api/trade/v1/trade/delete/[id] — should return 401`, () => {
+        cy.apiRequestNoAuth("DELETE", TRADE_ENDPOINTS.TRADE_DELETE(FAKE_ID)).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/trade/summary — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/trade/summary").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.TRADE_SUMMARY} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.TRADE_SUMMARY).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/trade/options/[type] — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/trade/options/buy-reason").then((res) => {
+    it(`GET /api/trade/v1/trade/options/[type] — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.TRADE_OPTIONS("buy-reason")).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
@@ -77,48 +79,48 @@ describe("API Auth Guard — Trade: Trade", () => {
 // ─── EVENT ───────────────────────────────────────────────────────────────────
 
 describe("API Auth Guard — Trade: Event", () => {
-    it("GET /api/trade/v1/event/list — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/event/list").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.EVENT_LIST} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.EVENT_LIST).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("POST /api/trade/v1/event/create — should return 401", () => {
-        cy.apiRequestNoAuth("POST", "/api/trade/v1/event/create", {
+    it(`POST ${TRADE_ENDPOINTS.EVENT_CREATE} — should return 401`, () => {
+        cy.apiRequestNoAuth("POST", TRADE_ENDPOINTS.EVENT_CREATE, {
             body: { name: "test" },
         }).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/event/[id] — should return 401", () => {
-        cy.apiRequestNoAuth("GET", `/api/trade/v1/event/${FAKE_ID}`).then((res) => {
+    it(`GET /api/trade/v1/event/[id] — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.EVENT_DETAIL(FAKE_ID)).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("PUT /api/trade/v1/event/update/[id] — should return 401", () => {
-        cy.apiRequestNoAuth("PUT", `/api/trade/v1/event/update/${FAKE_ID}`, {
+    it(`PUT /api/trade/v1/event/update/[id] — should return 401`, () => {
+        cy.apiRequestNoAuth("PUT", TRADE_ENDPOINTS.EVENT_UPDATE(FAKE_ID), {
             body: { name: "test" },
         }).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("DELETE /api/trade/v1/event/delete/[id] — should return 401", () => {
-        cy.apiRequestNoAuth("DELETE", `/api/trade/v1/event/delete/${FAKE_ID}`).then((res) => {
+    it(`DELETE /api/trade/v1/event/delete/[id] — should return 401`, () => {
+        cy.apiRequestNoAuth("DELETE", TRADE_ENDPOINTS.EVENT_DELETE(FAKE_ID)).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("PATCH /api/trade/v1/event/favorite/[id] — should return 401", () => {
-        cy.apiRequestNoAuth("PATCH", `/api/trade/v1/event/favorite/${FAKE_ID}`).then((res) => {
+    it(`PATCH /api/trade/v1/event/favorite/[id] — should return 401`, () => {
+        cy.apiRequestNoAuth("PATCH", TRADE_ENDPOINTS.EVENT_FAVORITE(FAKE_ID)).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/event/summary — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/event/summary").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.EVENT_SUMMARY} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.EVENT_SUMMARY).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
@@ -127,42 +129,42 @@ describe("API Auth Guard — Trade: Event", () => {
 // ─── FEE ─────────────────────────────────────────────────────────────────────
 
 describe("API Auth Guard — Trade: Fee", () => {
-    it("GET /api/trade/v1/fee/list — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/fee/list").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.FEE_LIST} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.FEE_LIST).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("POST /api/trade/v1/fee/create — should return 401", () => {
-        cy.apiRequestNoAuth("POST", "/api/trade/v1/fee/create", {
+    it(`POST ${TRADE_ENDPOINTS.FEE_CREATE} — should return 401`, () => {
+        cy.apiRequestNoAuth("POST", TRADE_ENDPOINTS.FEE_CREATE, {
             body: { name: "test" },
         }).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/fee/[id] — should return 401", () => {
-        cy.apiRequestNoAuth("GET", `/api/trade/v1/fee/${FAKE_ID}`).then((res) => {
+    it(`GET /api/trade/v1/fee/[id] — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.FEE_DETAIL(FAKE_ID)).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("PUT /api/trade/v1/fee/update/[id] — should return 401", () => {
-        cy.apiRequestNoAuth("PUT", `/api/trade/v1/fee/update/${FAKE_ID}`, {
+    it(`PUT /api/trade/v1/fee/update/[id] — should return 401`, () => {
+        cy.apiRequestNoAuth("PUT", TRADE_ENDPOINTS.FEE_UPDATE(FAKE_ID), {
             body: { name: "test" },
         }).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("DELETE /api/trade/v1/fee/delete/[id] — should return 401", () => {
-        cy.apiRequestNoAuth("DELETE", `/api/trade/v1/fee/delete/${FAKE_ID}`).then((res) => {
+    it(`DELETE /api/trade/v1/fee/delete/[id] — should return 401`, () => {
+        cy.apiRequestNoAuth("DELETE", TRADE_ENDPOINTS.FEE_DELETE(FAKE_ID)).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/fee/summary — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/fee/summary").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.FEE_SUMMARY} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.FEE_SUMMARY).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
@@ -171,14 +173,14 @@ describe("API Auth Guard — Trade: Fee", () => {
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
 
 describe("API Auth Guard — Trade: Settings", () => {
-    it("GET /api/trade/v1/settings — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/settings").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.SETTINGS} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.SETTINGS).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("PUT /api/trade/v1/settings/update — should return 401", () => {
-        cy.apiRequestNoAuth("PUT", "/api/trade/v1/settings/update", {
+    it(`PUT ${TRADE_ENDPOINTS.SETTINGS_UPDATE} — should return 401`, () => {
+        cy.apiRequestNoAuth("PUT", TRADE_ENDPOINTS.SETTINGS_UPDATE, {
             body: { initial_margin: 1000 },
         }).then((res) => {
             expect(res.status).to.eq(401);
@@ -195,32 +197,32 @@ describe("API Auth Guard — Trade: Options", () => {
      * Semua options routes wajib auth karena hanya dipakai di form yang sudah login.
      */
 
-    it("GET /api/trade/v1/options/buy-reason — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/options/buy-reason").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.OPTIONS_BUY_REASON} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.OPTIONS_BUY_REASON).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/options/sell-reason — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/options/sell-reason").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.OPTIONS_SELL_REASON} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.OPTIONS_SELL_REASON).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/options/entry-session — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/options/entry-session").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.OPTIONS_ENTRY_SESSION} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.OPTIONS_ENTRY_SESSION).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/options/entry-occasion — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/options/entry-occasion").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.OPTIONS_ENTRY_OCCASION} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.OPTIONS_ENTRY_OCCASION).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
 
-    it("GET /api/trade/v1/options/stock-type — should return 401", () => {
-        cy.apiRequestNoAuth("GET", "/api/trade/v1/options/stock-type").then((res) => {
+    it(`GET ${TRADE_ENDPOINTS.OPTIONS_STOCK_TYPE} — should return 401`, () => {
+        cy.apiRequestNoAuth("GET", TRADE_ENDPOINTS.OPTIONS_STOCK_TYPE).then((res) => {
             expect(res.status).to.eq(401);
         });
     });
