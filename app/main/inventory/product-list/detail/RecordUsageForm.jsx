@@ -25,6 +25,7 @@ import { adjustStock } from "@/lib/api/product";
 
 function RecordUsageForm({ product, onUpdated, onClose }) {
     const [serverError, setServerError] = useState(null);
+    const [datePickerOpen, setDatePickerOpen] = useState(false);
 
     const form = useForm({
         defaultValues: {
@@ -119,7 +120,7 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
                             <FormLabel className="font-medium">
                                 Start Usage Date
                             </FormLabel>
-                            <Popover>
+                            <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                                 <PopoverTrigger asChild>
                                     <Button
                                         type="button"
@@ -140,11 +141,17 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
                                 <PopoverContent
                                     className="w-auto p-0"
                                     align="start"
+                                    onInteractOutside={(e) => e.preventDefault()}
+                                    onPointerDownOutside={(e) => e.preventDefault()}
+                                    onFocusOutside={(e) => e.preventDefault()}
                                 >
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
-                                        onSelect={field.onChange}
+                                        onSelect={(date) => {
+                                            field.onChange(date);
+                                            setDatePickerOpen(false);
+                                        }}
                                         initialFocus
                                     />
                                 </PopoverContent>

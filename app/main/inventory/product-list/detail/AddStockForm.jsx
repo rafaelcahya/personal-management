@@ -37,6 +37,7 @@ import { createQuantityUpdate } from "@/lib/api/productQuantity";
 
 export default function AddStockForm({ product, onAdded }) {
     const [open, setOpen] = useState(false);
+    const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState(null);
 
@@ -101,6 +102,11 @@ export default function AddStockForm({ product, onAdded }) {
             <DialogContent
                 className="sm:max-w-md flex flex-col max-h-[90vh]"
                 id="addStockPopup"
+                onPointerDownOutside={(e) => {
+                    if (e.target.closest("[data-radix-popper-content-wrapper]")) {
+                        e.preventDefault();
+                    }
+                }}
             >
                 <DialogHeader className="text-left shrink-0">
                     <DialogTitle>📦 Add More Stock</DialogTitle>
@@ -193,7 +199,7 @@ export default function AddStockForm({ product, onAdded }) {
                                         <FormLabel className="font-medium">
                                             Purchase Date
                                         </FormLabel>
-                                        <Popover>
+                                        <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                                             <PopoverTrigger asChild>
                                                 <Button
                                                     type="button"
@@ -218,11 +224,17 @@ export default function AddStockForm({ product, onAdded }) {
                                             <PopoverContent
                                                 className="w-auto p-0"
                                                 align="start"
+                                                onInteractOutside={(e) => e.preventDefault()}
+                                                onPointerDownOutside={(e) => e.preventDefault()}
+                                                onFocusOutside={(e) => e.preventDefault()}
                                             >
                                                 <Calendar
                                                     mode="single"
                                                     selected={field.value}
-                                                    onSelect={field.onChange}
+                                                    onSelect={(date) => {
+                                                        field.onChange(date);
+                                                        setDatePickerOpen(false);
+                                                    }}
                                                     initialFocus
                                                 />
                                             </PopoverContent>

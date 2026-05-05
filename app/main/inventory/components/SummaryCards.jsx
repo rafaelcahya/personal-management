@@ -1,0 +1,99 @@
+import { Card, CardContent } from "@/components/ui/card";
+import {
+    PackageIcon,
+    CheckCircle2Icon,
+    XCircleIcon,
+    BoxesIcon,
+    StarIcon,
+    TrendingUpIcon,
+} from "lucide-react";
+
+export default function SummaryCards({ summary, loading }) {
+    const stats = [
+        {
+            title: "Total Products",
+            value: summary.totalProducts,
+            icon: PackageIcon,
+            color: "text-violet-600",
+            bgColor: "bg-violet-50",
+        },
+        {
+            title: "Active",
+            value: summary.activeProducts,
+            icon: CheckCircle2Icon,
+            color: "text-green-600",
+            bgColor: "bg-green-50",
+        },
+        {
+            title: "Inactive",
+            value: summary.inactiveProducts,
+            icon: XCircleIcon,
+            color: "text-red-500",
+            bgColor: "bg-red-50",
+        },
+        {
+            title: "Total Stock",
+            value: summary.totalQuantity,
+            icon: BoxesIcon,
+            color: "text-blue-600",
+            bgColor: "bg-blue-50",
+        },
+        {
+            title: "In Use",
+            value: summary.totalUsageQuantity,
+            icon: TrendingUpIcon,
+            color: "text-orange-600",
+            bgColor: "bg-orange-50",
+        },
+        {
+            title: "Favorites",
+            value: summary.favoriteProducts,
+            icon: StarIcon,
+            color: "text-yellow-500",
+            bgColor: "bg-yellow-50",
+        },
+    ];
+
+    if (loading) {
+        return (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {[...Array(6)].map((_, i) => (
+                    <Card key={i} className="animate-pulse border-slate-200">
+                        <CardContent className="px-4 py-4">
+                            <div className="h-3 bg-slate-200 rounded w-20 mb-3"></div>
+                            <div className="h-7 bg-slate-200 rounded w-10"></div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        );
+    }
+
+    return (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {stats.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                    <Card
+                        key={index}
+                        className="border border-slate-200/70 shadow-sm shadow-slate-100"
+                    >
+                        <CardContent className="px-4 py-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-xs font-medium text-slate-500">
+                                    {stat.title}
+                                </p>
+                                <div className={`p-1.5 rounded-lg ${stat.bgColor}`}>
+                                    <Icon className={`size-3.5 ${stat.color}`} />
+                                </div>
+                            </div>
+                            <p className="text-2xl font-semibold text-slate-800">
+                                {stat.value ?? 0}
+                            </p>
+                        </CardContent>
+                    </Card>
+                );
+            })}
+        </div>
+    );
+}

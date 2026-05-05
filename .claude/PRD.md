@@ -1,8 +1,8 @@
 # Product Requirements Document (PRD)
 ## Personal Management App
 
-**Version:** 1.3  
-**Last Updated:** 2026-05-03  
+**Version:** 1.4  
+**Last Updated:** 2026-05-05  
 **Owner:** Rafael Cahya  
 **Stack:** Next.js 15 App Router · Supabase (PostgreSQL) · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6)
 
@@ -38,6 +38,361 @@ Aplikasi ini dilengkapi dengan **AI Chat** berbasis Claude untuk interaksi natur
 ### 3.1 Inventory Management Module
 
 **Tujuan:** Melacak stok produk rumah tangga, penggunaan, dan riwayat konsumsi.
+
+---
+
+#### 3.1.0 Inventory Dashboard (`/main/inventory`)
+
+**Deskripsi:** Halaman utama modul Inventory yang memberikan gambaran menyeluruh kondisi stok dan analitik konsumsi produk. Dashboard terdiri dari 6 summary cards dan 6 section analitik yang dirancang untuk membantu user membuat keputusan restock yang tepat waktu dan berbasis data.
+
+**Route:** `/main/inventory`
+**Entry Point:** `app/main/inventory/page.jsx`
+**Komponen Utama:** `app/main/inventory/InventoryDashboard.jsx`
+
+**User Stories:**
+> As a user, I want to see a high-level overview of my inventory, so that I can quickly understand the current state of my stock without navigating to individual product pages.
+
+> As a user, I want to be alerted when products are running low, so that I can restock before they run out.
+
+> As a user, I want to know how much I spend per product and per category, so that I can make smarter purchasing decisions.
+
+> As a user, I want to know how long my current stock will last, so that I can plan my restocking schedule in advance.
+
+---
+
+##### Summary Cards (6 Cards)
+
+**Deskripsi:** 6 card ringkasan yang memberikan overview cepat kondisi inventory saat ini.
+
+| Card | Kalkulasi | Sumber Data |
+|------|-----------|-------------|
+| Total Products | Jumlah semua produk (active + inactive, tidak deleted) | `product_list` |
+| Active | Produk dengan `product_status = 'active'` | `product_list` |
+| Inactive | Produk dengan `product_status = 'inactive'` | `product_list` |
+| Total Stock | SUM(`quantity`) semua produk | `product_list` |
+| In Use | SUM(`usage_quantity`) semua produk | `product_list` |
+| Favorites | Produk dengan `is_favorite = true` | `product_list` |
+
+**Layout:** Responsive — 2 kolom (mobile) → 3 kolom (tablet) → 6 kolom (desktop)
+
+**Acceptance Criteria:**
+```
+GIVEN saya membuka halaman /main/inventory
+WHEN data berhasil dimuat
+THEN 6 summary cards ditampilkan dengan angka yang sesuai kondisi inventory saat ini
+
+GIVEN data sedang dimuat
+WHEN API belum merespons
+THEN card menampilkan skeleton/pulse loading state
+```
+
+**API:** `GET /api/inventory/v1/product/summary`
+
+---
+
+##### Section 1: Cost Per Use
+
+**Deskripsi:** Menampilkan biaya per unit pemakaian setiap produk untuk membantu user mengevaluasi nilai ekonomis setiap produk dan membuat keputusan pembelian yang lebih rasional.
+
+**Kalkulasi:**
+- `total_spent` = SUM(`price`) dari `product_quantity` per produk
+- `total_units` = `quantity` saat ini + jumlah unit yang pernah dipakai (dari `product_history.depleted_quantity`)
+- `cost_per_use` = `total_spent` / `total_units`
+
+**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Total Spent, Total Units, Cost/Use, Status
+
+**Behavior:**
+- Default: menampilkan top 5 produk dengan cost per use tertinggi
+- View All: modal `max-w-6xl`, menampilkan semua produk sorted by `cost_per_use DESC`
+- Empty state: "No products yet."
+
+**Acceptance Criteria:**
+```
+GIVEN ada produk dengan data pembelian (product_quantity)
+WHEN section Cost Per Use dimuat
+THEN ditampilkan maksimal 5 produk dengan cost per use tertinggi, diurutkan descending
+
+GIVEN user klik "View All"
+WHEN modal dibuka
+THEN semua produk ditampilkan sorted by cost per use DESC
+
+GIVEN tidak ada produk yang memiliki data pembelian
+WHEN section dimuat
+THEN tampilkan empty state "No products yet."
+```
+
+---
+
+##### Section 2: Low Stock Alert
+
+**Deskripsi:** Peringatan dini untuk produk yang hampir habis agar user dapat melakukan restock sebelum kehabisan.
+
+**Trigger:** Produk dengan `quantity ≤ 2` (semua status, termasuk inactive)
+
+**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Status, Stock
+
+**Stock Badge:**
+| Kondisi | Badge |
+|---------|-------|
+| `quantity === 0` | Badge merah "Out of Stock" |
+| `quantity ≤ 2` | Badge orange "Low: X left" |
+
+**Behavior:**
+- Default: top 5 produk sorted by `quantity ASC` (paling kritis di atas)
+- View All: modal `max-w-2xl`
+- Empty state: "All good! Stock levels are healthy 🎉"
+
+**Acceptance Criteria:**
+```
+GIVEN ada produk dengan quantity ≤ 2
+WHEN section Low Stock Alert dimuat
+THEN produk tersebut ditampilkan dengan badge yang sesuai (merah jika 0, orange jika ≤ 2)
+
+GIVEN ada produk dengan quantity = 0
+WHEN section dimuat
+THEN produk tersebut muncul paling atas dengan badge "Out of Stock" berwarna merah
+
+GIVEN semua produk memiliki quantity > 2
+WHEN section dimuat
+THEN tampilkan empty state "All good! Stock levels are healthy 🎉"
+```
+
+---
+
+##### Section 3: Neglected Products
+
+**Deskripsi:** Mengingatkan user tentang produk active yang sudah lama tidak digunakan agar tidak kadaluarsa atau terbuang percuma.
+
+**Trigger:** Produk dengan `product_status = 'active'` DAN (`usage_date IS NULL` ATAU `usage_date < NOW() - 30 hari`)
+
+**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Last Used, Days Since Used
+
+**Format:**
+- Last Used: format "dd MMM yyyy" atau italic "Never used" jika `usage_date` null
+- Days Since Used badge:
+  | Kondisi | Badge |
+  |---------|-------|
+  | `> 90 hari` | Badge merah |
+  | `> 60 hari` | Badge orange |
+  | `30–60 hari` | Badge kuning |
+  | Format | `Xd ago` |
+
+**Behavior:**
+- Sort: `usage_date ASC` — produk dengan `usage_date NULL` paling atas
+- Tidak ada View All — semua data ditampilkan
+- Empty state: "No neglected products — you're on top of it! 👏"
+
+**Acceptance Criteria:**
+```
+GIVEN ada produk active yang usage_date-nya null
+WHEN section Neglected Products dimuat
+THEN produk tersebut muncul paling atas dengan label "Never used" (italic)
+
+GIVEN ada produk active yang usage_date-nya lebih dari 90 hari lalu
+WHEN section dimuat
+THEN badge "Days Since Used" berwarna merah
+
+GIVEN semua produk active digunakan dalam 30 hari terakhir
+WHEN section dimuat
+THEN tampilkan empty state "No neglected products — you're on top of it! 👏"
+```
+
+---
+
+##### Section 4: Monthly Spend by Type
+
+**Deskripsi:** Membantu user memahami pola pengeluaran per kategori produk per bulan untuk perencanaan budget yang lebih baik.
+
+**Data:** Join `product_quantity` (purchase records) dengan `product_list` (untuk `type`)
+
+**Periode:** 6 bulan terakhir
+
+**Tampilan:** Grouped list by month — tiap bulan punya header, diikuti baris `type name | total rupiah`
+
+**Behavior:**
+- Default: menampilkan 5 data entries pertama
+- View All: modal `max-w-md`, menampilkan semua data 6 bulan
+- Sort: Month DESC, `total_spent DESC` dalam satu bulan
+- Empty state: "No purchase data yet 📋"
+- Format angka: Rupiah (Rp X.XXX.XXX)
+
+**Acceptance Criteria:**
+```
+GIVEN ada data pembelian dalam 6 bulan terakhir
+WHEN section Monthly Spend by Type dimuat
+THEN data ditampilkan grouped per bulan, diurutkan dari bulan terbaru
+
+GIVEN user klik "View All"
+WHEN modal dibuka
+THEN semua data 6 bulan ditampilkan, sorted by month DESC lalu total_spent DESC
+
+GIVEN tidak ada data pembelian
+WHEN section dimuat
+THEN tampilkan empty state "No purchase data yet 📋"
+```
+
+---
+
+##### Section 5: Avg Usage Duration
+
+**Deskripsi:** Menampilkan rata-rata durasi satu sesi pemakaian per produk untuk membantu user mengestimasi kapan perlu restock.
+
+**Kalkulasi:**
+- Jika produk punya ≥ 2 history records: rata-rata gap antar consecutive `start_usage_date`
+- Jika hanya 1 history record: `(NOW - start_usage_date)` dalam hari
+
+**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Avg Duration
+
+**Duration Badge:**
+| Kondisi | Badge |
+|---------|-------|
+| `< 30 hari` | Badge merah (cepat habis) |
+| `30–59 hari` | Badge kuning |
+| `≥ 60 hari` | Badge hijau (tahan lama) |
+| Format | `X days` |
+
+**Behavior:**
+- Default: top 5 produk sorted by `avg_days DESC`
+- View All: modal `max-w-2xl`, subtitle "Sorted by longest average duration"
+- Empty state: "Not enough usage data yet 📊"
+
+**Acceptance Criteria:**
+```
+GIVEN ada produk dengan ≥ 2 product_history records
+WHEN section Avg Usage Duration dimuat
+THEN avg duration dihitung dari rata-rata gap antar consecutive start_usage_date
+
+GIVEN ada produk dengan hanya 1 product_history record
+WHEN section dimuat
+THEN avg duration dihitung sebagai (NOW - start_usage_date) dalam hari
+
+GIVEN produk memiliki avg duration < 30 hari
+WHEN section dimuat
+THEN badge berwarna merah (menandakan produk cepat habis)
+
+GIVEN tidak ada produk yang memiliki data usage history
+WHEN section dimuat
+THEN tampilkan empty state "Not enough usage data yet 📊"
+```
+
+---
+
+##### Section 6: Days Until Empty
+
+**Deskripsi:** Estimasi berapa hari lagi stok produk akan habis berdasarkan historical consumption rate, membantu user menjadwalkan restock secara proaktif.
+
+**Kalkulasi:**
+- `daily_consumption` = `total_depleted_quantity` / `days_since_first_usage`
+- `days_until_empty` = `current_quantity` / `daily_consumption`
+- Hanya produk yang memiliki `quantity > 0` DAN ada history depletion
+
+**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Stock Left, Est. Days
+
+**Est. Days Badge:**
+| Kondisi | Badge |
+|---------|-------|
+| `≤ 7 hari` | Badge merah + suffix "⚠️" (kritis) |
+| `8–30 hari` | Badge orange |
+| `31–60 hari` | Badge kuning |
+| `> 60 hari` | Badge hijau |
+| Format | `Xd` atau `Xd ⚠️` |
+
+**Behavior:**
+- Default: top 5 produk sorted by `days_until_empty ASC` (paling kritis di atas)
+- View All: modal `max-w-3xl`, subtitle "Sorted by most critical first"
+- Empty state: "No consumption data to estimate from 📦"
+
+**Acceptance Criteria:**
+```
+GIVEN ada produk dengan quantity > 0 dan ada history depletion
+WHEN section Days Until Empty dimuat
+THEN estimasi hari ditampilkan dengan badge warna sesuai tingkat kekritisan
+
+GIVEN ada produk dengan days_until_empty ≤ 7
+WHEN section dimuat
+THEN badge berwarna merah dengan suffix "⚠️"
+
+GIVEN user klik "View All"
+WHEN modal dibuka
+THEN semua produk ditampilkan sorted by days_until_empty ASC dengan subtitle "Sorted by most critical first"
+
+GIVEN tidak ada produk yang memiliki data consumption history
+WHEN section dimuat
+THEN tampilkan empty state "No consumption data to estimate from 📦"
+```
+
+---
+
+##### Layout & UX
+
+**Struktur Layout:**
+- Summary Cards: 2 kolom mobile → 3 kolom tablet → 6 kolom desktop
+- Section Cost Per Use: full width
+- Section 2–6: 2-column grid (`md:grid-cols-2`), 1 kolom di mobile
+
+**Loading State:** Skeleton rows / pulse animation di semua section selama data dimuat
+
+**Scrollable:** Layout menggunakan `overflow-y-auto` agar dashboard dapat di-scroll
+
+**Acceptance Criteria:**
+```
+GIVEN saya membuka dashboard di perangkat mobile
+WHEN halaman dirender
+THEN summary cards tampil 2 kolom, section analitik tampil 1 kolom (full width)
+
+GIVEN saya membuka dashboard di desktop
+WHEN halaman dirender
+THEN summary cards tampil 6 kolom, section 2-6 tampil 2-column grid
+
+GIVEN API sedang memuat data
+WHEN halaman dirender
+THEN semua section menampilkan skeleton loading state
+```
+
+---
+
+##### Validasi
+
+- Dashboard hanya memuat data produk yang belum di-soft delete (`deleted_at IS NULL`)
+- Summary counts dan analytics dihitung server-side untuk konsistensi data
+- Kalkulasi `cost_per_use` hanya dilakukan jika `total_units > 0` (hindari division by zero)
+- Kalkulasi `days_until_empty` hanya dilakukan jika `daily_consumption > 0` (hindari division by zero)
+
+---
+
+##### Error States
+
+| Kondisi | Tampilan |
+|---------|----------|
+| API gagal (5xx) | Pesan error generik di level section |
+| Data kosong per section | Empty state spesifik per section |
+| Loading | Skeleton animation |
+
+---
+
+##### API Endpoints
+
+`GET /api/inventory/v1/dashboard`
+- Auth: Required
+- Deskripsi: Mengembalikan semua data yang dibutuhkan dashboard — summary cards + 6 section analitik
+- Response: `{ data: { summary, costPerUse, lowStock, neglected, monthlySpend, avgUsageDuration, daysUntilEmpty } }`
+
+`GET /api/inventory/v1/product/summary`
+- Auth: Required
+- Deskripsi: Mengembalikan summary counts (total, active, inactive, totalStock, inUse, favorites)
+- Response: `{ data: { total, active, inactive, totalStock, inUse, favorites } }`
+
+---
+
+##### Database Tables yang Digunakan
+
+| Tabel | Kolom yang Relevan | Kegunaan |
+|-------|-------------------|----------|
+| `product_list` | `id`, `user_id`, `product`, `brand`, `type`, `quantity`, `usage_quantity`, `product_status`, `is_favorite`, `usage_date`, `deleted_at` | Data produk utama |
+| `product_quantity` | `product_list_id`, `price`, `purchase_date` | Riwayat pembelian/restock untuk kalkulasi total spent dan monthly spend |
+| `product_history` | `product_list_id`, `depleted_quantity`, `start_usage_date` | Riwayat aktivasi pemakaian untuk kalkulasi avg duration dan days until empty |
+
+---
 
 #### 3.1.1 Product List (`/main/inventory/product-list`)
 
@@ -627,3 +982,4 @@ Setiap perubahan requirement harus diupdate oleh PM Agent di file ini terlebih d
 | 1.1 | 2026-05-03 | Auth module security & UX fixes — see sprint log. Updated 3.3.1 (Login: Google OAuth only, error/reason param handling, ?next= flow, Suspense); Added 3.3.3 (Logout: LogoutButton, POST /api/auth/logout); Added 3.3.4 (Session Expiry: AuthListener); Updated 3.3.2 (Callback: no_code/auth_failed redirects, ?next= preservation); Updated 3.4 (User Settings APIs: GET/PUT /api/user, POST /api/user/avatar); Updated Section 4 Auth (removed JWT, added createAdminClient pattern, added /api/auth/logout); Updated Section 2 (Google OAuth only) | Rafael Cahya |
 | 1.2 | 2026-05-03 | Auth flow bug fixes & PRD clarity update. (1) Fixed: middleware sekarang preserve ?next= param saat redirect ke /login sehingga user kembali ke halaman tujuan setelah login. (2) Fixed: LogoutButton sekarang panggil POST /api/auth/logout (server-side canonical) bukan client-side signOut langsung — session di-clear di server sebelum redirect. (3) Fixed: AuthListener tidak lagi tampilkan toast "session expired" saat intentional logout — menggunakan sessionStorage flag untuk membedakan intentional logout vs session expiry. (4) Fixed: callback route validasi ?next= harus dimulai dengan "/" untuk keamanan. Added 3.3.0 Auth Flow Overview dengan visual flow diagram untuk login, logout, dan session expiry. | Rafael Cahya |
 | 1.3 | 2026-05-03 | Auth UI/UX overhaul berdasarkan frontend + UI/UX agent review. (1) Login page: tambah app identity (icon + "Personal Management" di atas Card); Google button sekarang ikut Google branding guidelines (bg putih, SVG 4-warna, label "Sign in with Google"); copy text diperbarui seluruhnya. (2) LogoutButton: default size="sm", warna neutral (bukan merah), label "Sign out". (3) Baru: UserMenu component di landing page — menampilkan avatar Google user + email di DropdownMenu dengan opsi Sign out. (4) Landing page: CTA buttons diubah ke "Go to Trading" / "Go to Inventory"; card descriptions diperbarui. (5) Double toast session expiry dihilangkan — toast hanya dari login page via ?reason= param. Updated 3.3.1, 3.3.3, 3.3.4 di PRD. PRD maintenance: header version diupdate ke 1.3; semua [DEPRECATED] diberi tag versi (v1.1); flow diagrams dan error messages table diselaraskan dengan implementasi aktual (SESSION EXPIRY FLOW: hapus toast dari AuthListener, update copy text; LOGIN FLOW: "Sign in with Google"; LOGOUT FLOW: "Sign out" + UserMenu). | Rafael Cahya |
+| 1.4 | 2026-05-05 | Added 3.1.0 Inventory Dashboard — 6 summary cards (Total Products, Active, Inactive, Total Stock, In Use, Favorites) + 6 analytics sections (Cost Per Use, Low Stock Alert, Neglected Products, Monthly Spend by Type, Avg Usage Duration, Days Until Empty). Layout 2-column grid responsive (mobile 1-col → desktop 2-col untuk section analitik, 6-col untuk summary cards). API: GET /api/inventory/v1/dashboard dan GET /api/inventory/v1/product/summary. Database tables: product_list, product_quantity, product_history. | Rafael Cahya |

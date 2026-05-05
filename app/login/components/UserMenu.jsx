@@ -47,7 +47,7 @@ export function UserMenu({ user }) {
                 <Button
                     id="userMenuTrigger_landingPage"
                     variant="ghost"
-                    className="gap-2 h-9 px-2"
+                    className="gap-2 h-9 p-6 focus-visible:ring-0 hover:bg-violet-50"
                     disabled={loading}
                     aria-label="User menu"
                 >
@@ -80,9 +80,9 @@ export function UserMenu({ user }) {
                     id="userMenuSignOut_landingPage"
                     onClick={handleLogout}
                     disabled={loading}
-                    className="text-red-500 focus:text-red-500 focus:bg-red-50 cursor-pointer gap-2"
+                    className="text-red-500 focus:text-red-500 focus:bg-red-50 cursor-pointer gap-2 hover:outline-none"
                 >
-                    <LogOut className="h-4 w-4" aria-hidden="true" />
+                    <LogOut className="h-4 w-4 text-red-400" aria-hidden="true" />
                     {loading ? "Signing out..." : "Sign out"}
                 </DropdownMenuItem>
             </DropdownMenuContent>

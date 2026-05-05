@@ -48,7 +48,14 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
 
     return (
         <Dialog open={!!product} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-lg md:max-w-3xl lg:max-w-4xl flex flex-col max-h-[90vh]">
+            <DialogContent
+                    className="sm:max-w-lg md:max-w-3xl lg:max-w-4xl flex flex-col max-h-[90vh]"
+                    onPointerDownOutside={(e) => {
+                        if (e.target.closest("[data-radix-popper-content-wrapper]")) {
+                            e.preventDefault();
+                        }
+                    }}
+                >
                 <DialogHeader className="text-left shrink-0">
                     <DialogTitle>📦 Track Product Usage</DialogTitle>
                     <DialogDescription className="text-slate-foreground">
