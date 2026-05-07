@@ -137,9 +137,9 @@ Before starting any task, execute these steps in order:
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check for pending API contracts from Backend or design specs from UI/UX
 5. Check `cypress/fixtures/app-constants.json` — confirm testIds for components you're about to build are registered
 6. Read Next.js skills — always read these before writing any component or page:
-   - `.agents/skills/next-best-practices/rsc-boundaries.md` — Server/Client component rules, prop serialization
-   - `.agents/skills/next-best-practices/async-patterns.md` — async params/cookies/headers in Next.js 15
-   - `.agents/skills/next-best-practices/error-handling.md` — error boundaries, redirect() must NOT be in try-catch
+   - `.claude/skills/next-best-practices/rsc-boundaries.md` — Server/Client component rules, prop serialization
+   - `.claude/skills/next-best-practices/async-patterns.md` — async params/cookies/headers in Next.js 15
+   - `.claude/skills/next-best-practices/error-handling.md` — error boundaries, redirect() must NOT be in try-catch
    - Read these only when relevant to the current task:
      - `suspense-boundaries.md` — when using `useSearchParams` or dynamic routes
      - `hydration-error.md` — when debugging render/hydration issues

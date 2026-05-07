@@ -94,9 +94,9 @@ Before starting any task, execute these steps in order:
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check for pending endpoint gap requests from Tester
 5. Check `cypress/fixtures/app-constants.json` — register new endpoints after creating them
 6. Read Next.js skills — always read these before writing any route handler or service:
-   - `.agents/skills/next-best-practices/route-handlers.md` — route handler rules, when to use vs Server Actions
-   - `.agents/skills/next-best-practices/async-patterns.md` — async params/cookies/headers in Next.js 15
-   - `.agents/skills/next-best-practices/error-handling.md` — redirect() must NOT be in try-catch
+   - `.claude/skills/next-best-practices/route-handlers.md` — route handler rules, when to use vs Server Actions
+   - `.claude/skills/next-best-practices/async-patterns.md` — async params/cookies/headers in Next.js 15
+   - `.claude/skills/next-best-practices/error-handling.md` — redirect() must NOT be in try-catch
    - Read these only when relevant to the current task:
      - `data-patterns.md` — when deciding between Route Handler, Server Action, or Server Component fetch
      - `bundling.md` — when adding new npm packages (check `serverExternalPackages` for native bindings)
