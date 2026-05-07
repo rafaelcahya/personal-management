@@ -1,0 +1,127 @@
+{
+  "routes": {
+    "root": "/",
+    "landing": "/main/landing",
+    "inventory": "/main/inventory",
+    "inventory_product_list": "/main/inventory/product-list",
+    "inventory_product_brand": "/main/inventory/product-brand",
+    "inventory_product_name": "/main/inventory/product-name",
+    "inventory_product_history": "/main/inventory/product-history",
+    "trading": "/main/trading",
+    "trading_dashboard": "/main/trading/dashboard",
+    "trading_trade": "/main/trading/trade",
+    "trading_event": "/main/trading/event",
+    "trading_fee": "/main/trading/fee",
+    "login": "/login",
+    "auth_callback": "/auth/callback",
+    "auth_callback_v1": "/auth/v1/callback"
+  },
+  "endpoints": {
+    "auth": {
+      "cypress_login": "/api/auth/v1/cypress-login",
+      "logout": "/api/auth/logout",
+      "logout_v1": "/api/auth/v1/logout",
+      "session": "/api/auth/v1/session"
+    },
+    "inventory": {
+      "list": "/api/inventory/v1/list",
+      "create": "/api/inventory/v1/create",
+      "update": "/api/inventory/v1/update",
+      "delete": "/api/inventory/v1/delete",
+      "detail": "/api/inventory/v1/detail",
+      "get_products": "/api/inventory/v1/get-products"
+    },
+    "trading": {
+      "list": "/api/trading/v1/list",
+      "execute": "/api/trading/v1/execute",
+      "cancel": "/api/trading/v1/cancel",
+      "detail": "/api/trading/v1/detail",
+      "get_trades": "/api/trade/v1/get-trades"
+    },
+    "user": {
+      "profile": "/api/user",
+      "profile_v1": "/api/user/v1/profile",
+      "update_profile": "/api/user/v1/update"
+    }
+  },
+  "test_ids": {
+    "shared": {
+      "submit_btn": "submit-btn",
+      "cancel_btn": "cancel-btn",
+      "confirm_btn": "confirm-btn",
+      "delete_btn": "delete-btn",
+      "edit_btn": "edit-btn",
+      "close_btn": "close-btn",
+      "search_input": "search-input",
+      "loading_spinner": "loading-spinner",
+      "error_message": "error-message",
+      "toast_success": "toast-success",
+      "toast_error": "toast-error"
+    },
+    "inventory": {
+      "page": "inventory-page",
+      "table": "inventory-table",
+      "table_row": "inventory-table-row",
+      "empty_state": "inventory-empty-state",
+      "empty_state_cta": "inventory-empty-state-cta",
+      "skeleton": "inventory-skeleton",
+      "add_btn": "add-item-btn",
+      "row_actions": "inventory-row-actions",
+      "row_edit": "inventory-row-edit",
+      "row_delete": "inventory-row-delete",
+      "dialog": "add-item-dialog",
+      "name_input": "item-name-input",
+      "stock_input": "item-stock-input",
+      "price_input": "item-price-input",
+      "name_error": "item-name-error",
+      "stock_error": "item-stock-error",
+      "price_error": "item-price-error",
+      "bulk_action_bar": "inventory-bulk-action-bar",
+      "select_all": "inventory-select-all",
+      "filter_panel": "inventory-filter-panel"
+    },
+    "trading": {
+      "page": "trading-page",
+      "table": "trading-table",
+      "table_row": "trading-table-row",
+      "empty_state": "trading-empty-state",
+      "skeleton": "trading-skeleton",
+      "buy_btn": "trade-buy-btn",
+      "sell_btn": "trade-sell-btn",
+      "trade_form": "trade-form",
+      "symbol_input": "trade-symbol-input",
+      "quantity_input": "trade-quantity-input",
+      "price_input": "trade-price-input",
+      "subtotal": "trade-subtotal",
+      "confirm_dialog": "trade-confirm-dialog",
+      "symbol_error": "trade-symbol-error",
+      "quantity_error": "trade-quantity-error",
+      "portfolio_summary": "portfolio-summary",
+      "pnl_display": "portfolio-pnl"
+    },
+    "auth": {
+      "login_btn": "login-btn",
+      "logout_btn": "logout-btn",
+      "google_btn": "google-oauth-btn",
+      "user_menu": "user-menu",
+      "login_page": "loginPage",
+      "google_signin_btn": "googleSignInBtn_loginPage",
+      "logout_btn_el": "logoutBtn",
+      "user_menu_trigger": "userMenuTrigger_landingPage",
+      "user_menu_email": "userMenuEmail_landingPage",
+      "user_menu_signout": "userMenuSignOut_landingPage"
+    }
+  },
+  "seed": {
+    "inventory_item": {
+      "name": "Test Widget",
+      "stock": 100,
+      "price": 25.99
+    },
+    "trade": {
+      "symbol": "BBCA",
+      "quantity": 10,
+      "price": 9500
+    }
+  }
+}

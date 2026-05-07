@@ -135,8 +135,18 @@ Before starting any task, execute these steps in order:
 2. Read `.claude/agents/memory/frontend-agent-memory.md` — recall component decisions, gotchas, established patterns
 3. Read `.claude/agents/knowledge/frontend-knowledge.md` — confirm correct patterns for this task
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check for pending API contracts from Backend or design specs from UI/UX
-5. Check `cypress/fixtures/app-constants.yaml` — confirm testIds for components you're about to build are registered
-6. Start work
+5. Check `cypress/fixtures/app-constants.json` — confirm testIds for components you're about to build are registered
+6. Read Next.js skills — always read these before writing any component or page:
+   - `.agents/skills/next-best-practices/rsc-boundaries.md` — Server/Client component rules, prop serialization
+   - `.agents/skills/next-best-practices/async-patterns.md` — async params/cookies/headers in Next.js 15
+   - `.agents/skills/next-best-practices/error-handling.md` — error boundaries, redirect() must NOT be in try-catch
+   - Read these only when relevant to the current task:
+     - `suspense-boundaries.md` — when using `useSearchParams` or dynamic routes
+     - `hydration-error.md` — when debugging render/hydration issues
+     - `data-patterns.md` — when implementing data fetching in components
+     - `directives.md` — when deciding between `'use client'` and `'use server'`
+     - `parallel-routes.md` — when implementing modal with URL (e.g. detail page as modal)
+7. Start work
 
 ## Memory
 

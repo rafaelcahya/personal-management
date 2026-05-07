@@ -12,14 +12,14 @@
 - **Config**: `cypress.config.js`
 - **Auth bypass**: via `CYPRESS_AUTH_SECRET`
 - **Reports**: `cypress/reports/`
-- **Constants**: `cypress/fixtures/app-constants.yaml` ← single source of truth for all URLs, endpoints, testIds
+- **Constants**: `cypress/fixtures/app-constants.json` ← single source of truth for all URLs, endpoints, testIds
 - **Project**: Next.js 15, Supabase SSR auth, React, Tailwind
 
 ---
 
 ## RULE: Never Hardcode Values in Tests
 
-All URLs, API endpoints, and `data-testid` strings must be loaded from `cypress/fixtures/app-constants.yaml`.
+All URLs, API endpoints, and `data-testid` strings must be loaded from `cypress/fixtures/app-constants.json`.
 
 ```js
 // Always do this
@@ -35,7 +35,33 @@ cy.get('[data-testid="inventory-table"]')
 cy.intercept('GET', '/api/inventory/v1/list*', { ... })
 ```
 
-If a value is missing from `app-constants.yaml`, add it there first — then reference it.
+If a value is missing from `app-constants.json`, add it there first — then reference it. Keep `app-constants.yaml` in sync manually — YAML is for human readability only, JSON is what Cypress loads.
+
+---
+
+## RULE: Reports — Ask First, Then Generate
+
+After every test run or code review cycle, **always ask the user before generating reports**:
+
+> "Apakah kamu ingin saya buat regression report dan coverage report untuk task ini?"
+
+Only generate if user confirms. If user says no, skip both.
+
+### Regression Report (`cypress/reports/regression-report.md`)
+
+- Overwrite each run — reflects the latest run only
+- Always include `**App Version:**` — read from `.claude/PRD.md` → `Version:` field in the header
+
+### Coverage Report (`cypress/reports/coverage-report.md`)
+
+- **Cumulative — never overwrite from scratch**
+- Read the existing file first, then:
+  - Add new modules/features that didn't exist before
+  - Update existing rows if coverage status changed (e.g. `Not Tested` → `Automated`)
+  - Never delete existing rows — mark removed features as `[DEPRECATED]`
+  - Append new entries to Automated Test Cases table
+  - Recalculate Coverage Summary totals to reflect cumulative state
+- Always include `**App Version:**` — read from `.claude/PRD.md`
 
 ---
 

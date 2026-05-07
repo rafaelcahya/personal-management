@@ -92,9 +92,17 @@ Before starting any task, execute these steps in order:
 2. Read `.claude/agents/memory/backend-agent-memory.md` — recall API decisions, schema gotchas, security choices
 3. Read `.claude/agents/knowledge/backend-knowledge.md` — follow the new endpoint checklist and patterns
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check for pending endpoint gap requests from Tester
-5. Check `cypress/fixtures/app-constants.yaml` — register new endpoints after creating them
-6. If task involves schema changes or debugging: use Supabase MCP (`mcp__supabase__list_tables`, `mcp__supabase__execute_sql`, `mcp__supabase__apply_migration`) before writing code — inspect actual DB state first
-7. Start work
+5. Check `cypress/fixtures/app-constants.json` — register new endpoints after creating them
+6. Read Next.js skills — always read these before writing any route handler or service:
+   - `.agents/skills/next-best-practices/route-handlers.md` — route handler rules, when to use vs Server Actions
+   - `.agents/skills/next-best-practices/async-patterns.md` — async params/cookies/headers in Next.js 15
+   - `.agents/skills/next-best-practices/error-handling.md` — redirect() must NOT be in try-catch
+   - Read these only when relevant to the current task:
+     - `data-patterns.md` — when deciding between Route Handler, Server Action, or Server Component fetch
+     - `bundling.md` — when adding new npm packages (check `serverExternalPackages` for native bindings)
+     - `runtime-selection.md` — when creating new routes (default: Node.js, not Edge)
+7. If task involves schema changes or debugging: use Supabase MCP (`mcp__supabase__list_tables`, `mcp__supabase__execute_sql`, `mcp__supabase__apply_migration`) before writing code — inspect actual DB state first
+8. Start work
 
 ## Memory
 

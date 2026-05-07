@@ -1,92 +1,64 @@
-# Cypress Regression Report
+# Regression Testing Report
 
-**Last Run:** 2026-05-05  
-**Status:** ✅ All Passing  
-**Total:** 88 tests — 88 passing, 0 failing
+**Date:** 2026-05-07
+**App Version:** 1.4
+**Scope:** Auth Module — Login, Logout, Session Expiry
+**Tester:** QA Agent
 
----
+## Summary
 
-## Summary by Spec
+| Total Features | Passed | Failed | Pass Rate |
+| -------------- | ------ | ------ | --------- |
+| 30             | 30     | 0      | 100%      |
 
-| Spec File | Tests | Passing | Failing | Duration |
-|-----------|-------|---------|---------|----------|
-| `dashboard-api.cy.js` | 33 | 33 | 0 | ~20s |
-| `summary-api.cy.js` | 17 | 17 | 0 | ~9s |
-| `dashboard-ui.cy.js` | 38 | 38 | 0 | ~49s |
-| **Total** | **88** | **88** | **0** | **~1m 19s** |
-
----
-
-## Test Files — Inventory Dashboard
-
-### `cypress/e2e/inventory_management/dashboard/dashboard-api.cy.js`
-API tests for `GET /api/inventory/v1/dashboard`
-
-| Describe Group | Tests | Status |
-|----------------|-------|--------|
-| Authentication | 2 | ✅ Pass |
-| Response Structure | 4 | ✅ Pass |
-| Cost Per Use Data | 6 | ✅ Pass |
-| Low Stock Alert Logic | 3 | ✅ Pass |
-| Neglected Products Logic | 5 | ✅ Pass |
-| Monthly Spend By Type Logic | 4 | ✅ Pass |
-| Avg Usage Duration Logic | 3 | ✅ Pass |
-| Days Until Empty Logic | 5 | ✅ Pass |
-| Performance | 1 | ✅ Pass |
-| **Total** | **33** | **✅** |
-
-### `cypress/e2e/inventory_management/dashboard/summary-api.cy.js`
-API tests for `GET /api/inventory/v1/product/summary`
-
-| Describe Group | Tests | Status |
-|----------------|-------|--------|
-| Authentication | 2 | ✅ Pass |
-| Response Structure | 3 | ✅ Pass |
-| Data Types | 7 | ✅ Pass |
-| Data Consistency | 4 | ✅ Pass |
-| Performance | 1 | ✅ Pass |
-| **Total** | **17** | **✅** |
-
-### `cypress/e2e/inventory_management/dashboard/dashboard-ui.cy.js`
-UI tests for `/main/inventory`
-
-| Describe Group | Tests | Status |
-|----------------|-------|--------|
-| Page Load | 3 | ✅ Pass |
-| Summary Cards | 2 | ✅ Pass |
-| Cost Per Use Section | 5 | ✅ Pass |
-| Low Stock Alert Section | 6 | ✅ Pass |
-| Neglected Products Section | 4 | ✅ Pass |
-| Monthly Spend by Type Section | 4 | ✅ Pass |
-| Avg Usage Duration Section | 4 | ✅ Pass |
-| Days Until Empty Section | 5 | ✅ Pass |
-| Loading States | 1 | ✅ Pass |
-| API Error Handling | 1 | ✅ Pass |
-| Layout & Responsive | 3 | ✅ Pass |
-| **Total** | **38** | **✅** |
+> 30 feature suites (describe blocks) across 3 test files. 126 tests total, 0 failures.
+> Run duration: login.cy.js 42s · logout.cy.js 47s · session.cy.js 12s · **Total: 1m 42s**
 
 ---
 
-## Previously Existing Test Suites
+## Feature Test Results
 
-All previous inventory management tests continue to pass (not re-run in this session — last verified in prior runs):
+### File: `login.cy.js` (70 tests)
 
-- `product/list-product.cy.js`
-- `product/add-product.cy.js`
-- `product/delete-product.cy.js`
-- `product/favorite-product.cy.js`
-- `product/update-product.cy.js`
-- `product/product-detail.cy.js`
-- `product/product-history.cy.js`
-- `product/create-product-stock.cy.js`
-- `product/summary-product.cy.js`
-- `product_brand/` — all specs
-- `product_name/` — all specs
+| #   | Feature                                                      | Test Type           | Status   | Notes                                       |
+| --- | ------------------------------------------------------------ | ------------------- | -------- | ------------------------------------------- |
+| 1   | Login - API & Authentication                                 | API / Integration   | ✅ PASS  | Supabase session, token structure, clearAuth |
+| 2   | Login Page - Desktop Interactions                            | UI / Functional     | ✅ PASS  | Page render, Google button visibility       |
+| 3   | Login - Auth Callback - Desktop Interactions                 | UI / Functional     | ✅ PASS  | no_code & auth_failed redirects (desktop)   |
+| 4   | Login - Session Persistence - Desktop Interactions           | UI / Functional     | ✅ PASS  | Persist on reload, redirect 9 protected routes |
+| 5   | Login Page - Mobile Interactions                             | UI / Responsive     | ✅ PASS  | Page render & Google button (iphone-x)      |
+| 6   | Login - Auth Callback - Mobile Interactions                  | UI / Responsive     | ✅ PASS  | no_code & auth_failed redirects (mobile)    |
+| 7   | Login - Session Persistence - Mobile Interactions            | UI / Responsive     | ✅ PASS  | Persist on reload, redirect 9 protected routes |
+| 8   | Login Page - Tablet Interactions                             | UI / Responsive     | ✅ PASS  | Page render & Google button (ipad-2)        |
+| 9   | Login - Auth Callback - Tablet Interactions                  | UI / Responsive     | ✅ PASS  | no_code & auth_failed redirects (tablet)    |
+| 10  | Login - Session Persistence - Tablet Interactions            | UI / Responsive     | ✅ PASS  | Persist on reload, redirect 9 protected routes |
+| 11  | Login Page - App Identity & Google Branding - Desktop        | UI / Branding       | ✅ PASS  | App name, button label, aria-label, SVG icon |
+| 12  | Login Page - App Identity & Google Branding - Mobile         | UI / Branding       | ✅ PASS  | App name & button label on mobile           |
+| 13  | Login - Middleware ?next= Param Preservation - Desktop       | Middleware / API    | ✅ PASS  | ?next= param preserved, API returns 401     |
 
----
+### File: `logout.cy.js` (35 tests)
 
-## Notes
+| #   | Feature                                                      | Test Type           | Status   | Notes                                        |
+| --- | ------------------------------------------------------------ | ------------------- | -------- | -------------------------------------------- |
+| 14  | Logout - API Endpoint                                        | API / Integration   | ✅ PASS  | 200 auth'd, 401 unauth'd, GET rejected       |
+| 15  | Logout Button - Inventory Layout - Desktop                   | UI / Functional     | ✅ PASS  | Display, label, aria, keyboard, loading, redirect, error toast, re-enable |
+| 16  | Logout Button - Trading Layout - Desktop                     | UI / Functional     | ✅ PASS  | Display, label, aria, loading, redirect      |
+| 17  | UserMenu - Landing Page - Desktop                            | UI / Functional     | ✅ PASS  | Trigger, avatar, dropdown, email, sign out, error toast, keyboard |
+| 18  | UserMenu - Landing Page - Mobile                             | UI / Responsive     | ✅ PASS  | Trigger visible, dropdown sign out           |
+| 19  | UserMenu - Landing Page - Tablet                             | UI / Responsive     | ✅ PASS  | Trigger visible, dropdown email + sign out   |
+| 20  | Logout Button - Inventory Layout - Mobile                    | UI / Responsive     | ✅ PASS  | Display & label                              |
+| 21  | Logout Button - Trading Layout - Mobile                      | UI / Responsive     | ✅ PASS  | Display & label                              |
+| 22  | Logout Button - Inventory Layout - Tablet                    | UI / Responsive     | ✅ PASS  | Display                                      |
+| 23  | Logout Button - Trading Layout - Tablet                      | UI / Responsive     | ✅ PASS  | Display                                      |
 
-- Auth unauthenticated tests handle both 307 (middleware redirect) and 401 (route handler), reflecting the actual middleware behavior (`{ error: "UNAUTHORIZED" }`)
-- UI tests use `cy.loginWithBypass()` + `cy.intercept()` for reliable, deterministic test data
-- Error handling test verifies actual error message propagation from API response through the client fetch layer to the UI
+### File: `session.cy.js` (21 tests)
+
+| #   | Feature                                                      | Test Type           | Status   | Notes                                        |
+| --- | ------------------------------------------------------------ | ------------------- | -------- | -------------------------------------------- |
+| 24  | Session Expiry - Error Message Display - Desktop             | UI / Functional     | ✅ PASS  | session_expired, auth_failed, no_code params |
+| 25  | Session Expiry - Protected Route Guards - Desktop            | UI / Functional     | ✅ PASS  | Redirect from inventory, trading, landing    |
+| 26  | Session Expiry - Error Message Display - Mobile              | UI / Responsive     | ✅ PASS  | session_expired, auth_failed on mobile       |
+| 27  | Session Expiry - Error Message Display - Tablet              | UI / Responsive     | ✅ PASS  | session_expired on tablet                    |
+| 28  | Session - Toast Content Verification - Desktop               | UI / Functional     | ✅ PASS  | Toast text per param, no toast on clean login, no session_expired toast on intentional logout |
+| 29  | Session - API Security - Unauthenticated Requests            | API / Security      | ✅ PASS  | 401 for /api/user, /api/auth/logout, inventory API, trading API |
+| 30  | Session - Callback Open Redirect Validation                  | Security            | ✅ PASS  | External URL and double-slash ?next= rejected |

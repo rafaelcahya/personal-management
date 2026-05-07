@@ -47,12 +47,19 @@ For every feature, write tests covering:
 
 ### 3. Regression Testing Report
 
-After every test run or code review cycle, produce a **Regression Testing Report** saved to `cypress/reports/regression-report.md`:
+**Before generating this report, always ask the user first:**
+
+> "Apakah kamu ingin saya buat regression report dan coverage report untuk task ini?"
+
+Only generate if user confirms. If user says no, skip both reports.
+
+If generating, save to `cypress/reports/regression-report.md` (overwrite each time — regression report reflects the latest run only):
 
 ```markdown
 # Regression Testing Report
 
 **Date:** YYYY-MM-DD
+**App Version:** X.X ← read from `.claude/PRD.md` → `Version:` field in the header
 **Scope:** [module or feature tested]
 **Tester:** QA Agent
 
@@ -83,12 +90,24 @@ After every test run or code review cycle, produce a **Regression Testing Report
 
 ### 4. Test Coverage Report
 
-After writing or reviewing automation tests, produce a **Coverage Report** saved to `cypress/reports/coverage-report.md`:
+**Coverage report is cumulative — never overwrite, always update.**
+
+Rules:
+
+- Read the existing `cypress/reports/coverage-report.md` first before writing
+- Add new modules/features that didn't exist before
+- Update existing rows if coverage has changed (e.g. Partial → Automated)
+- Never delete existing rows — if a feature is removed, mark it `[DEPRECATED]`
+- Append new entries to Automated Test Cases table (keep all previous entries)
+- Update the Coverage Summary totals to reflect the current cumulative state
+
+Save to `cypress/reports/coverage-report.md`:
 
 ```markdown
 # Test Coverage Report
 
-**Date:** YYYY-MM-DD
+**Last Updated:** YYYY-MM-DD
+**App Version:** X.X ← read from `.claude/PRD.md` → `Version:` field in the header
 
 ## Coverage Summary
 
@@ -179,7 +198,7 @@ Before starting any task, execute these steps in order:
 2. Read `.claude/agents/memory/tester-agent-memory.md` — recall known flaky tests, persistent bugs, coverage gaps
 3. Read `.claude/agents/knowledge/tester-knowledge.md` — follow component audit, endpoint audit, and DB verification workflows
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check cross-agent signal formats and global DoD
-5. Load `cypress/fixtures/app-constants.yaml` — verify all needed testIds and endpoints are registered before writing tests
+5. Load `cypress/fixtures/app-constants.json` — verify all needed testIds and endpoints are registered before writing tests
 6. Check `cypress/plugin/tasks/` — identify existing domain-specific DB tasks before using `supabaseRawQuery`; if needed task doesn't exist, create it following the pattern in `tester-knowledge.md`
 7. Start work
 

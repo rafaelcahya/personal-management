@@ -1,172 +1,94 @@
-# Cypress Coverage Report
+# Test Coverage Report
 
-**Last Updated:** 2026-05-05  
-**Coverage Method:** E2E API + UI tests via Cypress
-
----
-
-## Overall Coverage Summary
-
-| Module | API Tests | UI Tests | Coverage |
-|--------|-----------|----------|----------|
-| Inventory Dashboard | ✅ | ✅ | Full |
-| Product Summary API | ✅ | ✅ (via UI) | Full |
-| Product List | ✅ | — | API only |
-| Product Detail | ✅ | — | API only |
-| Product Brand | ✅ | — | API only |
-| Product Name | ✅ | — | API only |
-| Product Stock | ✅ | — | API only |
-| Product History | ✅ | — | API only |
-| Auth (Login/Logout/Callback) | ✅ | ✅ | Full |
+**Last Updated:** 2026-05-07
+**App Version:** 1.4
+**Scope:** Auth Module (PRD Section 3.3)
+**Source:** `cypress/e2e/auth/` — login.cy.js, logout.cy.js, session.cy.js
 
 ---
 
-## Inventory Dashboard Coverage (`/main/inventory`)
+## Coverage Summary
 
-### API: `GET /api/inventory/v1/dashboard`
+| Module                      | Total Features | Automated | Manual Only | Not Tested | Coverage % |
+| --------------------------- | -------------- | --------- | ----------- | ---------- | ---------- |
+| 3.3.1 Login Page            | 8              | 7         | 1           | 0          | 87.5%      |
+| 3.3.2 Auth Callback         | 3              | 3         | 0           | 0          | 100%       |
+| 3.3.3 Logout                | 6              | 6         | 0           | 0          | 100%       |
+| 3.3.4 Session Expiry        | 4              | 4         | 0           | 0          | 100%       |
+| **Auth Module Total**       | **21**         | **20**    | **1**       | **0**      | **95.2%**  |
 
-| Scenario | Covered | Test File |
-|----------|---------|-----------|
-| Authenticated request returns 200 | ✅ | `dashboard-api.cy.js` |
-| Unauthenticated returns 401/307 | ✅ | `dashboard-api.cy.js` |
-| Response structure — top-level keys | ✅ | `dashboard-api.cy.js` |
-| Response structure — data keys | ✅ | `dashboard-api.cy.js` |
-| All data values are arrays | ✅ | `dashboard-api.cy.js` |
-| Content-Type is application/json | ✅ | `dashboard-api.cy.js` |
-| `top5` has required keys | ✅ | `dashboard-api.cy.js` |
-| `cost_per_use` null-safety | ✅ | `dashboard-api.cy.js` |
-| `top5` sorted DESC by cost_per_use | ✅ | `dashboard-api.cy.js` |
-| `top5.length <= 5` | ✅ | `dashboard-api.cy.js` |
-| `all.length >= top5.length` | ✅ | `dashboard-api.cy.js` |
-| `all` items have required keys | ✅ | `dashboard-api.cy.js` |
-| `lowStockAlerts` quantity <= 2 | ✅ | `dashboard-api.cy.js` |
-| `lowStockAlerts` sorted ASC by quantity | ✅ | `dashboard-api.cy.js` |
-| `lowStockAlerts` required keys | ✅ | `dashboard-api.cy.js` |
-| `neglectedProducts` product_status = 'active' | ✅ | `dashboard-api.cy.js` |
-| `neglectedProducts` last_used null or date | ✅ | `dashboard-api.cy.js` |
-| `neglectedProducts` days_since_used number or null | ✅ | `dashboard-api.cy.js` |
-| `neglectedProducts` null last_used sorted first | ✅ | `dashboard-api.cy.js` |
-| `neglectedProducts` required keys | ✅ | `dashboard-api.cy.js` |
-| `monthlySpendByType` required keys | ✅ | `dashboard-api.cy.js` |
-| `monthlySpendByType` month YYYY-MM format | ✅ | `dashboard-api.cy.js` |
-| `monthlySpendByType` total_spent >= 0 | ✅ | `dashboard-api.cy.js` |
-| `monthlySpendByType` within last 6 months | ✅ | `dashboard-api.cy.js` |
-| `avgUsageDuration` required keys | ✅ | `dashboard-api.cy.js` |
-| `avgUsageDuration` avg_days positive number | ✅ | `dashboard-api.cy.js` |
-| `avgUsageDuration` sorted DESC by avg_days | ✅ | `dashboard-api.cy.js` |
-| `daysUntilEmpty` required keys | ✅ | `dashboard-api.cy.js` |
-| `daysUntilEmpty` quantity > 0 | ✅ | `dashboard-api.cy.js` |
-| `daysUntilEmpty` days_until_empty positive | ✅ | `dashboard-api.cy.js` |
-| `daysUntilEmpty` daily_consumption positive | ✅ | `dashboard-api.cy.js` |
-| `daysUntilEmpty` sorted ASC (most critical first) | ✅ | `dashboard-api.cy.js` |
-| Response within 2000ms | ✅ | `dashboard-api.cy.js` |
-
-### API: `GET /api/inventory/v1/product/summary`
-
-| Scenario | Covered | Test File |
-|----------|---------|-----------|
-| Authenticated returns 200 | ✅ | `summary-api.cy.js` |
-| Unauthenticated returns 401/307 | ✅ | `summary-api.cy.js` |
-| Top-level keys: success, data | ✅ | `summary-api.cy.js` |
-| Data keys: all 6 summary fields | ✅ | `summary-api.cy.js` |
-| Content-Type application/json | ✅ | `summary-api.cy.js` |
-| totalProducts >= 0 | ✅ | `summary-api.cy.js` |
-| activeProducts >= 0 | ✅ | `summary-api.cy.js` |
-| inactiveProducts >= 0 | ✅ | `summary-api.cy.js` |
-| totalQuantity >= 0 | ✅ | `summary-api.cy.js` |
-| totalUsageQuantity >= 0 | ✅ | `summary-api.cy.js` |
-| favoriteProducts >= 0 | ✅ | `summary-api.cy.js` |
-| All values are numbers >= 0 | ✅ | `summary-api.cy.js` |
-| totalProducts >= active + inactive | ✅ | `summary-api.cy.js` |
-| active + inactive <= totalProducts | ✅ | `summary-api.cy.js` |
-| favoriteProducts <= totalProducts | ✅ | `summary-api.cy.js` |
-| Response within 2000ms | ✅ | `summary-api.cy.js` |
-
-### UI: `/main/inventory`
-
-| Scenario | Covered | Test File |
-|----------|---------|-----------|
-| Page loads without errors | ✅ | `dashboard-ui.cy.js` |
-| Navigation tabs visible | ✅ | `dashboard-ui.cy.js` |
-| Dashboard tab active | ✅ | `dashboard-ui.cy.js` |
-| 6 summary card titles rendered | ✅ | `dashboard-ui.cy.js` |
-| Summary card numeric values displayed | ✅ | `dashboard-ui.cy.js` |
-| Cost Per Use section header | ✅ | `dashboard-ui.cy.js` |
-| Cost Per Use empty state | ✅ | `dashboard-ui.cy.js` |
-| Cost Per Use table with data | ✅ | `dashboard-ui.cy.js` |
-| Cost Per Use View All button | ✅ | `dashboard-ui.cy.js` |
-| Cost Per Use modal title | ✅ | `dashboard-ui.cy.js` |
-| Low Stock Alert section header | ✅ | `dashboard-ui.cy.js` |
-| Low Stock Alert empty state | ✅ | `dashboard-ui.cy.js` |
-| Out of Stock badge (quantity = 0) | ✅ | `dashboard-ui.cy.js` |
-| Low: X left badge (quantity 1-2) | ✅ | `dashboard-ui.cy.js` |
-| Low Stock View All button | ✅ | `dashboard-ui.cy.js` |
-| Low Stock modal title | ✅ | `dashboard-ui.cy.js` |
-| Neglected Products section header | ✅ | `dashboard-ui.cy.js` |
-| Neglected Products empty state | ✅ | `dashboard-ui.cy.js` |
-| Never used italic label (null last_used) | ✅ | `dashboard-ui.cy.js` |
-| Days badge (e.g. "65d ago") | ✅ | `dashboard-ui.cy.js` |
-| Monthly Spend by Type section header | ✅ | `dashboard-ui.cy.js` |
-| Monthly Spend empty state | ✅ | `dashboard-ui.cy.js` |
-| Grouped by month display | ✅ | `dashboard-ui.cy.js` |
-| Rupiah format (Rp) | ✅ | `dashboard-ui.cy.js` |
-| Monthly Spend modal title | ✅ | `dashboard-ui.cy.js` |
-| Avg Usage Duration section header | ✅ | `dashboard-ui.cy.js` |
-| Avg Usage Duration empty state | ✅ | `dashboard-ui.cy.js` |
-| Duration badge "X days" | ✅ | `dashboard-ui.cy.js` |
-| Avg Usage Duration modal title | ✅ | `dashboard-ui.cy.js` |
-| Days Until Empty section header | ✅ | `dashboard-ui.cy.js` |
-| Days Until Empty empty state | ✅ | `dashboard-ui.cy.js` |
-| Warning badge "Xd ⚠️" for <= 7 days | ✅ | `dashboard-ui.cy.js` |
-| Normal days badge for > 7 days | ✅ | `dashboard-ui.cy.js` |
-| Days Until Empty modal title | ✅ | `dashboard-ui.cy.js` |
-| Skeleton loading state during API call | ✅ | `dashboard-ui.cy.js` |
-| Error message on API 500 | ✅ | `dashboard-ui.cy.js` |
-| 2-column analytics grid (desktop) | ✅ | `dashboard-ui.cy.js` |
-| Summary cards grid exists | ✅ | `dashboard-ui.cy.js` |
+> Feature count per module is derived from distinct acceptance criteria / behavior points in PRD 3.3.
 
 ---
 
-## Business Logic Coverage
+## Automated Test Cases
 
-| Business Rule | Tested |
-|---------------|--------|
-| `cost_per_use = total_spent / total_units`, null if no spend | ✅ API + UI |
-| Low Stock trigger: `quantity <= 2`, sorted ASC | ✅ API + UI |
-| Neglected: `product_status = active` AND unused 30+ days | ✅ API + UI |
-| Monthly Spend: last 6 months, YYYY-MM format | ✅ API + UI |
-| Avg Usage Duration: positive number, sorted DESC | ✅ API |
-| Days Until Empty: `quantity > 0`, sorted ASC (critical first) | ✅ API + UI |
-| Warning badge `⚠️` for days_until_empty <= 7 | ✅ UI |
-| Division by zero guard (cost_per_use null-safe) | ✅ API |
-| Performance: all endpoints < 2000ms | ✅ API |
+| #   | File                             | Test Suite                                                   | Test Cases | Feature Covered (PRD ref)                      |
+| --- | -------------------------------- | ------------------------------------------------------------ | ---------- | ---------------------------------------------- |
+| 1   | `login.cy.js`                    | Login - API & Authentication                                 | 11         | 3.3.1 — Programmatic auth, redirect unauth, invalid creds, session structure & storage |
+| 2   | `login.cy.js`                    | Login Page - Desktop Interactions                            | 3          | 3.3.1 — Login page render, Google button visibility (desktop) |
+| 3   | `login.cy.js`                    | Login - Auth Callback - Desktop Interactions                 | 3          | 3.3.2 — no_code redirect, auth_failed redirect (desktop) |
+| 4   | `login.cy.js`                    | Login - Session Persistence - Desktop Interactions           | 10         | 3.3.1 — Session persists on reload; 3.3.4 — Protected route guard (9 routes, desktop) |
+| 5   | `login.cy.js`                    | Login Page - Mobile Interactions                             | 3          | 3.3.1 — Login page render, Google button (mobile) |
+| 6   | `login.cy.js`                    | Login - Auth Callback - Mobile Interactions                  | 3          | 3.3.2 — no_code & auth_failed redirects (mobile) |
+| 7   | `login.cy.js`                    | Login - Session Persistence - Mobile Interactions            | 10         | 3.3.1 — Session persistence; 3.3.4 — Protected route guard (9 routes, mobile) |
+| 8   | `login.cy.js`                    | Login Page - Tablet Interactions                             | 3          | 3.3.1 — Login page render, Google button (tablet) |
+| 9   | `login.cy.js`                    | Login - Auth Callback - Tablet Interactions                  | 3          | 3.3.2 — no_code & auth_failed redirects (tablet) |
+| 10  | `login.cy.js`                    | Login - Session Persistence - Tablet Interactions            | 10         | 3.3.1 — Session persistence; 3.3.4 — Protected route guard (9 routes, tablet) |
+| 11  | `login.cy.js`                    | Login Page - App Identity & Google Branding - Desktop        | 4          | 3.3.1 — App name, Google button label, aria-label, 4-colour SVG icon |
+| 12  | `login.cy.js`                    | Login Page - App Identity & Google Branding - Mobile         | 2          | 3.3.1 — App name & button label on mobile      |
+| 13  | `login.cy.js`                    | Login - Middleware ?next= Param Preservation - Desktop       | 4          | 3.3.0 — ?next= preserved in redirect; 3.3.4 — API 401 for unauthenticated |
+| 14  | `logout.cy.js`                   | Logout - API Endpoint                                        | 3          | 3.3.3 — POST /api/auth/logout (200 auth'd, 401 unauth'd, GET rejected) |
+| 15  | `logout.cy.js`                   | Logout Button - Inventory Layout - Desktop                   | 8          | 3.3.3 — LogoutButton: display, label, aria-label, keyboard, loading state, redirect, error toast, re-enable on failure |
+| 16  | `logout.cy.js`                   | Logout Button - Trading Layout - Desktop                     | 5          | 3.3.3 — LogoutButton on trading layout: display, label, aria, loading, redirect |
+| 17  | `logout.cy.js`                   | UserMenu - Landing Page - Desktop                            | 9          | 3.3.3 — UserMenu: trigger, avatar/initial, dropdown open, email display, sign out, error toast, keyboard accessible |
+| 18  | `logout.cy.js`                   | UserMenu - Landing Page - Mobile                             | 2          | 3.3.3 — UserMenu on mobile: trigger visible, sign out in dropdown |
+| 19  | `logout.cy.js`                   | UserMenu - Landing Page - Tablet                             | 2          | 3.3.3 — UserMenu on tablet: trigger visible, email + sign out in dropdown |
+| 20  | `logout.cy.js`                   | Logout Button - Inventory Layout - Mobile                    | 2          | 3.3.3 — LogoutButton on inventory (mobile): display & label |
+| 21  | `logout.cy.js`                   | Logout Button - Trading Layout - Mobile                      | 2          | 3.3.3 — LogoutButton on trading (mobile): display & label |
+| 22  | `logout.cy.js`                   | Logout Button - Inventory Layout - Tablet                    | 1          | 3.3.3 — LogoutButton on inventory (tablet): display |
+| 23  | `logout.cy.js`                   | Logout Button - Trading Layout - Tablet                      | 1          | 3.3.3 — LogoutButton on trading (tablet): display |
+| 24  | `session.cy.js`                  | Session Expiry - Error Message Display - Desktop             | 4          | 3.3.1 — Error params render login page; no breakage without params |
+| 25  | `session.cy.js`                  | Session Expiry - Protected Route Guards - Desktop            | 3          | 3.3.4 — Redirect to login from inventory, trading, landing |
+| 26  | `session.cy.js`                  | Session Expiry - Error Message Display - Mobile              | 2          | 3.3.1 — Error params on mobile                 |
+| 27  | `session.cy.js`                  | Session Expiry - Error Message Display - Tablet              | 1          | 3.3.1 — session_expired on tablet              |
+| 28  | `session.cy.js`                  | Session - Toast Content Verification - Desktop               | 5          | 3.3.1 — Correct toast text per param; 3.3.4 — No session_expired toast on intentional logout |
+| 29  | `session.cy.js`                  | Session - API Security - Unauthenticated Requests            | 4          | 3.3.4 — 401 for /api/user, /api/auth/logout, inventory API, trading API |
+| 30  | `session.cy.js`                  | Session - Callback Open Redirect Validation                  | 2          | 3.3.2 — Open redirect prevention (external URL, double-slash ?next=) |
+
+**Total automated tests: 126**
 
 ---
 
-## Acceptance Criteria Coverage (PRD 3.1.0)
+## Manual Test Cases (not yet automated)
 
-| AC | Status |
-|----|--------|
-| 6 summary cards with correct values on page load | ✅ |
-| Skeleton loading state during API fetch | ✅ |
-| Cost Per Use: top 5 sorted DESC, View All modal | ✅ |
-| Cost Per Use: empty state "No products yet." | ✅ |
-| Low Stock: badge merah Out of Stock (qty=0) | ✅ |
-| Low Stock: badge orange "Low: X left" (qty 1-2) | ✅ |
-| Low Stock: empty state "All good!" | ✅ |
-| Low Stock: View All modal | ✅ |
-| Neglected: "Never used" for null last_used | ✅ |
-| Neglected: days badge per threshold | ✅ |
-| Neglected: empty state | ✅ |
-| Monthly Spend: grouped by month, Rupiah format | ✅ |
-| Monthly Spend: empty state | ✅ |
-| Monthly Spend: View All modal | ✅ |
-| Avg Duration: duration badge "X days" | ✅ |
-| Avg Duration: empty state | ✅ |
-| Avg Duration: View All modal | ✅ |
-| Days Until Empty: ⚠️ badge for <= 7 days | ✅ |
-| Days Until Empty: empty state | ✅ |
-| Days Until Empty: View All modal | ✅ |
-| API error: error message rendered | ✅ |
-| Layout: 2-column grid for analytics sections | ✅ |
-| Auth: unauthenticated blocked from dashboard | ✅ |
+| #   | Feature                                     | Reason Not Automated                                                                        | Priority to Automate |
+| --- | ------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------- |
+| 1   | Google OAuth end-to-end sign-in flow        | Requires interaction with Google's authentication UI (third-party, no programmatic control). Supabase OAuth redirects to google.com — Cypress cannot intercept cross-origin Google login UI. | Low — inherently untestable with E2E tools; covered contractually by Supabase OAuth |
+| 2   | Google button loading/disabled state during OAuth redirect | Once the button is clicked for a real OAuth flow, Cypress loses control of the page as it navigates to Google. | Medium — could be partially tested by mocking `signInWithOAuth` |
+| 3   | ?next= param end-to-end redirect after successful Google OAuth | Full happy-path test requires a valid Google OAuth code that cannot be replicated in CI without real credentials. Auth callback error paths are already automated; only the success+redirect path is manual. | Medium — requires test user with stable Google credentials or OAuth mock |
+
+---
+
+## Coverage Gap Analysis
+
+Based on a comparison of PRD Section 3.3 requirements against the three test files:
+
+### Fully Automated (no gaps)
+
+- **Auth Callback (3.3.2):** All three acceptance criteria are covered — `no_code` redirect, `auth_failed` redirect, and open redirect prevention via `?next=` validation.
+- **Logout (3.3.3):** All acceptance criteria are covered — loading/disabled state, redirect without `reason=session_expired`, error toast on failure, keyboard accessibility. API endpoint validated at 200/401/method levels.
+- **Session Expiry (3.3.4):** All acceptance criteria are covered — `?reason=session_expired` redirect, toast content, intentional logout does NOT produce session_expired toast, API returns 401 for unauthenticated requests on all protected endpoints.
+
+### Partial Coverage (manual-only gap)
+
+- **Login Page (3.3.1) — Google OAuth happy path:** The PRD states: _"GIVEN I click Sign in with Google THEN I am redirected to Google OAuth and the button shows loading/disabled state."_ The button loading/disabled state during real OAuth redirect and the successful post-login redirect (via `?next=`) are not automatable because they require the Google OAuth UI. All other acceptance criteria for 3.3.1 are fully automated.
+
+### Recommendations
+
+| Priority | Recommendation |
+| -------- | -------------- |
+| High     | No critical gaps — all server-side and UI-controllable flows are automated. |
+| Medium   | Add a test stub/mock for `signInWithOAuth` to cover the loading/disabled state on the Google button during the OAuth redirect without a real Google session. |
+| Medium   | Document the OAuth happy-path as a manual smoke test in the CI checklist for each release. |
+| Low      | Consider Playwright with browser storage injection if full OAuth end-to-end coverage becomes a requirement — Cypress's same-origin limitation makes this impractical in the current toolchain. |

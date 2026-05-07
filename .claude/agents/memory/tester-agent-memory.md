@@ -68,7 +68,8 @@
 
 <!-- Non-obvious QA discoveries — test setup quirks, Cypress behavior, auth bypass patterns -->
 
-- <!-- YYYY-MM-DD: lesson -->
+- 2026-05-07: Cypress tidak support `.yaml` sebagai fixture format — `cy.fixture('app-constants')` akan gagal jika file-nya `.yaml`. File yang dipakai adalah `app-constants.json`. File `.yaml` tetap ada tapi hanya untuk human readability — selalu update keduanya jika ada perubahan constants.
+- 2026-05-07: Report conventions yang disepakati user — (1) selalu tanya dulu sebelum buat report; (2) app version diambil dari `.claude/PRD.md` header `Version:` field; (3) `coverage-report.md` bersifat kumulatif — jangan overwrite, hanya update/append.
 
 ---
 
