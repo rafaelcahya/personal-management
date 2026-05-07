@@ -46,3 +46,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local editor & IDE settings
+.vscode/
+.claude/settings.local.json
+
+# local assets (screenshots, recordings)
+app/assets/*.mp4
+app/assets/*.png
+app/assets/*.jpg
+app/assets/*.gif
+app/assets/*.webm
