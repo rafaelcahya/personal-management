@@ -51,6 +51,11 @@ next-env.d.ts
 .vscode/
 .claude/settings.local.json
 
+# cypress generated output (HTML reports, screenshots, videos)
+cypress/reports/html/
+cypress/screenshots/
+cypress/videos/
+
 # local assets (screenshots, recordings)
 app/assets/*.mp4
 app/assets/*.png

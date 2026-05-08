@@ -2,59 +2,36 @@
 
 **Date:** 2026-05-08
 **App Version:** 1.4
-**Scope:** Landing Page
+**Scope:** Auth - Logout (`logout.cy.js`)
 **Tester:** QA Agent
 
 ## Summary
 
 | Total Features | Passed | Failed | Pass Rate |
 | -------------- | ------ | ------ | --------- |
-| 33             | 33     | 0      | 100%      |
+| 11             | 11     | 0      | 100%      |
 
 ## Feature Test Results
 
-| #   | Feature                                          | Test Type | Status  | Notes                                      |
-| --- | ------------------------------------------------ | --------- | ------- | ------------------------------------------ |
-| 1   | Display user greeting with correct name          | Auto      | ✅ PASS | Reads first name from session metadata     |
-| 2   | Display trade management card                    | Auto      | ✅ PASS | -                                          |
-| 3   | Display inventory management card                | Auto      | ✅ PASS | -                                          |
-| 4   | Navigate to Trading Dashboard via Trade button   | Auto      | ✅ PASS | -                                          |
-| 5   | Navigate to Inventory List via Inventory button  | Auto      | ✅ PASS | -                                          |
-| 6   | Responsive layout - mobile (iphone-x)            | Auto      | ✅ PASS | -                                          |
-| 7   | Responsive layout - tablet (ipad-2)              | Auto      | ✅ PASS | -                                          |
-| 8   | Responsive layout - desktop (1920x1080)          | Auto      | ✅ PASS | -                                          |
-| 9   | User greeting correct name - mobile              | Auto      | ✅ PASS | -                                          |
-| 10  | Navigate to Trading Dashboard - mobile           | Auto      | ✅ PASS | -                                          |
-| 11  | Navigate to Inventory List - mobile              | Auto      | ✅ PASS | -                                          |
-| 12  | User greeting correct name - tablet              | Auto      | ✅ PASS | -                                          |
-| 13  | Navigate to Trading Dashboard - tablet           | Auto      | ✅ PASS | -                                          |
-| 14  | Navigate to Inventory List - tablet              | Auto      | ✅ PASS | -                                          |
-| 15  | User greeting correct name - desktop             | Auto      | ✅ PASS | -                                          |
-| 16  | Navigate to Trading Dashboard - desktop          | Auto      | ✅ PASS | -                                          |
-| 17  | Navigate to Inventory List - desktop             | Auto      | ✅ PASS | -                                          |
-| 18  | User menu trigger visible                        | Auto      | ✅ PASS | -                                          |
-| 19  | User menu opens on trigger click                 | Auto      | ✅ PASS | Shows email + sign out item                |
-| 20  | User menu displays correct email                 | Auto      | ✅ PASS | Matches session user email                 |
-| 21  | Logout via user menu sign out                    | Auto      | ✅ PASS | Requires real Supabase session cookie      |
-| 22  | User menu trigger visible - mobile               | Auto      | ✅ PASS | -                                          |
-| 23  | User menu opens on trigger click - mobile        | Auto      | ✅ PASS | -                                          |
-| 24  | User menu displays correct email - mobile        | Auto      | ✅ PASS | -                                          |
-| 25  | Logout via user menu sign out - mobile           | Auto      | ✅ PASS | Uses clearApiAuthCache to refresh token    |
-| 26  | User menu trigger visible - tablet               | Auto      | ✅ PASS | -                                          |
-| 27  | User menu opens on trigger click - tablet        | Auto      | ✅ PASS | -                                          |
-| 28  | User menu displays correct email - tablet        | Auto      | ✅ PASS | -                                          |
-| 29  | Logout via user menu sign out - tablet           | Auto      | ✅ PASS | Uses clearApiAuthCache to refresh token    |
-| 30  | User menu trigger visible - desktop              | Auto      | ✅ PASS | -                                          |
-| 31  | User menu opens on trigger click - desktop       | Auto      | ✅ PASS | -                                          |
-| 32  | User menu displays correct email - desktop       | Auto      | ✅ PASS | -                                          |
-| 33  | Logout via user menu sign out - desktop          | Auto      | ✅ PASS | Uses clearApiAuthCache to refresh token    |
+| #   | Feature                                        | Test Type | Status  | Notes                      |
+| --- | ---------------------------------------------- | --------- | ------- | -------------------------- |
+| 1   | Logout - API Endpoint (200 auth, 401 unauth)   | Auto      | ✅ PASS | 3 test cases               |
+| 2   | Logout Button - Inventory Layout - Desktop     | Auto      | ✅ PASS | 8 test cases               |
+| 3   | Logout Button - Trading Layout - Desktop       | Auto      | ✅ PASS | 5 test cases               |
+| 4   | UserMenu - Landing Page - Desktop              | Auto      | ✅ PASS | 9 test cases               |
+| 5   | UserMenu - Landing Page - Mobile               | Auto      | ✅ PASS | 2 test cases               |
+| 6   | UserMenu - Landing Page - Tablet               | Auto      | ✅ PASS | 2 test cases               |
+| 7   | Logout Button - Inventory Layout - Mobile      | Auto      | ✅ PASS | 2 test cases               |
+| 8   | Logout Button - Trading Layout - Mobile        | Auto      | ✅ PASS | 2 test cases               |
+| 9   | Logout Button - Inventory Layout - Tablet      | Auto      | ✅ PASS | 1 test case                |
+| 10  | Logout Button - Trading Layout - Tablet        | Auto      | ✅ PASS | 1 test case                |
+| 11  | Format refactor (before/beforeEach separation) | Auto      | ✅ PASS | All 35 tests still passing |
 
 ## Failed Test Details
 
-_None — all 33 tests passed._
+None — all 35 tests passed.
 
-## Notes & Findings During Run
+## Technical Notes
 
-- `#logoutBtn` tidak ada di DOM. Landing page hanya menggunakan `UserMenu` component (`#userMenuTrigger_landingPage`) untuk logout. `logout_btn_el` di `app-constants.json` adalah sisa konfigurasi lama yang tidak digunakan.
-- `/api/auth/logout` memerlukan real Supabase session cookie (`sb-{ref}-auth-token`). Test yang menguji logout via UI harus memanggil `cy.setupApiAuthCookies()` setelah `cy.loginWithBypass()`.
-- Token Supabase yang sudah di-revoke (setelah sign out) masih tersimpan di `cachedSession` module-level di `api-commands.js`. Ditangani dengan command baru `cy.clearApiAuthCache()`.
+- Dev server was returning 500 on first run (crashed) — restarted and all tests passed on second run
+- `logout.cy.js` refactored: fixture loading moved to `before()`, login/visit kept in separate `beforeEach()`

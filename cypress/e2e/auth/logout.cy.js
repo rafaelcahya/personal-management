@@ -42,13 +42,16 @@ describe('Logout - API Endpoint', () => {
 // ------------------------------------------------------------
 describe('Logout Button - Inventory Layout - Desktop', () => {
   let C
-  beforeEach(() => {
-    cy.viewport(1920, 1080)
+  before(() => {
     cy.fixture('app-constants').then((data) => {
       C = data
-      cy.loginWithBypass()
-      cy.visit(C.routes.inventory_product_list)
     })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1920, 1080)
+    cy.loginWithBypass()
+    cy.visit(C.routes.inventory_product_list)
   })
 
   it('should display logout button', () => {
@@ -124,13 +127,16 @@ describe('Logout Button - Inventory Layout - Desktop', () => {
 // ------------------------------------------------------------
 describe('Logout Button - Trading Layout - Desktop', () => {
   let C
-  beforeEach(() => {
-    cy.viewport(1920, 1080)
+  before(() => {
     cy.fixture('app-constants').then((data) => {
       C = data
-      cy.loginWithBypass()
-      cy.visit(C.routes.trading_dashboard)
     })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1920, 1080)
+    cy.loginWithBypass()
+    cy.visit(C.routes.trading_dashboard)
   })
 
   it('should display logout button', () => {
@@ -178,13 +184,16 @@ describe('Logout Button - Trading Layout - Desktop', () => {
 // ------------------------------------------------------------
 describe('UserMenu - Landing Page - Desktop', () => {
   let C
-  beforeEach(() => {
-    cy.viewport(1920, 1080)
+  before(() => {
     cy.fixture('app-constants').then((data) => {
       C = data
-      cy.loginWithBypass()
-      cy.visit(C.routes.landing)
     })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1920, 1080)
+    cy.loginWithBypass()
+    cy.visit(C.routes.landing)
   })
 
   it('should display user menu trigger button', () => {
@@ -255,13 +264,16 @@ describe('UserMenu - Landing Page - Desktop', () => {
 // ------------------------------------------------------------
 describe('UserMenu - Landing Page - Mobile', () => {
   let C
-  beforeEach(() => {
-    cy.viewport('iphone-x')
+  before(() => {
     cy.fixture('app-constants').then((data) => {
       C = data
-      cy.loginWithBypass()
-      cy.visit(C.routes.landing)
     })
+  })
+
+  beforeEach(() => {
+    cy.viewport('iphone-x')
+    cy.loginWithBypass()
+    cy.visit(C.routes.landing)
   })
 
   it('should display user menu trigger on mobile', () => {
@@ -279,13 +291,16 @@ describe('UserMenu - Landing Page - Mobile', () => {
 // ------------------------------------------------------------
 describe('UserMenu - Landing Page - Tablet', () => {
   let C
-  beforeEach(() => {
-    cy.viewport('ipad-2')
+  before(() => {
     cy.fixture('app-constants').then((data) => {
       C = data
-      cy.loginWithBypass()
-      cy.visit(C.routes.landing)
     })
+  })
+
+  beforeEach(() => {
+    cy.viewport('ipad-2')
+    cy.loginWithBypass()
+    cy.visit(C.routes.landing)
   })
 
   it('should display user menu trigger on tablet', () => {
@@ -304,13 +319,16 @@ describe('UserMenu - Landing Page - Tablet', () => {
 // ------------------------------------------------------------
 describe('Logout Button - Inventory Layout - Mobile', () => {
   let C
-  beforeEach(() => {
-    cy.viewport('iphone-x')
+  before(() => {
     cy.fixture('app-constants').then((data) => {
       C = data
-      cy.loginWithBypass()
-      cy.visit(C.routes.inventory_product_list)
     })
+  })
+
+  beforeEach(() => {
+    cy.viewport('iphone-x')
+    cy.loginWithBypass()
+    cy.visit(C.routes.inventory_product_list)
   })
 
   it('should display logout button', () => {
@@ -327,13 +345,16 @@ describe('Logout Button - Inventory Layout - Mobile', () => {
 // ------------------------------------------------------------
 describe('Logout Button - Trading Layout - Mobile', () => {
   let C
-  beforeEach(() => {
-    cy.viewport('iphone-x')
+  before(() => {
     cy.fixture('app-constants').then((data) => {
       C = data
-      cy.loginWithBypass()
-      cy.visit(C.routes.trading_dashboard)
     })
+  })
+
+  beforeEach(() => {
+    cy.viewport('iphone-x')
+    cy.loginWithBypass()
+    cy.visit(C.routes.trading_dashboard)
   })
 
   it('should display logout button', () => {
@@ -350,13 +371,16 @@ describe('Logout Button - Trading Layout - Mobile', () => {
 // ------------------------------------------------------------
 describe('Logout Button - Inventory Layout - Tablet', () => {
   let C
-  beforeEach(() => {
-    cy.viewport('ipad-2')
+  before(() => {
     cy.fixture('app-constants').then((data) => {
       C = data
-      cy.loginWithBypass()
-      cy.visit(C.routes.inventory_product_list)
     })
+  })
+
+  beforeEach(() => {
+    cy.viewport('ipad-2')
+    cy.loginWithBypass()
+    cy.visit(C.routes.inventory_product_list)
   })
 
   it('should display logout button', () => {
@@ -369,13 +393,16 @@ describe('Logout Button - Inventory Layout - Tablet', () => {
 // ------------------------------------------------------------
 describe('Logout Button - Trading Layout - Tablet', () => {
   let C
-  beforeEach(() => {
-    cy.viewport('ipad-2')
+  before(() => {
     cy.fixture('app-constants').then((data) => {
       C = data
-      cy.loginWithBypass()
-      cy.visit(C.routes.trading_dashboard)
     })
+  })
+
+  beforeEach(() => {
+    cy.viewport('ipad-2')
+    cy.loginWithBypass()
+    cy.visit(C.routes.trading_dashboard)
   })
 
   it('should display logout button', () => {

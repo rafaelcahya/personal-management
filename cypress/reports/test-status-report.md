@@ -12,7 +12,7 @@
 
 | Module                    | Last Tested  | Manual | Automation | Total |
 | ------------------------- | ------------ | ------ | ---------- | ----- |
-| Auth                      | 2026-05-07   | 1      | 126        | 127   |
+| Auth                      | 2026-05-08   | 1      | 126        | 127   |
 | API Auth Guard            | 2026-05-04   | 0      | 59         | 59    |
 | Landing Page              | 2026-05-08   | 0      | 33         | 33    |
 | Inventory - Dashboard     | 2026-05-05   | 0      | 88         | 88    |
@@ -38,7 +38,7 @@
 | 4  | Session Persistence (3 viewports)     | auth/login.cy.js              | 2026-05-07  | 0      | 27         |
 | 5  | App Identity & Google Branding        | auth/login.cy.js              | 2026-05-07  | 0      | 6          |
 | 6  | Middleware ?next= Param Preservation  | auth/login.cy.js              | 2026-05-07  | 0      | 4          |
-| 7  | Logout                                | auth/logout.cy.js             | 2026-05-07  | 0      | 35         |
+| 7  | Logout                                | auth/logout.cy.js             | 2026-05-08  | 0      | 35         |
 | 8  | Session Validation                    | auth/session.cy.js            | 2026-05-07  | 0      | 21         |
 | 9  | Google OAuth UI Flow (browser)        | —                             | —           | 1      | 0          |
 
