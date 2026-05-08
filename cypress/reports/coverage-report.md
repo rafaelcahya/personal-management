@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-08
+**Last Updated:** 2026-05-09
 **App Version:** 1.4
 
 ## Coverage Summary
@@ -41,8 +41,8 @@
 | 16  | cypress/e2e/landing_page/landing-page.cy.js                           | Responsive Layout (3 viewports)      | 3          | Mobile/tablet/desktop layout |
 | 17  | cypress/e2e/landing_page/landing-page.cy.js                           | Mobile/Tablet/Desktop Interactions   | 9          | Per-viewport interactions    |
 | 18  | cypress/e2e/landing_page/landing-page.cy.js                           | User Menu (4 viewports)              | 16         | UserMenu trigger & sign out  |
-| 19  | cypress/e2e/inventory_management/dashboard/dashboard-ui.cy.js         | Dashboard UI                         | 38         | Inventory dashboard display  |
-| 20  | cypress/e2e/inventory_management/dashboard/dashboard-api.cy.js        | Dashboard API                        | 33         | Dashboard API responses      |
+| 19  | cypress/e2e/inventory_management/dashboard/dashboard-ui.cy.js         | Dashboard UI                         | 29         | Inventory dashboard display  |
+| 20  | cypress/e2e/inventory_management/dashboard/dashboard-api.cy.js        | Dashboard API                        | 23         | Dashboard API responses      |
 | 21  | cypress/e2e/inventory_management/dashboard/summary-api.cy.js          | Summary API                          | 17         | Inventory summary API        |
 | 22  | cypress/e2e/inventory_management/product/list-product.cy.js           | List Product                         | 26         | Product list view            |
 | 23  | cypress/e2e/inventory_management/product/product-detail.cy.js         | Product Detail                       | 25         | Product detail view          |
@@ -85,7 +85,7 @@
 | 60  | cypress/e2e/trading_management/event/delete-event.cy.js               | Delete Event                         | 9          | Event deletion flow          |
 | 61  | cypress/e2e/trading_management/event/summary-event.cy.js              | Event Summary                        | 25         | Event summary API            |
 
-**Total Automated Test Cases: 1,305**
+**Total Automated Test Cases: 1,286**
 
 ## Manual Test Cases (not yet automated)
 

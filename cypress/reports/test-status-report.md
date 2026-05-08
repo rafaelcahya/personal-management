@@ -1,6 +1,6 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-08
+**Last Updated:** 2026-05-09
 **App Version:** 1.4
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
@@ -15,14 +15,14 @@
 | Auth                      | 2026-05-08   | 1      | 126        | 127   |
 | API Auth Guard            | 2026-05-04   | 0      | 59         | 59    |
 | Landing Page              | 2026-05-08   | 0      | 33         | 33    |
-| Inventory - Dashboard     | 2026-05-05   | 0      | 88         | 88    |
+| Inventory - Dashboard     | 2026-05-09   | 0      | 69         | 69    |
 | Inventory - Product       | 2026-03-20   | 0      | 321        | 321   |
 | Inventory - Product Brand | 2026-04-22   | 0      | 114        | 114   |
 | Inventory - Product Name  | 2026-03-20   | 0      | 114        | 114   |
 | Trading - Trade           | 2026-03-15   | 0      | 185        | 185   |
 | Trading - Fee             | 2026-03-15   | 0      | 131        | 131   |
 | Trading - Event           | 2026-03-15   | 0      | 134        | 134   |
-| **Total**                 |              | **1**  | **1.305**  | **1.306** |
+| **Total**                 |              | **1**  | **1.286**  | **1.287** |
 
 ---
 
@@ -72,8 +72,8 @@
 
 | #  | Feature             | File                                      | Last Tested | Manual | Automation |
 | -- | ------------------- | ----------------------------------------- | ----------- | ------ | ---------- |
-| 1  | Dashboard UI        | inventory_management/dashboard/dashboard-ui.cy.js  | 2026-05-05  | 0      | 38         |
-| 2  | Dashboard API       | inventory_management/dashboard/dashboard-api.cy.js | 2026-05-05  | 0      | 33         |
+| 1  | Dashboard UI        | inventory_management/dashboard/dashboard-ui.cy.js  | 2026-05-09  | 0      | 29         |
+| 2  | Dashboard API       | inventory_management/dashboard/dashboard-api.cy.js | 2026-05-09  | 0      | 23         |
 | 3  | Summary API         | inventory_management/dashboard/summary-api.cy.js   | 2026-05-05  | 0      | 17         |
 
 ---
