@@ -63,6 +63,19 @@ Only generate if user confirms. If user says no, skip both.
   - Recalculate Coverage Summary totals to reflect cumulative state
 - Always include `**App Version:**` — read from `.claude/PRD.md`
 
+### Test Status Report (`cypress/reports/test-status-report.md`)
+
+- **Cumulative — never overwrite from scratch**
+- **Must be updated** whenever: new feature tests are written, test cases are added/removed, a test suite is run, or a feature is deprecated
+- Read the existing file first, then:
+  - Add new rows to the appropriate module table for new features
+  - Update the `Last Tested` column to the most recent run date
+  - Update the `Automation` column with the latest test case count (recount `it(` in changed files)
+  - Recalculate the Summary table totals (manual + automation)
+  - Recalculate the Staleness Alert — recompute "Days Since Last Test" based on today's date
+  - If a feature is removed, mark the row as `[DEPRECATED]` — never delete rows
+- Date format: YYYY-MM-DD
+
 ---
 
 ## Workflow 1: Component Audit (data-testid Check)

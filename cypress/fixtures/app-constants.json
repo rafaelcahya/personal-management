@@ -45,6 +45,13 @@
     }
   },
   "test_ids": {
+    "landing": {
+      "full_name": "fullNameAuth_landingPage",
+      "trade_card": "tradeManagementCard_landingPage",
+      "inventory_card": "inventoryManagementCard_landingPage",
+      "trade_btn": "tradeBtn_landingPage",
+      "inventory_btn": "inventoryBtn_landingPage"
+    },
     "shared": {
       "submit_btn": "submit-btn",
       "cancel_btn": "cancel-btn",

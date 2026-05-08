@@ -35,35 +35,29 @@
  *     cy.log(`Token: ${token}`)
  * })
  */
-Cypress.Commands.add("getApiAuthToken", (email, password) => {
-    cy.env(["TEST_EMAIL", "TEST_PASSWORD"]).then(
-        ({ TEST_EMAIL, TEST_PASSWORD }) => {
-            const testEmail = email || TEST_EMAIL;
-            const testPassword = password || TEST_PASSWORD;
+Cypress.Commands.add('getApiAuthToken', (email, password) => {
+  cy.env(['TEST_EMAIL', 'TEST_PASSWORD']).then(({ TEST_EMAIL, TEST_PASSWORD }) => {
+    const testEmail = email || TEST_EMAIL
+    const testPassword = password || TEST_PASSWORD
 
-            if (!testEmail || !testPassword) {
-                throw new Error(
-                    "TEST_EMAIL and TEST_PASSWORD must be configured",
-                );
-            }
+    if (!testEmail || !testPassword) {
+      throw new Error('TEST_EMAIL and TEST_PASSWORD must be configured')
+    }
 
-            return cy
-                .task("getSupabaseSession", {
-                    email: testEmail,
-                    password: testPassword,
-                })
-                .then((session) => {
-                    if (!session || !session.access_token) {
-                        throw new Error(
-                            `Failed to get auth token for ${testEmail}`,
-                        );
-                    }
+    return cy
+      .task('getSupabaseSession', {
+        email: testEmail,
+        password: testPassword,
+      })
+      .then((session) => {
+        if (!session || !session.access_token) {
+          throw new Error(`Failed to get auth token for ${testEmail}`)
+        }
 
-                    return session.access_token;
-                });
-        },
-    );
-});
+        return session.access_token
+      })
+  })
+})
 
 /**
  * Setup authentication cookies (mimics browser behavior)
@@ -78,86 +72,72 @@ Cypress.Commands.add("getApiAuthToken", (email, password) => {
  *     cy.setupApiAuthCookies()
  * })
  */
-let cachedSession = null;
-let cacheExpiry = null;
+let cachedSession = null
+let cacheExpiry = null
 
-Cypress.Commands.add("setupApiAuthCookies", (email, password) => {
-    cy.env(["TEST_EMAIL", "TEST_PASSWORD", "SUPABASE_PROJECT_REF"]).then(
-        ({ TEST_EMAIL, TEST_PASSWORD, SUPABASE_PROJECT_REF }) => {
-            const testEmail = email || TEST_EMAIL;
-            const testPassword = password || TEST_PASSWORD;
+Cypress.Commands.add('setupApiAuthCookies', (email, password) => {
+  cy.env(['TEST_EMAIL', 'TEST_PASSWORD', 'SUPABASE_PROJECT_REF']).then(
+    ({ TEST_EMAIL, TEST_PASSWORD, SUPABASE_PROJECT_REF }) => {
+      const testEmail = email || TEST_EMAIL
+      const testPassword = password || TEST_PASSWORD
 
-            if (!testEmail || !testPassword) {
-                throw new Error(
-                    "TEST_EMAIL and TEST_PASSWORD must be configured",
-                );
+      if (!testEmail || !testPassword) {
+        throw new Error('TEST_EMAIL and TEST_PASSWORD must be configured')
+      }
+
+      const now = Date.now() / 1000
+      if (cachedSession && cacheExpiry && now < cacheExpiry - 60) {
+        cy.log('♻️ Reusing cached session')
+        const projectRef = SUPABASE_PROJECT_REF || 'default'
+        return cy.setCookie(`sb-${projectRef}-auth-token`, JSON.stringify(cachedSession), {
+          path: '/',
+          httpOnly: false,
+          secure: false,
+          sameSite: 'lax',
+        })
+      }
+
+      const tryGetSession = (attempt = 1) => {
+        return cy
+          .task('getSupabaseSession', {
+            email: testEmail,
+            password: testPassword,
+          })
+          .then((session) => {
+            if (!session && attempt < 3) {
+              cy.log(`⚠️ Session attempt ${attempt} failed, retrying...`)
+              cy.wait(1000 * attempt)
+              return tryGetSession(attempt + 1)
             }
 
-            const now = Date.now() / 1000;
-            if (cachedSession && cacheExpiry && now < cacheExpiry - 60) {
-                cy.log("♻️ Reusing cached session");
-                const projectRef = SUPABASE_PROJECT_REF || "default";
-                return cy.setCookie(
-                    `sb-${projectRef}-auth-token`,
-                    JSON.stringify(cachedSession),
-                    {
-                        path: "/",
-                        httpOnly: false,
-                        secure: false,
-                        sameSite: "lax",
-                    },
-                );
+            if (!session) {
+              throw new Error(`Failed to get session for ${testEmail} after 3 attempts`)
             }
 
-            const tryGetSession = (attempt = 1) => {
-                return cy
-                    .task("getSupabaseSession", {
-                        email: testEmail,
-                        password: testPassword,
-                    })
-                    .then((session) => {
-                        if (!session && attempt < 3) {
-                            cy.log(
-                                `⚠️ Session attempt ${attempt} failed, retrying...`,
-                            );
-                            cy.wait(1000 * attempt);
-                            return tryGetSession(attempt + 1);
-                        }
+            cachedSession = {
+              access_token: session.access_token,
+              refresh_token: session.refresh_token,
+              expires_at: session.expires_at,
+              expires_in: session.expires_in,
+              token_type: 'bearer',
+              user: session.user,
+            }
+            cacheExpiry = session.expires_at
 
-                        if (!session) {
-                            throw new Error(
-                                `Failed to get session for ${testEmail} after 3 attempts`,
-                            );
-                        }
+            const projectRef = SUPABASE_PROJECT_REF || 'default'
+            return cy.setCookie(`sb-${projectRef}-auth-token`, JSON.stringify(cachedSession), {
+              path: '/',
+              httpOnly: false,
+              secure: false,
+              sameSite: 'lax',
+            })
+          })
+      }
 
-                        cachedSession = {
-                            access_token: session.access_token,
-                            refresh_token: session.refresh_token,
-                            expires_at: session.expires_at,
-                            expires_in: session.expires_in,
-                            token_type: "bearer",
-                            user: session.user,
-                        };
-                        cacheExpiry = session.expires_at;
-
-                        const projectRef = SUPABASE_PROJECT_REF || "default";
-                        return cy.setCookie(
-                            `sb-${projectRef}-auth-token`,
-                            JSON.stringify(cachedSession),
-                            {
-                                path: "/",
-                                httpOnly: false,
-                                secure: false,
-                                sameSite: "lax",
-                            },
-                        );
-                    });
-            };
-
-            return tryGetSession();
-        },
-    );
-});
+      return tryGetSession()
+    }
+  )
+})
 
 /**
  * Make authenticated API request (auto setup session)
@@ -182,19 +162,19 @@ Cypress.Commands.add("setupApiAuthCookies", (email, password) => {
  *     body: { ticker: "AAPL" }
  * })
  */
-Cypress.Commands.add("apiRequest", (method, url, options = {}) => {
-    return cy.setupApiAuthCookies(options.email, options.password).then(() => {
-        return cy.request({
-            method,
-            url,
-            body: options.body,
-            qs: options.qs,
-            headers: options.headers,
-            followRedirect: options.followRedirect ?? false,
-            failOnStatusCode: options.failOnStatusCode ?? false,
-        });
-    });
-});
+Cypress.Commands.add('apiRequest', (method, url, options = {}) => {
+  return cy.setupApiAuthCookies(options.email, options.password).then(() => {
+    return cy.request({
+      method,
+      url,
+      body: options.body,
+      qs: options.qs,
+      headers: options.headers,
+      followRedirect: options.followRedirect ?? false,
+      failOnStatusCode: options.failOnStatusCode ?? false,
+    })
+  })
+})
 
 /**
  * Make authenticated API request (reuse existing session)
@@ -220,41 +200,39 @@ Cypress.Commands.add("apiRequest", (method, url, options = {}) => {
  *     })
  * })
  */
-Cypress.Commands.add("apiRequestWithSession", (method, url, options = {}) => {
-    cy.env(["TEST_EMAIL"]).then(({ TEST_EMAIL }) => {
-        const email = options.email || TEST_EMAIL;
-        const sessionKey = `api-session-${email}`;
+Cypress.Commands.add('apiRequestWithSession', (method, url, options = {}) => {
+  cy.env(['TEST_EMAIL']).then(({ TEST_EMAIL }) => {
+    const email = options.email || TEST_EMAIL
+    const sessionKey = `api-session-${email}`
 
-        // Check if session was already set up for this email (Cypress.env, not the key string itself)
-        if (Cypress.env(sessionKey)) {
-            return cy.request({
-                method,
-                url,
-                body: options.body,
-                qs: options.qs,
-                headers: options.headers,
-                followRedirect: options.followRedirect ?? false,
-                failOnStatusCode: options.failOnStatusCode ?? false,
-            });
-        }
+    // Check if session was already set up for this email (Cypress.env, not the key string itself)
+    if (Cypress.env(sessionKey)) {
+      return cy.request({
+        method,
+        url,
+        body: options.body,
+        qs: options.qs,
+        headers: options.headers,
+        followRedirect: options.followRedirect ?? false,
+        failOnStatusCode: options.failOnStatusCode ?? false,
+      })
+    }
 
-        return cy
-            .setupApiAuthCookies(options.email, options.password)
-            .then(() => {
-                Cypress.env(sessionKey, true);
+    return cy.setupApiAuthCookies(options.email, options.password).then(() => {
+      Cypress.env(sessionKey, true)
 
-                return cy.request({
-                    method,
-                    url,
-                    body: options.body,
-                    qs: options.qs,
-                    headers: options.headers,
-                    followRedirect: options.followRedirect ?? false,
-                    failOnStatusCode: options.failOnStatusCode ?? false,
-                });
-            });
-    });
-});
+      return cy.request({
+        method,
+        url,
+        body: options.body,
+        qs: options.qs,
+        headers: options.headers,
+        followRedirect: options.followRedirect ?? false,
+        failOnStatusCode: options.failOnStatusCode ?? false,
+      })
+    })
+  })
+})
 
 /**
  * Make unauthenticated API request
@@ -274,17 +252,17 @@ Cypress.Commands.add("apiRequestWithSession", (method, url, options = {}) => {
  * // Test public endpoint
  * cy.apiRequestNoAuth("GET", "/api/public")
  */
-Cypress.Commands.add("apiRequestNoAuth", (method, url, options = {}) => {
-    return cy.request({
-        method,
-        url,
-        body: options.body,
-        qs: options.qs,
-        headers: options.headers,
-        followRedirect: options.followRedirect ?? false,
-        failOnStatusCode: options.failOnStatusCode ?? false,
-    });
-});
+Cypress.Commands.add('apiRequestNoAuth', (method, url, options = {}) => {
+  return cy.request({
+    method,
+    url,
+    body: options.body,
+    qs: options.qs,
+    headers: options.headers,
+    followRedirect: options.followRedirect ?? false,
+    failOnStatusCode: options.failOnStatusCode ?? false,
+  })
+})
 
 /**
  * Setup API auth and store token in env
@@ -303,21 +281,18 @@ Cypress.Commands.add("apiRequestNoAuth", (method, url, options = {}) => {
  *     const token = Cypress.env("API_AUTH_TOKEN")
  * })
  */
-Cypress.Commands.add("setupApiAuth", (email, password) => {
-    cy.env(["TEST_EMAIL", "TEST_PASSWORD"]).then(
-        ({ TEST_EMAIL, TEST_PASSWORD }) => {
-            const testEmail = email || TEST_EMAIL;
-            const testPassword = password || TEST_PASSWORD;
+Cypress.Commands.add('setupApiAuth', (email, password) => {
+  cy.env(['TEST_EMAIL', 'TEST_PASSWORD']).then(({ TEST_EMAIL, TEST_PASSWORD }) => {
+    const testEmail = email || TEST_EMAIL
+    const testPassword = password || TEST_PASSWORD
 
-            return cy.getApiAuthToken(testEmail, testPassword).then((token) => {
-                Cypress.env("API_AUTH_TOKEN", token);
-                cy.log("✅ API Auth setup complete");
-                return token;
-            });
-        },
-    );
-});
-
+    return cy.getApiAuthToken(testEmail, testPassword).then((token) => {
+      Cypress.env('API_AUTH_TOKEN', token)
+      cy.log('✅ API Auth setup complete')
+      return token
+    })
+  })
+})
 
 /**
  * Clear all authentication data
@@ -333,11 +308,17 @@ Cypress.Commands.add("setupApiAuth", (email, password) => {
  *     // Now no authentication
  * })
  */
-Cypress.Commands.add("clearApiAuth", () => {
-    cy.clearCookies();
+Cypress.Commands.add('clearApiAuth', () => {
+  cy.clearCookies()
 
-    const email = Cypress.env("TEST_EMAIL");
-    if (email) {
-        Cypress.env(`api-session-${email}`, null);
-    }
-});
+  const email = Cypress.env('TEST_EMAIL')
+  if (email) {
+    Cypress.env(`api-session-${email}`, null)
+  }
+})
+
+Cypress.Commands.add('clearApiAuthCache', () => {
+  cachedSession = null
+  cacheExpiry = null
+  cy.log('🗑️ API auth cache cleared — next setupApiAuthCookies will fetch fresh session')
+})

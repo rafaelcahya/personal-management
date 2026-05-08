@@ -1,237 +1,429 @@
-describe("Landing Page - User Experience", () => {
-    beforeEach(() => {
-        cy.loginWithBypass();
-        cy.visit("/main/landing");
-    });
+describe('Landing Page - User Experience', () => {
+  let C
+  before(() => {
+    cy.fixture('app-constants').then((data) => {
+      C = data
+    })
+  })
 
-    it("should display user greeting with correct name", () => {
-        cy.getSession().then((session) => {
-            const fullName = session.user.user_metadata?.full_name;
-            const email = session.user.email;
+  beforeEach(() => {
+    cy.loginWithBypass()
+    cy.visit(C.routes.landing)
+  })
 
-            const expectedName = fullName
-                ? fullName.split(" ")[0]
-                : email.split("@")[0];
+  it('should display user greeting with correct name', () => {
+    cy.getSession().then((session) => {
+      const fullName = session.user.user_metadata?.full_name
+      const email = session.user.email
 
-            cy.get("#fullNameAuth_landingPage")
-                .should("be.visible")
-                .invoke("text")
-                .should("eq", expectedName);
-        });
-    });
+      const expectedName = fullName ? fullName.split(' ')[0] : email.split('@')[0]
 
-    it("should logout and clear session", () => {
-        cy.disableBypass();
-        cy.get("button").contains("Logout").should("be.visible").click();
+      cy.get(`#${C.test_ids.landing.full_name}`)
+        .should('be.visible')
+        .invoke('text')
+        .should('eq', expectedName)
+    })
+  })
 
-        cy.getCookie("cypress-bypass").should("not.exist");
-        cy.url().should("include", "/login");
-        cy.get("#loginPage").should("be.visible");
-    });
+  it('should display trade management card', () => {
+    cy.get(`#${C.test_ids.landing.trade_card}`).should('be.visible')
+  })
 
-    it("should display trade management card", () => {
-        cy.get("#tradeManagementCard_landingPage").should("be.visible");
-    });
+  it('should display inventory management card', () => {
+    cy.get(`#${C.test_ids.landing.inventory_card}`).should('be.visible')
+  })
+})
 
-    it("should display inventory management card", () => {
-        cy.get("#inventoryManagementCard_landingPage").should("be.visible");
-    });
-});
+describe('Landing Page - Navigation', () => {
+  let C
+  before(() => {
+    cy.fixture('app-constants').then((data) => {
+      C = data
+    })
+  })
 
-describe("Landing Page - Navigation", () => {
-    beforeEach(() => {
-        cy.loginWithBypass();
-        cy.visit("/main/landing");
-    });
+  beforeEach(() => {
+    cy.loginWithBypass()
+    cy.visit(C.routes.landing)
+  })
 
-    it("should navigate to Trading Dashboard when clicking Trade button", () => {
-        cy.get("#tradeBtn_landingPage").should("be.visible").click();
+  it('should navigate to Trading Dashboard when clicking Trade button', () => {
+    cy.get(`#${C.test_ids.landing.trade_btn}`).should('be.visible').click()
 
-        cy.location("pathname").should("eq", "/main/trading/dashboard");
-        cy.url().should("include", "/main/trading/dashboard");
-    });
+    cy.location('pathname').should('eq', C.routes.trading_dashboard)
+    cy.url().should('include', C.routes.trading_dashboard)
+  })
 
-    it("should navigate to Inventory List when clicking Inventory button", () => {
-        cy.get("#inventoryBtn_landingPage").should("be.visible").click();
+  it('should navigate to Inventory List when clicking Inventory button', () => {
+    cy.get(`#${C.test_ids.landing.inventory_btn}`).should('be.visible').click()
 
-        cy.location("pathname").should("eq", "/main/inventory/product-list");
-        cy.url().should("include", "/main/inventory/product-list");
-    });
-});
+    cy.location('pathname').should('eq', C.routes.inventory_product_list)
+    cy.url().should('include', C.routes.inventory_product_list)
+  })
+})
 
-describe("Landing Page - Responsive Layout", () => {
-    beforeEach(() => {
-        cy.loginWithBypass();
-    });
+describe('Landing Page - Responsive Layout', () => {
+  let C
+  before(() => {
+    cy.fixture('app-constants').then((data) => {
+      C = data
+    })
+  })
 
-    it("should display correctly on mobile viewport", () => {
-        cy.viewport("iphone-x");
-        cy.visit("/main/landing");
+  beforeEach(() => {
+    cy.loginWithBypass()
+  })
 
-        cy.get("#fullNameAuth_landingPage").should("be.visible");
-        cy.get("#logoutBtn").should("be.visible");
-        cy.get("#tradeManagementCard_landingPage").should("be.visible");
-        cy.get("#inventoryManagementCard_landingPage").should("be.visible");
-    });
+  it('should display correctly on mobile viewport', () => {
+    cy.viewport('iphone-x')
+    cy.visit(C.routes.landing)
 
-    it("should display correctly on tablet viewport", () => {
-        cy.viewport("ipad-2");
-        cy.visit("/main/landing");
+    cy.get(`#${C.test_ids.landing.full_name}`).should('be.visible')
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('be.visible')
+    cy.get(`#${C.test_ids.landing.trade_card}`).should('be.visible')
+    cy.get(`#${C.test_ids.landing.inventory_card}`).should('be.visible')
+  })
 
-        cy.get("#fullNameAuth_landingPage").should("be.visible");
-        cy.get("#logoutBtn").should("be.visible");
-        cy.get("#tradeManagementCard_landingPage").should("be.visible");
-        cy.get("#inventoryManagementCard_landingPage").should("be.visible");
-    });
+  it('should display correctly on tablet viewport', () => {
+    cy.viewport('ipad-2')
+    cy.visit(C.routes.landing)
 
-    it("should display correctly on desktop viewport", () => {
-        cy.viewport(1920, 1080);
-        cy.visit("/main/landing");
+    cy.get(`#${C.test_ids.landing.full_name}`).should('be.visible')
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('be.visible')
+    cy.get(`#${C.test_ids.landing.trade_card}`).should('be.visible')
+    cy.get(`#${C.test_ids.landing.inventory_card}`).should('be.visible')
+  })
 
-        cy.get("#fullNameAuth_landingPage").should("be.visible");
-        cy.get("#logoutBtn").should("be.visible");
-        cy.get("#tradeManagementCard_landingPage").should("be.visible");
-        cy.get("#inventoryManagementCard_landingPage").should("be.visible");
-    });
-});
+  it('should display correctly on desktop viewport', () => {
+    cy.viewport(1920, 1080)
+    cy.visit(C.routes.landing)
 
-describe("Landing Page - Mobile Interactions", () => {
-    beforeEach(() => {
-        cy.viewport("iphone-x");
-        cy.loginWithBypass();
-        cy.visit("/main/landing");
-    });
+    cy.get(`#${C.test_ids.landing.full_name}`).should('be.visible')
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('be.visible')
+    cy.get(`#${C.test_ids.landing.trade_card}`).should('be.visible')
+    cy.get(`#${C.test_ids.landing.inventory_card}`).should('be.visible')
+  })
+})
 
-    it("should display user greeting with correct name on mobile viewport", () => {
-        cy.getSession().then((session) => {
-            const fullName = session.user.user_metadata?.full_name;
-            const email = session.user.email;
+describe('Landing Page - Mobile Interactions', () => {
+  let C
+  before(() => {
+    cy.fixture('app-constants').then((data) => {
+      C = data
+    })
+  })
 
-            const expectedName = fullName
-                ? fullName.split(" ")[0]
-                : email.split("@")[0];
+  beforeEach(() => {
+    cy.viewport('iphone-x')
+    cy.loginWithBypass()
+    cy.visit(C.routes.landing)
+  })
 
-            cy.get("#fullNameAuth_landingPage")
-                .should("be.visible")
-                .invoke("text")
-                .should("eq", expectedName);
-        });
-    });
+  it('should display user greeting with correct name on mobile viewport', () => {
+    cy.getSession().then((session) => {
+      const fullName = session.user.user_metadata?.full_name
+      const email = session.user.email
 
-    it("should logout and clear session on mobile viewport", () => {
-        cy.disableBypass();
-        cy.get("button").contains("Logout").should("be.visible").click();
+      const expectedName = fullName ? fullName.split(' ')[0] : email.split('@')[0]
 
-        cy.getCookie("cypress-bypass").should("not.exist");
-        cy.url().should("include", "/login");
-        cy.get("#loginPage").should("be.visible");
-    });
+      cy.get(`#${C.test_ids.landing.full_name}`)
+        .should('be.visible')
+        .invoke('text')
+        .should('eq', expectedName)
+    })
+  })
 
-    it("should navigate to Trading Dashboard when clicking Trade button on mobile viewport", () => {
-        cy.get("#tradeBtn_landingPage").should("be.visible").click();
+  it('should navigate to Trading Dashboard when clicking Trade button on mobile viewport', () => {
+    cy.get(`#${C.test_ids.landing.trade_btn}`).should('be.visible').click()
 
-        cy.location("pathname").should("eq", "/main/trading/dashboard");
-        cy.url().should("include", "/main/trading/dashboard");
-    });
+    cy.location('pathname').should('eq', C.routes.trading_dashboard)
+    cy.url().should('include', C.routes.trading_dashboard)
+  })
 
-    it("should navigate to Inventory List when clicking Inventory button on mobile viewport", () => {
-        cy.get("#inventoryBtn_landingPage").should("be.visible").click();
+  it('should navigate to Inventory List when clicking Inventory button on mobile viewport', () => {
+    cy.get(`#${C.test_ids.landing.inventory_btn}`).should('be.visible').click()
 
-        cy.location("pathname").should("eq", "/main/inventory/product-list");
-        cy.url().should("include", "/main/inventory/product-list");
-    });
-});
+    cy.location('pathname').should('eq', C.routes.inventory_product_list)
+    cy.url().should('include', C.routes.inventory_product_list)
+  })
+})
 
-describe("Landing Page - Tablet Interactions", () => {
-    beforeEach(() => {
-        cy.viewport("ipad-2");
-        cy.loginWithBypass();
-        cy.visit("/main/landing");
-    });
+describe('Landing Page - Tablet Interactions', () => {
+  let C
+  before(() => {
+    cy.fixture('app-constants').then((data) => {
+      C = data
+    })
+  })
 
-    it("should display user greeting with correct name on tablet viewport", () => {
-        cy.getSession().then((session) => {
-            const fullName = session.user.user_metadata?.full_name;
-            const email = session.user.email;
+  beforeEach(() => {
+    cy.viewport('ipad-2')
+    cy.loginWithBypass()
+    cy.visit(C.routes.landing)
+  })
 
-            const expectedName = fullName
-                ? fullName.split(" ")[0]
-                : email.split("@")[0];
+  it('should display user greeting with correct name on tablet viewport', () => {
+    cy.getSession().then((session) => {
+      const fullName = session.user.user_metadata?.full_name
+      const email = session.user.email
 
-            cy.get("#fullNameAuth_landingPage")
-                .should("be.visible")
-                .invoke("text")
-                .should("eq", expectedName);
-        });
-    });
+      const expectedName = fullName ? fullName.split(' ')[0] : email.split('@')[0]
 
-    it("should logout and clear session on tablet viewport", () => {
-        cy.disableBypass();
-        cy.get("button").contains("Logout").should("be.visible").click();
+      cy.get(`#${C.test_ids.landing.full_name}`)
+        .should('be.visible')
+        .invoke('text')
+        .should('eq', expectedName)
+    })
+  })
 
-        cy.getCookie("cypress-bypass").should("not.exist");
-        cy.url().should("include", "/login");
-        cy.get("#loginPage").should("be.visible");
-    });
+  it('should navigate to Trading Dashboard when clicking Trade button on tablet viewport', () => {
+    cy.get(`#${C.test_ids.landing.trade_btn}`).should('be.visible').click()
 
-    it("should navigate to Trading Dashboard when clicking Trade button on tablet viewport", () => {
-        cy.get("#tradeBtn_landingPage").should("be.visible").click();
+    cy.location('pathname').should('eq', C.routes.trading_dashboard)
+    cy.url().should('include', C.routes.trading_dashboard)
+  })
 
-        cy.location("pathname").should("eq", "/main/trading/dashboard");
-        cy.url().should("include", "/main/trading/dashboard");
-    });
+  it('should navigate to Inventory List when clicking Inventory button on tablet viewport', () => {
+    cy.get(`#${C.test_ids.landing.inventory_btn}`).should('be.visible').click()
 
-    it("should navigate to Inventory List when clicking Inventory button on tablet viewport", () => {
-        cy.get("#inventoryBtn_landingPage").should("be.visible").click();
+    cy.location('pathname').should('eq', C.routes.inventory_product_list)
+    cy.url().should('include', C.routes.inventory_product_list)
+  })
+})
 
-        cy.location("pathname").should("eq", "/main/inventory/product-list");
-        cy.url().should("include", "/main/inventory/product-list");
-    });
-});
+describe('Landing Page - Desktop Interactions', () => {
+  let C
+  before(() => {
+    cy.fixture('app-constants').then((data) => {
+      C = data
+    })
+  })
 
-describe("Landing Page - Desktop Interactions", () => {
-    beforeEach(() => {
-        cy.viewport(1920, 1080);
-        cy.loginWithBypass();
-        cy.visit("/main/landing");
-    });
+  beforeEach(() => {
+    cy.viewport(1920, 1080)
+    cy.loginWithBypass()
+    cy.visit(C.routes.landing)
+  })
 
-    it("should display user greeting with correct name on desktop viewport", () => {
-        cy.getSession().then((session) => {
-            const fullName = session.user.user_metadata?.full_name;
-            const email = session.user.email;
+  it('should display user greeting with correct name on desktop viewport', () => {
+    cy.getSession().then((session) => {
+      const fullName = session.user.user_metadata?.full_name
+      const email = session.user.email
 
-            const expectedName = fullName
-                ? fullName.split(" ")[0]
-                : email.split("@")[0];
+      const expectedName = fullName ? fullName.split(' ')[0] : email.split('@')[0]
 
-            cy.get("#fullNameAuth_landingPage")
-                .should("be.visible")
-                .invoke("text")
-                .should("eq", expectedName);
-        });
-    });
+      cy.get(`#${C.test_ids.landing.full_name}`)
+        .should('be.visible')
+        .invoke('text')
+        .should('eq', expectedName)
+    })
+  })
 
-    it("should logout and clear session on desktop viewport", () => {
-        cy.disableBypass();
-        cy.get("button").contains("Logout").should("be.visible").click();
+  it('should navigate to Trading Dashboard when clicking Trade button on desktop viewport', () => {
+    cy.get(`#${C.test_ids.landing.trade_btn}`).should('be.visible').click()
 
-        cy.getCookie("cypress-bypass").should("not.exist");
-        cy.url().should("include", "/login");
-        cy.get("#loginPage").should("be.visible");
-    });
+    cy.location('pathname').should('eq', C.routes.trading_dashboard)
+    cy.url().should('include', C.routes.trading_dashboard)
+  })
 
-    it("should navigate to Trading Dashboard when clicking Trade button on desktop viewport", () => {
-        cy.get("#tradeBtn_landingPage").should("be.visible").click();
+  it('should navigate to Inventory List when clicking Inventory button on desktop viewport', () => {
+    cy.get(`#${C.test_ids.landing.inventory_btn}`).should('be.visible').click()
 
-        cy.location("pathname").should("eq", "/main/trading/dashboard");
-        cy.url().should("include", "/main/trading/dashboard");
-    });
+    cy.location('pathname').should('eq', C.routes.inventory_product_list)
+    cy.url().should('include', C.routes.inventory_product_list)
+  })
+})
 
-    it("should navigate to Inventory List when clicking Inventory button on desktop viewport", () => {
-        cy.get("#inventoryBtn_landingPage").should("be.visible").click();
+describe('Landing Page - User Menu', () => {
+  let C
+  before(() => {
+    cy.fixture('app-constants').then((data) => {
+      C = data
+    })
+  })
 
-        cy.location("pathname").should("eq", "/main/inventory/product-list");
-        cy.url().should("include", "/main/inventory/product-list");
-    });
-});
+  beforeEach(() => {
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(C.routes.landing)
+  })
+
+  it('should display user menu trigger', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('be.visible')
+  })
+
+  it('should open user menu when trigger is clicked', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+
+    cy.get(`#${C.test_ids.auth.user_menu_email}`).should('be.visible')
+    cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible')
+  })
+
+  it('should display correct user email in user menu', () => {
+    cy.getSession().then((session) => {
+      cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+
+      cy.get(`#${C.test_ids.auth.user_menu_email}`)
+        .should('be.visible')
+        .invoke('text')
+        .should('eq', session.user.email)
+    })
+  })
+
+  it('should logout via user menu sign out option', () => {
+    cy.disableBypass()
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+    cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible').click()
+
+    cy.getCookie('cypress-bypass').should('not.exist')
+    cy.url().should('include', C.routes.login)
+    cy.get(`#${C.test_ids.auth.login_page}`).should('be.visible')
+  })
+})
+
+describe('Landing Page - User Menu - Mobile Interactions', () => {
+  let C
+  before(() => {
+    cy.fixture('app-constants').then((data) => {
+      C = data
+    })
+  })
+
+  beforeEach(() => {
+    cy.clearApiAuthCache()
+    cy.viewport('iphone-x')
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(C.routes.landing)
+  })
+
+  it('should display user menu trigger on mobile viewport', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('be.visible')
+  })
+
+  it('should open user menu when trigger is clicked on mobile viewport', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+
+    cy.get(`#${C.test_ids.auth.user_menu_email}`).should('be.visible')
+    cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible')
+  })
+
+  it('should display correct user email in user menu on mobile viewport', () => {
+    cy.getSession().then((session) => {
+      cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+
+      cy.get(`#${C.test_ids.auth.user_menu_email}`)
+        .should('be.visible')
+        .invoke('text')
+        .should('eq', session.user.email)
+    })
+  })
+
+  it('should logout via user menu sign out option on mobile viewport', () => {
+    cy.disableBypass()
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+    cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible').click()
+
+    cy.getCookie('cypress-bypass').should('not.exist')
+    cy.url().should('include', C.routes.login)
+    cy.get(`#${C.test_ids.auth.login_page}`).should('be.visible')
+  })
+})
+
+describe('Landing Page - User Menu - Tablet Interactions', () => {
+  let C
+  before(() => {
+    cy.fixture('app-constants').then((data) => {
+      C = data
+    })
+  })
+
+  beforeEach(() => {
+    cy.clearApiAuthCache()
+    cy.viewport('ipad-2')
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(C.routes.landing)
+  })
+
+  it('should display user menu trigger on tablet viewport', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('be.visible')
+  })
+
+  it('should open user menu when trigger is clicked on tablet viewport', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+
+    cy.get(`#${C.test_ids.auth.user_menu_email}`).should('be.visible')
+    cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible')
+  })
+
+  it('should display correct user email in user menu on tablet viewport', () => {
+    cy.getSession().then((session) => {
+      cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+
+      cy.get(`#${C.test_ids.auth.user_menu_email}`)
+        .should('be.visible')
+        .invoke('text')
+        .should('eq', session.user.email)
+    })
+  })
+
+  it('should logout via user menu sign out option on tablet viewport', () => {
+    cy.disableBypass()
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+    cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible').click()
+
+    cy.getCookie('cypress-bypass').should('not.exist')
+    cy.url().should('include', C.routes.login)
+    cy.get(`#${C.test_ids.auth.login_page}`).should('be.visible')
+  })
+})
+
+describe('Landing Page - User Menu - Desktop Interactions', () => {
+  let C
+  before(() => {
+    cy.fixture('app-constants').then((data) => {
+      C = data
+    })
+  })
+
+  beforeEach(() => {
+    cy.clearApiAuthCache()
+    cy.viewport(1920, 1080)
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(C.routes.landing)
+  })
+
+  it('should display user menu trigger on desktop viewport', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('be.visible')
+  })
+
+  it('should open user menu when trigger is clicked on desktop viewport', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+
+    cy.get(`#${C.test_ids.auth.user_menu_email}`).should('be.visible')
+    cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible')
+  })
+
+  it('should display correct user email in user menu on desktop viewport', () => {
+    cy.getSession().then((session) => {
+      cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+
+      cy.get(`#${C.test_ids.auth.user_menu_email}`)
+        .should('be.visible')
+        .invoke('text')
+        .should('eq', session.user.email)
+    })
+  })
+
+  it('should logout via user menu sign out option on desktop viewport', () => {
+    cy.disableBypass()
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+    cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible').click()
+
+    cy.getCookie('cypress-bypass').should('not.exist')
+    cy.url().should('include', C.routes.login)
+    cy.get(`#${C.test_ids.auth.login_page}`).should('be.visible')
+  })
+})

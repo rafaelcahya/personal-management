@@ -101,6 +101,26 @@ Rules:
 - Append new entries to Automated Test Cases table (keep all previous entries)
 - Update the Coverage Summary totals to reflect the current cumulative state
 
+### 5. Test Status Report
+
+`cypress/reports/test-status-report.md` is a cumulative report that **must be updated** whenever:
+
+- A new feature has its tests written
+- New test cases are added to an existing feature
+- A feature is removed or deprecated
+- A test suite is executed (update the `Last Tested` column)
+
+Rules:
+
+- Never overwrite from scratch — always read the existing file first, then update only the relevant rows
+- Add new rows to the appropriate module table for new features
+- Update the `Last Tested` column to the most recent run date
+- Update the `Automation` column with the latest test case count (recount `it(` in changed files)
+- Recalculate the Summary table at the top (total manual + automation)
+- Recalculate the Staleness Alert — recompute "Days Since Last Test" based on today's date
+- If a feature is removed, mark the row as `[DEPRECATED]` — never delete rows
+- Date format: YYYY-MM-DD
+
 Save to `cypress/reports/coverage-report.md`:
 
 ```markdown
