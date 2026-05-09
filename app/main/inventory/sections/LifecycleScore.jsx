@@ -2,20 +2,55 @@
 
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import SkeletonRows from '../components/SkeletonRows'
 
-function DurationBadge({ days }) {
-  let cls = 'bg-green-100 text-green-700 border-green-200'
-  if (days < 30) cls = 'bg-red-100 text-red-700 border-red-200'
-  else if (days < 60) cls = 'bg-yellow-100 text-yellow-700 border-yellow-200'
+function TierBadge({ score }) {
+  if (score >= 80)
+    return (
+      <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-violet-100 text-violet-700 border-violet-200">
+        S
+      </span>
+    )
+  if (score >= 60)
+    return (
+      <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-green-100 text-green-700 border-green-200">
+        A
+      </span>
+    )
+  if (score >= 40)
+    return (
+      <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-yellow-100 text-yellow-700 border-yellow-200">
+        B
+      </span>
+    )
   return (
-    <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${cls}`}>
-      {days} days
+    <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-slate-100 text-slate-500 border-slate-200">
+      C
     </span>
   )
 }
 
-function DurationTable({ data }) {
+function ScoreBar({ score }) {
+  const color =
+    score >= 80
+      ? 'bg-violet-500'
+      : score >= 60
+        ? 'bg-green-500'
+        : score >= 40
+          ? 'bg-yellow-400'
+          : 'bg-slate-300'
+  return (
+    <div className="flex items-center gap-2">
+      <div className="w-20 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+        <div className={`h-1.5 rounded-full ${color}`} style={{ width: `${score}%` }} />
+      </div>
+      <span className="text-xs font-semibold text-slate-600 w-6 text-right">{score}</span>
+    </div>
+  )
+}
+
+function ScoreTable({ items }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -27,15 +62,24 @@ function DurationTable({ data }) {
             <th className="text-left py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Product
             </th>
-            <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide rounded-r-lg">
+            <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide hidden md:table-cell">
+              Cost/Use
+            </th>
+            <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide hidden sm:table-cell">
               Avg Duration
+            </th>
+            <th className="text-center py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide hidden sm:table-cell">
+              Tier
+            </th>
+            <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide rounded-r-lg">
+              Score
             </th>
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
+          {items.map((item, index) => (
             <tr
-              key={item.product_list_id}
+              key={item.id}
               className="border-b border-slate-100 hover:bg-violet-50/30 transition-colors"
             >
               <td className="py-3 px-3 text-slate-400 text-xs">{index + 1}</td>
@@ -52,8 +96,19 @@ function DurationTable({ data }) {
                   )}
                 </div>
               </td>
-              <td className="py-3 px-3 text-right">
-                <DurationBadge days={item.avg_days} />
+              <td className="py-3 px-3 text-right text-slate-600 text-sm hidden md:table-cell">
+                {formatRupiah(item.cost_per_use)}
+              </td>
+              <td className="py-3 px-3 text-right text-slate-600 text-sm hidden sm:table-cell">
+                {item.avg_days} days
+              </td>
+              <td className="py-3 px-3 text-center hidden sm:table-cell">
+                <TierBadge score={item.score} />
+              </td>
+              <td className="py-3 px-3">
+                <div className="flex justify-end">
+                  <ScoreBar score={item.score} />
+                </div>
               </td>
             </tr>
           ))}
@@ -63,7 +118,7 @@ function DurationTable({ data }) {
   )
 }
 
-export default function AvgUsageDuration({ items, loading }) {
+export default function LifecycleScore({ items, loading }) {
   const [modalOpen, setModalOpen] = useState(false)
   const top5 = items.slice(0, 5)
 
@@ -71,9 +126,9 @@ export default function AvgUsageDuration({ items, loading }) {
     <>
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-base font-semibold text-slate-800">⏱️ Avg Usage Duration</h2>
+          <h2 className="text-base font-semibold text-slate-800">🏆 Product Lifecycle Score</h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            How long each product typically lasts per session
+            Composite score based on cost efficiency and usage duration
           </p>
         </div>
         <div className="px-2 py-2">
@@ -81,10 +136,10 @@ export default function AvgUsageDuration({ items, loading }) {
             <SkeletonRows count={5} />
           ) : items.length === 0 ? (
             <div className="py-8 text-center">
-              <p className="text-sm text-slate-400">Not enough usage data yet 📊</p>
+              <p className="text-sm text-slate-400">Not enough data to score products 📊</p>
             </div>
           ) : (
-            <DurationTable data={top5} />
+            <ScoreTable items={top5} />
           )}
         </div>
         {!loading && items.length > 0 && (
@@ -103,12 +158,12 @@ export default function AvgUsageDuration({ items, loading }) {
         <DialogContent className="max-w-2xl w-full max-h-[85vh] flex flex-col p-0 gap-0">
           <DialogHeader className="px-6 py-4 border-b border-slate-100 shrink-0">
             <DialogTitle className="text-base font-semibold text-slate-800">
-              All Products — Avg Usage Duration
+              All Products — Lifecycle Score
             </DialogTitle>
-            <p className="text-xs text-slate-400 mt-0.5">Sorted by longest average duration</p>
+            <p className="text-xs text-slate-400 mt-0.5">Sorted by highest score</p>
           </DialogHeader>
           <div className="overflow-y-auto flex-1 px-2 py-2">
-            <DurationTable data={items} />
+            <ScoreTable items={items} />
           </div>
         </DialogContent>
       </Dialog>
