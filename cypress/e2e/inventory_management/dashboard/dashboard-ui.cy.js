@@ -1208,6 +1208,222 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
   })
 
   // =========================================================================
+  // Mobile Responsiveness
+  // =========================================================================
+  describe('Mobile Responsiveness', () => {
+    beforeEach(() => {
+      cy.viewport(375, 812)
+    })
+
+    // --- Cost Per Use ---
+    describe('Cost Per Use - mobile', () => {
+      const cpuProduct = {
+        id: 1,
+        product: 'Vitamin C Complex Serum',
+        brand: 'The Ordinary',
+        type: 'Skin Care',
+        quantity: 2,
+        product_status: 'active',
+        is_favorite: false,
+        total_spent: 120000,
+        total_units: 12,
+        cost_per_use: 10000,
+      }
+
+      beforeEach(() => {
+        stubDashboard({ ...emptyDashboardData, top5: [cpuProduct], all: [cpuProduct] })
+        stubSummary()
+        cy.visit(INVENTORY_URL)
+        cy.wait(['@dashboardApi', '@summaryApi'])
+      })
+
+      it('should show product name visible and not truncated on mobile', () => {
+        cy.contains('Vitamin C Complex Serum')
+          .should('be.visible')
+          .then(($el) => {
+            expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
+          })
+      })
+
+      it('should show status badge visible on mobile', () => {
+        cy.contains('h2', 'Cost Per Use')
+          .parents('.bg-white')
+          .contains(/[Aa]ctive/)
+          .should('be.visible')
+      })
+    })
+
+    // --- Restock Prediction ---
+    describe('Restock Prediction - mobile', () => {
+      const restockProduct = {
+        id: 1,
+        product: 'Daily Moisturizing Lotion',
+        brand: 'Cetaphil',
+        type: 'Skin Care',
+        quantity: 3,
+        avg_days: 30,
+        days_until_empty: 90,
+        predicted_date: '2026-08-07',
+      }
+
+      beforeEach(() => {
+        stubDashboard({ ...emptyDashboardData, restockPrediction: [restockProduct] })
+        stubSummary()
+        cy.visit(INVENTORY_URL)
+        cy.wait(['@dashboardApi', '@summaryApi'])
+      })
+
+      it('should show product name visible and not truncated on mobile', () => {
+        cy.contains('Daily Moisturizing Lotion')
+          .should('be.visible')
+          .then(($el) => {
+            expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
+          })
+      })
+
+      it('should show urgency badge visible on mobile', () => {
+        cy.contains('Restock Prediction')
+          .parents('.bg-white')
+          .contains('6+ Months')
+          .should('be.visible')
+      })
+    })
+
+    // --- Product Lifecycle Score ---
+    describe('Product Lifecycle Score - mobile', () => {
+      const lifecycleProduct = {
+        id: 1,
+        product: 'Nourishing Hair Treatment',
+        brand: 'Pantene',
+        type: 'Hair Care',
+        cost_per_use: 2500,
+        avg_days: 60,
+        score: 85,
+      }
+
+      beforeEach(() => {
+        stubDashboard({ ...emptyDashboardData, lifecycleScore: [lifecycleProduct] })
+        stubSummary()
+        cy.visit(INVENTORY_URL)
+        cy.wait(['@dashboardApi', '@summaryApi'])
+      })
+
+      it('should show product name visible and not truncated on mobile', () => {
+        cy.contains('Nourishing Hair Treatment')
+          .should('be.visible')
+          .then(($el) => {
+            expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
+          })
+      })
+
+      it('should show tier/score badge visible on mobile', () => {
+        cy.contains('Product Lifecycle Score')
+          .parents('.bg-white')
+          .contains('S')
+          .should('be.visible')
+      })
+    })
+
+    // --- Avg Usage Duration ---
+    describe('Avg Usage Duration - mobile', () => {
+      const durationProduct = {
+        product_list_id: 1,
+        product: 'Moisturizing Body Wash',
+        brand: 'Dove',
+        type: 'Body Wash',
+        avg_days: 30,
+      }
+
+      beforeEach(() => {
+        stubDashboard({ ...emptyDashboardData, avgUsageDuration: [durationProduct] })
+        stubSummary()
+        cy.visit(INVENTORY_URL)
+        cy.wait(['@dashboardApi', '@summaryApi'])
+      })
+
+      it('should show product name visible and not truncated on mobile', () => {
+        cy.contains('Moisturizing Body Wash')
+          .should('be.visible')
+          .then(($el) => {
+            expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
+          })
+      })
+
+      it('should show duration badge visible on mobile', () => {
+        cy.contains('Avg Usage Duration')
+          .parents('.bg-white')
+          .contains('30 days')
+          .should('be.visible')
+      })
+    })
+
+    // --- Most Restocked ---
+    describe('Most Restocked - mobile', () => {
+      const restockedProduct = {
+        id: 1,
+        product: 'Antibacterial Hand Soap',
+        brand: 'Dettol',
+        type: 'Hand Care',
+        restock_count: 7,
+        last_restock_date: '2026-04-20',
+      }
+
+      beforeEach(() => {
+        stubDashboard({ ...emptyDashboardData, mostRestocked: [restockedProduct] })
+        stubSummary()
+        cy.visit(INVENTORY_URL)
+        cy.wait(['@dashboardApi', '@summaryApi'])
+      })
+
+      it('should show product name visible and not truncated on mobile', () => {
+        cy.contains('Antibacterial Hand Soap')
+          .should('be.visible')
+          .then(($el) => {
+            expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
+          })
+      })
+
+      it('should show restock count badge visible on mobile', () => {
+        cy.contains('Most Restocked').parents('.bg-white').contains('7×').should('be.visible')
+      })
+    })
+
+    // --- Low Stock Alert ---
+    describe('Low Stock Alert - mobile', () => {
+      const lowStockProduct = {
+        id: 1,
+        product: 'Facial Cleanser Gel',
+        brand: 'CeraVe',
+        type: 'Skin Care',
+        quantity: 1,
+        product_status: 'active',
+      }
+
+      beforeEach(() => {
+        stubDashboard({ ...emptyDashboardData, lowStockAlerts: [lowStockProduct] })
+        stubSummary()
+        cy.visit(INVENTORY_URL)
+        cy.wait(['@dashboardApi', '@summaryApi'])
+      })
+
+      it('should show product name visible and not truncated on mobile', () => {
+        cy.contains('Facial Cleanser Gel')
+          .should('be.visible')
+          .then(($el) => {
+            expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
+          })
+      })
+
+      it('should show stock status badge visible on mobile', () => {
+        cy.contains('Low Stock Alert')
+          .parents('.bg-white')
+          .contains('Low: 1 left')
+          .should('be.visible')
+      })
+    })
+  })
+
+  // =========================================================================
   // Layout & Responsive
   // =========================================================================
   describe('Layout & Responsive', () => {
