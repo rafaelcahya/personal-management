@@ -155,18 +155,17 @@ export default function SpendingHeatmap({ items, loading }) {
               </p>
             </div>
           )}
-
-          {/* Legend */}
-          <div className="flex items-center gap-1.5 mt-3">
-            <span className="text-[10px] text-slate-400">Less</span>
-            {LEVELS.map((l, i) => (
-              <div key={i} className={`w-[11px] h-[11px] rounded-[2px] ${l.bg}`} title={l.label} />
-            ))}
-            <span className="text-[10px] text-slate-400">More</span>
-          </div>
         </div>
         {/* Scroll indicator — visible only on mobile */}
         <div className="md:hidden absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-white to-transparent pointer-events-none rounded-r-xl" />
+      </div>
+      {/* Legend */}
+      <div className="px-5 pb-4 flex items-center gap-1.5">
+        <span className="text-[10px] text-slate-400">Less</span>
+        {LEVELS.map((l, i) => (
+          <div key={i} className={`w-[11px] h-[11px] rounded-[2px] ${l.bg}`} title={l.label} />
+        ))}
+        <span className="text-[10px] text-slate-400">More</span>
       </div>
     </div>
   )

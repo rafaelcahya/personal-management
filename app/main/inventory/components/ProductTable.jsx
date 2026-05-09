@@ -73,8 +73,8 @@ export default function ProductTable({ products }) {
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                  <p className="font-medium text-slate-700">{item.product}</p>
+                <div className="flex flex-wrap items-center gap-1.5 mt-0.5 min-w-0">
+                  <p className="font-medium text-slate-700 break-words min-w-0">{item.product}</p>
                   {item.type && (
                     <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
                       {item.type}
@@ -87,20 +87,22 @@ export default function ProductTable({ products }) {
                 <StatusBadge status={item.product_status} />
               </div>
             </div>
-            <div className="mt-2 pt-2 border-t border-slate-100 grid grid-cols-3 gap-2 text-xs">
+            <div className="mt-2 pt-2 border-t border-slate-100 flex flex-wrap justify-between gap-2 text-xs">
               <div>
                 <p className="text-slate-400">Total Spent</p>
-                <p className="font-medium text-slate-600 mt-0.5">
+                <p className="font-medium text-slate-600 mt-0.5 whitespace-nowrap">
                   {item.total_spent != null ? formatRupiah(item.total_spent) : '—'}
                 </p>
               </div>
               <div>
                 <p className="text-slate-400">Total Units</p>
-                <p className="font-medium text-slate-600 mt-0.5">{item.total_units ?? '—'}</p>
+                <p className="font-medium text-slate-600 mt-0.5 whitespace-nowrap">
+                  {item.total_units ?? '—'}
+                </p>
               </div>
               <div>
                 <p className="text-slate-400">Cost/Use</p>
-                <p className="font-semibold text-violet-700 mt-0.5">
+                <p className="font-semibold text-violet-700 mt-0.5 whitespace-nowrap">
                   {item.cost_per_use != null ? formatRupiah(item.cost_per_use) : '—'}
                 </p>
               </div>

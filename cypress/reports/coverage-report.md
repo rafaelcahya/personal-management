@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-09
+**Last Updated:** 2026-05-09 (Run #3 — Final)
 **App Version:** 1.6.1
 
 ## Coverage Summary
@@ -18,6 +18,16 @@
 | Trading - Fee             | 6              | 6         | 0           | 0          | 100%       |
 | Trading - Event           | 6              | 6         | 0           | 0          | 100%       |
 | **Total**                 | **69**         | **68**    | **1**       | **0**      | **98%**    |
+
+> **Note (2026-05-09 Run #3):** Coverage % reflects feature coverage (which features have tests), not pass rate. Dashboard UI memiliki 100% feature coverage dan 100% pass rate setelah fix `.scrollIntoView()` diterapkan.
+
+## Last Execution Results (2026-05-09 Run #3 — Final)
+
+| Spec File                                     | Tests | Passing | Failing | Pass Rate | Duration  |
+| --------------------------------------------- | ----- | ------- | ------- | --------- | --------- |
+| dashboard-ui.cy.js                            | 88    | 88      | 0       | 100%      | ~6m       |
+
+**Status: Clean run ✅ — Semua 88 test pass.**
 
 ## Automated Test Cases
 
@@ -41,7 +51,7 @@
 | 16  | cypress/e2e/landing_page/landing-page.cy.js                           | Responsive Layout (3 viewports)      | 3          | Mobile/tablet/desktop layout |
 | 17  | cypress/e2e/landing_page/landing-page.cy.js                           | Mobile/Tablet/Desktop Interactions   | 9          | Per-viewport interactions    |
 | 18  | cypress/e2e/landing_page/landing-page.cy.js                           | User Menu (4 viewports)              | 16         | UserMenu trigger & sign out  |
-| 19  | cypress/e2e/inventory_management/dashboard/dashboard-ui.cy.js         | Dashboard UI                         | 64         | Inventory dashboard display  |
+| 19  | cypress/e2e/inventory_management/dashboard/dashboard-ui.cy.js         | Dashboard UI                         | 88         | Inventory dashboard display  |
 | 20  | cypress/e2e/inventory_management/dashboard/dashboard-api.cy.js        | Dashboard API                        | 56         | Dashboard API responses      |
 | 21  | cypress/e2e/inventory_management/dashboard/summary-api.cy.js          | Summary API                          | 17         | Inventory summary API        |
 | 22  | cypress/e2e/inventory_management/product/list-product.cy.js           | List Product                         | 26         | Product list view            |
@@ -85,7 +95,7 @@
 | 60  | cypress/e2e/trading_management/event/delete-event.cy.js               | Delete Event                         | 9          | Event deletion flow          |
 | 61  | cypress/e2e/trading_management/event/summary-event.cy.js              | Event Summary                        | 25         | Event summary API            |
 
-**Total Automated Test Cases: 1,354**
+**Total Automated Test Cases: 1,378**
 
 ## Manual Test Cases (not yet automated)
 

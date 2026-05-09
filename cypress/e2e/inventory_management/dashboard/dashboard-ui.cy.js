@@ -115,7 +115,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
   // Summary Cards
   // =========================================================================
   describe('Summary Cards', () => {
-    it('should render 6 summary cards with titles', () => {
+    it('should render 6 summary cards with correct titles', () => {
       stubDashboard()
       stubSummary({
         totalProducts: 10,
@@ -130,10 +130,26 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
 
       cy.contains('Total Products').should('be.visible')
       cy.contains('Active').should('be.visible')
-      cy.contains('Inactive').should('be.visible')
+      cy.contains('Low Stock').should('be.visible')
       cy.contains('Total Stock').should('be.visible')
       cy.contains('In Use').should('be.visible')
       cy.contains('Favorites').should('be.visible')
+    })
+
+    it('should NOT render "Inactive" card title (replaced by Low Stock)', () => {
+      stubDashboard()
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      cy.contains('Inactive').should('not.exist')
     })
 
     it('should display numeric values in summary cards', () => {
@@ -151,10 +167,241 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
 
       cy.contains('10').should('be.visible')
       cy.contains('7').should('be.visible')
-      cy.contains('3').should('be.visible')
       cy.contains('45').should('be.visible')
       cy.contains('12').should('be.visible')
       cy.contains('4').should('be.visible')
+    })
+
+    it('should display Low Stock count from lowStockAlerts length (not inactiveProducts)', () => {
+      stubDashboard({
+        ...emptyDashboardData,
+        lowStockAlerts: [
+          {
+            id: 1,
+            product: 'Sabun',
+            brand: 'Lifebuoy',
+            type: 'Body Wash',
+            quantity: 0,
+            product_status: 'active',
+          },
+          {
+            id: 2,
+            product: 'Pasta Gigi',
+            brand: 'Pepsodent',
+            type: 'Oral Care',
+            quantity: 1,
+            product_status: 'active',
+          },
+        ],
+      })
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      // Low Stock card value should show 2 (length of lowStockAlerts), not inactiveProducts (3)
+      cy.contains('Low Stock').closest('button').contains('2').should('be.visible')
+    })
+
+    it('should display sub-label "of X products" on the Active card', () => {
+      stubDashboard()
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      // Scope to the summary cards grid — find the button containing "Active" title text
+      cy.contains('Total Products')
+        .parents('.grid')
+        .contains('button', 'Active')
+        .contains('of 10 products')
+        .should('be.visible')
+    })
+
+    it('should NOT show sub-label on cards other than Active', () => {
+      stubDashboard()
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      // Only the Active card should show a sub-label
+      cy.contains('Total Products').closest('button').should('not.contain', 'of 10 products')
+      cy.contains('Low Stock').closest('button').should('not.contain', 'of 10 products')
+      cy.contains('Total Stock').closest('button').should('not.contain', 'of 10 products')
+    })
+
+    it('should set localStorage "product-list-filter" to "active" when Active card is clicked', () => {
+      stubDashboard()
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      // Scope to the summary cards grid to avoid matching "Active" text in product tables
+      cy.contains('Total Products').parents('.grid').contains('button', 'Active').click()
+
+      cy.window().then((win) => {
+        expect(win.localStorage.getItem('product-list-filter')).to.eq('active')
+      })
+    })
+
+    it('should set localStorage "product-list-filter" to "low-stock" when Low Stock card is clicked', () => {
+      stubDashboard()
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      cy.contains('Low Stock').closest('button').click()
+
+      cy.window().then((win) => {
+        expect(win.localStorage.getItem('product-list-filter')).to.eq('low-stock')
+      })
+    })
+
+    it('should set localStorage "product-list-filter" to "favorite" when Favorites card is clicked', () => {
+      stubDashboard()
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      cy.contains('Favorites').closest('button').click()
+
+      cy.window().then((win) => {
+        expect(win.localStorage.getItem('product-list-filter')).to.eq('favorite')
+      })
+    })
+
+    it('should NOT set localStorage filter when Total Products card is clicked (filter is null)', () => {
+      stubDashboard()
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      cy.clearLocalStorage('product-list-filter')
+      cy.contains('Total Products').closest('button').click()
+
+      cy.window().then((win) => {
+        expect(win.localStorage.getItem('product-list-filter')).to.be.null
+      })
+    })
+
+    it('should navigate to /main/inventory/product-list when any summary card is clicked', () => {
+      stubDashboard()
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      cy.contains('Total Products').closest('button').click()
+
+      cy.url().should('include', '/main/inventory/product-list')
+    })
+
+    it('should show skeleton loading (animate-pulse) on summary cards while data is loading', () => {
+      cy.intercept('GET', SUMMARY_API, (req) => {
+        req.on('response', (res) => {
+          res.setDelay(800)
+        })
+      }).as('slowSummary')
+      stubDashboard()
+      cy.visit(INVENTORY_URL)
+
+      cy.get('.animate-pulse').should('exist')
+    })
+
+    it('should render summary card icons with aria-hidden="true"', () => {
+      stubDashboard()
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      // All icons inside summary cards should have aria-hidden
+      cy.contains('Total Products')
+        .parents('.grid')
+        .find('[aria-hidden="true"]')
+        .should('have.length.gte', 6)
+    })
+
+    it('should render summary cards as buttons accessible via keyboard (tab navigation)', () => {
+      stubDashboard()
+      stubSummary({
+        totalProducts: 10,
+        activeProducts: 7,
+        inactiveProducts: 3,
+        totalQuantity: 45,
+        totalUsageQuantity: 12,
+        favoriteProducts: 4,
+      })
+      cy.visit(INVENTORY_URL)
+      cy.wait(['@dashboardApi', '@summaryApi'])
+
+      // All 6 summary card buttons should be in the DOM and focusable
+      cy.contains('Total Products')
+        .parents('.grid')
+        .find('button')
+        .should('have.length', 6)
+        .each(($btn) => {
+          cy.wrap($btn).should('not.have.attr', 'disabled')
+        })
     })
   })
 
@@ -267,7 +514,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Most Restocked').should('be.visible')
+      cy.contains('Most Restocked').scrollIntoView().should('be.visible')
     })
 
     it("should show empty state 'No restock history yet' when data is empty", () => {
@@ -275,7 +522,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('No restock history yet').should('be.visible')
+      cy.contains('No restock history yet').scrollIntoView().should('be.visible')
     })
 
     it('should render table with restock count badge when data exists', () => {
@@ -295,8 +542,8 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Shampoo').should('be.visible')
-      cy.contains('5×').should('be.visible')
+      cy.contains('Shampoo').scrollIntoView().should('be.visible')
+      cy.contains('5×').scrollIntoView().should('be.visible')
     })
 
     it("should show 'View All' button when data exists", () => {
@@ -316,7 +563,11 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Most Restocked').parents('.bg-white').contains('View All').should('be.visible')
+      cy.contains('Most Restocked')
+        .parents('.bg-white')
+        .contains('View All')
+        .scrollIntoView()
+        .should('be.visible')
     })
 
     it("should open modal with title 'All Products — Restock History' on View All click", () => {
@@ -336,7 +587,12 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Most Restocked').parents('.bg-white').contains('View All').click()
+      cy.contains('Most Restocked')
+        .parents('.bg-white')
+        .contains('View All')
+        .scrollIntoView()
+        .should('be.visible')
+        .click()
       cy.contains('All Products — Restock History').should('be.visible')
     })
   })
@@ -350,7 +606,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('h2', 'Cost Per Use').should('be.visible')
+      cy.contains('h2', 'Cost Per Use').scrollIntoView().should('be.visible')
     })
 
     it("should show empty state 'No products yet.' when data is empty", () => {
@@ -358,7 +614,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('No products yet.').should('be.visible')
+      cy.contains('No products yet.').scrollIntoView().should('be.visible')
     })
 
     it('should render table when top5 data exists', () => {
@@ -396,7 +652,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Shampoo').should('be.visible')
+      cy.contains('Shampoo').scrollIntoView().should('be.visible')
     })
 
     it("should show 'View All' button when top5 data exists", () => {
@@ -439,6 +695,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.contains('h2', 'Cost Per Use')
         .parents('.bg-white')
         .contains('View All')
+        .scrollIntoView()
         .should('be.visible')
     })
 
@@ -478,7 +735,12 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
 
-      cy.contains('h2', 'Cost Per Use').parents('.bg-white').contains('View All').click()
+      cy.contains('h2', 'Cost Per Use')
+        .parents('.bg-white')
+        .contains('View All')
+        .scrollIntoView()
+        .should('be.visible')
+        .click()
 
       cy.contains('All Products — Cost Per Used').should('be.visible')
     })
@@ -493,7 +755,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Low Stock Alert').should('be.visible')
+      cy.contains('Low Stock Alert').scrollIntoView().should('be.visible')
     })
 
     it("should show 'All good!' empty state when no low stock items", () => {
@@ -501,7 +763,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('All good! Stock levels are healthy').should('be.visible')
+      cy.contains('All good! Stock levels are healthy').scrollIntoView().should('be.visible')
     })
 
     it("should show 'Out of Stock' badge when quantity is 0", () => {
@@ -521,7 +783,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Out of Stock').should('be.visible')
+      cy.contains('Out of Stock').scrollIntoView().should('be.visible')
     })
 
     it("should show 'Low: X left' badge when quantity is 1-2", () => {
@@ -541,7 +803,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Low: 1 left').should('be.visible')
+      cy.contains('Low: 1 left').scrollIntoView().should('be.visible')
     })
 
     it("should show 'View All' button when low stock data exists", () => {
@@ -562,7 +824,11 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
 
-      cy.contains('Low Stock Alert').parents('.bg-white').contains('View All').should('be.visible')
+      cy.contains('Low Stock Alert')
+        .parents('.bg-white')
+        .contains('View All')
+        .scrollIntoView()
+        .should('be.visible')
     })
 
     it("should open modal with title 'All Low Stock Products' on View All click", () => {
@@ -583,7 +849,12 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
 
-      cy.contains('Low Stock Alert').parents('.bg-white').contains('View All').click()
+      cy.contains('Low Stock Alert')
+        .parents('.bg-white')
+        .contains('View All')
+        .scrollIntoView()
+        .should('be.visible')
+        .click()
 
       cy.contains('All Low Stock Products').should('be.visible')
     })
@@ -598,7 +869,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Monthly Spend by Type').should('be.visible')
+      cy.contains('Monthly Spend by Type').scrollIntoView().should('be.visible')
     })
 
     it("should show empty state 'No purchase data yet' when no data", () => {
@@ -606,7 +877,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('No purchase data yet').should('be.visible')
+      cy.contains('No purchase data yet').scrollIntoView().should('be.visible')
     })
 
     it('should render grouped data with month header and product rows', () => {
@@ -632,8 +903,8 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Body Foam').should('be.visible')
-      cy.contains('Shampoo').should('be.visible')
+      cy.contains('Body Foam').scrollIntoView().should('be.visible')
+      cy.contains('Shampoo').scrollIntoView().should('be.visible')
     })
 
     it('should display type badge alongside product name', () => {
@@ -652,7 +923,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Body Wash').should('be.visible')
+      cy.contains('Body Wash').scrollIntoView().should('be.visible')
     })
 
     it('should format total_spent as Rupiah', () => {
@@ -671,7 +942,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Rp').should('be.visible')
+      cy.contains('Rp').scrollIntoView().should('be.visible')
     })
 
     it('should show This Month total in header when current month data exists', () => {
@@ -693,6 +964,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.contains('Monthly Spend by Type')
         .parents('.bg-white')
         .contains('This month')
+        .scrollIntoView()
         .should('be.visible')
     })
 
@@ -705,7 +977,12 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
 
-      cy.contains('Monthly Spend by Type').parents('.bg-white').contains('View All').click()
+      cy.contains('Monthly Spend by Type')
+        .parents('.bg-white')
+        .contains('View All')
+        .scrollIntoView()
+        .should('be.visible')
+        .click()
 
       // Modal dialog title
       cy.get("[role='dialog']").contains('Monthly Spend by Type').should('be.visible')
@@ -727,7 +1004,12 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Monthly Spend by Type').parents('.bg-white').contains('View All').click()
+      cy.contains('Monthly Spend by Type')
+        .parents('.bg-white')
+        .contains('View All')
+        .scrollIntoView()
+        .should('be.visible')
+        .click()
       cy.get("[role='dialog']").contains('Body Foam').should('be.visible')
     })
   })
@@ -741,7 +1023,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Avg Cost/Use Over Time').should('be.visible')
+      cy.contains('Avg Cost/Use Over Time').scrollIntoView().should('be.visible')
     })
 
     it("should show empty state 'No purchase history yet' when data is empty", () => {
@@ -749,7 +1031,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('No purchase history yet').should('be.visible')
+      cy.contains('No purchase history yet').scrollIntoView().should('be.visible')
     })
 
     it('should render product selector when data exists', () => {
@@ -815,7 +1097,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Not enough purchases to show a trend yet.').should('be.visible')
+      cy.contains('Not enough purchases to show a trend yet.').scrollIntoView().should('be.visible')
     })
   })
 
@@ -828,7 +1110,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Avg Usage Duration').should('be.visible')
+      cy.contains('Average Usage Duration').scrollIntoView().should('be.visible')
     })
 
     it("should show empty state 'Not enough usage data yet' when no data", () => {
@@ -836,7 +1118,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Not enough usage data yet').should('be.visible')
+      cy.contains('Not enough usage data yet').scrollIntoView().should('be.visible')
     })
 
     it("should render duration badge with 'days' text", () => {
@@ -855,7 +1137,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('45 days').should('be.visible')
+      cy.contains('45 days').scrollIntoView().should('be.visible')
     })
 
     it("should open modal with title 'All Products — Avg Usage Duration' on View All click", () => {
@@ -875,9 +1157,14 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
 
-      cy.contains('Avg Usage Duration').parents('.bg-white').contains('View All').click()
+      cy.contains('Average Usage Duration')
+        .parents('.bg-white')
+        .contains('View All')
+        .scrollIntoView()
+        .should('be.visible')
+        .click()
 
-      cy.contains('All Products — Avg Usage Duration').should('be.visible')
+      cy.contains('All Products — Average Usage Duration').should('be.visible')
     })
   })
 
@@ -890,7 +1177,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Restock Prediction').should('be.visible')
+      cy.contains('Restock Prediction').scrollIntoView().should('be.visible')
     })
 
     it('should show empty state when data is empty', () => {
@@ -898,7 +1185,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Not enough usage data to predict').should('be.visible')
+      cy.contains('Not enough usage data to predict').scrollIntoView().should('be.visible')
     })
 
     it('should render product name and urgency badge when data exists', () => {
@@ -920,8 +1207,8 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Shampoo').should('be.visible')
-      cy.contains('6+ Months').should('be.visible')
+      cy.contains('Shampoo').scrollIntoView().should('be.visible')
+      cy.contains('6+ Months').scrollIntoView().should('be.visible')
     })
 
     it("should show 'Out of Stock' badge when quantity is 0", () => {
@@ -943,7 +1230,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Out of Stock').should('be.visible')
+      cy.contains('Out of Stock').scrollIntoView().should('be.visible')
     })
 
     it("should open modal 'All Products — Restock Prediction' on View All click", () => {
@@ -965,7 +1252,12 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Restock Prediction').parents('.bg-white').contains('View All').click()
+      cy.contains('Restock Prediction')
+        .parents('.bg-white')
+        .contains('View All')
+        .scrollIntoView()
+        .should('be.visible')
+        .click()
       cy.contains('All Products — Restock Prediction').should('be.visible')
     })
   })
@@ -979,7 +1271,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Monthly Budget Tracker').should('be.visible')
+      cy.contains('Monthly Budget Tracker').scrollIntoView().should('be.visible')
     })
 
     it('should show empty state when no spend data this month', () => {
@@ -987,7 +1279,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('No spend data this month').should('be.visible')
+      cy.contains('No spend data this month').scrollIntoView().should('be.visible')
     })
 
     it('should render type row with actual spend amount', () => {
@@ -1009,6 +1301,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.contains('Monthly Budget Tracker')
         .parents('.bg-white')
         .contains('Body Wash')
+        .scrollIntoView()
         .should('be.visible')
     })
 
@@ -1031,6 +1324,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.contains('Monthly Budget Tracker')
         .parents('.bg-white')
         .contains('Set budget')
+        .scrollIntoView()
         .should('be.visible')
     })
 
@@ -1054,6 +1348,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.contains('Monthly Budget Tracker')
         .parents('.bg-white')
         .contains('50%')
+        .scrollIntoView()
         .should('be.visible')
     })
   })
@@ -1067,7 +1362,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Spending Heatmap').should('be.visible')
+      cy.contains('Spending Heatmap').scrollIntoView().should('be.visible')
     })
 
     it('should render heatmap grid cells when data exists', () => {
@@ -1092,8 +1387,16 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Spending Heatmap').parents('.bg-white').contains('Less').should('be.visible')
-      cy.contains('Spending Heatmap').parents('.bg-white').contains('More').should('be.visible')
+      cy.contains('Spending Heatmap')
+        .parents('.bg-white')
+        .contains('Less')
+        .scrollIntoView()
+        .should('be.visible')
+      cy.contains('Spending Heatmap')
+        .parents('.bg-white')
+        .contains('More')
+        .scrollIntoView()
+        .should('be.visible')
     })
   })
 
@@ -1106,7 +1409,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Product Lifecycle Score').should('be.visible')
+      cy.contains('Product Lifecycle Score').scrollIntoView().should('be.visible')
     })
 
     it('should show empty state when data is empty', () => {
@@ -1114,7 +1417,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Not enough data to score products').should('be.visible')
+      cy.contains('Not enough data to score products').scrollIntoView().should('be.visible')
     })
 
     it('should render product with tier badge when data exists', () => {
@@ -1135,8 +1438,8 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Shampoo').should('be.visible')
-      cy.contains('S').should('be.visible')
+      cy.contains('Shampoo').scrollIntoView().should('be.visible')
+      cy.contains('S').scrollIntoView().should('be.visible')
     })
 
     it("should open modal 'All Products — Lifecycle Score' on View All click", () => {
@@ -1157,7 +1460,12 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       stubSummary()
       cy.visit(INVENTORY_URL)
       cy.wait(['@dashboardApi', '@summaryApi'])
-      cy.contains('Product Lifecycle Score').parents('.bg-white').contains('View All').click()
+      cy.contains('Product Lifecycle Score')
+        .parents('.bg-white')
+        .contains('View All')
+        .scrollIntoView()
+        .should('be.visible')
+        .click()
       cy.contains('All Products — Lifecycle Score').should('be.visible')
     })
   })
@@ -1203,7 +1511,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
 
       // The client-side fetch throws with error.message from API response body
       // CostPerUse renders the error string directly in a <p> tag
-      cy.contains('Internal Server Error').should('be.visible')
+      cy.contains('Internal Server Error').scrollIntoView().should('be.visible')
     })
   })
 
@@ -1238,7 +1546,9 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       })
 
       it('should show product name visible and not truncated on mobile', () => {
-        cy.contains('Vitamin C Complex Serum')
+        cy.get('.md\\:hidden')
+          .contains('Vitamin C Complex Serum')
+          .scrollIntoView()
           .should('be.visible')
           .then(($el) => {
             expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
@@ -1248,7 +1558,9 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       it('should show status badge visible on mobile', () => {
         cy.contains('h2', 'Cost Per Use')
           .parents('.bg-white')
+          .find('.md\\:hidden')
           .contains(/[Aa]ctive/)
+          .scrollIntoView()
           .should('be.visible')
       })
     })
@@ -1274,7 +1586,9 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       })
 
       it('should show product name visible and not truncated on mobile', () => {
-        cy.contains('Daily Moisturizing Lotion')
+        cy.get('.md\\:hidden')
+          .contains('Daily Moisturizing Lotion')
+          .scrollIntoView()
           .should('be.visible')
           .then(($el) => {
             expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
@@ -1284,7 +1598,9 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       it('should show urgency badge visible on mobile', () => {
         cy.contains('Restock Prediction')
           .parents('.bg-white')
+          .find('.md\\:hidden')
           .contains('6+ Months')
+          .scrollIntoView()
           .should('be.visible')
       })
     })
@@ -1309,7 +1625,9 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       })
 
       it('should show product name visible and not truncated on mobile', () => {
-        cy.contains('Nourishing Hair Treatment')
+        cy.get('.md\\:hidden')
+          .contains('Nourishing Hair Treatment')
+          .scrollIntoView()
           .should('be.visible')
           .then(($el) => {
             expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
@@ -1320,6 +1638,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
         cy.contains('Product Lifecycle Score')
           .parents('.bg-white')
           .contains('S')
+          .scrollIntoView()
           .should('be.visible')
       })
     })
@@ -1342,7 +1661,9 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       })
 
       it('should show product name visible and not truncated on mobile', () => {
-        cy.contains('Moisturizing Body Wash')
+        cy.get('.md\\:hidden')
+          .contains('Moisturizing Body Wash')
+          .scrollIntoView()
           .should('be.visible')
           .then(($el) => {
             expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
@@ -1350,9 +1671,11 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       })
 
       it('should show duration badge visible on mobile', () => {
-        cy.contains('Avg Usage Duration')
+        cy.contains('Average Usage Duration')
           .parents('.bg-white')
+          .find('.md\\:hidden')
           .contains('30 days')
+          .scrollIntoView()
           .should('be.visible')
       })
     })
@@ -1376,7 +1699,9 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       })
 
       it('should show product name visible and not truncated on mobile', () => {
-        cy.contains('Antibacterial Hand Soap')
+        cy.get('.md\\:hidden')
+          .contains('Antibacterial Hand Soap')
+          .scrollIntoView()
           .should('be.visible')
           .then(($el) => {
             expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
@@ -1384,7 +1709,12 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       })
 
       it('should show restock count badge visible on mobile', () => {
-        cy.contains('Most Restocked').parents('.bg-white').contains('7×').should('be.visible')
+        cy.contains('Most Restocked')
+          .parents('.bg-white')
+          .find('.md\\:hidden')
+          .contains('7×')
+          .scrollIntoView()
+          .should('be.visible')
       })
     })
 
@@ -1407,7 +1737,9 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       })
 
       it('should show product name visible and not truncated on mobile', () => {
-        cy.contains('Facial Cleanser Gel')
+        cy.get('.md\\:hidden')
+          .contains('Facial Cleanser Gel')
+          .scrollIntoView()
           .should('be.visible')
           .then(($el) => {
             expect($el[0].scrollWidth).to.be.lte($el[0].clientWidth)
@@ -1417,7 +1749,9 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       it('should show stock status badge visible on mobile', () => {
         cy.contains('Low Stock Alert')
           .parents('.bg-white')
+          .find('.md\\:hidden')
           .contains('Low: 1 left')
+          .scrollIntoView()
           .should('be.visible')
       })
     })

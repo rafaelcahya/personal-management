@@ -135,17 +135,17 @@ export default function SpendComparison({ data, loading }) {
 
       <div className="px-5 py-4 flex flex-col gap-5">
         {/* Stats row */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex gap-6">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+          <div className="flex flex-col sm:flex-row gap-6">
             <div>
               <p className="text-xs text-slate-400">{monthLabel(thisMonth.month)}</p>
-              <p className="text-xl font-bold text-slate-800 mt-0.5">
+              <p className="text-xl font-bold text-slate-800 mt-0.5 whitespace-nowrap">
                 {formatRupiah(thisMonth.total)}
               </p>
             </div>
             <div>
               <p className="text-xs text-slate-400">{monthLabel(lastMonth.month)}</p>
-              <p className="text-xl font-bold text-slate-400 mt-0.5">
+              <p className="text-xl font-bold text-slate-400 mt-0.5 whitespace-nowrap">
                 {formatRupiah(lastMonth.total)}
               </p>
             </div>

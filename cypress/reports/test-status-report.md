@@ -1,10 +1,12 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-09
+**Last Updated:** 2026-05-09 (Run #3 — Final)
 **App Version:** 1.6.1
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
 > "Last Tested" mengacu pada tanggal test file terakhir dijalankan secara eksplisit, atau tanggal commit terakhir sebagai proxy.
+
+> ✅ **Dashboard UI (2026-05-09 Run #3):** 88/88 passing (100%). Semua test pass setelah fix `.scrollIntoView()` dan koreksi text mismatch pada section "Average Usage Duration".
 
 ---
 
@@ -15,14 +17,14 @@
 | Auth                      | 2026-05-08   | 1      | 126        | 127   |
 | API Auth Guard            | 2026-05-04   | 0      | 59         | 59    |
 | Landing Page              | 2026-05-08   | 0      | 33         | 33    |
-| Inventory - Dashboard     | 2026-05-09   | 0      | 137        | 137   |
+| Inventory - Dashboard     | 2026-05-09   | 0      | 161        | 161   |
 | Inventory - Product       | 2026-03-20   | 0      | 321        | 321   |
 | Inventory - Product Brand | 2026-04-22   | 0      | 114        | 114   |
 | Inventory - Product Name  | 2026-03-20   | 0      | 114        | 114   |
 | Trading - Trade           | 2026-03-15   | 0      | 185        | 185   |
 | Trading - Fee             | 2026-03-15   | 0      | 131        | 131   |
 | Trading - Event           | 2026-03-15   | 0      | 134        | 134   |
-| **Total**                 |              | **1**  | **1.354**  | **1.355** |
+| **Total**                 |              | **1**  | **1.378**  | **1.379** |
 
 ---
 
@@ -72,7 +74,7 @@
 
 | #  | Feature             | File                                      | Last Tested | Manual | Automation |
 | -- | ------------------- | ----------------------------------------- | ----------- | ------ | ---------- |
-| 1  | Dashboard UI        | inventory_management/dashboard/dashboard-ui.cy.js  | 2026-05-09  | 0      | 64         |
+| 1  | Dashboard UI        | inventory_management/dashboard/dashboard-ui.cy.js  | 2026-05-09  | 0      | 88         |
 | 2  | Dashboard API       | inventory_management/dashboard/dashboard-api.cy.js | 2026-05-09  | 0      | 56         |
 | 3  | Summary API         | inventory_management/dashboard/summary-api.cy.js   | 2026-05-05  | 0      | 17         |
 

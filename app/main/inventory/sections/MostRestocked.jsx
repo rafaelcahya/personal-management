@@ -73,8 +73,8 @@ function RestockTable({ items }) {
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                  <p className="font-medium text-slate-700">{item.product}</p>
+                <div className="flex flex-wrap items-center gap-1.5 mt-0.5 min-w-0">
+                  <p className="font-medium text-slate-700 break-words min-w-0">{item.product}</p>
                   {item.type && (
                     <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
                       {item.type}
@@ -140,11 +140,11 @@ export default function MostRestocked({ items, loading }) {
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0">
-          <DialogHeader className="px-6 py-4 border-b border-slate-100 shrink-0">
+          <DialogHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
             <DialogTitle className="text-base font-semibold text-slate-800">
               All Products — Restock History
             </DialogTitle>
-            <p className="text-xs text-slate-400 mt-0.5">Sorted by most restocked</p>
+            <p className="text-xs text-slate-400">Sorted by most restocked</p>
           </DialogHeader>
           <div className="overflow-y-auto flex-1 px-2 py-2">
             <RestockTable items={items} />

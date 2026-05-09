@@ -1,49 +1,70 @@
 # Regression Testing Report
 
-**Date:** 2026-05-09
-**App Version:** 1.4
-**Scope:** Inventory Dashboard — remove Neglected Products & Days Until Empty
+**Date:** 2026-05-09 (Run #3 — Final)
+**App Version:** 1.6.1
+**Scope:** Inventory Dashboard UI — Summary Cards block expanded (12 new tests) + Mobile Responsiveness (12 tests) + scrollIntoView fix
 **Tester:** QA Agent
 
 ## Summary
 
-| Total Features | Passed | Failed | Pass Rate |
-| -------------- | ------ | ------ | --------- |
-| 5              | 5      | 0      | 100%      |
+| Total Tests | Passed | Failed | Pass Rate |
+| ----------- | ------ | ------ | --------- |
+| 88          | 88     | 0      | 100%      |
 
 ## Feature Test Results
 
-| #   | Feature                          | Test Type | Status  | Notes                                        |
-| --- | -------------------------------- | --------- | ------- | -------------------------------------------- |
-| 1   | Dashboard UI — Page Load         | Auto      | ✅ PASS | 3 test cases                                 |
-| 2   | Dashboard UI — Summary Cards     | Auto      | ✅ PASS | 2 test cases                                 |
-| 3   | Dashboard UI — Cost Per Use      | Auto      | ✅ PASS | 5 test cases                                 |
-| 4   | Dashboard UI — Low Stock Alert   | Auto      | ✅ PASS | 6 test cases                                 |
-| 5   | Dashboard UI — Monthly Spend     | Auto      | ✅ PASS | 5 test cases                                 |
-| 6   | Dashboard UI — Avg Usage Duration| Auto      | ✅ PASS | 4 test cases                                 |
-| 7   | Dashboard UI — Loading States    | Auto      | ✅ PASS | 1 test case                                  |
-| 8   | Dashboard UI — Error Handling    | Auto      | ✅ PASS | 1 test case                                  |
-| 9   | Dashboard UI — Layout/Responsive | Auto      | ✅ PASS | 2 test cases                                 |
-| 10  | Dashboard API — Authentication   | Auto      | ✅ PASS | 2 test cases                                 |
-| 11  | Dashboard API — Response Struct  | Auto      | ✅ PASS | 4 test cases                                 |
-| 12  | Dashboard API — Cost Per Use     | Auto      | ✅ PASS | 6 test cases                                 |
-| 13  | Dashboard API — Low Stock Alert  | Auto      | ✅ PASS | 3 test cases                                 |
-| 14  | Dashboard API — Monthly Spend    | Auto      | ✅ PASS | 4 test cases                                 |
-| 15  | Dashboard API — Avg Usage Dur.   | Auto      | ✅ PASS | 3 test cases                                 |
-| 16  | Dashboard API — Performance      | Auto      | ✅ PASS | 1 test case                                  |
+| #   | Feature                                    | Test Type | Tests | Passed | Failed | Status     |
+| --- | ------------------------------------------ | --------- | ----- | ------ | ------ | ---------- |
+| 1   | Dashboard UI — Page Load                   | Auto      | 3     | 3      | 0      | ✅ PASS    |
+| 2   | Dashboard UI — Summary Cards               | Auto      | 14    | 14     | 0      | ✅ PASS    |
+| 3   | Dashboard UI — Spend Comparison            | Auto      | 6     | 6      | 0      | ✅ PASS    |
+| 4   | Dashboard UI — Most Restocked              | Auto      | 5     | 5      | 0      | ✅ PASS    |
+| 5   | Dashboard UI — Cost Per Use                | Auto      | 5     | 5      | 0      | ✅ PASS    |
+| 6   | Dashboard UI — Low Stock Alert             | Auto      | 6     | 6      | 0      | ✅ PASS    |
+| 7   | Dashboard UI — Monthly Spend by Type       | Auto      | 8     | 8      | 0      | ✅ PASS    |
+| 8   | Dashboard UI — Avg Cost/Use Over Time      | Auto      | 4     | 4      | 0      | ✅ PASS    |
+| 9   | Dashboard UI — Average Usage Duration      | Auto      | 4     | 4      | 0      | ✅ PASS    |
+| 10  | Dashboard UI — Restock Prediction          | Auto      | 5     | 5      | 0      | ✅ PASS    |
+| 11  | Dashboard UI — Monthly Budget Tracker      | Auto      | 5     | 5      | 0      | ✅ PASS    |
+| 12  | Dashboard UI — Spending Heatmap            | Auto      | 3     | 3      | 0      | ✅ PASS    |
+| 13  | Dashboard UI — Product Lifecycle Score     | Auto      | 4     | 4      | 0      | ✅ PASS    |
+| 14  | Dashboard UI — Loading States              | Auto      | 1     | 1      | 0      | ✅ PASS    |
+| 15  | Dashboard UI — API Error Handling          | Auto      | 1     | 1      | 0      | ✅ PASS    |
+| 16  | Dashboard UI — Mobile Responsiveness       | Auto      | 12    | 12     | 0      | ✅ PASS    |
+| 17  | Dashboard UI — Layout & Responsive         | Auto      | 2     | 2      | 0      | ✅ PASS    |
 
-**Total: 52/52 passing**
+**Total: 88/88 passing (100%)**
 
 ## Failed Test Details
 
-None — all 52 tests passed.
+Tidak ada kegagalan pada Run #3.
 
-## Changes Executed
+---
 
-- **Removed (Frontend):** `NeglectedProducts.jsx`, `DaysUntilEmpty.jsx` section components deleted
-- **Removed (Frontend):** Imports, state vars, and renders in `InventoryDashboard.jsx`
-- **Removed (Backend):** `buildNeglectedProducts()`, `buildDaysUntilEmpty()` functions from service
-- **Removed (Backend):** `usage_date` field from `fetchProductList` query (was only used by neglectedProducts)
-- **Removed (Tests):** Neglected Products Section describe (4 cases) and Days Until Empty Section describe (5 cases) from UI tests
-- **Removed (Tests):** Neglected Products Logic describe (5 cases) and Days Until Empty Logic describe (5 cases) from API tests
-- **Fixed (Tests):** 2 pre-existing test bugs: `.gte()` on strings (monthlySpendByType) and `avg_days > 0` (now `>= 0`)
+## Changes Since Last Regression Run
+
+### Run #2 → Run #3 (2026-05-09 — scrollIntoView fix)
+
+- **Root cause ditemukan:** Cypress menganggap elemen di dalam `overflow-y: auto` scroll container sebagai "not visible" jika berada di bawah viewport fold — bukan bug layout, melainkan perilaku default Cypress
+- **Fix diterapkan:** Tambah `.scrollIntoView()` sebelum setiap `.should('be.visible')` pada semua section yang memerlukan scroll (Most Restocked ke bawah)
+- **Bonus fix:** Text mismatch pada section "Avg Usage Duration" — komponen me-render `"Average Usage Duration"` bukan `"Avg Usage Duration"`, test dikoreksi
+- **Result:** 88/88 pass ✅
+
+### Run #1 → Run #2 (2026-05-09 — layout fix attempt)
+
+- **Fix dicoba:** Hapus `overflow-hidden` dari `app/main/layout.jsx` outer div
+- **Result:** Tidak berpengaruh — 51 failures tetap. Root cause bukan di layout
+
+### Run #1 (2026-05-09 — initial run)
+
+- **Ditambahkan:** 12 test baru di Summary Cards (Low Stock, sub-label, localStorage, navigasi, aria-hidden, keyboard)
+- **Ditambahkan:** Mobile Responsiveness suite (12 tests)
+- **Result:** 37/88 pass (42%) — 51 failure akibat Cypress visibility clipping
+
+## Recommendation
+
+Tidak ada issue aktif. Suite berjalan bersih 100%.
+
+Untuk run berikutnya, pertimbangkan menambahkan test untuk:
+- PageHeader breadcrumbs (komponen baru yang ditambahkan di semua halaman)
+- SummaryCards keyboard navigation (Tab + Enter triggers navigation)

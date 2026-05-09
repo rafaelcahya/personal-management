@@ -32,7 +32,7 @@ function SpendList({ items }) {
             >
               <div className="min-w-0">
                 <p className="text-xs text-slate-400 truncate">{item.brand || '—'}</p>
-                <div className="flex items-center gap-1.5 mt-0.5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 mt-0.5">
                   <p className="font-medium text-slate-700 text-sm truncate">{item.product}</p>
                   {item.type && (
                     <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
@@ -106,11 +106,11 @@ export default function MonthlySpendByType({ items, loading }) {
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-w-md w-full max-h-[85vh] flex flex-col p-0 gap-0">
-          <DialogHeader className="px-6 py-4 border-b border-slate-100 shrink-0">
+          <DialogHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
             <DialogTitle className="text-base font-semibold text-slate-800">
               Monthly Spend by Type
             </DialogTitle>
-            <p className="text-xs text-slate-400 mt-0.5">All categories across the last 6 months</p>
+            <p className="text-xs text-slate-400">All categories across the last 6 months</p>
           </DialogHeader>
           <div className="overflow-y-auto flex-1 px-5 py-3">
             <SpendList items={items} />

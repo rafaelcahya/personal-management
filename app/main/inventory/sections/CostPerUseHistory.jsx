@@ -57,7 +57,7 @@ function ProductSelector({ items, selectedId, onChange }) {
     <select
       value={selectedId ?? ''}
       onChange={(e) => onChange(Number(e.target.value))}
-      className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-600 focus:outline-none focus:ring-1 focus:ring-violet-300 bg-white"
+      className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-600 focus:outline-none focus:ring-1 focus:ring-violet-300 bg-white w-full"
     >
       {items.map((item) => (
         <option key={item.product_list_id} value={item.product_list_id}>
@@ -115,7 +115,7 @@ export default function CostPerUseHistory({ items, loading }) {
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100 flex items-start justify-between gap-3">
+      <div className="px-5 py-4 border-b border-slate-100 flex flex-col items-start justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-slate-800">📈 Avg Cost/Use Over Time</h2>
           <p className="text-xs text-slate-400 mt-0.5">

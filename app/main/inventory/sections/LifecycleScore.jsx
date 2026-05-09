@@ -87,7 +87,7 @@ function ScoreTable({ items }) {
                 <td className="py-3 px-3 text-slate-400 text-xs">{index + 1}</td>
                 <td className="py-3 px-3">
                   <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center gap-1.5 mt-0.5">
                     <p className="font-medium text-slate-700">{item.product}</p>
                     {item.type && (
                       <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
@@ -100,7 +100,7 @@ function ScoreTable({ items }) {
                   {formatRupiah(item.cost_per_use)}
                 </td>
                 <td className="py-3 px-3 text-right text-slate-600 text-sm">
-                  {item.avg_days} days
+                  <p className="whitespace-nowrap">{item.avg_days} days</p>
                 </td>
                 <td className="py-3 px-3 text-center">
                   <TierBadge score={item.score} />
@@ -126,8 +126,8 @@ function ScoreTable({ items }) {
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                  <p className="font-medium text-slate-700">{item.product}</p>
+                <div className="flex flex-wrap items-center gap-1.5 mt-0.5 min-w-0">
+                  <p className="font-medium text-slate-700 break-words min-w-0">{item.product}</p>
                   {item.type && (
                     <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
                       {item.type}
@@ -141,16 +141,18 @@ function ScoreTable({ items }) {
               </div>
             </div>
             <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-              <div className="grid grid-cols-2 gap-2 text-xs flex-1">
+              <div className="flex flex-wrap gap-2 text-xs flex-1">
                 <div>
                   <p className="text-slate-400">Cost/Use</p>
-                  <p className="font-medium text-slate-600 mt-0.5">
+                  <p className="font-medium text-slate-600 mt-0.5 whitespace-nowrap">
                     {formatRupiah(item.cost_per_use)}
                   </p>
                 </div>
                 <div>
                   <p className="text-slate-400">Avg Duration</p>
-                  <p className="font-medium text-slate-600 mt-0.5">{item.avg_days} days</p>
+                  <p className="font-medium text-slate-600 mt-0.5 whitespace-nowrap">
+                    {item.avg_days} days
+                  </p>
                 </div>
               </div>
               <ScoreBar score={item.score} />
@@ -200,11 +202,11 @@ export default function LifecycleScore({ items, loading }) {
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0">
-          <DialogHeader className="px-6 py-4 border-b border-slate-100 shrink-0">
+          <DialogHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
             <DialogTitle className="text-base font-semibold text-slate-800">
               All Products — Lifecycle Score
             </DialogTitle>
-            <p className="text-xs text-slate-400 mt-0.5">Sorted by highest score</p>
+            <p className="text-xs text-slate-400">Sorted by highest score</p>
           </DialogHeader>
           <div className="overflow-y-auto flex-1 px-2 py-2">
             <ScoreTable items={items} />

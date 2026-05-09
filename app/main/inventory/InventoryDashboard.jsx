@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { getProductSummary } from '@/lib/api/product'
 import { getInventoryDashboard } from '@/lib/api/inventoryDashboard'
 import SummaryCards from './components/SummaryCards'
+import PageHeader from '../components/PageHeader'
 import SpendComparison from './sections/SpendComparison'
 import CostPerUse from './sections/CostPerUse'
 import LowStockAlert from './sections/LowStockAlert'
@@ -70,7 +71,12 @@ export default function InventoryDashboard() {
 
   return (
     <div className="flex flex-col gap-6 pb-6">
-      <SummaryCards summary={summary} loading={loading} />
+      <PageHeader
+        title="Inventory Dashboard"
+        description="Overview of your inventory, spending, and product analytics"
+        breadcrumbs={[{ label: 'Inventory' }, { label: 'Dashboard' }]}
+      />
+      <SummaryCards summary={summary} lowStockCount={lowStockAlerts.length} loading={loading} />
       <SpendComparison data={spendComparison} loading={loading} />
       <SpendingHeatmap items={spendingHeatmap} loading={loading} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
