@@ -1,7 +1,7 @@
 # Test Coverage Report
 
 **Last Updated:** 2026-05-09
-**App Version:** 1.4
+**App Version:** 1.6.1
 
 ## Coverage Summary
 
@@ -10,14 +10,14 @@
 | Auth                      | 9              | 8         | 1           | 0          | 89%        |
 | API Auth Guard            | 3              | 3         | 0           | 0          | 100%       |
 | Landing Page              | 7              | 7         | 0           | 0          | 100%       |
-| Inventory - Dashboard     | 3              | 3         | 0           | 0          | 100%       |
+| Inventory - Dashboard     | 10             | 10        | 0           | 0          | 100%       |
 | Inventory - Product       | 9              | 9         | 0           | 0          | 100%       |
 | Inventory - Product Brand | 6              | 6         | 0           | 0          | 100%       |
 | Inventory - Product Name  | 6              | 6         | 0           | 0          | 100%       |
 | Trading - Trade           | 7              | 7         | 0           | 0          | 100%       |
 | Trading - Fee             | 6              | 6         | 0           | 0          | 100%       |
 | Trading - Event           | 6              | 6         | 0           | 0          | 100%       |
-| **Total**                 | **62**         | **61**    | **1**       | **0**      | **98%**    |
+| **Total**                 | **69**         | **68**    | **1**       | **0**      | **98%**    |
 
 ## Automated Test Cases
 
@@ -41,8 +41,8 @@
 | 16  | cypress/e2e/landing_page/landing-page.cy.js                           | Responsive Layout (3 viewports)      | 3          | Mobile/tablet/desktop layout |
 | 17  | cypress/e2e/landing_page/landing-page.cy.js                           | Mobile/Tablet/Desktop Interactions   | 9          | Per-viewport interactions    |
 | 18  | cypress/e2e/landing_page/landing-page.cy.js                           | User Menu (4 viewports)              | 16         | UserMenu trigger & sign out  |
-| 19  | cypress/e2e/inventory_management/dashboard/dashboard-ui.cy.js         | Dashboard UI                         | 29         | Inventory dashboard display  |
-| 20  | cypress/e2e/inventory_management/dashboard/dashboard-api.cy.js        | Dashboard API                        | 23         | Dashboard API responses      |
+| 19  | cypress/e2e/inventory_management/dashboard/dashboard-ui.cy.js         | Dashboard UI                         | 64         | Inventory dashboard display  |
+| 20  | cypress/e2e/inventory_management/dashboard/dashboard-api.cy.js        | Dashboard API                        | 56         | Dashboard API responses      |
 | 21  | cypress/e2e/inventory_management/dashboard/summary-api.cy.js          | Summary API                          | 17         | Inventory summary API        |
 | 22  | cypress/e2e/inventory_management/product/list-product.cy.js           | List Product                         | 26         | Product list view            |
 | 23  | cypress/e2e/inventory_management/product/product-detail.cy.js         | Product Detail                       | 25         | Product detail view          |
@@ -85,7 +85,7 @@
 | 60  | cypress/e2e/trading_management/event/delete-event.cy.js               | Delete Event                         | 9          | Event deletion flow          |
 | 61  | cypress/e2e/trading_management/event/summary-event.cy.js              | Event Summary                        | 25         | Event summary API            |
 
-**Total Automated Test Cases: 1,286**
+**Total Automated Test Cases: 1,354**
 
 ## Manual Test Cases (not yet automated)
 
