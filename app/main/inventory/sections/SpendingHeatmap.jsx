@@ -83,86 +83,90 @@ export default function SpendingHeatmap({ items, loading }) {
         </p>
       </div>
 
-      <div className="px-5 py-4 overflow-x-auto">
-        <div className="inline-flex gap-3">
-          {/* Day labels */}
-          <div className="flex flex-col gap-[3px] pt-5">
-            {DAY_LABELS.map((d, i) => (
-              <div
-                key={d}
-                className="h-[11px] text-[9px] text-slate-400 leading-none flex items-center"
-                style={{ visibility: i % 2 === 1 ? 'visible' : 'hidden' }}
-              >
-                {d}
-              </div>
-            ))}
-          </div>
-
-          {/* Grid */}
-          <div className="relative">
-            {/* Month labels */}
-            <div className="flex h-4 mb-1 relative" style={{ width: weeks.length * 14 }}>
-              {monthLabels.map(({ label, col }) => (
-                <span
-                  key={`${label}-${col}`}
-                  className="absolute text-[10px] text-slate-500"
-                  style={{ left: col * 14 }}
+      <div className="relative">
+        <div className="px-5 py-4 overflow-x-auto">
+          <div className="inline-flex gap-3">
+            {/* Day labels */}
+            <div className="flex flex-col gap-[3px] pt-5">
+              {DAY_LABELS.map((d, i) => (
+                <div
+                  key={d}
+                  className="h-[11px] text-[9px] text-slate-400 leading-none flex items-center"
+                  style={{ visibility: i % 2 === 1 ? 'visible' : 'hidden' }}
                 >
-                  {label}
-                </span>
-              ))}
-            </div>
-
-            {/* Cells */}
-            <div className="flex gap-[3px]">
-              {weeks.map((week, wi) => (
-                <div key={wi} className="flex flex-col gap-[3px]">
-                  {week.map(({ date, key, total, level }) => {
-                    if (level === -1) return <div key={key} className="w-[11px] h-[11px]" />
-                    const levelCls = LEVELS[level]?.bg ?? 'bg-slate-100'
-                    return (
-                      <div
-                        key={key}
-                        className={`w-[11px] h-[11px] rounded-[2px] cursor-pointer ${levelCls} transition-opacity hover:opacity-70`}
-                        onMouseEnter={(e) =>
-                          setTooltip({
-                            date: format(date, 'dd MMM yyyy'),
-                            total,
-                            x: e.currentTarget.getBoundingClientRect().left,
-                            y: e.currentTarget.getBoundingClientRect().top,
-                          })
-                        }
-                        onMouseLeave={() => setTooltip(null)}
-                      />
-                    )
-                  })}
+                  {d}
                 </div>
               ))}
             </div>
+
+            {/* Grid */}
+            <div className="relative">
+              {/* Month labels */}
+              <div className="flex h-4 mb-1 relative" style={{ width: weeks.length * 14 }}>
+                {monthLabels.map(({ label, col }) => (
+                  <span
+                    key={`${label}-${col}`}
+                    className="absolute text-[10px] text-slate-500"
+                    style={{ left: col * 14 }}
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+
+              {/* Cells */}
+              <div className="flex gap-[3px]">
+                {weeks.map((week, wi) => (
+                  <div key={wi} className="flex flex-col gap-[3px]">
+                    {week.map(({ date, key, total, level }) => {
+                      if (level === -1) return <div key={key} className="w-[11px] h-[11px]" />
+                      const levelCls = LEVELS[level]?.bg ?? 'bg-slate-100'
+                      return (
+                        <div
+                          key={key}
+                          className={`w-[11px] h-[11px] rounded-[2px] cursor-pointer ${levelCls} transition-opacity hover:opacity-70`}
+                          onMouseEnter={(e) =>
+                            setTooltip({
+                              date: format(date, 'dd MMM yyyy'),
+                              total,
+                              x: e.currentTarget.getBoundingClientRect().left,
+                              y: e.currentTarget.getBoundingClientRect().top,
+                            })
+                          }
+                          onMouseLeave={() => setTooltip(null)}
+                        />
+                      )
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Tooltip */}
+          {tooltip && (
+            <div
+              className="fixed z-50 pointer-events-none bg-slate-800 text-white text-xs rounded px-2 py-1.5 shadow-lg -translate-x-1/2 -translate-y-full"
+              style={{ left: tooltip.x + 6, top: tooltip.y - 6 }}
+            >
+              <p className="font-medium">{tooltip.date}</p>
+              <p className="text-slate-300">
+                {tooltip.total > 0 ? formatRupiah(tooltip.total) : 'No spend'}
+              </p>
+            </div>
+          )}
+
+          {/* Legend */}
+          <div className="flex items-center gap-1.5 mt-3">
+            <span className="text-[10px] text-slate-400">Less</span>
+            {LEVELS.map((l, i) => (
+              <div key={i} className={`w-[11px] h-[11px] rounded-[2px] ${l.bg}`} title={l.label} />
+            ))}
+            <span className="text-[10px] text-slate-400">More</span>
           </div>
         </div>
-
-        {/* Tooltip */}
-        {tooltip && (
-          <div
-            className="fixed z-50 pointer-events-none bg-slate-800 text-white text-xs rounded px-2 py-1.5 shadow-lg -translate-x-1/2 -translate-y-full"
-            style={{ left: tooltip.x + 6, top: tooltip.y - 6 }}
-          >
-            <p className="font-medium">{tooltip.date}</p>
-            <p className="text-slate-300">
-              {tooltip.total > 0 ? formatRupiah(tooltip.total) : 'No spend'}
-            </p>
-          </div>
-        )}
-
-        {/* Legend */}
-        <div className="flex items-center gap-1.5 mt-3">
-          <span className="text-[10px] text-slate-400">Less</span>
-          {LEVELS.map((l, i) => (
-            <div key={i} className={`w-[11px] h-[11px] rounded-[2px] ${l.bg}`} title={l.label} />
-          ))}
-          <span className="text-[10px] text-slate-400">More</span>
-        </div>
+        {/* Scroll indicator — visible only on mobile */}
+        <div className="md:hidden absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-white to-transparent pointer-events-none rounded-r-xl" />
       </div>
     </div>
   )
