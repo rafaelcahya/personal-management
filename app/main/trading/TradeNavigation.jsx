@@ -1,200 +1,105 @@
-"use client";
+'use client'
 
-import { useRouter, usePathname } from "next/navigation";
-import {
-    LayoutDashboard,
-    Receipt,
-    Calendar,
-    TrendingUp,
-    ChevronRight,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useRouter, usePathname } from 'next/navigation'
+import { LayoutDashboard, Receipt, Calendar, TrendingUp, ChevronRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const navigationItems = [
-    {
-        name: "Dashboard",
-        description: "Overview & insights",
-        value: "dashboard",
-        href: "/main/trading/dashboard",
-        icon: LayoutDashboard,
-        color: "violet",
-        gradient: "from-violet-500 to-purple-600",
-    },
-    {
-        name: "Trades",
-        description: "Trading journal",
-        value: "trades",
-        href: "/main/trading/trade",
-        icon: TrendingUp,
-        color: "blue",
-        gradient: "from-blue-500 to-cyan-600",
-    },
-    {
-        name: "Market Events",
-        description: "Market catalysts",
-        value: "events",
-        href: "/main/trading/event",
-        icon: Calendar,
-        color: "amber",
-        gradient: "from-amber-500 to-orange-600",
-    },
-    {
-        name: "Fees",
-        description: "Cost tracking",
-        value: "fees",
-        href: "/main/trading/fee",
-        icon: Receipt,
-        color: "red",
-        gradient: "from-red-500 to-rose-600",
-    },
-];
-
-const colorMap = {
-    violet: {
-        text: "text-violet-600",
-        bg: "bg-violet-50",
-        border: "border-violet-200",
-        activeBg: "bg-gradient-to-br from-violet-500 to-purple-600",
-        ring: "ring-2 ring-violet-200/50",
-    },
-    blue: {
-        text: "text-blue-600",
-        bg: "bg-blue-50",
-        border: "border-blue-200",
-        activeBg: "bg-gradient-to-br from-blue-500 to-cyan-600",
-        ring: "ring-2 ring-blue-200/50",
-    },
-    amber: {
-        text: "text-amber-600",
-        bg: "bg-amber-50",
-        border: "border-amber-200",
-        activeBg: "bg-gradient-to-br from-amber-500 to-orange-600",
-        ring: "ring-2 ring-amber-200/50",
-    },
-    red: {
-        text: "text-red-600",
-        bg: "bg-red-50",
-        border: "border-red-200",
-        activeBg: "bg-gradient-to-br from-red-500 to-rose-600",
-        ring: "ring-2 ring-red-200/50",
-    },
-};
+  {
+    name: 'Dashboard',
+    description: 'Overview & insights',
+    value: 'dashboard',
+    href: '/main/trading/dashboard',
+    icon: LayoutDashboard,
+  },
+  {
+    name: 'Trades',
+    description: 'Trading journal',
+    value: 'trades',
+    href: '/main/trading/trade',
+    icon: TrendingUp,
+  },
+  {
+    name: 'Market Events',
+    description: 'Market catalysts',
+    value: 'events',
+    href: '/main/trading/event',
+    icon: Calendar,
+  },
+  {
+    name: 'Fees',
+    description: 'Cost tracking',
+    value: 'fees',
+    href: '/main/trading/fee',
+    icon: Receipt,
+  },
+]
 
 export default function TradeNavigation() {
-    const router = useRouter();
-    const pathname = usePathname();
+  const router = useRouter()
+  const pathname = usePathname()
+  const activeItem = navigationItems.find((item) => pathname === item.href)
 
-    const activeItem = navigationItems.find((item) => pathname === item.href);
+  return (
+    <div className="w-full">
+      {/* Desktop Navigation - Unified Tab Bar */}
+      <div className="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+        {navigationItems.map((item) => {
+          const Icon = item.icon
+          const isActive = pathname === item.href
 
-    const handleNavigation = (href) => {
-        router.push(href);
-    };
+          return (
+            <button
+              key={item.value}
+              onClick={() => router.push(item.href)}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center focus:outline-none',
+                isActive
+                  ? 'bg-white text-violet-700 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-white/60'
+              )}
+            >
+              <Icon className={cn('size-4', isActive ? 'text-violet-600' : 'text-slate-400')} />
+              <span>{item.name}</span>
+            </button>
+          )
+        })}
+      </div>
 
-    return (
-        <div className="w-full">
-            {/* Desktop Navigation - Compact Cards */}
-            <div className="hidden md:grid md:grid-cols-4 gap-2">
-                {navigationItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    const colors = colorMap[item.color];
+      {/* Mobile Navigation - Horizontal Scroll Pills */}
+      <div className="md:hidden flex gap-1.5 overflow-x-auto py-1 scrollbar-hide">
+        {navigationItems.map((item) => {
+          const Icon = item.icon
+          const isActive = pathname === item.href
 
-                    return (
-                        <button
-                            key={item.value}
-                            onClick={() => handleNavigation(item.href)}
-                            className={cn(
-                                "group relative overflow-hidden rounded-lg border transition-all duration-200",
-                                " hover:shadow-md active:scale-[0.99]",
-                                isActive
-                                    ? `${colors.border} shadow-sm ${colors.ring}`
-                                    : "border-slate-200 hover:border-slate-300",
-                            )}
-                        >
-                            {/* Background Gradient (Active State) */}
-                            {isActive && (
-                                <div
-                                    className={cn(
-                                        "absolute inset-0 opacity-5",
-                                        `bg-gradient-to-br ${item.gradient}`,
-                                    )}
-                                />
-                            )}
+          return (
+            <button
+              key={item.value}
+              onClick={() => router.push(item.href)}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all duration-200 focus:outline-none',
+                isActive
+                  ? 'bg-violet-600 text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-violet-50 hover:text-violet-700'
+              )}
+            >
+              <Icon className="size-4" />
+              <span>{item.name}</span>
+            </button>
+          )
+        })}
+      </div>
 
-                            {/* Content */}
-                            <div className="relative p-3 text-left flex items-center gap-2.5 bg-white">
-                                <div
-                                    className={cn(
-                                        "p-2 rounded-lg transition-all duration-200",
-                                        isActive
-                                            ? `${colors.activeBg} text-white shadow-md`
-                                            : `${colors.bg} ${colors.text} group-hover:scale-105`,
-                                    )}
-                                >
-                                    <Icon className="size-4" />
-                                </div>
-                                <div>
-                                    <h3
-                                        className={cn(
-                                            "font-semibold text-sm transition-colors",
-                                            isActive
-                                                ? colors.text
-                                                : "text-slate-700 group-hover:text-slate-900",
-                                        )}
-                                    >
-                                        {item.name}
-                                    </h3>
-                                    <p className="text-xs text-slate-500">
-                                        {item.description}
-                                    </p>
-                                </div>
-                            </div>
-                        </button>
-                    );
-                })}
-            </div>
-
-            {/* Mobile Navigation - Horizontal Scroll Pills */}
-            <div className="md:hidden bg-white border rounded-lg shadow-sm p-2">
-                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                    {navigationItems.map((item) => {
-                        const Icon = item.icon;
-                        const isActive = pathname === item.href;
-                        const colors = colorMap[item.color];
-
-                        return (
-                            <button
-                                key={item.value}
-                                onClick={() => handleNavigation(item.href)}
-                                className={cn(
-                                    "flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 whitespace-nowrap flex-shrink-0",
-                                    isActive
-                                        ? `${colors.activeBg} text-white shadow-md`
-                                        : `${colors.bg} ${colors.text} hover:scale-105 active:scale-95`,
-                                )}
-                            >
-                                <Icon className="size-4" />
-                                <span className="text-sm font-medium">
-                                    {item.name}
-                                </span>
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* Breadcrumb Context - Subtle */}
-            {activeItem && (
-                <div className="mt-5 flex items-center gap-2 text-xs text-slate-500">
-                    <LayoutDashboard className="size-3.5" />
-                    <ChevronRight className="size-3" />
-                    <span className="font-medium text-slate-700">
-                        {activeItem.name}
-                    </span>
-                    <span className="text-slate-300">•</span>
-                    <span>{activeItem.description}</span>
-                </div>
-            )}
+      {/* Breadcrumb */}
+      {activeItem && (
+        <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+          <LayoutDashboard className="size-3.5" />
+          <ChevronRight className="size-3" />
+          <span className="font-medium text-slate-700">{activeItem.name}</span>
+          <span className="text-slate-300">•</span>
+          <span>{activeItem.description}</span>
         </div>
-    );
+      )}
+    </div>
+  )
 }
