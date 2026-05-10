@@ -18,20 +18,20 @@ Single-user app (no multi-tenant). Every data record is scoped to `user_id`.
 
 ## Full Tech Stack
 
-| Layer            | Technology                        | Location                                              |
-| ---------------- | --------------------------------- | ----------------------------------------------------- |
-| Framework        | Next.js 15 App Router             | `app/`                                                |
-| Language         | JavaScript/JSX                    | all files (no TypeScript in app code)                 |
-| Database         | Supabase (PostgreSQL)             | hosted                                                |
-| Auth             | Supabase SSR + JWT                | `middleware.js`, `lib/supabase/`                      |
-| Styling          | Tailwind CSS + CSS variables      | `app/globals.css`                                     |
-| UI Components    | shadcn/ui (Radix UI)              | `components/ui/`                                      |
-| Forms            | react-hook-form + Zod             | `schemas/`                                            |
-| API Client       | custom fetch functions            | `lib/api/`                                            |
-| AI Integration   | Claude Sonnet 4.6 (Anthropic SDK) | `lib/ai/` or `app/api/chat/`                          |
-| E2E Testing      | Cypress                           | `cypress/`                                            |
-| Test Constants   | YAML fixture                      | `cypress/fixtures/app-constants.yaml`                 |
-| DB Direct Access | Supabase MCP (`mcp__supabase__*`) | Backend Agent only — debug, migration, schema inspect |
+| Layer            | Technology                        | Location                                                                                                                    |
+| ---------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Framework        | Next.js 15 App Router             | `app/`                                                                                                                      |
+| Language         | JavaScript/JSX                    | all files (no TypeScript in app code)                                                                                       |
+| Database         | Supabase (PostgreSQL)             | hosted                                                                                                                      |
+| Auth             | Supabase SSR + JWT                | `middleware.js`, `lib/supabase/`                                                                                            |
+| Styling          | Tailwind CSS + CSS variables      | `app/globals.css`                                                                                                           |
+| UI Components    | shadcn/ui (Radix UI)              | `components/ui/`                                                                                                            |
+| Forms            | react-hook-form + Zod             | `schemas/`                                                                                                                  |
+| API Client       | custom fetch functions            | `lib/api/`                                                                                                                  |
+| AI Integration   | Claude Sonnet 4.6 (Anthropic SDK) | `lib/ai/` or `app/api/chat/`                                                                                                |
+| E2E Testing      | Cypress                           | `cypress/`                                                                                                                  |
+| Test Constants   | JSON + YAML fixture               | `cypress/fixtures/app-constants.json` (Cypress runtime) · `app-constants.yaml` (human-readable source) — always update both |
+| DB Direct Access | Supabase MCP (`mcp__supabase__*`) | Backend Agent only — debug, migration, schema inspect                                                                       |
 
 ---
 
@@ -63,7 +63,8 @@ lib/
 schemas/                                  ← Zod validation schemas (shared frontend/backend)
 cypress/
 ├── e2e/                                  ← test specs
-├── fixtures/app-constants.yaml           ← URLs, endpoints, testIds, seed data
+├── fixtures/app-constants.json           ← URLs, endpoints, testIds, seed data (used by Cypress runtime)
+├── fixtures/app-constants.yaml           ← same data, human-readable — always update both files together
 ├── support/commands.js                   ← custom Cypress commands
 ├── support/db/[module]/[entity]Db.js     ← Supabase query functions per domain
 └── plugin/tasks/                         ← cy.task() registrations (domain tasks + supabaseRawQuery)
@@ -94,14 +95,18 @@ cypress/
 ## Agent Collaboration Map
 
 ```
-         ┌─────────────┐
-         │  PM Agent   │  ← Owns PRD.md, defines requirements
-         └──────┬──────┘
+      ┌─────────────────────┐
+      │  Orchestrator Agent │  ← Coordinates end-to-end feature delivery
+      └──────────┬──────────┘
+                 │ spawns
+         ┌───────▼──────┐
+         │  PM Agent    │  ← Owns PRD.md, defines requirements
+         └──────┬───────┘
                 │ requirements
         ┌───────┴────────┐
         ▼                ▼
  ┌────────────┐   ┌─────────────┐
- │ UI/UX Agent│   │Backend Agent│
+ │ UI/UX Agent│   │Backend Agent│  ← run in parallel
  └──────┬─────┘   └──────┬──────┘
         │ design spec     │ API contract
         ▼                ▼
@@ -124,6 +129,18 @@ cypress/
 - Tester Agent reviews output from Frontend AND Backend — not just UI
 - Tester Agent uses `cy.task()` with domain-specific DB tasks (`cypress/plugin/tasks/`) to verify data persisted correctly after API calls; use `supabaseRawQuery` only if no domain task exists
 - Any agent can send a cross-agent signal via the formats below
+
+---
+
+## Cross-Agent Signal Inbox
+
+All cross-agent signals are written to and read from one central file:
+
+```
+.claude/agents/signals/pending-signals.md
+```
+
+Every agent checks this file at kickoff. After handling a signal, mark it `[RESOLVED: YYYY-MM-DD]` — never delete rows.
 
 ---
 

@@ -1,3 +1,10 @@
+---
+name: Backend Agent
+description: Use when task involves creating or editing API route handlers in app/api/, writing service logic in lib/services/, modifying Supabase schema or running migrations, writing Zod validation schemas in schemas/, adding auth guards, or reviewing server-side security vulnerabilities.
+tools: Read, Write, Edit, Glob, Grep, Bash, mcp__supabase__list_tables, mcp__supabase__execute_sql, mcp__supabase__apply_migration, mcp__supabase__list_migrations, mcp__supabase__generate_typescript_types, mcp__supabase__get_logs, mcp__supabase__get_advisors, mcp__supabase__get_project_url, mcp__supabase__get_publishable_keys
+model: claude-sonnet-4-6
+---
+
 # Senior Backend Engineer Agent
 
 ## Identity
@@ -93,16 +100,16 @@ Before starting any task, execute these steps in order:
 3. Read `.claude/agents/knowledge/backend-knowledge.md` — follow the new endpoint checklist and patterns
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check for pending endpoint gap requests from Tester
 5. Check `cypress/fixtures/app-constants.json` — register new endpoints after creating them
-6. Read Next.js skills — always read these before writing any route handler or service:
-   - `.claude/skills/next-best-practices/route-handlers.md` — route handler rules, when to use vs Server Actions
-   - `.claude/skills/next-best-practices/async-patterns.md` — async params/cookies/headers in Next.js 15
-   - `.claude/skills/next-best-practices/error-handling.md` — redirect() must NOT be in try-catch
-   - Read these only when relevant to the current task:
-     - `data-patterns.md` — when deciding between Route Handler, Server Action, or Server Component fetch
-     - `bundling.md` — when adding new npm packages (check `serverExternalPackages` for native bindings)
-     - `runtime-selection.md` — when creating new routes (default: Node.js, not Edge)
+6. Read Next.js skills — only read when relevant to the current task (do NOT read all upfront):
+   - `route-handlers.md` — when creating or editing API route handlers
+   - `async-patterns.md` — when using params, cookies, or headers in Next.js 15
+   - `error-handling.md` — when using redirect() or implementing error boundaries
+   - `data-patterns.md` — when deciding between Route Handler, Server Action, or Server Component fetch
+   - `bundling.md` — when adding new npm packages
+   - `runtime-selection.md` — when creating new routes
 7. If task involves schema changes or debugging: use Supabase MCP (`mcp__supabase__list_tables`, `mcp__supabase__execute_sql`, `mcp__supabase__apply_migration`) before writing code — inspect actual DB state first
-8. Start work
+8. Check `.claude/agents/signals/pending-signals.md` — any pending signals addressed to Backend Agent? Handle them before starting new work.
+9. Start work
 
 ## Memory
 

@@ -1,3 +1,10 @@
+---
+name: Tester Agent
+description: Use when task involves writing Cypress E2E tests in cypress/e2e/, reviewing Frontend or Backend output for bugs and edge cases, generating regression or coverage reports, or verifying that PRD acceptance criteria are fully covered by tests.
+tools: Read, Write, Edit, Glob, Grep, Bash
+model: claude-haiku-4-5-20251001
+---
+
 # Senior QA Engineer Agent
 
 ## Identity
@@ -220,7 +227,8 @@ Before starting any task, execute these steps in order:
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check cross-agent signal formats and global DoD
 5. Load `cypress/fixtures/app-constants.json` — verify all needed testIds and endpoints are registered before writing tests
 6. Check `cypress/plugin/tasks/` — identify existing domain-specific DB tasks before using `supabaseRawQuery`; if needed task doesn't exist, create it following the pattern in `tester-knowledge.md`
-7. Start work
+7. Check `.claude/agents/signals/pending-signals.md` — any pending signals addressed to Tester Agent? Handle them before starting new work.
+8. Start work
 
 ## Memory
 
