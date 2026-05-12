@@ -2,8 +2,8 @@
 
 ## Personal Management App
 
-**Version:** 1.7  
-**Last Updated:** 2026-05-09  
+**Version:** 1.11  
+**Last Updated:** 2026-05-12  
 **Owner:** Rafael Cahya  
 **Stack:** Next.js 15 App Router · Supabase (PostgreSQL) · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6)
 
@@ -723,6 +723,30 @@ THEN semua section menampilkan skeleton loading state
 - Deskripsi: Upsert budget untuk satu type (insert atau update jika sudah ada)
 - Response: `{ success: true }`
 
+`GET /api/inventory/v1/product/restock-predictions` _(implemented — v1.11)_
+
+- Auth: Required
+- Deskripsi: Mengembalikan prediksi `days_until_empty` per produk aktif berdasarkan rata-rata interval pemakaian (avg_days × quantity). Produk tanpa usage history di-skip.
+- Response: `{ data: [{ product_list_id, days_until_empty, ... }], message: "OK" }`
+- Digunakan oleh: `ProductsPage` untuk menampilkan `~Xd left` hint di tabel
+
+`GET /api/inventory/v1/product/[id]/last-price` _(implemented — v1.11)_
+
+- Auth: Required
+- Param: `id` — integer, product_list_id
+- Deskripsi: Mengembalikan harga dan tanggal pembelian terakhir untuk produk tertentu
+- Response: `{ success: true, data: { last_purchase_price, last_purchase_date } }`
+- Error: 400 jika ID tidak valid; 404 jika produk tidak ditemukan
+- Digunakan oleh: `AddStockForm` (hint di bawah field Price)
+
+`GET /api/inventory/v1/product/stock/history/[id]`
+
+- Auth: Required
+- Param: `id` — product_list_id
+- Deskripsi: Mengembalikan semua riwayat pembelian/restock untuk produk tertentu, diurutkan terbaru di atas
+- Response: array of `{ id, purchase_date, quantity_added, price, note }`
+- Digunakan oleh: `AddStockForm` (Recent Purchases section) dan `ProductDetailPage` (Purchase History table)
+
 ---
 
 ##### Database Tables yang Digunakan
@@ -738,30 +762,386 @@ THEN semua section menampilkan skeleton loading state
 
 #### 3.1.1 Product List (`/main/inventory/product-list`)
 
-**Deskripsi:** Halaman utama manajemen produk.
+**Deskripsi:** Halaman utama manajemen produk. Menampilkan semua produk dalam tabel dengan kemampuan search, filter, dan aksi per produk.
 
-**Fitur:**
+**Route:** `/main/inventory/product-list`
+**Entry Point:** `app/main/inventory/product-list/page.jsx`
 
-- Tampilkan semua produk dengan informasi: nama, brand, stok saat ini, status favorit
-- Filter produk berdasarkan brand, nama, atau status favorit
-- Tambah produk baru (form: nama, brand, quantity awal)
-- Edit detail produk
-- Hapus produk (soft delete atau hard delete)
-- Tandai/hapus produk sebagai favorit
-- Tambah stok (input quantity penambahan)
-- Kurangi stok / log penggunaan (input quantity pemakaian)
+---
+
+**User Stories:**
+
+> As a user, I want to search products by brand or name, so that I can quickly find a specific product without scrolling through the entire list.
+
+> As a user, I want to filter products by status or stock level, so that I can focus on products that need attention.
+
+> As a user, I want to edit product details, so that I can correct mistakes or update product information.
+
+> As a user, I want to see at a glance which products are out of stock or running low, so that I can prioritize restocking.
+
+> As a user, I want to add stock with the last purchase price visible, so that I can make an informed decision about the price I enter.
+
+> As a user, I want to record when I start using a product, so that I can track usage duration and consumption patterns.
+
+---
+
+**Fitur & Acceptance Criteria:**
+
+**A. Tabel Produk**
+
+Kolom yang ditampilkan:
+
+| Kolom          | Data                | Alignment | Note                                                                                        |
+| -------------- | ------------------- | --------- | ------------------------------------------------------------------------------------------- |
+| Product        | brand + tipe + nama | Left      | Star icon favorit di kiri — space selalu direservasi (visibility:hidden jika tidak favorit) |
+| Quantity       | `quantity`          | Right     | Font monospace                                                                              |
+| In Use         | `usage_quantity`    | Right     | Font monospace — jumlah unit yang sedang dipakai                                            |
+| Usage Date     | `usage_date`        | Center    | Format: DD MMM YYYY, "-" jika belum pernah dipakai                                          |
+| Product Status | `product_status`    | Center    | Badge: active (hijau) / inactive (merah)                                                    |
+| Actions        | —                   | Center    | Dropdown 3-titik                                                                            |
+
+```
+GIVEN produk ada di database
+WHEN halaman dimuat
+THEN semua produk ditampilkan dalam tabel, favorit di urutan atas
+```
+
+**B. Search Bar**
+
+```
+GIVEN user berada di halaman Product List
+WHEN user mengetik di search bar
+THEN tabel difilter berdasarkan brand ATAU nama produk (AND dengan filter aktif)
+AND filter dilakukan setelah 300ms debounce
+AND tombol clear (×) muncul saat ada teks
+
+GIVEN search bar berisi teks
+WHEN user klik tombol clear (×)
+THEN search direset dan semua produk ditampilkan (filter tetap aktif)
+```
+
+**C. Filter Dropdown**
+
+Filter options (by status/stock level — terpisah dari text search):
+
+| Filter       | Kondisi                                           | Group     |
+| ------------ | ------------------------------------------------- | --------- |
+| All Products | semua produk                                      | General   |
+| Active       | `product_status = 'active'`                       | Status    |
+| Inactive     | `product_status = 'inactive'`                     | Status    |
+| Favorite     | `is_favorite = true`                              | Status    |
+| Low Stock    | `quantity < LOW_STOCK_THRESHOLD AND quantity > 0` | Inventory |
+| Out of Stock | `quantity = 0`                                    | Inventory |
+| Never Used   | `usage_date IS NULL`                              | Usage     |
+| [Type name]  | `product.type === type` (dinamis)                 | Category  |
+
+**Category filter (dinamis):** Dropdown menampilkan section "Category" berisi semua nilai `product.type` unik yang ada di daftar produk saat ini. Filter value menggunakan prefix `"type:"` — contoh: `"type:Skincare"`. Setiap item category menampilkan jumlah produk per type.
+
+**Filter counts:** Setiap item dropdown menampilkan jumlah produk yang cocok. Status group menggunakan data dari `summary` API; Inventory dan Usage group dihitung client-side dari `products` array.
+
+```
+GIVEN filter aktif + search aktif
+WHEN hasil kombinasi keduanya = 0 produk
+THEN tampilkan empty state: icon 📦 + "No products match your filters"
+AND tampilkan label filter aktif dan/atau teks pencarian
+AND tombol "Clear filters & search" untuk reset keduanya sekaligus
+
+GIVEN ada produk dengan type "Skincare" di daftar
+WHEN user membuka filter dropdown
+THEN section "Category" muncul dengan item "Skincare" dan jumlah produk
+
+GIVEN user klik filter "Skincare" di section Category
+WHEN filter diterapkan
+THEN hanya produk dengan type = "Skincare" yang ditampilkan
+AND filter value tersimpan sebagai "type:Skincare"
+```
+
+**Controls Bar (Search + Filter + Add Button) — Sticky Behavior**
+
+Controls bar menggunakan `sticky top-0 z-10 bg-white` sehingga tetap terlihat saat user men-scroll daftar produk. Halaman di-scroll secara natural di dalam `main` (scroll container global) — tidak ada inner scroll container terpisah.
+
+```
+GIVEN halaman Product List memiliki banyak produk (daftar lebih panjang dari viewport)
+WHEN user men-scroll ke bawah
+THEN controls bar (search, filter dropdown, tombol "+ Add Product") tetap terlihat di bagian atas halaman
+AND tabel produk scroll di bawahnya
+```
+
+**D. Tambah Produk**
+
+```
+GIVEN user klik "+ Add Product"
+WHEN form dibuka (Dialog)
+THEN field: Brand (Select wajib), Tipe (Select wajib), Nama Produk (Input wajib), Quantity Awal (Number, default 0)
+
+GIVEN semua field valid
+WHEN user submit
+THEN produk baru tersimpan dan muncul di tabel
+AND toast sukses ditampilkan
+```
+
+**E. Edit Produk**
+
+```
+GIVEN user klik "Edit Product" di action dropdown
+WHEN Dialog terbuka
+THEN field pre-filled: Brand (Select), Product Name (Select), Type (Input), Status (Select active/inactive)
+AND setiap field memiliki guide message di bawahnya
+
+GIVEN perubahan valid
+WHEN user klik "Save Changes"
+THEN produk terupdate di tabel
+AND toast sukses ditampilkan
+AND Dialog tertutup
+```
+
+UI: Gunakan `<Dialog>` — konsisten dengan seluruh action lain (Add Stock, Record Usage, Delete, Add Product).
+
+**F. Tambah Stok**
+
+```
+GIVEN user klik "Add Stock" di action dropdown
+WHEN Dialog terbuka
+THEN tampilkan: Quantity to Add, Price (Rp), Purchase Date, Note (opsional)
+AND di bawah field Price ditampilkan hint last purchase price (lihat F.1)
+AND di atas form fields ditampilkan section Recent Purchases (lihat F.2)
+
+GIVEN quantity_added ≥ 1 dan price ≥ 0
+WHEN user submit
+THEN stok bertambah dan riwayat tersimpan
+```
+
+**F.1 Last Purchase Price Hint (implemented — v1.11)**
+
+Saat Add Stock dialog dibuka, sistem melakukan `GET /api/inventory/v1/product/[id]/last-price` dan menampilkan hasilnya di bawah field Price.
+
+| Kondisi        | Tampilan                                     |
+| -------------- | -------------------------------------------- |
+| Loading        | "Loading last price..."                      |
+| Ada data       | "Last purchase price: Rp X.XXX — d MMM yyyy" |
+| Tidak ada data | "No previous purchase data available"        |
+
+```
+GIVEN user membuka Add Stock dialog untuk produk yang pernah dibeli
+WHEN API last-price merespons
+THEN hint "Last purchase price: Rp X — d MMM yyyy" ditampilkan di bawah field Price
+
+GIVEN user membuka Add Stock dialog untuk produk yang belum pernah dibeli
+WHEN API last-price merespons dengan data kosong
+THEN teks "No previous purchase data available" ditampilkan
+```
+
+**F.2 Recent Purchases Section (implemented — v1.11)**
+
+Saat Add Stock dialog dibuka, sistem melakukan `GET /api/inventory/v1/product/stock/history/[id]` dan menampilkan 3 pembelian terakhir di atas form fields (sebelum Quantity to Add).
+
+Tampilan setiap baris: tanggal (font mono), qty, harga (Rp, format id-ID, font mono).
+Section hanya ditampilkan jika ada data pembelian (tidak ditampilkan jika history kosong).
+
+```
+GIVEN user membuka Add Stock dialog dan ada riwayat pembelian sebelumnya
+WHEN API stock-history merespons
+THEN section "Recent Purchases" ditampilkan di atas form dengan maksimal 3 entri terbaru
+
+GIVEN user membuka Add Stock dialog dan belum ada riwayat pembelian
+WHEN API stock-history merespons dengan data kosong
+THEN section "Recent Purchases" tidak ditampilkan
+```
+
+**API untuk Add Stock:**
+
+- `GET /api/inventory/v1/product/[id]/last-price` — Response: `{ success: true, data: { last_purchase_price, last_purchase_date } }`
+- `GET /api/inventory/v1/product/stock/history/[id]` — Response: array of `{ purchase_date, quantity_added, price }`
+
+**G. Record Usage** _(sebelumnya disebut "Update Usage" — nama diubah untuk kejelasan)_
+
+```
+GIVEN user klik "Record Usage" di action dropdown
+WHEN dialog terbuka
+THEN user dapat mencatat kapan mulai memakai produk dan quantity yang dipakai
+
+GIVEN usage dicatat
+WHEN berhasil tersimpan
+THEN kolom "Usage Date" dan "In Use" di tabel terupdate
+```
+
+**G.1 Note Display di Usage Log (implemented — v1.11)**
+
+Di halaman detail produk (Usage History), saat user meng-expand sebuah log row, jika `item.note` ada maka ditampilkan di atas `UsageCompletionForm` dalam card bertampilan: label "Note" (text-xs, text-slate-500) dan isi note (text-sm, text-slate-700).
+
+```
+GIVEN usage log item memiliki field note yang terisi
+WHEN user meng-expand row tersebut
+THEN card "Note" ditampilkan di atas form completion berisi isi note
+
+GIVEN usage log item tidak memiliki note
+WHEN user meng-expand row tersebut
+THEN card "Note" tidak ditampilkan (kondisional rendering)
+```
+
+**H. Favorit**
+
+```
+GIVEN user klik "Add to Favorites" di action dropdown
+WHEN berhasil
+THEN produk pindah ke urutan teratas tabel
+AND icon bintang muncul di kolom Product
+AND menu berubah menjadi "Remove from Favorites"
+```
+
+**I. Hapus Produk**
+
+```
+GIVEN user klik "Delete Product" di action dropdown
+WHEN dialog konfirmasi muncul
+THEN user harus konfirmasi sebelum dihapus (destructive action)
+
+GIVEN user konfirmasi
+WHEN berhasil dihapus
+THEN produk hilang dari tabel dan toast sukses ditampilkan
+```
+
+---
 
 **Validasi:**
 
-- Nama produk wajib diisi
 - Brand wajib dipilih
+- Tipe produk wajib dipilih
+- Nama produk wajib diisi
 - Quantity tidak boleh negatif
+- Quantity to Add minimal 1
+- Price minimal 0
 - Pengurangan stok tidak boleh melebihi stok tersedia
 
-**Error States:**
+---
 
-- Stok habis (quantity = 0) → tampilkan badge "Habis"
-- Stok menipis (quantity ≤ threshold) → tampilkan warning
+**Stock Status & Error States:**
+
+| Kondisi                                           | Tampilan                                       |
+| ------------------------------------------------- | ---------------------------------------------- |
+| `quantity = 0`                                    | Badge merah "Out of Stock" di kolom Quantity   |
+| `quantity < LOW_STOCK_THRESHOLD AND quantity > 0` | Badge kuning "Low Stock" di kolom Quantity     |
+| `quantity ≥ LOW_STOCK_THRESHOLD`                  | Angka normal (font monospace)                  |
+| `product_status = 'inactive'`                     | Badge merah "inactive" di kolom Product Status |
+
+**`LOW_STOCK_THRESHOLD` constant (implemented — v1.11):** Nilai default = `5`. Konstanta ini didefinisikan di 3 file:
+
+- `ProductFilterDropdown.jsx` — untuk menghitung jumlah produk low stock di dropdown
+- `ProductsTable.jsx` — untuk `QuantityBadge` dan restock hint display
+- `ProductsPage.jsx` — untuk logika filter "low-stock"
+
+Untuk mengubah threshold, update nilai di ketiga file tersebut. Tidak ada magic number `5` tersebar di luar konstanta ini.
+
+---
+
+**Empty States:**
+
+| Kondisi                      | Tampilan                                                                                                |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Belum ada produk sama sekali | Teks "No products yet. Start by adding a new product 🚀"                                                |
+| Search/filter aktif, hasil 0 | Icon 📦 + "No products match your filters" + info filter/search aktif + tombol "Clear filters & search" |
+
+---
+
+**J. Column Sorting (implemented — v1.11)**
+
+Header kolom di desktop table dapat diklik untuk sort ascending/descending. Sorting dilakukan client-side pada array `products` yang sudah difilter.
+
+| Kolom      | Sort Key                                | Tipe Sort                   |
+| ---------- | --------------------------------------- | --------------------------- |
+| Product    | `brand + product` (gabungan, lowercase) | String                      |
+| Quantity   | `quantity`                              | Numerik                     |
+| In Use     | `usage_quantity`                        | Numerik                     |
+| Usage Date | `usage_date` (timestamp)                | Date — null selalu di bawah |
+
+Kolom "Product Status" dan "Actions" tidak sortable.
+
+UI: Header sortable menampilkan icon `ArrowUpDown` (inactive) → `ArrowUp` (asc) → `ArrowDown` (desc). Klik kedua kali pada kolom yang sama membalik arah sort.
+
+```
+GIVEN user klik header kolom "Quantity"
+WHEN sort diterapkan
+THEN produk diurutkan ascending by quantity
+AND icon header berubah ke ArrowUp
+
+GIVEN user klik header "Quantity" sekali lagi
+WHEN sort dibalik
+THEN produk diurutkan descending by quantity
+AND icon header berubah ke ArrowDown
+
+GIVEN produk memiliki usage_date = null
+WHEN sort by usage_date (ascending atau descending)
+THEN produk tanpa usage_date selalu muncul paling bawah
+```
+
+**K. Restock Prediction Hint di Tabel (implemented — v1.11)**
+
+Di bawah `QuantityBadge` pada kolom Quantity (desktop) dan di stats row (mobile), ditampilkan prediksi waktu habis per produk aktif jika data tersedia.
+
+Format: `~Xd left` (font mono)
+
+| Kondisi                             | Tampilan                             |
+| ----------------------------------- | ------------------------------------ |
+| `days_until_empty ≤ 7`              | Text orange (`text-orange-500`)      |
+| `days_until_empty > 7`              | Text muted (`text-muted-foreground`) |
+| `quantity = 0`                      | Tidak ditampilkan                    |
+| Tidak ada prediksi untuk produk ini | Tidak ditampilkan                    |
+
+Data diambil via `GET /api/inventory/v1/product/restock-predictions` saat halaman pertama dimuat, disimpan sebagai map `{ [product_list_id]: { days_until_empty } }` di state `ProductsPage`.
+
+```
+GIVEN produk aktif memiliki data prediksi restock
+WHEN halaman Product List dimuat
+THEN "~Xd left" ditampilkan di bawah QuantityBadge di kolom Quantity
+
+GIVEN days_until_empty produk = 5 (≤ 7)
+WHEN tabel dirender
+THEN teks "~5d left" ditampilkan dalam warna orange
+
+GIVEN produk memiliki quantity = 0
+WHEN tabel dirender
+THEN prediksi hint tidak ditampilkan untuk produk tersebut
+```
+
+**L. Summary Cards — Clickable untuk Filter (implemented — v1.11)**
+
+Cards di `ProductListSummary` yang memiliki `filterValue` dapat diklik untuk langsung menerapkan filter pada tabel. Cards tanpa filterValue (Total Stock, In Use) tidak clickable.
+
+| Card           | Filter Value | Clickable |
+| -------------- | ------------ | --------- |
+| Total Products | `null` (all) | Ya        |
+| Active         | `"active"`   | Ya        |
+| Inactive       | `"inactive"` | Ya        |
+| Total Stock    | —            | Tidak     |
+| In Use         | —            | Tidak     |
+| Favorites      | `"favorite"` | Ya        |
+
+UI: Card clickable mendapatkan `cursor-pointer` dan `hover:shadow-md transition-shadow`. Pada mobile (collapsible view) perilaku yang sama diterapkan.
+
+```
+GIVEN user klik card "Active" di ProductListSummary
+WHEN filter diterapkan
+THEN tabel difilter untuk menampilkan hanya produk dengan status active
+AND toast "Showing active products" muncul
+
+GIVEN user klik card "Favorites"
+WHEN filter diterapkan
+THEN tabel difilter untuk menampilkan hanya produk favorit
+
+GIVEN user klik card "Total Stock"
+WHEN tidak ada filterValue
+THEN tidak ada aksi (card tidak clickable)
+```
+
+**Action Dropdown per Produk (urutan):**
+
+1. Edit Product _(baru)_
+2. Add Stock
+3. Record Usage _(sebelumnya: Update Usage)_
+4. — separator —
+5. Add to Favorites / Remove from Favorites
+6. — separator —
+7. Delete Product _(hanya muncul jika belum dihapus)_
 
 ---
 
@@ -823,6 +1203,83 @@ THEN semua section menampilkan skeleton loading state
 - Tanya stok saat ini
 
 **API:** `POST /api/chat`
+
+---
+
+#### 3.1.6 Product Detail Page (`/main/inventory/product-list/[id]`) — implemented v1.11
+
+**Deskripsi:** Halaman detail individual produk yang menampilkan statistik ringkas, riwayat pembelian, dan riwayat penggunaan dalam satu tampilan. Dapat diakses dari route `/main/inventory/product-list/[id]`.
+
+**Route:** `/main/inventory/product-list/[id]`
+**Entry Point:** `app/main/inventory/product-list/[id]/page.jsx`
+**Komponen Utama:** `app/main/inventory/product-list/[id]/ProductDetailPage.jsx`
+
+**User Stories:**
+
+> As a user, I want to see a complete history of purchases and usage sessions for a single product, so that I can understand how I've been using and buying it.
+
+> As a user, I want to see summary stats (current stock, total added, total spent, usage sessions) for a product in one place, so that I can evaluate its consumption at a glance.
+
+**Struktur Halaman:**
+
+1. Back link — "Back to Product List" → `/main/inventory/product-list`
+2. PageHeader — `title`: nama produk, `description`: brand · type, `breadcrumbs`: Inventory > Product List > [nama produk]
+3. Status badge (active/inactive) — di samping PageHeader (float right on sm+)
+4. 4 stat cards (2-col mobile, 4-col desktop):
+   - **Current Stock** — `product.quantity`, sub-label "Out of stock" / "Low stock" jika berlaku
+   - **Total Added** — SUM(`quantity_added`) dari stock history, sub-label "all time"
+   - **Total Spent** — SUM(`price`) dari stock history, format `Rp X.XXX`
+   - **Usage Sessions** — COUNT records dari usage history
+5. 2-column content grid (1-col mobile, 2-col desktop):
+   - **Purchase History** — tabel kolom: Date, Qty Added, Price, Note; sorted most recent first; empty state: icon + "No purchase history yet"
+   - **Usage History** — reuse `ProductUsageLog` component
+
+**Data Fetching:** 3 parallel API calls via `Promise.all` saat komponen mount:
+
+- `GET /api/inventory/v1/product/[id]` → product data
+- `GET /api/inventory/v1/product/stock/history/[id]` → purchase history
+- Usage history API → usage log
+
+**Loading State:** Full skeleton dengan back link tetap terlihat — skeleton untuk header, 4 stat cards, dan 2 content sections.
+
+**Error State:** Tampilan centered dengan icon `Package`, pesan error, dan tombol "Try again" (retry button memanggil ulang `loadData`).
+
+**Acceptance Criteria:**
+
+```
+GIVEN user navigasi ke /main/inventory/product-list/[id]
+WHEN halaman dimuat
+THEN 4 stat cards menampilkan data akurat berdasarkan stock history dan usage history produk
+
+GIVEN data sedang dimuat
+WHEN API belum merespons
+THEN skeleton ditampilkan untuk semua section
+AND back link tetap visible
+
+GIVEN API gagal (network error atau 5xx)
+WHEN error terjadi
+THEN pesan error ditampilkan dengan tombol "Try again"
+AND klik "Try again" me-retry semua 3 API calls
+
+GIVEN produk memiliki status "active"
+WHEN halaman dimuat
+THEN badge "active" berwarna emerald ditampilkan di samping PageHeader
+
+GIVEN produk tidak memiliki riwayat pembelian
+WHEN section Purchase History dirender
+THEN empty state ditampilkan dengan icon dan teks "No purchase history yet"
+```
+
+**Validasi:**
+
+- `productId` divalidasi sebagai integer positif sebelum diteruskan ke API
+- Halaman diproteksi via `requireAuth()` di server component wrapper
+
+**API Endpoints:**
+
+- `GET /api/inventory/v1/product/[id]` — product detail
+- `GET /api/inventory/v1/product/stock/history/[id]` — purchase history
+- `GET /api/inventory/v1/product/restock-predictions` — digunakan di halaman Product List (bukan di halaman detail)
 
 ---
 
@@ -1328,6 +1785,7 @@ Setiap halaman dalam app (Inventory + Trading) harus menggunakan komponen `PageH
 |---------|-------|-------------|
 | Inventory Dashboard | "Inventory Dashboard" | Inventory > Dashboard |
 | Product List | "Product List" | Inventory > Product List |
+| Product Detail | [nama produk] | Inventory > Product List > [nama produk] |
 | Product Brand | "Product Brand" | Inventory > Product Brand |
 | Product Name | "Product Name" | Inventory > Product Name |
 | Product History | "Product History" | Inventory > Product History |
@@ -1383,13 +1841,16 @@ Setiap perubahan requirement harus diupdate oleh PM Agent di file ini terlebih d
 
 ## 9. Version History
 
-| Versi | Tanggal    | Perubahan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Author       |
-| ----- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| 1.0   | 2026-05-03 | Initial PRD — dokumentasi semua fitur existing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Rafael Cahya |
-| 1.1   | 2026-05-03 | Auth module security & UX fixes — see sprint log. Updated 3.3.1 (Login: Google OAuth only, error/reason param handling, ?next= flow, Suspense); Added 3.3.3 (Logout: LogoutButton, POST /api/auth/logout); Added 3.3.4 (Session Expiry: AuthListener); Updated 3.3.2 (Callback: no_code/auth_failed redirects, ?next= preservation); Updated 3.4 (User Settings APIs: GET/PUT /api/user, POST /api/user/avatar); Updated Section 4 Auth (removed JWT, added createAdminClient pattern, added /api/auth/logout); Updated Section 2 (Google OAuth only)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Rafael Cahya |
-| 1.2   | 2026-05-03 | Auth flow bug fixes & PRD clarity update. (1) Fixed: middleware sekarang preserve ?next= param saat redirect ke /login sehingga user kembali ke halaman tujuan setelah login. (2) Fixed: LogoutButton sekarang panggil POST /api/auth/logout (server-side canonical) bukan client-side signOut langsung — session di-clear di server sebelum redirect. (3) Fixed: AuthListener tidak lagi tampilkan toast "session expired" saat intentional logout — menggunakan sessionStorage flag untuk membedakan intentional logout vs session expiry. (4) Fixed: callback route validasi ?next= harus dimulai dengan "/" untuk keamanan. Added 3.3.0 Auth Flow Overview dengan visual flow diagram untuk login, logout, dan session expiry.                                                                                                                                                                                                                                                                                                                                                                                                         | Rafael Cahya |
-| 1.3   | 2026-05-03 | Auth UI/UX overhaul berdasarkan frontend + UI/UX agent review. (1) Login page: tambah app identity (icon + "Personal Management" di atas Card); Google button sekarang ikut Google branding guidelines (bg putih, SVG 4-warna, label "Sign in with Google"); copy text diperbarui seluruhnya. (2) LogoutButton: default size="sm", warna neutral (bukan merah), label "Sign out". (3) Baru: UserMenu component di landing page — menampilkan avatar Google user + email di DropdownMenu dengan opsi Sign out. (4) Landing page: CTA buttons diubah ke "Go to Trading" / "Go to Inventory"; card descriptions diperbarui. (5) Double toast session expiry dihilangkan — toast hanya dari login page via ?reason= param. Updated 3.3.1, 3.3.3, 3.3.4 di PRD. PRD maintenance: header version diupdate ke 1.3; semua [DEPRECATED] diberi tag versi (v1.1); flow diagrams dan error messages table diselaraskan dengan implementasi aktual (SESSION EXPIRY FLOW: hapus toast dari AuthListener, update copy text; LOGIN FLOW: "Sign in with Google"; LOGOUT FLOW: "Sign out" + UserMenu).                                                      | Rafael Cahya |
-| 1.4   | 2026-05-05 | Added 3.1.0 Inventory Dashboard — 6 summary cards (Total Products, Active, Inactive, Total Stock, In Use, Favorites) + 6 analytics sections (Cost Per Use, Low Stock Alert, Neglected Products, Monthly Spend by Type, Avg Usage Duration, Days Until Empty). Layout 2-column grid responsive (mobile 1-col → desktop 2-col untuk section analitik, 6-col untuk summary cards). API: GET /api/inventory/v1/dashboard dan GET /api/inventory/v1/product/summary. Database tables: product_list, product_quantity, product_history.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Rafael Cahya |
-| 1.5   | 2026-05-09 | Dashboard v1.5 — removed Neglected Products (Section 3) and Days Until Empty (Section 6); added 4 new features: (1) Spend This Month vs Last Month — bar chart comparison dengan delta badge (Section 0, full width); (2) Most Restocked Products — tabel restock frequency per produk sorted by count DESC (replaces Section 3); (3) Monthly Spend by Type enhanced — tambah "This Month" total di header section; (4) Avg Cost/Use Over Time — line chart cumulative cost per use per produk dengan product selector dan hover tooltip berisi delta Rp + % per pembelian (Section 6, full width). Layout diupdate: Low Stock Alert + Most Restocked menjadi 2-col grid, sisanya full width. API response diupdate: tambah mostRestocked, spendComparison, costPerUseHistory; hapus neglected dan daysUntilEmpty. Installed recharts untuk chart components.                                                                                                                                                                                                                                                                              | Rafael Cahya |
-| 1.6   | 2026-05-09 | Dashboard v1.6 — 4 statistik baru + beberapa penyempurnaan: (1) Restock Prediction (Section 7) — prediksi tanggal habis per produk berdasarkan avg_days × quantity, sorted DESC, urgency badge 5 level; (2) Monthly Budget Tracker (Section 8) — set & track budget per type dengan inline edit, progress bar 3 warna, API budget baru + tabel Supabase `inventory_budget`; (3) Spending Heatmap (Section 9) — calendar heatmap GitHub-style 52 minggu × 7 hari, 5 level warna violet, hover tooltip, tanpa library tambahan; (4) Product Lifecycle Score (Section 10) — composite score 0-100 dari normalisasi cost_per_use + avg_days, tier S/A/B/C, score bar. Monthly Spend by Type diubah dari per-kategori menjadi per-produk (tampilkan brand + nama + type badge per baris). Semua table header di-unify ke style bg-slate-100 + rounded corners. API dashboard diupdate: tambah restockPrediction, spendingHeatmap, lifecycleScore. Baru: GET+POST /api/inventory/v1/budget. Database: tambah tabel inventory_budget (RLS, UNIQUE user+type).                                                                                     | Rafael Cahya |
-| 1.7   | 2026-05-09 | UX improvements & PageHeader rollout. (1) SummaryCards: card "Inactive" diganti "Low Stock" (value = `lowStockAlerts.length`, produk dengan `quantity ≤ 2`); card "Active" menambahkan sub-label "of X products"; semua card kini clickable — klik menyimpan filter ke `localStorage` lalu navigasi ke `/main/inventory/product-list`. (2) SummaryCards accessibility: card di-wrap dalam native `<button>` (keyboard accessible), icon `aria-hidden="true"`, `focus-visible:ring-2 focus-visible:ring-violet-500`, `tabular-nums` pada nilai angka, transisi eksplisit `transition-[box-shadow,border-color]`. (3) PageHeader component baru (`app/main/components/PageHeader.jsx`) — reusable component dengan props `title`, `description`, `breadcrumbs[]`; dirollout ke semua 10 halaman Inventory + Trading (lihat Section 5 — PageHeader Component). (4) Test: 12 test case baru pada Summary Cards suite; fix pattern `.scrollIntoView()` sebelum `.should('be.visible')` untuk semua section di scroll container; fix text mismatch "Avg Usage Duration" → "Average Usage Duration". Total dashboard-ui suite: 88/88 pass (100%). | Rafael Cahya |
+| Versi | Tanggal    | Perubahan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Author       |
+| ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| 1.0   | 2026-05-03 | Initial PRD — dokumentasi semua fitur existing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Rafael Cahya |
+| 1.1   | 2026-05-03 | Auth module security & UX fixes — see sprint log. Updated 3.3.1 (Login: Google OAuth only, error/reason param handling, ?next= flow, Suspense); Added 3.3.3 (Logout: LogoutButton, POST /api/auth/logout); Added 3.3.4 (Session Expiry: AuthListener); Updated 3.3.2 (Callback: no_code/auth_failed redirects, ?next= preservation); Updated 3.4 (User Settings APIs: GET/PUT /api/user, POST /api/user/avatar); Updated Section 4 Auth (removed JWT, added createAdminClient pattern, added /api/auth/logout); Updated Section 2 (Google OAuth only)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Rafael Cahya |
+| 1.2   | 2026-05-03 | Auth flow bug fixes & PRD clarity update. (1) Fixed: middleware sekarang preserve ?next= param saat redirect ke /login sehingga user kembali ke halaman tujuan setelah login. (2) Fixed: LogoutButton sekarang panggil POST /api/auth/logout (server-side canonical) bukan client-side signOut langsung — session di-clear di server sebelum redirect. (3) Fixed: AuthListener tidak lagi tampilkan toast "session expired" saat intentional logout — menggunakan sessionStorage flag untuk membedakan intentional logout vs session expiry. (4) Fixed: callback route validasi ?next= harus dimulai dengan "/" untuk keamanan. Added 3.3.0 Auth Flow Overview dengan visual flow diagram untuk login, logout, dan session expiry.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Rafael Cahya |
+| 1.3   | 2026-05-03 | Auth UI/UX overhaul berdasarkan frontend + UI/UX agent review. (1) Login page: tambah app identity (icon + "Personal Management" di atas Card); Google button sekarang ikut Google branding guidelines (bg putih, SVG 4-warna, label "Sign in with Google"); copy text diperbarui seluruhnya. (2) LogoutButton: default size="sm", warna neutral (bukan merah), label "Sign out". (3) Baru: UserMenu component di landing page — menampilkan avatar Google user + email di DropdownMenu dengan opsi Sign out. (4) Landing page: CTA buttons diubah ke "Go to Trading" / "Go to Inventory"; card descriptions diperbarui. (5) Double toast session expiry dihilangkan — toast hanya dari login page via ?reason= param. Updated 3.3.1, 3.3.3, 3.3.4 di PRD. PRD maintenance: header version diupdate ke 1.3; semua [DEPRECATED] diberi tag versi (v1.1); flow diagrams dan error messages table diselaraskan dengan implementasi aktual (SESSION EXPIRY FLOW: hapus toast dari AuthListener, update copy text; LOGIN FLOW: "Sign in with Google"; LOGOUT FLOW: "Sign out" + UserMenu).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Rafael Cahya |
+| 1.4   | 2026-05-05 | Added 3.1.0 Inventory Dashboard — 6 summary cards (Total Products, Active, Inactive, Total Stock, In Use, Favorites) + 6 analytics sections (Cost Per Use, Low Stock Alert, Neglected Products, Monthly Spend by Type, Avg Usage Duration, Days Until Empty). Layout 2-column grid responsive (mobile 1-col → desktop 2-col untuk section analitik, 6-col untuk summary cards). API: GET /api/inventory/v1/dashboard dan GET /api/inventory/v1/product/summary. Database tables: product_list, product_quantity, product_history.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Rafael Cahya |
+| 1.5   | 2026-05-09 | Dashboard v1.5 — removed Neglected Products (Section 3) and Days Until Empty (Section 6); added 4 new features: (1) Spend This Month vs Last Month — bar chart comparison dengan delta badge (Section 0, full width); (2) Most Restocked Products — tabel restock frequency per produk sorted by count DESC (replaces Section 3); (3) Monthly Spend by Type enhanced — tambah "This Month" total di header section; (4) Avg Cost/Use Over Time — line chart cumulative cost per use per produk dengan product selector dan hover tooltip berisi delta Rp + % per pembelian (Section 6, full width). Layout diupdate: Low Stock Alert + Most Restocked menjadi 2-col grid, sisanya full width. API response diupdate: tambah mostRestocked, spendComparison, costPerUseHistory; hapus neglected dan daysUntilEmpty. Installed recharts untuk chart components.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Rafael Cahya |
+| 1.6   | 2026-05-09 | Dashboard v1.6 — 4 statistik baru + beberapa penyempurnaan: (1) Restock Prediction (Section 7) — prediksi tanggal habis per produk berdasarkan avg_days × quantity, sorted DESC, urgency badge 5 level; (2) Monthly Budget Tracker (Section 8) — set & track budget per type dengan inline edit, progress bar 3 warna, API budget baru + tabel Supabase `inventory_budget`; (3) Spending Heatmap (Section 9) — calendar heatmap GitHub-style 52 minggu × 7 hari, 5 level warna violet, hover tooltip, tanpa library tambahan; (4) Product Lifecycle Score (Section 10) — composite score 0-100 dari normalisasi cost_per_use + avg_days, tier S/A/B/C, score bar. Monthly Spend by Type diubah dari per-kategori menjadi per-produk (tampilkan brand + nama + type badge per baris). Semua table header di-unify ke style bg-slate-100 + rounded corners. API dashboard diupdate: tambah restockPrediction, spendingHeatmap, lifecycleScore. Baru: GET+POST /api/inventory/v1/budget. Database: tambah tabel inventory_budget (RLS, UNIQUE user+type).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Rafael Cahya |
+| 1.10  | 2026-05-10 | **Sticky controls bar fix (Product List)** — fixed broken `h-full` height chain caused by `inventory/layout.jsx` wrapping children in a plain `div.relative` with no height constraints. Removed inner scroll container; page now scrolls naturally inside `main`. Controls bar (search + filter + add button) changed to `sticky top-0 z-10 bg-white` so it stays visible as the user scrolls the product list.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 1.11  | 2026-05-12 | **Product List enhancements (9 fitur baru).** P0: (1) Last Purchase Price hint di Add Stock dialog — fetch `GET /api/inventory/v1/product/[id]/last-price` saat dialog dibuka, tampilkan "Last purchase price: Rp X — d MMM yyyy" atau "No previous purchase data available". P1: (2) Summary cards clickable — Total Products, Active, Inactive, Favorites di ProductListSummary dapat diklik untuk apply filter; Total Stock dan In Use tidak clickable. (3) Column sorting — header Product, Quantity, In Use, Usage Date di desktop table sortable client-side ascending/descending dengan icon indicator. (4) Category filter dinamis — dropdown menambahkan section "Category" berisi semua nilai `product.type` unik; filter value prefix `"type:"`. (5) Note di Usage Log — `item.note` ditampilkan dalam card di atas UsageCompletionForm saat row di-expand. (6) `LOW_STOCK_THRESHOLD = 5` — konstanta terdefinisi di 3 file (`ProductFilterDropdown`, `ProductsTable`, `ProductsPage`); tidak ada magic number tersebar. P2: (7) Recent Purchases di Add Stock dialog — fetch `GET /api/inventory/v1/product/stock/history/[id]` saat dialog dibuka, tampilkan 3 entri terbaru di atas form. (8) Restock prediction hint di tabel — `~Xd left` di bawah QuantityBadge, orange jika ≤ 7 hari; data dari `GET /api/inventory/v1/product/restock-predictions`. (9) Halaman detail produk — route baru `/main/inventory/product-list/[id]`: back link, PageHeader, 4 stat cards (Current Stock, Total Added, Total Spent, Usage Sessions), Purchase History table, Usage History (reuse ProductUsageLog), loading skeleton, error state + retry. Tambah 3 endpoint baru ke API doc: `GET restock-predictions`, `GET [id]/last-price`, `GET stock/history/[id]`. Update PageHeader table: tambah Product Detail. | Rafael Cahya |
+| 1.9   | 2026-05-10 | Product List improvements & Edit Product feature. (1) **Edit Product** — implementasi `EditProductSheet` menggunakan `<Dialog>` (konsisten dengan semua action lain), bukan `<Sheet>`; field: Brand (Select), Product Name (Select), Type (Input), Status (Select); setiap field punya guide message; pre-fill dari data produk saat ini; PATCH `/api/inventory/v1/product/[id]`. (2) **Language** — semua teks UI di Product List diubah ke bahasa Inggris: "Habis" → "Out of Stock", "Menipis" → "Low Stock", "Tidak ada produk yang cocok" → "No products match your filters", "Hapus filter & pencarian" → "Clear filters & search", search placeholder diubah ke bahasa Inggris. (3) **API dedup fix** — `getProductSummary()` hanya dipanggil sekali di `ProductsPage`, hasilnya di-pass sebagai props ke `ProductListSummary`, `ProductTableHeader`, dan `ProductFilterDropdown` (sebelumnya 3× parallel API calls). (4) **`useDebounce` hook** — dibuat di `hooks/useDebounce.js` (sebelumnya di-import tapi belum ada). (5) **Quantity column** — kolom "On Hand Quantity" diubah menjadi "In Use"; kolom Quantity dan In Use sekarang right-aligned dengan `tabular-nums`. (6) **Star icon** — selalu dirender di kolom Product (`visibility:hidden` jika bukan favorit) untuk mencegah layout shift saat toggle favorite. (7) **Action dropdown reorder** — Edit Product → Add Stock → Record Usage → separator → Favorites → separator → Delete.                                                                                                                                                                                                                                                                                                                                                           | Rafael Cahya |
+| 1.7   | 2026-05-09 | UX improvements & PageHeader rollout. (1) SummaryCards: card "Inactive" diganti "Low Stock" (value = `lowStockAlerts.length`, produk dengan `quantity ≤ 2`); card "Active" menambahkan sub-label "of X products"; semua card kini clickable — klik menyimpan filter ke `localStorage` lalu navigasi ke `/main/inventory/product-list`. (2) SummaryCards accessibility: card di-wrap dalam native `<button>` (keyboard accessible), icon `aria-hidden="true"`, `focus-visible:ring-2 focus-visible:ring-violet-500`, `tabular-nums` pada nilai angka, transisi eksplisit `transition-[box-shadow,border-color]`. (3) PageHeader component baru (`app/main/components/PageHeader.jsx`) — reusable component dengan props `title`, `description`, `breadcrumbs[]`; dirollout ke semua 10 halaman Inventory + Trading (lihat Section 5 — PageHeader Component). (4) Test: 12 test case baru pada Summary Cards suite; fix pattern `.scrollIntoView()` sebelum `.should('be.visible')` untuk semua section di scroll container; fix text mismatch "Avg Usage Duration" → "Average Usage Duration". Total dashboard-ui suite: 88/88 pass (100%).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Rafael Cahya |

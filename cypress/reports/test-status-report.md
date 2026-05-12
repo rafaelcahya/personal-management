@@ -1,30 +1,35 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-09 (Run #3 — Final)
-**App Version:** 1.6.1
+**Last Updated:** 2026-05-12 (v1.11 Product List UI + Product Detail UI tests)
+**App Version:** 1.11
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
 > "Last Tested" mengacu pada tanggal test file terakhir dijalankan secara eksplisit, atau tanggal commit terakhir sebagai proxy.
 
 > ✅ **Dashboard UI (2026-05-09 Run #3):** 88/88 passing (100%). Semua test pass setelah fix `.scrollIntoView()` dan koreksi text mismatch pada section "Average Usage Duration".
+> ✅ **Product List UI (2026-05-10):** 56 new UI tests added for v1.9/v1.10 changes (sticky controls, Edit Product dialog, Record Usage, Usage Log, mobile layout, language).
+> 🆕 **Product List UI v1.11 (2026-05-12):** 46 new tests added for Summary Cards clickable, Column Sorting, Category Filter, Last Purchase Price hint, Recent Purchases, Note display, Restock Prediction.
+> 🆕 **Product Detail UI v1.11 (2026-05-12):** 38 new tests added for page load, status badge, 4 stat cards, purchase history, usage history, loading/error states.
 
 ---
 
 ## Summary
 
-| Module                    | Last Tested  | Manual | Automation | Total |
-| ------------------------- | ------------ | ------ | ---------- | ----- |
-| Auth                      | 2026-05-08   | 1      | 126        | 127   |
-| API Auth Guard            | 2026-05-04   | 0      | 59         | 59    |
-| Landing Page              | 2026-05-08   | 0      | 33         | 33    |
-| Inventory - Dashboard     | 2026-05-09   | 0      | 161        | 161   |
-| Inventory - Product       | 2026-03-20   | 0      | 321        | 321   |
-| Inventory - Product Brand | 2026-04-22   | 0      | 114        | 114   |
-| Inventory - Product Name  | 2026-03-20   | 0      | 114        | 114   |
-| Trading - Trade           | 2026-03-15   | 0      | 185        | 185   |
-| Trading - Fee             | 2026-03-15   | 0      | 131        | 131   |
-| Trading - Event           | 2026-03-15   | 0      | 134        | 134   |
-| **Total**                 |              | **1**  | **1.378**  | **1.379** |
+| Module                          | Last Tested  | Manual | Automation | Total |
+| ------------------------------- | ------------ | ------ | ---------- | ----- |
+| Auth                            | 2026-05-08   | 1      | 126        | 127   |
+| API Auth Guard                  | 2026-05-04   | 0      | 59         | 59    |
+| Landing Page                    | 2026-05-08   | 0      | 33         | 33    |
+| Inventory - Dashboard           | 2026-05-09   | 0      | 161        | 161   |
+| Inventory - Product (API)       | 2026-05-12   | 0      | 355        | 355   |
+| Inventory - Product List UI     | 2026-05-12   | 0      | 102        | 102   |
+| Inventory - Product Detail UI   | 2026-05-12   | 0      | 38         | 38    |
+| Inventory - Product Brand       | 2026-04-22   | 0      | 114        | 114   |
+| Inventory - Product Name        | 2026-03-20   | 0      | 114        | 114   |
+| Trading - Trade                 | 2026-03-15   | 0      | 185        | 185   |
+| Trading - Fee                   | 2026-03-15   | 0      | 131        | 131   |
+| Trading - Event                 | 2026-03-15   | 0      | 134        | 134   |
+| **Total**                       |              | **1**  | **1.548**  | **1.549** |
 
 ---
 
@@ -85,7 +90,10 @@
 | #  | Feature             | File                                                      | Last Tested | Manual | Automation |
 | -- | ------------------- | --------------------------------------------------------- | ----------- | ------ | ---------- |
 | 1  | List Product        | inventory_management/product/list-product.cy.js           | 2026-03-20  | 0      | 26         |
-| 2  | Product Detail      | inventory_management/product/product-detail.cy.js         | 2026-03-20  | 0      | 25         |
+| 2  | Product Detail (API)| inventory_management/product/product-detail.cy.js         | 2026-03-20  | 0      | 25         |
+| 2b | Product Detail UI   | inventory_management/product/product-detail-ui.cy.js       | 2026-05-12  | 0      | 38         |
+| 2c | Last Purchase Price API | inventory_management/product/last-price-api.cy.js      | 2026-05-12  | 0      | 13         |
+| 2d | Restock Predictions API | inventory_management/product/restock-predictions-api.cy.js | 2026-05-12  | 0      | 17         |
 | 3  | Add Product         | inventory_management/product/add-product.cy.js            | 2026-03-20  | 0      | 100        |
 | 4  | Update Product      | inventory_management/product/update-product.cy.js         | 2026-03-20  | 0      | 39         |
 | 5  | Delete Product      | inventory_management/product/delete-product.cy.js         | 2026-03-20  | 0      | 23         |

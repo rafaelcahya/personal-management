@@ -66,10 +66,13 @@ export const INVENTORY_ENDPOINTS = {
   PRODUCT_LIST: '/api/inventory/v1/product/list',
   PRODUCT_CREATE: '/api/inventory/v1/product/create',
   PRODUCT_DETAIL: (id) => `/api/inventory/v1/product/${id}`,
+  PRODUCT_UPDATE_DETAILS: (id) => `/api/inventory/v1/product/${id}`,
   PRODUCT_DELETE: (id) => `/api/inventory/v1/product/delete/${id}`,
   PRODUCT_FAVORITE: (id) => `/api/inventory/v1/product/${id}/favorite`,
   PRODUCT_ADJUST: (id) => `/api/inventory/v1/product/adjust/${id}`,
   PRODUCT_SUMMARY: '/api/inventory/v1/product/summary',
+  PRODUCT_LAST_PRICE: (id) => `/api/inventory/v1/product/${id}/last-price`,
+  PRODUCT_RESTOCK_PREDICTIONS: '/api/inventory/v1/product/restock-predictions',
 
   // Product Stock
   PRODUCT_STOCK_CREATE: '/api/inventory/v1/product/stock/create',

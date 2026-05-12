@@ -1,29 +1,33 @@
-*::selection{
-	color: white;
-	background-color: #8b5cf6;
+*::selection {
+  color: white;
+  background-color: #8b5cf6;
 }
 
 /* Simple Scrollbar */
 ::-webkit-scrollbar {
-	width: 6px;
-	/* lebar vertical scrollbar */
-	height: 6px;
-	/* tinggi horizontal scrollbar */
+  width: 6px;
+  /* lebar vertical scrollbar */
+  height: 6px;
+  /* tinggi horizontal scrollbar */
 }
 
 ::-webkit-scrollbar-track {
-	background: transparent;
-	/* biar clean */
+  background: transparent;
+  /* biar clean */
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #cbd5e1;
-	/* slate-300 */
-	border-radius: 9999px;
-	/* full rounded */
+  background: #cbd5e1;
+  /* slate-300 */
+  border-radius: 9999px;
+  /* full rounded */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #94a3b8;
-	/* slate-400 pas hover */
+  background: #94a3b8;
+  /* slate-400 pas hover */
+}
+
+.recharts-surface {
+  outline: none;
 }

@@ -1,33 +1,36 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-09 (Run #3 — Final)
-**App Version:** 1.6.1
+**Last Updated:** 2026-05-12 (v1.11 Product List UI + Product Detail UI tests added)
+**App Version:** 1.11
 
 ## Coverage Summary
 
-| Module                    | Total Features | Automated | Manual Only | Not Tested | Coverage % |
-| ------------------------- | -------------- | --------- | ----------- | ---------- | ---------- |
-| Auth                      | 9              | 8         | 1           | 0          | 89%        |
-| API Auth Guard            | 3              | 3         | 0           | 0          | 100%       |
-| Landing Page              | 7              | 7         | 0           | 0          | 100%       |
-| Inventory - Dashboard     | 10             | 10        | 0           | 0          | 100%       |
-| Inventory - Product       | 9              | 9         | 0           | 0          | 100%       |
-| Inventory - Product Brand | 6              | 6         | 0           | 0          | 100%       |
-| Inventory - Product Name  | 6              | 6         | 0           | 0          | 100%       |
-| Trading - Trade           | 7              | 7         | 0           | 0          | 100%       |
-| Trading - Fee             | 6              | 6         | 0           | 0          | 100%       |
-| Trading - Event           | 6              | 6         | 0           | 0          | 100%       |
-| **Total**                 | **69**         | **68**    | **1**       | **0**      | **98%**    |
+| Module                          | Total Features | Automated | Manual Only | Not Tested | Coverage % |
+| ------------------------------- | -------------- | --------- | ----------- | ---------- | ---------- |
+| Auth                            | 9              | 8         | 1           | 0          | 89%        |
+| API Auth Guard                  | 3              | 3         | 0           | 0          | 100%       |
+| Landing Page                    | 7              | 7         | 0           | 0          | 100%       |
+| Inventory - Dashboard           | 10             | 10        | 0           | 0          | 100%       |
+| Inventory - Product (API)       | 11             | 11        | 0           | 0          | 100%       |
+| Inventory - Product List UI     | 12             | 12        | 0           | 0          | 100%       |
+| Inventory - Product Detail UI   | 7              | 7         | 0           | 0          | 100%       |
+| Inventory - Product Brand       | 6              | 6         | 0           | 0          | 100%       |
+| Inventory - Product Name        | 6              | 6         | 0           | 0          | 100%       |
+| Trading - Trade                 | 7              | 7         | 0           | 0          | 100%       |
+| Trading - Fee                   | 6              | 6         | 0           | 0          | 100%       |
+| Trading - Event                 | 6              | 6         | 0           | 0          | 100%       |
+| **Total**                       | **91**         | **90**    | **1**       | **0**      | **99%**    |
 
-> **Note (2026-05-09 Run #3):** Coverage % reflects feature coverage (which features have tests), not pass rate. Dashboard UI memiliki 100% feature coverage dan 100% pass rate setelah fix `.scrollIntoView()` diterapkan.
+> **Note (2026-05-12):** v1.11 Product List UI tests added (46 new tests) for Summary Cards clickable, Column Sorting, Category Filter, Last Purchase Price hint, Recent Purchases section, Note display in Usage Log, and Restock Prediction hint. Product Detail UI test file created (38 new tests) covering page load, navigation, status badge, 4 stat cards, purchase history, usage history, loading/error states.
 
-## Last Execution Results (2026-05-09 Run #3 — Final)
+## Last Execution Results (2026-05-12 Run #1 — v1.11 Feature Tests)
 
-| Spec File                                     | Tests | Passing | Failing | Pass Rate | Duration  |
-| --------------------------------------------- | ----- | ------- | ------- | --------- | --------- |
-| dashboard-ui.cy.js                            | 88    | 88      | 0       | 100%      | ~6m       |
+| Spec File                                     | Tests | Feature Coverage        | Notes |
+| --------------------------------------------- | ----- | ----------------------- | ----- |
+| product-list-ui.cy.js (v1.11 additions)       | 46    | Not yet run             | P0/P1/P2 features: card filters, sorting, category filter, last price hint, recent purchases, note display, restock prediction |
+| product-detail-ui.cy.js (new)                 | 38    | Not yet run             | Page load, status badge, 4 stat cards, purchase history, usage history, loading/error states |
 
-**Status: Clean run ✅ — Semua 88 test pass.**
+**Status: Tests written, awaiting first execution run.**
 
 ## Automated Test Cases
 
@@ -54,8 +57,12 @@
 | 19  | cypress/e2e/inventory_management/dashboard/dashboard-ui.cy.js         | Dashboard UI                         | 88         | Inventory dashboard display  |
 | 20  | cypress/e2e/inventory_management/dashboard/dashboard-api.cy.js        | Dashboard API                        | 56         | Dashboard API responses      |
 | 21  | cypress/e2e/inventory_management/dashboard/summary-api.cy.js          | Summary API                          | 17         | Inventory summary API        |
-| 22  | cypress/e2e/inventory_management/product/list-product.cy.js           | List Product                         | 26         | Product list view            |
-| 23  | cypress/e2e/inventory_management/product/product-detail.cy.js         | Product Detail                       | 25         | Product detail view          |
+| 22  | cypress/e2e/inventory_management/product/list-product.cy.js           | List Product (API)                   | 26         | Product list API             |
+| 22b | cypress/e2e/inventory_management/product/product-list-ui.cy.js        | Product List UI (v1.9/v1.10/v1.11)   | 102        | Sticky controls, Edit dialog, Record Usage, Usage Log, Mobile cards, Language, Summary card filters, Column sorting, Category filter, Last price hint, Recent purchases, Note display, Restock prediction |
+| 22c | cypress/e2e/inventory_management/product/product-detail-ui.cy.js      | Product Detail UI (v1.11)            | 38         | Page load, navigation, status badge, 4 stat cards, purchase history, usage history, loading/error states |
+| 22d | cypress/e2e/inventory_management/product/last-price-api.cy.js         | Last Purchase Price API              | 13         | Last price endpoint (auth, validation, accuracy, DB comparison) |
+| 22e | cypress/e2e/inventory_management/product/restock-predictions-api.cy.js | Restock Predictions API              | 17         | Restock prediction endpoint (auth, response, business logic, DB comparison) |
+| 23  | cypress/e2e/inventory_management/product/product-detail.cy.js         | Product Detail (API)                 | 25         | Product detail API           |
 | 24  | cypress/e2e/inventory_management/product/add-product.cy.js            | Add Product                          | 100        | Product creation flow        |
 | 25  | cypress/e2e/inventory_management/product/update-product.cy.js         | Update Product                       | 39         | Product update flow          |
 | 26  | cypress/e2e/inventory_management/product/delete-product.cy.js         | Delete Product                       | 23         | Product deletion flow        |
@@ -95,7 +102,7 @@
 | 60  | cypress/e2e/trading_management/event/delete-event.cy.js               | Delete Event                         | 9          | Event deletion flow          |
 | 61  | cypress/e2e/trading_management/event/summary-event.cy.js              | Event Summary                        | 25         | Event summary API            |
 
-**Total Automated Test Cases: 1,378**
+**Total Automated Test Cases: 1,548** (added 46 + 38 + 13 + 17 = 114 new tests for v1.11)
 
 ## Manual Test Cases (not yet automated)
 
@@ -105,6 +112,25 @@
 
 ## Coverage Gap Analysis
 
-All features have at least partial automation coverage. The only manual-only test is Google OAuth UI Flow, which requires a real browser OAuth redirect that cannot be intercepted by Cypress without a custom OAuth mock server.
+All Product List v1.11 features now have automation coverage:
 
-**Recommendation:** P2 — automate Google OAuth using a mock OAuth provider (e.g., `cypress-social-logins` or a custom mock server) in a future sprint.
+- **Summary Cards Clickable (P1)** — 5 tests covering filter application for all clickable cards
+- **Column Sorting (P1)** — 7 tests covering ascending/descending sort, null handling, sort indicators
+- **Category Filter (P1)** — 4 tests covering dynamic type filter, product count display, filter application
+- **Last Purchase Price Hint (P0)** — 3 tests covering loading state, successful data display, empty state
+- **Recent Purchases Section (P2)** — 4 tests covering max 3 entries, data formatting, empty state
+- **Note Display in Usage Log (P1)** — 3 tests covering note display, conditional rendering, positioning
+- **Restock Prediction Hint (P2)** — 5 tests covering color coding, edge cases (qty=0), no prediction scenarios
+
+Product Detail Page v1.11 features now have automation coverage:
+
+- **Page Load & Navigation** — 4 tests covering page load, back link, breadcrumbs
+- **Status Badge** — 3 tests covering active/inactive states
+- **Stat Cards (4 cards)** — 7 tests covering all 4 cards, calculations, sub-labels, responsive layout
+- **Purchase History Section** — 6 tests covering table display, empty state, sorting
+- **Usage History Section** — 2 tests covering component integration
+- **Loading State** — 2 tests covering skeleton, back link persistence
+- **Error State** — 3 tests covering error display, retry button, retry logic
+- **Validation** — 2 tests covering ID validation, auth requirement
+
+**Recommendation:** Run both new test files (product-list-ui.cy.js v1.11 additions and product-detail-ui.cy.js) to verify all 84 new tests pass before final v1.11 release.

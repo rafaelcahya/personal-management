@@ -31,6 +31,12 @@
       "detail": "/api/inventory/v1/detail",
       "get_products": "/api/inventory/v1/get-products"
     },
+    "product": {
+      "list": "/api/inventory/v1/product/list",
+      "create": "/api/inventory/v1/product/create",
+      "summary": "/api/inventory/v1/product/summary",
+      "restock_predictions": "/api/inventory/v1/product/restock-predictions"
+    },
     "trading": {
       "list": "/api/trading/v1/list",
       "execute": "/api/trading/v1/execute",
@@ -117,6 +123,50 @@
       "user_menu_trigger": "userMenuTrigger_landingPage",
       "user_menu_email": "userMenuEmail_landingPage",
       "user_menu_signout": "userMenuSignOut_landingPage"
+    },
+    "product_list": {
+      "controls_bar": "product-list-controls-bar",
+      "search_input": "product-list-search-input",
+      "mobile_cards": "product-list-mobile-cards",
+      "mobile_card": "product-mobile-card",
+      "desktop_table": "product-list-desktop-table",
+      "action_menu_trigger": "product-action-menu-trigger",
+      "action_edit": "product-action-edit",
+      "action_record_usage": "product-action-record-usage",
+      "edit_dialog": "edit-product-dialog",
+      "edit_form": "edit-product-form",
+      "edit_brand_select": "edit-product-brand-select",
+      "edit_name_select": "edit-product-name-select",
+      "edit_type_input": "edit-product-type-input",
+      "edit_status_select": "edit-product-status-select",
+      "edit_cancel_btn": "edit-product-cancel-btn",
+      "edit_save_btn": "edit-product-save-btn",
+      "stock_adjustment_dialog": "stock-adjustment-dialog",
+      "active_session_warning": "active-session-warning",
+      "record_usage_date_picker": "record-usage-date-picker",
+      "record_usage_qty_input": "usageQuantityField-recordUsageForm",
+      "record_usage_note_input": "noteField-recordUsageForm",
+      "record_usage_submit_btn": "startTrackingBtn-recordUsageForm",
+      "record_usage_cancel_btn": "cancelBtn-recordUsageForm",
+      "product_summary": "product-summary",
+      "product_summary_active_session": "product-summary-active-session",
+      "product_usage_log": "product-usage-log",
+      "usage_log_duration_col": "usage-log-duration-col",
+      "log_row_duration": "log-row-duration",
+      "log_row_ongoing_label": "log-row-ongoing-label"
+    },
+    "product_detail": {
+      "page": "product-detail-page",
+      "loading": "product-detail-loading",
+      "error": "product-detail-error",
+      "retry_btn": "product-detail-retry-btn",
+      "status_badge": "product-detail-status-badge",
+      "stats": "product-detail-stats",
+      "purchase_section": "product-detail-purchase-section",
+      "purchase_table": "product-detail-purchase-table",
+      "purchase_row": "product-detail-purchase-row",
+      "purchase_empty": "product-detail-purchase-empty",
+      "usage_section": "product-detail-usage-section"
     }
   },
   "seed": {

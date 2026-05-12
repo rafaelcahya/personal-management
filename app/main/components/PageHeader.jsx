@@ -3,7 +3,7 @@ import { ChevronRight } from 'lucide-react'
 
 export default function PageHeader({ title, description, breadcrumbs = [] }) {
   return (
-    <div className="mb-6">
+    <div>
       <nav
         aria-label="Breadcrumb"
         className="flex items-center gap-1 text-xs text-slate-400 mb-2.5"

@@ -54,6 +54,6 @@
 
 ## Signals: PM → Any Agent (PRD change impact)
 
-| Status | Date | Target | Signal         |
-| ------ | ---- | ------ | -------------- |
-| —      | —    | —      | No signals yet |
+| Status                 | Date       | Target      | Signal                                                                                              |
+| ---------------------- | ---------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| [RESOLVED: 2026-05-10] | 2026-05-10 | UI/UX Agent | Product List analysis complete. Design review selesai, PRD v1.8 sudah diupdate dengan spec lengkap. |
