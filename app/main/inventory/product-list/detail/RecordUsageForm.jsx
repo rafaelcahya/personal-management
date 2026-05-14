@@ -179,7 +179,6 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
               <FormLabel className="font-medium">Note (Optional)</FormLabel>
               <FormControl>
                 <Textarea
-                  id="noteField-recordUsageForm"
                   id="noteField_recordUsageForm"
                   {...field}
                   placeholder="e.g. Where you got it, any observations..."
@@ -207,7 +206,6 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
             type="button"
             onClick={onClose}
             className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
-            id="cancelBtn-recordUsageForm"
             id="cancelBtn_recordUsageForm"
           >
             Cancel
