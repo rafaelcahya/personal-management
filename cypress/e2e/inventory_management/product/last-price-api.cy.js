@@ -1,5 +1,7 @@
 import { faker } from '@faker-js/faker'
 
+const constants = require('../../../fixtures/app-constants.json')
+
 describe('GET Last Purchase Price API - /api/inventory/v1/product/[id]/last-price', () => {
   let validProductListId
   let createdProduct
@@ -41,7 +43,6 @@ describe('GET Last Purchase Price API - /api/inventory/v1/product/[id]/last-pric
           expect(productRes.status).to.eq(201)
           createdProduct = productRes.body.product
           validProductListId = createdProduct.id
-          testUserId = productRes.body.product.user_id
 
           // Create 2 stock entries with different prices and dates
           cy.CreateProductStock(

@@ -16,7 +16,7 @@ describe('GET Dashboard API - /api/inventory/v1/dashboard', () => {
   // Authentication
   // =========================================================================
   describe('Authentication', () => {
-    it('should return 200 for authenticated user', () => {
+    it('GET Dashboard API (authenticated) → returns 200 with success', () => {
       cy.request({
         method: 'GET',
         url: DASHBOARD_API,
@@ -27,7 +27,7 @@ describe('GET Dashboard API - /api/inventory/v1/dashboard', () => {
       })
     })
 
-    it('should return 307 or 401 without authentication', () => {
+    it('GET Dashboard API (unauthenticated) → returns 307 redirect or 401 unauthorized', () => {
       cy.clearApiAuth()
       cy.request({
         method: 'GET',
@@ -38,10 +38,10 @@ describe('GET Dashboard API - /api/inventory/v1/dashboard', () => {
         expect(response.status).to.be.oneOf([307, 401])
 
         if (response.status === 401) {
-          // Middleware returns { error: "UNAUTHORIZED", message: "..." }
+          // Middleware returns { error: "Unauthorized", message: "..." }
           // Route handler returns { success: false, error: "Unauthorized" }
           const body = response.body
-          const isUnauth = body?.success === false || body?.error === 'UNAUTHORIZED'
+          const isUnauth = body?.success === false || body?.error === 'Unauthorized'
           expect(isUnauth).to.be.true
         }
 
@@ -57,7 +57,7 @@ describe('GET Dashboard API - /api/inventory/v1/dashboard', () => {
   // Response Structure
   // =========================================================================
   describe('Response Structure', () => {
-    it('should return correct top-level keys: success and data', () => {
+    it('Dashboard API response → has top-level keys: success, data', () => {
       cy.request({
         method: 'GET',
         url: DASHBOARD_API,
@@ -68,7 +68,7 @@ describe('GET Dashboard API - /api/inventory/v1/dashboard', () => {
       })
     })
 
-    it('should return all required data keys', () => {
+    it('Dashboard API data → contains all 11 required object keys', () => {
       cy.request({
         method: 'GET',
         url: DASHBOARD_API,
@@ -91,7 +91,7 @@ describe('GET Dashboard API - /api/inventory/v1/dashboard', () => {
       })
     })
 
-    it('should return array data values as arrays', () => {
+    it('Dashboard API data → array fields are properly typed as arrays', () => {
       cy.request({
         method: 'GET',
         url: DASHBOARD_API,
@@ -111,7 +111,7 @@ describe('GET Dashboard API - /api/inventory/v1/dashboard', () => {
       })
     })
 
-    it('should return spendComparison as object with required keys', () => {
+    it('Dashboard API data.spendComparison → has all required keys and structure', () => {
       cy.request({
         method: 'GET',
         url: DASHBOARD_API,
@@ -134,7 +134,7 @@ describe('GET Dashboard API - /api/inventory/v1/dashboard', () => {
       })
     })
 
-    it('should return application/json content-type', () => {
+    it('Dashboard API response → content-type is application/json', () => {
       cy.request({
         method: 'GET',
         url: DASHBOARD_API,
@@ -902,7 +902,7 @@ describe('Budget API - /api/inventory/v1/budget', () => {
       })
     })
 
-    it('should return 307 or 401 without authentication', () => {
+    it('GET Dashboard API (unauthenticated) → returns 307 redirect or 401 unauthorized', () => {
       cy.clearApiAuth()
       cy.request({
         method: 'GET',
@@ -975,7 +975,7 @@ describe('Budget API - /api/inventory/v1/budget', () => {
       })
     })
 
-    it('should return 307 or 401 without authentication', () => {
+    it('GET Dashboard API (unauthenticated) → returns 307 redirect or 401 unauthorized', () => {
       cy.clearApiAuth()
       cy.request({
         method: 'POST',

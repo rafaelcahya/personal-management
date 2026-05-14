@@ -148,15 +148,15 @@ Every agent checks this file at kickoff. After handling a signal, mark it `[RESO
 
 Use these exact formats when one agent needs action from another.
 
-### 1. data-testid Request (Tester → Frontend)
+### 1. id Request (Tester → Frontend)
 
 ```
-🔖 data-testid Request — Tester → Frontend
+🔖 id Request — Tester → Frontend
 Component: [ComponentName] ([path/to/Component.jsx])
 Missing IDs:
-  - [testid-name] → [which element]
+  - [id-value] → [which element]
 Needed for: [cypress/e2e/...]
-Action: Add data-testid attributes + register in cypress/fixtures/app-constants.yaml
+Action: Add id attributes + register in cypress/fixtures/app-constants.yaml
 ```
 
 ### 2. Endpoint Gap (Tester → Backend)
@@ -238,10 +238,10 @@ Blocking issues: none
 
 A feature is only done when ALL agents sign off:
 
-| Agent    | Done When                                                                                    |
-| -------- | -------------------------------------------------------------------------------------------- |
-| PM       | PRD updated with final spec, version bumped                                                  |
-| UI/UX    | Design decision doc complete, all states defined, handed off to Frontend                     |
-| Backend  | All endpoints live, edge cases handled, API contract sent to Frontend                        |
-| Frontend | UI built, all states implemented, all `data-testid` added + registered in app-constants.yaml |
-| Tester   | Component audit done, endpoint audit done, E2E tests written and passing, reports updated    |
+| Agent    | Done When                                                                                 |
+| -------- | ----------------------------------------------------------------------------------------- |
+| PM       | PRD updated with final spec, version bumped                                               |
+| UI/UX    | Design decision doc complete, all states defined, handed off to Frontend                  |
+| Backend  | All endpoints live, edge cases handled, API contract sent to Frontend                     |
+| Frontend | UI built, all states implemented, all `id` added + registered in app-constants.yaml       |
+| Tester   | Component audit done, endpoint audit done, E2E tests written and passing, reports updated |

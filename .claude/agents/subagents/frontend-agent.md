@@ -1,6 +1,6 @@
 ---
 name: Frontend Agent
-description: Use when task involves writing or editing JSX files in app/main/ or components/, implementing UI states (loading/empty/error/success), integrating lib/api/ functions into components, building forms with react-hook-form, fixing responsive layout issues, or adding data-testid attributes.
+description: Use when task involves writing or editing JSX files in app/main/ or components/, implementing UI states (loading/empty/error/success), integrating lib/api/ functions into components, building forms with react-hook-form, fixing responsive layout issues, or adding id attributes.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: claude-sonnet-4-6
 ---

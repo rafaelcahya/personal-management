@@ -67,7 +67,7 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
         {/* Active session warning */}
         {hasActiveSession && (
           <div
-            data-testid="active-session-warning"
+            id="activeSessionWarning_productListPage"
             className="flex gap-2.5 rounded-lg border border-yellow-200 bg-yellow-50 p-3"
           >
             <AlertCircle className="size-4 text-yellow-600 flex-shrink-0 mt-0.5" />
@@ -101,6 +101,7 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
                 <Input
                   type="number"
                   id="usageQuantityField-recordUsageForm"
+                  id="usageQuantityField_recordUsageForm"
                   {...field}
                   value={field.value ?? ''}
                   onChange={(e) => {
@@ -130,7 +131,7 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
               <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                 <PopoverTrigger asChild>
                   <Button
-                    data-testid="record-usage-date-picker"
+                    id="datePicker_recordUsageForm"
                     type="button"
                     variant="outline"
                     className={cn(
@@ -180,6 +181,7 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
               <FormControl>
                 <Textarea
                   id="noteField-recordUsageForm"
+                  id="noteField_recordUsageForm"
                   {...field}
                   placeholder="e.g. Where you got it, any observations..."
                   className="text-sm font-medium resize-vertical min-h-[72px] focus-visible:ring-violet-200 focus-visible:border-violet-600"
@@ -207,10 +209,11 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
             onClick={onClose}
             className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
             id="cancelBtn-recordUsageForm"
+            id="cancelBtn_recordUsageForm"
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting} id="startTrackingBtn-recordUsageForm">
+          <Button type="submit" disabled={isSubmitting} id="startTrackingBtn_recordUsageForm">
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSubmitting ? 'Saving...' : 'Record Usage'}
           </Button>

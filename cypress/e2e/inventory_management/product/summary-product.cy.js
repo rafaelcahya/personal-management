@@ -1,254 +1,236 @@
-import { faker } from "@faker-js/faker";
+import { faker } from '@faker-js/faker'
 
-describe("GET Product Summary API - /api/inventory/v1/product/summary", () => {
-    let validBrandId;
-    let validProductId;
-    let createdProducts = [];
+const constants = require('../../../fixtures/app-constants.json')
 
-    const buildRequest = (overrides = {}) => ({
-        product_id: validProductId,
-        brand_id: validBrandId,
-        type: faker.word.noun(),
-        usage_quantity: faker.number.int({ min: 1, max: 50 }),
-        note: faker.word.words(5),
-        product_image: "",
-        ...overrides,
-    });
+describe('GET Product Summary API - /api/inventory/v1/product/summary', () => {
+  let validBrandId
+  let validProductId
+  let createdProducts = []
 
-    before(() => {
-        cy.setupApiAuthCookies();
+  const buildRequest = (overrides = {}) => ({
+    product_id: validProductId,
+    brand_id: validBrandId,
+    type: faker.word.noun(),
+    usage_quantity: faker.number.int({ min: 1, max: 50 }),
+    note: faker.word.words(5),
+    product_image: '',
+    ...overrides,
+  })
 
-        cy.AddProductBrand({
-            brand: faker.food.fruit(),
-            brand_status: "active",
-            note: faker.word.words(5),
-        }).then((res) => {
-            expect(res.status).to.eq(201);
-            validBrandId = res.body.productBrand.id;
-        });
+  before(() => {
+    cy.setupApiAuthCookies()
 
-        cy.AddProductName({
-            product_name: faker.food.ingredient(),
-            product_name_status: "active",
-        }).then((res) => {
-            expect(res.status).to.eq(201);
-            validProductId = res.body.productName.id;
-        });
+    cy.AddProductBrand({
+      brand: faker.food.fruit(),
+      brand_status: 'active',
+      note: faker.word.words(5),
+    }).then((res) => {
+      expect(res.status).to.eq(201)
+      validBrandId = res.body.productBrand.id
+    })
 
-        Cypress._.times(3, () => {
-            cy.then(() => {
-                cy.AddProduct(buildRequest()).then((res) => {
-                    expect(res.status).to.eq(201);
-                    createdProducts.push(res.body.product);
-                });
-            });
-        });
-    });
+    cy.AddProductName({
+      product_name: faker.food.ingredient(),
+      product_name_status: 'active',
+    }).then((res) => {
+      expect(res.status).to.eq(201)
+      validProductId = res.body.productName.id
+    })
 
-    beforeEach(() => {
-        cy.setupApiAuthCookies();
-    });
+    Cypress._.times(3, () => {
+      cy.then(() => {
+        cy.AddProduct(buildRequest()).then((res) => {
+          expect(res.status).to.eq(201)
+          createdProducts.push(res.body.product)
+        })
+      })
+    })
+  })
 
-    describe("Authentication", () => {
-        it("should return 200 for authenticated user", () => {
-            cy.GetProductSummary().then((response) => {
-                expect(response.status).to.eq(200);
-                expect(response.body.success).to.be.true;
-            });
-        });
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
 
-        it("should return 307 or 401 without authentication", () => {
-            cy.clearApiAuth();
+  describe('Authentication', () => {
+    it('should return 200 for authenticated user', () => {
+      cy.GetProductSummary().then((response) => {
+        expect(response.status).to.eq(200)
+        expect(response.body.success).to.be.true
+      })
+    })
 
-            cy.GetProductSummaryNoAuth().then((response) => {
-                expect(response.status).to.be.oneOf([307, 401]);
+    it('should return 307 or 401 without authentication', () => {
+      cy.clearApiAuth()
 
-                if (response.status === 401) {
-                    expect(response.body.success).to.be.false;
-                    expect(response.body.error).to.eq("Unauthorized");
-                }
+      cy.GetProductSummaryNoAuth().then((response) => {
+        expect(response.status).to.be.oneOf([307, 401])
 
-                if (response.status === 307) {
-                    const location = response.headers.location || response.body;
-                    expect(String(location)).to.include("/login");
-                }
-            });
-        });
-    });
+        if (response.status === 401) {
+          expect(response.body.error?.toLowerCase()).to.eq('unauthorized')
+        }
 
-    describe("Response Structure", () => {
-        it("should return correct top-level keys", () => {
-            cy.GetProductSummary().then((response) => {
-                expect(response.body).to.have.all.keys("success", "data");
-                expect(response.body.success).to.be.true;
-                expect(response.body.data).to.be.an("object");
-            });
-        });
+        if (response.status === 307) {
+          const location = response.headers.location || response.body
+          expect(String(location)).to.include('/login')
+        }
+      })
+    })
+  })
 
-        it("should return all required summary keys", () => {
-            cy.GetProductSummary().then((response) => {
-                expect(response.body.data).to.have.all.keys([
-                    "totalProducts",
-                    "activeProducts",
-                    "inactiveProducts",
-                    "totalQuantity",
-                    "totalUsageQuantity",
-                    "favoriteProducts",
-                ]);
-            });
-        });
+  describe('Response Structure', () => {
+    it('should return correct top-level keys', () => {
+      cy.GetProductSummary().then((response) => {
+        expect(response.body).to.have.all.keys('success', 'data')
+        expect(response.body.success).to.be.true
+        expect(response.body.data).to.be.an('object')
+      })
+    })
 
-        it("should return application/json content-type", () => {
-            cy.GetProductSummary().then((response) => {
-                expect(response.headers["content-type"]).to.include(
-                    "application/json",
-                );
-            });
-        });
-    });
+    it('should return all required summary keys', () => {
+      cy.GetProductSummary().then((response) => {
+        expect(response.body.data).to.have.all.keys([
+          'totalProducts',
+          'activeProducts',
+          'inactiveProducts',
+          'totalQuantity',
+          'totalUsageQuantity',
+          'favoriteProducts',
+        ])
+      })
+    })
 
-    describe("Data Types", () => {
-        it("should return all summary values as numbers", () => {
-            cy.GetProductSummary().then((response) => {
-                const data = response.body.data;
+    it('should return application/json content-type', () => {
+      cy.GetProductSummary().then((response) => {
+        expect(response.headers['content-type']).to.include('application/json')
+      })
+    })
+  })
 
-                expect(data.totalProducts).to.be.a("number");
-                expect(data.activeProducts).to.be.a("number");
-                expect(data.inactiveProducts).to.be.a("number");
-                expect(data.totalQuantity).to.be.a("number");
-                expect(data.totalUsageQuantity).to.be.a("number");
-                expect(data.favoriteProducts).to.be.a("number");
-            });
-        });
+  describe('Data Types', () => {
+    it('should return all summary values as numbers', () => {
+      cy.GetProductSummary().then((response) => {
+        const data = response.body.data
 
-        it("should return all summary values as non-negative numbers", () => {
-            cy.GetProductSummary().then((response) => {
-                const data = response.body.data;
+        expect(data.totalProducts).to.be.a('number')
+        expect(data.activeProducts).to.be.a('number')
+        expect(data.inactiveProducts).to.be.a('number')
+        expect(data.totalQuantity).to.be.a('number')
+        expect(data.totalUsageQuantity).to.be.a('number')
+        expect(data.favoriteProducts).to.be.a('number')
+      })
+    })
 
-                expect(data.totalProducts).to.be.gte(0);
-                expect(data.activeProducts).to.be.gte(0);
-                expect(data.inactiveProducts).to.be.gte(0);
-                expect(data.totalQuantity).to.be.gte(0);
-                expect(data.totalUsageQuantity).to.be.gte(0);
-                expect(data.favoriteProducts).to.be.gte(0);
-            });
-        });
-    });
+    it('should return all summary values as non-negative numbers', () => {
+      cy.GetProductSummary().then((response) => {
+        const data = response.body.data
 
-    describe("Summary Calculation Logic", () => {
-        it("totalProducts should equal activeProducts + inactiveProducts", () => {
-            cy.GetProductSummary().then((response) => {
-                const { totalProducts, activeProducts, inactiveProducts } =
-                    response.body.data;
+        expect(data.totalProducts).to.be.gte(0)
+        expect(data.activeProducts).to.be.gte(0)
+        expect(data.inactiveProducts).to.be.gte(0)
+        expect(data.totalQuantity).to.be.gte(0)
+        expect(data.totalUsageQuantity).to.be.gte(0)
+        expect(data.favoriteProducts).to.be.gte(0)
+      })
+    })
+  })
 
-                expect(totalProducts).to.eq(activeProducts + inactiveProducts);
-            });
-        });
+  describe('Summary Calculation Logic', () => {
+    it('totalProducts should equal activeProducts + inactiveProducts', () => {
+      cy.GetProductSummary().then((response) => {
+        const { totalProducts, activeProducts, inactiveProducts } = response.body.data
 
-        it("activeProducts should not exceed totalProducts", () => {
-            cy.GetProductSummary().then((response) => {
-                const { totalProducts, activeProducts } = response.body.data;
-                expect(activeProducts).to.be.lte(totalProducts);
-            });
-        });
+        expect(totalProducts).to.eq(activeProducts + inactiveProducts)
+      })
+    })
 
-        it("inactiveProducts should not exceed totalProducts", () => {
-            cy.GetProductSummary().then((response) => {
-                const { totalProducts, inactiveProducts } = response.body.data;
-                expect(inactiveProducts).to.be.lte(totalProducts);
-            });
-        });
+    it('activeProducts should not exceed totalProducts', () => {
+      cy.GetProductSummary().then((response) => {
+        const { totalProducts, activeProducts } = response.body.data
+        expect(activeProducts).to.be.lte(totalProducts)
+      })
+    })
 
-        it("favoriteProducts should not exceed totalProducts", () => {
-            cy.GetProductSummary().then((response) => {
-                const { totalProducts, favoriteProducts } = response.body.data;
-                expect(favoriteProducts).to.be.lte(totalProducts);
-            });
-        });
+    it('inactiveProducts should not exceed totalProducts', () => {
+      cy.GetProductSummary().then((response) => {
+        const { totalProducts, inactiveProducts } = response.body.data
+        expect(inactiveProducts).to.be.lte(totalProducts)
+      })
+    })
 
-        it("totalProducts should increase by 1 after adding a new product", () => {
-            cy.GetProductSummary()
-                .then((response) => {
-                    return response.body.data.totalProducts;
-                })
-                .then((beforeCount) => {
-                    cy.AddProduct(buildRequest()).then((res) => {
-                        expect(res.status).to.eq(201);
-                    });
+    it('favoriteProducts should not exceed totalProducts', () => {
+      cy.GetProductSummary().then((response) => {
+        const { totalProducts, favoriteProducts } = response.body.data
+        expect(favoriteProducts).to.be.lte(totalProducts)
+      })
+    })
 
-                    cy.GetProductSummary().then((response) => {
-                        expect(response.body.data.totalProducts).to.eq(
-                            beforeCount + 1,
-                        );
-                    });
-                });
-        });
+    it('totalProducts should increase by 1 after adding a new product', () => {
+      cy.GetProductSummary()
+        .then((response) => {
+          return response.body.data.totalProducts
+        })
+        .then((beforeCount) => {
+          cy.AddProduct(buildRequest()).then((res) => {
+            expect(res.status).to.eq(201)
+          })
 
-        it("inactiveProducts should increase by 1 after adding a new product (default inactive)", () => {
-            cy.GetProductSummary()
-                .then((response) => {
-                    return response.body.data.inactiveProducts;
-                })
-                .then((beforeCount) => {
-                    cy.AddProduct(buildRequest()).then((res) => {
-                        expect(res.status).to.eq(201);
-                    });
+          cy.GetProductSummary().then((response) => {
+            expect(response.body.data.totalProducts).to.eq(beforeCount + 1)
+          })
+        })
+    })
 
-                    cy.GetProductSummary().then((response) => {
-                        expect(response.body.data.inactiveProducts).to.eq(
-                            beforeCount + 1,
-                        );
-                    });
-                });
-        });
-    });
+    it('inactiveProducts should increase by 1 after adding a new product (default inactive)', () => {
+      cy.GetProductSummary()
+        .then((response) => {
+          return response.body.data.inactiveProducts
+        })
+        .then((beforeCount) => {
+          cy.AddProduct(buildRequest()).then((res) => {
+            expect(res.status).to.eq(201)
+          })
 
-    describe("API vs Database Comparison", () => {
-        it("totalProducts should match database count", () => {
-            cy.GetProductSummary()
-                .then((response) => response.body.data.totalProducts)
-                .then((apiTotal) => {
-                    cy.getTotalProductsFromDb().then((dbTotal) => {
-                        expect(apiTotal).to.eq(dbTotal);
-                    });
-                });
-        });
+          cy.GetProductSummary().then((response) => {
+            expect(response.body.data.inactiveProducts).to.eq(beforeCount + 1)
+          })
+        })
+    })
+  })
 
-        it("all summary values should match computed DB values", () => {
-            cy.GetProductSummary()
-                .then((response) => response.body.data)
-                .then((apiSummary) => {
-                    cy.getProductSummaryFromDb().then((dbSummary) => {
-                        expect(apiSummary.totalProducts).to.eq(
-                            dbSummary.totalProducts,
-                        );
-                        expect(apiSummary.activeProducts).to.eq(
-                            dbSummary.activeProducts,
-                        );
-                        expect(apiSummary.inactiveProducts).to.eq(
-                            dbSummary.inactiveProducts,
-                        );
-                        expect(apiSummary.totalQuantity).to.eq(
-                            dbSummary.totalQuantity,
-                        );
-                        expect(apiSummary.totalUsageQuantity).to.eq(
-                            dbSummary.totalUsageQuantity,
-                        );
-                        expect(apiSummary.favoriteProducts).to.eq(
-                            dbSummary.favoriteProducts,
-                        );
-                    });
-                });
-        });
-    });
+  describe('API vs Database Comparison', () => {
+    it('totalProducts should match database count', () => {
+      cy.GetProductSummary()
+        .then((response) => response.body.data.totalProducts)
+        .then((apiTotal) => {
+          cy.getTotalProductsFromDb().then((dbTotal) => {
+            expect(apiTotal).to.eq(dbTotal)
+          })
+        })
+    })
 
-    describe("Performance", () => {
-        it("should respond within 2000ms", () => {
-            const start = Date.now();
-            cy.GetProductSummary().then((response) => {
-                expect(response.status).to.eq(200);
-                expect(Date.now() - start).to.be.lte(2000);
-            });
-        });
-    });
-});
+    it('all summary values should match computed DB values', () => {
+      cy.GetProductSummary()
+        .then((response) => response.body.data)
+        .then((apiSummary) => {
+          cy.getProductSummaryFromDb().then((dbSummary) => {
+            expect(apiSummary.totalProducts).to.eq(dbSummary.totalProducts)
+            expect(apiSummary.activeProducts).to.eq(dbSummary.activeProducts)
+            expect(apiSummary.inactiveProducts).to.eq(dbSummary.inactiveProducts)
+            expect(apiSummary.totalQuantity).to.eq(dbSummary.totalQuantity)
+            expect(apiSummary.totalUsageQuantity).to.eq(dbSummary.totalUsageQuantity)
+            expect(apiSummary.favoriteProducts).to.eq(dbSummary.favoriteProducts)
+          })
+        })
+    })
+  })
+
+  describe('Performance', () => {
+    it('should respond within 2000ms', () => {
+      const start = Date.now()
+      cy.GetProductSummary().then((response) => {
+        expect(response.status).to.eq(200)
+        expect(Date.now() - start).to.be.lte(2000)
+      })
+    })
+  })
+})

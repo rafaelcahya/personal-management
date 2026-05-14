@@ -82,7 +82,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
   // Page Load
   // =========================================================================
   describe('Page Load', () => {
-    it('should load the dashboard page without errors', () => {
+    it('dashboard page (load) → renders without uncaught JavaScript errors', () => {
       stubDashboard()
       stubSummary()
       cy.visit(INVENTORY_URL)
@@ -91,7 +91,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       // No uncaught JS errors — Cypress catches these automatically
     })
 
-    it('should display navigation tabs', () => {
+    it('dashboard page (navigation) → displays all 5 tab labels', () => {
       stubDashboard()
       stubSummary()
       cy.visit(INVENTORY_URL)
@@ -102,7 +102,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.contains('Product History').should('be.visible')
     })
 
-    it('should highlight Dashboard tab as active', () => {
+    it('dashboard page (navigation) → Dashboard tab has active styling', () => {
       stubDashboard()
       stubSummary()
       cy.visit(INVENTORY_URL)
@@ -115,7 +115,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
   // Summary Cards
   // =========================================================================
   describe('Summary Cards', () => {
-    it('should render 6 summary cards with correct titles', () => {
+    it('summary cards → renders all 6 cards with correct titles', () => {
       stubDashboard()
       stubSummary({
         totalProducts: 10,
@@ -136,7 +136,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.contains('Favorites').should('be.visible')
     })
 
-    it('should NOT render "Inactive" card title (replaced by Low Stock)', () => {
+    it('summary cards → does NOT display "Inactive" card (replaced by Low Stock)', () => {
       stubDashboard()
       stubSummary({
         totalProducts: 10,
@@ -152,7 +152,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.contains('Inactive').should('not.exist')
     })
 
-    it('should display numeric values in summary cards', () => {
+    it('summary cards → displays correct numeric values for each card', () => {
       stubDashboard()
       stubSummary({
         totalProducts: 10,
@@ -172,7 +172,7 @@ describe('Inventory Dashboard UI - /main/inventory', () => {
       cy.contains('4').should('be.visible')
     })
 
-    it('should display Low Stock count from lowStockAlerts length (not inactiveProducts)', () => {
+    it('summary cards (Low Stock) → displays alert count from API, not inactiveProducts', () => {
       stubDashboard({
         ...emptyDashboardData,
         lowStockAlerts: [

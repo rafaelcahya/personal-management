@@ -39,39 +39,53 @@ export async function getTotalProductsFromDb(supabase, userId) {
 }
 
 export async function getProductSummaryFromDb(supabase, userId) {
-  const { data, error } = await supabase
-    .from('product_list')
-    .select('product_status, quantity, usage_quantity, is_favorite')
-    .eq('user_id', userId)
-    .is('deleted_at', null)
+  const [r1, r2, r3, r4, r5] = await Promise.all([
+    supabase
+      .from('product_list')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .is('deleted_at', null),
+    supabase
+      .from('product_list')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('product_status', 'active')
+      .is('deleted_at', null),
+    supabase
+      .from('product_list')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('product_status', 'inactive')
+      .is('deleted_at', null),
+    supabase
+      .from('product_list')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('is_favorite', true)
+      .is('deleted_at', null),
+    supabase
+      .from('product_list')
+      .select('quantity, usage_quantity')
+      .eq('user_id', userId)
+      .is('deleted_at', null)
+      .range(0, 9999),
+  ])
 
-  if (error) throw new Error(`DB query failed: ${error.message}`)
+  const err = r1.error || r2.error || r3.error || r4.error || r5.error
+  if (err) throw new Error(`DB query failed: ${err.message}`)
 
-  const products = data || []
+  const rows = r5.data || []
+  const totalQuantity = rows.reduce((s, p) => s + (Number(p.quantity) || 0), 0)
+  const totalUsageQuantity = rows.reduce((s, p) => s + (Number(p.usage_quantity) || 0), 0)
 
-  return products.reduce(
-    (acc, product) => {
-      acc.totalProducts += 1
-
-      if (product.product_status === 'active') acc.activeProducts += 1
-      else if (product.product_status === 'inactive') acc.inactiveProducts += 1
-
-      acc.totalQuantity += Number(product.quantity) || 0
-      acc.totalUsageQuantity += Number(product.usage_quantity) || 0
-
-      if (product.is_favorite) acc.favoriteProducts += 1
-
-      return acc
-    },
-    {
-      totalProducts: 0,
-      activeProducts: 0,
-      inactiveProducts: 0,
-      totalQuantity: 0,
-      totalUsageQuantity: 0,
-      favoriteProducts: 0,
-    }
-  )
+  return {
+    totalProducts: r1.count,
+    activeProducts: r2.count,
+    inactiveProducts: r3.count,
+    favoriteProducts: r4.count,
+    totalQuantity,
+    totalUsageQuantity,
+  }
 }
 
 export async function getSingleProductIncludeDeletedFromDb(supabase, productId, userId) {

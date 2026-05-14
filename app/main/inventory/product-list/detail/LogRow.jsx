@@ -47,12 +47,12 @@ export default function LogRow({ item, onUpdate }) {
         <TableCell className="font-mono text-sm">
           {item.end_usage_date ? format(new Date(item.end_usage_date), 'dd MMM yyyy') : '-'}
         </TableCell>
-        <TableCell data-testid="log-row-duration" className="text-sm">
+        <TableCell id="logRowDuration_usageLogTable" className="text-sm">
           <span className={cn('font-medium', isActive ? 'text-violet-600' : 'text-slate-600')}>
             {duration}
           </span>
           {isActive && (
-            <span data-testid="log-row-ongoing-label" className="ml-1 text-xs text-violet-400">
+            <span id="ongoingLabel_usageLogTable" className="ml-1 text-xs text-violet-400">
               (ongoing)
             </span>
           )}

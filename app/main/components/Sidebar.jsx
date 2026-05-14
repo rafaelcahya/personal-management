@@ -95,7 +95,7 @@ function SidebarNav({ collapsed, onNavClick }) {
   )
 }
 
-function UserSection({ collapsed, user }) {
+function UserSection({ collapsed, user, mobile = false }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const ref = useRef(null)
@@ -136,12 +136,19 @@ function UserSection({ collapsed, user }) {
             {!collapsed && (
               <div className="px-3 py-2.5 border-b border-slate-100">
                 <p className="text-sm font-medium text-slate-700 truncate">{name}</p>
-                <p className="text-xs text-slate-400 truncate">{email}</p>
+                <p
+                  id={mobile ? 'userMenuEmail_mobile' : 'userMenuEmail_landingPage'}
+                  className="text-xs text-slate-400 truncate"
+                >
+                  {email}
+                </p>
               </div>
             )}
             <button
+              id={mobile ? 'userMenuSignOut_mobile' : 'userMenuSignOut_landingPage'}
               onClick={handleLogout}
               disabled={loading}
+              aria-label="Sign out from application"
               className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-60"
             >
               {loading ? (
@@ -154,6 +161,8 @@ function UserSection({ collapsed, user }) {
           </div>
         )}
         <button
+          id={mobile ? 'userMenuTrigger_mobile' : 'userMenuTrigger_landingPage'}
+          aria-label="User menu"
           onClick={() => setOpen(!open)}
           className={cn(
             'flex items-center gap-2.5 w-full rounded-xl p-2 hover:bg-slate-50 transition-colors text-left',
@@ -238,6 +247,7 @@ export default function Sidebar({ user }) {
       {/* ── Mobile top bar ── */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-white border-b border-slate-200 flex items-center px-4 gap-3">
         <button
+          id="mobileMenuTrigger"
           onClick={() => setMobileOpen(true)}
           className="size-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors"
         >
@@ -274,7 +284,7 @@ export default function Sidebar({ user }) {
               </button>
             </div>
             <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
-            <UserSection collapsed={false} user={user} />
+            <UserSection collapsed={false} user={user} mobile={true} />
           </aside>
         </>
       )}

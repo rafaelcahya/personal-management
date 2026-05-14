@@ -10,6 +10,12 @@
     "cy:run": "cypress run --config-file=cypress.config.js --headed --browser chrome",
     "cy:install": "cypress install",
     "cy:verify": "cypress verify",
+    "cy:api-auth": "cypress run --spec \"cypress/e2e/api-auth/**/*.cy.js\"",
+    "cy:auth": "cypress run --spec \"cypress/e2e/auth/**/*.cy.js\"",
+    "cy:dashboard": "cypress run --spec \"cypress/e2e/inventory_management/dashboard/**/*.cy.js\"",
+    "cy:product": "cypress run --spec \"cypress/e2e/inventory_management/product/**/*.cy.js\"",
+    "cy:regression": "node cypress/run-regression.mjs",
+    "cy:summary": "node cypress/parse-results.js",
     "prepare": "husky"
   },
   "dependencies": {

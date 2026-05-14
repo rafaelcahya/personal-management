@@ -44,7 +44,7 @@ function PurchaseHistorySection({ history }) {
   if (!history || history.length === 0) {
     return (
       <div
-        data-testid="product-detail-purchase-empty"
+        id="purchaseEmpty_productDetailPage"
         className="flex flex-col items-center gap-2 py-12 text-center"
       >
         <Package className="size-8 text-slate-300" aria-hidden="true" />
@@ -58,7 +58,7 @@ function PurchaseHistorySection({ history }) {
 
   return (
     <div className="overflow-x-auto">
-      <table data-testid="product-detail-purchase-table" className="min-w-full text-sm">
+      <table id="purchaseTable_productDetailPage" className="min-w-full text-sm">
         <thead>
           <tr className="bg-slate-100">
             <th className="py-2.5 px-3 text-left text-xs font-medium text-slate-500 rounded-l-lg">
@@ -75,7 +75,7 @@ function PurchaseHistorySection({ history }) {
           {sorted.map((h, idx) => (
             <tr
               key={h.id ?? idx}
-              data-testid="product-detail-purchase-row"
+              id="purchaseRow_productDetailPage"
               className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors"
             >
               <td className="py-2.5 px-3 text-slate-700 whitespace-nowrap">
@@ -149,7 +149,7 @@ export default function ProductDetailPage({ productId }) {
   if (loading) {
     return (
       <div
-        data-testid="product-detail-loading"
+        id="loadingState_productDetailPage"
         className="flex flex-col gap-5"
         aria-live="polite"
         aria-label="Loading product details"
@@ -199,7 +199,7 @@ export default function ProductDetailPage({ productId }) {
   // ---- Error state ----
   if (error) {
     return (
-      <div data-testid="product-detail-error" className="flex flex-col gap-5">
+      <div id="errorState_productDetailPage" className="flex flex-col gap-5">
         <Link
           href="/main/inventory/product-list"
           className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-2 w-fit"
@@ -219,7 +219,7 @@ export default function ProductDetailPage({ productId }) {
             <p className="text-sm text-slate-500 mt-1">{error}</p>
           </div>
           <button
-            data-testid="product-detail-retry-btn"
+            id="retryBtn_productDetailPage"
             onClick={loadData}
             className="inline-flex items-center gap-1.5 text-sm text-violet-600 hover:text-violet-700 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 rounded"
           >
@@ -233,7 +233,7 @@ export default function ProductDetailPage({ productId }) {
 
   // ---- Loaded state ----
   return (
-    <div data-testid="product-detail-page" className="flex flex-col gap-5">
+    <div id="container_productDetailPage" className="flex flex-col gap-5">
       {/* Back link */}
       <Link
         href="/main/inventory/product-list"
@@ -252,7 +252,7 @@ export default function ProductDetailPage({ productId }) {
         />
         {product?.product_status && (
           <Badge
-            data-testid="product-detail-status-badge"
+            id="statusBadge_productDetailPage"
             className={
               product.product_status === 'active'
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200 shrink-0'
@@ -267,7 +267,7 @@ export default function ProductDetailPage({ productId }) {
 
       {/* Stats row */}
       <div
-        data-testid="product-detail-stats"
+        id="statsSection_productDetailPage"
         className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
       >
         <StatCard
@@ -290,7 +290,7 @@ export default function ProductDetailPage({ productId }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Purchase History */}
         <section
-          data-testid="product-detail-purchase-section"
+          id="purchaseSection_productDetailPage"
           className="bg-white border border-slate-200/50 shadow-sm shadow-slate-100 rounded-xl p-4 sm:p-5"
           aria-labelledby="purchase-history-heading"
         >
@@ -302,7 +302,7 @@ export default function ProductDetailPage({ productId }) {
 
         {/* Usage History */}
         <section
-          data-testid="product-detail-usage-section"
+          id="usageSection_productDetailPage"
           className="bg-white border border-slate-200/50 shadow-sm shadow-slate-100 rounded-xl p-4 sm:p-5"
           aria-labelledby="usage-history-heading"
         >

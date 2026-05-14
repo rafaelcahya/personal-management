@@ -65,7 +65,7 @@ function ActionMenu({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          data-testid="product-action-menu-trigger"
+          id="actionMenuTrigger_productListPage"
           variant="ghost"
           size="icon"
           className="size-8 outline-none hover:bg-slate-200"
@@ -76,7 +76,7 @@ function ActionMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem
-          data-testid="product-action-edit"
+          id="editAction_productListPage"
           onClick={() => onEdit(product)}
           className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
         >
@@ -90,7 +90,7 @@ function ActionMenu({
           <AddStockForm product={product} onAdded={onRefresh} />
         </DropdownMenuItem>
         <DropdownMenuItem
-          data-testid="product-action-record-usage"
+          id="recordUsageAction_productListPage"
           onClick={() => onRecordUsage(product)}
           className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
         >
@@ -222,11 +222,11 @@ export default function ProductsTable({
   return (
     <>
       {/* ── Mobile Card List (< sm) ── */}
-      <div data-testid="product-list-mobile-cards" className="flex flex-col gap-2 sm:hidden">
+      <div id="mobileCards_productListPage" className="flex flex-col gap-2 sm:hidden">
         {products.map((product) => (
           <div
             key={product.id}
-            data-testid="product-mobile-card"
+            id="mobileCard_productListPage"
             className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
           >
             {/* Row 1: name + status + actions */}
@@ -304,7 +304,7 @@ export default function ProductsTable({
       </div>
 
       {/* ── Desktop Table (sm+) ── */}
-      <Table data-testid="product-list-desktop-table" className="hidden sm:table w-full table-auto">
+      <Table id="desktopTable_productListPage" className="hidden sm:table w-full table-auto">
         <TableHeader className="bg-slate-100 sticky top-0 z-20">
           <TableRow className="border-none uppercase text-xs">
             <TableHead

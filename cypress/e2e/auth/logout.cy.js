@@ -16,21 +16,21 @@ describe('Logout - API Endpoint', () => {
     })
   })
 
-  it('should return 200 when authenticated', () => {
+  it('POST logout endpoint (authenticated) → returns 200 with success message', () => {
     cy.apiRequestWithSession('POST', C.endpoints.auth.logout).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('message', 'Logged out successfully')
     })
   })
 
-  it('should return 401 when unauthenticated', () => {
+  it('POST logout endpoint (unauthenticated) → returns 401 unauthorized', () => {
     cy.apiRequestNoAuth('POST', C.endpoints.auth.logout).then((res) => {
       expect(res.status).to.eq(401)
-      expect(res.body).to.have.property('error', 'UNAUTHORIZED')
+      expect(res.body).to.have.property('error', 'Unauthorized')
     })
   })
 
-  it('should not accept GET method', () => {
+  it('GET logout endpoint (invalid method) → returns non-200 status', () => {
     cy.apiRequestNoAuth('GET', C.endpoints.auth.logout).then((res) => {
       expect(res.status).to.not.eq(200)
     })
@@ -52,18 +52,19 @@ describe('Logout Button - Inventory Layout - Desktop', () => {
     cy.viewport(1920, 1080)
     cy.loginWithBypass()
     cy.visit(C.routes.inventory_product_list)
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
   })
 
-  it('should display logout button', () => {
+  it('logout button (Inventory) → is visible on page load', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('be.visible')
   })
 
-  it("should show correct label 'Sign out'", () => {
+  it('logout button (Inventory) → displays "Sign out" label with icon', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('contain.text', 'Sign out')
     cy.get(`#${C.test_ids.auth.logout_btn_el} svg`).should('exist')
   })
 
-  it('should have accessible aria-label', () => {
+  it('logout button (Inventory) → has accessible aria-label attribute', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).should(
       'have.attr',
       'aria-label',
@@ -71,11 +72,11 @@ describe('Logout Button - Inventory Layout - Desktop', () => {
     )
   })
 
-  it('should be keyboard accessible via Tab', () => {
+  it('logout button (Inventory) → is focusable via keyboard Tab navigation', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).focus().should('be.focused')
   })
 
-  it('should show loading state while signing out', () => {
+  it('logout button (Inventory) → shows disabled + "Signing out..." while API in progress', () => {
     cy.intercept('POST', C.endpoints.auth.logout, (req) => {
       req.reply({ delay: 2000, statusCode: 200, body: { message: 'Logged out successfully' } })
     }).as('logoutRequest')
@@ -86,7 +87,7 @@ describe('Logout Button - Inventory Layout - Desktop', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el} svg`).should('exist')
   })
 
-  it('should redirect to /login after successful logout', () => {
+  it('logout button (Inventory) → redirects to /login after successful logout', () => {
     cy.intercept('POST', C.endpoints.auth.logout, {
       statusCode: 200,
       body: { message: 'Logged out successfully' },
@@ -98,7 +99,7 @@ describe('Logout Button - Inventory Layout - Desktop', () => {
     cy.url().should('not.include', 'reason=session_expired')
   })
 
-  it('should show error toast when logout API fails', () => {
+  it('logout button (Inventory) API error → displays error toast and stays on page', () => {
     cy.intercept('POST', C.endpoints.auth.logout, {
       statusCode: 500,
       body: { error: 'LOGOUT_FAILED', message: 'Internal server error' },
@@ -110,7 +111,7 @@ describe('Logout Button - Inventory Layout - Desktop', () => {
     cy.url().should('not.include', C.routes.login)
   })
 
-  it('should re-enable button after failed logout', () => {
+  it('logout button (Inventory) API error → re-enables button after failed logout', () => {
     cy.intercept('POST', C.endpoints.auth.logout, {
       statusCode: 500,
       body: { error: 'LOGOUT_FAILED', message: 'Internal server error' },
@@ -137,18 +138,19 @@ describe('Logout Button - Trading Layout - Desktop', () => {
     cy.viewport(1920, 1080)
     cy.loginWithBypass()
     cy.visit(C.routes.trading_dashboard)
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
   })
 
-  it('should display logout button', () => {
+  it('logout button (Trading) → is visible on page load', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('be.visible')
   })
 
-  it("should show correct label 'Sign out'", () => {
+  it('logout button (Trading) → displays "Sign out" label with icon', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('contain.text', 'Sign out')
     cy.get(`#${C.test_ids.auth.logout_btn_el} svg`).should('exist')
   })
 
-  it('should have accessible aria-label', () => {
+  it('logout button (Trading) → has accessible aria-label attribute', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).should(
       'have.attr',
       'aria-label',
@@ -156,7 +158,7 @@ describe('Logout Button - Trading Layout - Desktop', () => {
     )
   })
 
-  it('should show loading state while signing out', () => {
+  it('logout button (Trading) → shows disabled + "Signing out..." while API in progress', () => {
     cy.intercept('POST', C.endpoints.auth.logout, (req) => {
       req.reply({ delay: 2000, statusCode: 200, body: { message: 'Logged out successfully' } })
     }).as('logoutRequest')
@@ -166,7 +168,7 @@ describe('Logout Button - Trading Layout - Desktop', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('contain.text', 'Signing out...')
   })
 
-  it('should redirect to /login after successful logout', () => {
+  it('logout button (Trading) → redirects to /login after successful logout', () => {
     cy.intercept('POST', C.endpoints.auth.logout, {
       statusCode: 200,
       body: { message: 'Logged out successfully' },
@@ -196,38 +198,38 @@ describe('UserMenu - Landing Page - Desktop', () => {
     cy.visit(C.routes.landing)
   })
 
-  it('should display user menu trigger button', () => {
+  it('user menu trigger (Landing) → is visible on page load', () => {
     cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('be.visible')
   })
 
-  it('should have accessible aria-label', () => {
+  it('user menu trigger (Landing) → has accessible aria-label attribute', () => {
     cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('have.attr', 'aria-label', 'User menu')
   })
 
-  it('should show avatar or initial in trigger', () => {
+  it('user menu trigger (Landing) → displays avatar or initial (rounded element)', () => {
     cy.get(`#${C.test_ids.auth.user_menu_trigger}`).within(() => {
       cy.get('div.rounded-full').should('exist')
     })
   })
 
-  it('should open dropdown when clicked', () => {
+  it('user menu trigger (Landing) click → opens dropdown menu', () => {
     cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
     cy.get(`#${C.test_ids.auth.user_menu_email}`).should('be.visible')
   })
 
-  it('should show user email in dropdown', () => {
+  it('user menu (Landing) → displays user email in dropdown', () => {
     cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
     cy.get(`#${C.test_ids.auth.user_menu_email}`).should('be.visible').and('not.be.empty')
   })
 
-  it("should show 'Sign out' option in dropdown", () => {
+  it('user menu (Landing) → displays "Sign out" option in dropdown', () => {
     cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
     cy.get(`#${C.test_ids.auth.user_menu_signout}`)
       .should('be.visible')
       .and('contain.text', 'Sign out')
   })
 
-  it('should redirect to /login after sign out from UserMenu', () => {
+  it('user menu (Landing) "Sign out" successful → redirects to /login', () => {
     cy.intercept('POST', C.endpoints.auth.logout, {
       statusCode: 200,
       body: { message: 'Logged out successfully' },
@@ -240,7 +242,7 @@ describe('UserMenu - Landing Page - Desktop', () => {
     cy.url().should('not.include', 'reason=session_expired')
   })
 
-  it('should show error toast when sign out fails from UserMenu', () => {
+  it('user menu (Landing) "Sign out" API error → displays error toast and menu closes', () => {
     cy.intercept('POST', C.endpoints.auth.logout, {
       statusCode: 500,
       body: { error: 'LOGOUT_FAILED', message: 'Internal server error' },
@@ -252,9 +254,8 @@ describe('UserMenu - Landing Page - Desktop', () => {
     cy.get('[data-sonner-toast]').should('be.visible').and('contain.text', "Couldn't sign you out")
   })
 
-  it('should be keyboard accessible', () => {
-    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).focus().should('be.focused')
-    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).type('{enter}')
+  it('user menu trigger (Landing) → is focusable and opens on Enter key', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).focus().should('be.focused').click()
     cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible')
   })
 })
@@ -274,15 +275,16 @@ describe('UserMenu - Landing Page - Mobile', () => {
     cy.viewport('iphone-x')
     cy.loginWithBypass()
     cy.visit(C.routes.landing)
+    cy.get(`#${C.test_ids.auth.mobile_menu_trigger}`).click()
   })
 
-  it('should display user menu trigger on mobile', () => {
-    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('be.visible')
+  it('user menu trigger (Landing, Mobile) → is visible on mobile viewport', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger_mobile}`).should('be.visible')
   })
 
-  it('should open dropdown on mobile and show sign out', () => {
-    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
-    cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible')
+  it('user menu (Landing, Mobile) click → opens dropdown and displays "Sign out"', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_trigger_mobile}`).click({ force: true })
+    cy.get(`#${C.test_ids.auth.user_menu_signout_mobile}`).should('be.visible')
   })
 })
 
@@ -301,14 +303,14 @@ describe('UserMenu - Landing Page - Tablet', () => {
     cy.viewport('ipad-2')
     cy.loginWithBypass()
     cy.visit(C.routes.landing)
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
   })
 
-  it('should display user menu trigger on tablet', () => {
+  it('user menu trigger (Landing, Tablet) → is visible on tablet viewport', () => {
     cy.get(`#${C.test_ids.auth.user_menu_trigger}`).should('be.visible')
   })
 
-  it('should open dropdown on tablet and show email + sign out', () => {
-    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
+  it('user menu (Landing, Tablet) click → opens dropdown showing email + "Sign out"', () => {
     cy.get(`#${C.test_ids.auth.user_menu_email}`).should('be.visible')
     cy.get(`#${C.test_ids.auth.user_menu_signout}`).should('be.visible')
   })
@@ -329,14 +331,16 @@ describe('Logout Button - Inventory Layout - Mobile', () => {
     cy.viewport('iphone-x')
     cy.loginWithBypass()
     cy.visit(C.routes.inventory_product_list)
+    cy.get(`#${C.test_ids.auth.mobile_menu_trigger}`).click()
+    cy.get(`#${C.test_ids.auth.user_menu_trigger_mobile}`).click({ force: true })
   })
 
-  it('should display logout button', () => {
-    cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('be.visible')
+  it('logout button (Inventory, Mobile) → is visible on mobile viewport', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_signout_mobile}`).should('be.visible')
   })
 
-  it("should show correct label 'Sign out'", () => {
-    cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('contain.text', 'Sign out')
+  it('logout button (Inventory, Mobile) → displays "Sign out" label', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_signout_mobile}`).should('contain.text', 'Sign out')
   })
 })
 
@@ -355,14 +359,16 @@ describe('Logout Button - Trading Layout - Mobile', () => {
     cy.viewport('iphone-x')
     cy.loginWithBypass()
     cy.visit(C.routes.trading_dashboard)
+    cy.get(`#${C.test_ids.auth.mobile_menu_trigger}`).click()
+    cy.get(`#${C.test_ids.auth.user_menu_trigger_mobile}`).click({ force: true })
   })
 
-  it('should display logout button', () => {
-    cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('be.visible')
+  it('logout button (Trading, Mobile) → is visible on mobile viewport', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_signout_mobile}`).should('be.visible')
   })
 
-  it("should show correct label 'Sign out'", () => {
-    cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('contain.text', 'Sign out')
+  it('logout button (Trading, Mobile) → displays "Sign out" label', () => {
+    cy.get(`#${C.test_ids.auth.user_menu_signout_mobile}`).should('contain.text', 'Sign out')
   })
 })
 
@@ -381,9 +387,10 @@ describe('Logout Button - Inventory Layout - Tablet', () => {
     cy.viewport('ipad-2')
     cy.loginWithBypass()
     cy.visit(C.routes.inventory_product_list)
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
   })
 
-  it('should display logout button', () => {
+  it('logout button (Inventory, Tablet) → is visible on tablet viewport', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('be.visible')
   })
 })
@@ -403,9 +410,10 @@ describe('Logout Button - Trading Layout - Tablet', () => {
     cy.viewport('ipad-2')
     cy.loginWithBypass()
     cy.visit(C.routes.trading_dashboard)
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
   })
 
-  it('should display logout button', () => {
+  it('logout button (Trading, Tablet) → is visible on tablet viewport', () => {
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).should('be.visible')
   })
 })

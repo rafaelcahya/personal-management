@@ -10,14 +10,14 @@ import LogRow from './LogRow'
 
 export default function ProductUsageLog({ log, onUpdate }) {
   return (
-    <div data-testid="product-usage-log" className="border rounded-lg">
+    <div id="usageLog_productListPage" className="border rounded-lg">
       <Table>
         <TableHeader className="bg-slate-100 sticky top-0 z-20">
           <TableRow className="border-none">
             <TableHead className="py-2 text-slate-foreground rounded-l-lg w-8" />
             <TableHead className="py-2 text-slate-foreground">Start Date</TableHead>
             <TableHead className="py-2 text-slate-foreground">End Date</TableHead>
-            <TableHead data-testid="usage-log-duration-col" className="py-2 text-slate-foreground">
+            <TableHead id="durationCol_usageLogTable" className="py-2 text-slate-foreground">
               Duration
             </TableHead>
             <TableHead className="py-2 text-slate-foreground">Status</TableHead>

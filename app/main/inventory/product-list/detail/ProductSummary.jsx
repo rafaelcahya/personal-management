@@ -8,7 +8,7 @@ export default function ProductSummary({ product }) {
 
   return (
     <div
-      data-testid="product-summary"
+      id="summarySection_productListPage"
       className="space-y-3 p-3 bg-violet-50/75 rounded-lg border border-violet-100 text-sm w-full sm:w-1/3 self-start"
     >
       <div className="space-y-1">
@@ -54,10 +54,7 @@ export default function ProductSummary({ product }) {
         </span>
       </div>
       {hasActiveSession && (
-        <div
-          data-testid="product-summary-active-session"
-          className="pt-1 border-t border-violet-200"
-        >
+        <div id="activeSessionSummary_productListPage" className="pt-1 border-t border-violet-200">
           <p className="text-xs text-violet-600 font-medium">Active session in progress</p>
         </div>
       )}

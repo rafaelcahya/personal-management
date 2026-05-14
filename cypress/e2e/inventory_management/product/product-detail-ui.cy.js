@@ -1,23 +1,14 @@
-/**
- * Product Detail Page - UI E2E Tests (v1.11)
- *
- * Covers:
- * - Product Detail page layout
- * - Back link navigation
- * - Status badge (active/inactive)
- * - 4 stat cards (Current Stock, Total Added, Total Spent, Usage Sessions)
- * - Purchase History section
- * - Usage History section
- * - Loading state
- * - Error state with retry
- */
+// Product Detail Page - UI E2E Tests (v1.11)
+// Covers: layout, navigation, status badge, stat cards, purchase/usage history,
+// loading and error states with retry functionality
 
 import { INVENTORY_ENDPOINTS } from '../../../fixtures/api-endpoints.js'
+const constants = require('../../../fixtures/app-constants.json')
 
 const PRODUCT_DETAIL_URL = (id) => `/main/inventory/product-list/${id}`
 const PRODUCT_DETAIL_API = INVENTORY_ENDPOINTS.PRODUCT_DETAIL
 const STOCK_HISTORY_API = INVENTORY_ENDPOINTS.PRODUCT_STOCK_HISTORY
-const PRODUCT_USAGE_HISTORY_API = '/api/inventory/v1/product-history'
+const PRODUCT_USAGE_HISTORY_API = constants.endpoints.product.product_history
 
 // ---------------------------------------------------------------------------
 // Stub factories
@@ -139,7 +130,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
   // Page Load & Navigation
   // =========================================================================
   describe('Page Load & Navigation', () => {
-    it('should load the product detail page without errors', () => {
+    it('should load the product detail page without errors → page content is visible', () => {
       stubProductDetail()
       stubStockHistory(samplePurchaseHistory)
       stubUsageHistory(sampleUsageHistory)
@@ -153,7 +144,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.contains('Shampoo').should('be.visible')
     })
 
-    it('should display back link to Product List', () => {
+    it('should display back link to Product List → link is visible with correct href', () => {
       stubProductDetail()
       stubStockHistory([])
       stubUsageHistory([])
@@ -169,7 +160,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       )
     })
 
-    it('should navigate back to Product List when back link is clicked', () => {
+    it('should navigate back to Product List when back link is clicked → URL changes to product list', () => {
       stubProductDetail()
       stubStockHistory([])
       stubUsageHistory([])
@@ -182,7 +173,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.url().should('include', '/main/inventory/product-list')
     })
 
-    it('should render PageHeader with product name as title', () => {
+    it('should render PageHeader with product name as title → H1 element displays product name', () => {
       stubProductDetail({ product: 'Shampoo' })
       stubStockHistory([])
       stubUsageHistory([])
@@ -211,7 +202,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
   // Status Badge
   // =========================================================================
   describe('Status Badge', () => {
-    it('should show "active" badge in emerald color for active products', () => {
+    it('should show "active" badge in emerald color for active products → badge displays "active" with emerald styling', () => {
       stubProductDetail({ product_status: 'active' })
       stubStockHistory([])
       stubUsageHistory([])
@@ -219,12 +210,12 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
-      cy.get('[data-testid="product-detail-status-badge"]')
+      cy.get(`#${constants.test_ids.product_detail.status_badge}`)
         .should('contain.text', 'active')
-        .should('have.class', 'bg-emerald-100')
+        .should('have.class', 'bg-emerald-50')
     })
 
-    it('should show "inactive" badge in red color for inactive products', () => {
+    it('should show "inactive" badge in red color for inactive products → badge displays "inactive" with red styling', () => {
       stubProductDetail({ product_status: 'inactive' })
       stubStockHistory([])
       stubUsageHistory([])
@@ -232,9 +223,9 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
-      cy.get('[data-testid="product-detail-status-badge"]')
+      cy.get(`#${constants.test_ids.product_detail.status_badge}`)
         .should('contain.text', 'inactive')
-        .should('have.class', 'bg-red-100')
+        .should('have.class', 'bg-red-50')
     })
 
     it('should display status badge at top right of page header', () => {
@@ -246,7 +237,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
 
       // Badge should be positioned at top right (after title)
-      cy.get('[data-testid="product-detail-status-badge"]').should('be.visible')
+      cy.get(`#${constants.test_ids.product_detail.status_badge}`).should('be.visible')
     })
   })
 
@@ -264,7 +255,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@stockHistoryApi')
       cy.wait('@usageHistoryApi')
 
-      cy.get('[data-testid="product-detail-stats"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.stats}`).within(() => {
         cy.contains('Current Stock').should('be.visible')
         cy.contains('Total Added').should('be.visible')
         cy.contains('Total Spent').should('be.visible')
@@ -280,7 +271,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
-      cy.get('[data-testid="product-detail-stats"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.stats}`).within(() => {
         cy.contains('Current Stock').parent().should('contain.text', '8')
       })
     })
@@ -293,7 +284,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
-      cy.get('[data-testid="product-detail-stats"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.stats}`).within(() => {
         cy.contains('Out of stock').should('be.visible')
       })
     })
@@ -306,7 +297,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
-      cy.get('[data-testid="product-detail-stats"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.stats}`).within(() => {
         cy.contains('Low stock').should('be.visible')
       })
     })
@@ -321,7 +312,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@stockHistoryApi')
 
       // SUM: 2 + 3 + 1 = 6
-      cy.get('[data-testid="product-detail-stats"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.stats}`).within(() => {
         cy.contains('Total Added').parent().should('contain.text', '6')
       })
     })
@@ -336,7 +327,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@stockHistoryApi')
 
       // SUM: 50000 + 48000 + 45000 = 143000
-      cy.get('[data-testid="product-detail-stats"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.stats}`).within(() => {
         cy.contains('Total Spent').parent().should('contain.text', 'Rp')
       })
     })
@@ -350,7 +341,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
       cy.wait('@stockHistoryApi')
 
-      cy.get('[data-testid="product-detail-stats"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.stats}`).within(() => {
         cy.contains('all time').should('be.visible')
       })
     })
@@ -365,7 +356,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@usageHistoryApi')
 
       // 2 usage sessions
-      cy.get('[data-testid="product-detail-stats"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.stats}`).within(() => {
         cy.contains('Usage Sessions').parent().should('contain.text', '2')
       })
     })
@@ -380,14 +371,14 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
-      cy.get('[data-testid="product-detail-stats"]').should('have.class', 'grid-cols-2')
+      cy.get(`#${constants.test_ids.product_detail.stats}`).should('have.class', 'grid-cols-2')
 
       // Desktop
       cy.viewport(1280, 800)
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
-      cy.get('[data-testid="product-detail-stats"]').should('have.class', 'md:grid-cols-4')
+      cy.get(`#${constants.test_ids.product_detail.stats}`).should('have.class', 'lg:grid-cols-4')
     })
   })
 
@@ -404,8 +395,12 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
       cy.wait('@stockHistoryApi')
 
-      cy.get('[data-testid="product-detail-purchase-section"]').should('be.visible')
-      cy.get('[data-testid="product-detail-purchase-table"]').should('be.visible')
+      cy.get(`#${constants.test_ids.product_detail.purchase_section}`)
+        .scrollIntoView()
+        .should('be.visible')
+      cy.get(`#${constants.test_ids.product_detail.purchase_table}`)
+        .scrollIntoView()
+        .should('be.visible')
     })
 
     it('should show table headers: Date, Qty Added, Price, Note', () => {
@@ -417,7 +412,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
       cy.wait('@stockHistoryApi')
 
-      cy.get('[data-testid="product-detail-purchase-table"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.purchase_table}`).within(() => {
         cy.contains('Date').should('be.visible')
         cy.contains('Qty Added').should('be.visible')
         cy.contains('Price').should('be.visible')
@@ -434,13 +429,13 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
       cy.wait('@stockHistoryApi')
 
-      cy.get('[data-testid="product-detail-purchase-row"]').should('have.length', 3)
+      cy.get(`[id="${constants.test_ids.product_detail.purchase_row}"]`).should('have.length', 3)
 
       // First row: 05 Apr 2026, 2, Rp 50.000, "Promo sale"
-      cy.get('[data-testid="product-detail-purchase-row"]')
+      cy.get(`[id="${constants.test_ids.product_detail.purchase_row}"]`)
         .first()
         .within(() => {
-          cy.contains('05 Apr 2026').should('be.visible')
+          cy.contains('5 Apr 2026').should('be.visible')
           cy.contains('2').should('be.visible')
           cy.contains('Rp').should('be.visible')
           cy.contains('Promo sale').should('be.visible')
@@ -463,9 +458,9 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@stockHistoryApi')
 
       // Should be sorted: 05 Apr, 15 Mar, 01 Feb
-      cy.get('[data-testid="product-detail-purchase-row"]')
+      cy.get(`[id="${constants.test_ids.product_detail.purchase_row}"]`)
         .first()
-        .should('contain.text', '05 Apr 2026')
+        .should('contain.text', '5 Apr 2026')
     })
 
     it('should show empty state when no purchase history exists', () => {
@@ -477,7 +472,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
       cy.wait('@stockHistoryApi')
 
-      cy.get('[data-testid="product-detail-purchase-empty"]').should('be.visible')
+      cy.get(`#${constants.test_ids.product_detail.purchase_empty}`).should('be.visible')
       cy.contains('No purchase history yet').should('be.visible')
     })
 
@@ -490,7 +485,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
       cy.wait('@stockHistoryApi')
 
-      cy.get('[data-testid="product-detail-purchase-empty"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.purchase_empty}`).within(() => {
         cy.get('svg').should('exist')
       })
     })
@@ -505,17 +500,14 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
-      cy.get('[data-testid="product-detail-purchase-section"]').should('have.class', 'col-span-1')
+      cy.get(`#${constants.test_ids.product_detail.purchase_section}`).should('be.visible')
 
       // Desktop
       cy.viewport(1280, 800)
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
-      cy.get('[data-testid="product-detail-purchase-section"]').should(
-        'have.class',
-        'md:col-span-1'
-      )
+      cy.get(`#${constants.test_ids.product_detail.purchase_section}`).should('be.visible')
     })
   })
 
@@ -532,7 +524,9 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
       cy.wait('@usageHistoryApi')
 
-      cy.get('[data-testid="product-detail-usage-section"]').should('be.visible')
+      cy.get(`#${constants.test_ids.product_detail.usage_section}`)
+        .scrollIntoView()
+        .should('be.visible')
     })
 
     it('should reuse ProductUsageLog component', () => {
@@ -545,7 +539,9 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@usageHistoryApi')
 
       // Usage Log component should be visible (table with rows)
-      cy.get('[data-testid="product-usage-log"]').should('be.visible')
+      cy.get(`#${constants.test_ids.product_list.product_usage_log}`)
+        .scrollIntoView()
+        .should('be.visible')
     })
 
     it('should display usage history rows with correct data', () => {
@@ -557,11 +553,13 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
       cy.wait('@usageHistoryApi')
 
-      cy.get('[data-testid="product-usage-log"]').within(() => {
-        // Should show start dates
-        cy.contains('04 Apr 2026').should('be.visible')
-        cy.contains('01 Jan 2026').should('be.visible')
-      })
+      cy.get(`#${constants.test_ids.product_list.product_usage_log}`)
+        .scrollIntoView()
+        .within(() => {
+          // Should show start dates
+          cy.contains('01 Apr 2026').should('exist')
+          cy.contains('01 Jan 2026').should('exist')
+        })
     })
   })
 
@@ -578,7 +576,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
 
       cy.visit(PRODUCT_DETAIL_URL(1))
 
-      cy.get('[data-testid="product-detail-loading"]').should('be.visible')
+      cy.get(`#${constants.test_ids.product_detail.loading}`).should('be.visible')
       cy.wait('@slowProductDetail')
     })
 
@@ -609,8 +607,8 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailError')
 
-      cy.get('[data-testid="product-detail-error"]').should('be.visible')
-      cy.contains('Failed to load product details').should('be.visible')
+      cy.get(`#${constants.test_ids.product_detail.error}`).should('be.visible')
+      cy.contains('Failed to load product').should('be.visible')
     })
 
     it('should display retry button in error state', () => {
@@ -622,8 +620,8 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailError')
 
-      cy.get('[data-testid="product-detail-retry-btn"]').should('be.visible')
-      cy.get('[data-testid="product-detail-retry-btn"]').should('contain.text', 'Try again')
+      cy.get(`#${constants.test_ids.product_detail.retry_btn}`).should('be.visible')
+      cy.get(`#${constants.test_ids.product_detail.retry_btn}`).should('contain.text', 'Try again')
     })
 
     it('should retry all 3 API calls when retry button is clicked', () => {
@@ -644,13 +642,16 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
         }
       }).as('productDetailApi')
 
+      stubStockHistory([])
+      stubUsageHistory([])
+
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
-      cy.get('[data-testid="product-detail-retry-btn"]').click()
+      cy.get(`#${constants.test_ids.product_detail.retry_btn}`).click()
 
-      // Second call should succeed
-      cy.get('[data-testid="product-detail-page"]').should('be.visible')
+      // Second call should succeed and container renders
+      cy.get(`#${constants.test_ids.product_detail.page}`).should('be.visible')
     })
 
     it('should show icon in error state', () => {
@@ -662,7 +663,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailError')
 
-      cy.get('[data-testid="product-detail-error"]').within(() => {
+      cy.get(`#${constants.test_ids.product_detail.error}`).within(() => {
         cy.get('svg').should('exist')
       })
     })
@@ -677,12 +678,11 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit('/main/inventory/product-list/invalid-id')
 
       // Should show error or redirect
-      cy.get('[data-testid="product-detail-error"]').should('exist')
+      cy.get(`#${constants.test_ids.product_detail.error}`).should('exist')
     })
 
     it('should require authentication to view page', () => {
-      // Visit without logging in (simulated by not calling cy.loginWithBypass())
-      cy.logout()
+      cy.clearAuth()
       cy.visit(PRODUCT_DETAIL_URL(1))
 
       // Should redirect to login

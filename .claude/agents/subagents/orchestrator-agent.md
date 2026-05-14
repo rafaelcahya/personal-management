@@ -63,7 +63,7 @@ Spawn Frontend Agent with:
 
 - Reference to the design decision doc from UI/UX
 - Reference to the API contract from Backend
-- Clear instruction to add `data-testid` to all interactive elements
+- Clear instruction to add `id` to all interactive elements
 
 ### Step 4 — Tester Agent
 
@@ -103,7 +103,7 @@ After all agents complete, produce a delivery summary:
 - ✅ PM — PRD updated, acceptance criteria written
 - ✅ UI/UX — Design decision doc complete
 - ✅ Backend — [N] endpoints live
-- ✅ Frontend — UI implemented, data-testid added
+- ✅ Frontend — UI implemented, id added
 - ✅ Tester — [N] E2E tests written, [N] passing
 
 ### Files Changed

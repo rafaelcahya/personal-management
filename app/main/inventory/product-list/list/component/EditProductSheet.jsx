@@ -103,7 +103,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        data-testid="edit-product-dialog"
+        id="editProductDialog_productListPage"
         className="sm:max-w-md flex flex-col max-h-[90vh]"
       >
         <DialogHeader className="text-left shrink-0">
@@ -118,7 +118,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
 
         <Form {...form}>
           <form
-            data-testid="edit-product-form"
+            id="editProductForm_productListPage"
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col flex-1 min-h-0"
           >
@@ -133,7 +133,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger
-                          data-testid="edit-product-brand-select"
+                          id="brandSelect_editProductDialog"
                           className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
                         >
                           <SelectValue placeholder="Select brand" />
@@ -169,7 +169,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger
-                          data-testid="edit-product-name-select"
+                          id="nameSelect_editProductDialog"
                           className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
                         >
                           <SelectValue placeholder="Select product name" />
@@ -205,7 +205,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                     <FormLabel>Type</FormLabel>
                     <FormControl>
                       <Input
-                        data-testid="edit-product-type-input"
+                        id="typeInput_editProductDialog"
                         {...field}
                         placeholder="e.g. Whitening, Hydrating, SPF 50"
                         className={`font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500 ${
@@ -231,7 +231,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger
-                          data-testid="edit-product-status-select"
+                          id="statusSelect_editProductDialog"
                           className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
                         >
                           <SelectValue />
@@ -264,7 +264,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
             <DialogFooter className="shrink-0 pt-4">
               <DialogClose asChild>
                 <Button
-                  data-testid="edit-product-cancel-btn"
+                  id="cancelBtn_editProductDialog"
                   type="button"
                   className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
                   disabled={loading}
@@ -272,7 +272,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                   Cancel
                 </Button>
               </DialogClose>
-              <Button data-testid="edit-product-save-btn" type="submit" disabled={loading}>
+              <Button id="saveBtn_editProductDialog" type="submit" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading ? 'Saving...' : 'Save Changes'}
               </Button>

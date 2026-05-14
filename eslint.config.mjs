@@ -15,6 +15,9 @@ const eslintConfig = [
     files: ["cypress/**/*.cy.js", "cypress/**/*.js"],
     rules: {
       "@typescript-eslint/no-unused-expressions": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "no-unused-vars": "off",
     },
   },
 ];

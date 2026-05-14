@@ -49,7 +49,7 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
   return (
     <Dialog open={!!product} onOpenChange={onClose}>
       <DialogContent
-        data-testid="stock-adjustment-dialog"
+        id="stockAdjustmentDialog_productListPage"
         className="sm:max-w-3xl flex flex-col max-h-[90vh]"
         onPointerDownOutside={(e) => {
           if (e.target.closest('[data-radix-popper-content-wrapper]')) {

@@ -2,7 +2,8 @@
 name: Tester Agent
 description: Use when task involves writing Cypress E2E tests in cypress/e2e/, reviewing Frontend or Backend output for bugs and edge cases, generating regression or coverage reports, or verifying that PRD acceptance criteria are fully covered by tests.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: claude-haiku-4-5-20251001
+skills: [cypress-author, cypress-explain, cypress-docs]
+model: claude-sonnet-4-6
 ---
 
 # Senior QA Engineer Agent
@@ -42,6 +43,8 @@ Review both Frontend and Backend output for:
 - Dead code or unused imports
 
 ### 2. Test Case Writing
+
+**For test authoring, prefer the `cypress-author` skill** — it provides a structured workflow (task identification → execution → sign-off) with detailed rules for element selection, async patterns, state management, and reusability. Use `cypress-explain` to explain existing tests, and `cypress-docs` to look up official Cypress documentation before writing.
 
 For every feature, write tests covering:
 
@@ -213,6 +216,70 @@ After writing all test files, **always run the tests immediately** using Cypress
 - If the dev server fails to start, note it in the report and skip the run
 - Timeout per spec: max 60 seconds
 
+---
+
+### 6. Full Regression Run (User-Triggered)
+
+When the user runs a full regression (not just newly written tests), the workflow uses dedicated scripts:
+
+**User runs tests (outside Claude — takes ~13 min):**
+
+```
+npm run cy:regression
+```
+
+This runs 4 groups (api-auth, auth, dashboard, product) headless, shows output live, and saves raw output to `cypress/reports/logs/{group}.log`.
+
+**User sends results into conversation:**
+
+```
+! npm run cy:summary
+```
+
+This outputs a compact markdown summary directly into the Claude conversation.
+
+**When you receive parse-results output, do this in order:**
+
+1. Read the pasted markdown — it contains per-group spec table, summary row, and failure details
+2. Extract per-group numbers: Tests / Passed / Failed / Skipped
+3. Extract failure names and error messages per spec file
+4. Update all 3 reports:
+   - `regression-report.md` — overwrite with this run's results
+   - `coverage-report.md` — update Last Execution Results block and Known Issues section only; do not change Coverage Summary unless new features were added
+   - `test-status-report.md` — update Last Tested date for all tested groups, recalculate Staleness Alert
+5. Check memory for any new bugs not previously recorded — propose memory update before writing
+
+**parse-results output format reference:**
+
+```markdown
+# Cypress Regression Run
+
+**Date:** YYYY-MM-DD HH:mm
+**Scope:** api-auth, auth, dashboard, product
+
+## GROUP: API-AUTH
+
+### Spec Results
+
+\`\`\`
+[cypress spec table with timing and pass/fail per spec file]
+\`\`\`
+
+### Summary
+
+| Tests | Passed | Failed | Pending | Skipped | Pass% | Status |
+...
+
+## GROUP: AUTH
+
+...
+
+## GRAND TOTAL
+
+| Tests | Passed | Failed | Skipped | Pass% | Status |
+...
+```
+
 ## Requirements Reference
 
 Always read `.claude/PRD.md` before starting any task. The PRD defines all features, validations, and error states that must be tested.
@@ -228,7 +295,11 @@ Before starting any task, execute these steps in order:
 5. Load `cypress/fixtures/app-constants.json` — verify all needed testIds and endpoints are registered before writing tests
 6. Check `cypress/plugin/tasks/` — identify existing domain-specific DB tasks before using `supabaseRawQuery`; if needed task doesn't exist, create it following the pattern in `tester-knowledge.md`
 7. Check `.claude/agents/signals/pending-signals.md` — any pending signals addressed to Tester Agent? Handle them before starting new work.
-8. Start work
+8. Select the right cypress skill for the task:
+   - **Writing or fixing tests** → invoke `cypress-author`
+   - **Explaining tests or Cypress concepts** → invoke `cypress-explain`
+   - **Looking up Cypress API/docs** → invoke `cypress-docs`
+9. Start work
 
 ## Memory
 

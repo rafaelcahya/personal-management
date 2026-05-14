@@ -8,11 +8,9 @@
 
 ## Known Flaky Tests
 
-<!-- Tests that intermittently fail not due to bugs — log them to avoid false alarms -->
-
-| Test File                | Test Name          | Failure Pattern                 | Workaround Applied           |
-| ------------------------ | ------------------ | ------------------------------- | ---------------------------- |
-| <!-- cypress/e2e/... --> | <!-- it('...') --> | <!-- timing / env / network --> | <!-- retry / skip / stub --> |
+| Test File                                                      | Test Name          | Failure Pattern                                                                 | Workaround Applied                          |
+| -------------------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------- | ------------------------------------------- |
+| cypress/e2e/inventory_management/product/product-list-ui.cy.js | (21 tests skipped) | Likely conditional logic or missing data — 0 failures but 21 skips consistently | Investigate skip conditions before next run |
 
 ---
 
@@ -20,29 +18,32 @@
 
 <!-- Bugs found during QA that are not yet resolved — avoid re-reporting them -->
 
-| Date Found          | Module                          | Bug Description      | Priority       | Status                                |
-| ------------------- | ------------------------------- | -------------------- | -------------- | ------------------------------------- |
-| <!-- YYYY-MM-DD --> | <!-- inventory/trading/auth --> | <!-- what breaks --> | <!-- P0–P2 --> | <!-- Open / In Progress / Blocked --> |
+| Date Found | Module                            | Bug Description                                                                                                                            | Priority | Status |
+| ---------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------ |
+| 2026-05-13 | Auth — logout.cy.js               | Missing `id="logoutBtn"` on LogoutButton component — causes 8 test failures                                                                | P0       | Open   |
+| 2026-05-13 | Auth — logout.cy.js               | Missing `id="userMenuTrigger_landingPage"` on UserMenu trigger — causes 6 test failures                                                    | P0       | Open   |
+| 2026-05-13 | Auth — login.cy.js                | Session persistence redirect bug — after reload, redirects to `/main/inventory` instead of `/main/landing`                                 | P1       | Open   |
+| 2026-05-13 | Auth — session.cy.js              | `id="logoutBtn"` not found — 1 test failure in toast content verification                                                                  | P1       | Open   |
+| 2026-05-13 | Product (multiple files)          | `cy.getAuthToken()` custom command undefined — affects 9 tests across add, list, delete, update, favorite, stock, history, detail, summary | P1       | Open   |
+| 2026-05-13 | Product — product-detail-ui.cy.js | `cy.logout()` custom command not defined — 1 failure in auth validation test                                                               | P1       | Open   |
+| 2026-05-13 | Product — product-detail-ui.cy.js | Element visibility clipping — status badge, purchase history, usage history elements clipped by overflow-hidden; need `.scrollIntoView()`  | P1       | Open   |
+| 2026-05-13 | Product — add-product.cy.js       | Mobile dialog form overflow — form fields covered by dialog footer (position: fixed) on mobile viewports                                   | P1       | Open   |
 
 ---
 
 ## Coverage Gaps
 
-<!-- Features that have zero or low automation coverage and why -->
-
-| Module          | Feature          | Coverage Status         | Reason                        | Priority to Automate |
-| --------------- | ---------------- | ----------------------- | ----------------------------- | -------------------- |
-| <!-- module --> | <!-- feature --> | <!-- None / Partial --> | <!-- env dep / complexity --> | <!-- P0–P3 -->       |
+| Module | Feature              | Coverage Status | Reason                                                                         | Priority to Automate |
+| ------ | -------------------- | --------------- | ------------------------------------------------------------------------------ | -------------------- |
+| Auth   | Google OAuth UI Flow | Manual only     | Requires real Google OAuth browser redirect — cannot be intercepted in Cypress | P2                   |
 
 ---
 
 ## Blocked Tests
 
-<!-- Tests that can't run due to missing env vars, external deps, or infra -->
-
-| Test File     | Blocked By                                      | Notes                              |
-| ------------- | ----------------------------------------------- | ---------------------------------- |
-| <!-- file --> | <!-- CYPRESS_AUTH_SECRET / TEST_EMAIL / etc --> | <!-- what to set up to unblock --> |
+| Test File                                                     | Blocked By                      | Notes                                                                                                                                                      |
+| ------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| cypress/e2e/inventory_management/product/last-price-api.cy.js | Unknown setup/environment issue | 16/17 tests skipped consistently. First test fails, rest are skipped. Likely missing fixture data or env variable. Investigate test setup before next run. |
 
 ---
 
@@ -50,24 +51,24 @@
 
 <!-- Classes of bugs that keep appearing across modules — signals a systemic gap -->
 
-- <!-- YYYY-MM-DD: pattern description + modules affected -->
+- 2026-05-13: **Missing custom commands** — `cy.getAuthToken()` and `cy.logout()` used in tests but never defined in `cypress/support/commands.js`. Root cause: commands were planned but not implemented. Affects all product module API tests. Fix: define both commands in support/commands.js.
+- 2026-05-13: **Element visibility clipping** — elements inside scrollable containers assert `be.visible` but fail because they are clipped by CSS overflow. Seen in product-detail-ui (status badge, purchase/usage history) and add-product (mobile dialog). Fix pattern: always add `.scrollIntoView()` before visibility assertions on elements inside containers.
 
 ---
 
 ## Code Review Recurring Findings
 
-<!-- Issues that keep appearing in frontend/backend reviews — signals a knowledge gap to address -->
-
-| Category                  | Finding                        | Module         | Frequency           |
-| ------------------------- | ------------------------------ | -------------- | ------------------- |
-| <!-- Security/UX/Perf --> | <!-- what keeps showing up --> | <!-- where --> | <!-- times seen --> |
+| Category | Finding                                                                   | Module                        | Frequency                         |
+| -------- | ------------------------------------------------------------------------- | ----------------------------- | --------------------------------- |
+| Testing  | Missing `id` on interactive components                                    | Auth (LogoutButton, UserMenu) | 2 components in v1.11             |
+| Testing  | Custom Cypress commands used before being defined                         | Product module                | 2 commands (getAuthToken, logout) |
+| UI       | Mobile viewport dialog overflow — form fields hidden behind sticky footer | Product module                | Multiple forms                    |
 
 ---
 
 ## Lessons Learned
 
-<!-- Non-obvious QA discoveries — test setup quirks, Cypress behavior, auth bypass patterns -->
-
+- 2026-05-14: **Regression run workflow** — `npm run cy:regression` (defined in package.json, runs `cypress/run-regression.mjs`) runs 4 groups headless with live output + saves to `cypress/reports/logs/{group}.log`. Then `! npm run cy:summary` (runs `cypress/parse-results.js`) sends compact markdown into Claude conversation. Use this to update all 3 reports. Never estimate pass/fail — wait for actual output.
 - 2026-05-07: Cypress tidak support `.yaml` sebagai fixture format — `cy.fixture('app-constants')` akan gagal jika file-nya `.yaml`. File yang dipakai adalah `app-constants.json`. File `.yaml` tetap ada tapi hanya untuk human readability — selalu update keduanya jika ada perubahan constants.
 - 2026-05-07: Report conventions yang disepakati user — (1) selalu tanya dulu sebelum buat report; (2) app version diambil dari `.claude/PRD.md` header `Version:` field; (3) `coverage-report.md` bersifat kumulatif — jangan overwrite, hanya update/append.
 
@@ -75,8 +76,9 @@
 
 ## Cross-Agent Signals
 
-<!-- Findings that require PM, Frontend, or Backend to act -->
-
-| Date                | To Agent                     | Finding                 | Severity                  | Resolution                               |
-| ------------------- | ---------------------------- | ----------------------- | ------------------------- | ---------------------------------------- |
-| <!-- YYYY-MM-DD --> | <!-- PM/Frontend/Backend --> | <!-- what was found --> | <!-- CRITICAL/WARNING --> | <!-- fixed / accepted risk / backlog --> |
+| Date       | To Agent | Finding                                                                               | Severity | Resolution |
+| ---------- | -------- | ------------------------------------------------------------------------------------- | -------- | ---------- |
+| 2026-05-13 | Frontend | Add `id="logoutBtn"` to LogoutButton component in inventory + trading layouts         | CRITICAL | Open       |
+| 2026-05-13 | Frontend | Add `id="userMenuTrigger_landingPage"` to UserMenu trigger on landing page            | CRITICAL | Open       |
+| 2026-05-13 | Frontend | Define `cy.getAuthToken()` in `cypress/support/commands.js` — used in 9 product tests | HIGH     | Open       |
+| 2026-05-13 | Frontend | Define `cy.logout()` in `cypress/support/commands.js` — used in product-detail-ui     | HIGH     | Open       |

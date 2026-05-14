@@ -396,11 +396,11 @@ toast.error('Failed to create item. Please try again.')
 
 ---
 
-## 12. data-testid — Mandatory Rules
+## 12. id — Mandatory Rules
 
-Every component delivered by Frontend Agent must have `data-testid` on all testable elements **before** the component is considered done.
+Every component delivered by Frontend Agent must have `id` on all testable elements **before** the component is considered done.
 
-### What needs a data-testid
+### What needs an id
 
 | Element Type        | Example                                               |
 | ------------------- | ----------------------------------------------------- |
@@ -421,27 +421,27 @@ Every component delivered by Frontend Agent must have `data-testid` on all testa
 {field}-error                → item-name-error, trade-symbol-error
 ```
 
-### Example — component with correct data-testid
+### Example — component with correct id
 
 ```jsx
 export function InventoryTable() {
   return (
-    <div data-testid="inventory-table">
-      {isLoading && <div data-testid="inventory-skeleton">...</div>}
+    <div id="inventory-table">
+      {isLoading && <div id="inventory-skeleton">...</div>}
       {!items.length && (
-        <div data-testid="inventory-empty-state">
-          <Button data-testid="inventory-empty-state-cta" onClick={onAdd}>
+        <div id="inventory-empty-state">
+          <Button id="inventory-empty-state-cta" onClick={onAdd}>
             Add your first item
           </Button>
         </div>
       )}
       {items.map((item) => (
-        <tr key={item.id} data-testid="inventory-table-row">
+        <tr key={item.id} id="inventory-table-row">
           <DropdownMenu>
-            <DropdownMenuTrigger data-testid="inventory-row-actions" />
+            <DropdownMenuTrigger id="inventory-row-actions" />
             <DropdownMenuContent>
-              <DropdownMenuItem data-testid="inventory-row-edit">Edit</DropdownMenuItem>
-              <DropdownMenuItem data-testid="inventory-row-delete">Delete</DropdownMenuItem>
+              <DropdownMenuItem id="inventory-row-edit">Edit</DropdownMenuItem>
+              <DropdownMenuItem id="inventory-row-delete">Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </tr>
@@ -453,13 +453,13 @@ export function InventoryTable() {
 
 ### Register in app-constants.yaml
 
-After adding `data-testid` to a component, register the IDs in `cypress/fixtures/app-constants.yaml` under `test_ids.[module].[key]`.
+After adding `id` to a component, register the IDs in `cypress/fixtures/app-constants.yaml` under `test_ids.[module].[key]`.
 
 ### Responding to Tester Agent requests
 
-When Tester Agent sends a `🔖 data-testid Request`, treat it as a blocking task:
+When Tester Agent sends a `🔖 id Request`, treat it as a blocking task:
 
-1. Add the requested `data-testid` attributes to the component
+1. Add the requested `id` attributes to the component
 2. Register the IDs in `cypress/fixtures/app-constants.yaml`
 3. Confirm back to Tester Agent with the exact IDs added and their file locations
 

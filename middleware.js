@@ -65,7 +65,7 @@ export async function middleware(request) {
   if (!user && path !== '/login') {
     if (path.startsWith('/api/')) {
       return NextResponse.json(
-        { error: 'UNAUTHORIZED', message: 'Authentication required' },
+        { error: 'Unauthorized', message: 'Authentication required' },
         { status: 401 }
       )
     }

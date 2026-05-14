@@ -10,22 +10,22 @@ describe('Session Expiry - Error Message Display - Desktop', () => {
     cy.viewport(1920, 1080)
   })
 
-  it('should show session expired message when visiting login with reason=session_expired', () => {
+  it('login with ?reason=session_expired → login page displays', () => {
     cy.visit(`${C.routes.login}?reason=session_expired`)
     cy.get(`#${C.test_ids.auth.login_page}`).should('be.visible')
   })
 
-  it('should show error message when visiting login with error=auth_failed', () => {
+  it('login with ?error=auth_failed → login page displays', () => {
     cy.visit(`${C.routes.login}?error=auth_failed`)
     cy.get(`#${C.test_ids.auth.login_page}`).should('be.visible')
   })
 
-  it('should show error message when visiting login with error=no_code', () => {
+  it('login with ?error=no_code → login page displays', () => {
     cy.visit(`${C.routes.login}?error=no_code`)
     cy.get(`#${C.test_ids.auth.login_page}`).should('be.visible')
   })
 
-  it('should not break login page when no error params present', () => {
+  it('login with no params → page loads normally with enabled button', () => {
     cy.visit(C.routes.login)
     cy.get(`#${C.test_ids.auth.login_page}`).should('be.visible')
     cy.get(`#${C.test_ids.auth.google_signin_btn}`).should('not.be.disabled')
@@ -117,7 +117,7 @@ describe('Session - Toast Content Verification - Desktop', () => {
     cy.viewport(1920, 1080)
   })
 
-  it('should show correct toast text for ?reason=session_expired', () => {
+  it('?reason=session_expired param → displays "session expired" toast', () => {
     cy.visit(`${C.routes.login}?reason=session_expired`)
     cy.get('[data-sonner-toast]', { timeout: 5000 })
       .should('be.visible')
@@ -153,6 +153,7 @@ describe('Session - Toast Content Verification - Desktop', () => {
       body: { message: 'Logged out successfully' },
     }).as('logoutRequest')
 
+    cy.get(`#${C.test_ids.auth.user_menu_trigger}`).click()
     cy.get(`#${C.test_ids.auth.logout_btn_el}`).click()
     cy.wait('@logoutRequest')
 
@@ -188,7 +189,7 @@ describe('Session - API Security - Unauthenticated Requests', () => {
     cy.request({ method: 'GET', url: C.endpoints.user.profile, failOnStatusCode: false }).then(
       (res) => {
         expect(res.status).to.eq(401)
-        expect(res.body).to.have.property('error', 'UNAUTHORIZED')
+        expect(res.body).to.have.property('error', 'Unauthorized')
       }
     )
   })
@@ -196,7 +197,7 @@ describe('Session - API Security - Unauthenticated Requests', () => {
   it('should return 401 for POST /api/auth/logout when unauthenticated', () => {
     cy.apiRequestNoAuth('POST', C.endpoints.auth.logout).then((res) => {
       expect(res.status).to.eq(401)
-      expect(res.body).to.have.property('error', 'UNAUTHORIZED')
+      expect(res.body).to.have.property('error', 'Unauthorized')
     })
   })
 

@@ -184,7 +184,7 @@ export default function ProductsPageClient() {
 
         {/* Controls bar — sticky to viewport top while page scrolls */}
         <div
-          data-testid="product-list-controls-bar"
+          id="controlsBar_productListPage"
           className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5"
         >
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
@@ -249,7 +249,7 @@ function SearchInput({ search, setSearch }) {
     <div className="relative w-full sm:max-w-xs">
       <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none" />
       <Input
-        data-testid="product-list-search-input"
+        id="searchInput_productListPage"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by brand or product name..."

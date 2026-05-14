@@ -12,26 +12,26 @@
 - **Config**: `cypress.config.js`
 - **Auth bypass**: via `CYPRESS_AUTH_SECRET`
 - **Reports**: `cypress/reports/`
-- **Constants**: `cypress/fixtures/app-constants.json` ← single source of truth for all URLs, endpoints, testIds
+- **Constants**: `cypress/fixtures/app-constants.json` ← single source of truth for all URLs, endpoints, ids
 - **Project**: Next.js 15, Supabase SSR auth, React, Tailwind
 
 ---
 
 ## RULE: Never Hardcode Values in Tests
 
-All URLs, API endpoints, and `data-testid` strings must be loaded from `cypress/fixtures/app-constants.json`.
+All URLs, API endpoints, and `id` strings must be loaded from `cypress/fixtures/app-constants.json`.
 
 ```js
 // Always do this
 cy.fixture('app-constants').then((C) => {
   cy.visit(C.routes.inventory)
-  cy.get(`[data-testid="${C.test_ids.inventory.table}"]`).should('exist')
+  cy.get(`#${C.test_ids.inventory.table}`).should('exist')
   cy.intercept('GET', `${C.endpoints.inventory.list}*`, { ... })
 })
 
 // Never do this
 cy.visit('/main/inventory')
-cy.get('[data-testid="inventory-table"]')
+cy.get('#inventory-table')
 cy.intercept('GET', '/api/inventory/v1/list*', { ... })
 ```
 
@@ -78,9 +78,9 @@ Only generate if user confirms. If user says no, skip both.
 
 ---
 
-## Workflow 1: Component Audit (data-testid Check)
+## Workflow 1: Component Audit (id Check)
 
-**Before writing any test**, audit the target component for missing `data-testid` attributes.
+**Before writing any test**, audit the target component for missing `id` attributes.
 
 ### Step 1 — List testable elements in the component
 
@@ -95,18 +95,18 @@ Read the component file and identify every element that needs to be:
 
 Cross-reference each element against `cypress/fixtures/app-constants.yaml`.
 
-### Step 3 — If data-testid is missing, request it from Frontend Agent
+### Step 3 — If id is missing, request it from Frontend Agent
 
 Do NOT write the test yet. Send this request first:
 
 ```
-🔖 data-testid Request — Tester → Frontend
+🔖 id Request — Tester → Frontend
 Component: [ComponentName] ([path/to/Component.jsx])
 Missing IDs:
-  - [testid-name] → [which element: e.g., "the main <table> element"]
-  - [testid-name] → [which element: e.g., "the row-level actions dropdown"]
+  - [id-value] → [which element: e.g., "the main <table> element"]
+  - [id-value] → [which element: e.g., "the row-level actions dropdown"]
 Needed for: [test file name, e.g., cypress/e2e/inventory/create-item.cy.js]
-Action: Please add these data-testid attributes and register them in cypress/fixtures/app-constants.yaml
+Action: Please add these id attributes and register them in cypress/fixtures/app-constants.yaml
         under test_ids.[module].[key]
 ```
 
@@ -230,20 +230,14 @@ Cypress.Commands.add('loginBypass', () => {
 
 ```js
 it('should create an item successfully', () => {
-  cy.get(`[data-testid="${C.test_ids.inventory.add_btn}"]`).click()
-  cy.get(`[data-testid="${C.test_ids.inventory.name_input}"]`).type(C.seed.inventory_item.name)
-  cy.get(`[data-testid="${C.test_ids.inventory.stock_input}"]`).type(
-    String(C.seed.inventory_item.stock)
-  )
-  cy.get(`[data-testid="${C.test_ids.inventory.price_input}"]`).type(
-    String(C.seed.inventory_item.price)
-  )
-  cy.get(`[data-testid="${C.test_ids.shared.submit_btn}"]`).click()
+  cy.get(`#${C.test_ids.inventory.add_btn}`).click()
+  cy.get(`#${C.test_ids.inventory.name_input}`).type(C.seed.inventory_item.name)
+  cy.get(`#${C.test_ids.inventory.stock_input}`).type(String(C.seed.inventory_item.stock))
+  cy.get(`#${C.test_ids.inventory.price_input}`).type(String(C.seed.inventory_item.price))
+  cy.get(`#${C.test_ids.shared.submit_btn}`).click()
 
-  cy.get(`[data-testid="${C.test_ids.shared.toast_success}"]`).should('be.visible')
-  cy.get(`[data-testid="${C.test_ids.inventory.table}"]`)
-    .contains(C.seed.inventory_item.name)
-    .should('exist')
+  cy.get(`#${C.test_ids.shared.toast_success}`).should('be.visible')
+  cy.get(`#${C.test_ids.inventory.table}`).contains(C.seed.inventory_item.name).should('exist')
 })
 ```
 
@@ -253,21 +247,21 @@ it('should create an item successfully', () => {
 
 ```js
 it('should show validation error when name is empty', () => {
-  cy.get(`[data-testid="${C.test_ids.inventory.add_btn}"]`).click()
-  cy.get(`[data-testid="${C.test_ids.shared.submit_btn}"]`).click()
+  cy.get(`#${C.test_ids.inventory.add_btn}`).click()
+  cy.get(`#${C.test_ids.shared.submit_btn}`).click()
 
-  cy.get(`[data-testid="${C.test_ids.inventory.name_error}"]`)
+  cy.get(`#${C.test_ids.inventory.name_error}`)
     .should('be.visible')
     .and('contain', 'Name is required')
 })
 
 it('should show validation error when stock is negative', () => {
-  cy.get(`[data-testid="${C.test_ids.inventory.add_btn}"]`).click()
-  cy.get(`[data-testid="${C.test_ids.inventory.name_input}"]`).type('Widget')
-  cy.get(`[data-testid="${C.test_ids.inventory.stock_input}"]`).type('-1')
-  cy.get(`[data-testid="${C.test_ids.shared.submit_btn}"]`).click()
+  cy.get(`#${C.test_ids.inventory.add_btn}`).click()
+  cy.get(`#${C.test_ids.inventory.name_input}`).type('Widget')
+  cy.get(`#${C.test_ids.inventory.stock_input}`).type('-1')
+  cy.get(`#${C.test_ids.shared.submit_btn}`).click()
 
-  cy.get(`[data-testid="${C.test_ids.inventory.stock_error}"]`)
+  cy.get(`#${C.test_ids.inventory.stock_error}`)
     .should('be.visible')
     .and('contain', 'Stock cannot be negative')
 })
@@ -296,12 +290,12 @@ it('should show error state when API fails', () => {
     body: { error: 'Internal server error', message: 'Something went wrong' },
   }).as('createFail')
 
-  cy.get(`[data-testid="${C.test_ids.inventory.add_btn}"]`).click()
-  cy.get(`[data-testid="${C.test_ids.inventory.name_input}"]`).type('Widget A')
-  cy.get(`[data-testid="${C.test_ids.shared.submit_btn}"]`).click()
+  cy.get(`#${C.test_ids.inventory.add_btn}`).click()
+  cy.get(`#${C.test_ids.inventory.name_input}`).type('Widget A')
+  cy.get(`#${C.test_ids.shared.submit_btn}`).click()
 
   cy.wait('@createFail')
-  cy.get(`[data-testid="${C.test_ids.shared.toast_error}"]`).should('be.visible')
+  cy.get(`#${C.test_ids.shared.toast_error}`).should('be.visible')
 })
 ```
 
@@ -319,8 +313,8 @@ it('should show empty state when no items exist', () => {
   cy.visit(C.routes.inventory)
   cy.wait('@emptyList')
 
-  cy.get(`[data-testid="${C.test_ids.inventory.empty_state}"]`).should('be.visible')
-  cy.get(`[data-testid="${C.test_ids.inventory.empty_state_cta}"]`).should('be.visible')
+  cy.get(`#${C.test_ids.inventory.empty_state}`).should('be.visible')
+  cy.get(`#${C.test_ids.inventory.empty_state_cta}`).should('be.visible')
 })
 ```
 
@@ -337,9 +331,9 @@ it('should show skeleton while loading', () => {
   }).as('slowList')
 
   cy.visit(C.routes.inventory)
-  cy.get(`[data-testid="${C.test_ids.inventory.skeleton}"]`).should('be.visible')
+  cy.get(`#${C.test_ids.inventory.skeleton}`).should('be.visible')
   cy.wait('@slowList')
-  cy.get(`[data-testid="${C.test_ids.inventory.skeleton}"]`).should('not.exist')
+  cy.get(`#${C.test_ids.inventory.skeleton}`).should('not.exist')
 })
 ```
 
@@ -349,14 +343,14 @@ it('should show skeleton while loading', () => {
 
 ```js
 it('should be keyboard accessible', () => {
-  cy.get(`[data-testid="${C.test_ids.inventory.add_btn}"]`).focus().type('{enter}')
-  cy.get(`[data-testid="${C.test_ids.inventory.name_input}"]`).should('be.focused')
+  cy.get(`#${C.test_ids.inventory.add_btn}`).focus().type('{enter}')
+  cy.get(`#${C.test_ids.inventory.name_input}`).should('be.focused')
 
   cy.focused().type('Widget B').tab()
-  cy.focused().should('have.attr', 'data-testid', C.test_ids.inventory.stock_input)
+  cy.focused().should('have.attr', 'id', C.test_ids.inventory.stock_input)
 
   cy.get('body').type('{esc}')
-  cy.get(`[data-testid="${C.test_ids.inventory.dialog}"]`).should('not.exist')
+  cy.get(`#${C.test_ids.inventory.dialog}`).should('not.exist')
 })
 ```
 
