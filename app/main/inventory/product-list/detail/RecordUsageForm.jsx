@@ -100,7 +100,6 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
               <FormControl>
                 <Input
                   type="number"
-                  id="usageQuantityField-recordUsageForm"
                   id="usageQuantityField_recordUsageForm"
                   {...field}
                   value={field.value ?? ''}
