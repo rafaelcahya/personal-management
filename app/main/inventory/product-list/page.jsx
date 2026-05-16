@@ -1,12 +1,17 @@
-import { requireAuth } from "@/lib/auth/utils";
-import ProductsPage from "./ProductsPage";
+import { Suspense } from 'react'
+import { requireAuth } from '@/lib/auth/utils'
+import ProductsPage from './ProductsPage'
 
 export default async function InventoryPage() {
-    const user = await requireAuth();
+  const user = await requireAuth()
 
-    if (!user || !user.id) {
-        throw new Error("User ID is missing after authentication");
-    }
+  if (!user || !user.id) {
+    throw new Error('User ID is missing after authentication')
+  }
 
-    return <ProductsPage />;
+  return (
+    <Suspense fallback={null}>
+      <ProductsPage />
+    </Suspense>
+  )
 }

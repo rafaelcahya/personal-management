@@ -239,7 +239,7 @@ export default function ProductsTable({
                 />
                 <div className="min-w-0">
                   <p className="text-xs text-slate-400 truncate leading-tight">{product.brand}</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
+                  <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                     <p className="font-medium text-slate-700 text-sm truncate">{product.product}</p>
                     {product.type && (
                       <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">

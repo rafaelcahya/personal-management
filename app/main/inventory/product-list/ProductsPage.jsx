@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { fetchProductList, getProductSummary, getRestockPredictions } from '@/lib/api/product'
 import { toast } from 'sonner'
 import ProductListSummary from './list/component/ProductListSummary'
@@ -17,6 +18,7 @@ const FILTER_STORAGE_KEY = 'product-list-filter'
 const LOW_STOCK_THRESHOLD = 5
 
 export default function ProductsPageClient() {
+  const searchParams = useSearchParams()
   const [listProduct, setListProduct] = useState([])
   const [filter, setFilter] = useState(null)
   const [search, setSearch] = useState('')
@@ -34,6 +36,13 @@ export default function ProductsPageClient() {
       }
     } catch (error) {
       console.error('Failed to load filter from localStorage:', error)
+    }
+  }, [])
+
+  useEffect(() => {
+    const brandParam = searchParams.get('brand')
+    if (brandParam) {
+      setSearch(decodeURIComponent(brandParam))
     }
   }, [])
 
@@ -189,7 +198,7 @@ export default function ProductsPageClient() {
         >
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
             <SearchInput search={search} setSearch={setSearch} />
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center justify-between gap-2 shrink-0">
               <ProductFilterDropdown
                 filter={filter}
                 onFilterChange={handleFilterChange}

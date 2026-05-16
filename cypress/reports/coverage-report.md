@@ -1,31 +1,43 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-14 (Full regression run: api-auth, auth, dashboard, product modules)
-**App Version:** 1.11
+**Last Updated:** 2026-05-16 (Focused run: Product Brand UI — 3 new spec files, 50 tests)
+**App Version:** 1.13
 
 ## Coverage Summary
 
-| Module                          | Total Features | Automated | Manual Only | Not Tested | Coverage % |
-| ------------------------------- | -------------- | --------- | ----------- | ---------- | ---------- |
-| Auth                            | 9              | 8         | 1           | 0          | 89%        |
-| API Auth Guard                  | 3              | 3         | 0           | 0          | 100%       |
-| Landing Page                    | 7              | 7         | 0           | 0          | 100%       |
-| Inventory - Dashboard           | 10             | 10        | 0           | 0          | 100%       |
-| Inventory - Product (API)       | 11             | 11        | 0           | 0          | 100%       |
-| Inventory - Product List UI     | 12             | 12        | 0           | 0          | 100%       |
-| Inventory - Product Detail UI   | 7              | 7         | 0           | 0          | 100%       |
-| Inventory - Product Brand       | 6              | 6         | 0           | 0          | 100%       |
-| Inventory - Product Name        | 6              | 6         | 0           | 0          | 100%       |
-| Trading - Trade                 | 7              | 7         | 0           | 0          | 100%       |
-| Trading - Fee                   | 6              | 6         | 0           | 0          | 100%       |
-| Trading - Event                 | 6              | 6         | 0           | 0          | 100%       |
-| **Total**                       | **91**         | **90**    | **1**       | **0**      | **99%**    |
+| Module                          | Total Features | Automated | Manual Only | Not Tested | Coverage % | Test Cases |
+| ------------------------------- | -------------- | --------- | ----------- | ---------- | ---------- | ---------- |
+| Auth                            | 9              | 8         | 1           | 0          | 89%        | 120        |
+| API Auth Guard                  | 3              | 3         | 0           | 0          | 100%       | 59         |
+| Landing Page                    | 7              | 7         | 0           | 0          | 100%       | 33         |
+| Inventory - Dashboard           | 10             | 10        | 0           | 0          | 100%       | 161        |
+| Inventory - Product (API)       | 11             | 11        | 0           | 0          | 100%       | 354        |
+| Inventory - Product List UI     | 12             | 12        | 0           | 0          | 100%       | 102        |
+| Inventory - Product Detail UI   | 7              | 7         | 0           | 0          | 100%       | 35         |
+| Inventory - Product Brand       | 6              | 6         | 0           | 0          | 100%       | 114        |
+| Inventory - Product Brand UI    | 3              | 3         | 0           | 0          | 100%       | 50         |
+| Inventory - Product Name        | 6              | 6         | 0           | 0          | 100%       | 114        |
+| Trading - Trade                 | 7              | 7         | 0           | 0          | 100%       | 185        |
+| Trading - Fee                   | 6              | 6         | 0           | 0          | 100%       | 131        |
+| Trading - Event                 | 6              | 6         | 0           | 0          | 100%       | 134        |
+| **Total**                       | **94**         | **93**    | **1**       | **0**      | **99%**    | **1,592**  |
+
+> **Note (2026-05-16):** Product Brand UI tests added — 3 new spec files (ui-product-brand-add, ui-product-brand-list, ui-product-brand-update), 50 new tests, all 50 passing. Grand total Product Brand: 164 tests across 9 spec files. Total test cases (recounted from table): 1,592.
 
 > **Note (2026-05-14 final):** All active tests passing — 822/822 (100% active, 98.7% incl. pending). All 21 failures from initial run resolved: backend history payload fixed, summary/list API count cap fixed (PostgREST max_rows), auth assertion case-insensitive, DB helper rewritten with exact count queries. 11 pending remain in product-list-ui (intentional placeholders).
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-05-14 Full Regression Run)
+## Last Execution Results (2026-05-16 Focused Run: Product Brand UI)
+
+| Group                | Spec Files | Tests | Passed | Failed | Pending | Status |
+| -------------------- | ---------- | ----- | ------ | ------ | ------- | ------ |
+| product-brand (UI)   | 3          | 50    | 50     | 0      | 0       | ✅     |
+| **Total**            | **3**      | **50** | **50** | **0** | **0**  | **100%** |
+
+**Status:** 3 new UI spec files for Product Brand — all 50 tests passing. Covers Add Brand dialog (11), List UI with search/filter/sort/bulk (26), Update/Delete dialog flows (13).
+
+### Previous Run Results (2026-05-14 Full Regression Run)
 
 | Group     | Spec Files | Tests | Passed | Failed | Pending | Status |
 | --------- | ---------- | ----- | ------ | ------ | ------- | ------ |
@@ -116,8 +128,11 @@
 | 59  | cypress/e2e/trading_management/event/update-event.cy.js               | Update Event                         | 20         | Event update flow            |
 | 60  | cypress/e2e/trading_management/event/delete-event.cy.js               | Delete Event                         | 9          | Event deletion flow          |
 | 61  | cypress/e2e/trading_management/event/summary-event.cy.js              | Event Summary                        | 25         | Event summary API            |
+| 62  | cypress/e2e/inventory_management/product_brand/ui-product-brand-add.cy.js    | Add Brand UI               | 11         | Add Brand dialog: happy path, validation, duplicate rejection, open/close |
+| 63  | cypress/e2e/inventory_management/product_brand/ui-product-brand-list.cy.js   | List Brand UI              | 26         | Search, filter by status, sort, bulk actions, bulk set active, badge dot counter, edit button, product count badge navigation, sort by product count |
+| 64  | cypress/e2e/inventory_management/product_brand/ui-product-brand-update.cy.js | Update Brand UI            | 13         | Open/close dialog, prefill, name update, note update, delete flow, delete guard, duplicate name conflict, restore flow |
 
-**Total Automated Test Cases: 1,662** (added 114 new tests in v1.11 for product-list-ui, product-detail-ui, last-price-api, restock-predictions-api)
+**Total Automated Test Cases: 1,592** (added 50 new tests in v1.13 for ui-product-brand-add, ui-product-brand-list, ui-product-brand-update; total recounted from table — previous figure of 1,712 was inaccurate)
 
 ## Manual Test Cases (not yet automated)
 

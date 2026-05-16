@@ -1,11 +1,40 @@
 # Regression Testing Report
 
+**Date:** 2026-05-16
+**App Version:** 1.13
+**Scope:** Product Brand UI — focused run (3 new spec files)
+**Tester:** QA Agent
+
+## Summary (2026-05-16 Focused Run)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 50          | 50     | 0      | 0       | **100%**         |
+
+### Product Brand UI — New Spec Files
+
+| #  | Spec File                       | Tests | Passed | Failed | Status   |
+| -- | ------------------------------- | ----- | ------ | ------ | -------- |
+| 1  | ui-product-brand-add.cy.js      | 11    | 11     | 0      | ✅ PASS  |
+| 2  | ui-product-brand-list.cy.js     | 26    | 26     | 0      | ✅ PASS  |
+| 3  | ui-product-brand-update.cy.js   | 13    | 13     | 0      | ✅ PASS  |
+| — | **Total**                        | **50** | **50** | **0** | **100%** |
+
+**Scope notes:**
+- `ui-product-brand-add.cy.js`: Add Brand dialog — happy path, validation errors, duplicate name rejection, dialog open/close
+- `ui-product-brand-list.cy.js`: List page — search, filter by status, sort columns, bulk actions, bulk set active, badge dot counter, edit button, product count badge navigation, sort by product count
+- `ui-product-brand-update.cy.js`: Update dialog — open/close, prefill verification, name update success, note update success, delete flow, delete guard (active brand), duplicate name conflict, restore (reactivate) flow
+
+---
+
+## Previous Run — 2026-05-14 Full Regression
+
 **Date:** 2026-05-14
 **App Version:** 1.11
 **Scope:** api-auth, auth, dashboard, product (4 groups, 22 spec files)
 **Tester:** QA Agent
 
-## Summary
+### Summary
 
 | Total Tests | Passed | Failed | Pending | Active Pass Rate |
 | ----------- | ------ | ------ | ------- | ---------------- |
@@ -117,13 +146,14 @@ Rewrote `getProductSummaryFromDb()` to use individual `{ count: 'exact', head: t
 
 ## Improvements vs Previous Runs
 
-| Module | 2026-05-13 | 2026-05-14 (initial) | 2026-05-14 (final) | Change vs 2026-05-13 |
-| ------ | ---------- | -------------------- | ------------------ | -------------------- |
-| api-auth | 59/59 (100%) | 59/59 (100%) | 59/59 (100%) | — |
-| auth | 87/123 (70.7%) | 123/123 (100%) | 123/123 (100%) | ↑ +36 fixed |
-| dashboard | 161/161 (100%) | 161/161 (100%) | 161/161 (100%) | — |
-| product (active) | 433/463 (93.5%) | 477/479 (99.6%) | 479/479 (100%) | ↑ +46 fixed |
-| **Total (active)** | **740/776 (95.4%)** | **820/822 (99.8%)** | **822/822 (100%)** | **↑ +82 fixed** |
+| Module | 2026-05-13 | 2026-05-14 (initial) | 2026-05-14 (final) | 2026-05-16 (focused) | Change vs 2026-05-14 final |
+| ------ | ---------- | -------------------- | ------------------ | -------------------- | -------------------------- |
+| api-auth | 59/59 (100%) | 59/59 (100%) | 59/59 (100%) | — (not in scope) | — |
+| auth | 87/123 (70.7%) | 123/123 (100%) | 123/123 (100%) | — (not in scope) | — |
+| dashboard | 161/161 (100%) | 161/161 (100%) | 161/161 (100%) | — (not in scope) | — |
+| product (active) | 433/463 (93.5%) | 477/479 (99.6%) | 479/479 (100%) | — (not in scope) | — |
+| product-brand UI | — | — | — | 50/50 (100%) | ↑ +50 new tests |
+| **Total (active)** | **740/776 (95.4%)** | **820/822 (99.8%)** | **822/822 (100%)** | **50/50 (100%) focused** | **↑ +50 new** |
 
 ---
 

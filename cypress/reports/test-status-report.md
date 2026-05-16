@@ -1,7 +1,7 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-14 (Full regression run completed)
-**App Version:** 1.11
+**Last Updated:** 2026-05-16 (Focused run: Product Brand UI — 3 new spec files, 50 new tests)
+**App Version:** 1.13
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
 > "Last Tested" mengacu pada tanggal test file terakhir dijalankan secara eksplisit atau tanggal report update untuk full regression run.
@@ -10,6 +10,7 @@
 > ✅ **Dashboard (2026-05-14):** 161/161 passing (100%). Dashboard UI, API, and summary API all pass.
 > ✅ **Auth Module (2026-05-14):** 123/123 passing (100%). All auth failures from 2026-05-13 are fixed (logoutBtn id, userMenuTrigger id, session persistence).
 > ✅ **Product Module (2026-05-14 final):** 479/479 active passing (100%), 11 intentional pending. All 21 failures resolved via backend + test fixes.
+> ✅ **Product Brand UI (2026-05-16):** 3 new spec files added (ui-product-brand-add, ui-product-brand-list, ui-product-brand-update). 50/50 passing. Grand total Product Brand: 164 tests across 9 spec files.
 
 ---
 
@@ -22,29 +23,28 @@
 | Landing Page                    | 2026-05-08   | 0      | 33         | 33    |
 | Inventory - Dashboard           | 2026-05-14   | 0      | 161        | 161   |
 | Inventory - Product (API)       | 2026-05-14   | 0      | 390        | 390   |
-| Inventory - Product Brand       | 2026-04-22   | 0      | 114        | 114   |
+| Inventory - Product Brand       | 2026-05-16   | 0      | 164        | 164   |
 | Inventory - Product Name        | 2026-03-20   | 0      | 114        | 114   |
 | Trading - Trade                 | 2026-03-15   | 0      | 185        | 185   |
 | Trading - Fee                   | 2026-03-15   | 0      | 131        | 131   |
 | Trading - Event                 | 2026-03-15   | 0      | 134        | 134   |
-| **Total**                       |              | **1**  | **1,447**  | **1,448** |
+| **Total**                       |              | **1**  | **1,497**  | **1,498** |
 
 ---
 
 ## Staleness Alert
 
-Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-14):
+Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-16):
 
 | Module                    | Last Tested | Days Since Last Test |
 | ------------------------- | ----------- | -------------------- |
-| Landing Page              | 2026-05-08  | 6 hari               |
-| Inventory - Product Brand | 2026-04-22  | 22 hari              |
-| Inventory - Product Name  | 2026-03-20  | 55 hari 🔴           |
-| Trading - Trade           | 2026-03-15  | 60 hari 🔴           |
-| Trading - Fee             | 2026-03-15  | 60 hari 🔴           |
-| Trading - Event           | 2026-03-15  | 60 hari 🔴           |
+| Landing Page              | 2026-05-08  | 8 hari               |
+| Inventory - Product Name  | 2026-03-20  | 57 hari 🔴           |
+| Trading - Trade           | 2026-03-15  | 62 hari 🔴           |
+| Trading - Fee             | 2026-03-15  | 62 hari 🔴           |
+| Trading - Event           | 2026-03-15  | 62 hari 🔴           |
 
-> **Rekomendasi:** Run full regression suite untuk Trading module dan Product Name sebelum production release. Product Brand perlu ditest dalam 1-2 minggu.
+> **Rekomendasi:** Run full regression suite untuk Trading module dan Product Name sebelum production release. Product Brand sudah fresh (tested 2026-05-16).
 
 ---
 
@@ -122,14 +122,17 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-14):
 
 ### Inventory - Product Brand
 
-| #  | Feature              | File                                                           | Last Tested | Manual | Automation | Status       |
-| -- | -------------------- | -------------------------------------------------------------- | ----------- | ------ | ---------- | ------------ |
-| 1  | List Product Brand   | inventory_management/product_brand/list-product-brand.cy.js    | 2026-04-22  | 0      | 10         | 🟡 21 days old |
-| 2  | Product Brand Detail | inventory_management/product_brand/product-brand-detail.cy.js  | 2026-04-22  | 0      | 20         | 🟡 21 days old |
-| 3  | Add Product Brand    | inventory_management/product_brand/add-product-brand.cy.js     | 2026-04-22  | 0      | 32         | 🟡 21 days old |
-| 4  | Update Product Brand | inventory_management/product_brand/update-product-brand.cy.js  | 2026-04-22  | 0      | 26         | 🟡 21 days old |
-| 5  | Delete Product Brand | inventory_management/product_brand/delete-product-brand.cy.js  | 2026-04-22  | 0      | 13         | 🟡 21 days old |
-| 6  | Product Brand Summary| inventory_management/product_brand/summary-product-brand.cy.js | 2026-04-22  | 0      | 13         | 🟡 21 days old |
+| #  | Feature              | File                                                                  | Last Tested | Manual | Automation | Status           |
+| -- | -------------------- | --------------------------------------------------------------------- | ----------- | ------ | ---------- | ---------------- |
+| 1  | List Product Brand   | inventory_management/product_brand/list-product-brand.cy.js           | 2026-05-16  | 0      | 10         | ✅ 10/10 pass    |
+| 2  | Product Brand Detail | inventory_management/product_brand/product-brand-detail.cy.js         | 2026-05-16  | 0      | 20         | ✅ 20/20 pass    |
+| 3  | Add Product Brand    | inventory_management/product_brand/add-product-brand.cy.js            | 2026-05-16  | 0      | 32         | ✅ 32/32 pass    |
+| 4  | Update Product Brand | inventory_management/product_brand/update-product-brand.cy.js         | 2026-05-16  | 0      | 26         | ✅ 26/26 pass    |
+| 5  | Delete Product Brand | inventory_management/product_brand/delete-product-brand.cy.js         | 2026-05-16  | 0      | 13         | ✅ 13/13 pass    |
+| 6  | Product Brand Summary| inventory_management/product_brand/summary-product-brand.cy.js        | 2026-05-16  | 0      | 13         | ✅ 13/13 pass    |
+| 7  | Add Brand UI         | inventory_management/product_brand/ui-product-brand-add.cy.js         | 2026-05-16  | 0      | 11         | ✅ 11/11 pass    |
+| 8  | List Brand UI        | inventory_management/product_brand/ui-product-brand-list.cy.js        | 2026-05-16  | 0      | 26         | ✅ 26/26 pass    |
+| 9  | Update/Delete Brand UI | inventory_management/product_brand/ui-product-brand-update.cy.js    | 2026-05-16  | 0      | 13         | ✅ 13/13 pass    |
 
 ---
 
@@ -137,12 +140,12 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-14):
 
 | #  | Feature              | File                                                           | Last Tested | Manual | Automation | Status       |
 | -- | -------------------- | -------------------------------------------------------------- | ----------- | ------ | ---------- | ------------ |
-| 1  | List Product Name    | inventory_management/product_name/list-product-name.cy.js      | 2026-03-20  | 0      | 10         | 🔴 54 days old |
-| 2  | Product Name Detail  | inventory_management/product_name/product-name-detail.cy.js    | 2026-03-20  | 0      | 20         | 🔴 54 days old |
-| 3  | Add Product Name     | inventory_management/product_name/add-product-name.cy.js       | 2026-03-20  | 0      | 32         | 🔴 54 days old |
-| 4  | Update Product Name  | inventory_management/product_name/update-product-name.cy.js    | 2026-03-20  | 0      | 26         | 🔴 54 days old |
-| 5  | Delete Product Name  | inventory_management/product_name/delete-product-name.cy.js    | 2026-03-20  | 0      | 13         | 🔴 54 days old |
-| 6  | Product Name Summary | inventory_management/product_name/summary-product-name.cy.js   | 2026-03-20  | 0      | 13         | 🔴 54 days old |
+| 1  | List Product Name    | inventory_management/product_name/list-product-name.cy.js      | 2026-03-20  | 0      | 10         | 🔴 57 days old |
+| 2  | Product Name Detail  | inventory_management/product_name/product-name-detail.cy.js    | 2026-03-20  | 0      | 20         | 🔴 57 days old |
+| 3  | Add Product Name     | inventory_management/product_name/add-product-name.cy.js       | 2026-03-20  | 0      | 32         | 🔴 57 days old |
+| 4  | Update Product Name  | inventory_management/product_name/update-product-name.cy.js    | 2026-03-20  | 0      | 26         | 🔴 57 days old |
+| 5  | Delete Product Name  | inventory_management/product_name/delete-product-name.cy.js    | 2026-03-20  | 0      | 13         | 🔴 57 days old |
+| 6  | Product Name Summary | inventory_management/product_name/summary-product-name.cy.js   | 2026-03-20  | 0      | 13         | 🔴 57 days old |
 
 ---
 
@@ -150,13 +153,13 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-14):
 
 | #  | Feature        | File                                              | Last Tested | Manual | Automation | Status       |
 | -- | -------------- | ------------------------------------------------- | ----------- | ------ | ---------- | ------------ |
-| 1  | List Trade     | trading_management/trade/list-trade.cy.js         | 2026-03-15  | 0      | 6          | 🔴 59 days old |
-| 2  | Trade Detail   | trading_management/trade/trade-detail.cy.js       | 2026-03-15  | 0      | 15         | 🔴 59 days old |
-| 3  | Add Trade      | trading_management/trade/add-trade.cy.js          | 2026-03-15  | 0      | 109        | 🔴 59 days old |
-| 4  | Update Trade   | trading_management/trade/update-trade.cy.js       | 2026-03-15  | 0      | 32         | 🔴 59 days old |
-| 5  | Delete Trade   | trading_management/trade/delete-trade.cy.js       | 2026-03-15  | 0      | 6          | 🔴 59 days old |
-| 6  | Trade Options  | trading_management/trade/option-trade.cy.js       | 2026-03-15  | 0      | 7          | 🔴 59 days old |
-| 7  | Trade Summary  | trading_management/trade/summary-trade.cy.js      | 2026-03-15  | 0      | 10         | 🔴 59 days old |
+| 1  | List Trade     | trading_management/trade/list-trade.cy.js         | 2026-03-15  | 0      | 6          | 🔴 62 days old |
+| 2  | Trade Detail   | trading_management/trade/trade-detail.cy.js       | 2026-03-15  | 0      | 15         | 🔴 62 days old |
+| 3  | Add Trade      | trading_management/trade/add-trade.cy.js          | 2026-03-15  | 0      | 109        | 🔴 62 days old |
+| 4  | Update Trade   | trading_management/trade/update-trade.cy.js       | 2026-03-15  | 0      | 32         | 🔴 62 days old |
+| 5  | Delete Trade   | trading_management/trade/delete-trade.cy.js       | 2026-03-15  | 0      | 6          | 🔴 62 days old |
+| 6  | Trade Options  | trading_management/trade/option-trade.cy.js       | 2026-03-15  | 0      | 7          | 🔴 62 days old |
+| 7  | Trade Summary  | trading_management/trade/summary-trade.cy.js      | 2026-03-15  | 0      | 10         | 🔴 62 days old |
 
 ---
 
@@ -164,12 +167,12 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-14):
 
 | #  | Feature      | File                                          | Last Tested | Manual | Automation | Status       |
 | -- | ------------ | --------------------------------------------- | ----------- | ------ | ---------- | ------------ |
-| 1  | List Fee     | trading_management/fee/list-fee.cy.js         | 2026-03-15  | 0      | 6          | 🔴 59 days old |
-| 2  | Fee Detail   | trading_management/fee/fee-detail.cy.js       | 2026-03-15  | 0      | 15         | 🔴 59 days old |
-| 3  | Add Fee      | trading_management/fee/add-fee.cy.js          | 2026-03-15  | 0      | 62         | 🔴 59 days old |
-| 4  | Update Fee   | trading_management/fee/update-fee.cy.js       | 2026-03-15  | 0      | 19         | 🔴 59 days old |
-| 5  | Delete Fee   | trading_management/fee/delete-fee.cy.js       | 2026-03-15  | 0      | 6          | 🔴 59 days old |
-| 6  | Fee Summary  | trading_management/fee/summary-fee.cy.js      | 2026-03-15  | 0      | 23         | 🔴 59 days old |
+| 1  | List Fee     | trading_management/fee/list-fee.cy.js         | 2026-03-15  | 0      | 6          | 🔴 62 days old |
+| 2  | Fee Detail   | trading_management/fee/fee-detail.cy.js       | 2026-03-15  | 0      | 15         | 🔴 62 days old |
+| 3  | Add Fee      | trading_management/fee/add-fee.cy.js          | 2026-03-15  | 0      | 62         | 🔴 62 days old |
+| 4  | Update Fee   | trading_management/fee/update-fee.cy.js       | 2026-03-15  | 0      | 19         | 🔴 62 days old |
+| 5  | Delete Fee   | trading_management/fee/delete-fee.cy.js       | 2026-03-15  | 0      | 6          | 🔴 62 days old |
+| 6  | Fee Summary  | trading_management/fee/summary-fee.cy.js      | 2026-03-15  | 0      | 23         | 🔴 62 days old |
 
 ---
 
@@ -177,12 +180,12 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-14):
 
 | #  | Feature        | File                                              | Last Tested | Manual | Automation | Status       |
 | -- | -------------- | ------------------------------------------------- | ----------- | ------ | ---------- | ------------ |
-| 1  | List Event     | trading_management/event/list-event.cy.js         | 2026-03-15  | 0      | 6          | 🔴 59 days old |
-| 2  | Event Detail   | trading_management/event/event-detail.cy.js       | 2026-03-15  | 0      | 15         | 🔴 59 days old |
-| 3  | Add Event      | trading_management/event/add-event.cy.js          | 2026-03-15  | 0      | 59         | 🔴 59 days old |
-| 4  | Update Event   | trading_management/event/update-event.cy.js       | 2026-03-15  | 0      | 20         | 🔴 59 days old |
-| 5  | Delete Event   | trading_management/event/delete-event.cy.js       | 2026-03-15  | 0      | 9          | 🔴 59 days old |
-| 6  | Event Summary  | trading_management/event/summary-event.cy.js      | 2026-03-15  | 0      | 25         | 🔴 59 days old |
+| 1  | List Event     | trading_management/event/list-event.cy.js         | 2026-03-15  | 0      | 6          | 🔴 62 days old |
+| 2  | Event Detail   | trading_management/event/event-detail.cy.js       | 2026-03-15  | 0      | 15         | 🔴 62 days old |
+| 3  | Add Event      | trading_management/event/add-event.cy.js          | 2026-03-15  | 0      | 59         | 🔴 62 days old |
+| 4  | Update Event   | trading_management/event/update-event.cy.js       | 2026-03-15  | 0      | 20         | 🔴 62 days old |
+| 5  | Delete Event   | trading_management/event/delete-event.cy.js       | 2026-03-15  | 0      | 9          | 🔴 62 days old |
+| 6  | Event Summary  | trading_management/event/summary-event.cy.js      | 2026-03-15  | 0      | 25         | 🔴 62 days old |
 
 ---
 
