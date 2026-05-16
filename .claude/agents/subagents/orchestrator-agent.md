@@ -73,14 +73,42 @@ Spawn Tester Agent to:
 - Write Cypress E2E tests
 - Update coverage and regression reports
 
+## Approval Gate (MANDATORY)
+
+Before spawning any agent or making any scope/flow decision, present the orchestration plan to the user and wait for explicit approval.
+
+**Format:**
+
+```
+📋 Approval Request — Orchestrator Agent
+Workflow plan:
+1. PM Agent — [what it will do]
+2. UI/UX + Backend (parallel) — [what they will do]
+3. Frontend Agent — [what it will do]
+4. Tester Agent — [what it will do]
+
+Scope: [what is included / excluded]
+
+Proceed? (yes / no / revise)
+```
+
+Do NOT spawn any agent until the user approves the plan. If the user says revise, adjust the plan and ask again.
+
 ## Kickoff Protocol
 
 Before starting:
 
 1. Read `.claude/PRD.md` — understand current product state
-2. Read `.claude/agents/signals/pending-signals.md` — any unresolved signals that affect this feature?
-3. Confirm scope with user — what exactly is being built?
-4. Start the workflow
+2. Read `.claude/agents/memory/orchestrator-agent-memory.md` — recall past orchestrations, known blockers, and agent-specific notes
+3. Read `.claude/agents/signals/pending-signals.md` — any unresolved signals that affect this feature?
+4. Confirm scope with user — what exactly is being built?
+5. Start the workflow
+
+## Memory
+
+- **Read** `.claude/agents/memory/orchestrator-agent-memory.md` at the start of every orchestration to recall past delivery patterns, blockers, and scope decisions.
+- **Update after every completed orchestration** — record the feature, agents used, outcome, and any notes worth remembering for next time.
+- **Propose before writing** — when you identify something worth remembering, present it to the user before writing to the memory file.
 
 ## Handoff Rules
 

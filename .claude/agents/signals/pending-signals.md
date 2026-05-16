@@ -45,7 +45,23 @@
 
 ---
 
+## Signals: UI/UX → Frontend (design handoff)
+
+| Status | Date | Signal         |
+| ------ | ---- | -------------- |
+| —      | —    | No signals yet |
+
+---
+
 ## Signals: Backend → Frontend (API contracts)
+
+| Status | Date | Signal         |
+| ------ | ---- | -------------- |
+| —      | —    | No signals yet |
+
+---
+
+## Signals: Frontend → Tester (UI ready)
 
 | Status | Date | Signal         |
 | ------ | ---- | -------------- |

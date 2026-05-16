@@ -199,6 +199,59 @@ Change: [what changed]
 Impact on you: [what the agent needs to do differently]
 ```
 
+### 6. Design Handoff (UI/UX → Frontend)
+
+```
+🎨 Design Handoff — UI/UX → Frontend
+Feature: [feature name]
+Design doc: [path/to/design-doc.md]
+Components to build:
+  - [ComponentName] — [state: default/hover/loading/empty/error]
+Shadcn/ui mapping:
+  - [component] → [shadcn component]
+Notes: [any implementation gotchas]
+```
+
+### 7. UI Ready (Frontend → Tester)
+
+```
+✅ UI Ready — Frontend → Tester
+Feature: [feature name]
+Pages/components changed:
+  - [file path] — [what changed]
+New testIds added:
+  - [id value] → [what it maps to]
+API endpoints used:
+  - [METHOD] [/api/...] — [purpose]
+Ready for: E2E tests + code review
+```
+
+---
+
+## When to Write Signals
+
+### Pipeline mode (Orchestrator spawns agents sequentially)
+
+Every agent that completes in a pipeline **MUST** write a signal to the next agent before reporting done. No exceptions.
+
+| Completing agent | Must write signal to                              |
+| ---------------- | ------------------------------------------------- |
+| PM               | UI/UX Agent + Backend Agent (format 5 + format 5) |
+| UI/UX            | Frontend Agent (format 6)                         |
+| Backend          | Frontend Agent (format 4)                         |
+| Frontend         | Tester Agent (format 7)                           |
+
+### Standalone mode (agent invoked directly, not via Orchestrator)
+
+Only write a signal if your output **directly affects** another agent's work:
+
+- Bug fix in a UI component with no new testIds → no signal needed
+- New API endpoint added → write signal to Frontend (format 4)
+- PRD section updated → write signal to impacted agents (format 5)
+- New `id` attribute added → no signal needed (already in app-constants.yaml)
+
+When in doubt: if another agent would miss your change and build broken code, write the signal.
+
 ---
 
 ## Handoff Format
