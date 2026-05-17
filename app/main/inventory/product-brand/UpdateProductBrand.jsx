@@ -208,8 +208,7 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
                 <div className="flex items-start gap-2">
                   <AlertCircle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
                   <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
-                    Brand is still used by {productBrand.product_count} product(s) and cannot be
-                    deleted.
+                    Brand is by {productBrand.product_count} product(s) and cannot be deleted.
                   </p>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-16 (Focused run: Product Brand UI — 3 new spec files, 50 new tests)
-**App Version:** 1.13
+**Last Updated:** 2026-05-17 (Focused run: Product Name UI — 3 new spec files, 45 new tests)
+**App Version:** 1.17
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
 > "Last Tested" mengacu pada tanggal test file terakhir dijalankan secara eksplisit atau tanggal report update untuk full regression run.
@@ -11,6 +11,7 @@
 > ✅ **Auth Module (2026-05-14):** 123/123 passing (100%). All auth failures from 2026-05-13 are fixed (logoutBtn id, userMenuTrigger id, session persistence).
 > ✅ **Product Module (2026-05-14 final):** 479/479 active passing (100%), 11 intentional pending. All 21 failures resolved via backend + test fixes.
 > ✅ **Product Brand UI (2026-05-16):** 3 new spec files added (ui-product-brand-add, ui-product-brand-list, ui-product-brand-update). 50/50 passing. Grand total Product Brand: 164 tests across 9 spec files.
+> ✅ **Product Name UI (2026-05-17):** 3 new spec files added (ui-product-name-list, ui-product-name-update, ui-product-name-bulk). ui-product-name-bulk confirmed 16/16 passing in focused run. Grand total Product Name: 159 tests across 9 spec files.
 
 ---
 
@@ -24,27 +25,26 @@
 | Inventory - Dashboard           | 2026-05-14   | 0      | 161        | 161   |
 | Inventory - Product (API)       | 2026-05-14   | 0      | 390        | 390   |
 | Inventory - Product Brand       | 2026-05-16   | 0      | 164        | 164   |
-| Inventory - Product Name        | 2026-03-20   | 0      | 114        | 114   |
+| Inventory - Product Name        | 2026-05-17   | 0      | 159        | 159   |
 | Trading - Trade                 | 2026-03-15   | 0      | 185        | 185   |
 | Trading - Fee                   | 2026-03-15   | 0      | 131        | 131   |
 | Trading - Event                 | 2026-03-15   | 0      | 134        | 134   |
-| **Total**                       |              | **1**  | **1,497**  | **1,498** |
+| **Total**                       |              | **1**  | **1,542**  | **1,543** |
 
 ---
 
 ## Staleness Alert
 
-Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-16):
+Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-17):
 
 | Module                    | Last Tested | Days Since Last Test |
 | ------------------------- | ----------- | -------------------- |
-| Landing Page              | 2026-05-08  | 8 hari               |
-| Inventory - Product Name  | 2026-03-20  | 57 hari 🔴           |
-| Trading - Trade           | 2026-03-15  | 62 hari 🔴           |
-| Trading - Fee             | 2026-03-15  | 62 hari 🔴           |
-| Trading - Event           | 2026-03-15  | 62 hari 🔴           |
+| Landing Page              | 2026-05-08  | 9 hari               |
+| Trading - Trade           | 2026-03-15  | 63 hari 🔴           |
+| Trading - Fee             | 2026-03-15  | 63 hari 🔴           |
+| Trading - Event           | 2026-03-15  | 63 hari 🔴           |
 
-> **Rekomendasi:** Run full regression suite untuk Trading module dan Product Name sebelum production release. Product Brand sudah fresh (tested 2026-05-16).
+> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
 
 ---
 
@@ -140,12 +140,15 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-16):
 
 | #  | Feature              | File                                                           | Last Tested | Manual | Automation | Status       |
 | -- | -------------------- | -------------------------------------------------------------- | ----------- | ------ | ---------- | ------------ |
-| 1  | List Product Name    | inventory_management/product_name/list-product-name.cy.js      | 2026-03-20  | 0      | 10         | 🔴 57 days old |
-| 2  | Product Name Detail  | inventory_management/product_name/product-name-detail.cy.js    | 2026-03-20  | 0      | 20         | 🔴 57 days old |
-| 3  | Add Product Name     | inventory_management/product_name/add-product-name.cy.js       | 2026-03-20  | 0      | 32         | 🔴 57 days old |
-| 4  | Update Product Name  | inventory_management/product_name/update-product-name.cy.js    | 2026-03-20  | 0      | 26         | 🔴 57 days old |
-| 5  | Delete Product Name  | inventory_management/product_name/delete-product-name.cy.js    | 2026-03-20  | 0      | 13         | 🔴 57 days old |
-| 6  | Product Name Summary | inventory_management/product_name/summary-product-name.cy.js   | 2026-03-20  | 0      | 13         | 🔴 57 days old |
+| 1  | List Product Name    | inventory_management/product_name/list-product-name.cy.js      | 2026-03-20  | 0      | 10         | 🔴 63 days old |
+| 2  | Product Name Detail  | inventory_management/product_name/product-name-detail.cy.js    | 2026-03-20  | 0      | 20         | 🔴 63 days old |
+| 3  | Add Product Name     | inventory_management/product_name/add-product-name.cy.js       | 2026-03-20  | 0      | 32         | 🔴 63 days old |
+| 4  | Update Product Name  | inventory_management/product_name/update-product-name.cy.js    | 2026-03-20  | 0      | 26         | 🔴 63 days old |
+| 5  | Delete Product Name  | inventory_management/product_name/delete-product-name.cy.js    | 2026-03-20  | 0      | 13         | 🔴 63 days old |
+| 6  | Product Name Summary | inventory_management/product_name/summary-product-name.cy.js   | 2026-03-20  | 0      | 13         | 🔴 63 days old |
+| 7  | Product Name List UI | inventory_management/product_name/ui-product-name-list.cy.js   | 2026-05-17  | 0      | 15         | ✅ 15 tests (not yet run in focused mode) |
+| 8  | Product Name Update UI | inventory_management/product_name/ui-product-name-update.cy.js | 2026-05-17 | 0      | 14         | ✅ 14 tests (not yet run in focused mode) |
+| 9  | Product Name Bulk UI | inventory_management/product_name/ui-product-name-bulk.cy.js   | 2026-05-17  | 0      | 16         | ✅ 16/16 pass |
 
 ---
 
@@ -224,22 +227,25 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-16):
 
 ### 🟠 High Priority (before next release)
 
-1. **Backend:** Align auth error response to title-case `'Unauthorized'` — affects 9 product API tests
-2. **Tests:** Fix stale count assertions (use delta-based approach) — affects add-product, list-product, summary-product, favorite-product
-3. **Backend/Tests:** Investigate update-product history not recorded in DB — 3 data integrity failures
+1. Run full regression for Trading module — 63 days without a test run, risk of regressions before next production release
 
 ### 🟡 Medium Priority (within 1-2 weeks)
 
 1. Implement 11 pending tests in product-list-ui (sticky scroll, date picker, session UI)
-2. Re-test Product Brand module (22 days since last test)
-3. Re-test Trading module (60 days since last test)
-4. Re-test Product Name module (55 days since last test)
+2. Run ui-product-name-list.cy.js and ui-product-name-update.cy.js in focused mode to confirm pass rate
+3. Re-test Product Name API spec files (list, detail, add, update, delete, summary) — 63 days stale
+4. Re-test Trading module (63 days since last test)
 
-### ✅ Resolved (2026-05-13 → 2026-05-14)
+### ✅ Resolved (2026-05-13 → 2026-05-17)
 
-1. ~~Auth Module: Add missing testIds to LogoutButton and UserMenu components~~ — FIXED
-2. ~~Define cy.getAuthToken() and cy.logout() custom commands~~ — FIXED
+1. ~~Auth Module: Add missing testIds to LogoutButton and UserMenu components~~ — FIXED (2026-05-14)
+2. ~~Define cy.getAuthToken() and cy.logout() custom commands~~ — FIXED (2026-05-17)
 3. ~~Fix visibility clipping in product-detail-ui (13 failures)~~ — FIXED (35/35 now passing)
 4. ~~Fix mobile form dialog overflow in add-product~~ — FIXED
 5. ~~Fix session persistence redirect bug~~ — FIXED
 6. ~~Unblock last-price-api tests (16 skipped)~~ — FIXED (17/17 now passing)
+7. ~~Product Module: auth response case mismatch~~ — FIXED (2026-05-14)
+8. ~~Product Module: stale count assertions (PostgREST 1000-row cap)~~ — FIXED (2026-05-14)
+9. ~~Product Module: update history not recorded~~ — FIXED (2026-05-14)
+10. ~~Product Name: missing testIds for UpdateProductName and DeleteProductName~~ — FIXED (2026-05-17)
+11. ~~Product Name: missing uniqueness check (create/update 409), delete guard (delete 409), product_count on list~~ — FIXED (2026-05-17, PRD v1.15→v1.17)

@@ -1,21 +1,75 @@
-// ProductNamesPageClient.jsx
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import ProductNamesTable from './list/ProductNamesTable'
 import ProductNameTableHeader from './list/component/ProductNameTableHeader'
 import AddProductName from './AddProductName'
 import { fetchProductName } from '@/lib/api/productName'
 import ProductNameFilterDropdown from './list/component/ProductNameFilterDropdown'
 import PageHeader from '../../components/PageHeader'
+import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Search, X, PackageOpen } from 'lucide-react'
+
+function NameSearchInput({ searchQuery, setSearchQuery }) {
+  return (
+    <div className="relative w-full sm:max-w-xs">
+      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none" />
+      <Input
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder="Search product names..."
+        aria-label="Search product names"
+        id="searchInput_productNamePage"
+        className="pl-8 pr-7 text-sm h-9 focus-visible:ring-violet-200 focus-visible:border-violet-500"
+      />
+      {searchQuery && (
+        <button
+          onClick={() => setSearchQuery('')}
+          aria-label="Clear search"
+          id="clearSearchBtn_productNamePage"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+        >
+          <X className="size-3.5" />
+        </button>
+      )}
+    </div>
+  )
+}
+
+function TableSkeleton() {
+  return (
+    <div id="loadingSkeleton_productNamePage" className="flex-1 overflow-auto">
+      <div className="rounded-lg overflow-hidden">
+        <div className="bg-slate-100 px-4 py-2.5 flex items-center gap-4">
+          <Skeleton className="h-4 w-6 rounded" />
+          <Skeleton className="h-4 w-28 rounded" />
+          <Skeleton className="h-4 w-16 rounded ml-auto" />
+          <Skeleton className="h-4 w-16 rounded" />
+          <Skeleton className="h-4 w-24 rounded" />
+          <Skeleton className="h-4 w-10 rounded" />
+        </div>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="px-4 py-3 flex items-center gap-4 border-b border-slate-100">
+            <Skeleton className="h-4 w-4 rounded" />
+            <Skeleton className="h-4 w-32 rounded" />
+            <Skeleton className="h-5 w-16 rounded-full ml-auto" />
+            <Skeleton className="h-5 w-8 rounded-full" />
+            <Skeleton className="h-4 w-32 rounded" />
+            <Skeleton className="h-6 w-6 rounded" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function ProductNamesPageClient({ initialNames }) {
-  const [names, setNames] = useState(initialNames)
+  const [names, setNames] = useState(initialNames ?? null)
+  const [loading, setLoading] = useState(initialNames == null)
   const [filterStatus, setFilterStatus] = useState(null)
-  const [showStickyHeader, setShowStickyHeader] = useState(false)
-
-  const scrollContainerRef = useRef(null)
-  const headerSentinelRef = useRef(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortOrder, setSortOrder] = useState('name-asc')
 
   const fetchProductNames = async () => {
     try {
@@ -23,32 +77,19 @@ export default function ProductNamesPageClient({ initialNames }) {
       setNames(productNames || [])
     } catch (err) {
       console.error('Failed to fetch product names:', err)
+      setNames([])
+    } finally {
+      setLoading(false)
     }
   }
 
-  const handleFilter = (status) => {
-    setFilterStatus(status)
-  }
-
   useEffect(() => {
-    const sentinel = headerSentinelRef.current
-    const container = scrollContainerRef.current
+    if (initialNames == null) {
+      fetchProductNames()
+    }
+  }, [])
 
-    if (!sentinel || !container) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowStickyHeader(!entry.isIntersecting)
-      },
-      {
-        root: container,
-        threshold: 0,
-      }
-    )
-
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [names])
+  const nameList = names ?? []
 
   return (
     <div className="flex flex-col gap-3 sm:gap-5">
@@ -57,55 +98,58 @@ export default function ProductNamesPageClient({ initialNames }) {
         description="Manage product names and categories"
         breadcrumbs={[{ label: 'Inventory', href: '/main/inventory' }, { label: 'Product Name' }]}
       />
-      <div
-        ref={scrollContainerRef}
-        className="flex-1 min-h-0 overflow-y-auto relative border border-slate-200/50 shadow-slate-100 rounded-xl flex flex-col p-3 sm:p-5 bg-white"
-      >
+
+      <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white flex flex-col">
+        {/* Title */}
+        <div className="px-3 sm:px-5 pt-3 sm:pt-5">
+          <ProductNameTableHeader names={nameList} />
+        </div>
+
+        {/* Controls bar */}
         <div
-          className={`sticky top-0 z-30 transition-all duration-300 rounded-lg ${
-            showStickyHeader
-              ? 'opacity-100 translate-y-0 pointer-events-auto mb-2'
-              : 'opacity-0 -translate-y-2 pointer-events-none h-0 overflow-hidden'
-          }`}
+          id="controlsBar_productNamePage"
+          className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5"
         >
-          <div className="px-3 py-2.5 rounded-lg bg-white/5 backdrop-blur-[50px] border border-slate-200/60 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
+            <NameSearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
             <div className="flex items-center justify-between gap-2 shrink-0">
               <ProductNameFilterDropdown
                 filter={filterStatus}
-                onFilterChange={handleFilter}
-                productNames={names}
+                onFilterChange={setFilterStatus}
+                sortOrder={sortOrder}
+                onSortChange={setSortOrder}
               />
               <AddProductName onAdded={fetchProductNames} />
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 sm:gap-0">
-          <div className="flex flex-col sm:flex-row justify-between mb-2 sm:mb-4 gap-2 sm:gap-3">
-            <div className="max-w-full sm:max-w-[500px]">
-              <ProductNameTableHeader names={names} />
-              <div ref={headerSentinelRef} className="h-px" />
-            </div>
-
-            <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
-              <ProductNameFilterDropdown
-                filter={filterStatus}
-                onFilterChange={handleFilter}
-                productNames={names}
-              />
+        {/* Table area */}
+        <div className="px-3 sm:px-5 py-3 sm:py-4">
+          {loading ? (
+            <TableSkeleton />
+          ) : nameList.length === 0 ? (
+            <div
+              id="emptyState_productNamePage"
+              className="flex flex-col items-center justify-center gap-3 py-12 text-center"
+            >
+              <PackageOpen className="h-10 w-10 text-slate-300" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-slate-600">No product names yet</p>
+                <p className="text-xs text-slate-400">
+                  Add your first product name to start organizing your inventory
+                </p>
+              </div>
               <AddProductName onAdded={fetchProductNames} />
             </div>
-          </div>
-
-          {names.length === 0 ? (
-            <p className="text-center font-medium text-slate-foreground py-8 sm:py-10 text-sm sm:text-base">
-              No product names yet. Start by adding a new product name 🚀
-            </p>
           ) : (
             <ProductNamesTable
-              productNames={names}
+              productNames={nameList}
               filterStatus={filterStatus}
-              onFilterChange={handleFilter}
+              searchQuery={searchQuery}
+              sortOrder={sortOrder}
+              onClearSearch={() => setSearchQuery('')}
+              onClearFilter={() => setFilterStatus(null)}
             />
           )}
         </div>

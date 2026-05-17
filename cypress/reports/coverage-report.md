@@ -1,7 +1,7 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-16 (Focused run: Product Brand UI — 3 new spec files, 50 tests)
-**App Version:** 1.13
+**Last Updated:** 2026-05-17 (Focused run: Product Name UI — 3 new spec files, 45 tests)
+**App Version:** 1.17
 
 ## Coverage Summary
 
@@ -16,11 +16,13 @@
 | Inventory - Product Detail UI   | 7              | 7         | 0           | 0          | 100%       | 35         |
 | Inventory - Product Brand       | 6              | 6         | 0           | 0          | 100%       | 114        |
 | Inventory - Product Brand UI    | 3              | 3         | 0           | 0          | 100%       | 50         |
-| Inventory - Product Name        | 6              | 6         | 0           | 0          | 100%       | 114        |
+| Inventory - Product Name        | 9              | 9         | 0           | 0          | 100%       | 159        |
 | Trading - Trade                 | 7              | 7         | 0           | 0          | 100%       | 185        |
 | Trading - Fee                   | 6              | 6         | 0           | 0          | 100%       | 131        |
 | Trading - Event                 | 6              | 6         | 0           | 0          | 100%       | 134        |
-| **Total**                       | **94**         | **93**    | **1**       | **0**      | **99%**    | **1,592**  |
+| **Total**                       | **97**         | **96**    | **1**       | **0**      | **99%**    | **1,637**  |
+
+> **Note (2026-05-17):** Product Name UI tests added — 3 new spec files (ui-product-name-list, ui-product-name-update, ui-product-name-bulk), 45 new tests. ui-product-name-bulk.cy.js (16 tests) confirmed 16/16 passing in focused run. Grand total Product Name: 159 tests across 9 spec files. Total test cases (recounted from table): 1,637.
 
 > **Note (2026-05-16):** Product Brand UI tests added — 3 new spec files (ui-product-brand-add, ui-product-brand-list, ui-product-brand-update), 50 new tests, all 50 passing. Grand total Product Brand: 164 tests across 9 spec files. Total test cases (recounted from table): 1,592.
 
@@ -28,7 +30,16 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-05-16 Focused Run: Product Brand UI)
+## Last Execution Results (2026-05-17 Focused Run: Product Name UI)
+
+| Group                  | Spec Files | Tests | Passed | Failed | Pending | Status |
+| ---------------------- | ---------- | ----- | ------ | ------ | ------- | ------ |
+| product-name (UI bulk) | 1          | 16    | 16     | 0      | 0       | ✅     |
+| **Total**              | **1**      | **16** | **16** | **0** | **0**  | **100%** |
+
+**Status:** ui-product-name-bulk.cy.js — all 16 tests passing. Covers bulk checkbox selection, select-all with indeterminate state, Set Active / Set Inactive API call verification, Deselect All, auto-deselect on filter/search change, product count badge navigation (aria-label, URL param, keyboard accessibility), and zero-count badge non-navigation.
+
+### Previous Run Results (2026-05-16 Focused Run: Product Brand UI)
 
 | Group                | Spec Files | Tests | Passed | Failed | Pending | Status |
 | -------------------- | ---------- | ----- | ------ | ------ | ------- | ------ |
@@ -131,8 +142,11 @@
 | 62  | cypress/e2e/inventory_management/product_brand/ui-product-brand-add.cy.js    | Add Brand UI               | 11         | Add Brand dialog: happy path, validation, duplicate rejection, open/close |
 | 63  | cypress/e2e/inventory_management/product_brand/ui-product-brand-list.cy.js   | List Brand UI              | 26         | Search, filter by status, sort, bulk actions, bulk set active, badge dot counter, edit button, product count badge navigation, sort by product count |
 | 64  | cypress/e2e/inventory_management/product_brand/ui-product-brand-update.cy.js | Update Brand UI            | 13         | Open/close dialog, prefill, name update, note update, delete flow, delete guard, duplicate name conflict, restore flow |
+| 65  | cypress/e2e/inventory_management/product_name/ui-product-name-list.cy.js     | Product Name List UI       | 15         | Search (match, empty state, clear), filter by status (inactive, clear, deleted), sort (desc, reset), badge dot counter (0/1/2 active, drop from 2→1, hide on reset), edit button open, row-click open |
+| 66  | cypress/e2e/inventory_management/product_name/ui-product-name-update.cy.js   | Product Name Update UI     | 14         | Open via row-click and edit button, close via Cancel, prefill verification, name update success, note update success, validation error on empty name, duplicate name conflict (409 inline error, recover with unique name), delete flow, in-use guard (disabled button + warning box), restore flow (Restore button visible, submit disabled, restore API call, row disappears from deleted view) |
+| 67  | cypress/e2e/inventory_management/product_name/ui-product-name-bulk.cy.js     | Product Name Bulk UI       | 16         | Bulk checkbox: bar hidden on no selection, bar visible with count, bar disappears on deselect, select-all count, indeterminate state, select-all checked state, Deselect All; Set Active / Set Inactive API call body; auto-deselect on inactive filter, auto-deselect on search change; count badge > 0 is button with aria-label, badge click navigates to product-list?name=, keyboard accessible; count badge = 0 not rendered as button |
 
-**Total Automated Test Cases: 1,592** (added 50 new tests in v1.13 for ui-product-brand-add, ui-product-brand-list, ui-product-brand-update; total recounted from table — previous figure of 1,712 was inaccurate)
+**Total Automated Test Cases: 1,637** (added 45 new tests in v1.17 for ui-product-name-list, ui-product-name-update, ui-product-name-bulk; previous total: 1,592 in v1.13)
 
 ## Manual Test Cases (not yet automated)
 
@@ -163,24 +177,9 @@ All Product Detail UI v1.11 features have automation coverage:
 - **Error State** — 3 tests (failing due to error boundary implementation)
 - **Validation** — 2 tests
 
-### Known Issues Requiring Fixes (as of 2026-05-14)
+### Known Issues (as of 2026-05-17)
 
-1. **Product Module — Auth Response Case Mismatch** (9 failures)
-   - API returns `{ message: 'UNAUTHORIZED' }` but tests assert `'Unauthorized'`
-   - Affects all product API auth tests (9 spec files, 1 test each)
-   - Fix: align API response to title-case OR update 9 test assertions
-
-2. **Product Module — Stale Count Assertions** (8 failures)
-   - Tests hardcode expected counts (e.g., 1001) but API caps at 1000 items
-   - DB has grown past 1000 records, causing count divergence
-   - Affects: add-product, list-product, summary-product, favorite-product
-   - Fix: use delta-based count assertions or add test data isolation
-
-3. **Product Module — Update History Not Recorded** (3 failures)
-   - `update-product.cy.js`: usage history table has 0 records, tests expect 2
-   - Fix: verify history write logic in update API service
-
-4. **Product List UI — 11 Pending Tests** (intentional)
+1. **Product List UI — 11 Pending Tests** (intentional)
    - Tests marked pending cover scroll behavior, date picker, session UI
    - Not blocking — implement when interactions are fully testable
 

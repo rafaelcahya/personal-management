@@ -145,7 +145,7 @@ function UserSection({ collapsed, user, mobile = false }) {
               </div>
             )}
             <button
-              id={mobile ? 'userMenuSignOut_mobile' : 'userMenuSignOut_landingPage'}
+              id={mobile ? 'userMenuSignOut_mobile' : 'logoutBtn'}
               onClick={handleLogout}
               disabled={loading}
               aria-label="Sign out from application"

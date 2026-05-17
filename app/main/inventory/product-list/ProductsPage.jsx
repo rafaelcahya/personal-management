@@ -41,8 +41,11 @@ export default function ProductsPageClient() {
 
   useEffect(() => {
     const brandParam = searchParams.get('brand')
+    const nameParam = searchParams.get('name')
     if (brandParam) {
       setSearch(decodeURIComponent(brandParam))
+    } else if (nameParam) {
+      setSearch(decodeURIComponent(nameParam))
     }
   }, [])
 

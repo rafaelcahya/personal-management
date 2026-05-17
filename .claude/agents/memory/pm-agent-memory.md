@@ -30,9 +30,9 @@
 
 <!-- High-level log of significant PRD edits. Detailed history lives in PRD.md version section. -->
 
-| Date                | Section          | Change Type                  | Summary               |
-| ------------------- | ---------------- | ---------------------------- | --------------------- |
-| <!-- YYYY-MM-DD --> | <!-- section --> | Added / Updated / Deprecated | <!-- what changed --> |
+| Date       | Section            | Change Type | Summary                                                                                                                         |
+| ---------- | ------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-05-17 | 3.1.3 Product Name | Updated     | Removed P0 gap table and "not yet implemented" notes from API specs — all gaps resolved by Backend + Frontend. Bumped to v1.15. |
 
 ---
 

@@ -1,11 +1,38 @@
 # Regression Testing Report
 
+**Date:** 2026-05-17
+**App Version:** 1.17
+**Scope:** Product Name UI — focused run (3 new spec files)
+**Tester:** QA Agent
+
+## Summary (2026-05-17 Focused Run)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 16          | 16     | 0      | 0       | **100%**         |
+
+### Product Name UI — New Spec Files
+
+| #  | Spec File                       | Tests | Passed | Failed | Status   |
+| -- | ------------------------------- | ----- | ------ | ------ | -------- |
+| 1  | ui-product-name-bulk.cy.js      | 16    | 16     | 0      | ✅ PASS  |
+| — | **Total**                        | **16** | **16** | **0** | **100%** |
+
+**Scope notes:**
+- `ui-product-name-bulk.cy.js`: Product Name P2 features — (K) bulk status change: checkbox selection, select-all with indeterminate state, bulk action bar visibility, Set Active / Set Inactive API calls, Deselect All, auto-deselect on filter/search change; (L) product count badge navigation: badge > 0 is a keyboard-accessible button with aria-label, clicking navigates to product list filtered by name, badge = 0 is not rendered as a button
+
+> Note: Two additional spec files were written in this session (`ui-product-name-list.cy.js` — 15 tests, `ui-product-name-update.cy.js` — 14 tests) but were not included in the focused run reported above. See test-status-report for their tracking.
+
+---
+
+## Previous Run — 2026-05-16 Focused Run (Product Brand UI)
+
 **Date:** 2026-05-16
 **App Version:** 1.13
 **Scope:** Product Brand UI — focused run (3 new spec files)
 **Tester:** QA Agent
 
-## Summary (2026-05-16 Focused Run)
+### Summary
 
 | Total Tests | Passed | Failed | Pending | Active Pass Rate |
 | ----------- | ------ | ------ | ------- | ---------------- |

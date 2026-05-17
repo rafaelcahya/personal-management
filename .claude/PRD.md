@@ -2,8 +2,8 @@
 
 ## Personal Management App
 
-**Version:** 1.13  
-**Last Updated:** 2026-05-15  
+**Version:** 1.17  
+**Last Updated:** 2026-05-17  
 **Owner:** Rafael Cahya  
 **Stack:** Next.js 15 App Router · Supabase (PostgreSQL) · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6)
 
@@ -1568,14 +1568,434 @@ No new user stories for this — it's a layout consistency improvement that make
 
 #### 3.1.3 Product Name (`/main/inventory/product-name`)
 
-**Deskripsi:** Manajemen master data tipe/nama produk.
+**Description:** This is the master data page for product names (types). Product names are used as a foreign key in `product_list`, so every name needs to be unique per user. You also can't delete a product name while it's still being used by active products — that would break your product data.
 
-**Fitur:**
+**Route:** `/main/inventory/product-name`
 
-- Tampilkan semua tipe produk
-- Tambah tipe produk baru
-- Edit tipe produk
-- Hapus tipe produk (hanya jika tidak digunakan)
+**What it does:**
+
+- Show all product names along with how many active products are using each one (`product_count`)
+- Add a new product name (with a uniqueness check)
+- Edit a product name (also checks uniqueness, but skips itself when checking)
+- Delete a product name — only allowed if no active products are using it
+
+---
+
+**User Stories:**
+
+> As a user, I want to see all my product names in one place, so that I can manage and maintain my product name master data.
+
+> As a user, I want to know how many active products use each product name, so that I can make informed decisions before editing or deleting a name.
+
+> As a user, I want to be prevented from creating a duplicate product name, so that my name list stays clean and unambiguous.
+
+> As a user, I want to be prevented from deleting a product name that is still in use by active products, so that I don't accidentally break product data integrity.
+
+> As a user, I want to see a clear warning when a product name cannot be deleted, so that I understand why the delete action is disabled before I try.
+
+---
+
+**Acceptance Criteria:**
+
+**A. Show Product Name List**
+
+Each product name shows its name and how many active products are using it (`product_count`). The count comes from joining `product_name` with `product_list`, counting only products where `deleted_at IS NULL`.
+
+```
+GIVEN the user opens /main/inventory/product-name
+WHEN data loads successfully
+THEN all product names are shown, each with their product_count
+
+GIVEN data is still loading
+WHEN the API hasn't responded yet
+THEN show a loading state (skeleton or spinner)
+
+GIVEN no product names have been saved yet
+WHEN the page loads
+THEN show an appropriate empty state
+```
+
+**B. Add a New Product Name**
+
+```
+GIVEN the user opens the add product name form and types a name
+WHEN that name already exists (case-insensitive) and isn't soft-deleted
+THEN the API returns HTTP 409 and the form shows "Product name already exists"
+
+GIVEN the user types a name that doesn't exist yet
+WHEN the user submits the form
+THEN the new product name is saved and appears in the list with product_count = 0
+AND a success toast is shown
+
+GIVEN the user submits the form with an empty name
+WHEN frontend validation runs
+THEN the form doesn't submit and shows "Product name is required"
+```
+
+**C. Edit a Product Name**
+
+```
+GIVEN the user opens the edit modal and changes the name to one already used by another product name
+WHEN the user submits the form
+THEN the API returns HTTP 409 and the form shows "Product name already exists"
+
+GIVEN the user opens the edit modal and saves without changing the name
+WHEN the user submits the form
+THEN there's no conflict — the update goes through (the API excludes the product name itself from the uniqueness check)
+
+GIVEN the user changes the name to something genuinely new
+WHEN the user submits the form
+THEN the product name is updated in the list and a success toast is shown
+```
+
+**D. Delete Product Name — Guard: Name Still in Use**
+
+This is a P0 validation. The delete button is disabled upfront — not after a failed attempt.
+
+```
+GIVEN the user opens the edit modal for a product name with product_count > 0
+WHEN the modal opens
+THEN a warning box appears below the Note field with the message:
+     "Product name is still used by X product(s) and cannot be deleted."
+AND the delete button is disabled (opacity-40, cursor-not-allowed)
+
+GIVEN the user opens the edit modal for a product name with product_count = 0
+WHEN the modal opens
+THEN no warning box is shown
+AND the delete button is active and clickable
+
+GIVEN a product name has product_count > 0 and the delete API is called directly (bypassing the UI)
+WHEN the deleteProductName service runs
+THEN it throws an error with status 409 and message "Product name is still used by X product(s) and cannot be deleted"
+AND the API route returns HTTP 409
+
+GIVEN the user confirms deletion of a product name with product_count = 0
+WHEN it succeeds
+THEN the product name disappears from the list and a success toast is shown
+```
+
+---
+
+**Validations:**
+
+| Rule                                                                                   | Scope           | How it's enforced                                                                    |
+| -------------------------------------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------ |
+| Product name is required                                                               | Create + Update | Frontend form validation                                                             |
+| Product name must be unique (case-insensitive, excluding soft-deleted)                 | Create          | Backend service — HTTP 409 if duplicate                                              |
+| Product name must be unique (case-insensitive, excluding self, excluding soft-deleted) | Update          | Backend service — HTTP 409 if it conflicts with another name                         |
+| Can't delete a product name that's still used by active products                       | Delete          | Backend service — HTTP 409; Frontend — delete button disabled if `product_count > 0` |
+
+---
+
+**Error States:**
+
+| Situation                                                   | Layer                 | What the user sees                                    |
+| ----------------------------------------------------------- | --------------------- | ----------------------------------------------------- |
+| Product name already taken (create)                         | Backend → Frontend    | Form error: "Product name already exists"             |
+| Product name conflicts with another name (update)           | Backend → Frontend    | Form error: "Product name already exists"             |
+| Product name is still used by products (delete via UI)      | Frontend (preventive) | Red warning box in modal + delete button disabled     |
+| Product name is still used by products (delete bypasses UI) | Backend → Frontend    | HTTP 409 + `toast.error(err.message)` as a safety net |
+| API fails (5xx)                                             | Backend → Frontend    | Generic error toast                                   |
+
+**Warning Box — Visual Spec (Edit modal):**
+
+- Position: below the Note field
+- Style: red border, light red background
+- Icon: `AlertCircle` in the top-left, red color
+- Text: `"Product name is still used by X product(s) and cannot be deleted."` (X = `product_count`)
+- Render condition: `isInUse && !isDeleted` where `isInUse = product_count > 0`
+
+---
+
+**API Endpoints:**
+
+`GET /api/inventory/v1/product-name/list`
+
+- Auth: Required
+- What it does: Returns all product names for the user, each with a `product_count` (number of active products using that name)
+- Implementation: `Promise.all` — fetch `product_name` + `product_list` (active only, `deleted_at IS NULL`) in parallel, then merge the results
+- Response: `{ data: [{ id, product_name, product_name_status, product_count, note, ... }] }`
+
+`POST /api/inventory/v1/product-name/create`
+
+- Auth: Required
+- Body: `{ product_name: string }`
+- Validation: uniqueness check — query `product_name` where `product_name ilike newName AND user_id = userId AND product_name_status != 'deleted'`
+- Success response: `{ success: true, productName: {...} }` (201)
+- Error response: HTTP 409 `{ error: "CONFLICT", message: "Product name already exists" }` if duplicate
+
+`PUT /api/inventory/v1/product-name/update/[id]`
+
+- Auth: Required
+- Param: `id` — integer, product name ID
+- Body: `{ product_name: string, product_name_status: string }`
+- Validation: same uniqueness check as create, but adds `.neq("id", id)` to exclude the current record from the check
+- Success response: `{ success: true, productName: {...} }` (200)
+- Error response: HTTP 409 `{ error: "CONFLICT", message: "Product name already exists" }` if conflict
+
+`DELETE /api/inventory/v1/product-name/delete/[id]`
+
+- Auth: Required
+- Param: `id` — integer, product name ID
+- Guard: query `product_list` where `product_name_id = id AND user_id = userId AND deleted_at IS NULL` — if any records exist, throw 409
+- Implementation: soft-delete (set `product_name_status = 'deleted'`, set `deleted_at`)
+- Success response: `{ success: true, data: {...} }` (200)
+- Error response: HTTP 409 `{ error: "CONFLICT", message: "Product name is still used by X product(s) and cannot be deleted" }` if still in use
+
+`GET /api/inventory/v1/product-name/summary`
+
+- Auth: Required
+- What it does: Returns aggregate stats — total count of product names, count per status
+- Response: `{ success: true, data: { totalProductNames: number, totalStatus: { active: number, inactive: number, deleted: number } } }`
+
+`GET /api/inventory/v1/product-name/[id]`
+
+- Auth: Required
+- Param: `id` — integer, product name ID
+- What it does: Returns a single product name record
+- Response: `{ success: true, data: {...} }`
+
+---
+
+**Database Tables:**
+
+| Table          | Relevant columns                                                             | What it's used for                                  |
+| -------------- | ---------------------------------------------------------------------------- | --------------------------------------------------- |
+| `product_name` | `id`, `user_id`, `product_name`, `product_name_status`, `note`, `deleted_at` | Product name master data                            |
+| `product_list` | `id`, `product_name_id`, `user_id`, `deleted_at`                             | Used to calculate `product_count` and guard deletes |
+
+---
+
+**Implemented Features (P1 — delivered v1.16):**
+
+---
+
+**E. Search Bar**
+
+Client-side substring filter on product name. Works in combination with the sort dropdown.
+
+> As a user, I want to type into a search box and instantly see only the product names that match, so that I can find a specific name without scrolling.
+
+```
+GIVEN the user is on /main/inventory/product-name
+WHEN the user types into the search box
+THEN the table filters in real time to show only rows where the product name contains the typed text (case-insensitive)
+
+GIVEN the search box has text in it
+WHEN the user clicks the clear (X) button
+THEN the search input clears and all product names are shown again
+```
+
+- Component files: `ProductNamesPageClient.jsx`, `ProductNamesTable.jsx`
+- Key IDs: `searchInput_productNamePage`, `clearSearchBtn_productNamePage`
+
+---
+
+**F. Sort Controls**
+
+Sort dropdown with 4 options (A→Z default, Z→A, most products, fewest products). Works in combination with search.
+
+> As a user, I want to sort product names by name or by how many products use them, so that I can quickly spot the most-used or alphabetically adjacent names.
+
+```
+GIVEN the user opens the sort dropdown
+WHEN the user selects a sort option
+THEN the table reorders immediately — A→Z (default), Z→A, most products first, fewest products first
+
+GIVEN a non-default sort is active
+WHEN the user clicks the reset button inside the dropdown
+THEN the sort returns to A→Z (default)
+```
+
+- Component files: `ProductNameFilterDropdown.jsx`, `ProductNamesTable.jsx`
+- Key IDs: `filterSortBtn_productNamePage`, `sortOption_*_productNamePage` (e.g. `sortOption_az_productNamePage`), `resetSortBtn_productNamePage`
+
+---
+
+**G. Edit Button Per Row**
+
+Each table row has an explicit pencil icon button to open the edit modal, in addition to the existing row-click behavior.
+
+> As a user, I want a clear edit button on each product name row, so that I don't have to guess that clicking the row opens the edit modal.
+
+```
+GIVEN the user is viewing the product names table
+WHEN the user clicks the pencil icon on a row
+THEN the edit modal opens for that product name
+```
+
+- Component file: `ProductNamesTable.jsx`
+- ID pattern: `editProductNameBtn_{id}_productNamePage` (e.g. `editProductNameBtn_42_productNamePage`)
+
+---
+
+**H. Restore Deleted Product Name**
+
+When the edit modal is opened for a soft-deleted product name, a green Restore button appears instead of Delete.
+
+> As a user, I want to restore a soft-deleted product name, so that I can bring it back without having to recreate it.
+
+```
+GIVEN the user opens the edit modal for a product name with status = 'deleted'
+WHEN the modal opens
+THEN a green "Restore" button is shown instead of the Delete button
+
+GIVEN the user clicks the Restore button
+WHEN the PUT request succeeds
+THEN the product name status is set back to 'active'
+AND a success toast shows: "Product name restored successfully!"
+AND the modal closes
+```
+
+- Component file: `UpdateProductName.jsx`
+- Key ID: `restoreProductNameBtn_productNamePage`
+- Success toast: `"Product name restored successfully!"`
+
+---
+
+**I. Loading Skeleton**
+
+While the product name list is fetching, a shadcn Skeleton table is shown instead of a blank page.
+
+> As a user, I want to see a skeleton placeholder while data loads, so that the page feels responsive and I know something is happening.
+
+```
+GIVEN the user navigates to /main/inventory/product-name
+WHEN the API call is in flight
+THEN a skeleton table is rendered with 6 columns and 5 rows
+
+GIVEN the API call completes
+WHEN data arrives
+THEN the skeleton is replaced by the real product names table
+```
+
+- Component file: `ProductNamesPageClient.jsx`
+- Key ID: `loadingSkeleton_productNamePage`
+- Skeleton shape: 6 columns × 5 rows
+
+---
+
+**J. Empty States**
+
+Two distinct empty states: one for a truly empty list, one for a filtered result with no matches.
+
+> As a user, I want a helpful empty state when there are no product names yet, so that I know how to get started.
+
+> As a user, I want a clear message when my search returns no results, so that I know the filter is working and not that the list is broken.
+
+**True empty (no product names saved):**
+
+```
+GIVEN no product names have been created yet
+WHEN the page loads
+THEN show: PackageOpen icon + "No product names yet" heading + subtitle + "Add Product Name" CTA button
+```
+
+- Component file: `ProductNamesPageClient.jsx`
+- Key ID: `emptyState_productNamePage`
+
+**Filtered empty (search returns no matches):**
+
+```
+GIVEN there are product names in the list
+WHEN the user types a search term that matches nothing
+THEN show: SearchX icon + "No results" message + a clear search button to reset the filter
+```
+
+- Component file: `ProductNamesTable.jsx`
+
+---
+
+**Upcoming Scope (P2 — not yet implemented):**
+
+---
+
+##### K. Bulk Status Change
+
+**Description:** Let the user select multiple product name rows and flip their status to Active or Inactive in one shot — no need to open each edit modal one by one.
+
+**User Story:**
+
+> As a user, I want to select multiple product names and set their status to Active or Inactive in one action, so I can manage a group of names without editing them one by one.
+
+**Acceptance Criteria:**
+
+```
+GIVEN the product name table is loaded
+WHEN the user checks one or more row checkboxes
+THEN a bulk action bar appears above the table showing "{n} selected" and three buttons: Set Active, Set Inactive, Deselect All
+```
+
+```
+GIVEN the bulk action bar is visible
+WHEN the user clicks Set Active or Set Inactive
+THEN all selected names update to that status, a success toast shows "{n} name(s) updated", checkboxes clear, and the table re-fetches
+```
+
+```
+GIVEN the bulk action bar is visible
+WHEN the user clicks Deselect All
+THEN all checkboxes uncheck and the bar disappears
+```
+
+```
+GIVEN some rows are checked
+WHEN the user changes the search query or filter
+THEN any rows no longer visible are automatically deselected
+```
+
+```
+GIVEN all visible rows are checked
+THEN the header checkbox shows a checked state
+
+GIVEN some (but not all) visible rows are checked
+THEN the header checkbox shows an indeterminate state
+```
+
+**Component changes:** `ProductNamesTable.jsx` — add Checkbox column, select-all in header, bulk action bar.
+
+**Key test IDs:**
+
+| Element                    | id                                   |
+| -------------------------- | ------------------------------------ |
+| Bulk action bar            | `bulkActionBar_productNamePage`      |
+| Set Active button          | `bulkSetActiveBtn_productNamePage`   |
+| Set Inactive button        | `bulkSetInactiveBtn_productNamePage` |
+| Deselect All button        | `bulkDeselectAllBtn_productNamePage` |
+| Header select-all checkbox | `selectAllNames_productNamePage`     |
+| Per-row checkbox           | `nameCheckbox_{id}_productNamePage`  |
+
+---
+
+##### L. Product Count Badge Navigation
+
+**Description:** The product count badge on each row becomes a clickable link (when count > 0) that takes the user straight to the product list pre-filtered by that product name — so they can instantly see which products use it.
+
+**User Story:**
+
+> As a user, I want to click the product count badge on a product name row and be taken to the product list page filtered to that name, so I can quickly see which products use it.
+
+**Acceptance Criteria:**
+
+```
+GIVEN a product name has product_count > 0
+WHEN the user clicks its count badge
+THEN the browser navigates to /main/inventory/product-list?name={product_name} (URL-encoded)
+```
+
+```
+GIVEN a product name has product_count = 0
+THEN the badge is slate-colored, not clickable, and has no hover effect
+```
+
+```
+GIVEN the badge button receives keyboard focus
+THEN a visible focus ring is shown
+```
+
+**Component changes:** `ProductNamesTable.jsx` — wrap clickable badge in `<button>`.
+
+**Key test ID:** `productCountBadge_{id}_productNamePage`
 
 ---
 
@@ -2257,4 +2677,8 @@ Setiap perubahan requirement harus diupdate oleh PM Agent di file ini terlebih d
 | 1.9   | 2026-05-10 | Product List improvements & Edit Product feature. (1) **Edit Product** — implementasi `EditProductSheet` menggunakan `<Dialog>` (konsisten dengan semua action lain), bukan `<Sheet>`; field: Brand (Select), Product Name (Select), Type (Input), Status (Select); setiap field punya guide message; pre-fill dari data produk saat ini; PATCH `/api/inventory/v1/product/[id]`. (2) **Language** — semua teks UI di Product List diubah ke bahasa Inggris: "Habis" → "Out of Stock", "Menipis" → "Low Stock", "Tidak ada produk yang cocok" → "No products match your filters", "Hapus filter & pencarian" → "Clear filters & search", search placeholder diubah ke bahasa Inggris. (3) **API dedup fix** — `getProductSummary()` hanya dipanggil sekali di `ProductsPage`, hasilnya di-pass sebagai props ke `ProductListSummary`, `ProductTableHeader`, dan `ProductFilterDropdown` (sebelumnya 3× parallel API calls). (4) **`useDebounce` hook** — dibuat di `hooks/useDebounce.js` (sebelumnya di-import tapi belum ada). (5) **Quantity column** — kolom "On Hand Quantity" diubah menjadi "In Use"; kolom Quantity dan In Use sekarang right-aligned dengan `tabular-nums`. (6) **Star icon** — selalu dirender di kolom Product (`visibility:hidden` jika bukan favorit) untuk mencegah layout shift saat toggle favorite. (7) **Action dropdown reorder** — Edit Product → Add Stock → Record Usage → separator → Favorites → separator → Delete.                                                                                                                                                                                                                                                                                                                                                           | Rafael Cahya |
 | 1.12  | 2026-05-15 | **Product Brand module — full spec + P0 validation enforcement.** Section 3.1.2 fully rewritten from stub to production-grade spec. (1) Added user stories (5). (2) Added acceptance criteria for all 4 operations: list, create, edit, delete. (3) Documented P0 uniqueness validation on create and update — case-insensitive ilike check, excludes soft-deleted brands; update excludes self via `.neq("id", id)`; API returns HTTP 409 on conflict. (4) Documented P0 delete guard — service queries `product_list` for active products using brand before soft-delete; throws 409 with count in message. (5) Documented preventive UX: modal edit checks `product_count > 0` → shows red warning box (AlertCircle icon, red border/bg, message with count) below Note field; delete button disabled (`opacity-40 cursor-not-allowed`) — guard fires at modal open, not after attempt. (6) Documented `product_count` field added to list endpoint — parallel fetch via `Promise.all`, merged into each brand object. (7) Added full API endpoint specs (GET/POST/PUT/DELETE) with request/response format, HTTP codes, and validation notes. (8) Added database table reference.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Rafael Cahya |
 | 1.13  | 2026-05-15 | **Product Brand — 9 new features documented in section 3.1.2.** (E) Search bar — client-side substring filter on brand name, with clear (X) button, works in combination with status filter and sort. (F) Product count badge column — blue when count > 0 (clickable, navigates to product list pre-filtered by brand), gray when count = 0. (G) Filter & Sort merged dropdown — SlidersHorizontal icon, 4 sort options (A→Z default, Z→A, most/fewest products), independent clear buttons per section, violet badge dot showing active filter/sort count. (H) Bulk status change — per-row checkboxes + select-all, bulk action bar with Set Active / Set Inactive / Deselect All, loops PUT API per brand, toast summary "X brands updated". (I) Explicit edit (pencil icon) button on each row, alongside existing row-click behavior. (J) Restore deleted brand — edit modal for deleted brand shows green Restore Brand button (instead of Delete), calls PUT with brand_status: 'active'. (K) Empty state — PackageOpen icon + "No brands yet" heading + subtitle + Add Brand CTA button. (L) Loading skeleton — shadcn Skeleton table (1 header + 5 body rows) matching real column widths. (M) Layout aligned to Product List page — same controls bar structure, sticky top-0 CSS, same card layout pattern.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Rafael Cahya |
+| 1.14  | 2026-05-16 | **Product Name — section 3.1.3 fully rewritten from stub to production-grade spec.** (1) Added description explaining the foreign key constraint and uniqueness requirement. (2) Added 5 user stories. (3) Added acceptance criteria for all 4 operations: list (with product_count), create (uniqueness check), edit (uniqueness check excluding self), delete (guard: name still in use). (4) Added validations table (4 rules). (5) Added error states table (5 states) including delete guard warning box visual spec. (6) Added full API endpoint specs for all 6 routes with request/response shape, HTTP codes, and current implementation state notes. (7) Added database table reference. (8) Documented 6 P0 implementation gaps found in code review: missing product_count join, missing uniqueness checks on create/update, missing delete guard, missing toast on delete error, missing warning box in edit modal — each gap lists the exact file to fix. (9) Documented upcoming P1/P2 scope for feature parity with Product Brand v1.13.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Rafael Cahya |
+| 1.15  | 2026-05-17 | **Product Name — P0 gaps resolved.** All 6 P0 implementation gaps from v1.14 have been implemented by Backend + Frontend agents: `product_count` now returned by list endpoint; uniqueness check added to create and update (case-insensitive, excludes self on update); delete guard added (throws 409 with product count); delete error now surfaced via `toast.error`; warning box + disabled delete button shown in edit modal when `product_count > 0`. Removed P0 gap table from section 3.1.3 and removed "Current state: not yet implemented" notes from API endpoint specs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Rafael Cahya |
+| 1.16  | 2026-05-17 | **Product Name — P1 features documented as production-ready (section 3.1.3).** Replaced 6 P1 bullet placeholders with full specs: (E) Search bar — client-side substring filter, IDs `searchInput_productNamePage` + `clearSearchBtn_productNamePage`, components `ProductNamesPageClient.jsx` + `ProductNamesTable.jsx`. (F) Sort controls — dropdown with A→Z / Z→A / most/fewest options, IDs `filterSortBtn_productNamePage` + `sortOption_*_productNamePage` + `resetSortBtn_productNamePage`, components `ProductNameFilterDropdown.jsx` + `ProductNamesTable.jsx`. (G) Edit button per row — pencil icon, ID pattern `editProductNameBtn_{id}_productNamePage`, component `ProductNamesTable.jsx`. (H) Restore deleted product name — green Restore button in edit modal, ID `restoreProductNameBtn_productNamePage`, success toast "Product name restored successfully!", component `UpdateProductName.jsx`. (I) Loading skeleton — 6 columns × 5 rows shadcn Skeleton table, ID `loadingSkeleton_productNamePage`, component `ProductNamesPageClient.jsx`. (J) Empty states — true empty (PackageOpen icon + Add CTA, ID `emptyState_productNamePage`, `ProductNamesPageClient.jsx`) and filtered empty (SearchX icon + clear button, `ProductNamesTable.jsx`). P2 backlog retained.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Rafael Cahya |
+| 1.17  | 2026-05-17 | **Product Name P2 — full specs written for Bulk Status Change and Product Count Badge Navigation.** Merged Filter & Sort removed from P2 (delivered in P1). (K) Bulk Status Change — per-row checkboxes + select-all header checkbox, bulk action bar with Set Active / Set Inactive / Deselect All, auto-deselect on filter/search change, indeterminate header state, success toast "{n} name(s) updated". Key IDs: `bulkActionBar_productNamePage`, `bulkSetActiveBtn_productNamePage`, `bulkSetInactiveBtn_productNamePage`, `bulkDeselectAllBtn_productNamePage`, `selectAllNames_productNamePage`, `nameCheckbox_{id}_productNamePage`. (L) Product Count Badge Navigation — blue badge wraps a `<button>` when count > 0, navigates to `/main/inventory/product-list?name={encoded}`, slate badge is inert when count = 0, keyboard focus ring required. Key ID: `productCountBadge_{id}_productNamePage`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Rafael Cahya |
 | 1.7   | 2026-05-09 | UX improvements & PageHeader rollout. (1) SummaryCards: card "Inactive" diganti "Low Stock" (value = `lowStockAlerts.length`, produk dengan `quantity ≤ 2`); card "Active" menambahkan sub-label "of X products"; semua card kini clickable — klik menyimpan filter ke `localStorage` lalu navigasi ke `/main/inventory/product-list`. (2) SummaryCards accessibility: card di-wrap dalam native `<button>` (keyboard accessible), icon `aria-hidden="true"`, `focus-visible:ring-2 focus-visible:ring-violet-500`, `tabular-nums` pada nilai angka, transisi eksplisit `transition-[box-shadow,border-color]`. (3) PageHeader component baru (`app/main/components/PageHeader.jsx`) — reusable component dengan props `title`, `description`, `breadcrumbs[]`; dirollout ke semua 10 halaman Inventory + Trading (lihat Section 5 — PageHeader Component). (4) Test: 12 test case baru pada Summary Cards suite; fix pattern `.scrollIntoView()` sebelum `.should('be.visible')` untuk semua section di scroll container; fix text mismatch "Avg Usage Duration" → "Average Usage Duration". Total dashboard-ui suite: 88/88 pass (100%).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Rafael Cahya |
