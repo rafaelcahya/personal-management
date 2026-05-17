@@ -196,3 +196,51 @@ export async function insertProductHistoryFromDb(
   if (error) throw new Error(`Failed to insert product history: ${error.message}`)
   return data
 }
+
+/**
+ * Insert a fully-denormalized product_history record for UI test seeding.
+ * Allows setting all display fields (product, brand, type, status, quantity, dates, note)
+ * without requiring a real product_list row.
+ */
+export async function insertFullProductHistoryFromDb(supabase, record) {
+  const { data, error } = await supabase
+    .from('product_history')
+    .insert({
+      user_id: record.userId,
+      product_list_id: record.productListId ?? null,
+      product: record.product,
+      brand: record.brand ?? null,
+      type: record.type ?? null,
+      status: record.status ?? 'active',
+      quantity: record.quantity ?? 1,
+      depleted_quantity: record.depletedQuantity ?? 0,
+      remaining_quantity: record.remainingQuantity ?? record.quantity ?? 1,
+      start_usage_date: record.startUsageDate ?? new Date().toISOString(),
+      end_usage_date: record.endUsageDate ?? null,
+      note: record.note ?? null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .select()
+    .single()
+
+  if (error) throw new Error(`Failed to insert full product history: ${error.message}`)
+  return data
+}
+
+/**
+ * Delete all product_history records seeded for a given userId during UI tests.
+ * Pass an array of ids to only remove specific rows.
+ */
+export async function deleteProductHistoryFromDb(supabase, userId, ids = []) {
+  let query = supabase.from('product_history').delete().eq('user_id', userId)
+
+  if (ids.length > 0) {
+    query = query.in('id', ids)
+  }
+
+  const { error } = await query
+
+  if (error) throw new Error(`Failed to delete product history: ${error.message}`)
+  return null
+}

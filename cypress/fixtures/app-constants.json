@@ -233,6 +233,21 @@
       "bulk_set_inactive_btn": "bulkSetInactiveBtn_productNamePage",
       "bulk_deselect_all_btn": "bulkDeselectAllBtn_productNamePage"
     },
+    "product_history": {
+      "table": "productHistoryTable_productHistoryPage",
+      "search_input": "searchInput_productHistoryPage",
+      "clear_search_btn": "clearSearchBtn_productHistoryPage",
+      "filter_sort_btn": "filterSortBtn_productHistoryPage",
+      "filter_option_active": "filterOption_active_productHistoryPage",
+      "filter_option_inactive": "filterOption_inactive_productHistoryPage",
+      "filter_option_completed": "filterOption_completed_productHistoryPage",
+      "sort_option_date_desc": "sortOption_date_desc_productHistoryPage",
+      "sort_option_date_asc": "sortOption_date_asc_productHistoryPage",
+      "sort_option_name_asc": "sortOption_name_asc_productHistoryPage",
+      "sort_option_name_desc": "sortOption_name_desc_productHistoryPage",
+      "empty_state": "emptyState_productHistoryPage",
+      "loading_skeleton": "loadingSkeleton_productHistoryPage"
+    },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",
       "search_input": "searchInput_productBrandPage",

@@ -1,7 +1,7 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-17 (Focused run: Product Name UI — 3 new spec files, 45 new tests)
-**App Version:** 1.17
+**Last Updated:** 2026-05-17 (Focused run: Product History UI — 1 new spec file, 28 new tests)
+**App Version:** 1.18
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
 > "Last Tested" mengacu pada tanggal test file terakhir dijalankan secara eksplisit atau tanggal report update untuk full regression run.
@@ -12,6 +12,7 @@
 > ✅ **Product Module (2026-05-14 final):** 479/479 active passing (100%), 11 intentional pending. All 21 failures resolved via backend + test fixes.
 > ✅ **Product Brand UI (2026-05-16):** 3 new spec files added (ui-product-brand-add, ui-product-brand-list, ui-product-brand-update). 50/50 passing. Grand total Product Brand: 164 tests across 9 spec files.
 > ✅ **Product Name UI (2026-05-17):** 3 new spec files added (ui-product-name-list, ui-product-name-update, ui-product-name-bulk). ui-product-name-bulk confirmed 16/16 passing in focused run. Grand total Product Name: 159 tests across 9 spec files.
+> ✅ **Product History UI (2026-05-17):** 1 new spec file added (ui-product-history.cy.js). 28/28 passing in focused run. Covers all PRD 3.1.4 acceptance criteria. New DB tasks: insertFullProductHistory, deleteProductHistoryRows.
 
 ---
 
@@ -26,10 +27,11 @@
 | Inventory - Product (API)       | 2026-05-14   | 0      | 390        | 390   |
 | Inventory - Product Brand       | 2026-05-16   | 0      | 164        | 164   |
 | Inventory - Product Name        | 2026-05-17   | 0      | 159        | 159   |
+| Inventory - Product History UI  | 2026-05-17   | 0      | 28         | 28    |
 | Trading - Trade                 | 2026-03-15   | 0      | 185        | 185   |
 | Trading - Fee                   | 2026-03-15   | 0      | 131        | 131   |
 | Trading - Event                 | 2026-03-15   | 0      | 134        | 134   |
-| **Total**                       |              | **1**  | **1,542**  | **1,543** |
+| **Total**                       |              | **1**  | **1,570**  | **1,571** |
 
 ---
 
@@ -44,7 +46,7 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-17):
 | Trading - Fee             | 2026-03-15  | 63 hari 🔴           |
 | Trading - Event           | 2026-03-15  | 63 hari 🔴           |
 
-> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
+> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Product History UI fresh (tested 2026-05-17). Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
 
 ---
 
@@ -133,6 +135,14 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-17):
 | 7  | Add Brand UI         | inventory_management/product_brand/ui-product-brand-add.cy.js         | 2026-05-16  | 0      | 11         | ✅ 11/11 pass    |
 | 8  | List Brand UI        | inventory_management/product_brand/ui-product-brand-list.cy.js        | 2026-05-16  | 0      | 26         | ✅ 26/26 pass    |
 | 9  | Update/Delete Brand UI | inventory_management/product_brand/ui-product-brand-update.cy.js    | 2026-05-16  | 0      | 13         | ✅ 13/13 pass    |
+
+---
+
+### Inventory - Product History
+
+| #  | Feature               | File                                                                      | Last Tested | Manual | Automation | Status       |
+| -- | --------------------- | ------------------------------------------------------------------------- | ----------- | ------ | ---------- | ------------ |
+| 1  | Product History UI    | inventory_management/product_history/ui-product-history.cy.js             | 2026-05-17  | 0      | 28         | ✅ 28/28 pass |
 
 ---
 
@@ -249,3 +259,4 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-17):
 9. ~~Product Module: update history not recorded~~ — FIXED (2026-05-14)
 10. ~~Product Name: missing testIds for UpdateProductName and DeleteProductName~~ — FIXED (2026-05-17)
 11. ~~Product Name: missing uniqueness check (create/update 409), delete guard (delete 409), product_count on list~~ — FIXED (2026-05-17, PRD v1.15→v1.17)
+12. ~~Product History UI: P0 gap — all 13 testIds missing~~ — FIXED (2026-05-17, PRD v1.18); 28 tests added, all passing

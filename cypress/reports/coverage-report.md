@@ -1,7 +1,7 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-17 (Focused run: Product Name UI — 3 new spec files, 45 tests)
-**App Version:** 1.17
+**Last Updated:** 2026-05-17 (Focused run: Product History UI — 1 new spec file, 28 tests)
+**App Version:** 1.18
 
 ## Coverage Summary
 
@@ -17,12 +17,15 @@
 | Inventory - Product Brand       | 6              | 6         | 0           | 0          | 100%       | 114        |
 | Inventory - Product Brand UI    | 3              | 3         | 0           | 0          | 100%       | 50         |
 | Inventory - Product Name        | 9              | 9         | 0           | 0          | 100%       | 159        |
+| Inventory - Product History UI  | 7              | 7         | 0           | 0          | 100%       | 28         |
 | Trading - Trade                 | 7              | 7         | 0           | 0          | 100%       | 185        |
 | Trading - Fee                   | 6              | 6         | 0           | 0          | 100%       | 131        |
 | Trading - Event                 | 6              | 6         | 0           | 0          | 100%       | 134        |
-| **Total**                       | **97**         | **96**    | **1**       | **0**      | **99%**    | **1,637**  |
+| **Total**                       | **104**        | **103**   | **1**       | **0**      | **99%**    | **1,665**  |
 
-> **Note (2026-05-17):** Product Name UI tests added — 3 new spec files (ui-product-name-list, ui-product-name-update, ui-product-name-bulk), 45 new tests. ui-product-name-bulk.cy.js (16 tests) confirmed 16/16 passing in focused run. Grand total Product Name: 159 tests across 9 spec files. Total test cases (recounted from table): 1,637.
+> **Note (2026-05-17 v1.18):** Product History UI tests added — 1 new spec file (ui-product-history.cy.js), 28 tests, all 28/28 passing. Covers PRD section 3.1.4 — list view, search, filter by status, sort options, true empty state, filtered empty state, badge dot counter. New DB helpers: insertFullProductHistoryFromDb + deleteProductHistoryFromDb. New tasks: insertFullProductHistory, deleteProductHistoryRows. Total test cases updated to 1,665.
+
+> **Note (2026-05-17 v1.17):** Product Name UI tests added — 3 new spec files (ui-product-name-list, ui-product-name-update, ui-product-name-bulk), 45 new tests. ui-product-name-bulk.cy.js (16 tests) confirmed 16/16 passing in focused run. Grand total Product Name: 159 tests across 9 spec files. Total test cases (recounted from table): 1,637.
 
 > **Note (2026-05-16):** Product Brand UI tests added — 3 new spec files (ui-product-brand-add, ui-product-brand-list, ui-product-brand-update), 50 new tests, all 50 passing. Grand total Product Brand: 164 tests across 9 spec files. Total test cases (recounted from table): 1,592.
 
@@ -30,7 +33,16 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-05-17 Focused Run: Product Name UI)
+## Last Execution Results (2026-05-17 Focused Run: Product History UI)
+
+| Group                       | Spec Files | Tests | Passed | Failed | Pending | Status |
+| --------------------------- | ---------- | ----- | ------ | ------ | ------- | ------ |
+| product-history (UI)        | 1          | 28    | 28     | 0      | 0       | ✅     |
+| **Total**                   | **1**      | **28** | **28** | **0** | **0**  | **100%** |
+
+**Status:** ui-product-history.cy.js — all 28 tests passing. Covers all PRD 3.1.4 acceptance criteria: list view (3), search (4), search+filter combined (2), filter by status (4), sort options (5), true empty state (1), filtered empty state (3), badge dot counter (4), loading skeleton (1). Duration: 57s.
+
+### Previous Run Results (2026-05-17 Focused Run: Product Name UI)
 
 | Group                  | Spec Files | Tests | Passed | Failed | Pending | Status |
 | ---------------------- | ---------- | ----- | ------ | ------ | ------- | ------ |
@@ -145,8 +157,9 @@
 | 65  | cypress/e2e/inventory_management/product_name/ui-product-name-list.cy.js     | Product Name List UI       | 15         | Search (match, empty state, clear), filter by status (inactive, clear, deleted), sort (desc, reset), badge dot counter (0/1/2 active, drop from 2→1, hide on reset), edit button open, row-click open |
 | 66  | cypress/e2e/inventory_management/product_name/ui-product-name-update.cy.js   | Product Name Update UI     | 14         | Open via row-click and edit button, close via Cancel, prefill verification, name update success, note update success, validation error on empty name, duplicate name conflict (409 inline error, recover with unique name), delete flow, in-use guard (disabled button + warning box), restore flow (Restore button visible, submit disabled, restore API call, row disappears from deleted view) |
 | 67  | cypress/e2e/inventory_management/product_name/ui-product-name-bulk.cy.js     | Product Name Bulk UI       | 16         | Bulk checkbox: bar hidden on no selection, bar visible with count, bar disappears on deselect, select-all count, indeterminate state, select-all checked state, Deselect All; Set Active / Set Inactive API call body; auto-deselect on inactive filter, auto-deselect on search change; count badge > 0 is button with aria-label, badge click navigates to product-list?name=, keyboard accessible; count badge = 0 not rendered as button |
+| 68  | cypress/e2e/inventory_management/product_history/ui-product-history.cy.js    | Product History UI         | 28         | List view (table visible, 7 columns, row data), Search (name filter, filtered empty state, clear button, hidden when empty), Search+Filter AND logic, Filter by Status (3 options, active/inactive/completed, toggle deselects), Sort (4 options, date_desc default, date_asc, name_asc, name_desc), True empty state (conditional), Filtered empty state (no results, Clear filters button, restore), Badge dot counter (0/1/2 active, filter+sort), Loading skeleton absent after SSR load |
 
-**Total Automated Test Cases: 1,637** (added 45 new tests in v1.17 for ui-product-name-list, ui-product-name-update, ui-product-name-bulk; previous total: 1,592 in v1.13)
+**Total Automated Test Cases: 1,665** (added 28 new tests in v1.18 for ui-product-history; previous total: 1,637 in v1.17) (added 45 new tests in v1.17 for ui-product-name-list, ui-product-name-update, ui-product-name-bulk; previous total: 1,592 in v1.13)
 
 ## Manual Test Cases (not yet automated)
 

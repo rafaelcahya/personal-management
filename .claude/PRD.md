@@ -2,7 +2,7 @@
 
 ## Personal Management App
 
-**Version:** 1.17  
+**Version:** 1.18  
 **Last Updated:** 2026-05-17  
 **Owner:** Rafael Cahya  
 **Stack:** Next.js 15 App Router · Supabase (PostgreSQL) · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6)
@@ -2001,13 +2001,185 @@ THEN a visible focus ring is shown
 
 #### 3.1.4 Product History (`/main/inventory/product-history`)
 
-**Deskripsi:** Riwayat penggunaan dan penambahan stok.
+**Description:** A read-only log of all product usage sessions. Each record represents one usage session from the `product_usage_log` table — when a product was started, finished, or paused. Users can browse the full list, search by product name, filter by status, and sort by date or product name. No record can be added, edited, or deleted from this page.
 
-**Fitur:**
+**Route:** `/main/inventory/product-history`
+**Entry Point:** `app/main/inventory/product-history/page.jsx`
+**Main Components:** `ProductHistoryPageClient.jsx`, `ProductHistoryTable.jsx`, `ProductHistoryFilterDropdown.jsx`
 
-- Tampilkan log aktivitas (tambah stok / kurangi stok) per produk
-- Filter berdasarkan produk, tanggal, atau tipe aktivitas
-- Tidak ada aksi edit/hapus — history bersifat immutable
+---
+
+**User Stories**
+
+> As a user, I want to see all my product usage sessions in one table, so that I can review my full usage history at a glance.
+
+> As a user, I want to search for usage records by product name, so that I can quickly find history for a specific product.
+
+> As a user, I want to filter usage records by status (active, inactive, completed), so that I can focus on sessions that matter to me right now.
+
+> As a user, I want to sort usage records by date or product name, so that I can organize the list the way I prefer.
+
+---
+
+**Acceptance Criteria**
+
+**A. List View**
+
+```
+GIVEN the user navigates to /main/inventory/product-history
+WHEN the page loads
+THEN the table shows all usage records sorted by start_usage_date descending (most recent first) by default
+AND each row shows: #, Product (brand · type · product name), Status badge, Quantity, Start Date, End Date, Note
+AND a loading skeleton (id="loadingSkeleton_productHistoryPage") is shown while data is fetching
+```
+
+**B. Search by Product Name**
+
+```
+GIVEN there are usage records in the table
+WHEN the user types in the search input (id="searchInput_productHistoryPage")
+THEN the table filters client-side to show only rows where the product name contains the search string (case-insensitive, substring match)
+AND search is applied on product name field only (not brand or type)
+```
+
+```
+GIVEN the search input has text
+WHEN the user clicks the clear button (id="clearSearchBtn_productHistoryPage")
+THEN the search input is cleared and all records are shown again
+```
+
+```
+GIVEN the search input has text AND a status filter is active
+WHEN the user types a search string
+THEN both the search and status filter are applied together (AND logic)
+```
+
+**C. Filter by Status**
+
+```
+GIVEN the user clicks the filter/sort button (id="filterSortBtn_productHistoryPage")
+WHEN the dropdown opens
+THEN three status options are shown:
+  Active (id="filterOption_active_productHistoryPage")
+  Inactive (id="filterOption_inactive_productHistoryPage")
+  Completed (id="filterOption_completed_productHistoryPage")
+AND the currently selected filter option is visually highlighted
+```
+
+**D. Sort Options**
+
+```
+GIVEN the user opens the filter/sort dropdown
+WHEN the sort section is visible
+THEN four sort options are shown:
+  Most Recent First (id="sortOption_date_desc_productHistoryPage") — default
+  Oldest First (id="sortOption_date_asc_productHistoryPage")
+  Product Name A→Z (id="sortOption_name_asc_productHistoryPage")
+  Product Name Z→A (id="sortOption_name_desc_productHistoryPage")
+AND the currently active sort option is visually highlighted
+```
+
+**E. Empty State — True Empty**
+
+```
+GIVEN the user has no usage records
+WHEN the page loads
+THEN an empty state (id="emptyState_productHistoryPage") is shown with icon + "No usage history yet" heading
+AND there is no CTA button (records are created from Product List page)
+```
+
+**F. Empty State — Filtered Empty**
+
+```
+GIVEN search or filter produces no results
+THEN the table body shows a filtered empty message with a "Clear filters" action
+```
+
+**G. Loading State**
+
+```
+GIVEN data is still fetching
+THEN a skeleton (id="loadingSkeleton_productHistoryPage") with 7 columns is shown in place of the table
+```
+
+---
+
+**Validations / Constraints**
+
+| Rule            | Detail                                                              |
+| --------------- | ------------------------------------------------------------------- |
+| Read-only       | No add, edit, or delete action on this page                         |
+| Data source     | Records from `product_usage_log` only — this page writes nothing    |
+| Search scope    | Product name only — brand and type are displayed but not searchable |
+| Sort default    | Most recent first (start_usage_date DESC) on initial load           |
+| Filter + search | AND logic                                                           |
+| Client-side     | Search, filter, and sort all operate client-side                    |
+
+---
+
+**API Endpoint**
+
+`GET /api/inventory/v1/product-history/list`
+
+Response (HTTP 200):
+
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "product_id": "uuid",
+      "product_name": "string",
+      "brand_name": "string",
+      "product_type": "string",
+      "status": "active | inactive | completed",
+      "quantity": 1,
+      "start_usage_date": "YYYY-MM-DD",
+      "end_usage_date": "YYYY-MM-DD | null",
+      "note": "string | null"
+    }
+  ]
+}
+```
+
+| Code | Condition               |
+| ---- | ----------------------- |
+| 401  | User not authenticated  |
+| 500  | Unexpected server error |
+
+---
+
+**Key Test IDs**
+
+| Element                         | ID                                          |
+| ------------------------------- | ------------------------------------------- |
+| Table                           | `productHistoryTable_productHistoryPage`    |
+| Search input                    | `searchInput_productHistoryPage`            |
+| Clear search button             | `clearSearchBtn_productHistoryPage`         |
+| Filter/sort trigger button      | `filterSortBtn_productHistoryPage`          |
+| Filter option — active          | `filterOption_active_productHistoryPage`    |
+| Filter option — inactive        | `filterOption_inactive_productHistoryPage`  |
+| Filter option — completed       | `filterOption_completed_productHistoryPage` |
+| Sort option — most recent first | `sortOption_date_desc_productHistoryPage`   |
+| Sort option — oldest first      | `sortOption_date_asc_productHistoryPage`    |
+| Sort option — name A→Z          | `sortOption_name_asc_productHistoryPage`    |
+| Sort option — name Z→A          | `sortOption_name_desc_productHistoryPage`   |
+| Empty state                     | `emptyState_productHistoryPage`             |
+| Loading skeleton                | `loadingSkeleton_productHistoryPage`        |
+
+---
+
+**P0 Gap — Missing Test IDs**
+
+Zero `id` attributes currently exist on any interactive element in this feature. Frontend must add all IDs above before Tester can write tests.
+
+Impacted files:
+
+- `ProductHistoryPageClient.jsx` — search input, clear button, loading skeleton, empty state
+- `ProductHistoryTable.jsx` — table element
+- `ProductHistoryFilterDropdown.jsx` — filter/sort button, all filter + sort options
+
+All new IDs must also be registered in `cypress/fixtures/app-constants.json` under `test_ids.product_history`.
 
 ---
 
@@ -2680,5 +2852,6 @@ Setiap perubahan requirement harus diupdate oleh PM Agent di file ini terlebih d
 | 1.14  | 2026-05-16 | **Product Name — section 3.1.3 fully rewritten from stub to production-grade spec.** (1) Added description explaining the foreign key constraint and uniqueness requirement. (2) Added 5 user stories. (3) Added acceptance criteria for all 4 operations: list (with product_count), create (uniqueness check), edit (uniqueness check excluding self), delete (guard: name still in use). (4) Added validations table (4 rules). (5) Added error states table (5 states) including delete guard warning box visual spec. (6) Added full API endpoint specs for all 6 routes with request/response shape, HTTP codes, and current implementation state notes. (7) Added database table reference. (8) Documented 6 P0 implementation gaps found in code review: missing product_count join, missing uniqueness checks on create/update, missing delete guard, missing toast on delete error, missing warning box in edit modal — each gap lists the exact file to fix. (9) Documented upcoming P1/P2 scope for feature parity with Product Brand v1.13.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Rafael Cahya |
 | 1.15  | 2026-05-17 | **Product Name — P0 gaps resolved.** All 6 P0 implementation gaps from v1.14 have been implemented by Backend + Frontend agents: `product_count` now returned by list endpoint; uniqueness check added to create and update (case-insensitive, excludes self on update); delete guard added (throws 409 with product count); delete error now surfaced via `toast.error`; warning box + disabled delete button shown in edit modal when `product_count > 0`. Removed P0 gap table from section 3.1.3 and removed "Current state: not yet implemented" notes from API endpoint specs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Rafael Cahya |
 | 1.16  | 2026-05-17 | **Product Name — P1 features documented as production-ready (section 3.1.3).** Replaced 6 P1 bullet placeholders with full specs: (E) Search bar — client-side substring filter, IDs `searchInput_productNamePage` + `clearSearchBtn_productNamePage`, components `ProductNamesPageClient.jsx` + `ProductNamesTable.jsx`. (F) Sort controls — dropdown with A→Z / Z→A / most/fewest options, IDs `filterSortBtn_productNamePage` + `sortOption_*_productNamePage` + `resetSortBtn_productNamePage`, components `ProductNameFilterDropdown.jsx` + `ProductNamesTable.jsx`. (G) Edit button per row — pencil icon, ID pattern `editProductNameBtn_{id}_productNamePage`, component `ProductNamesTable.jsx`. (H) Restore deleted product name — green Restore button in edit modal, ID `restoreProductNameBtn_productNamePage`, success toast "Product name restored successfully!", component `UpdateProductName.jsx`. (I) Loading skeleton — 6 columns × 5 rows shadcn Skeleton table, ID `loadingSkeleton_productNamePage`, component `ProductNamesPageClient.jsx`. (J) Empty states — true empty (PackageOpen icon + Add CTA, ID `emptyState_productNamePage`, `ProductNamesPageClient.jsx`) and filtered empty (SearchX icon + clear button, `ProductNamesTable.jsx`). P2 backlog retained.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Rafael Cahya |
+| 1.18  | 2026-05-17 | **Product History — section 3.1.4 fully rewritten from stub to production-grade spec.** Added 4 user stories, acceptance criteria for list view (7-col table, default sort most recent first), search by product name (client-side, AND logic with filter), filter by status (active/inactive/completed), 4 sort options, true empty state, filtered empty state, loading skeleton. Added API endpoint spec, component list, and 13 key test IDs. Called out P0 gap: zero test IDs exist on any element — Frontend must add all IDs before Tester can write tests.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Rafael Cahya |
 | 1.17  | 2026-05-17 | **Product Name P2 — full specs written for Bulk Status Change and Product Count Badge Navigation.** Merged Filter & Sort removed from P2 (delivered in P1). (K) Bulk Status Change — per-row checkboxes + select-all header checkbox, bulk action bar with Set Active / Set Inactive / Deselect All, auto-deselect on filter/search change, indeterminate header state, success toast "{n} name(s) updated". Key IDs: `bulkActionBar_productNamePage`, `bulkSetActiveBtn_productNamePage`, `bulkSetInactiveBtn_productNamePage`, `bulkDeselectAllBtn_productNamePage`, `selectAllNames_productNamePage`, `nameCheckbox_{id}_productNamePage`. (L) Product Count Badge Navigation — blue badge wraps a `<button>` when count > 0, navigates to `/main/inventory/product-list?name={encoded}`, slate badge is inert when count = 0, keyboard focus ring required. Key ID: `productCountBadge_{id}_productNamePage`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Rafael Cahya |
 | 1.7   | 2026-05-09 | UX improvements & PageHeader rollout. (1) SummaryCards: card "Inactive" diganti "Low Stock" (value = `lowStockAlerts.length`, produk dengan `quantity ≤ 2`); card "Active" menambahkan sub-label "of X products"; semua card kini clickable — klik menyimpan filter ke `localStorage` lalu navigasi ke `/main/inventory/product-list`. (2) SummaryCards accessibility: card di-wrap dalam native `<button>` (keyboard accessible), icon `aria-hidden="true"`, `focus-visible:ring-2 focus-visible:ring-violet-500`, `tabular-nums` pada nilai angka, transisi eksplisit `transition-[box-shadow,border-color]`. (3) PageHeader component baru (`app/main/components/PageHeader.jsx`) — reusable component dengan props `title`, `description`, `breadcrumbs[]`; dirollout ke semua 10 halaman Inventory + Trading (lihat Section 5 — PageHeader Component). (4) Test: 12 test case baru pada Summary Cards suite; fix pattern `.scrollIntoView()` sebelum `.should('be.visible')` untuk semua section di scroll container; fix text mismatch "Avg Usage Duration" → "Average Usage Duration". Total dashboard-ui suite: 88/88 pass (100%).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Rafael Cahya |

@@ -10,6 +10,8 @@ import {
   getProductHistoryCountFromDb,
   getProductFavoriteStatusFromDb,
   insertProductHistoryFromDb,
+  insertFullProductHistoryFromDb,
+  deleteProductHistoryFromDb,
 } from '../../support/db/inventory/product/productDb'
 
 export const productTasks = (supabaseAdmin) => ({
@@ -61,5 +63,15 @@ export const productTasks = (supabaseAdmin) => ({
       startUsageDate,
       depletedQuantity
     )
+  },
+
+  // Insert a fully-denormalized product_history record for UI test seeding
+  async insertFullProductHistory(record) {
+    return insertFullProductHistoryFromDb(supabaseAdmin, record)
+  },
+
+  // Delete product_history rows by userId (and optionally by ids array)
+  async deleteProductHistoryRows({ userId, ids = [] }) {
+    return deleteProductHistoryFromDb(supabaseAdmin, userId, ids)
   },
 })
