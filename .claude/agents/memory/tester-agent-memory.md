@@ -18,16 +18,16 @@
 
 <!-- Bugs found during QA that are not yet resolved — avoid re-reporting them -->
 
-| Date Found | Module                            | Bug Description                                                                                                                            | Priority | Status |
-| ---------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------ |
-| 2026-05-13 | Auth — logout.cy.js               | Missing `id="logoutBtn"` on LogoutButton component — causes 8 test failures                                                                | P0       | Open   |
-| 2026-05-13 | Auth — logout.cy.js               | Missing `id="userMenuTrigger_landingPage"` on UserMenu trigger — causes 6 test failures                                                    | P0       | Open   |
-| 2026-05-13 | Auth — login.cy.js                | Session persistence redirect bug — after reload, redirects to `/main/inventory` instead of `/main/landing`                                 | P1       | Open   |
-| 2026-05-13 | Auth — session.cy.js              | `id="logoutBtn"` not found — 1 test failure in toast content verification                                                                  | P1       | Open   |
-| 2026-05-13 | Product (multiple files)          | `cy.getAuthToken()` custom command undefined — affects 9 tests across add, list, delete, update, favorite, stock, history, detail, summary | P1       | Open   |
-| 2026-05-13 | Product — product-detail-ui.cy.js | `cy.logout()` custom command not defined — 1 failure in auth validation test                                                               | P1       | Open   |
-| 2026-05-13 | Product — product-detail-ui.cy.js | Element visibility clipping — status badge, purchase history, usage history elements clipped by overflow-hidden; need `.scrollIntoView()`  | P1       | Open   |
-| 2026-05-13 | Product — add-product.cy.js       | Mobile dialog form overflow — form fields covered by dialog footer (position: fixed) on mobile viewports                                   | P1       | Open   |
+| Date Found | Module                            | Bug Description                                                                                                                            | Priority | Status              |
+| ---------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------- |
+| 2026-05-13 | Auth — logout.cy.js               | Missing `id="logoutBtn"` on LogoutButton component — causes 8 test failures                                                                | P0       | Resolved 2026-05-17 |
+| 2026-05-13 | Auth — logout.cy.js               | Missing `id="userMenuTrigger_landingPage"` on UserMenu trigger — causes 6 test failures                                                    | P0       | Resolved 2026-05-17 |
+| 2026-05-13 | Auth — login.cy.js                | Session persistence redirect bug — after reload, redirects to `/main/inventory` instead of `/main/landing`                                 | P1       | Open                |
+| 2026-05-13 | Auth — session.cy.js              | `id="logoutBtn"` not found — 1 test failure in toast content verification                                                                  | P1       | Resolved 2026-05-17 |
+| 2026-05-13 | Product (multiple files)          | `cy.getAuthToken()` custom command undefined — affects 9 tests across add, list, delete, update, favorite, stock, history, detail, summary | P1       | Resolved 2026-05-17 |
+| 2026-05-13 | Product — product-detail-ui.cy.js | `cy.logout()` custom command not defined — 1 failure in auth validation test                                                               | P1       | Resolved 2026-05-17 |
+| 2026-05-13 | Product — product-detail-ui.cy.js | Element visibility clipping — status badge, purchase history, usage history elements clipped by overflow-hidden; need `.scrollIntoView()`  | P1       | Open                |
+| 2026-05-13 | Product — add-product.cy.js       | Mobile dialog form overflow — form fields covered by dialog footer (position: fixed) on mobile viewports                                   | P1       | Open                |
 
 ---
 
@@ -76,9 +76,9 @@
 
 ## Cross-Agent Signals
 
-| Date       | To Agent | Finding                                                                               | Severity | Resolution |
-| ---------- | -------- | ------------------------------------------------------------------------------------- | -------- | ---------- |
-| 2026-05-13 | Frontend | Add `id="logoutBtn"` to LogoutButton component in inventory + trading layouts         | CRITICAL | Open       |
-| 2026-05-13 | Frontend | Add `id="userMenuTrigger_landingPage"` to UserMenu trigger on landing page            | CRITICAL | Open       |
-| 2026-05-13 | Frontend | Define `cy.getAuthToken()` in `cypress/support/commands.js` — used in 9 product tests | HIGH     | Open       |
-| 2026-05-13 | Frontend | Define `cy.logout()` in `cypress/support/commands.js` — used in product-detail-ui     | HIGH     | Open       |
+| Date       | To Agent | Finding                                                                               | Severity | Resolution          |
+| ---------- | -------- | ------------------------------------------------------------------------------------- | -------- | ------------------- |
+| 2026-05-13 | Frontend | Add `id="logoutBtn"` to LogoutButton component in inventory + trading layouts         | CRITICAL | Resolved 2026-05-17 |
+| 2026-05-13 | Frontend | Add `id="userMenuTrigger_landingPage"` to UserMenu trigger on landing page            | CRITICAL | Resolved 2026-05-17 |
+| 2026-05-13 | Frontend | Define `cy.getAuthToken()` in `cypress/support/commands.js` — used in 9 product tests | HIGH     | Resolved 2026-05-17 |
+| 2026-05-13 | Frontend | Define `cy.logout()` in `cypress/support/commands.js` — used in product-detail-ui     | HIGH     | Resolved 2026-05-17 |

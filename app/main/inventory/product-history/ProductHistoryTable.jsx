@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { SearchX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -127,7 +128,18 @@ export default function ProductHistoryTable({
                     {history.brand || '—'}
                   </p>
                   <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                    <p className="font-medium text-slate-700 text-sm truncate">{history.product}</p>
+                    {history.product_list_id ? (
+                      <Link
+                        href={`/main/inventory/product-list/${history.product_list_id}`}
+                        className="font-medium text-violet-700 text-sm truncate hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-1 rounded"
+                      >
+                        {history.product}
+                      </Link>
+                    ) : (
+                      <p className="font-medium text-slate-700 text-sm truncate">
+                        {history.product}
+                      </p>
+                    )}
                     {history.type && (
                       <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
                         {history.type}

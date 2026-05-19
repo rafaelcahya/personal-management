@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getProductSummary } from '@/lib/api/product'
 import { getInventoryDashboard } from '@/lib/api/inventoryDashboard'
 import SummaryCards from './components/SummaryCards'
 import PageHeader from '../components/PageHeader'
@@ -43,11 +42,17 @@ export default function InventoryDashboard() {
   useEffect(() => {
     async function fetchAll() {
       try {
-        const [summaryData, dashboardData] = await Promise.all([
-          getProductSummary(),
-          getInventoryDashboard(),
-        ])
-        setSummary(summaryData)
+        const dashboardData = await getInventoryDashboard()
+        setSummary(
+          dashboardData.summary ?? {
+            totalProducts: 0,
+            activeProducts: 0,
+            inactiveProducts: 0,
+            totalQuantity: 0,
+            totalUsageQuantity: 0,
+            favoriteProducts: 0,
+          }
+        )
         setTop5(dashboardData.top5 ?? [])
         setAllProducts(dashboardData.all ?? [])
         setLowStockAlerts(dashboardData.lowStockAlerts ?? [])
@@ -76,6 +81,15 @@ export default function InventoryDashboard() {
         description="Overview of your inventory, spending, and product analytics"
         breadcrumbs={[{ label: 'Inventory' }, { label: 'Dashboard' }]}
       />
+      {error && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          {error}
+        </div>
+      )}
       <SummaryCards summary={summary} lowStockCount={lowStockAlerts.length} loading={loading} />
       <SpendComparison data={spendComparison} loading={loading} />
       <SpendingHeatmap items={spendingHeatmap} loading={loading} />
@@ -84,9 +98,9 @@ export default function InventoryDashboard() {
         <MostRestocked items={mostRestocked} loading={loading} />
       </div>
       <RestockPrediction items={restockPrediction} loading={loading} />
-      <MonthlySpendByType items={monthlySpendByType} loading={loading} />
-      <CostPerUse top5={top5} all={allProducts} loading={loading} error={error} />
       <MonthlyBudgetTracker monthlySpendByType={monthlySpendByType} loading={loading} />
+      <MonthlySpendByType items={monthlySpendByType} loading={loading} />
+      <CostPerUse top5={top5} all={allProducts} loading={loading} />
       <CostPerUseHistory items={costPerUseHistory} loading={loading} />
       <AvgUsageDuration items={avgUsageDuration} loading={loading} />
       <LifecycleScore items={lifecycleScore} loading={loading} />

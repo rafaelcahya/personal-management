@@ -165,6 +165,24 @@ describe('API Auth Guard — Inventory: Product Name', () => {
   })
 })
 
+// ─── BUDGET ──────────────────────────────────────────────────────────────────
+
+describe('API Auth Guard — Inventory: Budget', () => {
+  it(`GET ${INVENTORY_ENDPOINTS.BUDGET} (unauthenticated) → returns 401 unauthorized`, () => {
+    cy.apiRequestNoAuth('GET', INVENTORY_ENDPOINTS.BUDGET).then((res) => {
+      expect(res.status).to.eq(401)
+    })
+  })
+
+  it(`POST ${INVENTORY_ENDPOINTS.BUDGET} (unauthenticated) → returns 401 unauthorized`, () => {
+    cy.apiRequestNoAuth('POST', INVENTORY_ENDPOINTS.BUDGET, {
+      body: { type: 'Body Wash', monthly_budget: 100000 },
+    }).then((res) => {
+      expect(res.status).to.eq(401)
+    })
+  })
+})
+
 // ─── PRODUCT HISTORY — SECURITY ISSUE ────────────────────────────────────────
 
 describe('API Auth Guard — Inventory: Product History [SECURITY]', () => {

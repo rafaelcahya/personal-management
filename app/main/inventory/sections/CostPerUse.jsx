@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import ProductTable from '../components/ProductTable'
 import SkeletonRows from '../components/SkeletonRows'
 
-export default function CostPerUse({ top5, all, loading, error }) {
+export default function CostPerUse({ top5, all, loading }) {
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -17,11 +17,7 @@ export default function CostPerUse({ top5, all, loading, error }) {
         </div>
 
         <div className="px-2 py-2">
-          {error ? (
-            <div className="py-8 text-center">
-              <p className="text-sm text-red-500">{error}</p>
-            </div>
-          ) : loading ? (
+          {loading ? (
             <SkeletonRows count={5} />
           ) : top5.length === 0 ? (
             <div className="py-8 text-center">
@@ -32,7 +28,7 @@ export default function CostPerUse({ top5, all, loading, error }) {
           )}
         </div>
 
-        {!loading && !error && top5.length > 0 && (
+        {!loading && top5.length > 0 && (
           <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
             <button
               onClick={() => setModalOpen(true)}

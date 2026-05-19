@@ -47,17 +47,32 @@ export async function POST(request) {
         { status: 400 }
       )
 
-    const { error } = await supabase
-      .from('inventory_budget')
-      .upsert(
-        {
-          user_id: user.id,
-          type,
-          monthly_budget: Number(monthly_budget),
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id,type' }
+    const { data: typeExists, error: typeError } = await supabase
+      .from('product_list')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('type', type)
+      .is('deleted_at', null)
+      .limit(1)
+      .maybeSingle()
+
+    if (typeError) throw new Error(typeError.message)
+
+    if (!typeExists)
+      return NextResponse.json(
+        { success: false, error: `Type "${type}" not found in your product list` },
+        { status: 400 }
       )
+
+    const { error } = await supabase.from('inventory_budget').upsert(
+      {
+        user_id: user.id,
+        type,
+        monthly_budget: Number(monthly_budget),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id,type' }
+    )
 
     if (error) throw new Error(error.message)
 

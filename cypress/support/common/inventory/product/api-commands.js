@@ -77,3 +77,35 @@ Cypress.Commands.add('GetRestockPredictions', () => {
 Cypress.Commands.add('GetRestockPredictionsNoAuth', () => {
   return cy.apiRequestNoAuth('GET', '/api/inventory/v1/product/restock-predictions')
 })
+
+// ── Product History ──────────────────────────────────────────────────────────
+
+Cypress.Commands.add('GetProductHistoryList', () => {
+  return cy.apiRequestWithSession('GET', '/api/inventory/v1/product-history/list')
+})
+
+Cypress.Commands.add('GetProductHistoryListNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', '/api/inventory/v1/product-history/list')
+})
+
+Cypress.Commands.add('GetProductHistoryDetail', (productListId) => {
+  return cy.apiRequestWithSession('GET', `/api/inventory/v1/product-history/${productListId}`)
+})
+
+Cypress.Commands.add('GetProductHistoryDetailNoAuth', (productListId) => {
+  return cy.apiRequestNoAuth('GET', `/api/inventory/v1/product-history/${productListId}`)
+})
+
+Cypress.Commands.add('UpdateProductHistory', (historyId, body) => {
+  return cy.apiRequestWithSession(
+    'PATCH',
+    `/api/inventory/v1/product-history/update/${historyId}`,
+    { body }
+  )
+})
+
+Cypress.Commands.add('UpdateProductHistoryNoAuth', (historyId, body) => {
+  return cy.apiRequestNoAuth('PATCH', `/api/inventory/v1/product-history/update/${historyId}`, {
+    body,
+  })
+})

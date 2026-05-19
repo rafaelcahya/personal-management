@@ -702,7 +702,7 @@ THEN semua section menampilkan skeleton loading state
 
 - Auth: Required
 - Deskripsi: Mengembalikan semua data yang dibutuhkan dashboard — summary cards + 11 section analitik
-- Response: `{ data: { top5, all, lowStockAlerts, monthlySpendByType, avgUsageDuration, mostRestocked, spendComparison, costPerUseHistory, restockPrediction, spendingHeatmap, lifecycleScore } }`
+- Response: `{ success: true, data: { summary, top5, all, lowStockAlerts, monthlySpendByType, avgUsageDuration, mostRestocked, spendComparison, costPerUseHistory, restockPrediction, spendingHeatmap, lifecycleScore } }`
 
 `GET /api/inventory/v1/product/summary`
 

@@ -182,13 +182,30 @@ export async function insertProductHistoryFromDb(
   startUsageDate,
   depletedQuantity
 ) {
+  // Fetch denormalized fields from product_list so the history row satisfies NOT NULL constraints
+  const { data: pl, error: plErr } = await supabase
+    .from('product_list')
+    .select('product, brand, type, quantity, product_status')
+    .eq('id', productListId)
+    .single()
+
+  if (plErr) throw new Error(`Failed to fetch product_list for history insert: ${plErr.message}`)
+
+  const remainingQty = Math.max(0, Number(pl.quantity) - Number(depletedQuantity))
+
   const { data, error } = await supabase
     .from('product_history')
     .insert({
       product_list_id: productListId,
       user_id: userId,
-      start_usage_date: startUsageDate,
+      product: pl.product,
+      brand: pl.brand,
+      type: pl.type ?? null,
+      status: pl.product_status ?? 'active',
+      quantity: pl.quantity,
       depleted_quantity: depletedQuantity,
+      remaining_quantity: remainingQty,
+      start_usage_date: startUsageDate,
     })
     .select()
     .single()
