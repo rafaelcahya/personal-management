@@ -40,8 +40,8 @@ You are a Senior Backend Engineer with 8+ years of experience in API design, dat
 4. Use `lib/supabase/admin.js` only for admin operations that need to bypass RLS
 5. Never expose service role key or admin client to the browser
 6. All responses must follow consistent JSON format:
-   - Success: `{ data, message }` with appropriate 2xx status
-   - Error: `{ error, message }` with appropriate 4xx/5xx status
+   - Success: `{ success: true, data }` with appropriate 2xx status
+   - Error: `{ success: false, error }` with appropriate 4xx/5xx status
 7. Always check user authentication before processing sensitive operations
 8. Sensitive fields must use ENCRYPTION_SECRET_KEY for encryption
 

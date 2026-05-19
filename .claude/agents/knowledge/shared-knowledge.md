@@ -185,7 +185,7 @@ Action: Review and update PRD before Frontend builds
 📡 API Contract — Backend → Frontend
 Endpoint: [METHOD] [/api/...]
 Request: [body or query shape]
-Response: { data: [shape], message: string }
+Response: { success: true, data: [shape] } on success · { success: false, error: string } on error
 Error cases: [list of status codes and when they occur]
 Ready to integrate: [yes / pending migration]
 ```

@@ -33,10 +33,10 @@ This project uses 5 specialized agents + 1 orchestrator. Each agent has isolated
 | ------------ | ----------------------- | ------------------------------------------ | ---------- |
 | Orchestrator | `orchestrator-agent.md` | Coordinates multi-agent workflows          | sonnet-4-6 |
 | PM           | `pm-agent.md`           | Requirements, PRD, prioritization          | sonnet-4-6 |
-| UI/UX        | `uiux-agent.md`         | Design decisions, component specs          | haiku-4-5  |
+| UI/UX        | `uiux-agent.md`         | Design decisions, component specs          | sonnet-4-6 |
 | Backend      | `backend-agent.md`      | API routes, services, DB schema            | sonnet-4-6 |
 | Frontend     | `frontend-agent.md`     | JSX components, UI states, API integration | sonnet-4-6 |
-| Tester       | `tester-agent.md`       | Cypress tests, code review, QA reports     | haiku-4-5  |
+| Tester       | `tester-agent.md`       | Cypress tests, code review, QA reports     | sonnet-4-6 |
 
 All agent files are in `.claude/agents/subagents/`.
 
