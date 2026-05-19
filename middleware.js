@@ -9,6 +9,7 @@ export async function middleware(request) {
 
   if (
     process.env.NODE_ENV !== 'production' &&
+    process.env.CYPRESS_BYPASS_ENABLED === 'true' &&
     cypressAuthCookie &&
     expectedSecret &&
     cypressAuthCookie === expectedSecret
