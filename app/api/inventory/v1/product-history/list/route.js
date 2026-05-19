@@ -1,34 +1,25 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { getProductHistoryList } from "@/lib/services/inventory/product_history/getProductHistoryList";
+import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { getProductHistoryList } from '@/lib/services/inventory/product_history/getProductHistoryList'
 
 export async function GET() {
-    try {
-        const supabase = await createClient();
+  try {
+    const supabase = await createClient()
 
-        const {
-            data: { user },
-            error: authError,
-        } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
-        if (authError || !user) {
-            return NextResponse.json(
-                { success: false, error: "Unauthorized" },
-                { status: 401 },
-            );
-        }
-
-        const productHistoryList = await getProductHistoryList(user.id);
-
-        return NextResponse.json(
-            { success: true, data: productHistoryList },
-            { status: 200 },
-        );
-    } catch (err) {
-        console.error("GET /api/inventory/v1/product-history/list error:", err);
-        return NextResponse.json(
-            { success: false, error: err.message || "Internal server error" },
-            { status: 500 },
-        );
+    if (authError || !user) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
+
+    const productHistoryList = await getProductHistoryList(user.id)
+
+    return NextResponse.json({ success: true, data: productHistoryList }, { status: 200 })
+  } catch (err) {
+    console.error('GET /api/inventory/v1/product-history/list error:', err)
+    return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
+  }
 }

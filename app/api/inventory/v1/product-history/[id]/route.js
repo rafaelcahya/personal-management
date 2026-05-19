@@ -29,6 +29,6 @@ export async function GET(req, context) {
     return NextResponse.json({ success: true, products: listProductHistory }, { status: 200 })
   } catch (err) {
     console.error('API Route Error:', err)
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
   }
 }

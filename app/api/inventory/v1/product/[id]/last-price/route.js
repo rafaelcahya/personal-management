@@ -31,9 +31,6 @@ export async function GET(req, { params }) {
       return NextResponse.json({ success: false, error: err.message }, { status: 404 })
     }
 
-    return NextResponse.json(
-      { success: false, error: err.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
   }
 }

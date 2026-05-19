@@ -97,7 +97,7 @@ export async function PUT(req, { params }) {
     return NextResponse.json(
       {
         success: false,
-        error: err.message || 'Internal Server Error',
+        error: 'Something went wrong',
       },
       { status: 500 }
     )

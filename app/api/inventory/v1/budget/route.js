@@ -21,10 +21,7 @@ export async function GET() {
     return NextResponse.json({ success: true, data: data || [] }, { status: 200 })
   } catch (err) {
     console.error('GET /api/inventory/v1/budget error:', err)
-    return NextResponse.json(
-      { success: false, error: err?.message || 'Internal Server Error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
   }
 }
 
@@ -79,9 +76,6 @@ export async function POST(request) {
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (err) {
     console.error('POST /api/inventory/v1/budget error:', err)
-    return NextResponse.json(
-      { success: false, error: err?.message || 'Internal Server Error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
   }
 }

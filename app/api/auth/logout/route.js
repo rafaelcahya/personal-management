@@ -24,7 +24,10 @@ export async function POST() {
     }
 
     return NextResponse.json({ message: 'Logged out successfully' }, { status: 200 })
-  } catch (err) {
-    return NextResponse.json({ error: 'LOGOUT_FAILED', message: err.message }, { status: 500 })
+  } catch {
+    return NextResponse.json(
+      { error: 'LOGOUT_FAILED', message: 'Something went wrong' },
+      { status: 500 }
+    )
   }
 }

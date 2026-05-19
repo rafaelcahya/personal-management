@@ -55,7 +55,7 @@ export async function GET(req, { params }) {
     return NextResponse.json({ success: true, data: product }, { status: 200 })
   } catch (err) {
     console.error('GET /api/inventory/v1/product/[id] error:', err)
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
   }
 }
 
@@ -121,9 +121,6 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ success: false, error: err.message }, { status: 404 })
     }
 
-    return NextResponse.json(
-      { success: false, error: err.message || 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
   }
 }

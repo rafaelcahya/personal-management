@@ -40,7 +40,10 @@ export async function POST(req) {
       { data: { path: filePath, url: data.publicUrl }, message: 'Avatar uploaded successfully' },
       { status: 201 }
     )
-  } catch (err) {
-    return NextResponse.json({ error: 'INTERNAL_ERROR', message: err.message }, { status: 500 })
+  } catch {
+    return NextResponse.json(
+      { error: 'INTERNAL_ERROR', message: 'Something went wrong' },
+      { status: 500 }
+    )
   }
 }

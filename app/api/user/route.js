@@ -30,8 +30,11 @@ export async function GET() {
     }
 
     return NextResponse.json({ data: { user: data }, message: 'User fetched successfully' })
-  } catch (err) {
-    return NextResponse.json({ error: 'INTERNAL_ERROR', message: err.message }, { status: 500 })
+  } catch {
+    return NextResponse.json(
+      { error: 'INTERNAL_ERROR', message: 'Something went wrong' },
+      { status: 500 }
+    )
   }
 }
 
@@ -63,7 +66,10 @@ export async function PUT(req) {
     if (error) throw error
 
     return NextResponse.json({ data: { user: updateData }, message: 'User updated successfully' })
-  } catch (err) {
-    return NextResponse.json({ error: 'INTERNAL_ERROR', message: err.message }, { status: 500 })
+  } catch {
+    return NextResponse.json(
+      { error: 'INTERNAL_ERROR', message: 'Something went wrong' },
+      { status: 500 }
+    )
   }
 }
