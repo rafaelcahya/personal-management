@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -821,7 +821,9 @@ function StepGoal({ onFinish }) {
 
 export default function OnboardingPage() {
   const router = useRouter()
-  const [step, setStep] = useState(1)
+  const searchParams = useSearchParams()
+  const initialStep = Math.min(3, Math.max(1, parseInt(searchParams.get('step') ?? '1', 10) || 1))
+  const [step, setStep] = useState(initialStep)
 
   function goNext() {
     setStep((s) => Math.min(s + 1, 3))

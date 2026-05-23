@@ -6,6 +6,7 @@ import { encrypt } from '@/lib/utils/running/encrypt'
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
 const SETTINGS_ERROR_URL = '/main/running/settings?error=strava_auth'
 const DASHBOARD_URL = '/main/running/dashboard'
+const ONBOARDING_NEXT_URL = '/main/running/onboarding?step=3'
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
@@ -74,7 +75,14 @@ export async function GET(request) {
 
     await inngest.send({ name: 'strava/backfill', data: { userId: user.id } })
 
-    return NextResponse.redirect(new URL(DASHBOARD_URL, request.url))
+    const { data: rtUser } = await supabase
+      .from('rt_users')
+      .select('onboarding_complete')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    const dest = rtUser?.onboarding_complete ? DASHBOARD_URL : ONBOARDING_NEXT_URL
+    return NextResponse.redirect(new URL(dest, request.url))
   } catch (err) {
     console.error('[strava/callback] post-token error:', err.message)
     return NextResponse.redirect(new URL(SETTINGS_ERROR_URL, request.url))
