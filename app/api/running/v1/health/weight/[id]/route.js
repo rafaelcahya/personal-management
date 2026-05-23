@@ -1,62 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { patchActivitySchema } from '@/schemas/runningManualEntry'
-
-export async function GET(_request, { params }) {
-  try {
-    const supabase = await createClient()
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized', message: 'Authentication required' },
-        { status: 401 }
-      )
-    }
-
-    const { id } = await params
-
-    const { data: activity, error: activityError } = await supabase
-      .from('rt_activities')
-      .select(
-        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, weather_summary, created_at'
-      )
-      .eq('id', id)
-      .eq('user_id', user.id)
-      .maybeSingle()
-
-    if (activityError) throw activityError
-
-    if (!activity) {
-      return NextResponse.json(
-        { error: 'Not found', message: 'Activity not found' },
-        { status: 404 }
-      )
-    }
-
-    const { data: splits, error: splitsError } = await supabase
-      .from('rt_activity_splits')
-      .select(
-        'id, split_number, distance_m, duration_sec, pace_sec_per_km, avg_hr, elevation_gain_m'
-      )
-      .eq('activity_id', id)
-      .order('split_number', { ascending: true })
-
-    if (splitsError) throw splitsError
-
-    return NextResponse.json({ activity, splits: splits ?? [] }, { status: 200 })
-  } catch (err) {
-    console.error('[running/activities/:id GET]', err)
-    return NextResponse.json(
-      { error: 'Internal server error', message: 'Something went wrong' },
-      { status: 500 }
-    )
-  }
-}
+import { patchWeightSchema } from '@/schemas/runningManualEntry'
 
 export async function PATCH(request, { params }) {
   try {
@@ -86,7 +30,7 @@ export async function PATCH(request, { params }) {
       )
     }
 
-    const parsed = patchActivitySchema.safeParse(body)
+    const parsed = patchWeightSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', issues: parsed.error.issues },
@@ -95,7 +39,7 @@ export async function PATCH(request, { params }) {
     }
 
     const { data: existing, error: fetchError } = await supabase
-      .from('rt_activities')
+      .from('rt_weight_logs')
       .select('id')
       .eq('id', id)
       .eq('user_id', user.id)
@@ -105,26 +49,24 @@ export async function PATCH(request, { params }) {
 
     if (!existing) {
       return NextResponse.json(
-        { error: 'Not found', message: 'Activity not found' },
+        { error: 'Not found', message: 'Weight log not found' },
         { status: 404 }
       )
     }
 
     const { data: updated, error: updateError } = await supabase
-      .from('rt_activities')
+      .from('rt_weight_logs')
       .update(parsed.data)
       .eq('id', id)
       .eq('user_id', user.id)
-      .select(
-        'id, started_at, duration_sec, distance_m, avg_pace_sec_per_km, avg_hr, activity_type, perceived_exertion, notes, source, created_at'
-      )
+      .select('id, measured_at, weight_kg, body_fat_pct, notes')
       .single()
 
     if (updateError) throw updateError
 
     return NextResponse.json({ data: updated }, { status: 200 })
   } catch (err) {
-    console.error('[running/activities/:id PATCH]', err)
+    console.error('[running/health/weight/:id PATCH]', err)
     return NextResponse.json(
       { error: 'Internal server error', message: 'Something went wrong' },
       { status: 500 }
@@ -151,7 +93,7 @@ export async function DELETE(_request, { params }) {
     const { id } = await params
 
     const { data: existing, error: fetchError } = await supabase
-      .from('rt_activities')
+      .from('rt_weight_logs')
       .select('id')
       .eq('id', id)
       .eq('user_id', user.id)
@@ -161,13 +103,13 @@ export async function DELETE(_request, { params }) {
 
     if (!existing) {
       return NextResponse.json(
-        { error: 'Not found', message: 'Activity not found' },
+        { error: 'Not found', message: 'Weight log not found' },
         { status: 404 }
       )
     }
 
     const { error: deleteError } = await supabase
-      .from('rt_activities')
+      .from('rt_weight_logs')
       .delete()
       .eq('id', id)
       .eq('user_id', user.id)
@@ -176,7 +118,7 @@ export async function DELETE(_request, { params }) {
 
     return new Response(null, { status: 204 })
   } catch (err) {
-    console.error('[running/activities/:id DELETE]', err)
+    console.error('[running/health/weight/:id DELETE]', err)
     return NextResponse.json(
       { error: 'Internal server error', message: 'Something went wrong' },
       { status: 500 }

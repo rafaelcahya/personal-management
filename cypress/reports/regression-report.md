@@ -1,11 +1,36 @@
 # Regression Testing Report
 
 **Date:** 2026-05-23
+**App Version:** 1.21
+**Scope:** Running Tracker Manual Entry API — focused run (1 new spec file)
+**Tester:** QA Agent
+
+## Summary (2026-05-23 Focused Run — Manual Entry)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 21          | 21     | 0      | 0       | **100%**         |
+
+### Running Tracker Manual Entry API — New Spec File
+
+| #  | Spec File                                | Tests | Passed | Pending | Failed | Status   |
+| -- | ---------------------------------------- | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/manual/manual-api.cy.js          | 21    | 21     | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                | **21** | **21** | **0**  | **0**  | **100%** |
+
+**Scope notes:**
+- `manual-api.cy.js`: Block A (Activities CRUD, 11 tests) — POST 201, list visibility, type filter, invalid page fallback, GET detail + splits, 404 non-existent, PATCH notes 200, empty PATCH 422, DELETE 204 + 404, dedup 409 with `existing.started_at` only; Block B (Subjective Health, 4 tests) — POST upsert 200 (not 201), same log_date updates, GET list shape, PATCH + DELETE lifecycle; Block C (Weight Log, 2 tests) — POST 201, GET list, PATCH + DELETE; Block D (Auth Guards, 4 tests) — 401 on all endpoints without session.
+
+---
+
+## Previous Run — 2026-05-23 Focused Run (Strava Sync API)
+
+**Date:** 2026-05-23
 **App Version:** 1.20
 **Scope:** Running Tracker Strava Sync API — focused run (1 new spec file)
 **Tester:** QA Agent
 
-## Summary (2026-05-23 Focused Run)
+## Summary (2026-05-23 Focused Run — Strava Sync)
 
 | Total Tests | Passed | Failed | Pending | Active Pass Rate |
 | ----------- | ------ | ------ | ------- | ---------------- |
@@ -221,6 +246,7 @@
 
 | Date       | Feature                   | Tests | Passed | Pending | Failed | Pass Rate |
 | ---------- | ------------------------- | ----- | ------ | ------- | ------ | --------- |
+| 2026-05-23 | Running Tracker Manual Entry API | 21 | 21 | 0      | 0      | 100%      |
 | 2026-05-23 | Running Tracker Strava Sync API | 8 | 8      | 0       | 0      | 100%        |
 | 2026-05-20 | Running Tracker Onboarding | 52   | 51     | 1       | 0      | 100% active |
 | 2026-05-17 | Product History UI        | 28    | 28     | 0       | 0      | 100%      |

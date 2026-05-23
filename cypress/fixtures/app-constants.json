@@ -68,6 +68,11 @@
       "sync_strava": "/api/running/v1/sync/strava",
       "sync_status": "/api/running/v1/sync/status",
       "strava_callback": "/api/running/v1/auth/strava/callback"
+    },
+    "running_manual": {
+      "activities": "/api/running/v1/activities",
+      "subjective_health": "/api/running/v1/health/subjective",
+      "weight_log": "/api/running/v1/health/weight"
     }
   },
   "test_ids": {

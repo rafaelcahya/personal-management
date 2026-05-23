@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getActivities } from '@/lib/services/running/activities/getActivities'
-import { createActivity } from '@/lib/services/running/activities/createActivity'
-import { createActivitySchema } from '@/schemas/runningManualEntry'
+import { getWeightLogs, createWeightLog } from '@/lib/services/running/health/weightLog'
+import { createWeightSchema } from '@/schemas/runningManualEntry'
 
 const MAX_LIMIT = 100
-const DEFAULT_LIMIT = 20
+const DEFAULT_LIMIT = 30
 
 export async function GET(request) {
   try {
@@ -26,18 +25,17 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url)
     const from = searchParams.get('from') ?? undefined
     const to = searchParams.get('to') ?? undefined
-    const type = searchParams.get('type') ?? undefined
     const page = parseInt(searchParams.get('page') ?? '1', 10) || 1
     const limit = Math.min(
       MAX_LIMIT,
       Math.max(1, parseInt(searchParams.get('limit') ?? String(DEFAULT_LIMIT), 10) || DEFAULT_LIMIT)
     )
 
-    const result = await getActivities(user.id, { from, to, type, page, limit })
+    const result = await getWeightLogs(user.id, { from, to, page, limit })
 
     return NextResponse.json(result, { status: 200 })
   } catch (err) {
-    console.error('[running/activities GET]', err)
+    console.error('[running/health/weight GET]', err)
     return NextResponse.json(
       { error: 'Internal server error', message: 'Something went wrong' },
       { status: 500 }
@@ -71,7 +69,7 @@ export async function POST(request) {
       )
     }
 
-    const parsed = createActivitySchema.safeParse(body)
+    const parsed = createWeightSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', issues: parsed.error.issues },
@@ -79,18 +77,11 @@ export async function POST(request) {
       )
     }
 
-    const result = await createActivity(user.id, parsed.data)
+    const row = await createWeightLog(user.id, parsed.data)
 
-    if (result.duplicate) {
-      return NextResponse.json(
-        { error: 'Potential duplicate', existing: { started_at: result.existing.started_at } },
-        { status: 409 }
-      )
-    }
-
-    return NextResponse.json({ data: result.data }, { status: 201 })
+    return NextResponse.json({ data: row }, { status: 201 })
   } catch (err) {
-    console.error('[running/activities POST]', err)
+    console.error('[running/health/weight POST]', err)
     return NextResponse.json(
       { error: 'Internal server error', message: 'Something went wrong' },
       { status: 500 }

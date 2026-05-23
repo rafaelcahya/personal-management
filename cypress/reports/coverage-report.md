@@ -1,7 +1,7 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-23 (Focused run: Running Tracker Strava Sync API — 1 new spec file, 8 tests)
-**App Version:** 1.20
+**Last Updated:** 2026-05-23 (Focused run: Running Tracker Manual Entry API — 1 new spec file, 21 tests)
+**App Version:** 1.21
 
 ## Coverage Summary
 
@@ -23,7 +23,10 @@
 | Trading - Event                 | 6              | 6         | 0           | 0          | 100%       | 134        |
 | Running Tracker - Onboarding    | 6              | 6         | 0           | 0          | 100%       | 52         |
 | Running Tracker - Sync API      | 3              | 3         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **113**        | **112**   | **1**       | **0**      | **99%**    | **1,725**  |
+| Running Tracker - Manual Entry  | 7              | 7         | 0           | 0          | 100%       | 21         |
+| **Total**                       | **120**        | **119**   | **1**       | **0**      | **99%**    | **1,746**  |
+
+> **Note (2026-05-23 v1.21):** Running Tracker Manual Entry API tests added — 1 new spec file (manual-api.cy.js), 21 tests, all 21/21 passing. Covers Activities CRUD (POST 201, list filter, dedup 409, PATCH notes, empty PATCH 422, DELETE 204), Subjective Health upsert (200 semantics, lifecycle), Weight Log CRUD, and auth guards (4 unauthenticated 401 checks). Also fixed 4 Code Review criticals (CB-1–4) and security warning S-2. Total test cases updated to 1,746.
 
 > **Note (2026-05-23 v1.20):** Running Tracker Strava Sync API tests added — 1 new spec file (sync-api.cy.js), 8 tests, all 8/8 passing. Covers POST /sync/strava (auth guard + response shape), GET /sync/status (connected=false + shape), GET /auth/strava/callback (missing code + invalid code redirect), unauthenticated 401 guard. Also added Strava callback to middleware bypass + Inngest signing key. Total test cases updated to 1,725.
 
