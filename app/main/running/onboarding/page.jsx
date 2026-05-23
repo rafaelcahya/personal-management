@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { format } from 'date-fns'
 import {
   UserIcon,
   LinkIcon,
@@ -22,6 +23,8 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Form,
   FormControl,
@@ -30,6 +33,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { cn } from '@/lib/utils'
 import {
   saveOnboardingBiometric,
   completeOnboarding,
@@ -252,23 +256,49 @@ function StepBiometrics({ onNext }) {
           <FormField
             control={form.control}
             name="birth_date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-1.5 text-slate-700">
-                  <CalendarIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                  Birth date
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    id="birthDateInput_onboarding"
-                    type="date"
-                    {...field}
-                    className="w-full focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const selectedDate = field.value ? new Date(field.value + 'T00:00:00') : undefined
+              return (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-1.5 text-slate-700">
+                    <CalendarIcon className="size-3.5 text-slate-400" aria-hidden="true" />
+                    Birth date
+                  </FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          id="birthDateInput_onboarding"
+                          variant="outline"
+                          className={cn(
+                            'w-full justify-start text-left font-normal focus-visible:ring-violet-200 focus-visible:border-violet-600',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          <CalendarIcon className="size-4 mr-2 text-slate-400" aria-hidden="true" />
+                          {field.value
+                            ? format(selectedDate, 'd MMM yyyy')
+                            : 'Select your birth date'}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        captionLayout="dropdown"
+                        selected={selectedDate}
+                        onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                        disabled={(date) => date > new Date()}
+                        defaultMonth={selectedDate ?? new Date(1990, 0)}
+                        fromYear={1930}
+                        toYear={new Date().getFullYear()}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )
+            }}
           />
 
           {/* Height + Weight side by side */}
@@ -708,18 +738,53 @@ function StepGoal({ onFinish }) {
               <FormField
                 control={form.control}
                 name="target_date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-1.5 text-slate-700">
-                      <CalendarIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                      Race date
-                    </FormLabel>
-                    <FormControl>
-                      <Input id="targetDateInput_onboarding" type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const selectedDate = field.value ? new Date(field.value + 'T00:00:00') : undefined
+                  return (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-1.5 text-slate-700">
+                        <CalendarIcon className="size-3.5 text-slate-400" aria-hidden="true" />
+                        Race date
+                      </FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              id="targetDateInput_onboarding"
+                              variant="outline"
+                              className={cn(
+                                'w-full justify-start text-left font-normal',
+                                !field.value && 'text-muted-foreground'
+                              )}
+                            >
+                              <CalendarIcon
+                                className="size-4 mr-2 text-slate-400"
+                                aria-hidden="true"
+                              />
+                              {field.value
+                                ? format(selectedDate, 'd MMM yyyy')
+                                : 'Select race date'}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            captionLayout="dropdown"
+                            selected={selectedDate}
+                            onSelect={(date) =>
+                              field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
+                            }
+                            disabled={(date) => date <= new Date()}
+                            fromYear={new Date().getFullYear()}
+                            toYear={new Date().getFullYear() + 5}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }}
               />
             </div>
           )}
