@@ -1,7 +1,7 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-17 (Focused run: Product History UI — 1 new spec file, 28 tests)
-**App Version:** 1.18
+**Last Updated:** 2026-05-23 (Focused run: Running Tracker Strava Sync API — 1 new spec file, 8 tests)
+**App Version:** 1.20
 
 ## Coverage Summary
 
@@ -21,7 +21,13 @@
 | Trading - Trade                 | 7              | 7         | 0           | 0          | 100%       | 185        |
 | Trading - Fee                   | 6              | 6         | 0           | 0          | 100%       | 131        |
 | Trading - Event                 | 6              | 6         | 0           | 0          | 100%       | 134        |
-| **Total**                       | **104**        | **103**   | **1**       | **0**      | **99%**    | **1,665**  |
+| Running Tracker - Onboarding    | 6              | 6         | 0           | 0          | 100%       | 52         |
+| Running Tracker - Sync API      | 3              | 3         | 0           | 0          | 100%       | 8          |
+| **Total**                       | **113**        | **112**   | **1**       | **0**      | **99%**    | **1,725**  |
+
+> **Note (2026-05-23 v1.20):** Running Tracker Strava Sync API tests added — 1 new spec file (sync-api.cy.js), 8 tests, all 8/8 passing. Covers POST /sync/strava (auth guard + response shape), GET /sync/status (connected=false + shape), GET /auth/strava/callback (missing code + invalid code redirect), unauthenticated 401 guard. Also added Strava callback to middleware bypass + Inngest signing key. Total test cases updated to 1,725.
+
+> **Note (2026-05-20 v1.19):** Running Tracker Onboarding tests added — 2 new spec files (onboarding-api.cy.js, onboarding-ui.cy.js), 52 tests (51 passing, 1 pending intentional). Covers POST /biometric and POST /complete API + full 3-step onboarding wizard UI. Also fixed Zod v4 breaking change (`errors` → `issues`) in biometric route. Total test cases updated to 1,717.
 
 > **Note (2026-05-17 v1.18):** Product History UI tests added — 1 new spec file (ui-product-history.cy.js), 28 tests, all 28/28 passing. Covers PRD section 3.1.4 — list view, search, filter by status, sort options, true empty state, filtered empty state, badge dot counter. New DB helpers: insertFullProductHistoryFromDb + deleteProductHistoryFromDb. New tasks: insertFullProductHistory, deleteProductHistoryRows. Total test cases updated to 1,665.
 
@@ -159,7 +165,11 @@
 | 67  | cypress/e2e/inventory_management/product_name/ui-product-name-bulk.cy.js     | Product Name Bulk UI       | 16         | Bulk checkbox: bar hidden on no selection, bar visible with count, bar disappears on deselect, select-all count, indeterminate state, select-all checked state, Deselect All; Set Active / Set Inactive API call body; auto-deselect on inactive filter, auto-deselect on search change; count badge > 0 is button with aria-label, badge click navigates to product-list?name=, keyboard accessible; count badge = 0 not rendered as button |
 | 68  | cypress/e2e/inventory_management/product_history/ui-product-history.cy.js    | Product History UI         | 28         | List view (table visible, 7 columns, row data), Search (name filter, filtered empty state, clear button, hidden when empty), Search+Filter AND logic, Filter by Status (3 options, active/inactive/completed, toggle deselects), Sort (4 options, date_desc default, date_asc, name_asc, name_desc), True empty state (conditional), Filtered empty state (no results, Clear filters button, restore), Badge dot counter (0/1/2 active, filter+sort), Loading skeleton absent after SSR load |
 
-**Total Automated Test Cases: 1,665** (added 28 new tests in v1.18 for ui-product-history; previous total: 1,637 in v1.17) (added 45 new tests in v1.17 for ui-product-name-list, ui-product-name-update, ui-product-name-bulk; previous total: 1,592 in v1.13)
+| 69  | cypress/e2e/running/onboarding/onboarding-api.cy.js                  | Running Tracker Onboarding API       | 14         | POST /biometric, POST /complete — validation, auth guard |
+| 70  | cypress/e2e/running/onboarding/onboarding-ui.cy.js                   | Running Tracker Onboarding UI        | 38         | 3-step wizard: biometric, Strava connect, goal setup, auth guard |
+| 71  | cypress/e2e/running/sync/sync-api.cy.js                              | Running Tracker Strava Sync API      | 8          | POST /sync/strava, GET /sync/status, GET /auth/strava/callback (redirect), unauthenticated 401 guard |
+
+**Total Automated Test Cases: 1,725** (added 8 new tests in v1.20 for sync-api; previous total: 1,717 in v1.19)
 
 ## Manual Test Cases (not yet automated)
 

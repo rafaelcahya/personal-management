@@ -1,7 +1,7 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-17 (Focused run: Product History UI — 1 new spec file, 28 new tests)
-**App Version:** 1.18
+**Last Updated:** 2026-05-23 (Focused run: Running Tracker Strava Sync API — 1 new spec file, 8 new tests)
+**App Version:** 1.20
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
 > "Last Tested" mengacu pada tanggal test file terakhir dijalankan secara eksplisit atau tanggal report update untuk full regression run.
@@ -13,6 +13,7 @@
 > ✅ **Product Brand UI (2026-05-16):** 3 new spec files added (ui-product-brand-add, ui-product-brand-list, ui-product-brand-update). 50/50 passing. Grand total Product Brand: 164 tests across 9 spec files.
 > ✅ **Product Name UI (2026-05-17):** 3 new spec files added (ui-product-name-list, ui-product-name-update, ui-product-name-bulk). ui-product-name-bulk confirmed 16/16 passing in focused run. Grand total Product Name: 159 tests across 9 spec files.
 > ✅ **Product History UI (2026-05-17):** 1 new spec file added (ui-product-history.cy.js). 28/28 passing in focused run. Covers all PRD 3.1.4 acceptance criteria. New DB tasks: insertFullProductHistory, deleteProductHistoryRows.
+> ✅ **Running Tracker Strava Sync API (2026-05-23):** 1 new spec file added (sync-api.cy.js). 8/8 passing in focused run. Covers POST /sync/strava, GET /sync/status, GET /auth/strava/callback (redirect flows), unauthenticated guard (401).
 
 ---
 
@@ -31,7 +32,9 @@
 | Trading - Trade                 | 2026-03-15   | 0      | 185        | 185   |
 | Trading - Fee                   | 2026-03-15   | 0      | 131        | 131   |
 | Trading - Event                 | 2026-03-15   | 0      | 134        | 134   |
-| **Total**                       |              | **1**  | **1,570**  | **1,571** |
+| Running Tracker - Onboarding    | 2026-05-20   | 0      | 52         | 52    |
+| Running Tracker - Sync API      | 2026-05-23   | 0      | 8          | 8     |
+| **Total**                       |              | **1**  | **1,630**  | **1,631** |
 
 ---
 
@@ -159,6 +162,17 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-17):
 | 7  | Product Name List UI | inventory_management/product_name/ui-product-name-list.cy.js   | 2026-05-17  | 0      | 15         | ✅ 15 tests (not yet run in focused mode) |
 | 8  | Product Name Update UI | inventory_management/product_name/ui-product-name-update.cy.js | 2026-05-17 | 0      | 14         | ✅ 14 tests (not yet run in focused mode) |
 | 9  | Product Name Bulk UI | inventory_management/product_name/ui-product-name-bulk.cy.js   | 2026-05-17  | 0      | 16         | ✅ 16/16 pass |
+
+---
+
+### Running Tracker - Sync API
+
+| #  | Feature                          | File                                | Last Tested | Manual | Automation | Status       |
+| -- | -------------------------------- | ----------------------------------- | ----------- | ------ | ---------- | ------------ |
+| 1  | POST /sync/strava (auth + shape) | running/sync/sync-api.cy.js         | 2026-05-23  | 0      | 2          | ✅ 2/2 pass  |
+| 2  | GET /sync/status (auth + shape)  | running/sync/sync-api.cy.js         | 2026-05-23  | 0      | 2          | ✅ 2/2 pass  |
+| 3  | GET /strava/callback (redirects) | running/sync/sync-api.cy.js         | 2026-05-23  | 0      | 2          | ✅ 2/2 pass  |
+| 4  | Unauthenticated guard (401)      | running/sync/sync-api.cy.js         | 2026-05-23  | 0      | 2          | ✅ 2/2 pass  |
 
 ---
 

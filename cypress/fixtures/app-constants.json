@@ -7,6 +7,9 @@
     "inventory_product_brand": "/main/inventory/product-brand",
     "inventory_product_name": "/main/inventory/product-name",
     "inventory_product_history": "/main/inventory/product-history",
+    "running_onboarding": "/main/running/onboarding",
+    "running_dashboard": "/main/running/dashboard",
+    "running_activities": "/main/running/activities",
     "trading": "/main/trading",
     "trading_dashboard": "/main/trading/dashboard",
     "trading_trade": "/main/trading/trade",
@@ -56,6 +59,15 @@
       "profile": "/api/user",
       "profile_v1": "/api/user/v1/profile",
       "update_profile": "/api/user/v1/update"
+    },
+    "running_onboarding": {
+      "biometric": "/api/running/v1/onboarding/biometric",
+      "complete": "/api/running/v1/onboarding/complete"
+    },
+    "running_sync": {
+      "sync_strava": "/api/running/v1/sync/strava",
+      "sync_status": "/api/running/v1/sync/status",
+      "strava_callback": "/api/running/v1/auth/strava/callback"
     }
   },
   "test_ids": {
@@ -232,6 +244,30 @@
       "bulk_set_active_btn": "bulkSetActiveBtn_productNamePage",
       "bulk_set_inactive_btn": "bulkSetInactiveBtn_productNamePage",
       "bulk_deselect_all_btn": "bulkDeselectAllBtn_productNamePage"
+    },
+    "running_onboarding": {
+      "page": "runningOnboardingPage",
+      "step_indicator": "onboardingStepIndicator",
+      "biometric_form": "biometricForm_onboarding",
+      "birth_date_input": "birthDateInput_onboarding",
+      "height_input": "heightInput_onboarding",
+      "weight_input": "weightInput_onboarding",
+      "resting_hr_input": "restingHrInput_onboarding",
+      "max_hr_formula_radio": "maxHrFormulaRadio_onboarding",
+      "max_hr_manual_radio": "maxHrManualRadio_onboarding",
+      "max_hr_manual_input": "maxHrManualInput_onboarding",
+      "max_hr_formula_preview": "maxHrFormulaPreview_onboarding",
+      "continue_btn": "continueBtn_onboarding",
+      "connect_strava_btn": "connectStravaBtn_onboarding",
+      "skip_strava_btn": "skipStravaBtn_onboarding",
+      "goal_yes_radio": "goalYesRadio_onboarding",
+      "goal_no_radio": "goalNoRadio_onboarding",
+      "target_distance_input": "targetDistanceInput_onboarding",
+      "target_date_input": "targetDateInput_onboarding",
+      "finish_btn": "finishBtn_onboarding",
+      "back_btn": "backBtn_onboarding",
+      "root_error": "rootError_onboarding",
+      "step_count_label": "stepCountLabel_onboarding"
     },
     "product_history": {
       "table": "productHistoryTable_productHistoryPage",

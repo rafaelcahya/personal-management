@@ -24,13 +24,17 @@ export async function middleware(request) {
     path.startsWith('/auth/v1/callback') ||
     path.startsWith('/login') ||
     path.startsWith('/_next') ||
-    path.startsWith('/api/auth')
+    path.startsWith('/api/auth') ||
+    path === '/api/running/v1/auth/strava/callback'
   ) {
     return NextResponse.next()
   }
 
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', path)
+
   let response = NextResponse.next({
-    request: { headers: request.headers },
+    request: { headers: requestHeaders },
   })
 
   const supabase = createServerClient(
@@ -44,14 +48,14 @@ export async function middleware(request) {
         set(name, value, options) {
           request.cookies.set({ name, value, ...options })
           response = NextResponse.next({
-            request: { headers: request.headers },
+            request: { headers: requestHeaders },
           })
           response.cookies.set({ name, value, ...options })
         },
         remove(name, options) {
           request.cookies.set({ name, value: '', ...options })
           response = NextResponse.next({
-            request: { headers: request.headers },
+            request: { headers: requestHeaders },
           })
           response.cookies.set({ name, value: '', ...options })
         },

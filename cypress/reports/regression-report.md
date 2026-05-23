@@ -1,5 +1,59 @@
 # Regression Testing Report
 
+**Date:** 2026-05-23
+**App Version:** 1.20
+**Scope:** Running Tracker Strava Sync API — focused run (1 new spec file)
+**Tester:** QA Agent
+
+## Summary (2026-05-23 Focused Run)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 8           | 8      | 0      | 0       | **100%**         |
+
+### Running Tracker Strava Sync API — New Spec File
+
+| #  | Spec File                                | Tests | Passed | Pending | Failed | Status   |
+| -- | ---------------------------------------- | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/sync/sync-api.cy.js              | 8     | 8      | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                | **8** | **8**  | **0**   | **0**  | **100%** |
+
+**Scope notes:**
+- `sync-api.cy.js`: POST /api/running/v1/sync/strava — authenticated 200 + response shape; GET /api/running/v1/sync/status — connected=false/last_sync_at=null + shape check; GET /api/running/v1/auth/strava/callback — missing code → redirect to settings error, invalid code → redirect to settings error; Unauthenticated — POST /sync/strava 401, GET /sync/status 401.
+
+---
+
+## Previous Run — 2026-05-20 Focused Run (Running Tracker Onboarding)
+
+**Date:** 2026-05-20
+**App Version:** 1.19
+**Scope:** Running Tracker Onboarding — focused run (2 new spec files)
+**Tester:** QA Agent
+
+## Summary (2026-05-20 Focused Run)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 52          | 51     | 0      | 1       | **100%**         |
+
+> **Pending (1):** `returns 401 when not authenticated (BLOCKED: cookie isolation needed)` — intentional, requires per-test cookie scope isolation not yet implemented.
+
+### Running Tracker Onboarding — New Spec Files
+
+| #  | Spec File                                              | Tests | Passed | Pending | Failed | Status   |
+| -- | ------------------------------------------------------ | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/onboarding/onboarding-api.cy.js                | 14    | 13     | 1       | 0      | ✅ PASS  |
+| 2  | running/onboarding/onboarding-ui.cy.js                 | 38    | 38     | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                              | **52** | **51** | **1** | **0** | **100% active** |
+
+**Scope notes:**
+- `onboarding-api.cy.js`: POST /api/running/v1/onboarding/biometric — happy path, empty body, 5 validation cases (height/weight/max_hr/birth_date range, malformed JSON), 401 without session; POST /api/running/v1/onboarding/complete — no goal, full goal payload, partial goal, 401 without session.
+- `onboarding-ui.cy.js`: Auth guard (unauthenticated → /login for both onboarding and (app) routes); Step 1 rendering (10 tests), Step 1 validation (6 tests), max HR formula preview (4 tests), Step 1 → Step 2 transition + error handling (2 tests); Step 2 Strava connect/skip/back (5 tests); Step 3 no-race path (4 tests), Step 3 yes-race path (6 tests); (app) layout guard with real Supabase session (1 test).
+
+---
+
+## Previous Run — 2026-05-17 Focused Run (Product History UI)
+
 **Date:** 2026-05-17
 **App Version:** 1.18
 **Scope:** Product History UI — focused run (1 new spec file)
@@ -160,3 +214,16 @@
 | Spec Files with 100% Pass | 1/1 |
 
 **Conclusion:** All 28 tests in the Product History UI spec pass (100%). The spec covers all 7 acceptance criteria groups from PRD section 3.1.4: list view, search, search+filter AND logic, filter by status, sort options, true empty state, filtered empty state, and badge dot counter.
+
+---
+
+## Cumulative Active Pass Rate (All Focused Runs to Date)
+
+| Date       | Feature                   | Tests | Passed | Pending | Failed | Pass Rate |
+| ---------- | ------------------------- | ----- | ------ | ------- | ------ | --------- |
+| 2026-05-23 | Running Tracker Strava Sync API | 8 | 8      | 0       | 0      | 100%        |
+| 2026-05-20 | Running Tracker Onboarding | 52   | 51     | 1       | 0      | 100% active |
+| 2026-05-17 | Product History UI        | 28    | 28     | 0       | 0      | 100%      |
+| 2026-05-17 | Product Name UI (bulk)    | 16    | 16     | 0       | 0      | 100%      |
+| 2026-05-16 | Product Brand UI          | 50    | 50     | 0       | 0      | 100%      |
+| 2026-05-14 | Full Regression (4 groups)| 833   | 822    | 11      | 0      | 100% active |
