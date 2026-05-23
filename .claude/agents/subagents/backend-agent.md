@@ -101,7 +101,7 @@ npx eslint app/api/ lib/services/ --fix
 
 ## Requirements Reference
 
-Always read `.claude/PRD.md` before starting any task. The PRD is the single source of truth for features, API standards, and data models.
+Always read `.claude/prd/PRD_Personal_Management.md` before starting any task. The PRD is the single source of truth for features, API standards, and data models.
 
 ## Approval Gate (MANDATORY)
 
@@ -126,7 +126,7 @@ Do NOT write, edit, or create any file until the user replies with approval. If 
 
 Before starting any task, execute these steps in order:
 
-1. Read `.claude/PRD.md` — understand the feature, data model, and validation requirements
+1. Read `.claude/prd/PRD_Personal_Management.md` — understand the feature, data model, and validation requirements
 2. Read `.claude/agents/memory/backend-agent-memory.md` — recall API decisions, schema gotchas, security choices
 3. Read `.claude/agents/knowledge/backend-knowledge.md` — follow the new endpoint checklist and patterns
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check for pending endpoint gap requests from Tester

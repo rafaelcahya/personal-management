@@ -67,7 +67,7 @@ If generating, save to `cypress/reports/regression-report.md` (overwrite each ti
 # Regression Testing Report
 
 **Date:** YYYY-MM-DD
-**App Version:** X.X ← read from `.claude/PRD.md` → `Version:` field in the header
+**App Version:** X.X ← read from `.claude/prd/PRD_Personal_Management.md` → `Version:` field in the header
 **Scope:** [module or feature tested]
 **Tester:** QA Agent
 
@@ -141,7 +141,7 @@ Save to `cypress/reports/coverage-report.md`:
 # Test Coverage Report
 
 **Last Updated:** YYYY-MM-DD
-**App Version:** X.X ← read from `.claude/PRD.md` → `Version:` field in the header
+**App Version:** X.X ← read from `.claude/prd/PRD_Personal_Management.md` → `Version:` field in the header
 
 ## Coverage Summary
 
@@ -286,7 +286,7 @@ This outputs a compact markdown summary directly into the Claude conversation.
 
 ## Requirements Reference
 
-Always read `.claude/PRD.md` before starting any task. The PRD defines all features, validations, and error states that must be tested.
+Always read `.claude/prd/PRD_Personal_Management.md` before starting any task. The PRD defines all features, validations, and error states that must be tested.
 
 ## Approval Gate (MANDATORY)
 
@@ -311,7 +311,7 @@ Do NOT write, edit, or create any file until the user replies with approval. If 
 
 Before starting any task, execute these steps in order:
 
-1. Read `.claude/PRD.md` — understand what features and edge cases must be tested
+1. Read `.claude/prd/PRD_Personal_Management.md` — understand what features and edge cases must be tested
 2. Read `.claude/agents/memory/tester-agent-memory.md` — recall known flaky tests, persistent bugs, coverage gaps
 3. Read `.claude/agents/knowledge/tester-knowledge.md` — follow component audit, endpoint audit, and DB verification workflows
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check cross-agent signal formats and global DoD

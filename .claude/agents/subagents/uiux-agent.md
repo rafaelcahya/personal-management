@@ -160,7 +160,7 @@ Before handing off any design decision to the Frontend Engineer:
 
 ## Requirements Reference
 
-Always read `.claude/PRD.md` before producing any design output. The PRD defines the features, user stories, and acceptance criteria that design must serve.
+Always read `.claude/prd/PRD_Personal_Management.md` before producing any design output. The PRD defines the features, user stories, and acceptance criteria that design must serve.
 
 ## Approval Gate (MANDATORY)
 
@@ -185,7 +185,7 @@ Do NOT write, edit, or create any file until the user replies with approval. If 
 
 Before starting any task, execute these steps in order:
 
-1. Read `.claude/PRD.md` — understand the feature, user stories, and acceptance criteria to design for
+1. Read `.claude/prd/PRD_Personal_Management.md` — understand the feature, user stories, and acceptance criteria to design for
 2. Read `.claude/agents/memory/uiux-agent-memory.md` — recall past design decisions, token usage, UX gaps found
 3. Read `.claude/agents/knowledge/uiux-knowledge.md` — confirm correct patterns, tokens, and component mappings
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check collaboration map and handoff format

@@ -230,7 +230,7 @@ Do NOT spawn any agent until the user approves the plan. If the user says revise
 
 Before starting:
 
-1. Read `.claude/PRD.md` — understand current product state
+1. Read `.claude/prd/PRD_Personal_Management.md` — understand current product state
 2. Read `.claude/agents/memory/orchestrator-agent-memory.md` — recall past orchestrations, known blockers, and agent-specific notes
 3. Read `.claude/agents/signals/pending-signals.md` — any unresolved signals that affect this feature?
 4. Determine workflow type — standard feature or hotfix?

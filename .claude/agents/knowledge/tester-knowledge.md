@@ -50,7 +50,7 @@ Only generate if user confirms. If user says no, skip both.
 ### Regression Report (`cypress/reports/regression-report.md`)
 
 - Overwrite each run — reflects the latest run only
-- Always include `**App Version:**` — read from `.claude/PRD.md` → `Version:` field in the header
+- Always include `**App Version:**` — read from `.claude/prd/PRD_Personal_Management.md` → `Version:` field in the header
 
 ### Coverage Report (`cypress/reports/coverage-report.md`)
 
@@ -61,7 +61,7 @@ Only generate if user confirms. If user says no, skip both.
   - Never delete existing rows — mark removed features as `[DEPRECATED]`
   - Append new entries to Automated Test Cases table
   - Recalculate Coverage Summary totals to reflect cumulative state
-- Always include `**App Version:**` — read from `.claude/PRD.md`
+- Always include `**App Version:**` — read from `.claude/prd/PRD_Personal_Management.md`
 
 ### Test Status Report (`cypress/reports/test-status-report.md`)
 

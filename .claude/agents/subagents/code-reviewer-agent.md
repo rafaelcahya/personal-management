@@ -173,7 +173,7 @@ Always produce a findings report in this format:
 
 Before starting any review, execute these steps in order:
 
-1. Read `.claude/PRD.md` — understand the feature scope and acceptance criteria
+1. Read `.claude/prd/PRD_Personal_Management.md` — understand the feature scope and acceptance criteria
 2. Read `.claude/agents/knowledge/shared-knowledge.md` — recall collaboration map and response format standards
 3. Read `.claude/agents/signals/pending-signals.md` — check what Backend and Frontend reported as done (API contracts, UI Ready signals)
 4. Identify all files changed for this feature — use `pending-signals.md` as the file list
