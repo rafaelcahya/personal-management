@@ -17,6 +17,7 @@ const groups = [
   { name: 'auth',      spec: 'cypress/e2e/auth/**/*.cy.js' },
   { name: 'dashboard', spec: 'cypress/e2e/inventory_management/dashboard/**/*.cy.js' },
   { name: 'product',   spec: 'cypress/e2e/inventory_management/product/**/*.cy.js' },
+  { name: 'running',   spec: 'cypress/e2e/running/**/*.cy.js' },
 ]
 
 function runGroup(group) {

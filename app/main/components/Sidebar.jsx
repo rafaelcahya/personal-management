@@ -20,6 +20,9 @@ import {
   Package2,
   LogOut,
   Loader2,
+  Activity,
+  BarChart2,
+  BrainCircuit,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -38,6 +41,14 @@ const TRADING_ITEMS = [
   { name: 'Market Events', href: '/main/trading/event', icon: Calendar },
   { name: 'Fees', href: '/main/trading/fee', icon: Receipt },
   { name: 'Settings', href: '/main/trading/settings', icon: Settings },
+]
+
+const RUNNING_ITEMS = [
+  { name: 'Dashboard', href: '/main/running/dashboard', icon: LayoutDashboard },
+  { name: 'Activities', href: '/main/running/activities', icon: Activity },
+  { name: 'Analytics', href: '/main/running/analytics', icon: BarChart2 },
+  { name: 'AI Coach', href: '/main/running/ai', icon: BrainCircuit },
+  { name: 'Settings', href: '/main/running/settings', icon: Settings },
 ]
 
 function NavItem({ item, collapsed, onClick }) {
@@ -89,6 +100,17 @@ function SidebarNav({ collapsed, onNavClick }) {
         </p>
       )}
       {TRADING_ITEMS.map((item) => (
+        <NavItem key={item.href} item={item} collapsed={collapsed} onClick={onNavClick} />
+      ))}
+
+      <div className="border-t border-slate-100 pt-3" />
+
+      {!collapsed && (
+        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3 pb-1.5">
+          Running
+        </p>
+      )}
+      {RUNNING_ITEMS.map((item) => (
         <NavItem key={item.href} item={item} collapsed={collapsed} onClick={onNavClick} />
       ))}
     </nav>

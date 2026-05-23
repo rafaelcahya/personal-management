@@ -6,7 +6,7 @@ import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 
 const logDir = 'cypress/reports/logs'
-const groups = ['api-auth', 'auth', 'dashboard', 'product']
+const groups = ['api-auth', 'auth', 'dashboard', 'product', 'running']
 
 function stripAnsi(text) {
   return text.replace(/\x1B\[[\d;]*[A-Za-z]/g, '').replace(/\x1B\][\d;]*[^\x07]*\x07/g, '')
@@ -26,7 +26,7 @@ const runDate = existsSync(tsFile)
 const out = [
   '# Cypress Regression Run',
   `**Date:** ${runDate}`,
-  '**Scope:** api-auth, auth, dashboard, product',
+  '**Scope:** api-auth, auth, dashboard, product, running',
   '',
   '---',
   '',
