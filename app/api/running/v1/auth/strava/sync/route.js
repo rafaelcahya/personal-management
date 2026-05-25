@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { decrypt, encrypt } from '@/lib/utils/running/encrypt'
+import { inngest } from '@/lib/inngest/client'
 
 const STRAVA_ACTIVITIES_URL = 'https://www.strava.com/api/v3/athlete/activities'
 const STRAVA_ATHLETE_URL = 'https://www.strava.com/api/v3/athlete'
@@ -212,12 +213,24 @@ export async function POST(_request) {
           raw_data: a,
         }))
 
-        const { error: insertError } = await admin.from('rt_activities').insert(rows)
+        const { data: insertedRows, error: insertError } = await admin
+          .from('rt_activities')
+          .insert(rows)
+          .select('id, external_id')
 
         if (insertError) {
           return NextResponse.json(
             { error: `Insert failed: ${insertError.message}` },
             { status: 500 }
+          )
+        }
+
+        if (insertedRows?.length > 0) {
+          await inngest.send(
+            insertedRows.map((r) => ({
+              name: 'strava/fetch-streams',
+              data: { activityId: r.id, userId: user.id, stravaActivityId: r.external_id },
+            }))
           )
         }
 

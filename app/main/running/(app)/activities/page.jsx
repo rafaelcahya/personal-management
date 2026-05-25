@@ -1,12 +1,9 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { useEffect, useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
-import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { format } from 'date-fns'
 import {
-  ChevronLeft,
-  ChevronRight,
   Trophy,
   Footprints,
   Bike,
@@ -20,15 +17,31 @@ import {
   Activity,
   PersonStanding,
   Wind,
-  Thermometer,
+  ChevronLeft,
+  ChevronRight,
+  AlertCircle,
 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 import { fetchActivities } from '@/lib/api/running'
-import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../dashboard/utils/format'
+import { fmtDistance, fmtPace, fmtDuration } from '../dashboard/utils/format'
+import PageHeader from '@/app/main/components/PageHeader'
 
-const RouteMap = dynamic(() => import('./components/RouteMap'), { ssr: false })
-
-// ─── activity config (matches dashboard) ─────────────────────────────────────
+// ─── activity config ──────────────────────────────────────────────────────────
 
 const ACTIVITY_CONFIG = {
   Run: { icon: Footprints, color: 'text-violet-600', bg: 'bg-violet-50', label: 'Run' },
@@ -56,7 +69,6 @@ const ACTIVITY_CONFIG = {
   recovery: { icon: Heart, color: 'text-slate-500', bg: 'bg-slate-100', label: 'Recovery' },
 }
 const DEFAULT_CONFIG = { icon: Activity, color: 'text-slate-500', bg: 'bg-slate-100', label: null }
-
 const WORKOUT_TYPE_KEY = { 1: 'race', 2: 'long', 3: 'interval' }
 
 function getActivityCfg(activity) {
@@ -66,157 +78,118 @@ function getActivityCfg(activity) {
   return ACTIVITY_CONFIG[activity.activity_type] ?? DEFAULT_CONFIG
 }
 
-// ─── temperature color ────────────────────────────────────────────────────────
+// ─── helpers ──────────────────────────────────────────────────────────────────
 
-function tempColor(c) {
-  if (c < 10) return 'text-blue-500'
-  if (c < 20) return 'text-green-500'
-  if (c < 28) return 'text-amber-500'
-  return 'text-red-500'
+const CURRENT_YEAR = new Date().getFullYear()
+
+function fmtShortDate(iso) {
+  const d = new Date(iso)
+  const str = format(d, 'd MMM')
+  return d.getFullYear() !== CURRENT_YEAR ? `${str} ${d.getFullYear()}` : str
 }
 
-// ─── skeleton card ────────────────────────────────────────────────────────────
+function getRangeFrom(range) {
+  if (range === '30d') return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+  if (range === '90d') return new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
+  if (range === 'ytd') return new Date(new Date().getFullYear(), 0, 1).toISOString()
+  return null
+}
 
-function SkeletonCard() {
+function buildUrl(searchParams, overrides) {
+  const p = new URLSearchParams(searchParams.toString())
+  Object.entries(overrides).forEach(([k, v]) => {
+    if (v == null || v === '' || v === 'all') p.delete(k)
+    else p.set(k, String(v))
+  })
+  p.delete('page')
+  if (overrides.page != null) p.set('page', String(overrides.page))
+  return `/main/running/activities?${p.toString()}`
+}
+
+const NULL_CELL = <span className="text-slate-400">—</span>
+
+// ─── workout badge ─────────────────────────────────────────────────────────────
+
+const WORKOUT_BADGE = {
+  1: (
+    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-violet-100 text-violet-700 shrink-0">
+      Race
+    </span>
+  ),
+  2: (
+    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600 shrink-0">
+      Long
+    </span>
+  ),
+  3: (
+    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-600 shrink-0">
+      Interval
+    </span>
+  ),
+}
+
+// ─── skeleton row ──────────────────────────────────────────────────────────────
+
+function SkeletonRow() {
   return (
-    <Card className="border border-slate-200/70 shadow-sm">
-      <CardContent className="p-4">
-        <div className="flex gap-4 animate-pulse">
-          <div className="w-40 shrink-0 rounded-lg bg-slate-100" style={{ height: 160 }} />
-          <div className="flex-1 min-w-0 flex flex-col gap-2 py-1">
-            <div className="h-4 bg-slate-100 rounded w-3/4" />
-            <div className="h-3 bg-slate-100 rounded w-1/3" />
-            <div className="h-3 bg-slate-100 rounded w-2/3 mt-1" />
-            <div className="h-3 bg-slate-100 rounded w-1/2" />
+    <TableRow className="animate-pulse">
+      <TableCell>
+        <div className="flex items-center gap-3">
+          <div className="size-8 rounded-full bg-slate-100 shrink-0" />
+          <div className="flex flex-col gap-1.5">
+            <div className="h-3 w-36 bg-slate-100 rounded" />
+            <div className="h-2.5 w-20 bg-slate-100 rounded" />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </TableCell>
+      {[60, 56, 48, 52, 40, 44].map((w, i) => (
+        <TableCell key={i}>
+          <div className="h-3 bg-slate-100 rounded ml-auto" style={{ width: w }} />
+        </TableCell>
+      ))}
+    </TableRow>
   )
 }
 
-// ─── activity card ────────────────────────────────────────────────────────────
+// ─── type chip ────────────────────────────────────────────────────────────────
 
-function ActivityCard({ activity: a }) {
-  const cfg = getActivityCfg(a)
-  const Icon = cfg.icon
-  const wattsVal = a.device_watts === true ? (a.weighted_avg_watts ?? a.avg_watts) : null
-  const cadenceSpm = a.avg_cadence != null ? a.avg_cadence * 2 : null
-  const elevationM =
-    a.elevation_gain_m && a.elevation_gain_m > 0 ? Math.round(a.elevation_gain_m) : null
-
+function TypeChip({ type, label, icon: Icon, active, onClick }) {
   return (
-    <Card className="border border-slate-200/70 shadow-sm hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <Link
-          href={`/main/running/activities/${a.id}`}
-          className="flex gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded-lg"
-        >
-          {/* Map thumbnail */}
-          <div className="w-40 shrink-0">
-            {a.summary_polyline ? (
-              <RouteMap encodedPolyline={a.summary_polyline} height={160} className="w-full" />
-            ) : (
-              <div
-                className="w-full rounded-lg bg-slate-50 flex items-center justify-center text-xs text-slate-300"
-                style={{ height: 160 }}
-              >
-                No GPS
-              </div>
-            )}
-          </div>
-
-          {/* Activity details */}
-          <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
-            {/* Name + PR badge */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-semibold text-slate-800 truncate">
-                {a.name || cfg.label || a.activity_type}
-              </span>
-              {a.pr_count > 0 && (
-                <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold shrink-0">
-                  <Trophy className="size-3" aria-hidden="true" />
-                  {a.pr_count} PR
-                </span>
-              )}
-            </div>
-
-            {/* Date + type chip */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-slate-400">{fmtDate(a.started_at)}</span>
-              <span
-                className={`flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full ${cfg.bg} ${cfg.color}`}
-              >
-                <Icon className="size-3" aria-hidden="true" />
-                {cfg.label ?? a.activity_type}
-              </span>
-            </div>
-
-            {/* Stats row */}
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 flex-wrap mt-0.5">
-              <span className="font-medium text-slate-700">{fmtDistance(a.distance_m)} km</span>
-              <span className="text-slate-300">·</span>
-              <span>{fmtPace(a.avg_pace_sec_per_km)}/km</span>
-              <span className="text-slate-300">·</span>
-              <span>{fmtDuration(a.moving_time_sec ?? a.duration_sec)}</span>
-              {elevationM != null && (
-                <>
-                  <span className="text-slate-300">·</span>
-                  <span>↑{elevationM}m</span>
-                </>
-              )}
-              {a.avg_hr != null && (
-                <>
-                  <span className="text-slate-300">·</span>
-                  <span>{a.avg_hr} bpm</span>
-                </>
-              )}
-              {wattsVal != null && (
-                <>
-                  <span className="text-slate-300">·</span>
-                  <span>{wattsVal} W</span>
-                </>
-              )}
-              {a.avg_temp_c != null && (
-                <>
-                  <span className="text-slate-300">·</span>
-                  <span className={tempColor(a.avg_temp_c)}>{a.avg_temp_c}°C</span>
-                </>
-              )}
-            </div>
-
-            {/* Gear */}
-            {a.gear_name && (
-              <div className="flex items-center gap-1 mt-0.5">
-                <Footprints className="size-3 text-slate-400 shrink-0" aria-hidden="true" />
-                <span className="text-xs text-slate-400">{a.gear_name}</span>
-              </div>
-            )}
-          </div>
-        </Link>
-      </CardContent>
-    </Card>
+    <button
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium border whitespace-nowrap transition-colors ${
+        active
+          ? 'border-violet-300 bg-violet-100 text-violet-700'
+          : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'
+      }`}
+    >
+      {Icon && <Icon className="size-3" aria-hidden="true" />}
+      {label}
+    </button>
   )
 }
 
-// ─── inner page (uses useSearchParams — must be inside Suspense) ──────────────
+// ─── inner page ───────────────────────────────────────────────────────────────
 
 function ActivitiesInner() {
   const searchParams = useSearchParams()
+  const router = useRouter()
+
   const type = searchParams.get('type') || null
+  const range = searchParams.get('range') || 'all'
+  const sort = searchParams.get('sort') || 'newest'
+  const page = parseInt(searchParams.get('page') ?? '1', 10) || 1
 
   const [activities, setActivities] = useState([])
   const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
+  const [knownTypes, setKnownTypes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   const LIMIT = 20
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
-
-  useEffect(() => {
-    setPage(1)
-  }, [type])
+  const hasFilters = type || range !== 'all' || sort !== 'newest'
 
   useEffect(() => {
     let cancelled = false
@@ -224,13 +197,32 @@ function ActivitiesInner() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetchActivities({ page, limit: LIMIT, type })
+        const res = await fetchActivities({
+          page,
+          limit: LIMIT,
+          type,
+          from: getRangeFrom(range),
+          sort,
+        })
         if (!cancelled) {
           setActivities(res.data ?? [])
           setTotal(res.total ?? 0)
+          setKnownTypes((prev) => {
+            const all = new Set(prev)
+            ;(res.data ?? []).forEach((a) => {
+              if (a.activity_type) all.add(a.activity_type)
+            })
+            return [...all]
+          })
         }
       } catch (err) {
-        if (!cancelled) setError(err.message || 'Failed to load activities')
+        if (!cancelled) {
+          if (err.message === 'UNAUTHORIZED') {
+            window.location.href = '/login'
+            return
+          }
+          setError(err.message || 'Failed to load activities')
+        }
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -239,101 +231,316 @@ function ActivitiesInner() {
     return () => {
       cancelled = true
     }
-  }, [page, type])
+  }, [page, type, range, sort])
+
+  function clearFilters() {
+    router.push('/main/running/activities')
+  }
 
   return (
-    <div id="activitiesPage" className="flex flex-col gap-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">Activities</h1>
-          {!loading && total > 0 && (
-            <p className="text-sm text-slate-400 mt-0.5" aria-live="polite">
-              {total} {type ? `${type} ` : ''}activities
+    <div id="activitiesPage" className="flex flex-col gap-3 sm:gap-5">
+      <PageHeader
+        title="Activities"
+        description="All your recorded workouts in one place"
+        breadcrumbs={[
+          { label: 'Running', href: '/main/running/dashboard' },
+          { label: 'Activities' },
+        ]}
+      />
+
+      <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white flex flex-col">
+        {/* Filter bar */}
+        <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            {/* Type chips */}
+            <div className="flex items-center gap-2 shrink-0">
+              <p className="text-sm font-medium text-slate-500">Filter:</p>
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                <TypeChip
+                  label="All"
+                  active={!type}
+                  onClick={() => router.push(buildUrl(searchParams, { type: null }))}
+                />
+                {knownTypes.map((t) => {
+                  const cfg = ACTIVITY_CONFIG[t] ?? DEFAULT_CONFIG
+                  return (
+                    <TypeChip
+                      key={t}
+                      type={t}
+                      label={cfg.label ?? t}
+                      icon={cfg.icon}
+                      active={type === t}
+                      onClick={() => router.push(buildUrl(searchParams, { type: t }))}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Date + Sort selects */}
+            <div className="flex items-center gap-2 shrink-0">
+              <Select
+                value={range}
+                onValueChange={(v) => router.push(buildUrl(searchParams, { range: v }))}
+              >
+                <SelectTrigger className="w-36 h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All time</SelectItem>
+                  <SelectItem value="30d">Last 30 days</SelectItem>
+                  <SelectItem value="90d">Last 90 days</SelectItem>
+                  <SelectItem value="ytd">This year</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={sort}
+                onValueChange={(v) => router.push(buildUrl(searchParams, { sort: v }))}
+              >
+                <SelectTrigger className="w-40 h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest first</SelectItem>
+                  <SelectItem value="oldest">Oldest first</SelectItem>
+                  <SelectItem value="longest">Longest distance</SelectItem>
+                  <SelectItem value="fastest">Fastest pace</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+
+        {/* Table area */}
+        <div className="px-3 sm:px-5 py-3 sm:py-4">
+          {/* Total count */}
+          {!loading && !error && (
+            <p className="text-sm text-slate-400 mb-3" aria-live="polite">
+              {total} {type ? `${type} ` : ''}activit{total === 1 ? 'y' : 'ies'}
             </p>
           )}
+
+          {/* Error */}
+          {!loading && error && (
+            <div
+              id="activitiesError"
+              role="alert"
+              aria-live="assertive"
+              className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-50 text-sm text-red-600 border border-red-100 mb-3"
+            >
+              <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
+              <span>
+                {error}{' '}
+                <button
+                  className="underline font-medium"
+                  onClick={() => {
+                    setError(null)
+                    setLoading(true)
+                  }}
+                >
+                  Try again
+                </button>
+              </span>
+            </div>
+          )}
+
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <Table className="min-w-[640px] w-full table-auto">
+              <TableHeader className="bg-slate-100 sticky top-0 z-20">
+                <TableRow className="border-none uppercase text-xs">
+                  <TableHead className="py-2 text-slate-foreground rounded-l-lg w-[40%]">
+                    Activity
+                  </TableHead>
+                  <TableHead className="py-2 text-slate-foreground">Date</TableHead>
+                  <TableHead className="py-2 text-slate-foreground text-right">Dist</TableHead>
+                  <TableHead className="py-2 text-slate-foreground text-right">Pace</TableHead>
+                  <TableHead className="py-2 text-slate-foreground text-right">Time</TableHead>
+                  <TableHead
+                    className="py-2 text-slate-foreground text-right"
+                    title="Average heart rate"
+                  >
+                    HR
+                  </TableHead>
+                  <TableHead
+                    className="py-2 text-slate-foreground text-right rounded-r-lg"
+                    title="Elevation gain"
+                  >
+                    Elev
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody id="activitiesList">
+                {/* Loading */}
+                {loading && (
+                  <TableRow>
+                    <TableCell colSpan={7} className="p-0">
+                      <div
+                        id="activitiesLoadingSkeleton"
+                        aria-busy="true"
+                        aria-label="Loading activities"
+                      >
+                        <Table className="min-w-[640px] w-full">
+                          <TableBody>
+                            {Array.from({ length: 8 }).map((_, i) => (
+                              <SkeletonRow key={i} />
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+
+                {/* Empty */}
+                {!loading && !error && activities.length === 0 && (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={7}>
+                      <div className="flex flex-col items-center justify-center py-16 gap-3">
+                        <Activity className="size-10 text-slate-200" aria-hidden="true" />
+                        <p className="text-sm text-slate-500">
+                          {hasFilters ? 'No activities match your filters.' : 'No activities yet.'}
+                        </p>
+                        {hasFilters && (
+                          <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            Clear filters
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+
+                {/* Rows */}
+                {!loading &&
+                  !error &&
+                  activities.map((a) => {
+                    const cfg = getActivityCfg(a)
+                    const Icon = cfg.icon
+                    const dist =
+                      a.distance_m && a.distance_m > 0 ? `${fmtDistance(a.distance_m)} km` : null
+                    const pace = a.avg_pace_sec_per_km
+                      ? `${fmtPace(a.avg_pace_sec_per_km)}/km`
+                      : null
+                    const dur = a.moving_time_sec ?? a.duration_sec
+                    const elev =
+                      a.elevation_gain_m && a.elevation_gain_m > 0
+                        ? `↑ ${Math.round(a.elevation_gain_m)} m`
+                        : null
+                    const workoutBadge =
+                      a.workout_type != null ? WORKOUT_BADGE[a.workout_type] : null
+                    const name = a.name || cfg.label || a.activity_type
+
+                    return (
+                      <TableRow
+                        key={a.id}
+                        className="cursor-pointer hover:bg-slate-100 transition-colors"
+                        onClick={() => router.push(`/main/running/activities/${a.id}`)}
+                      >
+                        {/* Activity */}
+                        <TableCell className="w-[40%]">
+                          <div className="flex items-center gap-3">
+                            <span
+                              className={`flex size-8 items-center justify-center rounded-full shrink-0 ${cfg.bg}`}
+                            >
+                              <Icon className={`size-4 ${cfg.color}`} aria-hidden="true" />
+                            </span>
+                            <div className="flex flex-col min-w-0">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                {workoutBadge}
+                                <span className="text-sm font-medium text-slate-700 truncate">
+                                  {name}
+                                </span>
+                                {a.pr_count > 0 && (
+                                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0">
+                                    <Trophy className="size-3" aria-hidden="true" />
+                                    {a.pr_count} PR
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-xs text-slate-400">
+                                {cfg.label ?? a.activity_type}
+                              </span>
+                            </div>
+                          </div>
+                        </TableCell>
+
+                        {/* Date */}
+                        <TableCell className="text-sm text-slate-600 whitespace-nowrap">
+                          {fmtShortDate(a.started_at)}
+                        </TableCell>
+
+                        {/* Distance */}
+                        <TableCell className="text-right">
+                          <span className="font-mono tabular-nums text-sm text-slate-700">
+                            {dist ?? NULL_CELL}
+                          </span>
+                        </TableCell>
+
+                        {/* Pace */}
+                        <TableCell className="text-right">
+                          <span className="font-mono tabular-nums text-sm text-slate-700">
+                            {pace ?? NULL_CELL}
+                          </span>
+                        </TableCell>
+
+                        {/* Duration */}
+                        <TableCell className="text-right">
+                          <span className="font-mono tabular-nums text-sm text-slate-700">
+                            {dur != null ? fmtDuration(dur) : NULL_CELL}
+                          </span>
+                        </TableCell>
+
+                        {/* HR */}
+                        <TableCell className="text-right">
+                          <span className="font-mono tabular-nums text-sm text-slate-700">
+                            {a.avg_hr ? `${a.avg_hr} bpm` : NULL_CELL}
+                          </span>
+                        </TableCell>
+
+                        {/* Elev */}
+                        <TableCell className="text-right">
+                          <span className="font-mono tabular-nums text-sm text-slate-700">
+                            {elev ?? NULL_CELL}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          {!loading && !error && totalPages > 1 && (
+            <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">
+              <button
+                onClick={() => router.push(buildUrl(searchParams, { page: page - 1 }))}
+                disabled={page <= 1}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="size-4" aria-hidden="true" />
+                Prev
+              </button>
+              <span className="text-xs text-slate-400" aria-live="polite">
+                Page {page} of {totalPages} · {total} activities
+              </span>
+              <button
+                onClick={() => router.push(buildUrl(searchParams, { page: page + 1 }))}
+                disabled={page >= totalPages}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+                aria-label="Next page"
+              >
+                Next
+                <ChevronRight className="size-4" aria-hidden="true" />
+              </button>
+            </div>
+          )}
         </div>
-        {type && (
-          <Link
-            href="/main/running/activities"
-            className="text-xs text-slate-500 hover:text-violet-600 transition-colors flex items-center gap-1"
-          >
-            <ChevronLeft className="size-3.5" aria-hidden="true" />
-            All types
-          </Link>
-        )}
       </div>
-
-      {/* Loading skeleton */}
-      {loading && (
-        <div
-          id="activitiesLoadingSkeleton"
-          className="flex flex-col gap-4"
-          aria-busy="true"
-          aria-label="Loading activities"
-        >
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
-      )}
-
-      {/* Error */}
-      {!loading && error && (
-        <div
-          id="activitiesError"
-          className="flex items-center justify-center py-16 text-sm text-red-400"
-          role="alert"
-          aria-live="assertive"
-        >
-          {error}
-        </div>
-      )}
-
-      {/* Activity list */}
-      {!loading && !error && activities.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 gap-2 text-center">
-          <p className="text-sm text-slate-400">No activities yet</p>
-          <p className="text-xs text-slate-300">
-            Sync with Strava or log a manual activity to get started
-          </p>
-        </div>
-      )}
-
-      {!loading && !error && activities.length > 0 && (
-        <div id="activitiesList" className="grid grid-cols-1 gap-4">
-          {activities.map((a) => (
-            <ActivityCard key={a.id} activity={a} />
-          ))}
-        </div>
-      )}
-
-      {/* Pagination */}
-      {!loading && !error && totalPages > 1 && (
-        <div className="flex items-center justify-between pt-2" aria-label="Pagination">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page <= 1}
-            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px] min-w-[44px]"
-            aria-label="Previous page"
-          >
-            <ChevronLeft className="size-4" aria-hidden="true" />
-            Prev
-          </button>
-          <span className="text-xs text-slate-400" aria-live="polite">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page >= totalPages}
-            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px] min-w-[44px]"
-            aria-label="Next page"
-          >
-            Next
-            <ChevronRight className="size-4" aria-hidden="true" />
-          </button>
-        </div>
-      )}
     </div>
   )
 }
@@ -344,11 +551,12 @@ export default function ActivitiesPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex flex-col gap-4">
-          <div className="h-8 bg-slate-100 rounded w-40 animate-pulse" />
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
+        <div className="flex flex-col gap-4 animate-pulse">
+          <div className="h-8 bg-slate-100 rounded w-40" />
+          <div className="h-9 bg-slate-100 rounded w-full" />
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-14 bg-slate-100 rounded w-full" />
+          ))}
         </div>
       }
     >

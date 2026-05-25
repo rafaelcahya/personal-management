@@ -23,17 +23,20 @@ export async function GET(request) {
       )
     }
 
+    const VALID_SORTS = ['newest', 'oldest', 'longest', 'fastest']
     const { searchParams } = new URL(request.url)
     const from = searchParams.get('from') ?? undefined
     const to = searchParams.get('to') ?? undefined
     const type = searchParams.get('type') ?? undefined
+    const rawSort = searchParams.get('sort') ?? 'newest'
+    const sort = VALID_SORTS.includes(rawSort) ? rawSort : 'newest'
     const page = parseInt(searchParams.get('page') ?? '1', 10) || 1
     const limit = Math.min(
       MAX_LIMIT,
       Math.max(1, parseInt(searchParams.get('limit') ?? String(DEFAULT_LIMIT), 10) || DEFAULT_LIMIT)
     )
 
-    const result = await getActivities(user.id, { from, to, type, page, limit })
+    const result = await getActivities(user.id, { from, to, type, sort, page, limit })
 
     return NextResponse.json(result, { status: 200 })
   } catch (err) {

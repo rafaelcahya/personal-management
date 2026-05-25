@@ -5,8 +5,8 @@ export function fmtDistance(m) {
 export function fmtDuration(s) {
   const h = Math.floor(s / 3600)
   const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0')
-  const sec = String(s % 60).padStart(2, '0')
-  return `${h}:${m}:${sec}`
+  const sec = String(Math.floor(s % 60)).padStart(2, '0')
+  return h > 0 ? `${h}:${m}:${sec}` : `${parseInt(m, 10)}:${sec}`
 }
 
 export function fmtPace(s) {
