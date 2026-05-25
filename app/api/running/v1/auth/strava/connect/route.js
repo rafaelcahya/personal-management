@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(request) {
   const clientId = process.env.STRAVA_CLIENT_ID
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL
 
-  if (!clientId || !appUrl) {
+  if (!clientId) {
     return NextResponse.json({ error: 'Strava integration is not configured' }, { status: 503 })
   }
 
-  const redirectUri = `${appUrl}/api/running/v1/auth/strava/callback`
+  const redirectUri = new URL('/api/running/v1/auth/strava/callback', request.url).toString()
 
   const params = new URLSearchParams({
     client_id: clientId,

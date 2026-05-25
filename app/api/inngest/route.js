@@ -7,6 +7,7 @@ import { dailyInsight } from '@/lib/inngest/functions/dailyInsight'
 import { fridayPrepNotification } from '@/lib/inngest/functions/fridayPrepNotification'
 import { stravaFetchStreams } from '@/lib/inngest/functions/stravaFetchStreams'
 import { stravaBackfill } from '@/lib/inngest/functions/stravaBackfill'
+import { stravaHandleWebhookEvent } from '@/lib/inngest/functions/stravaHandleWebhookEvent'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -18,5 +19,6 @@ export const { GET, POST, PUT } = serve({
     fridayPrepNotification,
     stravaFetchStreams,
     stravaBackfill,
+    stravaHandleWebhookEvent,
   ],
 })
