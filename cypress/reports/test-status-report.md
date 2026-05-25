@@ -1,6 +1,6 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-23 (Focused run: Running Tracker Manual Entry API — 1 new spec file, 21 new tests)
+**Last Updated:** 2026-05-25 (Focused run: Running Tracker Dashboard Extended — 4 new spec files, 39 new tests, all 39/39 passing)
 **App Version:** 1.21
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
@@ -15,6 +15,8 @@
 > ✅ **Product History UI (2026-05-17):** 1 new spec file added (ui-product-history.cy.js). 28/28 passing in focused run. Covers all PRD 3.1.4 acceptance criteria. New DB tasks: insertFullProductHistory, deleteProductHistoryRows.
 > ✅ **Running Tracker Manual Entry API (2026-05-23):** 1 new spec file added (manual-api.cy.js). 21/21 passing in focused run. Covers Activities CRUD (POST, list filter, dedup 409, PATCH, empty PATCH 422, DELETE), Subjective Health upsert lifecycle, Weight Log CRUD, auth guards (4 tests).
 > ✅ **Running Tracker Strava Sync API (2026-05-23):** 1 new spec file added (sync-api.cy.js). 8/8 passing in focused run. Covers POST /sync/strava, GET /sync/status, GET /auth/strava/callback (redirect flows), unauthenticated guard (401).
+> ✅ **Running Tracker Dashboard (2026-05-23):** 2 new spec files added (dashboard-api.cy.js, dashboard-ui.cy.js). 36/36 passing in focused run. API spec: GET /dashboard response shape (weekly_stats, training_load, recent_activities, calendar_activities, health_today), integer checks, 401 guard. UI spec: auth guard, loading skeleton, happy path 6 sections, empty state, health logged state, error+retry, training load badge variants (Low/Caution/High Risk).
+> ✅ **Running Tracker Dashboard Extended (2026-05-25):** 4 new spec files added (gear-api.cy.js, gear-ui.cy.js, performance-trends-api.cy.js, dashboard-ui-extended.cy.js). 39 tests, all 39/39 passing. Gear API (6): response shape, PATCH, auth guards. Gear UI (14): loading skeleton, list rendering, empty/error state, limit tabs, near-retirement warning, edit form. Performance Trends API (5): shape, ?limit, ?type, 401. Dashboard Extended UI (14): YtdStats, NextRace, syncStatusBar/btn/resultMsg, activity type filter active ring.
 
 ---
 
@@ -36,22 +38,23 @@
 | Running Tracker - Onboarding    | 2026-05-20   | 0      | 52         | 52    |
 | Running Tracker - Sync API      | 2026-05-23   | 0      | 8          | 8     |
 | Running Tracker - Manual Entry  | 2026-05-23   | 0      | 21         | 21    |
-| **Total**                       |              | **1**  | **1,651**  | **1,652** |
+| Running Tracker - Dashboard     | 2026-05-25   | 0      | 75         | 75    |
+| **Total**                       |              | **1**  | **1,820**  | **1,821** |
 
 ---
 
 ## Staleness Alert
 
-Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-17):
+Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-23):
 
 | Module                    | Last Tested | Days Since Last Test |
 | ------------------------- | ----------- | -------------------- |
-| Landing Page              | 2026-05-08  | 9 hari               |
-| Trading - Trade           | 2026-03-15  | 63 hari 🔴           |
-| Trading - Fee             | 2026-03-15  | 63 hari 🔴           |
-| Trading - Event           | 2026-03-15  | 63 hari 🔴           |
+| Landing Page              | 2026-05-08  | 17 hari              |
+| Trading - Trade           | 2026-03-15  | 71 hari 🔴           |
+| Trading - Fee             | 2026-03-15  | 71 hari 🔴           |
+| Trading - Event           | 2026-03-15  | 71 hari 🔴           |
 
-> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Product History UI fresh (tested 2026-05-17). Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
+> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Running Tracker Dashboard Extended authored 2026-05-25 — run focused spec before merging. Running Tracker Dashboard tests fresh (tested 2026-05-23). Product History UI fresh (tested 2026-05-17). Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
 
 ---
 
@@ -175,6 +178,32 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-17):
 | 2  | GET /sync/status (auth + shape)  | running/sync/sync-api.cy.js         | 2026-05-23  | 0      | 2          | ✅ 2/2 pass  |
 | 3  | GET /strava/callback (redirects) | running/sync/sync-api.cy.js         | 2026-05-23  | 0      | 2          | ✅ 2/2 pass  |
 | 4  | Unauthenticated guard (401)      | running/sync/sync-api.cy.js         | 2026-05-23  | 0      | 2          | ✅ 2/2 pass  |
+
+---
+
+### Running Tracker - Dashboard
+
+| #  | Feature                                      | File                                                  | Last Tested | Manual | Automation | Status        |
+| -- | -------------------------------------------- | ----------------------------------------------------- | ----------- | ------ | ---------- | ------------- |
+| 1  | GET /dashboard — response shape + auth guard | running/dashboard/dashboard-api.cy.js                 | 2026-05-23  | 0      | 8          | ✅ 8/8 pass   |
+| 2  | Dashboard page — auth guard                  | running/dashboard/dashboard-ui.cy.js                  | 2026-05-23  | 0      | 1          | ✅ 1/1 pass   |
+| 3  | Dashboard page — loading skeleton            | running/dashboard/dashboard-ui.cy.js                  | 2026-05-23  | 0      | 1          | ✅ 1/1 pass   |
+| 4  | Dashboard page — happy path (all sections)   | running/dashboard/dashboard-ui.cy.js                  | 2026-05-23  | 0      | 14         | ✅ 14/14 pass |
+| 5  | Dashboard page — empty state                 | running/dashboard/dashboard-ui.cy.js                  | 2026-05-23  | 0      | 3          | ✅ 3/3 pass   |
+| 6  | Dashboard page — health logged state         | running/dashboard/dashboard-ui.cy.js                  | 2026-05-23  | 0      | 2          | ✅ 2/2 pass   |
+| 7  | Dashboard page — error + retry               | running/dashboard/dashboard-ui.cy.js                  | 2026-05-23  | 0      | 4          | ✅ 4/4 pass   |
+| 8  | Dashboard page — training load badge variants| running/dashboard/dashboard-ui.cy.js                  | 2026-05-23  | 0      | 3          | ✅ 3/3 pass   |
+| 9  | GET /gear — response shape + auth guard      | running/dashboard/gear-api.cy.js                      | 2026-05-25  | 0      | 4          | ✅ 4/4 pass   |
+| 10 | PATCH /gear — update + auth guard            | running/dashboard/gear-api.cy.js                      | 2026-05-25  | 0      | 2          | ✅ 2/2 pass   |
+| 11 | Gear UI — loading, list, empty, error        | running/dashboard/gear-ui.cy.js                       | 2026-05-25  | 0      | 8          | ✅ 8/8 pass   |
+| 12 | Gear UI — limit tabs (Strava / Manual)       | running/dashboard/gear-ui.cy.js                       | 2026-05-25  | 0      | 3          | ✅ 3/3 pass   |
+| 13 | Gear UI — near retirement warning            | running/dashboard/gear-ui.cy.js                       | 2026-05-25  | 0      | 1          | ✅ 1/1 pass   |
+| 14 | Gear UI — edit form open/save/cancel         | running/dashboard/gear-ui.cy.js                       | 2026-05-25  | 0      | 3          | ✅ 3/3 pass   |
+| 15 | GET /performance-trends — shape, params, 401 | running/dashboard/performance-trends-api.cy.js        | 2026-05-25  | 0      | 5          | ✅ 5/5 pass   |
+| 16 | YtdStats — renders, distance format, hidden  | running/dashboard/dashboard-ui-extended.cy.js         | 2026-05-25  | 0      | 4          | ✅ 4/4 pass   |
+| 17 | NextRace — null, title, race-week badge      | running/dashboard/dashboard-ui-extended.cy.js         | 2026-05-25  | 0      | 3          | ✅ 3/3 pass   |
+| 18 | SyncStatusBar — Never, btn, POST, resultMsg  | running/dashboard/dashboard-ui-extended.cy.js         | 2026-05-25  | 0      | 5          | ✅ 5/5 pass   |
+| 19 | Activity type filter — render, active ring   | running/dashboard/dashboard-ui-extended.cy.js         | 2026-05-25  | 0      | 2          | ✅ 2/2 pass   |
 
 ---
 

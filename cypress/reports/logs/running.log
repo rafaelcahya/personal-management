@@ -1,0 +1,182 @@
+
+
+DevTools listening on ws://127.0.0.1:56078/devtools/browser/0b56cc35-c59d-41d2-bdbc-de5259e59da0
+[dotenv@17.2.1] injecting env (9) from .env.local -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+
+=== Cypress Environment Check ===
+CYPRESS_AUTH_SECRET: ✓ Loaded
+CYPRESS_TEST_EMAIL: ✓ Loaded
+SUPABASE_URL: ✓ Loaded
+=================================
+
+Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.
+
+1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)
+2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()
+
+Learn more: https://on.cypress.io/cypress-env-migration
+
+
+====================================================================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        15.11.0                                                                        │
+  │ Browser:        Electron 138 (headless)                                                        │
+  │ Node Version:   v24.14.0 (C:\nvm4w\nodejs\node.exe)                                            │
+  │ Specs:          2 found (onboarding-api.cy.js, onboarding-ui.cy.js)                            │
+  │ Searched:       C:\.Cahya\project\personal-management\cypress\e2e\running\onboarding\*.cy.js   │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+Remove output folder C:\.Cahya\project\personal-management\cypress\reports\html
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  onboarding-api.cy.js                                                            (1 of 2)
+
+
+  Onboarding API — POST /api/running/v1/onboarding/biometric
+    √ returns 200 with valid biometric payload
+    √ returns 200 with empty body (all biometric fields optional in schema)
+    √ KNOWN_GAP: returns 400 (or 500) when height_cm is below schema minimum (49)
+    √ KNOWN_GAP: returns 400 (or 500) when height_cm is above schema maximum (301)
+    √ KNOWN_GAP: returns 400 (or 500) when weight_kg is below schema minimum (19)
+    √ KNOWN_GAP: returns 400 (or 500) when max_hr is below schema minimum (59)
+    √ KNOWN_GAP: returns 400 (or 500) when birth_date is not YYYY-MM-DD format
+    √ returns 400 when request body is malformed JSON
+    - returns 401 when not authenticated (BLOCKED: cookie isolation needed)
+
+  Onboarding API — POST /api/running/v1/onboarding/complete
+    √ returns 200 with empty body (no goal)
+    √ returns 200 with valid goal payload (race type)
+    √ returns 200 when goal_type is present but target_date is omitted
+
+  Onboarding API — Unauthenticated access (no session)
+    √ biometric endpoint returns 401 when no session cookie
+    √ complete endpoint returns 401 when no session cookie
+
+
+  13 passing (7s)
+  1 pending
+
+[mochawesome] Report JSON saved to C:\.Cahya\project\personal-management\cypress\reports\html\.jsons\mochawesome.json
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        14                                                                               │
+  │ Passing:      13                                                                               │
+  │ Failing:      0                                                                                │
+  │ Pending:      1                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     6 seconds                                                                        │
+  │ Spec Ran:     onboarding-api.cy.js                                                             │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  onboarding-ui.cy.js                                                             (2 of 2)
+
+
+  Running Onboarding — Auth Guard
+    √ unauthenticated visit to /main/running/onboarding redirects to /login
+    √ unauthenticated visit to (app) route /main/running/dashboard redirects to /login
+
+  Running Onboarding — Step 1 Biometrics (rendering)
+    √ renders the onboarding page heading
+    √ shows step 1 of 3 label
+    √ shows step indicator with Biometrics, Connect Strava, First Goal
+    √ renders the Biometrics form heading
+    √ renders Birth date, Height, Weight, Resting HR and Max HR fields
+    √ formula mode is selected by default and shows formula label
+    √ shows Continue button
+    √ does NOT show a Back button on step 1
+
+  Running Onboarding — Step 1 Biometrics (validation)
+    √ shows validation error when birth date is missing → does not advance to step 2
+    √ shows validation error when height is out of range (99) → does not advance
+    √ shows validation error when weight is out of range (25) → does not advance
+    √ shows validation error when resting HR is out of range (130) → does not advance
+    √ shows manual max HR error when mode is manual and field is empty
+    √ shows manual max HR out-of-range error (50 bpm) → does not advance
+
+  Running Onboarding — Step 1 Max HR formula preview
+    √ shows placeholder text before birth date is entered
+    √ shows estimated max HR bpm after entering birth date
+    √ manual mode hides formula preview and shows text input
+    √ switching back to formula mode hides manual input
+
+  Running Onboarding — Step 1 → Step 2 (happy path, stubbed)
+    √ fills valid biometrics and advances to Step 2 after API succeeds
+    √ shows root error when biometric API returns 500
+
+  Running Onboarding — Step 2 Strava Connect
+    √ renders Step 2 heading and Strava benefits
+    √ shows Connect with Strava and Skip buttons
+    √ shows Back button on step 2
+    √ clicking Back returns to Step 1
+    √ clicking Skip advances to Step 3
+
+  Running Onboarding — Step 3 First Goal (no race planned)
+    √ renders Step 3 heading and goal toggle
+    √ "No race planned yet" is default — goal fields are hidden
+    √ shows "Go to dashboard" button when no goal is selected
+    √ clicking "Go to dashboard" without goal completes onboarding → redirects to /main/running/dashboard
+
+  Running Onboarding — Step 3 First Goal (yes, I have a race)
+    √ shows goal fields when "Yes, I have a race" is selected
+    √ clicking a quick distance button fills the distance input
+    √ clicking Marathon (exact match) fills 42.195 in distance input
+    √ shows "Save goal & go to dashboard" button when race goal is selected
+    √ saves goal and redirects to dashboard when valid goal is set
+    √ completes onboarding even if the API returns 500 (goal save failure is non-blocking)
+
+  Running (app) layout — auth guard with real Supabase session
+    √ setupApiAuthCookies provides a real Supabase session for (app) routes
+
+
+  38 passing (1m)
+
+[mochawesome] Report JSON saved to C:\.Cahya\project\personal-management\cypress\reports\html\.jsons\mochawesome_001.json
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        38                                                                               │
+  │ Passing:      38                                                                               │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     1 minute, 10 seconds                                                             │
+  │ Spec Ran:     onboarding-ui.cy.js                                                              │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+Start generate report process
+Read and merge jsons from "C:\.Cahya\project\personal-management\cypress\reports\html\.jsons"
+Copy media folder from "C:\.Cahya\project\personal-management\cypress\videos" to "C:\.Cahya\project\personal-management\cypress\reports\html\videos"
+Enhance report
+Create HTML report
+HTML report successfully created!
+C:\.Cahya\project\personal-management\cypress\reports\html\index.html
+
+====================================================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✔  onboarding-api.cy.js                     00:06       14       13        -        1        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  onboarding-ui.cy.js                      01:10       38       38        -        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✔  All specs passed!                        01:17       52       51        -        1        -  
+

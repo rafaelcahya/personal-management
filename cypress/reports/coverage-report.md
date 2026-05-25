@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-23 (Focused run: Running Tracker Manual Entry API — 1 new spec file, 21 tests)
+**Last Updated:** 2026-05-25 (Focused run: Running Tracker Dashboard Extended — 4 new spec files, 39 new tests, all 39/39 passing)
 **App Version:** 1.21
 
 ## Coverage Summary
@@ -24,7 +24,12 @@
 | Running Tracker - Onboarding    | 6              | 6         | 0           | 0          | 100%       | 52         |
 | Running Tracker - Sync API      | 3              | 3         | 0           | 0          | 100%       | 8          |
 | Running Tracker - Manual Entry  | 7              | 7         | 0           | 0          | 100%       | 21         |
-| **Total**                       | **120**        | **119**   | **1**       | **0**      | **99%**    | **1,746**  |
+| Running Tracker - Dashboard     | 9              | 9         | 0           | 0          | 100%       | 75         |
+| **Total**                       | **129**        | **128**   | **1**       | **0**      | **99%**    | **1,821**  |
+
+> **Note (2026-05-25 v1.21 Dashboard Extended):** Running Tracker Dashboard extended tests added — 4 new spec files (gear-api.cy.js, gear-ui.cy.js, performance-trends-api.cy.js, dashboard-ui-extended.cy.js), 39 tests, all 39/39 passing. Gear API (6 tests): GET shape validation + 401 guard, PATCH with real gear id. Gear UI (14 tests): loading skeleton, happy path list rendering, empty state, error+retry, Strava-only limit tab, both-tab display, near-retirement warning (90% threshold), edit form open/save/cancel. Performance Trends API (5 tests): shape, ?limit=20, ?type=Run filter, 401. Dashboard Extended UI (14 tests): YtdStats renders when distance_m>0, hidden when 0 or null, distance format (150.00 km); NextRace null/title/race-week badge; syncStatusBar Never label, sync btn, POST trigger, syncResultMsg X new activities / Already up to date; activity type filter renders + active ring. Also added 4 IDs to app-constants.json running_dashboard section: performance_trends_card, sync_status_bar, sync_btn, sync_result_msg. app-constants.yaml does not exist in this project — JSON is the single source of truth. Running Tracker Dashboard total: 75 tests (36 from 2026-05-23 + 39 from 2026-05-25).
+
+> **Note (2026-05-23 v1.21 Dashboard):** Running Tracker Dashboard tests added — 2 new spec files (dashboard-api.cy.js, dashboard-ui.cy.js), 36 tests, all 36/36 passing. API spec: GET /api/running/v1/dashboard response shape (weekly_stats, training_load, recent_activities, calendar_activities, health_today), integer type checks, 401 guard. UI spec: auth guard, loading skeleton, happy path (all 6 sections including scroll-into-view), empty state, health logged state, error + retry, training load status badge variants. Total test cases updated to 1,782.
 
 > **Note (2026-05-23 v1.21):** Running Tracker Manual Entry API tests added — 1 new spec file (manual-api.cy.js), 21 tests, all 21/21 passing. Covers Activities CRUD (POST 201, list filter, dedup 409, PATCH notes, empty PATCH 422, DELETE 204), Subjective Health upsert (200 semantics, lifecycle), Weight Log CRUD, and auth guards (4 unauthenticated 401 checks). Also fixed 4 Code Review criticals (CB-1–4) and security warning S-2. Total test cases updated to 1,746.
 
@@ -42,7 +47,29 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-05-17 Focused Run: Product History UI)
+## Last Execution Results (2026-05-25 Focused Run: Running Tracker Dashboard Extended)
+
+| Group                                      | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| ------------------------------------------ | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running-dashboard (Gear API)               | 1          | 6     | 6      | 0      | 0       | ✅       |
+| running-dashboard (Gear UI)                | 1          | 14    | 14     | 0      | 0       | ✅       |
+| running-dashboard (Performance Trends API) | 1          | 5     | 5      | 0      | 0       | ✅       |
+| running-dashboard (Dashboard UI Extended)  | 1          | 14    | 14     | 0      | 0       | ✅       |
+| **Total**                                  | **4**      | **39** | **39** | **0** | **0**   | **100%** |
+
+**Status:** All 4 new spec files passing 100%. gear-api.cy.js (6/6): GET shape + 401, PATCH 200. gear-ui.cy.js (14/14): loading skeleton, list render, empty/error state, limit tabs, near-retirement warning, edit form. performance-trends-api.cy.js (5/5): shape, ?limit, ?type filter, 401. dashboard-ui-extended.cy.js (14/14): YtdStats visibility + distance format, NextRace variants, syncStatusBar Never/btn/POST/resultMsg, activity type filter render + active ring.
+
+### Previous Run Results (2026-05-23 Focused Run: Running Tracker Dashboard)
+
+| Group                          | Spec Files | Tests | Passed | Failed | Pending | Status |
+| ------------------------------ | ---------- | ----- | ------ | ------ | ------- | ------ |
+| running-dashboard (API)        | 1          | 8     | 8      | 0      | 0       | ✅     |
+| running-dashboard (UI)         | 1          | 28    | 28     | 0      | 0       | ✅     |
+| **Total**                      | **2**      | **36** | **36** | **0** | **0**  | **100%** |
+
+**Status:** dashboard-api.cy.js (8/8 pass, 5s) and dashboard-ui.cy.js (28/28 pass, 20s). All sections render correctly with stubbed data. Auth guard, loading skeleton, error+retry, and all 3 training load badge variants pass. scroll-into-view applied on 5 tests to handle overflow clipping on sections below viewport fold.
+
+### Previous Run Results (2026-05-17 Focused Run: Product History UI)
 
 | Group                       | Spec Files | Tests | Passed | Failed | Pending | Status |
 | --------------------------- | ---------- | ----- | ------ | ------ | ------- | ------ |
@@ -171,8 +198,14 @@
 | 69  | cypress/e2e/running/onboarding/onboarding-api.cy.js                  | Running Tracker Onboarding API       | 14         | POST /biometric, POST /complete — validation, auth guard |
 | 70  | cypress/e2e/running/onboarding/onboarding-ui.cy.js                   | Running Tracker Onboarding UI        | 38         | 3-step wizard: biometric, Strava connect, goal setup, auth guard |
 | 71  | cypress/e2e/running/sync/sync-api.cy.js                              | Running Tracker Strava Sync API      | 8          | POST /sync/strava, GET /sync/status, GET /auth/strava/callback (redirect), unauthenticated 401 guard |
+| 72  | cypress/e2e/running/dashboard/dashboard-api.cy.js                    | Running Tracker Dashboard API        | 8          | GET /api/running/v1/dashboard — 200 + response shape (weekly_stats, training_load, recent_activities, calendar_activities, health_today), integer type checks, 401 guard |
+| 73  | cypress/e2e/running/dashboard/dashboard-ui.cy.js                     | Running Tracker Dashboard UI         | 28         | Auth guard, loading skeleton, happy path (all 6 sections), empty state, health logged state, error + retry, training load status badge variants (Low/Caution/High Risk) |
+| 74  | cypress/e2e/running/dashboard/gear-api.cy.js                         | Running Tracker Gear API             | 6          | GET /gear (200, data array, field presence, 401), PATCH /gear (200 updated object, 401) |
+| 75  | cypress/e2e/running/dashboard/gear-ui.cy.js                          | Running Tracker Gear UI              | 14         | Loading skeleton, happy path (list + name + distance km), empty state, error + retry, limit tabs (Strava-only, both), near retirement warning, edit form open/save/cancel |
+| 76  | cypress/e2e/running/dashboard/performance-trends-api.cy.js           | Running Tracker Performance Trends API | 5        | GET /performance-trends (200, data array, field presence), ?limit=20, ?type=Run, 401 guard |
+| 77  | cypress/e2e/running/dashboard/dashboard-ui-extended.cy.js            | Running Tracker Dashboard UI Extended | 14       | YtdStats (renders, distance format, hidden when 0, hidden when null), NextRace (null, title, race-week badge), syncStatusBar (Never, btn visible, click triggers POST, syncResultMsg), activity type filter (renders, active ring) |
 
-**Total Automated Test Cases: 1,725** (added 8 new tests in v1.20 for sync-api; previous total: 1,717 in v1.19)
+**Total Automated Test Cases: 1,821** (added 39 confirmed passing tests for gear API, gear UI, performance-trends API, dashboard extended UI; previous total: 1,782)
 
 ## Manual Test Cases (not yet automated)
 

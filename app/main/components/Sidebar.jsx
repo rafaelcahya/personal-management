@@ -23,6 +23,8 @@ import {
   Activity,
   BarChart2,
   BrainCircuit,
+  Footprints,
+  Trophy,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -46,6 +48,8 @@ const TRADING_ITEMS = [
 const RUNNING_ITEMS = [
   { name: 'Dashboard', href: '/main/running/dashboard', icon: LayoutDashboard },
   { name: 'Activities', href: '/main/running/activities', icon: Activity },
+  { name: 'Gear', href: '/main/running/gear', icon: Footprints },
+  { name: 'Race', href: '/main/running/race', icon: Trophy },
   { name: 'Analytics', href: '/main/running/analytics', icon: BarChart2 },
   { name: 'AI Coach', href: '/main/running/ai', icon: BrainCircuit },
   { name: 'Settings', href: '/main/running/settings', icon: Settings },

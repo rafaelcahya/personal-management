@@ -73,6 +73,22 @@
       "activities": "/api/running/v1/activities",
       "subjective_health": "/api/running/v1/health/subjective",
       "weight_log": "/api/running/v1/health/weight"
+    },
+    "running_dashboard": {
+      "dashboard": "/api/running/v1/dashboard"
+    },
+    "running_gear": {
+      "list": "/api/running/v1/gear",
+      "update": "/api/running/v1/gear"
+    },
+    "running_race_log": {
+      "list": "/api/running/v1/race-log",
+      "create": "/api/running/v1/race-log",
+      "update": "/api/running/v1/race-log",
+      "delete": "/api/running/v1/race-log"
+    },
+    "running_goals": {
+      "update": "/api/running/v1/goals"
     }
   },
   "test_ids": {
@@ -250,6 +266,32 @@
       "bulk_set_inactive_btn": "bulkSetInactiveBtn_productNamePage",
       "bulk_deselect_all_btn": "bulkDeselectAllBtn_productNamePage"
     },
+    "running_activities": {
+      "page": "activitiesPage",
+      "loading_skeleton": "activitiesLoadingSkeleton",
+      "error": "activitiesError",
+      "list": "activitiesList"
+    },
+    "running_activity_detail": {
+      "page": "activityDetailPage"
+    },
+    "running_dashboard": {
+      "page": "dashboardPage",
+      "weekly_stats_card": "weeklyStatsCard",
+      "training_load_card": "trainingLoadCard",
+      "ytd_stats_card": "ytdStatsCard",
+      "next_race_card": "nextRaceCard",
+      "activity_calendar_card": "activityCalendarCard",
+      "recent_activities_card": "recentActivitiesCard",
+      "ai_coach_card": "aiCoachCard",
+      "health_checkin_card": "healthCheckinCard",
+      "skeleton": "dashboardSkeleton",
+      "error": "dashboardError",
+      "performance_trends_card": "performanceTrendsCard",
+      "sync_status_bar": "syncStatusBar",
+      "sync_btn": "syncBtn_dashboard",
+      "sync_result_msg": "syncResultMsg"
+    },
     "running_onboarding": {
       "page": "runningOnboardingPage",
       "step_indicator": "onboardingStepIndicator",
@@ -288,6 +330,32 @@
       "sort_option_name_desc": "sortOption_name_desc_productHistoryPage",
       "empty_state": "emptyState_productHistoryPage",
       "loading_skeleton": "loadingSkeleton_productHistoryPage"
+    },
+    "running_gear": {
+      "page": "gearPage",
+      "loading_skeleton": "gearLoadingSkeleton",
+      "error": "gearError",
+      "list": "gearList",
+      "gear_card": "gearCard",
+      "category_input": "gearCategoryInput",
+      "retirement_km_input": "gearRetirementKmInput",
+      "save_btn": "gearSaveBtn"
+    },
+    "race_log": {
+      "page": "raceLogPage",
+      "loading_skeleton": "raceLogLoadingSkeleton",
+      "error": "raceLogError",
+      "empty_state": "raceLogEmptyState",
+      "list": "raceLogList",
+      "card": "raceLogCard",
+      "add_btn": "addRaceBtn",
+      "form_modal": "raceLogFormModal",
+      "save_btn": "raceLogSaveBtn",
+      "delete_btn": "raceLogDeleteBtn",
+      "delete_confirm_btn": "raceLogDeleteConfirmBtn",
+      "edit_goal_btn": "editGoalBtn",
+      "edit_goal_modal": "editGoalModal",
+      "edit_goal_save_btn": "editGoalSaveBtn"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",

@@ -1,5 +1,63 @@
 # Regression Testing Report
 
+**Date:** 2026-05-25
+**App Version:** 1.21
+**Scope:** Running Tracker Dashboard Extended — focused run (4 new spec files)
+**Tester:** QA Agent
+
+## Summary (2026-05-25 Focused Run — Running Tracker Dashboard Extended)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 39          | 39     | 0      | 0       | **100%**         |
+
+### Running Tracker Dashboard Extended — New Spec Files
+
+| #  | Spec File                                                | Tests | Passed | Pending | Failed | Status   |
+| -- | -------------------------------------------------------- | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/dashboard/gear-api.cy.js                         | 6     | 6      | 0       | 0      | ✅ PASS  |
+| 2  | running/dashboard/gear-ui.cy.js                          | 14    | 14     | 0       | 0      | ✅ PASS  |
+| 3  | running/dashboard/performance-trends-api.cy.js           | 5     | 5      | 0       | 0      | ✅ PASS  |
+| 4  | running/dashboard/dashboard-ui-extended.cy.js            | 14    | 14     | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                                | **39** | **39** | **0** | **0**  | **100%** |
+
+**Scope notes:**
+- `gear-api.cy.js` (6 tests): GET /api/running/v1/gear — authenticated 200, data array shape, required field presence, 401 guard; PATCH /api/running/v1/gear — 200 with updated object, 401 guard.
+- `gear-ui.cy.js` (14 tests): Loading skeleton render; happy path (gear list, name, distance km); empty state (no gear message); error + retry flow; limit tabs (Strava-only tab, both-source tab display); near-retirement warning at 90% threshold; edit form open, save, cancel.
+- `performance-trends-api.cy.js` (5 tests): GET /api/running/v1/performance-trends — 200 + data array, required field presence, ?limit=20, ?type=Run filter, 401 guard.
+- `dashboard-ui-extended.cy.js` (14 tests): YtdStats renders when distance_m > 0, hidden when 0, hidden when null, distance format (150.00 km); NextRace null state, title display, race-week badge; syncStatusBar Never label, sync btn visible, POST trigger on click, syncResultMsg (X new activities / Already up to date); activity type filter renders + active ring state.
+
+---
+
+## Previous Run — 2026-05-23 Focused Run (Running Tracker Dashboard)
+
+**Date:** 2026-05-23
+**App Version:** 1.21
+**Scope:** Running Tracker Dashboard — focused run (2 new spec files)
+**Tester:** QA Agent
+
+## Summary (2026-05-23 Focused Run — Running Tracker Dashboard)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 36          | 36     | 0      | 0       | **100%**         |
+
+### Running Tracker Dashboard — New Spec Files
+
+| #  | Spec File                                       | Tests | Passed | Pending | Failed | Status   |
+| -- | ----------------------------------------------- | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/dashboard/dashboard-api.cy.js           | 8     | 8      | 0       | 0      | ✅ PASS  |
+| 2  | running/dashboard/dashboard-ui.cy.js            | 28    | 28     | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                       | **36** | **36** | **0** | **0**  | **100%** |
+
+**Scope notes:**
+- `dashboard-api.cy.js`: GET /api/running/v1/dashboard — authenticated 200 + response shape (weekly_stats current/prev blocks, training_load with status enum, recent_activities array, calendar_activities array, health_today.logged boolean), distance_m/duration_sec integer check; unauthenticated 401 guard (isolated describe with no auth setup).
+- `dashboard-ui.cy.js`: Auth guard (unauthenticated → /login); loading skeleton render (delayed response); happy path (8 sections visible: weeklyStats 21.00 km + session count + avg pace 5:43, trainingLoad 0.95 Optimal badge, activityCalendar, recentActivities 1 row 10.50 km, aiCoach, healthCheckin not-logged message); empty state (No activities yet, No Data badge, avg pace —); health logged state (Today's health logged + sleep hours); error state (500 → error message, fallback message, Retry button); retry → success (data appears after retry); training load badge variants (Low Load, Caution, High Risk). All scroll-into-view applied for sections below viewport fold.
+
+---
+
+## Previous Run — 2026-05-23 Focused Run (Running Tracker Manual Entry API)
+
 **Date:** 2026-05-23
 **App Version:** 1.21
 **Scope:** Running Tracker Manual Entry API — focused run (1 new spec file)
@@ -244,12 +302,14 @@
 
 ## Cumulative Active Pass Rate (All Focused Runs to Date)
 
-| Date       | Feature                   | Tests | Passed | Pending | Failed | Pass Rate |
-| ---------- | ------------------------- | ----- | ------ | ------- | ------ | --------- |
-| 2026-05-23 | Running Tracker Manual Entry API | 21 | 21 | 0      | 0      | 100%      |
-| 2026-05-23 | Running Tracker Strava Sync API | 8 | 8      | 0       | 0      | 100%        |
-| 2026-05-20 | Running Tracker Onboarding | 52   | 51     | 1       | 0      | 100% active |
-| 2026-05-17 | Product History UI        | 28    | 28     | 0       | 0      | 100%      |
-| 2026-05-17 | Product Name UI (bulk)    | 16    | 16     | 0       | 0      | 100%      |
-| 2026-05-16 | Product Brand UI          | 50    | 50     | 0       | 0      | 100%      |
-| 2026-05-14 | Full Regression (4 groups)| 833   | 822    | 11      | 0      | 100% active |
+| Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
+| ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-05-25 | Running Tracker Dashboard Extended   | 39    | 39     | 0       | 0      | 100%        |
+| 2026-05-23 | Running Tracker Dashboard            | 36    | 36     | 0       | 0      | 100%        |
+| 2026-05-23 | Running Tracker Manual Entry API     | 21    | 21     | 0       | 0      | 100%        |
+| 2026-05-23 | Running Tracker Strava Sync API      | 8     | 8      | 0       | 0      | 100%        |
+| 2026-05-20 | Running Tracker Onboarding           | 52    | 51     | 1       | 0      | 100% active |
+| 2026-05-17 | Product History UI                   | 28    | 28     | 0       | 0      | 100%        |
+| 2026-05-17 | Product Name UI (bulk)               | 16    | 16     | 0       | 0      | 100%        |
+| 2026-05-16 | Product Brand UI                     | 50    | 50     | 0       | 0      | 100%        |
+| 2026-05-14 | Full Regression (4 groups)           | 833   | 822    | 11      | 0      | 100% active |

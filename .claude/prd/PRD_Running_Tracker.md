@@ -2,8 +2,8 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 1.8
-**Last Updated:** 2026-05-20
+**Version:** 2.2
+**Last Updated:** 2026-05-25
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6) · Strava API
 
@@ -215,7 +215,65 @@ Strava akan kirim GET ke callback URL dulu untuk verifikasi (lihat Section 8.6 u
 | Backfill     | Bisa ratusan                | Inngest step functions + exponential backoff |
 | Webhook      | Tidak terbatas untuk terima | Proses async, tidak block response           |
 
-### 5.6 Disconnect Strava
+### 5.6 Data Flow: Strava ke Dashboard
+
+Ini gambaran end-to-end bagaimana data lari dari Strava sampai ke dashboard — mulai dari event masuk sampai insight muncul di layar.
+
+```
+Strava (event baru)
+        ↓
+POST /api/sync/webhook
+  └─ Terima event JSON dari Strava (aspect_type, object_id, owner_id)
+  └─ Langsung return 200 OK
+  └─ Kirim event ke Inngest: strava/handle-webhook-event
+        ↓
+Inngest: strava/handle-webhook-event
+  └─ create  → fetch detail aktivitas dari Strava API
+  └─ update  → re-fetch dan update row di tabel activities
+  └─ delete  → hapus row dari tabel activities
+        ↓
+Inngest: strava/fetch-streams
+  └─ Fetch time-series HR/GPS/pace dari Strava API
+  └─ Downsample ke 10s resolution (default)
+  └─ Insert ke tabel activity_streams
+  └─ Trigger: ai/anomaly-detector
+        ↓
+Inngest: ai/anomaly-detector
+  └─ Ambil aktivitas terbaru + baseline 30 hari aktivitas sejenis
+  └─ Rules-based check: ACWR spike, HR drift, pace drop, konsistensi
+  └─ Kalau ada anomali → insert ke ai_insights (insight_type = 'anomaly')
+  └─ Trigger: ai/generate-post-activity-insight
+        ↓
+Inngest: ai/generate-post-activity-insight
+  └─ Build context: aktivitas + splits + baseline + health log + goals + profil
+  └─ Call Claude API (Sonnet 4.6, temp 0.3, max 700 token)
+  └─ Validasi output (panjang + section headers)
+  └─ Insert ke ai_insights (insight_type = 'post_activity')
+  └─ Trigger push notification kalau notify_post_activity = true
+        ↓
+Dashboard (user buka app)
+  └─ GET /api/activities        → recent activities list
+  └─ GET /api/analytics/summary → weekly stats + training load
+  └─ GET /api/ai/insights       → AI insight cards (post-activity + anomaly)
+  └─ Render semua data di UI
+```
+
+**Titik-titik yang bisa gagal dan cara recovernya:**
+
+| Titik                      | Failure mode                         | Recovery                                      |
+| -------------------------- | ------------------------------------ | --------------------------------------------- |
+| Webhook tidak terima event | Strava missed delivery               | Polling fallback setiap 1 jam via Vercel Cron |
+| Strava API timeout         | fetch-streams gagal                  | Inngest auto-retry dengan exponential backoff |
+| Claude API timeout/error   | insight tidak ter-generate           | Inngest retry 1x setelah 5 menit, lalu skip   |
+| Output AI invalid          | konten terlalu pendek / format salah | Retry 1x, kalau tetap gagal: is_valid=false   |
+
+**Latency tipikal (estimasi):**
+
+- Webhook masuk → data tersimpan di DB: **~3–5 detik**
+- Data tersimpan → insight tersedia di dashboard: **~15–30 detik** (tergantung antrian Inngest + Claude latency)
+- Total dari selesai lari (Garmin/Strava sync) → insight di dashboard: **~2–5 menit** (tergantung kecepatan device sync ke Strava)
+
+### 5.7 Disconnect Strava
 
 ```
 1. Revoke token: DELETE https://www.strava.com/oauth/deauthorize
@@ -1076,7 +1134,482 @@ ALTER TABLE ai_insights
 
 ---
 
-## 12. Computed Metrics Formulas
+## 12. Gear Management (Shoe Rotation)
+
+### 12.1 Overview
+
+Gear Management adalah fitur untuk melacak kondisi sepatu lari berdasarkan total jarak yang sudah dipakai. Data sepatu di-sync otomatis dari Strava — setiap sepatu yang terekam di aktivitas Strava akan muncul di sini.
+
+Tujuannya sederhana: kamu tahu kapan sepatu harus pensiun sebelum performanya drop atau risiko cedera naik.
+
+### 12.2 User Stories
+
+> As a runner, I want to see all my shoes with their mileage so that I know which ones are still fresh and which are wearing out.
+
+> As a runner, I want to set a retirement threshold per shoe so that I get a visual warning before I hit the limit.
+
+> As a runner, I want to categorize each shoe by use type (daily, race, trail, etc.) so that I can track rotation correctly.
+
+### 12.3 Data Source
+
+Sepatu di-sync dari dua tempat:
+
+1. **Strava activity sync** — setiap aktivitas dari Strava yang punya `gear_id` akan upsert gear ke tabel `rt_gear`
+2. **Athlete sync** — saat user connect Strava, endpoint `/api/v3/athlete` di-call untuk langsung fetch semua sepatu yang terdaftar di profil athlete, bukan hanya yang muncul di aktivitas
+
+Field yang di-sync dari Strava: `name`, `brand_name`, `model_name`, `distance_m`, `retired`, `notification_distance_m`.
+
+`notification_distance_m` adalah batas pensiun yang di-set user di Strava (bukan di app ini). Strava returns this value in km via `notification_distance` — backend converts it to meters on save (`Math.round(notification_distance * 1000)`).
+
+Field yang **tidak pernah** di-overwrite oleh sync Strava: `category`, `retirement_km` — ini sepenuhnya user-managed.
+
+### 12.4 Database
+
+```sql
+CREATE TABLE rt_gear (
+  id TEXT PRIMARY KEY,              -- Strava gear ID (format: g12345678)
+  user_id UUID REFERENCES users(id),
+  name TEXT,
+  brand_name TEXT,
+  model_name TEXT,
+  distance_m INTEGER DEFAULT 0,    -- total jarak dalam meter, di-update tiap sync
+  retired BOOLEAN DEFAULT FALSE,
+  notification_distance_m INTEGER DEFAULT NULL, -- Strava-managed shoe alert threshold, stored in meters (Strava returns km → converted on save)
+  category TEXT DEFAULT NULL,       -- user-managed: daily/tempo/race/trail/recovery/cross-training
+  retirement_km INTEGER DEFAULT NULL, -- user-managed threshold dalam km
+  last_fetched_at TIMESTAMPTZ
+);
+```
+
+### 12.5 API Endpoints
+
+```
+GET   /api/running/v1/gear        ← list semua gear user
+PATCH /api/running/v1/gear        ← update category dan/atau retirement_km satu gear
+```
+
+**GET /api/running/v1/gear**
+
+- Auth required (401 kalau tidak ada session)
+- No query params
+- Response: `{ data: [{ id, name, brand_name, model_name, distance_m, retired, notification_distance_m, category, retirement_km, last_fetched_at }], message }`
+- Urutan: retired asc (active dulu), lalu name asc
+
+**PATCH /api/running/v1/gear**
+
+- Auth required
+- Body: `{ id: string (required), category?: string|null, retirement_km?: integer|null }`
+- Validasi via Zod schema di `schemas/runningGear.js`
+- Strava sync fields (`name`, `distance_m`, `retired`) tidak bisa diubah via endpoint ini
+- Response: `{ data: <updated gear row>, message }`
+- Error 400 kalau `id` tidak ada atau field tidak valid
+- Error 404 kalau gear tidak ditemukan atau milik user lain
+
+### 12.6 UI — Shoe Rotation Component
+
+Shoe Rotation muncul di halaman Dashboard, setelah section Performance Trends.
+
+**States yang harus ada:**
+
+| State           | Tampilan                                                                |
+| --------------- | ----------------------------------------------------------------------- |
+| Loading         | Skeleton 3 rows (ikon + nama + bar)                                     |
+| Error           | AlertTriangle icon + pesan error + tombol "Try again"                   |
+| Empty (no gear) | Footprints icon + teks "No shoes synced yet" + instruksi connect Strava |
+| Has data        | List active + list retired (kalau ada)                                  |
+
+**Layout per gear card:**
+
+- Header: ikon Footprints + nama sepatu + brand/model (baris kedua, abu) + category badge (kalau ada) + tombol edit (pensil, hanya untuk active)
+- Body: total km besar-besar + two-tab limit toggle (see below) + mileage progress bar (ungu → amber >= 70% → merah >= 90%) + alert "Nearing limit" kalau >= 90% active-tab limit
+- Retired shoes: seluruh card opacity 60%, badge "Retired", tidak ada tombol edit, tidak ada tab toggle
+
+**Two-tab limit toggle (Strava / Manual):**
+
+Active shoes that have at least one limit set (`notification_distance_m` or `retirement_km`) show two pill-style tab buttons next to the total distance:
+
+- **Strava tab** — shows the `notification_distance_m` value converted to km. Label format: `Strava · {N} km`. If `notification_distance_m` is null: `Strava · —`.
+- **Manual tab** — shows the `retirement_km` value. Label format: `Manual · {N} km`. If `retirement_km` is null: `Manual · —`.
+
+Default active tab:
+
+- If `retirement_km` is set → default to **Manual**
+- If `retirement_km` is null but `notification_distance_m` is set → default to **Strava**
+
+Switching tabs immediately updates both the progress bar and the "Nearing limit" warning to use that tab's limit value. If the selected tab's limit is null, the progress bar is hidden and "Nearing limit" is not shown even if the other tab's limit is near.
+
+If neither limit is set, no tab toggle is shown and no progress bar is rendered.
+
+**Inline edit form (muncul di dalam card, bukan modal):**
+
+- Toggle kategori: pill buttons (daily / tempo / race / trail / recovery / cross-training / none)
+- Input "Retire at (km)": number input, min 0, max 100000
+- Tombol Save + Cancel
+- Optimistic update: gearList di-update secara lokal setelah save berhasil — tidak perlu refetch
+- Kalau save gagal: tampilkan error message di bawah form, jangan tutup form
+
+**Category options:** `daily`, `tempo`, `race`, `trail`, `recovery`, `cross-training`
+
+### 12.7 Acceptance Criteria
+
+```
+GIVEN user is authenticated and has shoes synced from Strava
+WHEN Shoe Rotation section loads
+THEN active shoes appear first, retired shoes appear below with "Retired" badge and 60% opacity
+
+GIVEN shoe has retirement_km set and no notification_distance_m
+WHEN card renders
+THEN Manual tab is the default active tab
+AND progress bar and "Nearing limit" are based on retirement_km
+
+GIVEN shoe has notification_distance_m set and no retirement_km
+WHEN card renders
+THEN Strava tab is the default active tab
+AND progress bar and "Nearing limit" are based on notification_distance_m
+
+GIVEN shoe has both notification_distance_m and retirement_km set
+WHEN card renders
+THEN Manual tab is the default active tab
+
+GIVEN shoe has at least one limit set (notification_distance_m or retirement_km)
+WHEN user clicks the inactive tab button
+THEN progress bar and "Nearing limit" recalculate using the newly active tab's limit
+
+GIVEN active tab's limit is null (e.g. Strava tab selected but notification_distance_m is null)
+WHEN card renders
+THEN no progress bar is shown and "Nearing limit" is not shown
+
+GIVEN shoe has no retirement_km and no notification_distance_m
+WHEN card renders
+THEN no tab toggle is shown and no progress bar is shown
+
+GIVEN active tab's limit is set and distance_m / active_limit_km >= 90%
+WHEN card renders
+THEN "Nearing limit" warning badge appears on that card
+AND progress bar turns red
+
+GIVEN active tab's limit is set and distance_m / active_limit_km is between 70% and 89%
+WHEN card renders
+THEN progress bar is amber colored
+
+GIVEN active tab's limit is set and distance_m / active_limit_km is below 70%
+WHEN card renders
+THEN progress bar is violet colored
+
+GIVEN user clicks the edit icon on an active shoe card
+WHEN edit form opens inline
+THEN current category and retirement_km are pre-filled
+
+GIVEN user selects a category pill and enters a retirement_km
+WHEN user clicks Save
+THEN PATCH /api/running/v1/gear is called with { id, category, retirement_km }
+AND the card updates immediately (optimistic) without page reload
+
+GIVEN user clicks Save on the edit form
+WHEN API returns an error
+THEN error message is shown below the form
+AND the edit form stays open (not closed)
+
+GIVEN user clicks Cancel on the edit form
+WHEN form closes
+THEN no changes are saved
+
+GIVEN no shoes are synced (empty list)
+WHEN section renders
+THEN empty state shows "No shoes synced yet" with instruction to connect Strava
+
+GIVEN API call fails to load gear list
+WHEN error state renders
+THEN "Try again" button is visible and retries the fetch on click
+
+GIVEN shoe is retired
+WHEN edit icon is checked
+THEN no edit icon is shown (retired shoes are read-only)
+```
+
+### 12.8 Validations & Error States
+
+| Scenario                                                         | Handling                                                               |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `retirement_km` bukan integer atau < 0                           | 400 dari API, form shows error message                                 |
+| `retirement_km` > 100000                                         | 400 dari API, form shows error message                                 |
+| `category` bukan salah satu dari CATEGORY_OPTIONS dan bukan null | 400 dari API                                                           |
+| `id` tidak ada di body PATCH                                     | 400 Validation failed                                                  |
+| Gear tidak ditemukan atau milik user lain                        | 404 Not found                                                          |
+| Sync otomatis override `category` atau `retirement_km`           | Tidak boleh — sync hanya update Strava fields                          |
+| PATCH body includes `notification_distance_m`                    | Ignored — this field is Strava-managed, never writable by user via API |
+
+### 12.9 Test IDs
+
+Terdaftar di `cypress/fixtures/app-constants.json` under `test_ids.running_gear.*`:
+
+| ID                    | Element                       |
+| --------------------- | ----------------------------- |
+| `gearPage`            | Section root element          |
+| `gearLoadingSkeleton` | Skeleton wrapper saat loading |
+| `gearError`           | Error container               |
+| `gearList`            | `<ul>` active shoes           |
+| `gearCard`            | Setiap `<li>` gear card       |
+| `gearSaveBtn`         | Save button di edit form      |
+
+---
+
+## 13. Race Log
+
+### 13.1 Overview
+
+Race Log adalah fitur untuk mencatat dan melacak semua race yang pernah kamu ikuti. Berbeda dari Goals (yang forward-looking), Race Log adalah catatan historis — setiap race yang sudah selesai bisa dicatat dengan hasil aktual (finish time, pace, posisi, dll).
+
+Dua hal yang bisa kamu kelola di sini:
+
+1. **Race history** — semua race yang sudah selesai, lengkap dengan hasil dan catatan
+2. **Upcoming race goal** — goal race berikutnya yang juga bisa di-edit langsung dari halaman Activity (bukan harus lewat onboarding ulang)
+
+### 13.2 User Stories
+
+> As a runner, I want to log every race I've completed so that I can track my race history and see how my performance has improved over time.
+
+> As a runner, I want to record my finish time and official distance for each race so that I can calculate accurate race-day pacing and compare across events.
+
+> As a runner, I want to add a title and personal notes to each race entry so that I can remember the context (weather, conditions, how I felt).
+
+> As a runner, I want to edit my upcoming race goal directly from the Activity page so that I don't have to redo onboarding to update my race target.
+
+> As a runner, I want to see my race history ordered by date so that I can quickly spot trends in my race performance.
+
+### 13.3 Database
+
+#### rt_goals — schema update
+
+Add title and description to the existing goals table (used for upcoming race goal in onboarding and NextRace card):
+
+```sql
+ALTER TABLE rt_goals
+  ADD COLUMN title TEXT,
+  ADD COLUMN description TEXT;
+```
+
+- `title` — race name, e.g. "Jakarta Marathon 2027", "BCA Bali Run 10K". Optional. If set, used in the NextRace card instead of the auto-generated distance label.
+- `description` — free-form notes about this goal. Optional.
+
+#### rt_race_log — new table
+
+```sql
+CREATE TABLE rt_race_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,                    -- race name, e.g. "Jakarta Marathon 2027"
+  race_date DATE NOT NULL,
+  distance_m NUMERIC(10,2) NOT NULL,      -- official race distance
+  finish_time_sec INT,                    -- official finish time, nullable (DNF)
+  avg_pace_sec_per_km NUMERIC(6,2),       -- computed: finish_time_sec / (distance_m / 1000)
+  avg_hr INT,                             -- average HR during race, nullable
+  elevation_gain_m NUMERIC(7,2),          -- nullable
+  position_overall INT,                   -- finishing position overall, nullable
+  position_category INT,                  -- finishing position in age group / category, nullable
+  did_not_finish BOOLEAN DEFAULT FALSE,
+  activity_id UUID REFERENCES activities(id) ON DELETE SET NULL, -- optional link to Strava activity
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_race_log_user_date ON rt_race_log(user_id, race_date DESC);
+```
+
+- `did_not_finish = true` → `finish_time_sec` dan `avg_pace_sec_per_km` boleh null
+- `activity_id` — opsional link ke aktivitas Strava. Kalau ada, activity detail page bisa tampilkan "Raced: [title]" label
+- `avg_pace_sec_per_km` dihitung otomatis di server saat insert/update — tidak perlu dikirim dari client
+
+### 13.4 API Endpoints
+
+```
+GET    /api/running/v1/race-log              ← list semua race entries, urut race_date DESC
+POST   /api/running/v1/race-log              ← tambah race entry baru
+PATCH  /api/running/v1/race-log/:id          ← edit race entry
+DELETE /api/running/v1/race-log/:id          ← hapus race entry
+
+PATCH  /api/running/v1/goals/:id             ← update upcoming race goal (title, description, target fields)
+```
+
+**GET /api/running/v1/race-log**
+
+- Auth required (401 kalau tidak ada session)
+- No query params untuk MVP
+- Response: `{ data: [{ id, title, race_date, distance_m, finish_time_sec, avg_pace_sec_per_km, avg_hr, elevation_gain_m, position_overall, position_category, did_not_finish, activity_id, notes, created_at }], message }`
+
+**POST /api/running/v1/race-log**
+
+- Auth required
+- Body: `{ title, race_date, distance_m, finish_time_sec?, avg_hr?, elevation_gain_m?, position_overall?, position_category?, did_not_finish?, activity_id?, notes? }`
+- Validasi via Zod schema di `schemas/raceLog.js`
+- Server computes `avg_pace_sec_per_km = Math.round(finish_time_sec / (distance_m / 1000))` — hanya kalau `finish_time_sec` ada dan `did_not_finish = false`
+- Response: `{ data: <new race log row>, message }`
+
+**PATCH /api/running/v1/race-log/:id**
+
+- Auth required
+- Body: semua field opsional kecuali setidaknya satu field harus ada
+- Ownership check: hanya bisa edit entry milik user sendiri (404 kalau bukan milik user)
+- `avg_pace_sec_per_km` recomputed kalau `finish_time_sec` atau `distance_m` berubah
+- Response: `{ data: <updated row>, message }`
+
+**DELETE /api/running/v1/race-log/:id**
+
+- Auth required
+- Ownership check: 404 kalau bukan milik user
+- Response: `{ message: "Deleted" }`
+
+**PATCH /api/running/v1/goals/:id**
+
+- Auth required
+- Body: `{ title?, description?, target_date?, target_distance_m?, target_time_sec? }` — semua opsional, minimal satu
+- Ownership check: 404 kalau bukan milik user
+- Response: `{ data: <updated goal row>, message }`
+
+### 13.5 UI — Race Log Page
+
+Race Log punya halaman sendiri di `/running/race-log`.
+
+**States yang harus ada:**
+
+| State    | Tampilan                                                                   |
+| -------- | -------------------------------------------------------------------------- |
+| Loading  | Skeleton 3 rows (title + date + distance + time)                           |
+| Error    | AlertTriangle icon + pesan error + tombol "Try again"                      |
+| Empty    | Medal icon + teks "No races logged yet" + CTA button "Log your first race" |
+| Has data | List race entries, urut terbaru dulu                                       |
+
+**Layout per race entry card:**
+
+- Header: nama race (title) + tanggal + distance label (5K / 10K / Half / Full / Ultra / Custom)
+- Body: finish time (format HH:MM:SS) + avg pace (format MM:SS/km) + posisi kalau ada
+- Footer: tombol edit (pensil) + tombol delete (trash)
+- DNF badge kalau `did_not_finish = true`
+- Link ke activity detail kalau `activity_id` ada
+
+**Add / Edit form (modal):**
+
+- Title (required) — text input
+- Race date (required) — date picker
+- Distance (required) — dropdown preset (5K / 10K / 21.1K / 42.2K / Custom) + custom number input kalau Custom
+- Finish time — time input (HH:MM:SS), optional kalau DNF
+- Did not finish — checkbox. Kalau dicentang: disable finish time input
+- Avg HR — number input, optional
+- Elevation gain — number input (meter), optional
+- Overall position — number input, optional
+- Category position — number input, optional
+- Notes — textarea, optional
+- Link to activity — searchable dropdown dari recent activities (opsional)
+
+**Delete confirmation:**
+
+- Alert dialog: "Hapus race ini? Data tidak bisa dikembalikan."
+- Konfirmasi delete button + cancel
+
+### 13.6 UI — Edit Upcoming Race Goal (dari Activity page)
+
+Di halaman Activity, tambahkan section atau button "Edit race goal" yang membuka modal edit goal.
+
+Modal berisi:
+
+- Race title (text input) — pre-fill dari `rt_goals.title` kalau ada
+- Target distance — dropdown preset sama dengan Race Log
+- Target date — date picker
+- Description / notes (textarea) — opsional
+- Save + Cancel buttons
+
+Setelah save, NextRace card di dashboard langsung reflect perubahan (dengan re-fetch atau optimistic update).
+
+**Lokasi di Activity page:** di bawah activity list, dalam card tersendiri bertitel "Your Next Race" atau terintegrasi di sidebar kalau layout memungkinkan.
+
+### 13.7 Acceptance Criteria
+
+```
+GIVEN user navigates to /running/race-log
+WHEN page loads
+THEN race entries appear ordered by race_date DESC
+AND loading skeleton shows while fetching
+
+GIVEN user has no race entries
+WHEN page loads
+THEN empty state shows with "Log your first race" CTA button
+
+GIVEN user clicks "Log your first race" or the Add button
+WHEN form modal opens
+THEN title, race_date, distance fields are required and validated before submit
+
+GIVEN user fills title, race_date, distance_m, finish_time_sec and submits
+WHEN POST /api/running/v1/race-log is called
+THEN new entry appears at top of the list
+AND avg_pace_sec_per_km is computed server-side and shown correctly
+
+GIVEN user checks "Did not finish"
+WHEN form submits
+THEN finish_time_sec and avg_pace_sec_per_km are null in DB
+AND entry shows "DNF" badge in the list
+
+GIVEN user clicks the edit icon on a race entry
+WHEN edit modal opens
+THEN all existing values are pre-filled
+
+GIVEN user edits finish time and submits
+WHEN PATCH /api/running/v1/race-log/:id is called
+THEN avg_pace_sec_per_km is recomputed server-side
+
+GIVEN user clicks the delete icon on a race entry
+WHEN delete confirmation dialog appears and user confirms
+THEN DELETE /api/running/v1/race-log/:id is called
+AND entry is removed from the list
+
+GIVEN another user's race log ID is used in PATCH or DELETE
+WHEN request is made
+THEN API returns 404 (ownership check)
+
+GIVEN user navigates to the Activity page and clicks "Edit race goal"
+WHEN modal opens
+THEN current goal title, target date, distance, and description are pre-filled
+AND after save, NextRace card on dashboard reflects the updated data
+```
+
+### 13.8 Validations & Error States
+
+| Field                        | Validation                                             | Error                                         |
+| ---------------------------- | ------------------------------------------------------ | --------------------------------------------- |
+| `title`                      | Required, max 200 chars                                | "Race name is required"                       |
+| `race_date`                  | Required, valid date, not in future by more than 1 day | "Race date cannot be in the future"           |
+| `distance_m`                 | Required, > 0, max 1000000                             | "Distance must be greater than 0"             |
+| `finish_time_sec`            | Integer, > 0, required unless `did_not_finish = true`  | "Finish time is required for completed races" |
+| `avg_hr`                     | Integer, 1–250                                         | "Heart rate must be between 1 and 250"        |
+| `position_overall`           | Integer, >= 1                                          | "Position must be 1 or greater"               |
+| `position_category`          | Integer, >= 1                                          | "Position must be 1 or greater"               |
+| Race not found or wrong user | —                                                      | 404 Not found                                 |
+| Server error                 | —                                                      | 500 with message in response                  |
+
+### 13.9 Test IDs
+
+Registered in `cypress/fixtures/app-constants.json` under `test_ids.race_log.*`:
+
+| ID                        | Element                                  |
+| ------------------------- | ---------------------------------------- |
+| `raceLogPage`             | Page root element                        |
+| `raceLogLoadingSkeleton`  | Skeleton wrapper saat loading            |
+| `raceLogError`            | Error container                          |
+| `raceLogEmptyState`       | Empty state container                    |
+| `raceLogList`             | `<ul>` race entries list                 |
+| `raceLogCard`             | Each `<li>` race entry card              |
+| `addRaceBtn`              | Add race button (opens modal)            |
+| `raceLogFormModal`        | Add/edit modal root                      |
+| `raceLogSaveBtn`          | Save button in form modal                |
+| `raceLogDeleteBtn`        | Delete icon on each card                 |
+| `raceLogDeleteConfirmBtn` | Confirm button in delete dialog          |
+| `editGoalBtn`             | "Edit race goal" button on Activity page |
+| `editGoalModal`           | Edit goal modal root                     |
+| `editGoalSaveBtn`         | Save button in edit goal modal           |
+
+---
+
+## 14. Computed Metrics Formulas
 
 ### Training Stress Score (rTSS)
 
@@ -1118,7 +1651,7 @@ Atau dari HR + pace pakai Firstbeat approximation
 
 ---
 
-## 13. Background Workers
+## 15. Background Workers
 
 Semua background jobs dijalankan via **Inngest** — serverless-native, tidak butuh persistent server.
 
@@ -1200,9 +1733,9 @@ Semua Inngest functions didaftarkan di endpoint ini. Inngest free tier: 50.000 e
 
 ---
 
-## 14. Push Notification (PWA)
+## 16. Push Notification (PWA)
 
-### 14.1 Setup overview
+### 15.1 Setup overview
 
 Push notification di PWA bekerja lewat tiga komponen:
 
@@ -1214,7 +1747,7 @@ Browser (Service Worker)  ←→  Push Service (browser vendor)  ←→  App Ser
 - **Service Worker** — script yang jalan di background di browser, terima push event bahkan saat app tidak dibuka
 - **Push subscription** — object dari browser berisi endpoint unik per device, disimpan di DB
 
-### 14.2 Setup flow
+### 15.2 Setup flow
 
 ```
 1. User buka app → browser minta izin notifikasi
@@ -1231,7 +1764,7 @@ Browser (Service Worker)  ←→  Push Service (browser vendor)  ←→  App Ser
 6. Sekarang server bisa kirim notifikasi ke device ini kapan saja
 ```
 
-### 14.3 Server-side: kirim notifikasi
+### 15.3 Server-side: kirim notifikasi
 
 ```javascript
 import webpush from 'web-push'
@@ -1259,7 +1792,7 @@ const payload = {
 }
 ```
 
-### 14.4 Trigger notifikasi
+### 15.4 Trigger notifikasi
 
 | Event                         | Trigger                                     | Kondisi kirim                                    | Setting  |
 | ----------------------------- | ------------------------------------------- | ------------------------------------------------ | -------- |
@@ -1272,7 +1805,7 @@ const payload = {
 
 Semua setting default `true`. User bisa matikan satu per satu di halaman Settings.
 
-### 14.5 Environment variables yang dibutuhkan
+### 15.5 Environment variables yang dibutuhkan
 
 ```
 VAPID_PUBLIC_KEY=    ← generate sekali pakai: npx web-push generate-vapid-keys
@@ -1280,14 +1813,14 @@ VAPID_PRIVATE_KEY=   ← simpan di .env, jangan commit
 VAPID_EMAIL=         ← email kontak untuk push service
 ```
 
-### 14.6 Endpoint tambahan
+### 15.6 Endpoint tambahan
 
 ```
 POST   /api/user/push-subscription    ← simpan subscription object dari browser
 DELETE /api/user/push-subscription    ← hapus subscription (user matikan notif)
 ```
 
-### 14.7 Service worker (public/sw.js)
+### 15.7 Service worker (public/sw.js)
 
 ```javascript
 self.addEventListener('push', (event) => {
@@ -1309,9 +1842,9 @@ self.addEventListener('notificationclick', (event) => {
 
 ---
 
-## 15. Encryption Strategy
+## 17. Encryption Strategy
 
-### 15.1 Apa yang dienkripsi
+### 16.1 Apa yang dienkripsi
 
 | Data                                  | Lokasi       | Alasan                                                        |
 | ------------------------------------- | ------------ | ------------------------------------------------------------- |
@@ -1319,7 +1852,7 @@ self.addEventListener('notificationclick', (event) => {
 | `strava_credentials.refresh_token`    | DB           | Lebih kritis — berlaku lama, bisa generate access token baru  |
 | `garmin_credentials.credentials_data` | DB (Phase 2) | Credential Garmin, tergantung metode integrasi                |
 
-### 15.2 Algoritma
+### 16.2 Algoritma
 
 **AES-256-GCM** — pilihan yang tepat karena:
 
@@ -1327,7 +1860,7 @@ self.addEventListener('notificationclick', (event) => {
 - GCM mode — authenticated encryption, sekaligus deteksi tampering
 - Built-in di Node.js `crypto` module — tidak butuh library tambahan
 
-### 15.3 Implementasi
+### 16.3 Implementasi
 
 ```javascript
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto'
@@ -1360,7 +1893,7 @@ export function decrypt(ciphertext) {
 
 IV (Initialization Vector) di-generate baru tiap kali enkripsi — tidak pernah reuse. IV tidak perlu dirahasiakan, cukup disimpan bersama ciphertext.
 
-### 15.4 Key management
+### 16.4 Key management
 
 ```
 ENCRYPTION_KEY=   ← 64 karakter hex (= 32 bytes)
@@ -1371,7 +1904,7 @@ ENCRYPTION_KEY=   ← 64 karakter hex (= 32 bytes)
 
 Key rotation: kalau `ENCRYPTION_KEY` perlu diganti, perlu migration — decrypt semua token dengan key lama, encrypt ulang dengan key baru. Proses ini harus atomic dan dilakukan saat maintenance window.
 
-### 15.5 Di mana encrypt/decrypt dipanggil
+### 16.5 Di mana encrypt/decrypt dipanggil
 
 | Operasi                  | Kapan                                                                |
 | ------------------------ | -------------------------------------------------------------------- |
@@ -1384,7 +1917,7 @@ Tidak pernah log token dalam bentuk plaintext — bahkan di error logs sekalipun
 
 ---
 
-## 16. Non-functional Requirements
+## 18. Non-functional Requirements
 
 ### Performance
 
@@ -1412,7 +1945,7 @@ Tidak pernah log token dalam bentuk plaintext — bahkan di error logs sekalipun
 
 ---
 
-## 17. Development Phases & Timeline
+## 19. Development Phases & Timeline
 
 ### Phase 1 — MVP
 
@@ -1448,7 +1981,7 @@ Tidak pernah log token dalam bentuk plaintext — bahkan di error logs sekalipun
 
 ---
 
-## 18. Risks
+## 20. Risks
 
 | Risk                                        | Kemungkinan | Dampak | Mitigasi                                                                     |
 | ------------------------------------------- | ----------- | ------ | ---------------------------------------------------------------------------- |
@@ -1462,7 +1995,7 @@ Tidak pernah log token dalam bentuk plaintext — bahkan di error logs sekalipun
 
 ---
 
-## 19. Architectural Decisions (sudah final)
+## 21. Architectural Decisions (sudah final)
 
 | #   | Pertanyaan           | Keputusan                               | Implikasi                                                                                                               |
 | --- | -------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
@@ -1507,4 +2040,4 @@ Zone boundaries (% dari masing-masing metodologi):
 
 ---
 
-_End of document. Version 1.1 — semua architectural decisions final, siap untuk development planning._
+_End of document. Version 2.2 — Section 12 Gear Management updated: added `notification_distance_m` column to rt_gear schema and sync fields, documented two-tab limit toggle (Strava / Manual) in UI spec and acceptance criteria, updated GET response shape, added PATCH validation note for Strava-managed field._
