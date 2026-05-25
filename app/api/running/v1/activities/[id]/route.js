@@ -24,7 +24,7 @@ export async function GET(_request, { params }) {
     const { data: activity, error: activityError } = await supabase
       .from('rt_activities')
       .select(
-        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, weather_summary, created_at, name, avg_watts, weighted_avg_watts, device_watts, summary_polyline, gear_id, avg_temp_c, pr_count, workout_type, relative_effort, max_pace_sec_per_km'
+        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, weather_summary, created_at, name, avg_watts, weighted_avg_watts, device_watts, summary_polyline, gear_id, avg_temp_c, pr_count, workout_type, relative_effort, max_pace_sec_per_km, device_name, kilojoules, elev_high_m, elev_low_m, achievement_count, kudos_count'
       )
       .eq('id', id)
       .eq('user_id', user.id)
@@ -61,8 +61,36 @@ export async function GET(_request, { params }) {
 
     if (splitsError) throw splitsError
 
+    const { data: laps, error: lapsError } = await supabase
+      .from('rt_activity_laps')
+      .select(
+        'id, lap_index, name, distance_m, elapsed_time_sec, moving_time_sec, avg_speed_ms, max_speed_ms, avg_cadence, avg_watts, total_elevation_gain_m, pace_zone, started_at'
+      )
+      .eq('activity_id', id)
+      .order('lap_index', { ascending: true })
+    if (lapsError) throw lapsError
+
+    const { data: bestEfforts, error: bestEffortsError } = await supabase
+      .from('rt_activity_best_efforts')
+      .select('id, name, distance_m, elapsed_time_sec, moving_time_sec, pr_rank, started_at')
+      .eq('activity_id', id)
+      .order('distance_m', { ascending: true })
+    if (bestEffortsError) throw bestEffortsError
+
+    const { data: photos, error: photosError } = await supabase
+      .from('rt_activity_photos')
+      .select('id, unique_id, url_600, url_100, media_type')
+      .eq('activity_id', id)
+    if (photosError) throw photosError
+
     return NextResponse.json(
-      { activity: { ...activity, gear }, splits: splits ?? [] },
+      {
+        activity: { ...activity, gear },
+        splits: splits ?? [],
+        laps: laps ?? [],
+        best_efforts: bestEfforts ?? [],
+        photos: photos ?? [],
+      },
       { status: 200 }
     )
   } catch (err) {

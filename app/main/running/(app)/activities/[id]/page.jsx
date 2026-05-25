@@ -26,6 +26,7 @@ import {
   Calendar,
   NotebookText,
   CloudSun,
+  Smartphone,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -354,6 +355,9 @@ export default function ActivityDetailPage() {
   const { id } = useParams()
   const [activity, setActivity] = useState(null)
   const [splits, setSplits] = useState([])
+  const [laps, setLaps] = useState([])
+  const [bestEfforts, setBestEfforts] = useState([])
+  const [photos, setPhotos] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -372,6 +376,9 @@ export default function ActivityDetailPage() {
           if (actRes.status === 'fulfilled') {
             setActivity(actRes.value.activity)
             setSplits(actRes.value.splits ?? [])
+            setLaps(actRes.value.laps ?? [])
+            setBestEfforts(actRes.value.best_efforts ?? [])
+            setPhotos(actRes.value.photos ?? [])
           } else {
             throw actRes.reason
           }
@@ -462,6 +469,15 @@ export default function ActivityDetailPage() {
                             <Trophy className="size-3" aria-hidden="true" />
                             {activity.pr_count} PR
                           </span>
+                        )}
+                        {activity.achievement_count > 0 && (
+                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 text-xs font-semibold shrink-0">
+                            <Trophy className="size-3" aria-hidden="true" />
+                            {activity.achievement_count} achievements
+                          </span>
+                        )}
+                        {activity.kudos_count > 0 && (
+                          <span className="text-xs text-slate-400">♥ {activity.kudos_count}</span>
                         )}
                       </div>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -555,6 +571,20 @@ export default function ActivityDetailPage() {
                       {activity.perceived_exertion != null && (
                         <StatTile label="RPE" value={activity.perceived_exertion} unit="/ 10" />
                       )}
+                      {activity.kilojoules != null && (
+                        <StatTile
+                          label="Energy"
+                          value={Math.round(activity.kilojoules)}
+                          unit="kJ"
+                        />
+                      )}
+                      {(activity.elev_high_m != null || activity.elev_low_m != null) && (
+                        <StatTile
+                          label="Elevation Range"
+                          value={`↑${Math.round(activity.elev_high_m ?? 0)} ↓${Math.round(activity.elev_low_m ?? 0)}`}
+                          unit="m"
+                        />
+                      )}
                     </div>
                   </div>
 
@@ -593,6 +623,14 @@ export default function ActivityDetailPage() {
                     </div>
                   )}
 
+                  {/* Device */}
+                  {activity.device_name && (
+                    <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 rounded-lg">
+                      <Smartphone className="size-4 text-slate-400 shrink-0" aria-hidden="true" />
+                      <span className="text-sm text-slate-600">{activity.device_name}</span>
+                    </div>
+                  )}
+
                   {/* Notes + weather */}
                   {(activity.notes || activity.weather_summary) && (
                     <div className="flex flex-col gap-2">
@@ -611,6 +649,25 @@ export default function ActivityDetailPage() {
                           <p className="text-sm text-slate-600">{activity.weather_summary}</p>
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {/* Photos */}
+                  {photos.length > 0 && (
+                    <div>
+                      <SectionLabel>Photos</SectionLabel>
+                      <div className="flex flex-wrap gap-2">
+                        {photos.map((p) =>
+                          p.url_600 ? (
+                            <img
+                              key={p.unique_id}
+                              src={p.url_600}
+                              alt="Activity photo"
+                              className="rounded-lg object-cover w-full max-h-72"
+                            />
+                          ) : null
+                        )}
+                      </div>
                     </div>
                   )}
 
@@ -681,6 +738,124 @@ export default function ActivityDetailPage() {
                                 </TableCell>
                               </TableRow>
                             ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  )}
+                  {/* Best Efforts */}
+                  {bestEfforts.length > 0 && (
+                    <div>
+                      <SectionLabel>Best Efforts</SectionLabel>
+                      <div className="overflow-x-auto">
+                        <Table className="w-full table-auto">
+                          <TableHeader className="bg-slate-100">
+                            <TableRow className="border-none uppercase text-xs">
+                              <TableHead className="py-2 text-slate-foreground rounded-l-lg">
+                                Distance
+                              </TableHead>
+                              <TableHead className="py-2 text-slate-foreground text-right">
+                                Time
+                              </TableHead>
+                              <TableHead className="py-2 text-slate-foreground text-right rounded-r-lg">
+                                PR
+                              </TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {bestEfforts.map((e) => (
+                              <TableRow key={e.id} className="hover:bg-slate-50">
+                                <TableCell className="text-sm text-slate-700 font-medium">
+                                  {e.name}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <span className="font-mono tabular-nums text-sm text-slate-700">
+                                    {e.elapsed_time_sec ? fmtDuration(e.elapsed_time_sec) : '—'}
+                                  </span>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {e.pr_rank === 1 ? (
+                                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                                      <Trophy className="size-3" aria-hidden="true" />
+                                      PR
+                                    </span>
+                                  ) : e.pr_rank != null ? (
+                                    <span className="text-xs text-slate-400">#{e.pr_rank}</span>
+                                  ) : (
+                                    <span className="text-xs text-slate-300">—</span>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Laps */}
+                  {laps.length > 0 && (
+                    <div>
+                      <SectionLabel>Laps</SectionLabel>
+                      <div className="overflow-x-auto">
+                        <Table className="w-full table-auto">
+                          <TableHeader className="bg-slate-100">
+                            <TableRow className="border-none uppercase text-xs">
+                              <TableHead className="py-2 text-slate-foreground rounded-l-lg w-10">
+                                #
+                              </TableHead>
+                              <TableHead className="py-2 text-slate-foreground text-right">
+                                Dist
+                              </TableHead>
+                              <TableHead className="py-2 text-slate-foreground text-right">
+                                Pace
+                              </TableHead>
+                              <TableHead className="py-2 text-slate-foreground text-right">
+                                Time
+                              </TableHead>
+                              <TableHead className="py-2 text-slate-foreground text-right rounded-r-lg">
+                                Elev
+                              </TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {laps.map((l) => {
+                              const lapPaceSec =
+                                l.moving_time_sec > 0 && l.distance_m > 0
+                                  ? Math.round(l.moving_time_sec / (l.distance_m / 1000))
+                                  : null
+                              return (
+                                <TableRow key={l.id} className="hover:bg-slate-50">
+                                  <TableCell className="text-xs text-slate-400 font-medium">
+                                    {l.lap_index}
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    <span className="font-mono tabular-nums text-sm text-slate-700">
+                                      {l.distance_m
+                                        ? `${(l.distance_m / 1000).toFixed(2)} km`
+                                        : '—'}
+                                    </span>
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    <span className="font-mono tabular-nums text-sm text-slate-700">
+                                      {lapPaceSec ? `${fmtPace(lapPaceSec)}/km` : '—'}
+                                    </span>
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    <span className="font-mono tabular-nums text-sm text-slate-700">
+                                      {l.moving_time_sec ? fmtDuration(l.moving_time_sec) : '—'}
+                                    </span>
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    <span className="font-mono tabular-nums text-sm text-slate-700">
+                                      {l.total_elevation_gain_m != null
+                                        ? `${l.total_elevation_gain_m > 0 ? '+' : ''}${Math.round(l.total_elevation_gain_m)} m`
+                                        : '—'}
+                                    </span>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            })}
                           </TableBody>
                         </Table>
                       </div>
