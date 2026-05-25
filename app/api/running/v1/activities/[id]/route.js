@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { patchActivitySchema } from '@/schemas/runningManualEntry'
 
 export async function GET(_request, { params }) {
@@ -23,7 +24,7 @@ export async function GET(_request, { params }) {
     const { data: activity, error: activityError } = await supabase
       .from('rt_activities')
       .select(
-        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, weather_summary, created_at'
+        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, weather_summary, created_at, name, avg_watts, weighted_avg_watts, device_watts, summary_polyline, gear_id, avg_temp_c, pr_count, workout_type, relative_effort, max_pace_sec_per_km'
       )
       .eq('id', id)
       .eq('user_id', user.id)
@@ -38,6 +39,18 @@ export async function GET(_request, { params }) {
       )
     }
 
+    let gear = null
+    if (activity.gear_id) {
+      const admin = createAdminClient()
+      const { data: gearRow } = await admin
+        .from('rt_gear')
+        .select('name, distance_m')
+        .eq('id', activity.gear_id)
+        .eq('user_id', user.id)
+        .maybeSingle()
+      if (gearRow) gear = { name: gearRow.name, distance_m: gearRow.distance_m }
+    }
+
     const { data: splits, error: splitsError } = await supabase
       .from('rt_activity_splits')
       .select(
@@ -48,7 +61,10 @@ export async function GET(_request, { params }) {
 
     if (splitsError) throw splitsError
 
-    return NextResponse.json({ activity, splits: splits ?? [] }, { status: 200 })
+    return NextResponse.json(
+      { activity: { ...activity, gear }, splits: splits ?? [] },
+      { status: 200 }
+    )
   } catch (err) {
     console.error('[running/activities/:id GET]', err)
     return NextResponse.json(
