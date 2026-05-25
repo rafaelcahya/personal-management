@@ -22,10 +22,12 @@ export async function GET(request) {
 
     const { searchParams } = new URL(request.url)
     const activityType = searchParams.get('type') || null
+    const tzOffset = parseInt(searchParams.get('tz_offset') ?? '0', 10)
+    const tzOffsetMs = isNaN(tzOffset) ? 0 : tzOffset * 60 * 1000
 
     const admin = createAdminClient()
     const [data, credResult, ytd_stats] = await Promise.all([
-      getDashboardData(user.id, activityType),
+      getDashboardData(user.id, activityType, tzOffsetMs),
       admin
         .from('rt_strava_credentials')
         .select('last_sync_at')
