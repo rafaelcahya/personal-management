@@ -24,7 +24,7 @@ export async function GET(_request, { params }) {
     const { data: activity, error: activityError } = await supabase
       .from('rt_activities')
       .select(
-        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, weather_summary, created_at, name, avg_watts, weighted_avg_watts, device_watts, summary_polyline, gear_id, avg_temp_c, pr_count, workout_type, relative_effort, max_pace_sec_per_km, device_name, kilojoules, elev_high_m, elev_low_m, achievement_count, kudos_count'
+        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, description, weather_summary, created_at, name, avg_watts, weighted_avg_watts, device_watts, summary_polyline, gear_id, avg_temp_c, pr_count, workout_type, relative_effort, max_pace_sec_per_km, device_name, kilojoules, elev_high_m, elev_low_m, achievement_count, kudos_count, zones'
       )
       .eq('id', id)
       .eq('user_id', user.id)

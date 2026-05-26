@@ -20,7 +20,10 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertCircle,
+  Search,
+  X,
 } from 'lucide-react'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -186,6 +189,8 @@ function ActivitiesInner() {
   const [knownTypes, setKnownTypes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState('')
 
   const LIMIT = 20
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
@@ -203,6 +208,7 @@ function ActivitiesInner() {
           type,
           from: getRangeFrom(range),
           sort,
+          search: search || null,
         })
         if (!cancelled) {
           setActivities(res.data ?? [])
@@ -231,7 +237,7 @@ function ActivitiesInner() {
     return () => {
       cancelled = true
     }
-  }, [page, type, range, sort])
+  }, [page, type, range, sort, search])
 
   function clearFilters() {
     router.push('/main/running/activities')
@@ -251,6 +257,31 @@ function ActivitiesInner() {
       <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white flex flex-col">
         {/* Filter bar */}
         <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5">
+          {/* Search input */}
+          <div className="relative mb-2">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none" aria-hidden="true" />
+            <Input
+              data-testid="activitiesSearch"
+              type="text"
+              placeholder="Search by activity name…"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') setSearch(searchInput.trim())
+              }}
+              className="pl-8 pr-8 h-8 text-sm"
+            />
+            {searchInput && (
+              <button
+                data-testid="activitiesSearchClear"
+                onClick={() => { setSearchInput(''); setSearch('') }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                aria-label="Clear search"
+              >
+                <X className="size-3.5" aria-hidden="true" />
+              </button>
+            )}
+          </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
             {/* Type chips */}
             <div className="flex items-center gap-2 shrink-0">

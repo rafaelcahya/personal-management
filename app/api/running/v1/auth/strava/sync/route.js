@@ -188,6 +188,7 @@ export async function POST(_request) {
           external_id: String(a.id),
           activity_type: a.sport_type ?? a.type ?? null,
           name: a.name ?? null,
+          description: a.description ?? null,
           notes: a.name ?? null,
           started_at: a.start_date,
           duration_sec: a.elapsed_time,
@@ -208,7 +209,10 @@ export async function POST(_request) {
           avg_watts: a.average_watts != null ? Math.round(a.average_watts) : null,
           weighted_avg_watts:
             a.weighted_average_watts != null ? Math.round(a.weighted_average_watts) : null,
-          device_watts: a.device_watts ?? null,
+          device_watts: a.device_watts ?? false,
+          kilojoules: a.kilojoules ?? null,
+          achievement_count: a.achievement_count ?? 0,
+          kudos_count: a.kudos_count ?? 0,
           summary_polyline: a.map?.summary_polyline ?? null,
           raw_data: a,
         }))
@@ -219,10 +223,8 @@ export async function POST(_request) {
           .select('id, external_id')
 
         if (insertError) {
-          return NextResponse.json(
-            { error: `Insert failed: ${insertError.message}` },
-            { status: 500 }
-          )
+          console.error('[strava/sync] insert failed:', insertError.message)
+          return NextResponse.json({ error: 'Sync failed' }, { status: 500 })
         }
 
         if (insertedRows?.length > 0) {

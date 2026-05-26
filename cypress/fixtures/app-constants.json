@@ -10,6 +10,7 @@
     "running_onboarding": "/main/running/onboarding",
     "running_dashboard": "/main/running/dashboard",
     "running_activities": "/main/running/activities",
+    "running_race_log": "/main/running/race-log",
     "trading": "/main/trading",
     "trading_dashboard": "/main/trading/dashboard",
     "trading_trade": "/main/trading/trade",
@@ -89,6 +90,13 @@
     },
     "running_goals": {
       "update": "/api/running/v1/goals"
+    },
+    "running_activity_streams": {
+      "get": "/api/running/v1/activities"
+    },
+    "running_ai_insights": {
+      "list": "/api/running/v1/ai/insights",
+      "generate": "/api/running/v1/ai/insights/generate"
     }
   },
   "test_ids": {
@@ -273,7 +281,25 @@
       "list": "activitiesList"
     },
     "running_activity_detail": {
-      "page": "activityDetailPage"
+      "page": "activityDetailPage",
+      "stream_charts_section": "streamChartsSection",
+      "stream_charts_loading": "streamChartsLoading",
+      "stream_charts_error": "streamChartsError",
+      "stream_charts_retry": "streamChartsRetry",
+      "stream_charts_empty": "streamChartsEmpty",
+      "stream_chart_pace": "streamChartPace",
+      "stream_chart_hr": "streamChartHr",
+      "stream_chart_elevation": "streamChartElevation",
+      "hr_zones_section": "hrZonesSection",
+      "hr_zones_empty": "hrZonesEmpty",
+      "ai_insight_card": "aiInsightCard",
+      "ai_insight_loading": "aiInsightLoading",
+      "ai_insight_empty": "aiInsightEmpty",
+      "ai_insight_generate_btn": "aiInsightGenerateBtn",
+      "ai_insight_pending": "aiInsightPending",
+      "ai_insight_content": "aiInsightContent",
+      "ai_insight_error": "aiInsightError",
+      "ai_insight_retry": "aiInsightRetry"
     },
     "running_dashboard": {
       "page": "dashboardPage",

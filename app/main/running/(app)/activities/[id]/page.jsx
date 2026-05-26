@@ -57,7 +57,10 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { toast } from 'sonner'
-import { fetchActivity, getDashboard, updateGoal } from '@/lib/api/running'
+import { fetchActivity, getDashboard, updateGoal, updateActivity } from '@/lib/api/running'
+import StreamCharts from '../components/StreamCharts'
+import HrZonesChart from '../components/HrZonesChart'
+import AIInsightCard from '../components/AIInsightCard'
 import { updateGoalSchema } from '@/schemas/raceLog'
 import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../../dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
@@ -364,6 +367,25 @@ export default function ActivityDetailPage() {
   const [nextRaceGoal, setNextRaceGoal] = useState(null)
   const [editGoalOpen, setEditGoalOpen] = useState(false)
 
+  const [notesEditing, setNotesEditing] = useState(false)
+  const [notesValue, setNotesValue] = useState('')
+  const [notesSaving, setNotesSaving] = useState(false)
+
+  async function handleSaveNotes() {
+    setNotesSaving(true)
+    try {
+      const trimmed = notesValue.trim() || null
+      await updateActivity(id, { notes: trimmed })
+      setActivity((prev) => ({ ...prev, notes: trimmed }))
+      setNotesEditing(false)
+      toast.success('Notes saved')
+    } catch (err) {
+      toast.error(err.message || 'Failed to save notes')
+    } finally {
+      setNotesSaving(false)
+    }
+  }
+
   useEffect(() => {
     if (!id) return
     let cancelled = false
@@ -631,26 +653,91 @@ export default function ActivityDetailPage() {
                     </div>
                   )}
 
-                  {/* Notes + weather */}
-                  {(activity.notes || activity.weather_summary) && (
-                    <div className="flex flex-col gap-2">
-                      {activity.notes && (
+                  {/* Description (from Strava) */}
+                  {activity.description && (
+                    <div className="px-3 py-2.5 bg-slate-50 rounded-lg">
+                      <p className="text-xs font-medium text-slate-400 mb-1">Description</p>
+                      <p className="text-sm text-slate-600 whitespace-pre-line">{activity.description}</p>
+                    </div>
+                  )}
+
+                  {/* Notes — inline editable */}
+                  <div className="flex flex-col gap-2">
+                    {notesEditing ? (
+                      <div className="flex flex-col gap-2">
                         <div className="flex items-start gap-2 px-3 py-2.5 bg-slate-50 rounded-lg">
                           <NotebookText
                             className="size-4 text-slate-400 shrink-0 mt-0.5"
                             aria-hidden="true"
                           />
-                          <p className="text-sm text-slate-600">{activity.notes}</p>
+                          <textarea
+                            data-testid="notesTextarea"
+                            rows={3}
+                            value={notesValue}
+                            onChange={(e) => setNotesValue(e.target.value)}
+                            className="w-full text-sm text-slate-700 bg-white border border-slate-200 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
+                            placeholder="Add your notes…"
+                            autoFocus
+                          />
                         </div>
-                      )}
-                      {activity.weather_summary && (
-                        <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 rounded-lg">
-                          <CloudSun className="size-4 text-slate-400 shrink-0" aria-hidden="true" />
-                          <p className="text-sm text-slate-600">{activity.weather_summary}</p>
+                        <div className="flex gap-2 justify-end">
+                          <Button
+                            data-testid="notesCancelBtn"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setNotesEditing(false)}
+                            disabled={notesSaving}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            data-testid="notesSaveBtn"
+                            size="sm"
+                            onClick={handleSaveNotes}
+                            disabled={notesSaving}
+                            className="min-w-[60px]"
+                          >
+                            {notesSaving ? (
+                              <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+                            ) : (
+                              'Save'
+                            )}
+                          </Button>
                         </div>
-                      )}
-                    </div>
-                  )}
+                      </div>
+                    ) : (
+                      <button
+                        data-testid="notesEditBtn"
+                        onClick={() => {
+                          setNotesValue(activity.notes ?? '')
+                          setNotesEditing(true)
+                        }}
+                        className="flex items-start gap-2 px-3 py-2.5 bg-slate-50 rounded-lg w-full text-left hover:bg-slate-100 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                        aria-label="Edit notes"
+                      >
+                        <NotebookText
+                          className="size-4 text-slate-400 shrink-0 mt-0.5"
+                          aria-hidden="true"
+                        />
+                        {activity.notes ? (
+                          <span className="text-sm text-slate-600 flex-1">{activity.notes}</span>
+                        ) : (
+                          <span className="text-sm text-slate-400 italic flex-1">Add notes…</span>
+                        )}
+                        <Pencil className="size-3.5 text-slate-300 group-hover:text-slate-400 shrink-0 mt-0.5 transition-colors" aria-hidden="true" />
+                      </button>
+                    )}
+
+                    {activity.weather_summary && (
+                      <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 rounded-lg">
+                        <CloudSun className="size-4 text-slate-400 shrink-0" aria-hidden="true" />
+                        <p className="text-sm text-slate-600">{activity.weather_summary}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="border-t border-slate-100" />
+                  <AIInsightCard activityId={id} />
 
                   {/* Photos */}
                   {photos.length > 0 && (
@@ -861,6 +948,10 @@ export default function ActivityDetailPage() {
                       </div>
                     </div>
                   )}
+                  <div className="border-t border-slate-100" />
+                  <StreamCharts activityId={id} />
+                  <div className="border-t border-slate-100" />
+                  <HrZonesChart zones={activity.zones} />
                 </div>
               </div>
 

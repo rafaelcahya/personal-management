@@ -60,7 +60,7 @@ export default function NextRace({ next_race_goal }) {
             </div>
             <p className="text-sm text-slate-500">No race goal set</p>
             <Link
-              href="/main/running/race"
+              href="/main/running/race-log"
               className="text-xs font-medium text-violet-600 hover:text-violet-700 hover:underline transition-colors"
             >
               Add your first race →
@@ -127,7 +127,7 @@ export default function NextRace({ next_race_goal }) {
           )}
           <div className="mt-3 pt-3 border-t border-slate-100 flex justify-end">
             <Link
-              href="/main/running/race"
+              href="/main/running/race-log"
               className="text-xs font-medium text-violet-600 hover:text-violet-700 hover:underline transition-colors"
             >
               View all races →
