@@ -5,12 +5,19 @@ import { Sparkles, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { fetchActivityInsight, requestInsightGeneration } from '@/lib/api/running'
 
+function parseInline(text) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g)
+  return parts.map((part, i) =>
+    part.startsWith('**') && part.endsWith('**')
+      ? <strong key={i} className="font-semibold text-slate-700">{part.slice(2, -2)}</strong>
+      : part
+  )
+}
+
 function renderMarkdown(content) {
   if (!content) return null
 
-  // Split by section headers
-  const raw = content.startsWith('## ') ? content : content
-  const sections = raw.split(/\n(?=## )/)
+  const sections = content.split(/\n(?=## )/)
 
   return sections.map((section, i) => {
     const lines = section.split('\n')
@@ -51,11 +58,11 @@ function renderMarkdown(content) {
           part.type === 'list' ? (
             <ul key={j} className="list-disc list-inside space-y-0.5 mb-1">
               {part.items.map((item, k) => (
-                <li key={k} className="text-sm text-slate-600">{item}</li>
+                <li key={k} className="text-sm text-slate-600">{parseInline(item)}</li>
               ))}
             </ul>
           ) : (
-            <p key={j} className="text-sm text-slate-600 mb-1">{part.text}</p>
+            <p key={j} className="text-sm text-slate-600 mb-1">{parseInline(part.text)}</p>
           )
         )}
       </div>
