@@ -16,6 +16,16 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { searchParams } = new URL(request.url)
+    const resolutionParam = searchParams.get('resolution') ?? '10s'
+
+    if (!(resolutionParam in VALID_RESOLUTIONS)) {
+      return NextResponse.json(
+        { error: 'Invalid resolution. Use: raw, 10s, 30s, 60s' },
+        { status: 400 }
+      )
+    }
+
     const { id } = await params
 
     const { data: activity, error: activityError } = await supabase
@@ -29,16 +39,6 @@ export async function GET(request, { params }) {
 
     if (!activity) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
-    }
-
-    const { searchParams } = new URL(request.url)
-    const resolutionParam = searchParams.get('resolution') ?? '10s'
-
-    if (!(resolutionParam in VALID_RESOLUTIONS)) {
-      return NextResponse.json(
-        { error: 'Invalid resolution. Use: raw, 10s, 30s, 60s' },
-        { status: 400 }
-      )
     }
 
     const downFactor = VALID_RESOLUTIONS[resolutionParam]

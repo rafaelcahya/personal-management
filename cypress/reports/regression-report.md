@@ -1,5 +1,52 @@
 # Regression Testing Report
 
+**Date:** 2026-05-27
+**App Version:** 1.22
+**Scope:** Running Tracker Activities — focused run (9 spec files, 2 new)
+**Tester:** QA Agent
+
+## Summary (2026-05-27 Focused Run — Running Tracker Activities)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 152         | 152    | 0      | 0       | **100%**         |
+
+### Running Tracker Activities — Spec Files
+
+| #  | Spec File                                                | Tests | Passed | Pending | Failed | Status   |
+| -- | -------------------------------------------------------- | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/activities/activities-api.cy.js ⭐ NEW           | 8     | 8      | 0       | 0      | ✅ PASS  |
+| 2  | running/activities/activities-ui.cy.js ⭐ NEW            | 21    | 21     | 0       | 0      | ✅ PASS  |
+| 3  | running/activities/activity-detail-ui.cy.js              | 27    | 27     | 0       | 0      | ✅ PASS  |
+| 4  | running/activities/activityDetail.cy.js                  | 36    | 36     | 0       | 0      | ✅ PASS  |
+| 5  | running/activities/activityDetailApi.cy.js               | 25    | 25     | 0       | 0      | ✅ PASS  |
+| 6  | running/activities/ai-insight-api.cy.js                  | 8     | 8      | 0       | 0      | ✅ PASS  |
+| 7  | running/activities/hr-zones-api.cy.js                    | 6     | 6      | 0       | 0      | ✅ PASS  |
+| 8  | running/activities/stream-charts-api.cy.js               | 7     | 7      | 0       | 0      | ✅ PASS  |
+| 9  | running/activities/stream-charts-ui.cy.js                | 14    | 14     | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                                | **152** | **152** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `activities-api.cy.js` (8 tests, NEW): GET /api/running/v1/activities — authenticated 200 + paginated shape `{data, total, page, limit}`, data array, required field presence, `?type=Run` filter, `?page&limit` params, 401 unauthenticated.
+- `activities-ui.cy.js` (21 tests, NEW): Activities list page — auth guard, loading skeleton, list renders, type filter (query param changes), pagination next/prev, error state, empty state (no activities + filtered empty).
+- `activityDetail.cy.js` (36 tests): Activity detail full page — stats grid, secondary stats, HR zones, AI insight card (all 5 states), gear row, splits, laps, route map.
+- `activityDetailApi.cy.js` (25 tests): GET /activities/:id, PATCH /activities/:id, DELETE /activities/:id, PATCH /goals/:id — all status codes and ownership checks. `PATCH /goals/:id` ownership test now asserts strict 404 (bug fixed: `.single()` → `.maybeSingle()` in updateGoal.js).
+- `activity-detail-ui.cy.js` (27 tests): HrZonesChart (empty state, Z1-Z5 rows, HR range labels, % + duration) + AIInsightCard (loading, empty+focus buttons, generate→pending, content markdown, error+retry, completed-invalid fallback). All `data-testid` converted to `id=` with `_activityDetailPage` suffix.
+- `ai-insight-api.cy.js` (8 tests): GET /ai/insights (list shape, field presence, status enum) + POST /ai/insights/generate (queued response, 422 missing activity_id, 401, 404 unowned activity).
+- `hr-zones-api.cy.js` (6 tests): GET /activities/:id zones field presence, null vs populated.
+- `stream-charts-api.cy.js` (7 tests): GET /activities/:id/streams — shape, 400 invalid resolution (validation now runs before DB lookup), 401, 404 non-existent.
+- `stream-charts-ui.cy.js` (14 tests): StreamCharts component — loading skeleton, happy path (pace/HR/elevation charts), empty state, error state, retry → success. All `data-testid` converted to `id=` with `_activityDetailPage` suffix.
+
+**Bugs fixed this session:**
+- `updateGoal.js` — `.single()` → `.maybeSingle()`: PATCH /goals/:id now returns 404 (not 500) for unowned goals.
+- `streams/route.js` — resolution validation moved before DB lookup: invalid `?resolution=` now returns 400 (not 500).
+- `AIInsightCard.jsx` — added missing `border-l-4 border-purple-400` per design spec.
+- All `data-testid` in `StreamCharts.jsx`, `HrZonesChart.jsx`, `AIInsightCard.jsx`, `activities/page.jsx` converted to `id=` following `{componentName}_{pageName}` convention.
+
+---
+
+## Previous Run — 2026-05-25 Focused Run (Running Tracker Dashboard Extended)
+
 **Date:** 2026-05-25
 **App Version:** 1.21
 **Scope:** Running Tracker Dashboard Extended — focused run (4 new spec files)
@@ -304,6 +351,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-05-27 | Running Tracker Activities           | 152   | 152    | 0       | 0      | 100%        |
 | 2026-05-25 | Running Tracker Dashboard Extended   | 39    | 39     | 0       | 0      | 100%        |
 | 2026-05-23 | Running Tracker Dashboard            | 36    | 36     | 0       | 0      | 100%        |
 | 2026-05-23 | Running Tracker Manual Entry API     | 21    | 21     | 0       | 0      | 100%        |

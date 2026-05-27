@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, useRef, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import {
@@ -189,12 +189,25 @@ function ActivitiesInner() {
   const [knownTypes, setKnownTypes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
+  const debounceRef = useRef(null)
 
   const LIMIT = 20
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
   const hasFilters = type || range !== 'all' || sort !== 'newest'
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      setSearch(searchInput.trim())
+    }, 400)
+    return () => clearTimeout(debounceRef.current)
+  }, [searchInput])
+
+  useEffect(() => {
+    setKnownTypes([])
+  }, [type, range, sort, search])
 
   useEffect(() => {
     let cancelled = false
@@ -259,22 +272,25 @@ function ActivitiesInner() {
         <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5">
           {/* Search input */}
           <div className="relative mb-2">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none" aria-hidden="true" />
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none"
+              aria-hidden="true"
+            />
             <Input
-              data-testid="activitiesSearch"
+              id="activitiesSearch_activitiesPage"
               type="text"
               placeholder="Search by activity name…"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') setSearch(searchInput.trim())
-              }}
-              className="pl-8 pr-8 h-8 text-sm"
+              className="pl-8 pr-8 h-8 text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600"
             />
             {searchInput && (
               <button
-                data-testid="activitiesSearchClear"
-                onClick={() => { setSearchInput(''); setSearch('') }}
+                id="activitiesSearchClear_activitiesPage"
+                onClick={() => {
+                  setSearchInput('')
+                  setSearch('')
+                }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 aria-label="Clear search"
               >

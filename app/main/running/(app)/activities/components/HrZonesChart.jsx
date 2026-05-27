@@ -30,14 +30,19 @@ export default function HrZonesChart({ zones }) {
   const hrZones = zones?.heart_rate?.zones
 
   return (
-    <div data-testid="hrZonesSection">
+    <div id="hrZonesSection_activityDetailPage">
       <div className="flex items-center gap-2 mb-3">
         <Activity className="h-4 w-4 text-slate-400" aria-hidden="true" />
-        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">HR Zones</span>
+        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+          HR Zones
+        </span>
       </div>
 
       {!hrZones || hrZones.length === 0 ? (
-        <p data-testid="hrZonesEmpty" className="text-sm text-muted-foreground text-slate-400">
+        <p
+          id="hrZonesEmpty_activityDetailPage"
+          className="text-sm text-muted-foreground text-slate-400"
+        >
           Zone data not available
         </p>
       ) : (
@@ -51,7 +56,9 @@ export default function HrZonesChart({ zones }) {
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-28 shrink-0">
                     <p className="text-xs font-medium text-slate-600">{zoneConfig.label}</p>
-                    <p className="text-[10px] text-slate-400">{formatHrRange(zone, i, hrZones.length)}</p>
+                    <p className="text-[10px] text-slate-400">
+                      {formatHrRange(zone, i, hrZones.length)}
+                    </p>
                   </div>
                   <div className="flex-1 h-5 bg-slate-100 rounded-full overflow-hidden">
                     <div

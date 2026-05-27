@@ -2,8 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import {
-  LineChart,
-  Line,
   AreaChart,
   Area,
   XAxis,
@@ -11,6 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceArea,
 } from 'recharts'
 import { AlertCircle, Activity } from 'lucide-react'
 import { fetchActivityStreams } from '@/lib/api/running'
@@ -76,63 +75,88 @@ function PaceChart({ data }) {
   return (
     <div>
       <SubLabel>Pace</SubLabel>
-      <div className="h-[100px] sm:h-[120px]" data-testid="streamChartPace">
+      <div className="h-[180px] sm:h-[210px]" id="streamChartPace_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} syncId="streamCharts" margin={{ top: 4, right: 8, left: 4, bottom: 0 }}>
+          <AreaChart
+            data={data}
+            syncId="streamCharts"
+            margin={{ top: 4, right: 8, left: 4, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="gradPace" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.25} />
+                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
-            <YAxis
-              reversed
-              tickFormatter={fmtPaceSec}
-              width={36}
-              {...AXIS_PROPS}
-            />
-            <Tooltip
-              content={
-                <StreamTooltip
-                  formatter={(sec) => `${fmtPaceSec(sec)} /km`}
-                />
-              }
-            />
-            <Line
+            <YAxis reversed tickFormatter={fmtPaceSec} width={36} {...AXIS_PROPS} />
+            <Tooltip content={<StreamTooltip formatter={(sec) => `${fmtPaceSec(sec)} /km`} />} />
+            <Area
               type="monotone"
               dataKey="pace"
               stroke="#8b5cf6"
               strokeWidth={1.5}
+              fill="url(#gradPace)"
+              baseValue="dataMax"
               dot={false}
               activeDot={{ r: 3 }}
               connectNulls={false}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </div>
   )
 }
 
-function HrStreamChart({ data }) {
+const ZONE_COLORS = ['#6b7280', '#3b82f6', '#f59e0b', '#f97316', '#ef4444']
+
+function HrStreamChart({ data, zones }) {
+  const hrZones = zones?.heart_rate?.zones ?? []
+
   return (
     <div>
       <SubLabel>Heart Rate</SubLabel>
-      <div className="h-[90px] sm:h-[110px]" data-testid="streamChartHr">
+      <div className="h-[170px] sm:h-[200px]" id="streamChartHr_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} syncId="streamCharts" margin={{ top: 4, right: 8, left: 4, bottom: 0 }}>
+          <AreaChart
+            data={data}
+            syncId="streamCharts"
+            margin={{ top: 4, right: 8, left: 4, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="gradHr" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
             <YAxis width={36} {...AXIS_PROPS} />
-            <Tooltip
-              content={<StreamTooltip formatter={(v) => `${v} bpm`} />}
-            />
-            <Line
+            <Tooltip content={<StreamTooltip formatter={(v) => `${v} bpm`} />} />
+            {hrZones.map((z, i) => (
+              <ReferenceArea
+                key={i}
+                y1={z.min}
+                y2={z.max}
+                fill={ZONE_COLORS[i] ?? '#94a3b8'}
+                fillOpacity={0.12}
+                ifOverflow="hidden"
+              />
+            ))}
+            <Area
               type="monotone"
               dataKey="hr"
               stroke="#ef4444"
               strokeWidth={1.5}
+              fill="url(#gradHr)"
+              baseValue="dataMin"
               dot={false}
               activeDot={{ r: 3 }}
               connectNulls={false}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </div>
@@ -143,22 +167,30 @@ function ElevationChart({ data }) {
   return (
     <div>
       <SubLabel>Elevation</SubLabel>
-      <div className="h-[75px] sm:h-[90px]" data-testid="streamChartElevation">
+      <div className="h-[150px] sm:h-[180px]" id="streamChartElevation_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} syncId="streamCharts" margin={{ top: 4, right: 8, left: 4, bottom: 0 }}>
+          <AreaChart
+            data={data}
+            syncId="streamCharts"
+            margin={{ top: 4, right: 8, left: 4, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="gradElevation" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#94a3b8" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
             <YAxis width={36} {...AXIS_PROPS} />
-            <Tooltip
-              content={<StreamTooltip formatter={(v) => `${Math.round(v)} m`} />}
-            />
+            <Tooltip content={<StreamTooltip formatter={(v) => `${Math.round(v)} m`} />} />
             <Area
               type="monotone"
               dataKey="alt"
               stroke="#94a3b8"
-              strokeWidth={1}
-              fill="#f1f5f9"
-              fillOpacity={0.8}
+              strokeWidth={1.5}
+              fill="url(#gradElevation)"
+              baseValue="dataMin"
               dot={false}
               activeDot={{ r: 3 }}
             />
@@ -169,7 +201,46 @@ function ElevationChart({ data }) {
   )
 }
 
-export default function StreamCharts({ activityId }) {
+function CadenceChart({ data }) {
+  return (
+    <div>
+      <SubLabel>Cadence</SubLabel>
+      <div className="h-[150px] sm:h-[180px]" id="streamChartCadence_activityDetailPage">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={data}
+            syncId="streamCharts"
+            margin={{ top: 4, right: 8, left: 4, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="gradCadence" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid {...GRID_PROPS} />
+            {XAXIS}
+            <YAxis width={36} {...AXIS_PROPS} />
+            <Tooltip content={<StreamTooltip formatter={(v) => `${v} spm`} />} />
+            <Area
+              type="monotone"
+              dataKey="cadence_spm"
+              stroke="#10b981"
+              strokeWidth={1.5}
+              fill="url(#gradCadence)"
+              baseValue="dataMin"
+              dot={false}
+              activeDot={{ r: 3 }}
+              connectNulls={false}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  )
+}
+
+export default function StreamCharts({ activityId, zones }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [meta, setMeta] = useState(null)
@@ -185,7 +256,11 @@ export default function StreamCharts({ activityId }) {
       const step = Math.max(1, Math.ceil(raw.length / 500))
       const processed = raw
         .filter((_, i) => i % step === 0 || i === raw.length - 1)
-        .map((d) => ({ ...d, dist_km: d.dist_m != null ? d.dist_m / 1000 : null }))
+        .map((d) => ({
+          ...d,
+          dist_km: d.dist_m != null ? d.dist_m / 1000 : null,
+          cadence_spm: d.cadence != null ? d.cadence * 2 : null,
+        }))
       setMeta(res.meta)
       setThinned(processed)
     } catch (err) {
@@ -202,14 +277,14 @@ export default function StreamCharts({ activityId }) {
   if (loading) {
     return (
       <div
-        data-testid="streamChartsLoading"
+        id="streamChartsLoading_activityDetailPage"
         className="flex flex-col gap-4 animate-pulse"
         aria-label="Loading performance charts"
       >
         <div className="h-3 bg-slate-100 rounded w-24" />
-        <div className="h-[100px] sm:h-[120px] bg-slate-100 rounded-lg" />
-        <div className="h-[90px] sm:h-[110px] bg-slate-100 rounded-lg" />
-        <div className="h-[75px] sm:h-[90px] bg-slate-100 rounded-lg" />
+        <div className="h-[180px] sm:h-[210px] bg-slate-100 rounded-lg" />
+        <div className="h-[170px] sm:h-[200px] bg-slate-100 rounded-lg" />
+        <div className="h-[150px] sm:h-[180px] bg-slate-100 rounded-lg" />
       </div>
     )
   }
@@ -217,7 +292,7 @@ export default function StreamCharts({ activityId }) {
   if (error) {
     return (
       <div
-        data-testid="streamChartsError"
+        id="streamChartsError_activityDetailPage"
         role="alert"
         aria-live="polite"
         className="flex items-center gap-2 py-4 text-sm text-slate-400"
@@ -225,7 +300,7 @@ export default function StreamCharts({ activityId }) {
         <AlertCircle className="size-4 text-red-400 shrink-0" aria-hidden="true" />
         <span>Could not load stream data.</span>
         <button
-          data-testid="streamChartsRetry"
+          id="streamChartsRetry_activityDetailPage"
           onClick={load}
           className="ml-auto text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded"
         >
@@ -238,11 +313,12 @@ export default function StreamCharts({ activityId }) {
   const hasPace = thinned.some((d) => d.pace != null && d.pace > 0)
   const hasHr = meta?.has_hr && thinned.some((d) => d.hr != null)
   const hasAlt = meta?.has_altitude && thinned.some((d) => d.alt != null)
+  const hasCadence = thinned.some((d) => d.cadence_spm != null && d.cadence_spm > 0)
 
-  if (!hasPace && !hasHr && !hasAlt) {
+  if (!hasPace && !hasHr && !hasAlt && !hasCadence) {
     return (
       <div
-        data-testid="streamChartsEmpty"
+        id="streamChartsEmpty_activityDetailPage"
         className="flex items-center gap-2 py-6 justify-center text-sm text-slate-400"
       >
         <Activity className="size-4 text-slate-300" aria-hidden="true" />
@@ -252,7 +328,7 @@ export default function StreamCharts({ activityId }) {
   }
 
   return (
-    <div data-testid="streamChartsSection">
+    <div id="streamChartsSection_activityDetailPage">
       <SectionLabel>Performance</SectionLabel>
       <p className="sr-only">
         Performance stream chart showing pace, heart rate, and elevation over distance for this
@@ -260,8 +336,9 @@ export default function StreamCharts({ activityId }) {
       </p>
       <div className="flex flex-col gap-4">
         {hasPace && <PaceChart data={thinned} />}
-        {hasHr && <HrStreamChart data={thinned} />}
+        {hasHr && <HrStreamChart data={thinned} zones={zones} />}
         {hasAlt && <ElevationChart data={thinned} />}
+        {hasCadence && <CadenceChart data={thinned} />}
       </div>
     </div>
   )

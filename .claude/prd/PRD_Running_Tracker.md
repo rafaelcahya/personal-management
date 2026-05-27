@@ -2,8 +2,8 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 2.2
-**Last Updated:** 2026-05-25
+**Version:** 2.4
+**Last Updated:** 2026-05-26
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6) · Strava API
 
@@ -306,6 +306,32 @@ User yang ingin hapus data historis juga bisa melakukannya secara manual via hal
 | File storage    | Cloudflare R2             | GPX/FIT file upload + backup                                        |
 | Deployment      | Vercel                    | Web app + API routes — serverless                                   |
 | Monitoring      | Sentry + Vercel Analytics |                                                                     |
+
+---
+
+## 6.1 UI Design Standards
+
+Aturan ini berlaku untuk semua komponen di Running Tracker. Frontend dan UI/UX Agent wajib mengikuti ini sebagai source of truth.
+
+### Input Focus Ring
+
+Semua elemen `<Input>` (shadcn) dan `<textarea>` **harus** menggunakan violet focus ring, bukan default gray dari CSS variable `--ring`:
+
+```
+focus-visible:ring-violet-200 focus-visible:border-violet-600
+```
+
+Untuk `<textarea>` native (bukan shadcn):
+
+```
+focus:outline-none focus:ring-2 focus:ring-violet-500
+```
+
+**Alasan:** `--ring` default di globals.css adalah dark gray (`0 0% 3.9%`), tidak konsisten dengan brand color violet yang dipakai di seluruh UI running tracker.
+
+### Brand Color
+
+Primary accent: `violet-600` (`#7c3aed`) — digunakan untuk CTA button, active state, focus ring, highlight.
 
 ---
 
@@ -1054,6 +1080,104 @@ ALTER TABLE ai_insights
 
 ---
 
+### 10.9 AI Coach Card — UI Design
+
+Kartu AI Coach muncul di halaman detail aktivitas, setelah pre-activity context section dan sebelum splits/laps/stream charts. Tampilannya satu kartu putih (`bg-white rounded-lg p-4`) dengan header tetap dan konten yang berubah sesuai state. Card dibungkus container dengan gradient `from-violet-50 to-purple-50` dan border `border-violet-200/60`.
+
+**Header (selalu tampil):**
+
+```
+✦ AI Coach  [BETA]
+```
+
+- Icon: `Sparkles` (purple-400)
+- Label: "AI Coach" (semibold, slate-700)
+- Badge: "BETA" (bg-purple-100, text-purple-700, rounded, font-medium)
+
+---
+
+**State 1 — Loading** (`data-testid="aiInsightLoading"`)
+
+Saat fetch awal insight dari DB. Tampil 3 skeleton bar (animate-pulse) dengan lebar berbeda (3/4, full, 5/6).
+
+---
+
+**State 2 — Load Error** (`data-testid="aiInsightError"`)
+
+Kalau fetch gagal. Tampil teks "Failed to load analysis" + tombol "Try again" (`data-testid="aiInsightRetry"`). Klik retry → `setInsight(undefined)` + re-fetch.
+
+---
+
+**State 3 — Empty / No Insight** (`data-testid="aiInsightEmpty"`)
+
+Kalau DB tidak punya insight untuk aktivitas ini. Tampil teks "Choose analysis focus:" + 4 focus buttons.
+
+**Focus buttons (primary variant — bg-purple-100):**
+
+| Button             | Icon       | Focus key       |
+| ------------------ | ---------- | --------------- |
+| Performance & Pace | Zap        | `performance`   |
+| Recovery & Load    | Heart      | `recovery`      |
+| Race Tips          | Trophy     | `next_race`     |
+| Next Training      | Footprints | `next_training` |
+
+Klik → `POST /api/running/v1/ai/insights/generate` dengan `{ activity_id, focus }` → set state ke `pending`.
+
+Kalau generate gagal → teks error merah "Failed to start analysis. Try again." muncul di atas buttons.
+
+---
+
+**State 4 — Pending / Generating** (`data-testid="aiInsightPending"`)
+
+Insight ada di DB dengan `status='pending'`. Tampil:
+
+- Spinner `Loader2` (purple-400) + teks "Analyzing..."
+- Teks kecil "Usually < 30 seconds"
+- Tombol "Refresh" manual (`data-testid="aiInsightRetry"`)
+
+Auto-poll setiap 8 detik. Kalau status berubah dari `pending` → stop polling → update state.
+
+---
+
+**State 5 — Valid Insight** (`data-testid="aiInsightContent"`)
+
+Kondisi: `status='completed' AND is_valid=true AND content != null`.
+
+Layout dari atas ke bawah:
+
+1. **Focus label** — pill kecil (bg-purple-100, text-purple-600, rounded-full) yang menunjukkan focus yang dipakai, e.g., "Performance & Pace"
+2. **Konten markdown** — render via `renderMarkdown()`:
+   - `## Header` → `<p>` semibold slate-700
+   - `- List item` → `<ul>` dengan `<li>` text-sm slate-600
+   - Paragraf biasa → `<p>` text-sm slate-600
+   - `**bold**` inline → `<strong>` semibold slate-700
+3. **Timestamp** — format `dd MMM yyyy, HH:mm` (locale id-ID), text-xs slate-400
+4. **Divider** + label "Re-analyze with different focus" → 4 focus buttons (sama dengan State 3)
+5. **Label "Ask more"** → 3 follow-up buttons (slate-100 variant):
+
+| Button           | Icon      | Focus key          |
+| ---------------- | --------- | ------------------ |
+| Training Plan    | BookOpen  | `detail_training`  |
+| HR Zone Analysis | Activity  | `zone_analysis`    |
+| Compare Baseline | BarChart2 | `compare_baseline` |
+
+---
+
+**State 6 — Completed but Invalid**
+
+`status='completed'` tapi `is_valid=false` atau `content` kosong. Tampil sama seperti State 3 (empty) — user bisa generate ulang.
+
+---
+
+**Polling logic:**
+
+- Poll hanya aktif saat `status='pending'`
+- Interval: 8 detik
+- Stop polling otomatis saat status berubah
+- Cleanup interval di `useEffect` unmount
+
+---
+
 ## 11. Dashboard & Statistik
 
 ### 10.1 Dashboard utama (Phase 1)
@@ -1122,15 +1246,109 @@ ALTER TABLE ai_insights
 
 ### 10.3 Activity detail page
 
-- Summary header: distance, duration, avg/max pace, avg/max HR, elevation, calories
-- Pace per km chart + elevation overlay
-- HR over time dengan zone coloring (Z1–Z5)
-- Map rute (Leaflet + OSM)
-- Splits table (km, pace, HR, elevation gain)
-- HR zones distribution (donut chart)
-- Cadence chart (kalau data ada)
-- Notes editable + AI auto-summary button
-- Pre-activity context: energy/sleep dari log hari tersebut
+**Route:** `/main/running/activities/[id]`
+**Root testid:** `data-testid="activityDetailPage"`
+
+#### Page structure (top to bottom)
+
+1. **Page header** — back button (ChevronLeft, returns to previous page) + breadcrumb (Running > Activities > [Activity name])
+2. **Main card** — white card with:
+   - **Media carousel** — if GPS polyline exists + no photos: shows RouteMap full width. If photos exist alongside map: shows combined carousel (map slide first, then photo slides) with prev/next arrows, dot navigation, and expand-to-fullscreen button for photos. If neither: section hidden.
+   - **Activity header** — activity type icon (colored by type/workout_type) + name + date + source badge. PR count badge (amber, Trophy icon) + achievement count badge when > 0. Kudos count when > 0.
+   - **Stats grid** — responsive 2–3 column grid. Only tiles with data are rendered (null-guarded). Tiles:
+     - Distance (km), Avg Pace (min/km) with best pace sub-label, Moving Time with elapsed diff sub-label, Avg HR (bpm) with max HR sub-label, Cadence (spm), Elevation (↑m + ↓m loss), Calories (kcal), Relative Effort, RPE (/10), Energy (kJ), Elevation Range (high/low m), Efficiency Factor (m/s/bpm, 4 decimals), Est. VO₂max (mL/kg/min, 1 decimal)
+     - Derived metrics guide text — shown when activity is a run type but `efficiency_factor`, `estimated_vo2max`, AND `aerobic_decoupling` are all null. Text: "Aerobic Decoupling, Efficiency Factor, and VO₂max estimates require heart rate data. Connect a HR monitor to your Strava activities to unlock these metrics." `data-testid="derivedMetricsGuide"`
+   - **Pills row** — shows only when at least one value exists:
+     - Power pill (violet, Zap icon) — shows weighted_avg_watts (or avg_watts if no weighted), with normalized watts note when different. Only shown when `device_watts = true`.
+     - Temperature pill (color-coded by range: Cold <10°C blue, Cool 10–18°C green, Warm 18–25°C amber, Hot 25–32°C orange, Very Hot ≥32°C red) — shows °C value + text label. Thermometer icon. Info text below about temperature source. `title` attribute with explanation.
+     - Aerobic Decoupling badge (Heart icon) — green "Good" < 5%, amber "Moderate" 5–10%, red "High drift" > 10%. Shows "Decouple +X%" with sign. `data-testid="aeroDrift"`. `title` explains Pa:Hr interpretation.
+   - **Gear row** — Footprints icon + shoe name + total km (from rt_gear.distance_m). Only shown when gear.name exists.
+   - **Device row** — Smartphone icon + device_name. Only shown when device_name exists.
+   - **Race log linkage badge** — amber card (Trophy icon) showing linked race entry title + finish time. Only shown when this activity is linked to an `rt_race_log` entry via `activity_id`. `data-testid` not currently set.
+   - **Strava description** — shown when `activity.description` exists (Strava-synced description, read-only).
+   - **Notes** — inline editable. View mode: click anywhere on the row to enter edit mode. Edit mode: textarea with Ctrl+Enter shortcut to save, Cancel button (`data-testid="notesCancelBtn"`), Save button (`data-testid="notesSaveBtn"`). View mode button: `data-testid="notesEditBtn"`. Textarea: `data-testid="notesTextarea"`.
+   - **Weather summary** — CloudSun icon + `activity.weather_summary` text. Only shown when value exists.
+   - **Pre-activity context** (`data-testid="preActivityContext"`) — shown when `healthLog` has loaded (including when null). If null: shows "No health log for this day" with link to /main/running/health. If exists: shows inline fields: sleep hours + quality, morning energy (Very Low–Very High color-coded), mood (Poor–Great color-coded), soreness level (/10), RHR (bpm), plus health log notes in italic.
+   - **AI Coach card** — purple gradient background container wrapping `AIInsightCard`. Placed after pre-activity context, before splits table.
+   - **Splits table** (`SectionLabel: "Splits (per km)"`) — columns: #, Dist, Pace, Time, HR (conditional on hasSplitsHr), Elev. Below table: cardiac drift indicator (`data-testid="cardiacDrift"`) showing HR delta (last split – first split), positive = red, negative = blue. Only shown when ≥ 2 splits have HR data.
+   - **Best Efforts table** (`SectionLabel: "Best Efforts"`) — columns: Distance (name), Time, PR (shows "PR" badge with Trophy icon when pr_rank=1, "#N" rank otherwise). Only shown when bestEfforts.length > 0.
+   - **Laps table** (`SectionLabel: "Laps"`) — columns: #, Dist, Pace, Time, HR (conditional), Elev. Pace computed from moving_time_sec / distance_m. Only shown when laps.length > 0.
+   - **Stream charts** (`data-testid="streamChartsSection"`) — 4 separate AreaCharts synced by syncId "streamCharts". Only renders charts where data exists: Pace (purple, reversed Y), HR (red, with Z1–Z5 ReferenceArea zone bands), Elevation (slate), Cadence (green, spm = raw × 2). Loading state: `data-testid="streamChartsLoading"`. Error state: `data-testid="streamChartsError"` + retry button `data-testid="streamChartsRetry"`. Empty state: `data-testid="streamChartsEmpty"`. Individual chart testids: `streamChartPace`, `streamChartHr`, `streamChartElevation`, `streamChartCadence`. Charts keyed to distance (km) on X axis.
+   - **HR Zones chart** (`data-testid="hrZonesSection"`) — horizontal CSS progress bar chart (not donut). One row per zone (Z1–Z5) showing zone name, HR range, progress bar sized to % of total time, label with % + duration. Empty state: `data-testid="hrZonesEmpty"`. Shown always (empty state when zones data unavailable).
+3. **Next Race goal card** — standalone card below main card. Shows "Your Next Race" label + race title (or auto-generated distance label) + target date. Edit button (`id="editGoalBtn"`) opens `EditGoalModal` (`id="editGoalModal"`). Save button: `id="editGoalSaveBtn"`. Modal fields: race title (text), target distance (preset dropdown + custom number), target date (date input), notes/description (textarea).
+
+#### States
+
+| State   | What renders                                                               |
+| ------- | -------------------------------------------------------------------------- |
+| Loading | `Skeleton` component — animated pulse placeholders for map, stats, content |
+| Error   | Centered error message + "Try again" link (reloads page). `role="alert"`   |
+| Loaded  | Full detail layout described above                                         |
+
+#### Data loading
+
+Three parallel fetches on page load (via `Promise.allSettled`):
+
+1. `fetchActivity(id)` → activity, splits, laps, best_efforts, photos
+2. `getDashboard()` → next_race_goal
+3. `fetchRaceLog()` → find entry with matching `activity_id` for linkage badge
+
+Then (non-blocking, after activity date known): `fetchSubjectiveHealthByDate(activityDate)` → healthLog
+
+---
+
+### 10.4 Derived Metrics
+
+Tiga metric dihitung **saat ingest time** (Strava webhook / manual sync) dan disimpan di `rt_activities`. Tidak dihitung saat render. Kalau gate conditions tidak terpenuhi, kolom di-set NULL.
+
+**Gate conditions (semua metric):** duration > 20 menit AND HR data tersedia (avg_hr not null)
+
+#### Aerobic Decoupling (Pa:Hr)
+
+- **Formula:** `((pace/HR first half) / (pace/HR second half) - 1) * 100`
+- **DB column:** `aerobic_decoupling NUMERIC(5,2)` on `rt_activities`
+- **Interpretation:**
+  - < 5% → good aerobic base (green badge)
+  - 5–10% → moderate drift (amber badge)
+  - > 10% → above threshold / poor aerobic base (red badge)
+- **UI:** badge on activity detail card, tooltip explains what it means
+- **Data source:** pace stream + HR stream (split at 50% of duration)
+
+#### Efficiency Factor (EF)
+
+- **Formula:** `avg_speed_ms / avg_hr`
+- **DB column:** `efficiency_factor NUMERIC(6,4)` on `rt_activities`
+- **Interpretation:** higher = better running economy; used as a trend indicator, not absolute judgment
+- **UI:** shown as a number with up/down trend arrow vs. 30-day average
+- **Data source:** `avg_speed` (from Strava) + `avg_hr`
+
+#### Estimated VO2max
+
+- **Formula:** Daniels formula — `(avg_speed_ms * 60 / 1000) / (0.8 + 0.1894393 * exp(-0.012778 * duration_min) + 0.2989558 * exp(-0.1932605 * duration_min))` normalized to mL/kg/min via HR ratio `(avg_hr / max_hr)`
+- **DB column:** `estimated_vo2max NUMERIC(5,2)` on `rt_activities`
+- **Interpretation:** trend matters more than absolute value; 30-day rolling average smooths outliers
+- **UI on activity detail:** show per-run estimate as a stat
+- **UI on Analytics page:** 30-day rolling average trend line
+- **Data source:** `avg_hr`, `max_hr` (from user profile), `duration_sec`, `avg_speed`
+
+#### Quick Wins (no new API needed)
+
+These use data already synced from Strava — just need UI surfacing:
+
+1. **PR count badge on activities list** — show "X PRs" badge (gold/amber) on activity card when `pr_count > 0`. Data already in `rt_activities.pr_count`. **[DONE — implemented on activity detail page header and activities list]**
+2. **Cardiac drift indicator on splits** — show HR delta (last split avg_hr minus first split avg_hr) below the splits table. Positive = drift up (red), negative = drift down (blue). Data already in splits. **[DONE — `data-testid="cardiacDrift"`, shown below splits table]**
+
+#### Implementation Status
+
+| Priority | Item                                                      | Status                                                                                                    |
+| -------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| P0       | PR count + achievement count badges on activity detail    | DONE                                                                                                      |
+| P0       | Cardiac drift indicator below splits table                | DONE                                                                                                      |
+| P1       | Aerobic Decoupling badge on activity detail               | DONE — `data-testid="aeroDrift"`, green/amber/red                                                         |
+| P1       | Efficiency Factor stat tile on activity detail            | DONE — `data-testid="efficiencyFactor"`, shows raw number (trend arrow vs 30-day avg not yet implemented) |
+| P1       | Estimated VO₂max stat tile on activity detail             | DONE — `data-testid="estimatedVo2max"`, 1 decimal                                                         |
+| P2       | Estimated VO2max 30-day rolling average on Analytics page | NOT STARTED                                                                                               |
+| P2       | Analytics page `/running/analytics` (Section 10.2 spec)   | NOT STARTED                                                                                               |
 
 ---
 

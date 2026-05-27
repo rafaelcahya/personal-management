@@ -1,7 +1,7 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-25 (Focused run: Running Tracker Dashboard Extended — 4 new spec files, 39 new tests, all 39/39 passing)
-**App Version:** 1.21
+**Last Updated:** 2026-05-27 (Focused run: Running Tracker Activities — 9 spec files, 152 tests, all 152/152 passing; 2 new spec files added)
+**App Version:** 1.22
 
 ## Coverage Summary
 
@@ -25,7 +25,11 @@
 | Running Tracker - Sync API      | 3              | 3         | 0           | 0          | 100%       | 8          |
 | Running Tracker - Manual Entry  | 7              | 7         | 0           | 0          | 100%       | 21         |
 | Running Tracker - Dashboard     | 9              | 9         | 0           | 0          | 100%       | 75         |
-| **Total**                       | **129**        | **128**   | **1**       | **0**      | **99%**    | **1,821**  |
+| Running Tracker - Race Log      | 5              | 5         | 0           | 0          | 100%       | 59         |
+| Running Tracker - Activities    | 9              | 9         | 0           | 0          | 100%       | 152        |
+| **Total**                       | **143**        | **142**   | **1**       | **0**      | **99%**    | **2,032**  |
+
+> **Note (2026-05-27 v1.22 Activities):** Running Tracker Activities suite complete — 9 spec files, 152 tests, all 152/152 passing. 2 new spec files: activities-api.cy.js (8 tests: GET list shape, pagination, ?type filter, 401) and activities-ui.cy.js (21 tests: auth guard, loading skeleton, list render, type filter URL param, pagination, error state, empty state). Pre-existing 7 spec files also confirmed passing: activityDetail (36), activityDetailApi (25), activity-detail-ui (27), ai-insight-api (8), hr-zones-api (6), stream-charts-api (7), stream-charts-ui (14). Bugs fixed: updateGoal.js `.single()`→`.maybeSingle()` (PATCH /goals/:id strict 404), streams route resolution validation order (400 not 500), AIInsightCard missing border-l-4 border-purple-400. All data-testid in StreamCharts/HrZonesChart/AIInsightCard/activities page converted to id= following {componentName}_{pageName} convention. Also added Race Log module (59 tests: race-log-api 21 + race-log-ui 38) to coverage.
 
 > **Note (2026-05-25 v1.21 Dashboard Extended):** Running Tracker Dashboard extended tests added — 4 new spec files (gear-api.cy.js, gear-ui.cy.js, performance-trends-api.cy.js, dashboard-ui-extended.cy.js), 39 tests, all 39/39 passing. Gear API (6 tests): GET shape validation + 401 guard, PATCH with real gear id. Gear UI (14 tests): loading skeleton, happy path list rendering, empty state, error+retry, Strava-only limit tab, both-tab display, near-retirement warning (90% threshold), edit form open/save/cancel. Performance Trends API (5 tests): shape, ?limit=20, ?type=Run filter, 401. Dashboard Extended UI (14 tests): YtdStats renders when distance_m>0, hidden when 0 or null, distance format (150.00 km); NextRace null/title/race-week badge; syncStatusBar Never label, sync btn, POST trigger, syncResultMsg X new activities / Already up to date; activity type filter renders + active ring. Also added 4 IDs to app-constants.json running_dashboard section: performance_trends_card, sync_status_bar, sync_btn, sync_result_msg. app-constants.yaml does not exist in this project — JSON is the single source of truth. Running Tracker Dashboard total: 75 tests (36 from 2026-05-23 + 39 from 2026-05-25).
 
@@ -47,7 +51,24 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-05-25 Focused Run: Running Tracker Dashboard Extended)
+## Last Execution Results (2026-05-27 Focused Run: Running Tracker Activities)
+
+| Group                                              | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| -------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running-activities (Activities API) ⭐ NEW         | 1          | 8     | 8      | 0      | 0       | ✅       |
+| running-activities (Activities UI) ⭐ NEW          | 1          | 21    | 21     | 0      | 0       | ✅       |
+| running-activities (Activity Detail UI)            | 1          | 27    | 27     | 0      | 0       | ✅       |
+| running-activities (Activity Detail full)          | 1          | 36    | 36     | 0      | 0       | ✅       |
+| running-activities (Activity Detail API)           | 1          | 25    | 25     | 0      | 0       | ✅       |
+| running-activities (AI Insights API)               | 1          | 8     | 8      | 0      | 0       | ✅       |
+| running-activities (HR Zones API)                  | 1          | 6     | 6      | 0      | 0       | ✅       |
+| running-activities (Stream Charts API)             | 1          | 7     | 7      | 0      | 0       | ✅       |
+| running-activities (Stream Charts UI)              | 1          | 14    | 14     | 0      | 0       | ✅       |
+| **Total**                                          | **9**      | **152** | **152** | **0** | **0**  | **100%** |
+
+**Status:** All 9 spec files passing 100%. 2 new files added today. 3 bugs fixed (goals 404, streams 400, AIInsightCard border). All data-testid converted to id= in activities components.
+
+### Previous Run Results (2026-05-25 Focused Run: Running Tracker Dashboard Extended)
 
 | Group                                      | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | ------------------------------------------ | ---------- | ----- | ------ | ------ | ------- | -------- |
@@ -204,8 +225,19 @@
 | 75  | cypress/e2e/running/dashboard/gear-ui.cy.js                          | Running Tracker Gear UI              | 14         | Loading skeleton, happy path (list + name + distance km), empty state, error + retry, limit tabs (Strava-only, both), near retirement warning, edit form open/save/cancel |
 | 76  | cypress/e2e/running/dashboard/performance-trends-api.cy.js           | Running Tracker Performance Trends API | 5        | GET /performance-trends (200, data array, field presence), ?limit=20, ?type=Run, 401 guard |
 | 77  | cypress/e2e/running/dashboard/dashboard-ui-extended.cy.js            | Running Tracker Dashboard UI Extended | 14       | YtdStats (renders, distance format, hidden when 0, hidden when null), NextRace (null, title, race-week badge), syncStatusBar (Never, btn visible, click triggers POST, syncResultMsg), activity type filter (renders, active ring) |
+| 78  | cypress/e2e/running/race-log/race-log-api.cy.js                      | Running Tracker Race Log API         | 21       | GET /race-log (200 + shape, 401), POST (201 + body, 400 validation, 401), PATCH/:id (200 + recomputed pace, 404 unowned, 401), DELETE/:id (200, 404, 401) |
+| 79  | cypress/e2e/running/race-log/race-log-ui.cy.js                       | Running Tracker Race Log UI          | 38       | Auth guard, loading skeleton, empty state CTA, race card list (title/date/distance/time/pace), add modal (open, full form, submit, 400 error), edit modal (prefill, submit, cancel), delete (confirm dialog, cancel), DNF badge, mobile responsive |
+| 80  | cypress/e2e/running/activities/activities-api.cy.js                  | Running Tracker Activities List API  | 8        | GET /activities — authenticated 200, paginated shape, data array, required field presence, ?type=Run filter, ?page&limit params, 401 unauthenticated |
+| 81  | cypress/e2e/running/activities/activities-ui.cy.js                   | Running Tracker Activities List UI   | 21       | Auth guard, loading skeleton, list renders activity cards, type filter (URL param change), pagination next/prev, error state, empty state (no activities + filtered empty) |
+| 82  | cypress/e2e/running/activities/activityDetail.cy.js                  | Running Tracker Activity Detail full | 36       | Stats grid, secondary stats (power/temp/calories/gear), HR zones, AI insight card (all 5 states), splits, laps, best efforts, photos, route map |
+| 83  | cypress/e2e/running/activities/activityDetailApi.cy.js               | Running Tracker Activity Detail API  | 25       | GET /activities/:id (200 + shape, 404, 401), PATCH /activities/:id (200, 422 validation, 404, 401), DELETE (204, 404, 401), PATCH /goals/:id (200, 404 ownership, 401) |
+| 84  | cypress/e2e/running/activities/activity-detail-ui.cy.js              | Running Tracker HrZones + AIInsight UI | 27     | HrZonesChart (empty, Z1-Z5 rows, HR range labels, % + duration); AIInsightCard (loading, empty+focus buttons, generate→pending, content markdown, error+retry, completed-invalid fallback) |
+| 85  | cypress/e2e/running/activities/ai-insight-api.cy.js                  | Running Tracker AI Insights API      | 8        | GET /ai/insights (200 + array shape, field presence, status enum, completed+valid content); POST /generate (202 queued, 422 missing activity_id, 401, 404 unowned activity) |
+| 86  | cypress/e2e/running/activities/hr-zones-api.cy.js                    | Running Tracker HR Zones API         | 6        | GET /activities/:id zones field — null vs populated, zone array shape, min/max/time fields |
+| 87  | cypress/e2e/running/activities/stream-charts-api.cy.js               | Running Tracker Stream Charts API    | 7        | GET /activities/:id/streams — 200 + shape (meta + data), 400 invalid resolution, 401, 404 non-existent |
+| 88  | cypress/e2e/running/activities/stream-charts-ui.cy.js                | Running Tracker StreamCharts UI      | 14       | Loading skeleton, happy path (pace/HR/elevation charts), partial data (no cadence), empty state, error state, retry → success, accessibility sr-only |
 
-**Total Automated Test Cases: 1,821** (added 39 confirmed passing tests for gear API, gear UI, performance-trends API, dashboard extended UI; previous total: 1,782)
+**Total Automated Test Cases: 2,031** (added 59 race-log + 152 activities tests since v1.21; previous total: 1,821)
 
 ## Manual Test Cases (not yet automated)
 

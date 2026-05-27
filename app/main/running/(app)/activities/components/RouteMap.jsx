@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Maximize2, X } from 'lucide-react'
 import polyline from '@mapbox/polyline'
 
-export default function RouteMap({ encodedPolyline, height = 240, className = '' }) {
+function LeafletMap({ encodedPolyline, height, className = '', interactive = false }) {
   const containerRef = useRef(null)
   const mapRef = useRef(null)
 
@@ -16,7 +17,6 @@ export default function RouteMap({ encodedPolyline, height = 240, className = ''
       import('leaflet/dist/leaflet.css')
 
       if (!isMounted || !containerRef.current) return
-      // Guard against container already having a Leaflet instance (Strict Mode double-invoke)
       if (containerRef.current._leaflet_id) return
       if (mapRef.current) return
 
@@ -32,9 +32,9 @@ export default function RouteMap({ encodedPolyline, height = 240, className = ''
       })
 
       const map = L.default.map(containerRef.current, {
-        zoomControl: false,
-        scrollWheelZoom: false,
-        dragging: false,
+        zoomControl: interactive,
+        scrollWheelZoom: interactive,
+        dragging: interactive,
         attributionControl: false,
       })
 
@@ -59,7 +59,20 @@ export default function RouteMap({ encodedPolyline, height = 240, className = ''
         mapRef.current = null
       }
     }
-  }, [encodedPolyline])
+  }, [encodedPolyline, interactive])
+
+  return (
+    <div
+      ref={containerRef}
+      className={`overflow-hidden ${className}`}
+      style={{ height }}
+      aria-label="Route map"
+    />
+  )
+}
+
+export default function RouteMap({ encodedPolyline, height = 240, className = '' }) {
+  const [expanded, setExpanded] = useState(false)
 
   if (!encodedPolyline) {
     return (
@@ -73,11 +86,43 @@ export default function RouteMap({ encodedPolyline, height = 240, className = ''
   }
 
   return (
-    <div
-      ref={containerRef}
-      className={`rounded-lg overflow-hidden ${className}`}
-      style={{ height }}
-      aria-label="Route map"
-    />
+    <>
+      <div className={`relative rounded-lg overflow-hidden ${className}`} style={{ height }}>
+        <LeafletMap encodedPolyline={encodedPolyline} height={height} interactive={false} />
+        <button
+          onClick={() => setExpanded(true)}
+          className="absolute top-2 right-2 z-[1000] bg-white/90 hover:bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm transition-colors"
+          aria-label="Expand map"
+        >
+          <Maximize2 className="size-4 text-slate-600" />
+        </button>
+      </div>
+
+      {expanded && (
+        <div
+          className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4"
+          onClick={() => setExpanded(false)}
+        >
+          <div
+            className="relative w-full max-w-4xl h-[80vh] rounded-xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <LeafletMap
+              encodedPolyline={encodedPolyline}
+              height="100%"
+              className="w-full h-full"
+              interactive={true}
+            />
+            <button
+              onClick={() => setExpanded(false)}
+              className="absolute top-3 right-3 z-[1000] bg-white/90 hover:bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm transition-colors"
+              aria-label="Close map"
+            >
+              <X className="size-4 text-slate-600" />
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

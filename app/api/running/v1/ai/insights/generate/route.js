@@ -22,7 +22,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
     }
 
-    const { activity_id } = body
+    const { activity_id, focus = 'general' } = body
     if (!activity_id) {
       return NextResponse.json({ error: 'activity_id required' }, { status: 422 })
     }
@@ -39,12 +39,14 @@ export async function POST(request) {
     }
 
     // Fire-and-forget — don't block the response waiting for Inngest to acknowledge
-    inngest.send({
-      name: 'ai/generate-post-activity-insight',
-      data: { activityId: activity_id, userId: user.id },
-    }).catch((err) => {
-      console.error('[ai/insights/generate] Failed to queue insight:', err.message)
-    })
+    inngest
+      .send({
+        name: 'ai/generate-post-activity-insight',
+        data: { activityId: activity_id, userId: user.id, focus },
+      })
+      .catch((err) => {
+        console.error('[ai/insights/generate] Failed to queue insight:', err.message)
+      })
 
     return NextResponse.json({ queued: true, message: 'Analisis sedang diproses' })
   } catch (err) {
