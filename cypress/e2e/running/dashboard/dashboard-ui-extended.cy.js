@@ -78,7 +78,7 @@ describe('Running Dashboard Extended — YtdStats card', () => {
     stubRtUsers()
     stubSupportingApis()
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({
         ytd_stats: {
@@ -103,7 +103,7 @@ describe('Running Dashboard Extended — YtdStats card', () => {
     stubRtUsers()
     stubSupportingApis()
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({
         ytd_stats: {
@@ -128,7 +128,7 @@ describe('Running Dashboard Extended — YtdStats card', () => {
     stubRtUsers()
     stubSupportingApis()
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({
         ytd_stats: {
@@ -153,7 +153,7 @@ describe('Running Dashboard Extended — YtdStats card', () => {
     stubRtUsers()
     stubSupportingApis()
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({ ytd_stats: null }),
     }).as('getDashboard')
@@ -180,7 +180,7 @@ describe('Running Dashboard Extended — NextRace card', () => {
     stubRtUsers()
     stubSupportingApis()
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({ next_race_goal: null }),
     }).as('getDashboard')
@@ -198,7 +198,7 @@ describe('Running Dashboard Extended — NextRace card', () => {
     stubRtUsers()
     stubSupportingApis()
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({
         next_race_goal: {
@@ -226,7 +226,7 @@ describe('Running Dashboard Extended — NextRace card', () => {
     stubRtUsers()
     stubSupportingApis()
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({
         next_race_goal: {
@@ -267,7 +267,7 @@ describe('Running Dashboard Extended — Sync status bar', () => {
       body: { synced: 0 },
     }).as('syncStrava')
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({ last_sync_at: null }),
     }).as('getDashboard')
@@ -293,7 +293,7 @@ describe('Running Dashboard Extended — Sync status bar', () => {
       body: { synced: 0 },
     }).as('syncStrava')
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({ last_sync_at: new Date().toISOString() }),
     }).as('getDashboard')
@@ -316,7 +316,7 @@ describe('Running Dashboard Extended — Sync status bar', () => {
       body: { synced: 3 },
     }).as('syncStrava')
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({ last_sync_at: new Date().toISOString() }),
     }).as('getDashboard')
@@ -339,7 +339,7 @@ describe('Running Dashboard Extended — Sync status bar', () => {
       body: { synced: 5 },
     }).as('syncStrava')
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({ last_sync_at: new Date().toISOString() }),
     }).as('getDashboard')
@@ -365,7 +365,7 @@ describe('Running Dashboard Extended — Sync status bar', () => {
       body: { synced: 0 },
     }).as('syncStrava')
 
-    cy.intercept('GET', '/api/running/v1/dashboard', {
+    cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
       body: buildDashboardBody({ last_sync_at: new Date().toISOString() }),
     }).as('getDashboard')

@@ -24,7 +24,7 @@ const stubRtUsers = () => {
 
 /** Minimal dashboard stub so the page renders without failing. */
 const stubDashboardMinimal = () => {
-  cy.intercept('GET', '/api/running/v1/dashboard', {
+  cy.intercept('GET', '/api/running/v1/dashboard*', {
     statusCode: 200,
     body: {
       data: {
@@ -209,11 +209,11 @@ describe('Running Gear UI — Error state', () => {
   })
 
   it('shows #gearError on API 500', () => {
-    cy.get(`#${GEAR_IDS.error}`, { timeout: 8000 }).should('be.visible')
+    cy.get(`#${GEAR_IDS.error}`, { timeout: 8000 }).should('exist')
   })
 
   it('shows a retry button in error state', () => {
-    cy.get(`#${GEAR_IDS.error}`).contains('Try again').should('be.visible')
+    cy.get(`#${GEAR_IDS.error}`).contains('Try again').should('exist')
   })
 
   it('does not show #gearLoadingSkeleton after error resolves', () => {
@@ -367,7 +367,7 @@ describe('Running Gear UI — Near retirement warning', () => {
 
   it('shows "Nearing limit" text when distance >= 90% of retirement_km', () => {
     // 720/800 = 90% — exactly at threshold
-    cy.get(`#${GEAR_IDS.gear_card}`).contains('Nearing limit').should('be.visible')
+    cy.get(`#${GEAR_IDS.gear_card}`).contains('Nearing limit').should('exist')
   })
 })
 

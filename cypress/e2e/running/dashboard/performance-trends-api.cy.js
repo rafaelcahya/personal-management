@@ -59,11 +59,11 @@ describe('Running Performance Trends API — GET /api/running/v1/performance-tre
   })
 
   it('returns 401 when unauthenticated', () => {
+    cy.clearCookies()
     cy.request({
       method: 'GET',
       url: '/api/running/v1/performance-trends',
       failOnStatusCode: false,
-      headers: { Cookie: '' },
     }).then((res) => {
       expect(res.status).to.eq(401)
     })
