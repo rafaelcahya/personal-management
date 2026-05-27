@@ -145,6 +145,7 @@ export default function AIInsightCard({ activityId }) {
   const [generating, setGenerating] = useState(null) // focus string or null
   const [generateError, setGenerateError] = useState(false)
   const pollRef = useRef(null)
+  const pollCountRef = useRef(0)
 
   const loadInsight = useCallback(async () => {
     setLoadError(false)
@@ -169,9 +170,13 @@ export default function AIInsightCard({ activityId }) {
       return
     }
     if (pollRef.current) return
+    pollCountRef.current = 0
     pollRef.current = setInterval(async () => {
+      pollCountRef.current += 1
       const data = await fetchActivityInsight(activityId).catch(() => null)
-      if (data && data.status !== 'pending') {
+      const isValidResult = data && data.status === 'completed' && data.is_valid === true
+      const timedOut = pollCountRef.current >= 15 // 15 × 8s = 2 minutes max
+      if (isValidResult || timedOut) {
         setInsight(data)
         clearInterval(pollRef.current)
         pollRef.current = null
