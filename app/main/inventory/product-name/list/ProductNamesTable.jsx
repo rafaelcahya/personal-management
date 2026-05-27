@@ -289,7 +289,7 @@ export default function ProductNamesTable({
                             `/main/inventory/product-list?name=${encodeURIComponent(productName.product_name)}`
                           )
                         }
-                        className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-1 rounded"
+                        className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1 rounded"
                       >
                         <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200 cursor-pointer">
                           {productName.product_count}

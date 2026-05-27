@@ -105,7 +105,7 @@ export default function SummaryCards({ summary, lowStockCount, loading }) {
           >
             <button
               onClick={() => handleCardClick(stat.filter, stat.href)}
-              className="w-full h-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 rounded-xl"
+              className="w-full h-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-2 rounded-xl"
             >
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">

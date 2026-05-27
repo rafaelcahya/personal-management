@@ -221,7 +221,7 @@ export default function ProductDetailPage({ productId }) {
           <button
             id="retryBtn_productDetailPage"
             onClick={loadData}
-            className="inline-flex items-center gap-1.5 text-sm text-violet-600 hover:text-violet-700 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 rounded"
+            className="inline-flex items-center gap-1.5 text-sm text-violet-600 hover:text-violet-700 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-2 rounded"
           >
             <RefreshCw className="size-3.5" aria-hidden="true" />
             Try again
@@ -237,7 +237,7 @@ export default function ProductDetailPage({ productId }) {
       {/* Back link */}
       <Link
         href="/main/inventory/product-list"
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-2 w-fit transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 rounded"
+        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-2 w-fit transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-2 rounded"
       >
         <ChevronLeft className="size-4" aria-hidden="true" />
         Back to Product List

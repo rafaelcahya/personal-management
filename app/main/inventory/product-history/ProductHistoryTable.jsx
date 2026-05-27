@@ -131,7 +131,7 @@ export default function ProductHistoryTable({
                     {history.product_list_id ? (
                       <Link
                         href={`/main/inventory/product-list/${history.product_list_id}`}
-                        className="font-medium text-violet-700 text-sm truncate hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-1 rounded"
+                        className="font-medium text-violet-700 text-sm truncate hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1 rounded"
                       >
                         {history.product}
                       </Link>

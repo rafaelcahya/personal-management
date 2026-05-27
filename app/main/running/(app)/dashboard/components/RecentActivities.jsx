@@ -80,7 +80,7 @@ export default function RecentActivities({ activities }) {
                 <li key={a.id}>
                   <Link
                     href="/main/running/activities"
-                    className={`flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 ${idx !== 0 ? 'border-t border-slate-100' : ''}`}
+                    className={`flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 ${idx !== 0 ? 'border-t border-slate-100' : ''}`}
                     aria-label={`${cfg.label ?? a.activity_type} on ${fmtDate(a.started_at)}, ${fmtDistance(a.distance_m)} km`}
                   >
                     <div className={`p-1.5 rounded-md shrink-0 ${cfg.bg}`}>

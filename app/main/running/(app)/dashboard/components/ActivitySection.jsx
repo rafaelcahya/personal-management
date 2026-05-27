@@ -465,7 +465,7 @@ function RecentColumn({ activities, activityType, selectedDate, onSelectDate }) 
               <li key={a.id}>
                 <button
                   onClick={() => onSelectDate(isActive ? null : dateStr)}
-                  className={`w-full flex items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 ${
+                  className={`w-full flex items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 ${
                     isActive ? 'bg-blue-50' : ''
                   }`}
                   aria-pressed={isActive}

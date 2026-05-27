@@ -255,7 +255,7 @@ function GearCard({ gear, onUpdate }) {
                 setEditing((v) => !v)
                 setSaveError(null)
               }}
-              className="p-1 rounded-md text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+              className="p-1 rounded-md text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
               aria-label={editing ? 'Close editor' : `Edit ${gear.name}`}
               aria-expanded={editing}
             >
@@ -417,7 +417,7 @@ export default function ShoeRotation() {
                     .catch((err) => setError(err.message || 'Failed to load gear'))
                     .finally(() => setLoading(false))
                 }}
-                className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded"
+                className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
               >
                 Try again
               </button>
