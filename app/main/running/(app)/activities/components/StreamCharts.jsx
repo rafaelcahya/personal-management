@@ -302,7 +302,7 @@ export default function StreamCharts({ activityId, zones }) {
         <button
           id="streamChartsRetry_activityDetailPage"
           onClick={load}
-          className="ml-auto text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded"
+          className="ml-auto text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
         >
           Try again
         </button>

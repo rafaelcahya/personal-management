@@ -395,7 +395,7 @@ function ActivitiesInner() {
           {/* Table */}
           <div className="overflow-x-auto">
             <Table className="min-w-[640px] w-full table-auto">
-              <TableHeader className="bg-slate-100 sticky top-0 z-20">
+              <TableHeader className="bg-slate-100">
                 <TableRow className="border-none uppercase text-xs">
                   <TableHead className="py-2 text-slate-foreground rounded-l-lg w-[40%]">
                     Activity

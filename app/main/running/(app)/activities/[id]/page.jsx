@@ -603,7 +603,7 @@ export default function ActivityDetailPage() {
           <span>{error}</span>
           <button
             onClick={() => window.location.reload()}
-            className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded"
+            className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
           >
             Try again
           </button>
@@ -629,9 +629,9 @@ export default function ActivityDetailPage() {
 
           return (
             <>
-              <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden pt-4 pb-6">
+              <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden pb-6 pt-0 lg:pt-6">
                 {/* Carousel: 80% of card, centered */}
-                <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden">
+                <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden relative z-0 isolate">
                   <MediaCarousel polyline={activity.summary_polyline} photos={photos} />
                 </div>
 
@@ -1002,7 +1002,7 @@ export default function ActivityDetailPage() {
                           setNotesValue(activity.notes ?? '')
                           setNotesEditing(true)
                         }}
-                        className="flex items-start gap-2 px-3 py-2.5 bg-slate-50 rounded-lg w-full text-left hover:bg-slate-100 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                        className="flex items-start gap-2 px-3 py-2.5 bg-slate-50 rounded-lg w-full text-left hover:bg-slate-100 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
                         aria-label="Edit notes"
                       >
                         <NotebookText
@@ -1423,7 +1423,7 @@ export default function ActivityDetailPage() {
                     <button
                       id="editGoalBtn_activityDetailPage"
                       onClick={() => setEditGoalOpen(true)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-violet-600 hover:bg-violet-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 min-h-[44px]"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-violet-600 hover:bg-violet-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[44px]"
                       aria-label="Edit race goal"
                     >
                       <Pencil className="size-3.5" aria-hidden="true" />
