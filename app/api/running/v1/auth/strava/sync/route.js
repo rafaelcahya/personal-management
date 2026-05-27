@@ -63,25 +63,8 @@ async function syncAthleteShoes(accessToken, admin, userId) {
 
     if (shoes.length === 0) return
 
-    const { data: existingGear } = await admin
-      .from('rt_gear')
-      .select('id, last_fetched_at')
-      .eq('user_id', userId)
-      .in(
-        'id',
-        shoes.map((s) => s.id)
-      )
-
-    const existingGearMap = new Map((existingGear || []).map((g) => [g.id, g.last_fetched_at]))
-
-    const cutoff = new Date(Date.now() - GEAR_REFRESH_INTERVAL_MS)
-
+    // Always re-fetch all shoes on every manual sync — gear name/status can change in Strava
     for (const shoe of shoes) {
-      const lastFetched = existingGearMap.get(shoe.id)
-      const needsFetch = !lastFetched || new Date(lastFetched) < cutoff
-
-      if (!needsFetch) continue
-
       try {
         const gearRes = await fetch(`${STRAVA_GEAR_URL}/${shoe.id}`, {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -180,6 +163,7 @@ export async function POST(_request) {
 
       const existingIds = new Set((existing || []).map((r) => r.external_id))
       const toInsert = activities.filter((a) => !existingIds.has(String(a.id)))
+      const toUpdate = activities.filter((a) => existingIds.has(String(a.id)))
 
       if (toInsert.length > 0) {
         const rows = toInsert.map((a) => ({
@@ -295,6 +279,25 @@ export async function POST(_request) {
         }
 
         totalInserted += rows.length
+      }
+
+      // Update mutable Strava fields on existing activities (gear, name, kudos, etc.)
+      if (toUpdate.length > 0) {
+        for (const a of toUpdate) {
+          await admin
+            .from('rt_activities')
+            .update({
+              gear_id: a.gear_id ?? null,
+              name: a.name ?? null,
+              description: a.description ?? null,
+              kudos_count: a.kudos_count ?? 0,
+              pr_count: a.pr_count != null ? a.pr_count : null,
+              achievement_count: a.achievement_count ?? 0,
+            })
+            .eq('user_id', user.id)
+            .eq('source', 'strava')
+            .eq('external_id', String(a.id))
+        }
       }
 
       // If we got fewer than PER_PAGE, we're done

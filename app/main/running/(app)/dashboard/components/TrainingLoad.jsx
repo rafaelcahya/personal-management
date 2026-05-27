@@ -2,7 +2,20 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { TrendingUp, TrendingDown, Minus, Info, Heart, Flame } from 'lucide-react'
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  Info,
+  Heart,
+  Flame,
+  Activity,
+  MapPin,
+  Clock,
+  Mountain,
+  Gauge,
+  Flag,
+} from 'lucide-react'
 
 const ACWR_STATUS = {
   no_data: {
@@ -234,21 +247,57 @@ export default function TrainingLoad({ data, weeklyStats }) {
 
           {/* Stats grid — activity metrics */}
           <div className="grid grid-cols-3 gap-x-4 gap-y-4">
-            <StatCell label="Sessions" value={current.count ?? '—'} sub="this week" />
-            <StatCell label="Distance" value={formatDistance(current.distance_m)} sub="this week" />
-            <StatCell label="Time" value={formatDuration(current.duration_sec)} sub="this week" />
             <StatCell
-              label="Elevation"
+              label={
+                <span className="flex items-center gap-1">
+                  Sessions <Activity className="size-3 text-blue-400" />
+                </span>
+              }
+              value={current.count ?? '—'}
+              sub="this week"
+            />
+            <StatCell
+              label={
+                <span className="flex items-center gap-1">
+                  Distance <MapPin className="size-3 text-blue-400" />
+                </span>
+              }
+              value={formatDistance(current.distance_m)}
+              sub="this week"
+            />
+            <StatCell
+              label={
+                <span className="flex items-center gap-1">
+                  Time <Clock className="size-3 text-indigo-400" />
+                </span>
+              }
+              value={formatDuration(current.duration_sec)}
+              sub="this week"
+            />
+            <StatCell
+              label={
+                <span className="flex items-center gap-1">
+                  Elevation <Mountain className="size-3 text-green-500" />
+                </span>
+              }
               value={formatElevation(current.elevation_gain_m)}
               sub="this week"
             />
             <StatCell
-              label="Avg pace"
+              label={
+                <span className="flex items-center gap-1">
+                  Avg pace <Gauge className="size-3 text-purple-400" />
+                </span>
+              }
               value={formatPace(current.avg_moving_pace_sec_per_km)}
               sub="moving pace"
             />
             <StatCell
-              label="Longest run"
+              label={
+                <span className="flex items-center gap-1">
+                  Longest run <Flag className="size-3 text-amber-400" />
+                </span>
+              }
               value={current.longest_run_m ? formatDistance(current.longest_run_m) : '—'}
               sub="this week"
             />
