@@ -2,8 +2,8 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 2.4
-**Last Updated:** 2026-05-26
+**Version:** 2.5
+**Last Updated:** 2026-05-27
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6) · Strava API
 
@@ -1623,8 +1623,8 @@ CREATE TABLE rt_race_log (
   avg_pace_sec_per_km NUMERIC(6,2),       -- computed: finish_time_sec / (distance_m / 1000)
   avg_hr INT,                             -- average HR during race, nullable
   elevation_gain_m NUMERIC(7,2),          -- nullable
-  position_overall INT,                   -- finishing position overall, nullable
-  position_category INT,                  -- finishing position in age group / category, nullable
+  position_place INT,                     -- finishing position overall (all finishers), nullable
+  position_male INT,                      -- finishing position within male category, nullable
   did_not_finish BOOLEAN DEFAULT FALSE,
   activity_id UUID REFERENCES activities(id) ON DELETE SET NULL, -- optional link to Strava activity
   notes TEXT,
@@ -1644,6 +1644,7 @@ CREATE INDEX idx_race_log_user_date ON rt_race_log(user_id, race_date DESC);
 ```
 GET    /api/running/v1/race-log              ← list semua race entries, urut race_date DESC
 POST   /api/running/v1/race-log              ← tambah race entry baru
+GET    /api/running/v1/race-log/:id          ← fetch single race entry (untuk detail page)
 PATCH  /api/running/v1/race-log/:id          ← edit race entry
 DELETE /api/running/v1/race-log/:id          ← hapus race entry
 
@@ -1654,15 +1655,21 @@ PATCH  /api/running/v1/goals/:id             ← update upcoming race goal (titl
 
 - Auth required (401 kalau tidak ada session)
 - No query params untuk MVP
-- Response: `{ data: [{ id, title, race_date, distance_m, finish_time_sec, avg_pace_sec_per_km, avg_hr, elevation_gain_m, position_overall, position_category, did_not_finish, activity_id, notes, created_at }], message }`
+- Response: `{ data: [{ id, title, race_date, distance_m, finish_time_sec, avg_pace_sec_per_km, avg_hr, elevation_gain_m, position_place, position_male, did_not_finish, activity_id, notes, created_at }], message }`
 
 **POST /api/running/v1/race-log**
 
 - Auth required
-- Body: `{ title, race_date, distance_m, finish_time_sec?, avg_hr?, elevation_gain_m?, position_overall?, position_category?, did_not_finish?, activity_id?, notes? }`
+- Body: `{ title, race_date, distance_m, finish_time_sec?, avg_hr?, elevation_gain_m?, position_place?, position_male?, did_not_finish?, activity_id?, notes? }`
 - Validasi via Zod schema di `schemas/raceLog.js`
 - Server computes `avg_pace_sec_per_km = Math.round(finish_time_sec / (distance_m / 1000))` — hanya kalau `finish_time_sec` ada dan `did_not_finish = false`
 - Response: `{ data: <new race log row>, message }`
+
+**GET /api/running/v1/race-log/:id**
+
+- Auth required (401 if no session)
+- Ownership check: 404 if entry does not belong to the user
+- Response: `{ data: { id, title, race_date, distance_m, finish_time_sec, avg_pace_sec_per_km, avg_hr, elevation_gain_m, position_place, position_male, did_not_finish, activity_id, notes, created_at } }`
 
 **PATCH /api/running/v1/race-log/:id**
 
@@ -1693,37 +1700,56 @@ Race Log punya halaman sendiri di `/running/race-log`.
 
 | State    | Tampilan                                                                   |
 | -------- | -------------------------------------------------------------------------- |
-| Loading  | Skeleton 3 rows (title + date + distance + time)                           |
+| Loading  | Skeleton rows inside table (5 rows, animate-pulse)                         |
 | Error    | AlertTriangle icon + pesan error + tombol "Try again"                      |
 | Empty    | Medal icon + teks "No races logged yet" + CTA button "Log your first race" |
-| Has data | List race entries, urut terbaru dulu                                       |
+| Has data | Table of race entries, urut race_date DESC                                 |
 
-**Layout per race entry card:**
+**Table layout (implemented as shadcn `<Table>`):**
 
-- Header: nama race (title) + tanggal + distance label (5K / 10K / Half / Full / Ultra / Custom)
-- Body: finish time (format HH:MM:SS) + avg pace (format MM:SS/km) + posisi kalau ada
-- Footer: tombol edit (pensil) + tombol delete (trash)
-- DNF badge kalau `did_not_finish = true`
-- Link ke activity detail kalau `activity_id` ada
+Columns: Race (title + distance label + DNF badge) | Date | Dist | Time | Pace | Place | Male
 
-**Add / Edit form (modal):**
+- Each row is clickable — navigates to `/running/race-log/[id]` detail page
+- "Place" column = `position_place`, "Male" column = `position_male`
+- DNF badge shows in title cell when `did_not_finish = true`
+- `avg_pace_sec_per_km` shown as MM:SS/km; falls back to computing from `finish_time_sec / distance_m` if column is null
+
+**Header buttons (top right):**
+
+- "Add from activity" button (`id="addRaceFromActivityBtn"`) — opens `ActivityPickerDialog` to pick an existing Strava activity; after picking, opens `RaceConfirmDialog` to confirm auto-filling fields from the activity
+- "Log race" button (`id="addRaceBtn"`) — opens blank `RaceFormModal`
+
+**Add / Edit form (RaceFormModal):**
 
 - Title (required) — text input
-- Race date (required) — date picker
+- Race date (required) — date picker (calendar popover)
 - Distance (required) — dropdown preset (5K / 10K / 21.1K / 42.2K / Custom) + custom number input kalau Custom
-- Finish time — time input (HH:MM:SS), optional kalau DNF
-- Did not finish — checkbox. Kalau dicentang: disable finish time input
+- Did not finish — checkbox. Kalau dicentang: hide finish time field
+- Finish time — time input (HH:MM:SS), required unless DNF is checked
 - Avg HR — number input, optional
 - Elevation gain — number input (meter), optional
-- Overall position — number input, optional
-- Category position — number input, optional
+- Position (place) — number input, optional — maps to `position_place`
+- Position (male) — number input, optional — maps to `position_male`
 - Notes — textarea, optional
-- Link to activity — searchable dropdown dari recent activities (opsional)
+- After save in Add mode: redirects to `/running/race-log/[id]` detail page
 
-**Delete confirmation:**
+**Delete confirmation (on detail page only):**
 
-- Alert dialog: "Hapus race ini? Data tidak bisa dikembalikan."
-- Konfirmasi delete button + cancel
+- Alert dialog: "Delete this race entry? [title] will be permanently deleted. This cannot be undone."
+- Confirm delete button + cancel
+- After confirm: redirects to `/running/race-log`
+
+### 13.5b UI — Race Log Detail Page
+
+Each race entry has its own detail page at `/running/race-log/[id]`.
+
+- Fetches entry via GET /api/running/v1/race-log/:id
+- If `activity_id` is set, also fetches activity detail, splits, laps, best efforts, photos, and health log for that date
+- Renders the linked activity's stream data, HR zones, splits, laps, best efforts, and photos via `ActivitySection` component (same as Activities feature)
+- Edit button opens `EditRaceModal` (same form fields as RaceFormModal, pre-filled with current values)
+- Delete button (`id="deleteRaceBtn_raceDetailPage"`) opens AlertDialog; confirm button `id="deleteRaceConfirmBtn_raceDetailPage"`; after confirm redirects to `/running/race-log`
+- Loading state: skeleton matching the detail page structure
+- Error state: AlertTriangle + error message + "Try again" link (page reload)
 
 ### 13.6 UI — Edit Upcoming Race Goal (dari Activity page)
 
@@ -1799,8 +1825,8 @@ AND after save, NextRace card on dashboard reflects the updated data
 | `distance_m`                 | Required, > 0, max 1000000                             | "Distance must be greater than 0"             |
 | `finish_time_sec`            | Integer, > 0, required unless `did_not_finish = true`  | "Finish time is required for completed races" |
 | `avg_hr`                     | Integer, 1–250                                         | "Heart rate must be between 1 and 250"        |
-| `position_overall`           | Integer, >= 1                                          | "Position must be 1 or greater"               |
-| `position_category`          | Integer, >= 1                                          | "Position must be 1 or greater"               |
+| `position_place`             | Integer, >= 1                                          | "Position must be 1 or greater"               |
+| `position_male`              | Integer, >= 1                                          | "Position must be 1 or greater"               |
 | Race not found or wrong user | —                                                      | 404 Not found                                 |
 | Server error                 | —                                                      | 500 with message in response                  |
 
@@ -1808,22 +1834,40 @@ AND after save, NextRace card on dashboard reflects the updated data
 
 Registered in `cypress/fixtures/app-constants.json` under `test_ids.race_log.*`:
 
-| ID                        | Element                                  |
-| ------------------------- | ---------------------------------------- |
-| `raceLogPage`             | Page root element                        |
-| `raceLogLoadingSkeleton`  | Skeleton wrapper saat loading            |
-| `raceLogError`            | Error container                          |
-| `raceLogEmptyState`       | Empty state container                    |
-| `raceLogList`             | `<ul>` race entries list                 |
-| `raceLogCard`             | Each `<li>` race entry card              |
-| `addRaceBtn`              | Add race button (opens modal)            |
-| `raceLogFormModal`        | Add/edit modal root                      |
-| `raceLogSaveBtn`          | Save button in form modal                |
-| `raceLogDeleteBtn`        | Delete icon on each card                 |
-| `raceLogDeleteConfirmBtn` | Confirm button in delete dialog          |
-| `editGoalBtn`             | "Edit race goal" button on Activity page |
-| `editGoalModal`           | Edit goal modal root                     |
-| `editGoalSaveBtn`         | Save button in edit goal modal           |
+**Race Log list page (`/running/race-log`):**
+
+| ID                        | Element                                                                                                     |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `raceLogPage`             | Page root `<div id="raceLogPage">`                                                                          |
+| `raceLogLoadingSkeleton`  | Skeleton wrapper — NOTE: currently missing from rendered HTML (gap — see below)                             |
+| `raceLogError`            | Error container `<div id="raceLogError" role="alert">`                                                      |
+| `raceLogEmptyState`       | Empty state container `<div id="raceLogEmptyState">`                                                        |
+| `raceLogList`             | Table container — NOTE: currently rendered as `<div id="raceLogTable">` not `raceLogList` (gap — see below) |
+| `raceLogCard`             | Each table row — NOTE: currently no id on `<TableRow>` (gap — see below)                                    |
+| `addRaceBtn`              | "Log race" button in page header                                                                            |
+| `addRaceFromActivityBtn`  | "Add from activity" button in page header                                                                   |
+| `raceLogFormModal`        | Add/edit modal root `<DialogContent id="raceLogFormModal">`                                                 |
+| `raceLogSaveBtn`          | Save button in form modal                                                                                   |
+| `raceLogDeleteBtn`        | Delete button — NOTE: delete is on detail page, not list page (gap — see below)                             |
+| `raceLogDeleteConfirmBtn` | Confirm button in delete dialog — on detail page                                                            |
+| `editGoalBtn`             | "Edit race goal" button on Activity detail page                                                             |
+| `editGoalModal`           | Edit goal modal root                                                                                        |
+| `editGoalSaveBtn`         | Save button in edit goal modal                                                                              |
+
+**Race Log detail page (`/running/race-log/[id]`):**
+
+| ID                                    | Element                               |
+| ------------------------------------- | ------------------------------------- |
+| `raceDetailPage`                      | Page root `<div id="raceDetailPage">` |
+| `deleteRaceBtn_raceDetailPage`        | Delete race button                    |
+| `deleteRaceConfirmBtn_raceDetailPage` | Confirm button in delete dialog       |
+
+**Known gaps between `app-constants.json` registered IDs and actual rendered HTML (Tester to note):**
+
+- `raceLogLoadingSkeleton` — skeleton rows inside `<TableBody>` have no wrapping ID; tests referencing this ID will fail to find the element
+- `raceLogList` — table container rendered as `id="raceLogTable"`, not `raceLogList`; Cypress `IDS.list` selector will not find the element
+- `raceLogCard` — no ID on individual `<TableRow>` elements; Cypress `IDS.card` selector will not find entries
+- `raceLogDeleteBtn` — delete action only exists on the detail page, not on list rows; Cypress tests that click delete on the list will fail
 
 ---
 
@@ -2258,4 +2302,4 @@ Zone boundaries (% dari masing-masing metodologi):
 
 ---
 
-_End of document. Version 2.2 — Section 12 Gear Management updated: added `notification_distance_m` column to rt_gear schema and sync fields, documented two-tab limit toggle (Strava / Manual) in UI spec and acceptance criteria, updated GET response shape, added PATCH validation note for Strava-managed field._
+_End of document. Version 2.5 — Section 13 Race Log synced with actual implementation: (1) DB columns renamed position_overall/position_category → position_place/position_male throughout schema, API specs, validations table. (2) UI spec updated from card layout to table layout; table columns documented. (3) "Add from activity" flow (addRaceFromActivityBtn + ActivityPickerDialog + RaceConfirmDialog) documented. (4) Race Log detail page /running/race-log/[id] added as Section 13.5b with own test IDs. (5) GET /api/running/v1/race-log/:id endpoint added to Section 13.4. (6) Test IDs section split into list page / detail page; missing IDs (raceLogLoadingSkeleton, raceLogList, raceLogCard, raceLogDeleteBtn on list) flagged as known gaps for Tester._

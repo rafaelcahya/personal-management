@@ -11,6 +11,7 @@
     "running_dashboard": "/main/running/dashboard",
     "running_activities": "/main/running/activities",
     "running_race_log": "/main/running/race-log",
+    "running_analytics": "/main/running/analytics",
     "trading": "/main/trading",
     "trading_dashboard": "/main/trading/dashboard",
     "trading_trade": "/main/trading/trade",
@@ -86,7 +87,8 @@
       "list": "/api/running/v1/race-log",
       "create": "/api/running/v1/race-log",
       "update": "/api/running/v1/race-log",
-      "delete": "/api/running/v1/race-log"
+      "delete": "/api/running/v1/race-log",
+      "detail": "/api/running/v1/race-log"
     },
     "running_goals": {
       "update": "/api/running/v1/goals"
@@ -379,11 +381,25 @@
       "add_btn": "addRaceBtn",
       "form_modal": "raceLogFormModal",
       "save_btn": "raceLogSaveBtn",
-      "delete_btn": "raceLogDeleteBtn",
-      "delete_confirm_btn": "raceLogDeleteConfirmBtn",
+      "delete_btn": "deleteRaceBtn_raceDetailPage",
+      "delete_confirm_btn": "deleteRaceConfirmBtn_raceDetailPage",
       "edit_goal_btn": "editGoalBtn",
       "edit_goal_modal": "editGoalModal",
-      "edit_goal_save_btn": "editGoalSaveBtn"
+      "edit_goal_save_btn": "editGoalSaveBtn",
+      "detail_page": "raceDetailPage",
+      "edit_btn": "editRaceBtn_raceDetailPage",
+      "edit_modal": "editRaceModal_raceDetailPage",
+      "edit_save_btn": "editRaceSaveBtn_raceDetailPage"
+    },
+    "running_analytics": {
+      "page": "analyticsPage",
+      "loading_skeleton": "analyticsLoadingSkeleton",
+      "error": "analyticsError",
+      "weekly_distance_section": "weeklyDistanceSection",
+      "pace_trend_section": "paceTrendSection",
+      "best_pace_section": "bestPaceSection",
+      "training_load_section": "trainingLoadSection",
+      "race_predictor_section": "racePredictorSection"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",

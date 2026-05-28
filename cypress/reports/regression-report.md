@@ -1,5 +1,36 @@
 # Regression Testing Report
 
+**Date:** 2026-05-28
+**App Version:** 1.22
+**Scope:** Running Tracker Race Log — focused re-run after UI test rewrite (2 spec files)
+**Tester:** QA Agent
+
+## Summary (2026-05-28 Focused Run — Race Log Test Fix)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 59          | 59     | 0      | 0       | **100%**         |
+
+### Race Log — Spec Files
+
+| #  | Spec File                                                | Tests | Passed | Pending | Failed | Status   |
+| -- | -------------------------------------------------------- | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/race-log/race-log-api.cy.js                      | 21    | 21     | 0       | 0      | ✅ PASS  |
+| 2  | running/race-log/race-log-ui.cy.js                       | 38    | 38     | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                                | **59** | **59** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `race-log-api.cy.js` (21 tests, unchanged): GET /race-log (200 + shape, ordered DESC, pace null for DNF, 401), POST (201 + body, pace computed server-side, DNF without finish_time, 400 validation x4, 401), PATCH/:id (200 + partial update, pace recomputed on finish_time change, 400 empty body, 404 unowned, 401), DELETE/:id (200, 404, 401).
+- `race-log-ui.cy.js` (38 tests, **rewritten** to match actual table-layout implementation): Auth guard, loading skeleton, error+retry, empty state (CTA button). Race list: title/DNF badge/finish time/position_place/position_male rendered in table rows; clicking row navigates to `/main/running/race-log/:id`. Add modal: open/close, validation (empty form + DNF toggle), date via calendar picker, successful save navigates to detail page, server error stays open. Edit modal (**detail page only**): open via `editRaceBtn_raceDetailPage`, prefill title, successful PATCH closes modal, server error shows alert. Delete (**detail page only**): opens AlertDialog, title shown in dialog, Cancel keeps page, Confirm calls DELETE + navigates back to list. Mobile: no overflow, add btn visible, rows visible.
+
+**Changes made this session:**
+- `race-log-ui.cy.js` — Sections E, I, J, K rewritten: E (position_overall→position_place, position_category→position_male, removed "View activity" tests, row-click navigation test); I (calendar picker `.click()` + gridcell, post-save navigates to detail); J (edit modal moved to detail page — stubs GET /race-log/:id + GET /activities/:id, uses `editRaceBtn_raceDetailPage`/`editRaceModal_raceDetailPage`); K (delete moved to detail page — same stubs, AlertDialog via `deleteRaceBtn_raceDetailPage`, confirm navigates back to list).
+- `app-constants.json` — Added `test_ids.race_log.detail_page`, `edit_btn`, `edit_modal`, `edit_save_btn`; added `endpoints.running_race_log.detail`.
+- 1 failure from initial run fixed: `cy.contains(entry1.title).should('be.visible')` in AlertDialog scoped to `[role="alertdialog"]` to avoid matching page header title clipped by overlay.
+
+---
+
+## Previous Run — 2026-05-27
 **Date:** 2026-05-27
 **App Version:** 1.22
 **Scope:** Running Tracker Activities — focused run (9 spec files, 2 new)
@@ -351,6 +382,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-05-28 | Running Tracker Race Log (fix)       | 59    | 59     | 0       | 0      | 100%        |
 | 2026-05-27 | Running Tracker Activities           | 152   | 152    | 0       | 0      | 100%        |
 | 2026-05-25 | Running Tracker Dashboard Extended   | 39    | 39     | 0       | 0      | 100%        |
 | 2026-05-23 | Running Tracker Dashboard            | 36    | 36     | 0       | 0      | 100%        |

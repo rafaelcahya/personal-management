@@ -27,18 +27,8 @@ export const createRaceLogSchema = z
       .optional()
       .nullable(),
     elevation_gain_m: z.number().min(0).optional().nullable(),
-    position_overall: z
-      .number()
-      .int()
-      .min(1, 'Position must be 1 or greater')
-      .optional()
-      .nullable(),
-    position_category: z
-      .number()
-      .int()
-      .min(1, 'Position must be 1 or greater')
-      .optional()
-      .nullable(),
+    position_place: z.number().int().min(1, 'Position must be 1 or greater').optional().nullable(),
+    position_male: z.number().int().min(1, 'Position must be 1 or greater').optional().nullable(),
     did_not_finish: z.boolean().optional().default(false),
     activity_id: z.string().uuid('Invalid activity ID').optional().nullable(),
     notes: z.string().max(5000).optional().nullable(),
@@ -78,18 +68,8 @@ export const updateRaceLogSchema = z
       .optional()
       .nullable(),
     elevation_gain_m: z.number().min(0).optional().nullable(),
-    position_overall: z
-      .number()
-      .int()
-      .min(1, 'Position must be 1 or greater')
-      .optional()
-      .nullable(),
-    position_category: z
-      .number()
-      .int()
-      .min(1, 'Position must be 1 or greater')
-      .optional()
-      .nullable(),
+    position_place: z.number().int().min(1, 'Position must be 1 or greater').optional().nullable(),
+    position_male: z.number().int().min(1, 'Position must be 1 or greater').optional().nullable(),
     did_not_finish: z.boolean().optional(),
     activity_id: z.string().uuid('Invalid activity ID').optional().nullable(),
     notes: z.string().max(5000).optional().nullable(),
