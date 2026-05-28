@@ -35,8 +35,10 @@ import {
   Gauge,
   TrendingUp,
   BarChart2,
+  Info,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -678,6 +680,25 @@ export default function ActivityDetailPage() {
                           </span>
                         )}
                       </div>
+                      {(activity.commute || activity.trainer || activity.manual) && (
+                        <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+                          {activity.commute && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                              Commute
+                            </span>
+                          )}
+                          {activity.trainer && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                              Indoor
+                            </span>
+                          )}
+                          {activity.manual && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
+                              Manual
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -772,6 +793,14 @@ export default function ActivityDetailPage() {
                           label="Energy"
                           value={Math.round(activity.kilojoules)}
                           unit="kJ"
+                        />
+                      )}
+                      {activity.max_watts != null && (
+                        <StatTile
+                          icon={Zap}
+                          label="Max Power"
+                          value={activity.max_watts}
+                          unit="W"
                         />
                       )}
                       {(activity.elev_high_m != null || activity.elev_low_m != null) && (
@@ -1243,6 +1272,36 @@ export default function ActivityDetailPage() {
                                 {cardiacDrift} bpm
                               </span>
                               <span className="text-xs text-slate-300">(split 1 → last split)</span>
+                              <TooltipProvider delayDuration={200}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button
+                                      type="button"
+                                      className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                                      aria-label="Cardiac drift information"
+                                    >
+                                      <Info className="size-3.5" aria-hidden="true" />
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    side="top"
+                                    className="max-w-64 text-xs leading-relaxed"
+                                  >
+                                    <p className="font-semibold mb-1">What is Cardiac Drift?</p>
+                                    <p>
+                                      HR increase from your first split to your last split at the
+                                      same pace — a sign of fatigue or dehydration.
+                                    </p>
+                                    <p className="mt-1.5 text-slate-300">
+                                      <span className="text-green-400 font-medium">0–5 bpm</span>{' '}
+                                      Good ·{' '}
+                                      <span className="text-amber-400 font-medium">6–10</span>{' '}
+                                      Moderate ·{' '}
+                                      <span className="text-red-400 font-medium">&gt;10</span> High
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             </div>
                           )}
                         </div>

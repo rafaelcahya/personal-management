@@ -199,6 +199,12 @@ export async function POST(_request) {
           kudos_count: a.kudos_count ?? 0,
           summary_polyline: a.map?.summary_polyline ?? null,
           raw_data: a,
+          max_watts: a.max_watts != null ? Math.round(a.max_watts) : null,
+          commute: a.commute ?? null,
+          trainer: a.trainer ?? null,
+          has_heartrate: a.has_heartrate ?? null,
+          manual: a.manual ?? null,
+          perceived_exertion: a.perceived_exertion ?? null,
         }))
 
         const { data: insertedRows, error: insertError } = await admin
