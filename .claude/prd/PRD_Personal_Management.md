@@ -2,10 +2,23 @@
 
 ## Personal Management App
 
-**Version:** 1.18  
-**Last Updated:** 2026-05-17  
+**Version:** 1.19
+**Last Updated:** 2026-05-29
 **Owner:** Rafael Cahya  
 **Stack:** Next.js 15 App Router · Supabase (PostgreSQL) · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6)
+
+---
+
+## Product Release Plan
+
+> PRD version = document revision (tracks requirement changes).
+> Product release version = what ships to production (GitHub milestone).
+
+| Release  | Status  | GitHub Milestone                                                       | PRD Coverage                                                                | Issues      |
+| -------- | ------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------- | ----------- |
+| **v1.0** | Shipped | —                                                                      | PM PRD v1.0–v1.19 (all features to date: Inventory, Trading, Auth, Sidebar) | —           |
+| **v1.1** | Planned | [v1.1](https://github.com/rafaelcahya/personal-management/milestone/2) | RT PRD §10 Analytics, §11 AI Coach                                          | #4 #5 #6 #7 |
+| **v1.2** | Planned | [v1.2](https://github.com/rafaelcahya/personal-management/milestone/3) | TBD                                                                         | —           |
 
 ---
 

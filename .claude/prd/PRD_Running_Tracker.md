@@ -2,10 +2,23 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 2.5
-**Last Updated:** 2026-05-27
+**Version:** 2.6
+**Last Updated:** 2026-05-29
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6) · Strava API
+
+---
+
+## Product Release Plan
+
+> PRD version = document revision (tracks requirement changes).
+> Product release version = what ships to production (GitHub milestone).
+
+| Release  | Status  | GitHub Milestone                                                       | PRD Coverage                                                                                     | Issues      |
+| -------- | ------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------- |
+| **v1.0** | Shipped | —                                                                      | RT PRD v1.0–v2.6 (all features to date: Dashboard, Activities, Race Log, Training Load, Sidebar) | —           |
+| **v1.1** | Planned | [v1.1](https://github.com/rafaelcahya/personal-management/milestone/2) | §10 Analytics (10.2 page, 10.4 VO2max), §10.4 Efficiency Factor, §11 AI Coach                    | #4 #5 #6 #7 |
+| **v1.2** | Planned | [v1.2](https://github.com/rafaelcahya/personal-management/milestone/3) | TBD                                                                                              | —           |
 
 ---
 

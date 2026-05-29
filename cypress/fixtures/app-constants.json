@@ -109,6 +109,12 @@
       "trade_btn": "tradeBtn_landingPage",
       "inventory_btn": "inventoryBtn_landingPage"
     },
+    "sidebar": {
+      "collapse_btn": "sidebarCollapseBtn_sidebar",
+      "inventory_dashboard_nav": "inventoryDashboardNav_sidebar",
+      "trading_dashboard_nav": "tradingDashboardNav_sidebar",
+      "running_dashboard_nav": "runningDashboardNav_sidebar"
+    },
     "shared": {
       "submit_btn": "submit-btn",
       "cancel_btn": "cancel-btn",
@@ -303,7 +309,8 @@
       "ai_insight_pending": "aiInsightPending_activityDetailPage",
       "ai_insight_content": "aiInsightContent_activityDetailPage",
       "ai_insight_error": "aiInsightError_activityDetailPage",
-      "ai_insight_retry": "aiInsightRetry_activityDetailPage"
+      "ai_insight_retry": "aiInsightRetry_activityDetailPage",
+      "ef_trend_arrow": "efTrendArrow"
     },
     "running_dashboard": {
       "page": "dashboardPage",
@@ -314,6 +321,11 @@
       "activity_calendar_card": "activityCalendarCard",
       "recent_activities_card": "recentActivitiesCard",
       "ai_coach_card": "aiCoachCard",
+      "ai_coach_loading": "aiCoachLoading_dashboardPage",
+      "ai_coach_empty": "aiCoachEmpty_dashboardPage",
+      "ai_coach_error": "aiCoachError_dashboardPage",
+      "ai_coach_content": "aiCoachContent_dashboardPage",
+      "ai_coach_retry_btn": "aiCoachRetryBtn_dashboardPage",
       "health_checkin_card": "healthCheckinCard",
       "skeleton": "dashboardSkeleton",
       "error": "dashboardError",
@@ -399,6 +411,8 @@
       "pace_trend_section": "paceTrendSection",
       "best_pace_section": "bestPaceSection",
       "training_load_section": "trainingLoadSection",
+      "vo2max_trend_section": "vo2maxTrendSection",
+      "ef_trend_section": "efTrendSection",
       "race_predictor_section": "racePredictorSection"
     },
     "product_brand": {

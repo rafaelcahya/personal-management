@@ -34,6 +34,7 @@ import "./common/inventory/product_stock_history/api-commands";
 import "./common/inventory/product_stock_history/db-commands";
 import "./common/helper";
 import "cypress-mochawesome-reporter/register";
+import "cypress-real-events";
 
 beforeEach(() => {
     Cypress.session.clearAllSavedSessions();

@@ -1,6 +1,6 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-29 (Race Log UI — 13 new tests for search + distance filter chips; race-log-ui.cy.js 51/51 passing; Race Log total 72/72)
+**Last Updated:** 2026-05-29 (Sidebar UI — sidebar-ui.cy.js 8/8 passing; Shared module added; issue #8 complete; cypress-real-events installed)
 **App Version:** 1.22
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
@@ -16,7 +16,9 @@
 > ✅ **Running Tracker Manual Entry API (2026-05-23):** 1 new spec file added (manual-api.cy.js). 21/21 passing in focused run. Covers Activities CRUD (POST, list filter, dedup 409, PATCH, empty PATCH 422, DELETE), Subjective Health upsert lifecycle, Weight Log CRUD, auth guards (4 tests).
 > ✅ **Running Tracker Strava Sync API (2026-05-23):** 1 new spec file added (sync-api.cy.js). 8/8 passing in focused run. Covers POST /sync/strava, GET /sync/status, GET /auth/strava/callback (redirect flows), unauthenticated guard (401).
 > ✅ **Running Tracker Dashboard (2026-05-23):** 2 new spec files added (dashboard-api.cy.js, dashboard-ui.cy.js). 36/36 passing in focused run. API spec: GET /dashboard response shape (weekly_stats, training_load, recent_activities, calendar_activities, health_today), integer checks, 401 guard. UI spec: auth guard, loading skeleton, happy path 6 sections, empty state, health logged state, error+retry, training load badge variants (Low/Caution/High Risk).
-> ✅ **Running Tracker Race Log (2026-05-28):** UI tests rewritten to match actual table-layout implementation (was card layout). race-log-api.cy.js: 21/21 unchanged. race-log-ui.cy.js: 38/38 passing after rewrite — Sections E (position_place/position_male, row-click navigation), I (calendar picker, post-save navigate to detail), J (edit modal on detail page), K (delete on detail page). New test IDs: detail_page, edit_btn, edit_modal, edit_save_btn. app-constants.json updated with detail endpoint.
+> ✅ **Sidebar UI (2026-05-29):** sidebar-ui.cy.js 8/8 passing (100%). New `shared/` spec folder. Covers issue #8: auth guard, collapsed tooltips (Inventory Dashboard/Running Dashboard/Activities label), expanded no-tooltip, collapse toggle (both directions). Tooltip fix: native `PointerEvent('pointermove')` dispatch triggers Radix `onPointerMove` handler; collapse state fix: wait for `title="Expand/Collapse sidebar"` to confirm React useEffect has run. Added `sidebarCollapseBtn_sidebar` id and 3 Dashboard nav item ids. Shared module: 8 tests.
+> ✅ **Running Tracker AI Coach UI (2026-05-29):** ai-coach-ui.cy.js 20/20 passing (100%). Covers issues #7, #22, #23: auth guard, empty state, content state, pending/invalid fallback, error state, retry flows, and new Section H multi-card rendering (3 cards, 1 card, pending filter, is_valid filter). Root fix: added `scrollIntoView()` before visibility assertions to handle overflow-y-auto clipping. Dashboard total now 95 tests.
+> ✅ **Running Tracker Race Log (2026-05-29):** Full re-run confirmed — race-log-api.cy.js 21/21 + race-log-ui.cy.js 51/51 = 72/72 passing (100%). All API and UI tests pass including search + distance filter chips added in last session.
 > ✅ **Running Tracker Activities (2026-05-27):** 2 new spec files added (activities-api.cy.js, activities-ui.cy.js). Full activities suite: 9 spec files, 152 tests, all 152/152 passing. New: activities-api (8 tests: GET list shape, pagination, type filter, 401), activities-ui (21 tests: auth guard, skeleton, list render, type filter URL param, pagination, error, empty states). Existing: activityDetail (36), activityDetailApi (25, strict 404 for goals ownership), activity-detail-ui (27, HrZonesChart + AIInsightCard), ai-insight-api (8), hr-zones-api (6), stream-charts-api (7, 400 fix for invalid resolution), stream-charts-ui (14). Bugs fixed: updateGoal.js `.single()`→`.maybeSingle()`, streams route validation order, AIInsightCard border. All `data-testid` in activities components converted to `id=` with `_activityDetailPage` suffix.
 > ✅ **Running Tracker Dashboard Extended (2026-05-25):** 4 new spec files added (gear-api.cy.js, gear-ui.cy.js, performance-trends-api.cy.js, dashboard-ui-extended.cy.js). 39 tests, all 39/39 passing. Gear API (6): response shape, PATCH, auth guards. Gear UI (14): loading skeleton, list rendering, empty/error state, limit tabs, near-retirement warning, edit form. Performance Trends API (5): shape, ?limit, ?type, 401. Dashboard Extended UI (14): YtdStats, NextRace, syncStatusBar/btn/resultMsg, activity type filter active ring.
 
@@ -40,10 +42,11 @@
 | Running Tracker - Onboarding    | 2026-05-20   | 0      | 52         | 52    |
 | Running Tracker - Sync API      | 2026-05-23   | 0      | 8          | 8     |
 | Running Tracker - Manual Entry  | 2026-05-23   | 0      | 21         | 21    |
-| Running Tracker - Dashboard     | 2026-05-25   | 0      | 75         | 75    |
+| Running Tracker - Dashboard     | 2026-05-29   | 0      | 95         | 95    |
 | Running Tracker - Race Log      | 2026-05-29   | 0      | 72         | 72    |
 | Running Tracker - Activities    | 2026-05-27   | 0      | 152        | 152   |
-| **Total**                       |              | **1**  | **2,044**  | **2,045** |
+| Shared - Sidebar                | 2026-05-29   | 0      | 8          | 8     |
+| **Total**                       |              | **1**  | **2,072**  | **2,073** |
 
 ---
 

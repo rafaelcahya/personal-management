@@ -85,3 +85,55 @@ All signals between agents go through one central file:
 `.claude/agents/signals/pending-signals.md`
 
 Each agent checks this file at kickoff and resolves `[PENDING]` signals before starting new work.
+
+## Git Workflow
+
+Every feature is tied to a GitHub Issue. Branches, commits, and PRs must reference the issue number so GitHub auto-links them to the project board.
+
+### Branch naming
+
+```
+feat/issue-{n}-{short-description}    # new feature
+fix/issue-{n}-{short-description}     # bug fix or test
+```
+
+Examples:
+
+```
+feat/issue-4-analytics-page
+feat/issue-6-efficiency-factor
+fix/issue-8-sidebar-tooltip-tests
+```
+
+### Commit message format
+
+```
+<type>: <description> (#n)
+```
+
+Examples:
+
+```
+feat: add analytics page with distance trend and race predictor (#4)
+feat: add efficiency factor trend arrow vs 30-day average (#6)
+fix: add sidebar collapsed tooltip cypress tests (#8)
+```
+
+### PR body — closing keyword
+
+Always include `Closes #n` in the PR body so GitHub auto-closes the issue on merge, which updates the milestone progress and project board status automatically.
+
+```
+## Summary
+- ...
+
+Closes #4
+```
+
+### Versioning convention
+
+- **PRD version** (e.g. v1.19, v2.6) — document revision, tracks requirement changes
+- **Product release** (e.g. v1.0, v1.1) — what ships to production, tracked via GitHub milestone
+
+Release plan lives in each PRD under **Product Release Plan**. GitHub milestones are at:
+`https://github.com/rafaelcahya/personal-management/milestones`
