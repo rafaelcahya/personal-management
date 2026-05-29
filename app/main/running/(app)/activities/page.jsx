@@ -43,6 +43,7 @@ import { Button } from '@/components/ui/button'
 import { fetchActivities } from '@/lib/api/running'
 import { fmtDistance, fmtPace, fmtDuration } from '../dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
+import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
 
 // ─── activity config ──────────────────────────────────────────────────────────
 
@@ -129,29 +130,6 @@ const WORKOUT_BADGE = {
       Interval
     </span>
   ),
-}
-
-// ─── skeleton row ──────────────────────────────────────────────────────────────
-
-function SkeletonRow() {
-  return (
-    <TableRow className="animate-pulse">
-      <TableCell>
-        <div className="flex items-center gap-3">
-          <div className="size-8 rounded-full bg-slate-100 shrink-0" />
-          <div className="flex flex-col gap-1.5">
-            <div className="h-3 w-36 bg-slate-100 rounded" />
-            <div className="h-2.5 w-20 bg-slate-100 rounded" />
-          </div>
-        </div>
-      </TableCell>
-      {[60, 56, 48, 52, 40, 44].map((w, i) => (
-        <TableCell key={i}>
-          <div className="h-3 bg-slate-100 rounded ml-auto" style={{ width: w }} />
-        </TableCell>
-      ))}
-    </TableRow>
-  )
 }
 
 // ─── type chip ────────────────────────────────────────────────────────────────
@@ -431,9 +409,7 @@ function ActivitiesInner() {
                       >
                         <Table className="min-w-[640px] w-full">
                           <TableBody>
-                            {Array.from({ length: 8 }).map((_, i) => (
-                              <SkeletonRow key={i} />
-                            ))}
+                            <TableSkeletonRows rows={8} metricWidths={[60, 56, 48, 52, 40, 44]} />
                           </TableBody>
                         </Table>
                       </div>

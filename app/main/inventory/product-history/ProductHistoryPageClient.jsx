@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { PackageOpen, Search, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
 import ProductHistoryTable from './ProductHistoryTable'
+import InventoryTableSkeleton from '@/app/main/components/InventoryTableSkeleton'
 import ProductHistoryTableHeader from './component/ProductHistoryTableHeader'
 import ProductHistoryFilterDropdown from './component/ProductHistoryFilterDropdown'
 import PageHeader from '../../components/PageHeader'
@@ -36,34 +36,24 @@ function HistorySearchInput({ searchQuery, setSearchQuery }) {
   )
 }
 
-function TableSkeleton() {
-  return (
-    <div id="loadingSkeleton_productHistoryPage" className="flex-1 overflow-auto">
-      <div className="rounded-lg overflow-hidden">
-        <div className="bg-slate-100 px-4 py-2.5 flex items-center gap-4">
-          <Skeleton className="h-4 w-6 rounded" />
-          <Skeleton className="h-4 w-32 rounded" />
-          <Skeleton className="h-4 w-16 rounded" />
-          <Skeleton className="h-4 w-10 rounded" />
-          <Skeleton className="h-4 w-20 rounded" />
-          <Skeleton className="h-4 w-20 rounded" />
-          <Skeleton className="h-4 w-28 rounded ml-auto" />
-        </div>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="px-4 py-3 flex items-center gap-4 border-b border-slate-100">
-            <Skeleton className="h-4 w-4 rounded" />
-            <Skeleton className="h-4 w-36 rounded" />
-            <Skeleton className="h-5 w-16 rounded-full" />
-            <Skeleton className="h-4 w-8 rounded" />
-            <Skeleton className="h-4 w-20 rounded" />
-            <Skeleton className="h-4 w-20 rounded" />
-            <Skeleton className="h-4 w-28 rounded" />
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
+const HISTORY_SKELETON_HEADER = [
+  'h-4 w-6 rounded',
+  'h-4 w-32 rounded',
+  'h-4 w-16 rounded',
+  'h-4 w-10 rounded',
+  'h-4 w-20 rounded',
+  'h-4 w-20 rounded',
+  'h-4 w-28 rounded ml-auto',
+]
+const HISTORY_SKELETON_ROW = [
+  'h-4 w-4 rounded',
+  'h-4 w-36 rounded',
+  'h-5 w-16 rounded-full',
+  'h-4 w-8 rounded',
+  'h-4 w-20 rounded',
+  'h-4 w-20 rounded',
+  'h-4 w-28 rounded',
+]
 
 export default function ProductHistoryPageClient({ initialHistory }) {
   const [history, setHistory] = useState(initialHistory ?? null)
@@ -122,7 +112,11 @@ export default function ProductHistoryPageClient({ initialHistory }) {
         {/* Content area */}
         <div className="px-3 sm:px-5 py-3 sm:py-4">
           {loading ? (
-            <TableSkeleton />
+            <InventoryTableSkeleton
+              id="loadingSkeleton_productHistoryPage"
+              headerCols={HISTORY_SKELETON_HEADER}
+              rowCols={HISTORY_SKELETON_ROW}
+            />
           ) : historyList.length === 0 ? (
             <div
               id="emptyState_productHistoryPage"

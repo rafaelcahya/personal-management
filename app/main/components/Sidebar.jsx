@@ -27,9 +27,15 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
 
 const INVENTORY_ITEMS = [
-  { name: 'Dashboard', href: '/main/inventory', icon: LayoutDashboard },
+  {
+    name: 'Dashboard',
+    tooltip: 'Inventory Dashboard',
+    href: '/main/inventory',
+    icon: LayoutDashboard,
+  },
   { name: 'Product List', href: '/main/inventory/product-list', icon: Package },
   { name: 'Product Brand', href: '/main/inventory/product-brand', icon: Tag },
   { name: 'Product Name', href: '/main/inventory/product-name', icon: Type },
@@ -37,7 +43,12 @@ const INVENTORY_ITEMS = [
 ]
 
 const TRADING_ITEMS = [
-  { name: 'Dashboard', href: '/main/trading/dashboard', icon: LayoutDashboard },
+  {
+    name: 'Dashboard',
+    tooltip: 'Trading Dashboard',
+    href: '/main/trading/dashboard',
+    icon: LayoutDashboard,
+  },
   { name: 'Trades', href: '/main/trading/trade', icon: TrendingUp },
   { name: 'Market Events', href: '/main/trading/event', icon: Calendar },
   { name: 'Fees', href: '/main/trading/fee', icon: Receipt },
@@ -45,7 +56,12 @@ const TRADING_ITEMS = [
 ]
 
 const RUNNING_ITEMS = [
-  { name: 'Dashboard', href: '/main/running/dashboard', icon: LayoutDashboard },
+  {
+    name: 'Dashboard',
+    tooltip: 'Running Dashboard',
+    href: '/main/running/dashboard',
+    icon: LayoutDashboard,
+  },
   { name: 'Activities', href: '/main/running/activities', icon: Activity },
   { name: 'Race Log', href: '/main/running/race-log', icon: Trophy },
   { name: 'Analytics', href: '/main/running/analytics', icon: BarChart2 },
@@ -62,11 +78,10 @@ function NavItem({ item, collapsed, onClick }) {
       : pathname === item.href || pathname.startsWith(item.href + '/')
   const Icon = item.icon
 
-  return (
+  const link = (
     <Link
       href={item.href}
       onClick={onClick}
-      title={collapsed ? item.name : undefined}
       className={cn(
         'flex items-center gap-3 rounded-lg text-sm font-medium transition-colors',
         collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2',
@@ -78,6 +93,17 @@ function NavItem({ item, collapsed, onClick }) {
       <Icon className={cn('size-4 shrink-0', isActive ? 'text-violet-600' : 'text-slate-400')} />
       {!collapsed && <span className="truncate">{item.name}</span>}
     </Link>
+  )
+
+  if (!collapsed) return link
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>{link}</TooltipTrigger>
+        <TooltipContent side="right">{item.tooltip ?? item.name}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }
 

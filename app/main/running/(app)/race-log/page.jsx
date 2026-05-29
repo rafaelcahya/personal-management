@@ -16,6 +16,7 @@ import {
 import { fmtDistance } from '../dashboard/utils/format'
 import { fetchRaceLog } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
+import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
 import RaceFormModal from './components/RaceFormModal'
 import ActivityPickerDialog from './components/ActivityPickerDialog'
 import RaceConfirmDialog from './components/RaceConfirmDialog'
@@ -35,27 +36,6 @@ function getDistanceBucket(distanceM) {
     if (b.min != null && distanceM >= b.min && distanceM <= b.max) return b.key
   }
   return 'other'
-}
-
-function RaceSkeletonRow() {
-  return (
-    <TableRow className="animate-pulse">
-      <TableCell>
-        <div className="flex items-center gap-3">
-          <div className="size-8 rounded-full bg-slate-100 shrink-0" />
-          <div className="flex flex-col gap-1.5">
-            <div className="h-3 bg-slate-100 rounded w-36" />
-            <div className="h-2.5 bg-slate-100 rounded w-16" />
-          </div>
-        </div>
-      </TableCell>
-      {[48, 52, 44, 48, 40, 32, 32].map((w, i) => (
-        <TableCell key={i}>
-          <div className="h-3 bg-slate-100 rounded ml-auto" style={{ width: w }} />
-        </TableCell>
-      ))}
-    </TableRow>
-  )
 }
 
 export default function RaceLogPage() {
@@ -285,9 +265,7 @@ export default function RaceLogPage() {
                     <div id="raceLogLoadingSkeleton">
                       <Table className="min-w-[700px] w-full">
                         <TableBody>
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <RaceSkeletonRow key={i} />
-                          ))}
+                          <TableSkeletonRows rows={5} metricWidths={[48, 52, 44, 48, 40, 32, 32]} />
                         </TableBody>
                       </Table>
                     </div>

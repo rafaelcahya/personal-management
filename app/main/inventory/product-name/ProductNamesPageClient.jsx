@@ -8,8 +8,8 @@ import { fetchProductName } from '@/lib/api/productName'
 import ProductNameFilterDropdown from './list/component/ProductNameFilterDropdown'
 import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Search, X, PackageOpen } from 'lucide-react'
+import InventoryTableSkeleton from '@/app/main/components/InventoryTableSkeleton'
 
 function NameSearchInput({ searchQuery, setSearchQuery }) {
   return (
@@ -37,32 +37,22 @@ function NameSearchInput({ searchQuery, setSearchQuery }) {
   )
 }
 
-function TableSkeleton() {
-  return (
-    <div id="loadingSkeleton_productNamePage" className="flex-1 overflow-auto">
-      <div className="rounded-lg overflow-hidden">
-        <div className="bg-slate-100 px-4 py-2.5 flex items-center gap-4">
-          <Skeleton className="h-4 w-6 rounded" />
-          <Skeleton className="h-4 w-28 rounded" />
-          <Skeleton className="h-4 w-16 rounded ml-auto" />
-          <Skeleton className="h-4 w-16 rounded" />
-          <Skeleton className="h-4 w-24 rounded" />
-          <Skeleton className="h-4 w-10 rounded" />
-        </div>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="px-4 py-3 flex items-center gap-4 border-b border-slate-100">
-            <Skeleton className="h-4 w-4 rounded" />
-            <Skeleton className="h-4 w-32 rounded" />
-            <Skeleton className="h-5 w-16 rounded-full ml-auto" />
-            <Skeleton className="h-5 w-8 rounded-full" />
-            <Skeleton className="h-4 w-32 rounded" />
-            <Skeleton className="h-6 w-6 rounded" />
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
+const NAME_SKELETON_HEADER = [
+  'h-4 w-6 rounded',
+  'h-4 w-28 rounded',
+  'h-4 w-16 rounded ml-auto',
+  'h-4 w-16 rounded',
+  'h-4 w-24 rounded',
+  'h-4 w-10 rounded',
+]
+const NAME_SKELETON_ROW = [
+  'h-4 w-4 rounded',
+  'h-4 w-32 rounded',
+  'h-5 w-16 rounded-full ml-auto',
+  'h-5 w-8 rounded-full',
+  'h-4 w-32 rounded',
+  'h-6 w-6 rounded',
+]
 
 export default function ProductNamesPageClient({ initialNames }) {
   const [names, setNames] = useState(initialNames ?? null)
@@ -127,7 +117,11 @@ export default function ProductNamesPageClient({ initialNames }) {
         {/* Table area */}
         <div className="px-3 sm:px-5 py-3 sm:py-4">
           {loading ? (
-            <TableSkeleton />
+            <InventoryTableSkeleton
+              id="loadingSkeleton_productNamePage"
+              headerCols={NAME_SKELETON_HEADER}
+              rowCols={NAME_SKELETON_ROW}
+            />
           ) : nameList.length === 0 ? (
             <div
               id="emptyState_productNamePage"
