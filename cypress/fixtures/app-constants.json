@@ -109,6 +109,12 @@
       "trade_btn": "tradeBtn_landingPage",
       "inventory_btn": "inventoryBtn_landingPage"
     },
+    "sidebar": {
+      "collapse_btn": "sidebarCollapseBtn_sidebar",
+      "inventory_dashboard_nav": "inventoryDashboardNav_sidebar",
+      "trading_dashboard_nav": "tradingDashboardNav_sidebar",
+      "running_dashboard_nav": "runningDashboardNav_sidebar"
+    },
     "shared": {
       "submit_btn": "submit-btn",
       "cancel_btn": "cancel-btn",
