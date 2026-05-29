@@ -83,9 +83,26 @@ export async function GET(_request, { params }) {
       .eq('activity_id', id)
     if (photosError) throw photosError
 
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+    const { data: efRows, error: efError } = await supabase
+      .from('rt_activities')
+      .select('efficiency_factor')
+      .eq('user_id', user.id)
+      .not('efficiency_factor', 'is', null)
+      .gte('started_at', thirtyDaysAgo)
+      .neq('id', id)
+
+    if (efError) throw efError
+
+    let efficiency_factor_30d_avg = null
+    if (efRows && efRows.length >= 3) {
+      const sum = efRows.reduce((acc, row) => acc + Number(row.efficiency_factor), 0)
+      efficiency_factor_30d_avg = parseFloat((sum / efRows.length).toFixed(4))
+    }
+
     return NextResponse.json(
       {
-        activity: { ...activity, gear },
+        activity: { ...activity, gear, efficiency_factor_30d_avg },
         splits: splits ?? [],
         laps: laps ?? [],
         best_efforts: bestEfforts ?? [],
