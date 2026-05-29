@@ -2,6 +2,87 @@
 
 **Date:** 2026-05-29
 **App Version:** 1.22
+**Scope:** Sidebar nav tooltips — sidebar-ui.cy.js (issue #8)
+**Tester:** QA Agent
+
+## Summary (2026-05-29 Focused Run — Sidebar UI)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 8           | 8      | 0      | 0       | **100%**         |
+
+### Sidebar UI — Spec Files
+
+| #  | Spec File                                                    | Tests | Passed | Pending | Failed | Status   |
+| -- | ------------------------------------------------------------ | ----- | ------ | ------- | ------ | -------- |
+| 1  | shared/sidebar-ui.cy.js                                      | 8     | 8      | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                                    | **8** | **8** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `sidebar-ui.cy.js` (8 tests): Section A — auth guard (1). Section B — collapsed tooltips (3): Inventory Dashboard/Running Dashboard/Activities tooltip text verified. Section C — expanded no tooltips (2): tooltip does not appear when sidebar is expanded. Section D — collapse toggle (2): collapse button hides nav labels, expand button shows nav labels.
+- Tooltip triggering: Native `PointerEvent('pointermove')` dispatch used instead of CDP-based `realHover()` — Radix UI's `onPointerMove` React handler requires a real DOM PointerEvent to open the tooltip in headless Electron.
+- Collapse state sync: Tests wait for `title="Expand/Collapse sidebar"` on the toggle button to confirm React `useEffect` has applied the localStorage value before interacting.
+- New: `cypress-real-events` package added to devDependencies. Sidebar nav items got `id` attributes for 3 Dashboard items. `sidebarCollapseBtn_sidebar` id added to toggle button.
+
+---
+
+## Previous Run — 2026-05-29 Focused Run — AI Coach UI
+
+**Date:** 2026-05-29
+**App Version:** 1.22
+**Scope:** Running Tracker Dashboard AI Coach — ai-coach-ui.cy.js (issue #7, #22, #23)
+**Tester:** QA Agent
+
+## Summary (2026-05-29 Focused Run — AI Coach UI)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 20          | 20     | 0      | 0       | **100%**         |
+
+### AI Coach UI — Spec Files
+
+| #  | Spec File                                                    | Tests | Passed | Pending | Failed | Status   |
+| -- | ------------------------------------------------------------ | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/dashboard/ai-coach-ui.cy.js                          | 20    | 20     | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                                    | **20** | **20** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `ai-coach-ui.cy.js` (20 tests): Sections A–G (16 tests, issues #22/#23): auth guard, card root, empty state (copy fix → "Complete a run to get AI analysis."), content state (title, first paragraph, View activity link), pending/invalid fallback to empty, error state (message + retry button), retry success and retry continued-failure flows. Section H (4 tests, issue #7): 3 cards render when 3 valid insights returned, 1 card renders when 1 insight returned, pending insight shows empty state, is_valid=false insight shows empty state.
+- Root cause of pre-existing visibility failures: `#aiCoachCard` section sits below several dashboard components inside an `overflow-y-auto` scroll container. Fixed by adding `cy.get('#aiCoachCard').scrollIntoView()` before each visibility assertion.
+
+---
+
+## Previous Run — 2026-05-29 Full Re-run — Race Log
+
+**Date:** 2026-05-29
+**App Version:** 1.22
+**Scope:** Running Tracker Race Log — full re-run (2 spec files)
+**Tester:** QA Agent
+
+## Summary (2026-05-29 Full Re-run — Race Log)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 72          | 72     | 0      | 0       | **100%**         |
+
+### Race Log — Spec Files
+
+| #  | Spec File                                                | Tests | Passed | Pending | Failed | Status   |
+| -- | -------------------------------------------------------- | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/race-log/race-log-api.cy.js                      | 21    | 21     | 0       | 0      | ✅ PASS  |
+| 2  | running/race-log/race-log-ui.cy.js                       | 51    | 51     | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                                | **72** | **72** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `race-log-api.cy.js` (21 tests, unchanged): GET /race-log (200 + shape, ordered DESC, pace null for DNF, 401), POST (201 + body, pace computed server-side, DNF without finish_time, 400 validation x4, 401), PATCH/:id (200 + partial update, pace recomputed on finish_time change, 400 empty body, 404 unowned, 401), DELETE/:id (200, 404, 401).
+- `race-log-ui.cy.js` (51 tests): All previous sections A–L confirmed passing. Section M — Search input (4 tests): filter by title case-insensitive, uppercase query match, clear via X button, clear via empty input. Section N — Distance filter chips (9 tests): `#raceFilterChip_all` always visible, chips only render for present buckets, `#raceFilterChip_5k/42k/other` filters, clicking active chip resets to All, combined search+chip intersection, filter empty state + Clear filters button.
+
+---
+
+## Previous Run — 2026-05-29 (Race Log Search + Filter)
+
+**Date:** 2026-05-29
+**App Version:** 1.22
 **Scope:** Running Tracker Race Log — search + distance filter (13 new tests in race-log-ui.cy.js)
 **Tester:** QA Agent
 
@@ -408,6 +489,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-05-29 | Race Log full re-run (2 spec files)  | 72    | 72     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log Search + Filter (+13 tests) | 51    | 51     | 0       | 0      | 100%        |
 | 2026-05-28 | Running Tracker Race Log (fix)       | 59    | 59     | 0       | 0      | 100%        |
 | 2026-05-27 | Running Tracker Activities           | 152   | 152    | 0       | 0      | 100%        |

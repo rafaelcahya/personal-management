@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-29 (Race Log — search + distance filter feature added; 13 new tests; race-log-ui.cy.js 51/51 passing; Race Log total 72 tests)
+**Last Updated:** 2026-05-29 (Sidebar UI — sidebar-ui.cy.js 8/8 passing; issue #8 complete; Shared module added with 8 tests)
 **App Version:** 1.22
 
 ## Coverage Summary
@@ -24,10 +24,17 @@
 | Running Tracker - Onboarding    | 6              | 6         | 0           | 0          | 100%       | 52         |
 | Running Tracker - Sync API      | 3              | 3         | 0           | 0          | 100%       | 8          |
 | Running Tracker - Manual Entry  | 7              | 7         | 0           | 0          | 100%       | 21         |
-| Running Tracker - Dashboard     | 9              | 9         | 0           | 0          | 100%       | 75         |
+| Running Tracker - Dashboard     | 10             | 10        | 0           | 0          | 100%       | 95         |
 | Running Tracker - Race Log      | 7              | 7         | 0           | 0          | 100%       | 72         |
 | Running Tracker - Activities    | 9              | 9         | 0           | 0          | 100%       | 152        |
-| **Total**                       | **145**        | **144**   | **1**       | **0**      | **99%**    | **2,045**  |
+| Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
+| **Total**                       | **150**        | **149**   | **1**       | **0**      | **99%**    | **2,073**  |
+
+> **Note (2026-05-29 v1.22 Sidebar UI):** sidebar-ui.cy.js 8/8 passing. New `shared/` spec folder added. Covers issue #8: auth guard, collapsed tooltips for Inventory Dashboard/Running Dashboard/Activities, no-tooltip in expanded state, collapse toggle both directions. Key fixes: native `PointerEvent('pointermove')` dispatch to trigger Radix UI tooltip (CDP-based realHover doesn't fire React's onPointerMove handler in headless Electron); title-attribute wait pattern to confirm React useEffect state sync before interacting. Added ids: `sidebarCollapseBtn_sidebar`, `inventoryDashboardNav_sidebar`, `tradingDashboardNav_sidebar`, `runningDashboardNav_sidebar`. `cypress-real-events` added as devDependency. `sidebar` section added to app-constants.json test_ids.
+
+> **Note (2026-05-29 v1.22 AI Coach UI):** ai-coach-ui.cy.js 20/20 passing. Covers issues #7, #22, #23. Sections A–G (16 tests): auth guard, card root, empty state ("Complete a run to get AI analysis."), content state (title + first paragraph + View activity link), pending/invalid fallback to empty, error state + retry. Section H (4 tests): multi-card rendering — 3 cards when 3 valid insights, 1 card when 1 valid, empty when status=pending, empty when is_valid=false. Fix: added `scrollIntoView()` before visibility assertions — AI Coach section is below fold inside overflow-y-auto main container. Dashboard module: 9 spec files, 95 tests total (was 75).
+
+> **Note (2026-05-29 v1.22 Race Log full re-run):** Full re-run of both race-log spec files confirmed 72/72 passing. race-log-api.cy.js (21 tests): all GET/POST/PATCH/DELETE flows pass. race-log-ui.cy.js (51 tests): all sections A–N pass including search filter (Section M) and distance filter chips (Section N) added in previous session.
 
 > **Note (2026-05-28 v1.22 Race Log fix):** Race Log UI tests rewritten to match actual table-layout implementation. race-log-ui.cy.js 38/38 passing, race-log-api.cy.js 21/21 unchanged. Key changes: fixtures updated (position_overall→position_place, position_category→position_male); Section E row-click navigation test replaces inline edit/delete; Section I calendar picker `.click()`+gridcell replaces `.type()`, post-save asserts URL navigation; Section J edit modal now tests detail page (stubs GET /race-log/:id + GET /activities/:id); Section K delete now tests detail page (AlertDialog→confirm→navigates back). New test_ids in app-constants.json: detail_page, edit_btn, edit_modal, edit_save_btn. New endpoint: running_race_log.detail. Total test count unchanged: 59 tests (21 API + 38 UI).
 
@@ -53,7 +60,25 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-05-29 Focused Run: Race Log Search + Filter)
+## Last Execution Results (2026-05-29 Focused Run: Sidebar UI)
+
+| Group                                                          | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| -------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| shared (Sidebar UI) ⭐ NEW spec file + new `shared/` folder    | 1          | 8     | 8      | 0      | 0       | ✅       |
+| **Total**                                                      | **1**      | **8** | **8** | **0** | **0**  | **100%** |
+
+**Status:** New sidebar-ui.cy.js — 8 tests covering auth guard, tooltip presence in collapsed/expanded state, and collapse toggle. All 8 passing 100%.
+
+### Previous Run Results (2026-05-29 Focused Run: AI Coach UI)
+
+| Group                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| ------------------------------------------------------------ | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running-dashboard (AI Coach UI) ⭐ +4 new Section H tests    | 1          | 20    | 20     | 0      | 0       | ✅       |
+| **Total**                                                    | **1**      | **20** | **20** | **0** | **0**  | **100%** |
+
+**Status:** Fixed empty-state copy mismatch (Section C) + added Section H multi-card tests + added scrollIntoView() to all visibility assertions. All 20 tests passing 100%.
+
+### Previous Run Results (2026-05-29 Focused Run: Race Log Search + Filter)
 
 | Group                                                    | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | -------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
