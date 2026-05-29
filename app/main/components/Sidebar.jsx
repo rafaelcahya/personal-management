@@ -31,6 +31,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 
 const INVENTORY_ITEMS = [
   {
+    id: 'inventoryDashboardNav_sidebar',
     name: 'Dashboard',
     tooltip: 'Inventory Dashboard',
     href: '/main/inventory',
@@ -44,6 +45,7 @@ const INVENTORY_ITEMS = [
 
 const TRADING_ITEMS = [
   {
+    id: 'tradingDashboardNav_sidebar',
     name: 'Dashboard',
     tooltip: 'Trading Dashboard',
     href: '/main/trading/dashboard',
@@ -57,6 +59,7 @@ const TRADING_ITEMS = [
 
 const RUNNING_ITEMS = [
   {
+    id: 'runningDashboardNav_sidebar',
     name: 'Dashboard',
     tooltip: 'Running Dashboard',
     href: '/main/running/dashboard',
@@ -80,6 +83,7 @@ function NavItem({ item, collapsed, onClick }) {
 
   const link = (
     <Link
+      id={item.id}
       href={item.href}
       onClick={onClick}
       className={cn(
@@ -282,6 +286,7 @@ export default function Sidebar({ user }) {
 
         {/* Collapse toggle */}
         <button
+          id="sidebarCollapseBtn_sidebar"
           onClick={toggleCollapse}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           className="absolute -right-3 top-[4.25rem] size-6 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:bg-slate-50 z-10 transition-colors"
