@@ -22,6 +22,8 @@ import {
   Thermometer,
   Gauge,
   TrendingUp,
+  TrendingDown,
+  Minus,
   BarChart2,
   Info,
 } from 'lucide-react'
@@ -398,7 +400,7 @@ export default function ActivityDetailPage() {
                         />
                       )}
                       {activity.efficiency_factor != null && (
-                        <div id="efficiencyFactor_activityDetailPage">
+                        <div id="efficiencyFactor_activityDetailPage" className="relative">
                           <StatTile
                             icon={BarChart2}
                             label="Efficiency"
@@ -421,6 +423,39 @@ export default function ActivityDetailPage() {
                               </>
                             }
                           />
+                          {activity.efficiency_factor_30d_avg != null &&
+                            (() => {
+                              const ef = Number(activity.efficiency_factor)
+                              const avg = Number(activity.efficiency_factor_30d_avg)
+                              if (ef > avg) {
+                                return (
+                                  <TrendingUp
+                                    id="efTrendArrow"
+                                    className="size-3.5 text-green-500 absolute top-3 right-3"
+                                    title={`Above your 30-day average (${avg.toFixed(4)})`}
+                                    aria-hidden="true"
+                                  />
+                                )
+                              }
+                              if (ef < avg) {
+                                return (
+                                  <TrendingDown
+                                    id="efTrendArrow"
+                                    className="size-3.5 text-red-400 absolute top-3 right-3"
+                                    title={`Below your 30-day average (${avg.toFixed(4)})`}
+                                    aria-hidden="true"
+                                  />
+                                )
+                              }
+                              return (
+                                <Minus
+                                  id="efTrendArrow"
+                                  className="size-3.5 text-slate-400 absolute top-3 right-3"
+                                  title="Equal to your 30-day average"
+                                  aria-hidden="true"
+                                />
+                              )
+                            })()}
                         </div>
                       )}
                       {activity.estimated_vo2max != null && (
