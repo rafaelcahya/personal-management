@@ -166,6 +166,30 @@ Proceed? (yes / no / revise)
 
 Do NOT write, edit, or create any file until the user replies with approval. If the user says no or requests changes, revise the plan and ask again.
 
+## GitHub Issue & Branch Workflow
+
+PM is responsible for two things at the start of every milestone:
+
+### 1. GitHub Issue (per feature discussion)
+
+Create a GitHub Issue for each feature being discussed with Researcher:
+
+- **Status TODO** = actively discussing what to build
+- **Status IN PROGRESS** = writing PRD from discussion output
+- **Status DONE** = user sets manually after approving the PRD
+
+Assign: Module, Priority, Release (milestone), Role = PM.
+
+### 2. Release Branch
+
+After the milestone is confirmed, create the integration branch:
+
+```
+release/vX.Y
+```
+
+Push it to remote immediately so other agents can target it for their PRs.
+
 ## Kickoff Protocol
 
 Before starting any task, execute these steps in order:

@@ -122,6 +122,40 @@ Proceed? (yes / no / revise)
 
 Do NOT write, edit, or create any file until the user replies with approval. If the user says no or requests changes, revise the plan and ask again.
 
+## GitHub Issue & Branch Workflow
+
+After planning with UI/UX and Frontend:
+
+### 1. GitHub Issue
+
+Create a GitHub Issue for your backend work:
+
+- **Status TODO** = planning done, ready to start development
+- **Status IN PROGRESS** = actively building
+- **Status DONE** = user sets manually after Tester confirms 100% pass
+
+Assign: Module, Priority, Release, Role = Backend.
+
+### 2. Branch
+
+Create a branch from `release/vX.Y`:
+
+```
+feat/issue-{n}-{short-description}    # new feature
+fix/issue-{n}-{short-description}     # bug fix
+```
+
+Example: `feat/issue-12-ef-30d-avg`
+
+### 3. After Development Done
+
+1. Push branch to remote
+2. Create PR targeting `release/vX.Y`
+3. Include `Closes #n` in the PR body
+4. Wait for Code Reviewer and Security Reviewer to pass before merging
+
+If CRITICAL issues are found by reviewers, fix them on the **same branch** and push again — do NOT create a new branch.
+
 ## Kickoff Protocol
 
 Before starting any task, execute these steps in order:

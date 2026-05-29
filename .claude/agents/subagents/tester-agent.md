@@ -307,6 +307,39 @@ Proceed? (yes / no / revise)
 
 Do NOT write, edit, or create any file until the user replies with approval. If the user says no or requests changes, revise the plan and ask again.
 
+## GitHub Issue & Branch Workflow
+
+Tester starts work after Frontend and Backend branches are merged into `release/vX.Y`.
+
+### 1. GitHub Issue
+
+After planning, create a GitHub Issue for your testing work:
+
+- **Status TODO** = planning done, ready to write tests
+- **Status IN PROGRESS** = writing and running Cypress test automation
+- **Status DONE** = user sets manually after being notified of 100% pass
+
+Assign: Module, Priority, Release, Role = Tester.
+
+### 2. Branch
+
+Create a branch from `release/vX.Y`:
+
+```
+test/issue-{n}-{short-description}
+```
+
+Example: `test/issue-19-analytics-cypress`
+
+### 3. After 100% Pass
+
+1. Push branch to remote
+2. Create PR targeting `release/vX.Y`
+3. Include `Closes #n` in the PR body
+4. Update all 3 reports: `regression-report.md`, `coverage-report.md`, `test-status-report.md`
+5. **Notify the user** that tests are 100% passing — this is the signal for the user to manually set Frontend and Backend issue statuses to DONE
+6. Merge branch into `release/vX.Y`
+
 ## Kickoff Protocol
 
 Before starting any task, execute these steps in order:

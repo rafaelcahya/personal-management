@@ -171,10 +171,10 @@ Proceed with option 1 or 2?
 
 Wait for user response. Do NOT proceed without explicit instruction.
 
-- **Option 1 approved** → Orchestrator spawns relevant agent(s) to fix → Security Reviewer re-runs after fix → only then proceed to Tester
+- **Option 1 approved** → Frontend/Backend fixes on the **same branch** and pushes again → Security Reviewer re-runs after fix → only then notify to merge and proceed to Tester
 - **Option 2** → pass findings to Tester as known issues; note them explicitly in the Tester's context
 
-**If no CRITICAL findings** → proceed directly to Tester, passing WARNING and SUGGESTION findings as context.
+**If no CRITICAL findings** → notify that Frontend and Backend can merge their branches into `release/vX.Y`. Pass WARNING and SUGGESTION findings to Tester as context.
 
 ---
 

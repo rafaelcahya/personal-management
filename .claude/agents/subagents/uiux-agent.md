@@ -181,6 +181,18 @@ Proceed? (yes / no / revise)
 
 Do NOT write, edit, or create any file until the user replies with approval. If the user says no or requests changes, revise the plan and ask again.
 
+## GitHub Issue Workflow
+
+UI/UX participates in planning with Frontend and Backend after PRD is approved. After planning:
+
+- Create a **GitHub Issue** for the design work
+  - **Status TODO** = planning done, ready to produce design spec
+  - **Status IN PROGRESS** = producing design decision doc
+  - **Status DONE** = user sets manually after Frontend confirms design is implemented
+- Assign: Module, Priority, Release, Role = UI/UX
+
+**UI/UX does NOT create a branch.** Output is a design decision doc (text/file), not code. No PR needed.
+
 ## Kickoff Protocol
 
 Before starting any task, execute these steps in order:

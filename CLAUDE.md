@@ -47,31 +47,69 @@ All agent files are in `.claude/agents/subagents/`.
 ## Standard Feature Workflow
 
 ```
-[Researcher ↔ PM] (flexible order or parallel) → UI/UX + Backend (parallel) → Frontend → Code Reviewer → Security Reviewer* → Tester → Regression Gate → PM Validation
+Phase 1: PM + Researcher → Phase 2: UI/UX + Frontend + Backend → Phase 3: Code Reviewer + Security Reviewer → Phase 4: Tester → Phase 5: Merge to master
 ```
+
+### Phase 1 — PM + Researcher (Feature Discovery & PRD)
+
+1. PM and Researcher discuss features to develop — both create a **GitHub Issue** to track the discussion
+   - Status **TODO** = actively discussing what to build
+   - Status **IN PROGRESS** = writing PRD from the discussion output
+   - Status **DONE** = user manually sets after PRD is approved
+2. PM creates the milestone integration branch: `release/vX.Y`
+3. PM writes PRD; Researcher validates requirements, benchmarks UX/tech
+4. User reviews and approves PRD → manually sets issue status to **DONE**
+
+### Phase 2 — UI/UX + Frontend + Backend (Planning & Development)
+
+After PRD is approved:
+
+1. UI/UX, Frontend, and Backend do planning together based on the PRD
+2. After planning, each agent creates a **GitHub Issue** for their own work:
+   - Status **TODO** = planning done, ready to start
+   - Status **IN PROGRESS** = actively developing
+   - Status **DONE** = user manually sets after Tester confirms 100% pass
+3. **UI/UX** — produces design decision doc; no branch needed (design spec output only)
+4. **Backend** — builds API endpoints; creates branch `feat/issue-{n}-{desc}`
+5. **Frontend** — builds UI using design spec + API contract; creates branch `feat/issue-{n}-{desc}`
+6. After development done: push branch to remote and create PR targeting `release/vX.Y`
+
+### Phase 3 — Code Reviewer + Security Reviewer
+
+After Frontend and Backend PRs are open:
+
+1. Code Reviewer reviews both PRs — no GitHub issue needed
+2. Security Reviewer reviews both PRs (conditional\*) — no GitHub issue needed
+3. If CRITICAL issues found → Frontend/Backend fix on the **same branch**, push again → Reviewer re-checks
+4. After all CRITICAL issues resolved → Frontend and Backend merge their branches into `release/vX.Y`
 
 \*Security Reviewer is conditional — triggered when new API routes, auth/session/permissions, admin client, new env vars, or user-generated content is involved.
 
-**Researcher ↔ PM** are peers — either can run first or both can run in parallel:
+### Phase 4 — Tester
 
-- Researcher before PM: product discovery, idea generation, surfacing unknowns
-- PM before Researcher: Researcher validates requirements, benchmarks UX/tech for defined features
-- Parallel: when topics are non-overlapping
+After Frontend and Backend branches are merged into `release/vX.Y`:
 
-1. **Researcher / PM** — research product, UX, library, security landscape; PM writes user stories + acceptance criteria; both inform each other
-2. **UI/UX** — produce design decision doc with all states + component mapping
-3. **Backend** — build API endpoints, send API contract to Frontend
-4. **Frontend** — build UI using design spec + API contract, add `data-testid`
-5. **Code Reviewer** — review Backend + Frontend output; CRITICAL issues must be fixed before proceeding
-6. **Security Reviewer** — review ownership, IDOR, secrets, XSS; CRITICAL issues must be fixed before Tester starts
-7. **Tester** — write Cypress E2E tests using Code Reviewer + Security Reviewer findings as context
-8. **Regression Gate** — user runs `npm run cy:regression` and confirms pass before proceeding
-9. **PM Validation** — PM verifies every acceptance criterion is implemented and tested
+1. Tester does planning, then creates a **GitHub Issue**:
+   - Status **TODO** = planning done, ready to write tests
+   - Status **IN PROGRESS** = writing Cypress test automation
+   - Status **DONE** = user manually sets after Tester notifies 100% pass
+2. Tester creates branch: `test/issue-{n}-{desc}`
+3. Tester writes tests until 100% passing
+4. After 100% pass: push branch, create PR targeting `release/vX.Y`, update all 3 reports
+5. Tester notifies user of 100% pass — user then manually sets Frontend and Backend issue statuses to **DONE**
+6. Tester branch is merged into `release/vX.Y`
+
+### Phase 5 — Merge to master
+
+After all branches (Frontend, Backend, Tester) are merged into `release/vX.Y`:
+
+1. Create PR from `release/vX.Y` → `master`
+2. Merge → product release shipped
 
 ## Hotfix Workflow
 
 ```
-Backend/Frontend (targeted fix) → Tester (scope-limited) → Regression Gate
+Backend/Frontend (targeted fix) → Tester (scope-limited) → merge to master
 ```
 
 For bugs and regressions — skips PM and UI/UX. Use the **Orchestrator** and it will detect the hotfix path automatically.
@@ -93,30 +131,48 @@ Every feature is tied to a GitHub Issue. Branches, commits, and PRs must referen
 ### Branch naming
 
 ```
-feat/issue-{n}-{short-description}    # new feature
-fix/issue-{n}-{short-description}     # bug fix or test
+feat/issue-{n}-{short-description}    # Frontend or Backend new feature
+fix/issue-{n}-{short-description}     # Frontend or Backend bug fix
+test/issue-{n}-{short-description}    # Tester branch
+release/vX.Y                          # PM creates — milestone integration branch
 ```
 
 Examples:
 
 ```
-feat/issue-4-analytics-page
-feat/issue-6-efficiency-factor
-fix/issue-8-sidebar-tooltip-tests
+feat/issue-15-ef-trend-arrow          # Frontend
+feat/issue-12-ef-30d-avg              # Backend
+test/issue-19-analytics-cypress       # Tester
+release/v1.2                          # PM
 ```
 
 ### Commit message format
 
+Follow the **50/72 rule**:
+
+- **Subject line**: max 50 characters — `<type>: <description> (#n)`
+- **Body lines**: max 72 characters per line — explains what and why
+- Blank line between subject and body
+
 ```
 <type>: <description> (#n)
+
+Optional body explaining what changed and why.
+Wrap at 72 characters per line.
 ```
 
 Examples:
 
 ```
-feat: add analytics page with distance trend and race predictor (#4)
-feat: add efficiency factor trend arrow vs 30-day average (#6)
-fix: add sidebar collapsed tooltip cypress tests (#8)
+feat: add analytics page (#4)
+
+Extract chart components into components/ subfolder.
+Reduces page.jsx from 1015 lines to ~120 lines.
+
+fix: sidebar tooltip tests (#8)
+
+Use native PointerEvent dispatch — CDP realHover() does
+not fire Radix onPointerMove in headless Electron.
 ```
 
 ### PR body — closing keyword

@@ -201,12 +201,12 @@ Proceed with option 1 or 2?
 
 Wait for user response. Do NOT proceed without explicit instruction.
 
-- If user approves fix (option 1) → Orchestrator spawns Backend and/or Frontend agent(s) to fix the specific issues → Code Reviewer is re-run after fixes → only then hand off to Tester
+- If user approves fix (option 1) → Frontend/Backend fixes on the **same branch** and pushes again → Code Reviewer re-runs → only then notify to merge and hand off to Tester
 - If user skips (option 2) → pass findings to Tester as known issues; Tester must still cover them in tests
 
 **If no CRITICAL findings:**
 
-Pass directly to Tester with the findings report attached as context (WARNINGs and SUGGESTIONs are informational for Tester, not blockers).
+Notify that Frontend and Backend can merge their branches into `release/vX.Y`. Pass findings report to Tester as context (WARNINGs and SUGGESTIONs are informational, not blockers).
 
 ---
 

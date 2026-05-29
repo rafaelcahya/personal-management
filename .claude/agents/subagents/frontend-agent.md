@@ -119,6 +119,19 @@ npx next build
 3. **Naming** — komponen: `PascalCase`; hooks: `useCamelCase`; utils: `camelCase`; konstanta: `UPPER_SNAKE_CASE`
 4. **File size** — jika komponen > 200 baris, pecah menjadi sub-komponen atau pisahkan hook-nya
 5. **Reusability** — sebelum membuat komponen baru, pastikan tidak ada yang serupa di `components/ui/` atau `components/`
+6. **Page components folder (MANDATORY)** — setiap page yang memiliki lebih dari satu chart/section/card WAJIB memisahkan setiap komponen ke file tersendiri di subfolder `components/` di sebelah `page.jsx`. Jangan taruh semua komponen di dalam `page.jsx`. Contoh struktur yang benar:
+   ```
+   app/main/running/(app)/analytics/
+   ├── page.jsx                  ← hanya layout + data fetching
+   └── components/
+       ├── WeeklyDistanceChart.jsx
+       ├── PaceTrendChart.jsx
+       ├── BestPaceChart.jsx
+       ├── TrainingLoadChart.jsx
+       ├── Vo2maxTrendChart.jsx
+       ├── EfTrendChart.jsx
+       └── RacePredictor.jsx
+   ```
 
 ### Hooks & State
 
@@ -164,6 +177,40 @@ Proceed? (yes / no / revise)
 ```
 
 Do NOT write, edit, or create any file until the user replies with approval. If the user says no or requests changes, revise the plan and ask again.
+
+## GitHub Issue & Branch Workflow
+
+After planning with UI/UX and Backend:
+
+### 1. GitHub Issue
+
+Create a GitHub Issue for your frontend work:
+
+- **Status TODO** = planning done, ready to start development
+- **Status IN PROGRESS** = actively building
+- **Status DONE** = user sets manually after Tester confirms 100% pass
+
+Assign: Module, Priority, Release, Role = Frontend.
+
+### 2. Branch
+
+Create a branch from `release/vX.Y`:
+
+```
+feat/issue-{n}-{short-description}    # new feature
+fix/issue-{n}-{short-description}     # bug fix
+```
+
+Example: `feat/issue-15-ef-trend-arrow`
+
+### 3. After Development Done
+
+1. Push branch to remote
+2. Create PR targeting `release/vX.Y`
+3. Include `Closes #n` in the PR body
+4. Wait for Code Reviewer and Security Reviewer to pass before merging
+
+If CRITICAL issues are found by reviewers, fix them on the **same branch** and push again — do NOT create a new branch.
 
 ## Kickoff Protocol
 
