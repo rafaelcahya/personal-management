@@ -207,7 +207,7 @@ function ActivitiesInner() {
 
   useEffect(() => {
     setKnownTypes([])
-  }, [type, range, sort, search])
+  }, [range, sort, search])
 
   useEffect(() => {
     let cancelled = false

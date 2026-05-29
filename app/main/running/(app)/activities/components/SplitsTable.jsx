@@ -1,0 +1,127 @@
+'use client'
+
+import { Heart, Info } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { fmtPace, fmtDuration } from '../../dashboard/utils/format'
+import { SectionLabel } from './activityShared'
+
+export default function SplitsTable({ splits }) {
+  if (!splits || splits.length === 0) return null
+
+  const hasSplitsHr = splits.some((s) => s.avg_hr != null)
+  const splitsWithHr = splits.filter((s) => s.avg_hr != null)
+  const cardiacDrift =
+    hasSplitsHr && splitsWithHr.length >= 2
+      ? splitsWithHr[splitsWithHr.length - 1].avg_hr - splitsWithHr[0].avg_hr
+      : null
+
+  return (
+    <div>
+      <SectionLabel>Splits (per km)</SectionLabel>
+      <div className="overflow-x-auto">
+        <Table className="w-full table-auto">
+          <TableHeader className="bg-slate-100">
+            <TableRow className="border-none uppercase text-xs">
+              <TableHead className="py-2 text-slate-foreground rounded-l-lg w-10">#</TableHead>
+              <TableHead className="py-2 text-slate-foreground text-right">Dist</TableHead>
+              <TableHead className="py-2 text-slate-foreground text-right">Pace</TableHead>
+              <TableHead className="py-2 text-slate-foreground text-right">Time</TableHead>
+              {hasSplitsHr && (
+                <TableHead className="py-2 text-slate-foreground text-right">HR</TableHead>
+              )}
+              <TableHead className="py-2 text-slate-foreground text-right rounded-r-lg">
+                Elev
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {splits.map((s) => (
+              <TableRow key={s.id ?? s.split_number} className="hover:bg-slate-50">
+                <TableCell className="text-xs text-slate-400 font-medium">
+                  {s.split_number}
+                </TableCell>
+                <TableCell className="text-right">
+                  <span className="font-mono tabular-nums text-sm text-slate-700">
+                    {s.distance_m ? `${(s.distance_m / 1000).toFixed(2)} km` : '—'}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <span className="font-mono tabular-nums text-sm text-slate-700">
+                    {s.pace_sec_per_km ? `${fmtPace(s.pace_sec_per_km)}/km` : '—'}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <span className="font-mono tabular-nums text-sm text-slate-700">
+                    {s.duration_sec ? fmtDuration(s.duration_sec) : '—'}
+                  </span>
+                </TableCell>
+                {hasSplitsHr && (
+                  <TableCell className="text-right">
+                    <span className="font-mono tabular-nums text-sm text-slate-700">
+                      {s.avg_hr ? `${s.avg_hr}` : '—'}
+                    </span>
+                  </TableCell>
+                )}
+                <TableCell className="text-right">
+                  <span className="font-mono tabular-nums text-sm text-slate-700">
+                    {s.elevation_gain_m != null
+                      ? `${s.elevation_gain_m > 0 ? '+' : ''}${Math.round(s.elevation_gain_m)} m`
+                      : '—'}
+                  </span>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      {cardiacDrift !== null && (
+        <div id="cardiacDrift_activityDetailPage" className="flex items-center gap-2 mt-2 px-1">
+          <Heart className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />
+          <span className="text-xs text-slate-400">Cardiac drift:</span>
+          <span
+            className={`text-xs font-semibold ${
+              cardiacDrift > 0 ? 'text-red-500' : 'text-blue-500'
+            }`}
+          >
+            {cardiacDrift > 0 ? '+' : ''}
+            {cardiacDrift} bpm
+          </span>
+          <span className="text-xs text-slate-300">(split 1 → last split)</span>
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                  aria-label="Cardiac drift information"
+                >
+                  <Info className="size-3.5" aria-hidden="true" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+                <p className="font-semibold mb-1">What is Cardiac Drift?</p>
+                <p>
+                  HR increase from your first split to your last split at the same pace — a sign of
+                  fatigue or dehydration.
+                </p>
+                <p className="mt-1.5 text-slate-300">
+                  <span className="text-green-400 font-medium">0–5 bpm</span> Good ·{' '}
+                  <span className="text-amber-400 font-medium">6–10</span> Moderate ·{' '}
+                  <span className="text-red-400 font-medium">&gt;10</span> High
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      )}
+    </div>
+  )
+}

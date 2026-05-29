@@ -22,7 +22,7 @@ export default function HealthCheckin({ data }) {
       </h2>
       {logged ? (
         <Card className="border border-green-200 bg-green-50 shadow-sm">
-          <CardContent className="px-5 py-4">
+          <CardContent className="px-5">
             <p className="text-sm font-semibold text-green-700 mb-3">Today's health logged</p>
             {healthData ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -44,7 +44,7 @@ export default function HealthCheckin({ data }) {
         </Card>
       ) : (
         <Card className="border border-slate-200/70 shadow-sm">
-          <CardContent className="px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <CardContent className="px-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <p className="text-sm font-medium text-slate-700">
                 You haven't logged today's health yet

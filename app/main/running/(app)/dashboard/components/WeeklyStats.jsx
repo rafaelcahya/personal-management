@@ -131,7 +131,7 @@ export default function WeeklyStats({ data }) {
         This Week
       </h2>
 
-      <Card className="border border-slate-200/70 shadow-sm">
+      <Card className="border border-slate-200/70 shadow-sm py-4">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-y-5 md:gap-y-0">
           {statTiles.map((t, i) => {
             const Icon = t.icon
@@ -142,7 +142,7 @@ export default function WeeklyStats({ data }) {
                   ? 'border-b md:border-b-0 md:border-r border-slate-100'
                   : 'border-b md:border-b-0 lg:border-r border-slate-100'
             return (
-              <div key={t.label} className={`px-4 pb-5 ${border}`}>
+              <div key={t.label} className={`px-4 ${border}`}>
                 <div className="flex items-center gap-1.5 mb-2">
                   <div className={`p-1 rounded-md ${t.iconBg}`}>
                     <Icon className={`size-3 ${t.iconColor}`} aria-hidden="true" />

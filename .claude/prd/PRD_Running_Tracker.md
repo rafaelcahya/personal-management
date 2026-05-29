@@ -1739,6 +1739,22 @@ Columns: Race (title + distance label + DNF badge) | Date | Dist | Time | Pace |
 - Confirm delete button + cancel
 - After confirm: redirects to `/running/race-log`
 
+**Filtering & Search (client-side, no pagination):**
+
+- Text search input (`id="raceSearchInput"`) — debounced ~400 ms; filters the loaded list by race title (case-insensitive substring match)
+- Distance filter chips — a row of pill/chip buttons shown above the table:
+  - Chips: **All** | **5K** | **10K** | **21K (Half)** | **42K (Full)** | **Other**
+  - "All" chip (`id="raceFilterChip_all"`) is always shown and selected by default
+  - The other chips are only rendered when at least one entry in the loaded list matches that distance preset:
+    - 5K = distance_m 4500–5499
+    - 10K = distance_m 9500–10499
+    - 21K (Half) = distance_m 20500–21499
+    - 42K (Full) = distance_m 41500–42499
+    - Other = any distance that does not fall into the four presets above
+  - Only one chip can be active at a time; clicking the active chip resets to "All"
+  - Text search and distance chip filter stack — both apply simultaneously
+- Filtering runs entirely on the already-loaded list (no extra API call)
+
 ### 13.5b UI — Race Log Detail Page
 
 Each race entry has its own detail page at `/running/race-log/[id]`.
@@ -1814,6 +1830,25 @@ GIVEN user navigates to the Activity page and clicks "Edit race goal"
 WHEN modal opens
 THEN current goal title, target date, distance, and description are pre-filled
 AND after save, NextRace card on dashboard reflects the updated data
+
+GIVEN user has race entries loaded on /running/race-log
+WHEN user types in the search input
+THEN list filters to only entries whose title contains the typed text (case-insensitive)
+AND filter is applied after ~400 ms debounce (not on every keystroke)
+AND clearing the input restores the full list
+
+GIVEN user has race entries with mixed distances
+WHEN page loads
+THEN only distance chips for distances present in the data are shown (plus "All" always shown)
+
+GIVEN user clicks a distance chip (e.g. "5K")
+WHEN chip becomes active
+THEN list filters to entries matching that distance preset
+AND clicking the active chip again resets the filter to "All"
+
+GIVEN user has both a search term typed and a distance chip selected
+WHEN either filter changes
+THEN both filters are applied simultaneously (intersection, not union)
 ```
 
 ### 13.8 Validations & Error States
@@ -1853,6 +1888,13 @@ Registered in `cypress/fixtures/app-constants.json` under `test_ids.race_log.*`:
 | `editGoalBtn`             | "Edit race goal" button on Activity detail page                                                             |
 | `editGoalModal`           | Edit goal modal root                                                                                        |
 | `editGoalSaveBtn`         | Save button in edit goal modal                                                                              |
+| `raceSearchInput`         | Debounced text search input above the race table                                                            |
+| `raceFilterChip_all`      | "All" distance filter chip — always rendered                                                                |
+| `raceFilterChip_5k`       | "5K" distance filter chip — rendered only when matching entries exist                                       |
+| `raceFilterChip_10k`      | "10K" distance filter chip — rendered only when matching entries exist                                      |
+| `raceFilterChip_21k`      | "21K (Half)" distance filter chip — rendered only when matching entries exist                               |
+| `raceFilterChip_42k`      | "42K (Full)" distance filter chip — rendered only when matching entries exist                               |
+| `raceFilterChip_other`    | "Other" distance filter chip — rendered only when at least one non-preset distance exists                   |
 
 **Race Log detail page (`/running/race-log/[id]`):**
 
@@ -2302,4 +2344,6 @@ Zone boundaries (% dari masing-masing metodologi):
 
 ---
 
-_End of document. Version 2.5 — Section 13 Race Log synced with actual implementation: (1) DB columns renamed position_overall/position_category → position_place/position_male throughout schema, API specs, validations table. (2) UI spec updated from card layout to table layout; table columns documented. (3) "Add from activity" flow (addRaceFromActivityBtn + ActivityPickerDialog + RaceConfirmDialog) documented. (4) Race Log detail page /running/race-log/[id] added as Section 13.5b with own test IDs. (5) GET /api/running/v1/race-log/:id endpoint added to Section 13.4. (6) Test IDs section split into list page / detail page; missing IDs (raceLogLoadingSkeleton, raceLogList, raceLogCard, raceLogDeleteBtn on list) flagged as known gaps for Tester._
+_End of document. Version 2.6 — 2026-05-29 — Section 13 Race Log: added client-side filtering & search to 13.5 (debounced text search + distance filter chips All/5K/10K/21K/42K/Other; chips only rendered when matching data exists; filters stack); added acceptance criteria for search and filter chip behaviors to 13.7; added test IDs raceSearchInput, raceFilterChip_all, raceFilterChip_5k, raceFilterChip_10k, raceFilterChip_21k, raceFilterChip_42k, raceFilterChip_other to 13.9._
+
+_Previous: Version 2.5 — Section 13 Race Log synced with actual implementation: (1) DB columns renamed position_overall/position_category → position_place/position_male throughout schema, API specs, validations table. (2) UI spec updated from card layout to table layout; table columns documented. (3) "Add from activity" flow (addRaceFromActivityBtn + ActivityPickerDialog + RaceConfirmDialog) documented. (4) Race Log detail page /running/race-log/[id] added as Section 13.5b with own test IDs. (5) GET /api/running/v1/race-log/:id endpoint added to Section 13.4. (6) Test IDs section split into list page / detail page; missing IDs (raceLogLoadingSkeleton, raceLogList, raceLogCard, raceLogDeleteBtn on list) flagged as known gaps for Tester._

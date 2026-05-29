@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Medal, Plus, AlertTriangle, Flag, Trophy, Link2 } from 'lucide-react'
+import { Medal, Plus, AlertTriangle, Flag, Trophy, Link2, Search, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -19,6 +20,22 @@ import RaceFormModal from './components/RaceFormModal'
 import ActivityPickerDialog from './components/ActivityPickerDialog'
 import RaceConfirmDialog from './components/RaceConfirmDialog'
 import { getDistanceLabel, secsToHMS, secsToMMSS, formatDate } from './components/raceLogUtils'
+
+const DISTANCE_BUCKETS = [
+  { key: '5k', label: '5K', min: 4500, max: 5499 },
+  { key: '10k', label: '10K', min: 9500, max: 10499 },
+  { key: '21k', label: '21K (Half)', min: 20500, max: 21499 },
+  { key: '42k', label: '42K (Full)', min: 41500, max: 42499 },
+  { key: 'other', label: 'Other', min: null, max: null },
+]
+
+function getDistanceBucket(distanceM) {
+  if (distanceM == null) return 'other'
+  for (const b of DISTANCE_BUCKETS) {
+    if (b.min != null && distanceM >= b.min && distanceM <= b.max) return b.key
+  }
+  return 'other'
+}
 
 function RaceSkeletonRow() {
   return (
@@ -51,6 +68,25 @@ export default function RaceLogPage() {
   const [pagePickerOpen, setPagePickerOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [pendingActivity, setPendingActivity] = useState(null)
+
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
+  const [activeDistance, setActiveDistance] = useState(null)
+  const debounceRef = useRef(null)
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => setSearch(searchInput.trim()), 400)
+    return () => clearTimeout(debounceRef.current)
+  }, [searchInput])
+
+  const knownBuckets = new Set(entries.map((e) => getDistanceBucket(e.distance_m)))
+
+  const filteredEntries = entries.filter((e) => {
+    const matchSearch = !search || e.title?.toLowerCase().includes(search.toLowerCase())
+    const matchDist = !activeDistance || getDistanceBucket(e.distance_m) === activeDistance
+    return matchSearch && matchDist
+  })
 
   async function load() {
     setLoading(true)
@@ -162,6 +198,67 @@ export default function RaceLogPage() {
         </div>
       )}
 
+      {/* Search + filter bar */}
+      {!error && (loading || entries.length > 0) && (
+        <div className="flex flex-col gap-2">
+          <div className="relative">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none"
+              aria-hidden="true"
+            />
+            <Input
+              id="raceSearchInput"
+              type="text"
+              placeholder="Search by race name…"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="pl-8 pr-8 h-8 text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600"
+            />
+            {searchInput && (
+              <button
+                onClick={() => {
+                  setSearchInput('')
+                  setSearch('')
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                aria-label="Clear search"
+              >
+                <X className="size-3.5" aria-hidden="true" />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              id="raceFilterChip_all"
+              aria-pressed={!activeDistance}
+              onClick={() => setActiveDistance(null)}
+              className={`flex items-center rounded-full px-3 py-1 text-xs font-medium border whitespace-nowrap transition-colors ${
+                !activeDistance
+                  ? 'border-violet-300 bg-violet-100 text-violet-700'
+                  : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'
+              }`}
+            >
+              All
+            </button>
+            {DISTANCE_BUCKETS.filter((b) => knownBuckets.has(b.key)).map((b) => (
+              <button
+                key={b.key}
+                id={`raceFilterChip_${b.key}`}
+                aria-pressed={activeDistance === b.key}
+                onClick={() => setActiveDistance(activeDistance === b.key ? null : b.key)}
+                className={`flex items-center rounded-full px-3 py-1 text-xs font-medium border whitespace-nowrap transition-colors ${
+                  activeDistance === b.key
+                    ? 'border-violet-300 bg-violet-100 text-violet-700'
+                    : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'
+                }`}
+              >
+                {b.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Race table */}
       {!error && (loading || entries.length > 0) && (
         <div id="raceLogList" className="overflow-x-auto">
@@ -197,8 +294,27 @@ export default function RaceLogPage() {
                   </TableCell>
                 </TableRow>
               )}
+              {!loading && filteredEntries.length === 0 && entries.length > 0 && (
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={7}>
+                    <div className="flex flex-col items-center justify-center py-12 gap-2">
+                      <p className="text-sm text-slate-500">No races match your filters.</p>
+                      <button
+                        onClick={() => {
+                          setSearchInput('')
+                          setSearch('')
+                          setActiveDistance(null)
+                        }}
+                        className="text-xs text-violet-600 hover:underline"
+                      >
+                        Clear filters
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
               {!loading &&
-                entries.map((entry) => {
+                filteredEntries.map((entry) => {
                   const pace = entry.avg_pace_sec_per_km
                     ? secsToMMSS(entry.avg_pace_sec_per_km)
                     : entry.finish_time_sec && entry.distance_m

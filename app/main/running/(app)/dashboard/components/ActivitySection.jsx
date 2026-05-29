@@ -589,7 +589,7 @@ export default function ActivitySection({ calendarActivities, recentActivities, 
       <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
         Activity
       </h2>
-      <Card className="border border-slate-200/70 shadow-sm">
+      <Card className="border border-slate-200/70 shadow-sm py-4">
         <CardContent className="px-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x md:divide-slate-100">
             <CalendarColumn

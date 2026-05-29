@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-28 (Race Log UI tests rewritten — 59/59 passing; race-log-ui.cy.js Sections E/I/J/K fixed to match table-layout implementation + detail page flows)
+**Last Updated:** 2026-05-29 (Race Log — search + distance filter feature added; 13 new tests; race-log-ui.cy.js 51/51 passing; Race Log total 72 tests)
 **App Version:** 1.22
 
 ## Coverage Summary
@@ -25,9 +25,9 @@
 | Running Tracker - Sync API      | 3              | 3         | 0           | 0          | 100%       | 8          |
 | Running Tracker - Manual Entry  | 7              | 7         | 0           | 0          | 100%       | 21         |
 | Running Tracker - Dashboard     | 9              | 9         | 0           | 0          | 100%       | 75         |
-| Running Tracker - Race Log      | 5              | 5         | 0           | 0          | 100%       | 59         |
+| Running Tracker - Race Log      | 7              | 7         | 0           | 0          | 100%       | 72         |
 | Running Tracker - Activities    | 9              | 9         | 0           | 0          | 100%       | 152        |
-| **Total**                       | **143**        | **142**   | **1**       | **0**      | **99%**    | **2,032**  |
+| **Total**                       | **145**        | **144**   | **1**       | **0**      | **99%**    | **2,045**  |
 
 > **Note (2026-05-28 v1.22 Race Log fix):** Race Log UI tests rewritten to match actual table-layout implementation. race-log-ui.cy.js 38/38 passing, race-log-api.cy.js 21/21 unchanged. Key changes: fixtures updated (position_overall→position_place, position_category→position_male); Section E row-click navigation test replaces inline edit/delete; Section I calendar picker `.click()`+gridcell replaces `.type()`, post-save asserts URL navigation; Section J edit modal now tests detail page (stubs GET /race-log/:id + GET /activities/:id); Section K delete now tests detail page (AlertDialog→confirm→navigates back). New test_ids in app-constants.json: detail_page, edit_btn, edit_modal, edit_save_btn. New endpoint: running_race_log.detail. Total test count unchanged: 59 tests (21 API + 38 UI).
 
@@ -53,7 +53,16 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-05-27 Focused Run: Running Tracker Activities)
+## Last Execution Results (2026-05-29 Focused Run: Race Log Search + Filter)
+
+| Group                                                    | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| -------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running-race-log (Race Log UI) ⭐ +13 new tests          | 1          | 51    | 51     | 0      | 0       | ✅       |
+| **Total**                                                | **1**      | **51** | **51** | **0** | **0**  | **100%** |
+
+**Status:** 13 new tests added to `race-log-ui.cy.js` — Section M (Search input: 4 tests) + Section N (Distance filter chips: 9 tests). All 51 tests in the file passing 100%.
+
+### Previous Run Results (2026-05-27 Focused Run: Running Tracker Activities)
 
 | Group                                              | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | -------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
@@ -228,7 +237,7 @@
 | 76  | cypress/e2e/running/dashboard/performance-trends-api.cy.js           | Running Tracker Performance Trends API | 5        | GET /performance-trends (200, data array, field presence), ?limit=20, ?type=Run, 401 guard |
 | 77  | cypress/e2e/running/dashboard/dashboard-ui-extended.cy.js            | Running Tracker Dashboard UI Extended | 14       | YtdStats (renders, distance format, hidden when 0, hidden when null), NextRace (null, title, race-week badge), syncStatusBar (Never, btn visible, click triggers POST, syncResultMsg), activity type filter (renders, active ring) |
 | 78  | cypress/e2e/running/race-log/race-log-api.cy.js                      | Running Tracker Race Log API         | 21       | GET /race-log (200 + shape, 401), POST (201 + body, 400 validation, 401), PATCH/:id (200 + recomputed pace, 404 unowned, 401), DELETE/:id (200, 404, 401) |
-| 79  | cypress/e2e/running/race-log/race-log-ui.cy.js                       | Running Tracker Race Log UI          | 38       | Auth guard, loading skeleton, error+retry, empty state CTA. List: title/DNF badge/finish time/position_place/position_male in table rows; row-click navigates to detail. Add modal: open/close, validation, calendar date picker, successful save→navigate to detail, server error. Edit modal (detail page): open via editRaceBtn_raceDetailPage, prefill, PATCH success/fail. Delete (detail page): AlertDialog open, title in dialog, cancel, confirm→navigate back to list. Mobile: no overflow, add btn, rows visible. |
+| 79  | cypress/e2e/running/race-log/race-log-ui.cy.js                       | Running Tracker Race Log UI          | 51       | Auth guard, loading skeleton, error+retry, empty state CTA. List: title/DNF badge/finish time/position_place/position_male in table rows; row-click navigates to detail. Add modal: open/close, validation, calendar date picker, successful save→navigate to detail, server error. Edit modal (detail page): open via editRaceBtn_raceDetailPage, prefill, PATCH success/fail. Delete (detail page): AlertDialog open, title in dialog, cancel, confirm→navigate back to list. Mobile: no overflow, add btn, rows visible. Search (#raceSearchInput): filter by title (case-insensitive), clear via X button, clear via empty input. Distance filter chips (All/5K/10K/21K/42K/Other): conditional render, single-bucket filter, toggle active chip, combined search+chip intersection, filter empty state + Clear filters. |
 | 80  | cypress/e2e/running/activities/activities-api.cy.js                  | Running Tracker Activities List API  | 8        | GET /activities — authenticated 200, paginated shape, data array, required field presence, ?type=Run filter, ?page&limit params, 401 unauthenticated |
 | 81  | cypress/e2e/running/activities/activities-ui.cy.js                   | Running Tracker Activities List UI   | 21       | Auth guard, loading skeleton, list renders activity cards, type filter (URL param change), pagination next/prev, error state, empty state (no activities + filtered empty) |
 | 82  | cypress/e2e/running/activities/activityDetail.cy.js                  | Running Tracker Activity Detail full | 36       | Stats grid, secondary stats (power/temp/calories/gear), HR zones, AI insight card (all 5 states), splits, laps, best efforts, photos, route map |
@@ -239,7 +248,7 @@
 | 87  | cypress/e2e/running/activities/stream-charts-api.cy.js               | Running Tracker Stream Charts API    | 7        | GET /activities/:id/streams — 200 + shape (meta + data), 400 invalid resolution, 401, 404 non-existent |
 | 88  | cypress/e2e/running/activities/stream-charts-ui.cy.js                | Running Tracker StreamCharts UI      | 14       | Loading skeleton, happy path (pace/HR/elevation charts), partial data (no cadence), empty state, error state, retry → success, accessibility sr-only |
 
-**Total Automated Test Cases: 2,031** (added 59 race-log + 152 activities tests since v1.21; previous total: 1,821)
+**Total Automated Test Cases: 2,044** (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
 
 ## Manual Test Cases (not yet automated)
 

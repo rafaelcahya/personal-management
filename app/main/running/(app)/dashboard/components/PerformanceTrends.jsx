@@ -691,7 +691,7 @@ export default function PerformanceTrends({ activityType }) {
       <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
         Performance Trends
       </h2>
-      <Card className="border border-slate-200/70 shadow-sm">
+      <Card className="border border-slate-200/70 shadow-sm py-4">
         <CardContent className="px-5 flex flex-col gap-8">
           <p className="text-xs text-slate-400 -mb-4">
             Last {data.length} runs · Running activities only

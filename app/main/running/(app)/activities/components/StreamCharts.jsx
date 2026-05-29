@@ -319,10 +319,14 @@ export default function StreamCharts({ activityId, zones }) {
     return (
       <div
         id="streamChartsEmpty_activityDetailPage"
-        className="flex items-center gap-2 py-6 justify-center text-sm text-slate-400"
+        className="flex flex-col items-center gap-1.5 py-6 text-center text-sm text-slate-400"
       >
         <Activity className="size-4 text-slate-300" aria-hidden="true" />
-        No stream data available for this activity.
+        <span>No performance stream data for this activity.</span>
+        <span className="text-xs text-slate-300">
+          Stream data requires GPS and sensor recordings over time. This is common for manually
+          entered activities or certain activity types.
+        </span>
       </div>
     )
   }

@@ -9,7 +9,7 @@ export default function AiCoachPlaceholder() {
       <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
         AI Coach
       </h2>
-      <Card className="border border-slate-200/70 shadow-sm">
+      <Card className="border border-slate-200/70 shadow-sm py-4">
         <CardContent className="px-5 py-4 flex items-start gap-4">
           <div className="rounded-full bg-violet-50 p-3 shrink-0">
             <BrainCircuit className="w-6 h-6 text-violet-600" aria-hidden="true" />

@@ -1,6 +1,6 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-28 (Race Log UI tests rewritten — 59/59 passing; api 21/21 + ui 38/38; Sections E/I/J/K fixed to match table-layout implementation)
+**Last Updated:** 2026-05-29 (Race Log UI — 13 new tests for search + distance filter chips; race-log-ui.cy.js 51/51 passing; Race Log total 72/72)
 **App Version:** 1.22
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
@@ -41,9 +41,9 @@
 | Running Tracker - Sync API      | 2026-05-23   | 0      | 8          | 8     |
 | Running Tracker - Manual Entry  | 2026-05-23   | 0      | 21         | 21    |
 | Running Tracker - Dashboard     | 2026-05-25   | 0      | 75         | 75    |
-| Running Tracker - Race Log      | 2026-05-28   | 0      | 59         | 59    |
+| Running Tracker - Race Log      | 2026-05-29   | 0      | 72         | 72    |
 | Running Tracker - Activities    | 2026-05-27   | 0      | 152        | 152   |
-| **Total**                       |              | **1**  | **2,031**  | **2,032** |
+| **Total**                       |              | **1**  | **2,044**  | **2,045** |
 
 ---
 
@@ -219,7 +219,7 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-04-23):
 | 2  | POST /race-log — create + validation + 401       | running/race-log/race-log-api.cy.js          | 2026-05-26  | 0      | 7          | ✅ 7/7 pass   |
 | 3  | PATCH /race-log/:id — update + 404 + 401         | running/race-log/race-log-api.cy.js          | 2026-05-26  | 0      | 5          | ✅ 5/5 pass   |
 | 4  | DELETE /race-log/:id — delete + 404 + 401        | running/race-log/race-log-api.cy.js          | 2026-05-26  | 0      | 4          | ✅ 4/4 pass   |
-| 5  | Race Log UI — full CRUD + all states             | running/race-log/race-log-ui.cy.js           | 2026-05-28  | 0      | 38         | ✅ 38/38 pass (rewritten + focused) |
+| 5  | Race Log UI — full CRUD + all states             | running/race-log/race-log-ui.cy.js           | 2026-05-29  | 0      | 51         | ✅ 51/51 pass (+13 search + distance filter) |
 
 ---
 

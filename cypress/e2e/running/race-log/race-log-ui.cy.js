@@ -688,6 +688,345 @@ describe('Race Log — Delete confirmation dialog on detail page', () => {
 })
 
 // ---------------------------------------------------------------------------
+// M. Search input
+// ---------------------------------------------------------------------------
+// Fixture set: three races with distinct, non-overlapping title substrings so
+// every search assertion targets exactly one entry.
+//
+// Debounce is 400 ms — cy.clock() + cy.tick(500) makes timing deterministic.
+// Filtering is purely client-side; no additional cy.intercept needed after load.
+
+describe('Race Log — Search input', () => {
+  const fiveK = {
+    id: 'filter-entry-5k',
+    title: 'Jakarta 5K Sprint',
+    race_date: '2025-10-01',
+    distance_m: 5000,
+    finish_time_sec: 1500,
+    avg_pace_sec_per_km: 300,
+    avg_hr: null,
+    elevation_gain_m: null,
+    position_place: null,
+    position_male: null,
+    did_not_finish: false,
+    activity_id: null,
+    notes: null,
+    created_at: '2025-10-01T06:00:00Z',
+  }
+
+  const fortyTwoK = {
+    id: 'filter-entry-42k',
+    title: 'Bogor Full Marathon',
+    race_date: '2025-09-15',
+    distance_m: 42195,
+    finish_time_sec: 14400,
+    avg_pace_sec_per_km: 341,
+    avg_hr: null,
+    elevation_gain_m: null,
+    position_place: null,
+    position_male: null,
+    did_not_finish: false,
+    activity_id: null,
+    notes: null,
+    created_at: '2025-09-15T05:00:00Z',
+  }
+
+  const otherDist = {
+    id: 'filter-entry-other',
+    title: 'Bandung Trail Run',
+    race_date: '2025-08-20',
+    distance_m: 8000,
+    finish_time_sec: 3000,
+    avg_pace_sec_per_km: 375,
+    avg_hr: null,
+    elevation_gain_m: null,
+    position_place: null,
+    position_male: null,
+    did_not_finish: false,
+    activity_id: null,
+    notes: null,
+    created_at: '2025-08-20T07:00:00Z',
+  }
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+    stubRtUsers()
+    stubRaceLog([fiveK, fortyTwoK, otherDist])
+
+    // Freeze time so debounce ticks are explicit
+    cy.clock()
+
+    visitPage()
+    cy.wait('@getRaceLog')
+  })
+
+  it('typing in #raceSearchInput filters the list to matching titles (case-insensitive)', () => {
+    // "sprint" matches only fiveK.title (case-insensitive)
+    cy.get('#raceSearchInput').type('sprint')
+    cy.tick(500) // advance past the 400 ms debounce
+
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Jakarta 5K Sprint').should('be.visible')
+      cy.contains('Bogor Full Marathon').should('not.exist')
+      cy.contains('Bandung Trail Run').should('not.exist')
+    })
+  })
+
+  it('typing is case-insensitive — uppercase query matches lowercase title', () => {
+    cy.get('#raceSearchInput').type('BOGOR')
+    cy.tick(500)
+
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Bogor Full Marathon').should('be.visible')
+      cy.contains('Jakarta 5K Sprint').should('not.exist')
+      cy.contains('Bandung Trail Run').should('not.exist')
+    })
+  })
+
+  it('clearing search via the X button restores all entries', () => {
+    cy.get('#raceSearchInput').type('sprint')
+    cy.tick(500)
+    // Confirm filter is active
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Bogor Full Marathon').should('not.exist')
+    })
+
+    // Click the X clear button
+    cy.get('[aria-label="Clear search"]').click()
+    cy.tick(500) // debounce fires immediately on clear (value is empty string)
+
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Jakarta 5K Sprint').should('be.visible')
+      cy.contains('Bogor Full Marathon').should('be.visible')
+      cy.contains('Bandung Trail Run').should('be.visible')
+    })
+  })
+
+  it('clearing search by emptying the input restores all entries', () => {
+    cy.get('#raceSearchInput').type('trail')
+    cy.tick(500)
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Jakarta 5K Sprint').should('not.exist')
+    })
+
+    // Select all and delete
+    cy.get('#raceSearchInput').clear()
+    cy.tick(500)
+
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Jakarta 5K Sprint').should('be.visible')
+      cy.contains('Bogor Full Marathon').should('be.visible')
+      cy.contains('Bandung Trail Run').should('be.visible')
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// N. Distance filter chips
+// ---------------------------------------------------------------------------
+// Same three-entry fixture as Section M:
+//   fiveK     → distance_m: 5000  → bucket key "5k"
+//   fortyTwoK → distance_m: 42195 → bucket key "42k"
+//   otherDist → distance_m: 8000  → bucket key "other"
+//
+// Chips are rendered only for buckets that exist in the loaded data.
+// Clicking the active chip toggles it off → resets filter to "All".
+
+describe('Race Log — Distance filter chips', () => {
+  const fiveK = {
+    id: 'chip-entry-5k',
+    title: 'Jakarta 5K Sprint',
+    race_date: '2025-10-01',
+    distance_m: 5000,
+    finish_time_sec: 1500,
+    avg_pace_sec_per_km: 300,
+    avg_hr: null,
+    elevation_gain_m: null,
+    position_place: null,
+    position_male: null,
+    did_not_finish: false,
+    activity_id: null,
+    notes: null,
+    created_at: '2025-10-01T06:00:00Z',
+  }
+
+  const fortyTwoK = {
+    id: 'chip-entry-42k',
+    title: 'Bogor Full Marathon',
+    race_date: '2025-09-15',
+    distance_m: 42195,
+    finish_time_sec: 14400,
+    avg_pace_sec_per_km: 341,
+    avg_hr: null,
+    elevation_gain_m: null,
+    position_place: null,
+    position_male: null,
+    did_not_finish: false,
+    activity_id: null,
+    notes: null,
+    created_at: '2025-09-15T05:00:00Z',
+  }
+
+  const otherDist = {
+    id: 'chip-entry-other',
+    title: 'Bandung Trail Run',
+    race_date: '2025-08-20',
+    distance_m: 8000,
+    finish_time_sec: 3000,
+    avg_pace_sec_per_km: 375,
+    avg_hr: null,
+    elevation_gain_m: null,
+    position_place: null,
+    position_male: null,
+    did_not_finish: false,
+    activity_id: null,
+    notes: null,
+    created_at: '2025-08-20T07:00:00Z',
+  }
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+    stubRtUsers()
+    stubRaceLog([fiveK, fortyTwoK, otherDist])
+    cy.clock()
+    visitPage()
+    cy.wait('@getRaceLog')
+  })
+
+  it('#raceFilterChip_all is always visible after data loads', () => {
+    cy.get('#raceFilterChip_all').should('be.visible')
+  })
+
+  it('chips for present distance buckets render, absent buckets do not', () => {
+    // Fixture has 5k, 42k, and other — none of 10k or 21k
+    cy.get('#raceFilterChip_5k').should('be.visible')
+    cy.get('#raceFilterChip_42k').should('be.visible')
+    cy.get('#raceFilterChip_other').should('be.visible')
+    cy.get('#raceFilterChip_10k').should('not.exist')
+    cy.get('#raceFilterChip_21k').should('not.exist')
+  })
+
+  it('clicking #raceFilterChip_5k filters list to 5K entries only', () => {
+    cy.get('#raceFilterChip_5k').click()
+
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Jakarta 5K Sprint').should('be.visible')
+      cy.contains('Bogor Full Marathon').should('not.exist')
+      cy.contains('Bandung Trail Run').should('not.exist')
+    })
+
+    // Chip is now aria-pressed="true"
+    cy.get('#raceFilterChip_5k').should('have.attr', 'aria-pressed', 'true')
+    cy.get('#raceFilterChip_all').should('have.attr', 'aria-pressed', 'false')
+  })
+
+  it('clicking #raceFilterChip_42k filters list to full-marathon entries only', () => {
+    cy.get('#raceFilterChip_42k').click()
+
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Bogor Full Marathon').should('be.visible')
+      cy.contains('Jakarta 5K Sprint').should('not.exist')
+      cy.contains('Bandung Trail Run').should('not.exist')
+    })
+  })
+
+  it('clicking #raceFilterChip_other filters list to non-standard distances only', () => {
+    cy.get('#raceFilterChip_other').click()
+
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Bandung Trail Run').should('be.visible')
+      cy.contains('Jakarta 5K Sprint').should('not.exist')
+      cy.contains('Bogor Full Marathon').should('not.exist')
+    })
+  })
+
+  it('clicking the active chip again resets filter to "All" (shows all entries)', () => {
+    // Activate 5k chip
+    cy.get('#raceFilterChip_5k').click()
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Bogor Full Marathon').should('not.exist')
+    })
+
+    // Click the active chip again — should toggle off
+    cy.get('#raceFilterChip_5k').click()
+
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Jakarta 5K Sprint').should('be.visible')
+      cy.contains('Bogor Full Marathon').should('be.visible')
+      cy.contains('Bandung Trail Run').should('be.visible')
+    })
+
+    // "All" chip should be aria-pressed="true" again
+    cy.get('#raceFilterChip_all').should('have.attr', 'aria-pressed', 'true')
+  })
+
+  it('combined search + distance chip filter shows only intersection', () => {
+    // Activate 5k chip
+    cy.get('#raceFilterChip_5k').click()
+
+    // Type a search that still matches the 5K entry
+    cy.get('#raceSearchInput').type('sprint')
+    cy.tick(500)
+
+    // Only the 5K entry with "sprint" in title should be visible
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Jakarta 5K Sprint').should('be.visible')
+      cy.contains('Bogor Full Marathon').should('not.exist')
+      cy.contains('Bandung Trail Run').should('not.exist')
+    })
+
+    // Narrow further — search that matches no 5K entry
+    cy.get('#raceSearchInput').clear().type('bandung')
+    cy.tick(500)
+
+    // "bandung" is in other bucket, not 5k — filter empty state expected
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('No races match your filters.').should('be.visible')
+    })
+  })
+
+  it('filter empty state shows "No races match your filters." and "Clear filters" button', () => {
+    // Search for a string that matches nothing
+    cy.get('#raceSearchInput').type('xyznotfound')
+    cy.tick(500)
+
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('No races match your filters.').should('be.visible')
+      cy.contains('button', 'Clear filters').should('be.visible')
+    })
+  })
+
+  it('clicking "Clear filters" restores all entries', () => {
+    cy.get('#raceSearchInput').type('xyznotfound')
+    cy.tick(500)
+
+    // Confirm empty state is shown
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('No races match your filters.').should('be.visible')
+    })
+
+    // Click "Clear filters"
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('button', 'Clear filters').click()
+    })
+    cy.tick(500)
+
+    // All three entries should be visible again
+    cy.get(`[id="${IDS.list}"]`).within(() => {
+      cy.contains('Jakarta 5K Sprint').should('be.visible')
+      cy.contains('Bogor Full Marathon').should('be.visible')
+      cy.contains('Bandung Trail Run').should('be.visible')
+    })
+
+    // Search input should be cleared
+    cy.get('#raceSearchInput').should('have.value', '')
+
+    // "All" chip should be active
+    cy.get('#raceFilterChip_all').should('have.attr', 'aria-pressed', 'true')
+  })
+})
+
+// ---------------------------------------------------------------------------
 // L. Mobile responsive
 // ---------------------------------------------------------------------------
 

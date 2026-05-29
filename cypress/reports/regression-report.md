@@ -1,5 +1,31 @@
 # Regression Testing Report
 
+**Date:** 2026-05-29
+**App Version:** 1.22
+**Scope:** Running Tracker Race Log — search + distance filter (13 new tests in race-log-ui.cy.js)
+**Tester:** QA Agent
+
+## Summary (2026-05-29 Focused Run — Race Log Search + Filter)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 51          | 51     | 0      | 0       | **100%**         |
+
+### Race Log — Spec Files
+
+| #  | Spec File                                                | Tests | Passed | Pending | Failed | Status   |
+| -- | -------------------------------------------------------- | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/race-log/race-log-ui.cy.js                       | 51    | 51     | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                                | **51** | **51** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `race-log-ui.cy.js` (51 tests, +13 new): Added Section M — Search input (4 tests): filter by title case-insensitive, uppercase query match, clear via X button, clear via empty input. Added Section N — Distance filter chips (9 tests): `#raceFilterChip_all` always visible, chips only render for present buckets (5k/42k/other present, 10k/21k absent), `#raceFilterChip_5k` filters to 5K only, `#raceFilterChip_42k` filters to 42K only, `#raceFilterChip_other` filters to non-standard distances, clicking active chip resets to All, combined search+chip intersection, filter empty state shows "No races match your filters." + Clear filters button, clicking Clear filters restores all entries.
+- Filtering is client-side (no extra API calls). Debounce handled with `cy.clock()` + `cy.tick(500)`.
+- Distance bucket ranges: 5K=4500–5499m, 10K=9500–10499m, 21K=20500–21499m, 42K=41500–42499m, Other=anything outside.
+
+---
+
+## Previous Run — 2026-05-28
 **Date:** 2026-05-28
 **App Version:** 1.22
 **Scope:** Running Tracker Race Log — focused re-run after UI test rewrite (2 spec files)
@@ -382,6 +408,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-05-29 | Race Log Search + Filter (+13 tests) | 51    | 51     | 0       | 0      | 100%        |
 | 2026-05-28 | Running Tracker Race Log (fix)       | 59    | 59     | 0       | 0      | 100%        |
 | 2026-05-27 | Running Tracker Activities           | 152   | 152    | 0       | 0      | 100%        |
 | 2026-05-25 | Running Tracker Dashboard Extended   | 39    | 39     | 0       | 0      | 100%        |

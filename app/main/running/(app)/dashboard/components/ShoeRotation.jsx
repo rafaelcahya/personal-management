@@ -381,7 +381,7 @@ export default function ShoeRotation() {
         Shoe Rotation
       </h2>
 
-      <Card className="border border-slate-200/70 shadow-sm flex-1">
+      <Card className="border border-slate-200/70 shadow-sm flex-1 py-4">
         <CardContent className="px-5">
           {loading && (
             <div id="gearLoadingSkeleton" aria-label="Loading gear" className="flex flex-col gap-3">

@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
 import {
   TrendingUp,
   TrendingDown,
@@ -22,64 +22,162 @@ const ACWR_STATUS = {
     label: 'No Data',
     badge: 'bg-slate-100 text-slate-500',
     guidance: null,
-    tip: 'Not enough activity data to calculate training load yet.',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">No Training Data</p>
+        <p>Not enough activity history to calculate your training load ratio yet.</p>
+        <p className="mt-1.5 text-slate-300">
+          Log at least a few runs over 2–4 weeks to see your ACWR.
+        </p>
+      </>
+    ),
   },
   resting: {
     label: 'Rest Week',
     badge: 'bg-purple-100 text-purple-700',
     guidance: null,
-    tip: 'You have training history but no activities this week. This counts as a rest week.',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">Rest Week</p>
+        <p>You have training history but no activities recorded this week.</p>
+        <p className="mt-1.5 text-slate-300">
+          Intentional rest is part of the plan — your chronic load is still building fitness.
+        </p>
+      </>
+    ),
   },
   low: {
     label: 'Low Load',
     badge: 'bg-blue-100 text-blue-700',
     guidance: 'Training load is low — safe to gradually increase volume or intensity.',
-    tip: 'Your load this week is well below your baseline (ACWR ≤ 0.8). Safe to gradually add more volume or intensity.',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">Low Load (ACWR ≤ 0.8)</p>
+        <p>Your current week load is well below your 28-day baseline.</p>
+        <p className="mt-1.5 text-slate-300">
+          Safe to gradually add volume or intensity — aim for 5–10% increase per week.
+        </p>
+      </>
+    ),
   },
   optimal: {
     label: 'Optimal',
     badge: 'bg-green-100 text-green-700',
     guidance: null,
-    tip: 'Load is in the ideal zone (ACWR 0.8–1.3). Your body is getting enough stimulus without overloading.',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">Optimal Load (ACWR 0.8–1.3)</p>
+        <p>
+          You&apos;re training in the ideal zone — enough stimulus to improve without overloading.
+        </p>
+        <p className="mt-1.5 text-slate-300">
+          Keep this up. This is where fitness gains happen safely.
+        </p>
+      </>
+    ),
   },
   caution: {
     label: 'Caution',
     badge: 'bg-yellow-100 text-yellow-700',
     guidance: 'Approaching high load — avoid adding intensity this week.',
-    tip: 'Load is getting high (ACWR 1.3–1.5). Avoid adding intensity — stick to easy volume or active recovery.',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">Caution Zone (ACWR 1.3–1.5)</p>
+        <p>Your load is noticeably above your baseline. Injury risk begins to rise here.</p>
+        <p className="mt-1.5 text-slate-300">
+          Avoid adding intensity. Stick to easy volume or active recovery this week.
+        </p>
+      </>
+    ),
   },
   danger: {
     label: 'High Risk',
     badge: 'bg-red-100 text-red-700',
     guidance: 'High injury risk — schedule an easy day or rest before your next hard session.',
-    tip: 'Load is too high relative to your baseline (ACWR > 1.5). Injury risk is significantly elevated. Prioritize rest or very easy sessions.',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">High Risk (ACWR &gt; 1.5)</p>
+        <p>Load is too high relative to your baseline. Injury risk is significantly elevated.</p>
+        <p className="mt-1.5 text-slate-300">
+          Prioritize rest or very easy sessions before any hard effort.
+        </p>
+      </>
+    ),
   },
 }
 
 const TIPS = {
-  acwr: "Ratio of your last 7 days of training load vs your 28-day average. 1.0 means you're training at your usual level. Above 1.5 significantly raises injury risk.",
-  totalEffort:
-    'Total effort points this week, based on Strava Relative Effort — a combination of duration and intensity using heart rate. Harder sessions score higher.',
-  acuteLaod:
-    'Your average daily training load over the last 7 days. Reflects how tired or fresh your body is right now.',
-  chronicLoad:
-    "Your average daily training load over the last 28 days. Reflects the fitness base you've built up over time.",
+  acwr: (
+    <>
+      <p className="font-semibold mb-1">What is ACWR?</p>
+      <p>
+        Ratio of your last 7 days of load vs your 28-day average. A value of 1.0 means you&apos;re
+        training at your usual baseline.
+      </p>
+      <p className="mt-1.5 text-slate-300">
+        <span className="text-blue-400 font-medium">≤ 0.8</span> Low ·{' '}
+        <span className="text-green-400 font-medium">0.8–1.3</span> Optimal ·{' '}
+        <span className="text-amber-400 font-medium">1.3–1.5</span> Caution ·{' '}
+        <span className="text-red-400 font-medium">&gt; 1.5</span> High Risk
+      </p>
+    </>
+  ),
+  totalEffort: (
+    <>
+      <p className="font-semibold mb-1">Relative Effort</p>
+      <p>
+        Total effort points this week, based on Strava Relative Effort — a combination of duration
+        and heart rate intensity.
+      </p>
+      <p className="mt-1.5 text-slate-300">
+        Harder sessions score higher. An easy 5K scores less than a tempo run of the same distance.
+      </p>
+    </>
+  ),
+  acuteLaod: (
+    <>
+      <p className="font-semibold mb-1">Acute Load (7-day avg)</p>
+      <p>
+        Your average daily training load over the last 7 days. Reflects how tired or fresh your body
+        is right now.
+      </p>
+      <p className="mt-1.5 text-slate-300">
+        High acute load = more fatigue. Low acute load = fresher, but possibly detraining.
+      </p>
+    </>
+  ),
+  chronicLoad: (
+    <>
+      <p className="font-semibold mb-1">Chronic Load (28-day avg)</p>
+      <p>
+        Your average daily training load over the last 28 days. Reflects the fitness base
+        you&apos;ve built up over time.
+      </p>
+      <p className="mt-1.5 text-slate-300">
+        A high chronic load means your body is conditioned to handle more work.
+      </p>
+    </>
+  ),
 }
 
 function InfoTip({ content }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          type="button"
-          className="inline-flex text-slate-300 hover:text-slate-500 transition-colors focus:outline-none"
-          aria-label="More information"
-        >
-          <Info className="size-3.5" aria-hidden="true" />
-        </button>
-      </TooltipTrigger>
-      <TooltipContent className="max-w-56 text-center leading-snug">{content}</TooltipContent>
-    </Tooltip>
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+            aria-label="More information"
+          >
+            <Info className="size-3.5" aria-hidden="true" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+          {content}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }
 

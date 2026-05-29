@@ -100,9 +100,6 @@ export default function ActivitySection({
                   {activity.achievement_count} achievements
                 </span>
               )}
-              {activity.kudos_count > 0 && (
-                <span className="text-xs text-slate-400">♥ {activity.kudos_count}</span>
-              )}
             </div>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               <span className="text-sm text-slate-400">{fmtDate(activity.started_at)}</span>
