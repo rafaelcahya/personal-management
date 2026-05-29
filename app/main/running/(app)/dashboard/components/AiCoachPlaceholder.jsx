@@ -25,18 +25,17 @@ function relativeTime(isoString) {
 
 export default function AiCoachPlaceholder() {
   const [status, setStatus] = useState('loading')
-  const [insight, setInsight] = useState(null)
+  const [insights, setInsights] = useState([])
 
   const load = useCallback(async () => {
     setStatus('loading')
     try {
-      const all = await fetchInsights(3)
-      const valid = all.filter((i) => i.status === 'completed' && i.is_valid === true)
+      const all = await fetchInsights(10)
+      const valid = all.filter((i) => i.status === 'completed' && i.is_valid === true).slice(0, 3)
       if (valid.length === 0) {
-        setInsight(null)
         setStatus('empty')
       } else {
-        setInsight(valid[0])
+        setInsights(valid)
         setStatus('content')
       }
     } catch {
@@ -70,9 +69,7 @@ export default function AiCoachPlaceholder() {
             <div className="rounded-full bg-violet-100 p-2 shrink-0">
               <BrainCircuit className="size-5 text-violet-600" aria-hidden="true" />
             </div>
-            <p className="text-sm text-slate-500">
-              No AI insights yet — complete a run to unlock your first analysis.
-            </p>
+            <p className="text-sm text-slate-500">Complete a run to get AI analysis.</p>
           </div>
         )}
 
@@ -89,21 +86,30 @@ export default function AiCoachPlaceholder() {
           </div>
         )}
 
-        {status === 'content' && insight && (
-          <div id="aiCoachContent_dashboardPage" className="flex flex-col gap-2">
-            <p className="text-sm font-semibold text-slate-700 line-clamp-1">{insight.title}</p>
-            <p className="text-xs text-slate-500 line-clamp-3">{firstParagraph(insight.content)}</p>
-            <div className="flex items-center justify-between mt-1">
-              <span className="text-xs text-slate-400">{relativeTime(insight.created_at)}</span>
-              {insight.data_refs?.activity_id && (
-                <Link
-                  href={`/main/running/activities/${insight.data_refs.activity_id}`}
-                  className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-                >
-                  View activity →
-                </Link>
-              )}
-            </div>
+        {status === 'content' && insights.length > 0 && (
+          <div
+            id="aiCoachContent_dashboardPage"
+            className="flex flex-col divide-y divide-violet-100"
+          >
+            {insights.map((insight) => (
+              <div key={insight.id} className="flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0">
+                <p className="text-sm font-semibold text-slate-700 line-clamp-1">{insight.title}</p>
+                <p className="text-xs text-slate-500 line-clamp-2">
+                  {firstParagraph(insight.content)}
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-400">{relativeTime(insight.created_at)}</span>
+                  {insight.data_refs?.activity_id && (
+                    <Link
+                      href={`/main/running/activities/${insight.data_refs.activity_id}`}
+                      className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                    >
+                      View activity →
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

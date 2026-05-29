@@ -82,6 +82,7 @@ describe('Dashboard AI Coach — Card root', () => {
     cy.viewport(1280, 900)
     cy.visit(DASHBOARD_URL)
     cy.wait('@getDashboard')
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
   })
 
   it('renders #aiCoachCard on the dashboard', () => {
@@ -106,6 +107,7 @@ describe('Dashboard AI Coach — Empty state', () => {
     cy.visit(DASHBOARD_URL)
     cy.wait('@getDashboard')
     cy.wait('@getInsights')
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
   })
 
   it('shows #aiCoachEmpty_dashboardPage when no insights exist', () => {
@@ -114,7 +116,7 @@ describe('Dashboard AI Coach — Empty state', () => {
 
   it('shows the no-insights copy', () => {
     cy.get(`#${IDS.ai_coach_empty}`).within(() => {
-      cy.contains('No AI insights yet').should('be.visible')
+      cy.contains('Complete a run to get AI analysis.').should('be.visible')
     })
   })
 
@@ -141,6 +143,7 @@ describe('Dashboard AI Coach — Content state', () => {
     cy.visit(DASHBOARD_URL)
     cy.wait('@getDashboard')
     cy.wait('@getInsights')
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
   })
 
   it('shows #aiCoachContent_dashboardPage with the insight title', () => {
@@ -189,6 +192,7 @@ describe('Dashboard AI Coach — Pending insight shows empty state', () => {
     cy.visit(DASHBOARD_URL)
     cy.wait('@getDashboard')
     cy.wait('@getInsights')
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
   })
 
   it('shows empty state when only pending/invalid insights exist', () => {
@@ -214,6 +218,7 @@ describe('Dashboard AI Coach — Error state', () => {
     cy.visit(DASHBOARD_URL)
     cy.wait('@getDashboard')
     cy.wait('@getInsightsError')
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
   })
 
   it('shows #aiCoachError_dashboardPage on fetch failure', () => {
@@ -259,6 +264,7 @@ describe('Dashboard AI Coach — Retry reloads insights', () => {
     cy.wait('@getDashboard')
     cy.wait('@getInsightsFail')
 
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
     cy.get(`#${IDS.ai_coach_error}`).should('be.visible')
 
     // Second call succeeds
@@ -284,6 +290,7 @@ describe('Dashboard AI Coach — Retry reloads insights', () => {
     cy.wait('@getDashboard')
     cy.wait('@getInsightsFail')
 
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
     cy.get(`#${IDS.ai_coach_error}`).should('be.visible')
 
     cy.intercept('GET', `${AI_EP}*`, {
@@ -295,5 +302,95 @@ describe('Dashboard AI Coach — Retry reloads insights', () => {
     cy.wait('@getInsightsRetry2')
 
     cy.get(`#${IDS.ai_coach_error}`).should('be.visible')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// H. Multi-card rendering — up to 3 insights shown (#7)
+// ---------------------------------------------------------------------------
+
+describe('Dashboard AI Coach — Multi-card rendering', () => {
+  const makeInsight = (n) => ({
+    id: `insight-00${n}`,
+    title: `Insight title ${n}`,
+    content: `Paragraph ${n} content here.`,
+    status: 'completed',
+    is_valid: true,
+    created_at: new Date(Date.now() - n * 60 * 60 * 1000).toISOString(),
+    data_refs: { activity_id: `act-00${n}` },
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+    stubRtUsers()
+    stubDashboard()
+    cy.viewport(1280, 900)
+  })
+
+  it('renders all 3 cards when 3 valid insights are returned', () => {
+    cy.intercept('GET', `${AI_EP}*`, {
+      statusCode: 200,
+      body: { data: [makeInsight(1), makeInsight(2), makeInsight(3)] },
+    }).as('getInsights3')
+
+    cy.visit(DASHBOARD_URL)
+    cy.wait('@getDashboard')
+    cy.wait('@getInsights3')
+
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
+    cy.get(`#${IDS.ai_coach_content}`).should('be.visible')
+    cy.get(`#${IDS.ai_coach_content}`).within(() => {
+      cy.contains('Insight title 1').should('be.visible')
+      cy.contains('Insight title 2').should('be.visible')
+      cy.contains('Insight title 3').should('be.visible')
+    })
+  })
+
+  it('renders 1 card when only 1 valid insight is returned', () => {
+    cy.intercept('GET', `${AI_EP}*`, {
+      statusCode: 200,
+      body: { data: [makeInsight(1)] },
+    }).as('getInsights1')
+
+    cy.visit(DASHBOARD_URL)
+    cy.wait('@getDashboard')
+    cy.wait('@getInsights1')
+
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
+    cy.get(`#${IDS.ai_coach_content}`).should('be.visible')
+    cy.get(`#${IDS.ai_coach_content}`).within(() => {
+      cy.contains('Insight title 1').should('be.visible')
+      cy.contains('Insight title 2').should('not.exist')
+    })
+  })
+
+  it('shows empty state when all insights have status pending', () => {
+    cy.intercept('GET', `${AI_EP}*`, {
+      statusCode: 200,
+      body: { data: [{ ...makeInsight(1), status: 'pending' }] },
+    }).as('getInsightsPending')
+
+    cy.visit(DASHBOARD_URL)
+    cy.wait('@getDashboard')
+    cy.wait('@getInsightsPending')
+
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
+    cy.get(`#${IDS.ai_coach_empty}`).should('be.visible')
+    cy.get(`#${IDS.ai_coach_content}`).should('not.exist')
+  })
+
+  it('shows empty state when all insights have is_valid false', () => {
+    cy.intercept('GET', `${AI_EP}*`, {
+      statusCode: 200,
+      body: { data: [{ ...makeInsight(1), is_valid: false }] },
+    }).as('getInsightsInvalid')
+
+    cy.visit(DASHBOARD_URL)
+    cy.wait('@getDashboard')
+    cy.wait('@getInsightsInvalid')
+
+    cy.get(`#${IDS.ai_coach_card}`).scrollIntoView()
+    cy.get(`#${IDS.ai_coach_empty}`).should('be.visible')
+    cy.get(`#${IDS.ai_coach_content}`).should('not.exist')
   })
 })
