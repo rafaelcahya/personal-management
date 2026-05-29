@@ -742,6 +742,82 @@ describe('Activity Detail UI — Splits table with cardiac drift', () => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// Q. EF trend arrow — visible when 30d avg is present (#21)
+// ---------------------------------------------------------------------------
+
+describe('Activity Detail UI — EF trend arrow present', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+    stubRtUsers()
+    stubActivity({
+      efficiency_factor: 1.25,
+      efficiency_factor_30d_avg: 1.18,
+    })
+    stubDashboard()
+    stubRaceLog()
+    stubStreams()
+    stubInsightEmpty()
+    stubHealthNull()
+    visitAndWait()
+  })
+
+  it('renders #efTrendArrow when efficiency_factor_30d_avg is present', () => {
+    cy.get('#efficiencyFactor_activityDetailPage').scrollIntoView().should('exist')
+    cy.get('#efTrendArrow').should('exist')
+  })
+
+  it('shows TrendingUp (green) icon when EF is above 30d avg', () => {
+    cy.get('#efTrendArrow').should('have.class', 'text-green-500')
+  })
+
+  it('title attribute reflects the 30d average value', () => {
+    cy.get('#efTrendArrow').should('have.attr', 'title').and('include', '1.1800')
+  })
+})
+
+describe('Activity Detail UI — EF trend arrow below average', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+    stubRtUsers()
+    stubActivity({
+      efficiency_factor: 1.1,
+      efficiency_factor_30d_avg: 1.18,
+    })
+    stubDashboard()
+    stubRaceLog()
+    stubStreams()
+    stubInsightEmpty()
+    stubHealthNull()
+    visitAndWait()
+  })
+
+  it('shows TrendingDown (red) icon when EF is below 30d avg', () => {
+    cy.get('#efTrendArrow').should('exist').and('have.class', 'text-red-400')
+  })
+})
+
+describe('Activity Detail UI — EF trend arrow hidden when no 30d avg', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+    stubRtUsers()
+    stubActivity({
+      efficiency_factor: 1.25,
+      efficiency_factor_30d_avg: null,
+    })
+    stubDashboard()
+    stubRaceLog()
+    stubStreams()
+    stubInsightEmpty()
+    stubHealthNull()
+    visitAndWait()
+  })
+
+  it('does not render #efTrendArrow when efficiency_factor_30d_avg is null', () => {
+    cy.get('#efTrendArrow').should('not.exist')
+  })
+})
+
 describe('Activity Detail UI — No splits table when splits are empty', () => {
   beforeEach(() => {
     cy.setupApiAuthCookies()
