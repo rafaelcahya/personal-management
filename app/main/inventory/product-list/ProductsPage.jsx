@@ -105,7 +105,6 @@ export default function ProductsPageClient() {
   const filteredProducts = listProduct.filter((product) => {
     const matchesFilter = (() => {
       if (!filter) return true
-      if (filter?.startsWith('type:')) return product.type === filter.slice(5)
       switch (filter) {
         case 'low-stock':
           return product.quantity > 0 && product.quantity < LOW_STOCK_THRESHOLD
@@ -139,11 +138,6 @@ export default function ProductsPageClient() {
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter)
-
-    if (newFilter?.startsWith('type:')) {
-      toast.success(`Showing ${newFilter.slice(5)} products`)
-      return
-    }
 
     const messages = {
       null: 'Showing all products',

@@ -166,10 +166,9 @@ function GearEditForm({ gear, onSave, onCancel }) {
         <Button
           type="button"
           size="sm"
-          variant="ghost"
           disabled={isSubmitting}
           onClick={onCancel}
-          className="h-7 px-3 text-xs gap-1.5 text-slate-500"
+          className="h-7 px-3 text-xs gap-1.5 text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
           aria-label="Cancel editing"
         >
           <X className="size-3" aria-hidden="true" />
@@ -209,7 +208,7 @@ function GearCard({ gear, onUpdate }) {
 
   return (
     <li
-      id="gearCard"
+      id={`gearCard_${gear.id}`}
       className={`rounded-xl border p-4 transition-colors ${
         gear.retired ? 'border-slate-100 bg-slate-50 opacity-60' : 'border-slate-200 bg-white'
       }`}
@@ -267,7 +266,7 @@ function GearCard({ gear, onUpdate }) {
 
       {/* Distance + mileage bar */}
       <div className="mt-3">
-        <div className="flex items-baseline justify-between mb-2">
+        <div className="flex flex-col items-start gap-2 lg:flex-row sm:items-baseline sm:justify-between mb-2">
           <span className="text-lg font-bold text-slate-800 tabular-nums">
             {distanceKm.toFixed(2)}
             <span className="text-xs font-normal text-slate-400 ml-1">km</span>
@@ -441,11 +440,7 @@ export default function ShoeRotation() {
                   <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">
                     Active ({activeGear.length})
                   </p>
-                  <ul
-                    id="gearList"
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3"
-                    aria-label="Active shoes"
-                  >
+                  <ul id="gearList" className="grid grid-cols-1 gap-3" aria-label="Active shoes">
                     {activeGear.map((gear) => (
                       <GearCard key={gear.id} gear={gear} onUpdate={handleUpdate} />
                     ))}
@@ -458,10 +453,7 @@ export default function ShoeRotation() {
                   <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">
                     Retired ({retiredGear.length})
                   </p>
-                  <ul
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3"
-                    aria-label="Retired shoes"
-                  >
+                  <ul className="grid grid-cols-1 gap-3" aria-label="Retired shoes">
                     {retiredGear.map((gear) => (
                       <GearCard key={gear.id} gear={gear} onUpdate={handleUpdate} />
                     ))}

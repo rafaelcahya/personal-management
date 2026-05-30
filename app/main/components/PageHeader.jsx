@@ -6,7 +6,7 @@ export default function PageHeader({ title, description, breadcrumbs = [] }) {
     <div>
       <nav
         aria-label="Breadcrumb"
-        className="flex items-center gap-1 text-xs text-slate-400 mb-2.5"
+        className="flex items-center gap-1 text-xs text-slate-400 pt-6 lg:pt-0 mb-2.5"
       >
         {breadcrumbs.map((crumb, i) => (
           <span key={i} className="flex items-center gap-1">

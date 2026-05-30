@@ -99,6 +99,10 @@
     "running_ai_insights": {
       "list": "/api/running/v1/ai/insights",
       "generate": "/api/running/v1/ai/insights/generate"
+    },
+    "running_strava": {
+      "re_enrich": "/api/running/v1/auth/strava/re-enrich",
+      "re_enrich_metrics": "/api/running/v1/auth/strava/re-enrich-metrics"
     }
   },
   "test_ids": {
@@ -214,7 +218,8 @@
       "product_usage_log": "usageLog_productListPage",
       "usage_log_duration_col": "durationCol_usageLogTable",
       "log_row_duration": "logRowDuration_usageLogTable",
-      "log_row_ongoing_label": "ongoingLabel_usageLogTable"
+      "log_row_ongoing_label": "ongoingLabel_usageLogTable",
+      "image_preview_dialog": "imagePreviewDialog_productListPage"
     },
     "product_detail": {
       "page": "container_productDetailPage",
@@ -310,6 +315,7 @@
       "ai_insight_content": "aiInsightContent_activityDetailPage",
       "ai_insight_error": "aiInsightError_activityDetailPage",
       "ai_insight_retry": "aiInsightRetry_activityDetailPage",
+      "ai_insight_refresh": "aiInsightRefresh_activityDetailPage",
       "ef_trend_arrow": "efTrendArrow"
     },
     "running_dashboard": {

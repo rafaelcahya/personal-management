@@ -259,7 +259,7 @@ export default function StreamCharts({ activityId, zones }) {
         .map((d) => ({
           ...d,
           dist_km: d.dist_m != null ? d.dist_m / 1000 : null,
-          cadence_spm: d.cadence != null ? d.cadence * 2 : null,
+          cadence_spm: d.cadence,
         }))
       setMeta(res.meta)
       setThinned(processed)

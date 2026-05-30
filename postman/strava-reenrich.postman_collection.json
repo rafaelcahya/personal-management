@@ -1,0 +1,66 @@
+{
+  "info": {
+    "name": "Strava Re-Enrich",
+    "_postman_id": "strava-reenrich-collection",
+    "description": "Trigger Strava re-enrich to backfill new fields (max_watts, commute, trainer, has_heartrate, manual, perceived_exertion) for all existing activities.\n\n**Auth**: Paste your Supabase JWT into the `auth_token` variable.\nGet it from the browser: DevTools → Application → Local Storage → `sb-kreuvyttowiwztojuvtk-auth-token` → value of `access_token`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "description": "App base URL. Change to your Vercel URL for production."
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "description": "Supabase JWT. Get from browser: DevTools → Application → Local Storage → sb-kreuvyttowiwztojuvtk-auth-token → access_token"
+    }
+  ],
+  "item": [
+    {
+      "name": "POST Re-Enrich All Activities",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/running/v1/auth/strava/re-enrich",
+          "host": ["{{base_url}}"],
+          "path": ["api", "running", "v1", "auth", "strava", "re-enrich"]
+        },
+        "description": "Queues an Inngest `strava/fetch-streams` event for every Strava activity the user has. Each event will fetch the full DetailedActivity from Strava and backfill all new columns.\n\n**Response**: `{ \"queued\": <number> }` — number of activities queued.\n\n**Note**: This only queues the jobs. Actual enrichment runs asynchronously via Inngest."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"queued\": 42\n}"
+        },
+        {
+          "name": "Strava not connected",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"error\": \"Strava not connected\"\n}"
+        },
+        {
+          "name": "Unauthorized",
+          "status": "Unauthorized",
+          "code": 401,
+          "body": "{\n  \"error\": \"Unauthorized\"\n}"
+        }
+      ]
+    }
+  ]
+}
