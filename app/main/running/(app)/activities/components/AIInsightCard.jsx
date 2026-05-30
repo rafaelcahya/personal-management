@@ -40,16 +40,30 @@ const FOCUS_LABELS = {
 }
 
 function parseInline(text) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g)
-  return parts.map((part, i) =>
-    part.startsWith('**') && part.endsWith('**') ? (
-      <strong key={i} className="font-semibold text-slate-700">
-        {part.slice(2, -2)}
+  if (typeof text !== 'string') return text
+  const result = []
+  let remaining = text
+  let key = 0
+  while (remaining.length > 0) {
+    const start = remaining.indexOf('**')
+    if (start === -1) {
+      result.push(remaining)
+      break
+    }
+    if (start > 0) result.push(remaining.slice(0, start))
+    const end = remaining.indexOf('**', start + 2)
+    if (end === -1) {
+      result.push(remaining.slice(start))
+      break
+    }
+    result.push(
+      <strong key={key++} className="font-semibold text-slate-700">
+        {remaining.slice(start + 2, end)}
       </strong>
-    ) : (
-      part
     )
-  )
+    remaining = remaining.slice(end + 2)
+  }
+  return result
 }
 
 function renderMarkdown(content) {
@@ -97,7 +111,11 @@ function renderMarkdown(content) {
 
     return (
       <div key={i} className="mb-3 last:mb-0">
-        {header && <p className="text-sm font-semibold text-slate-700 mb-1">{header}</p>}
+        {header && (
+          <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 mt-3 mb-1.5 first:mt-0">
+            {header}
+          </p>
+        )}
         {bodyParts.map((part, j) =>
           part.type === 'hr' ? (
             <hr key={j} className="border-slate-200 my-2" />
@@ -123,17 +141,20 @@ function renderMarkdown(content) {
 function FocusButtons({ onSelect, generating, activeFocus, variant = 'primary' }) {
   const buttons = variant === 'followup' ? FOLLOWUP_BUTTONS : FOCUS_BUTTONS
   return (
-    <div className="flex flex-wrap gap-2">
+    <div
+      className="flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-visible md:pb-0"
+      style={{ scrollbarWidth: 'none' }}
+    >
       {buttons.map(({ focus, label, icon: Icon }) => (
         <button
           key={focus}
           id={`aiInsightGenerateBtn_${focus}_activityDetailPage`}
           onClick={() => onSelect(focus)}
           disabled={generating === focus}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors disabled:opacity-60
+          className={`flex flex-shrink-0 items-center gap-1.5 px-3 py-2 md:py-1.5 rounded-full text-xs font-medium transition-colors disabled:opacity-60
             ${
               variant === 'primary'
-                ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                ? 'bg-violet-100 text-violet-700 hover:bg-violet-200'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
         >
@@ -237,33 +258,46 @@ export default function AIInsightCard({ activityId }) {
   return (
     <div
       id="aiInsightCard_activityDetailPage"
-      className="bg-white rounded-lg p-4 border-l-4 border-purple-400"
+      className="space-y-4"
+      aria-live="polite"
+      aria-atomic="true"
     >
-      <div className="flex items-center gap-2 mb-3">
-        <Sparkles className="h-4 w-4 text-purple-400" aria-hidden="true" />
-        <span className="text-sm font-semibold text-slate-700">AI Coach</span>
-        <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-medium">
+      <div className="flex items-center gap-3">
+        <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-violet-100 flex-shrink-0">
+          <Sparkles className="h-4 w-4 text-violet-600" aria-hidden="true" />
+        </span>
+        <span className="text-base font-semibold text-slate-800">AI Coach</span>
+        <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-medium">
           BETA
         </span>
       </div>
 
       {/* Loading */}
       {insight === undefined && !loadError && (
-        <div id="aiInsightLoading_activityDetailPage" className="space-y-2">
-          <div className="h-3 bg-slate-200 rounded animate-pulse w-3/4" />
-          <div className="h-3 bg-slate-200 rounded animate-pulse w-full" />
-          <div className="h-3 bg-slate-200 rounded animate-pulse w-5/6" />
+        <div id="aiInsightLoading_activityDetailPage" className="space-y-3 animate-pulse">
+          <div className="h-5 w-28 bg-violet-100 rounded-full" />
+          <div className="space-y-1.5">
+            <div className="h-3 bg-slate-200 rounded w-1/3" />
+            <div className="h-3 bg-slate-200 rounded w-full" />
+            <div className="h-3 bg-slate-200 rounded w-5/6" />
+          </div>
+          <div className="space-y-1.5">
+            <div className="h-3 bg-slate-200 rounded w-2/5" />
+            <div className="h-3 bg-slate-200 rounded w-full" />
+            <div className="h-3 bg-slate-200 rounded w-3/4" />
+          </div>
         </div>
       )}
 
       {/* Fetch error */}
       {loadError && (
         <div id="aiInsightError_activityDetailPage" className="flex items-center gap-3">
-          <p className="text-sm text-slate-400">Failed to load analysis</p>
+          <p className="text-sm text-slate-400">Could not load analysis.</p>
           <Button
             id="aiInsightRetry_activityDetailPage"
-            variant="outline"
+            variant="ghost"
             size="sm"
+            className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal"
             onClick={() => {
               setInsight(undefined)
               loadInsight()
@@ -277,7 +311,12 @@ export default function AIInsightCard({ activityId }) {
       {/* No insight yet — show focus buttons */}
       {!loadError && insight === null && (
         <div id="aiInsightEmpty_activityDetailPage" className="space-y-3">
-          <p className="text-sm text-slate-400">Choose analysis focus:</p>
+          <div className="flex items-start gap-2">
+            <Sparkles className="h-4 w-4 text-violet-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
+            <p className="text-sm text-slate-500">
+              Get AI-powered coaching insights for this run. Choose a focus to start.
+            </p>
+          </div>
           {generateError && (
             <p className="text-xs text-red-400">Failed to start analysis. Try again.</p>
           )}
@@ -287,12 +326,18 @@ export default function AIInsightCard({ activityId }) {
 
       {/* Pending / generating */}
       {!loadError && insight && insight.status === 'pending' && (
-        <div id="aiInsightPending_activityDetailPage" className="text-center py-2 space-y-2">
-          <div className="flex items-center justify-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin text-purple-400" aria-hidden="true" />
-            <span className="text-sm text-slate-600">Analyzing...</span>
+        <div id="aiInsightPending_activityDetailPage" className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Loader2
+              className="h-4 w-4 animate-spin text-violet-500 flex-shrink-0"
+              aria-hidden="true"
+            />
+            <span className="text-sm text-slate-600">Analyzing your run...</span>
           </div>
-          <p className="text-xs text-slate-400">Usually &lt; 30 seconds</p>
+          <div className="h-1 w-full bg-violet-100 rounded-full overflow-hidden">
+            <div className="h-full w-1/2 bg-violet-300 rounded-full animate-pulse" />
+          </div>
+          <p className="text-xs text-slate-400">Usually under 30 seconds</p>
           <Button
             id="aiInsightRefresh_activityDetailPage"
             variant="outline"
@@ -309,45 +354,52 @@ export default function AIInsightCard({ activityId }) {
         <div id="aiInsightContent_activityDetailPage" className="space-y-4">
           <div>
             {focusLabel && (
-              <span className="inline-block text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full font-medium mb-2">
+              <span className="inline-flex items-center gap-1.5 text-xs bg-violet-100 text-violet-700 border border-violet-200 px-2.5 py-1 rounded-full font-medium mb-3">
                 {focusLabel}
               </span>
             )}
             <div className="prose-sm">{renderMarkdown(insight.content)}</div>
-            {insight.created_at && (
-              <p className="text-xs text-slate-400 mt-3">
-                {new Date(insight.created_at).toLocaleString('id-ID', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+          </div>
+
+          <div className="bg-white/60 border border-violet-100 rounded-lg p-3 space-y-4">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                Analyze with a different focus
               </p>
-            )}
+              {generateError && (
+                <p className="text-xs text-red-400">Failed to start analysis. Try again.</p>
+              )}
+              <FocusButtons onSelect={handleGenerate} generating={generating} variant="primary" />
+            </div>
+            <div className="space-y-2 border-t border-violet-100 pt-3">
+              <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">Ask more</p>
+              <FocusButtons onSelect={handleGenerate} generating={generating} variant="followup" />
+            </div>
           </div>
 
-          <div className="border-t border-slate-200 pt-3 space-y-2">
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
-              Re-analyze with different focus
+          {insight.created_at && (
+            <p className="text-xs text-slate-400">
+              {new Date(insight.created_at).toLocaleString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
             </p>
-            {generateError && (
-              <p className="text-xs text-red-400">Failed to start analysis. Try again.</p>
-            )}
-            <FocusButtons onSelect={handleGenerate} generating={generating} variant="primary" />
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">Ask more</p>
-            <FocusButtons onSelect={handleGenerate} generating={generating} variant="followup" />
-          </div>
+          )}
         </div>
       )}
 
       {/* Completed but invalid */}
       {!loadError && insight && insight.status === 'completed' && !isValidInsight && (
         <div id="aiInsightInvalid_activityDetailPage" className="space-y-3">
-          <p className="text-sm text-slate-400">Choose analysis focus:</p>
+          <div className="flex items-start gap-2">
+            <Sparkles className="h-4 w-4 text-violet-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
+            <p className="text-sm text-slate-500">
+              Get AI-powered coaching insights for this run. Choose a focus to start.
+            </p>
+          </div>
           <FocusButtons onSelect={handleGenerate} generating={generating} variant="primary" />
         </div>
       )}
