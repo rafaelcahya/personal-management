@@ -422,7 +422,13 @@
       "training_load_section": "trainingLoadSection",
       "vo2max_trend_section": "vo2maxTrendSection",
       "ef_trend_section": "efTrendSection",
-      "race_predictor_section": "racePredictorSection"
+      "race_predictor_section": "racePredictorSection",
+      "vo2max_stat_section": "vo2maxStatSection",
+      "current_vo2max": "currentVo2max_analyticsPage",
+      "vo2max_trend_arrow": "vo2maxTrendArrow_analyticsPage",
+      "vo2max_category": "vo2maxCategory_analyticsPage",
+      "vo2max_maintenance_status": "vo2maxMaintenanceStatus_analyticsPage",
+      "vo2max_improvement_signal": "vo2maxImprovementSignal_analyticsPage"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",
