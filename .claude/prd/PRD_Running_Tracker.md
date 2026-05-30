@@ -2,8 +2,8 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 2.6
-**Last Updated:** 2026-05-29
+**Version:** 2.7
+**Last Updated:** 2026-05-30
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6) · Strava API
 
@@ -1353,15 +1353,15 @@ These use data already synced from Strava — just need UI surfacing:
 
 #### Implementation Status
 
-| Priority | Item                                                      | Status                                                                                                    |
-| -------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| P0       | PR count + achievement count badges on activity detail    | DONE                                                                                                      |
-| P0       | Cardiac drift indicator below splits table                | DONE                                                                                                      |
-| P1       | Aerobic Decoupling badge on activity detail               | DONE — `data-testid="aeroDrift"`, green/amber/red                                                         |
-| P1       | Efficiency Factor stat tile on activity detail            | DONE — `data-testid="efficiencyFactor"`, shows raw number (trend arrow vs 30-day avg not yet implemented) |
-| P1       | Estimated VO₂max stat tile on activity detail             | DONE — `data-testid="estimatedVo2max"`, 1 decimal                                                         |
-| P2       | Estimated VO2max 30-day rolling average on Analytics page | NOT STARTED                                                                                               |
-| P2       | Analytics page `/running/analytics` (Section 10.2 spec)   | NOT STARTED                                                                                               |
+| Priority | Item                                                      | Status                                                                                                                                  |
+| -------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| P0       | PR count + achievement count badges on activity detail    | DONE                                                                                                                                    |
+| P0       | Cardiac drift indicator below splits table                | DONE                                                                                                                                    |
+| P1       | Aerobic Decoupling badge on activity detail               | DONE — `data-testid="aeroDrift"`, green/amber/red                                                                                       |
+| P1       | Efficiency Factor stat tile on activity detail            | DONE — `id="efficiencyFactor_activityDetailPage"`, shows raw number + trend arrow (`id="efTrendArrow"`) vs 30-day avg                   |
+| P1       | Estimated VO₂max stat tile on activity detail             | DONE — `id="estimatedVo2max_activityDetailPage"`, 1 decimal                                                                             |
+| P2       | Estimated VO2max 30-day rolling average on Analytics page | DONE — `Vo2maxTrendChart.jsx` in `analytics/components/`; individual dots (#c4b5fd) + rolling avg line (#7c3aed); empty state at <3 pts |
+| P2       | Analytics page `/running/analytics` (Section 10.2 spec)   | DONE — `analytics/page.jsx`; sections: Weekly Distance, Pace Trend, Best Pace, Training Load, Race Predictor, VO2max Trend, EF Trend    |
 
 ---
 
@@ -2357,6 +2357,8 @@ Zone boundaries (% dari masing-masing metodologi):
 
 ---
 
-_End of document. Version 2.6 — 2026-05-29 — Section 13 Race Log: added client-side filtering & search to 13.5 (debounced text search + distance filter chips All/5K/10K/21K/42K/Other; chips only rendered when matching data exists; filters stack); added acceptance criteria for search and filter chip behaviors to 13.7; added test IDs raceSearchInput, raceFilterChip_all, raceFilterChip_5k, raceFilterChip_10k, raceFilterChip_21k, raceFilterChip_42k, raceFilterChip_other to 13.9._
+_End of document. Version 2.7 — 2026-05-30 — Section 10.4 Implementation Status: marked EF trend arrow (id="efTrendArrow"), VO2max 30-day rolling average on Analytics page (Vo2maxTrendChart.jsx), and Analytics page /running/analytics as DONE. Updated EF stat tile testid to reflect actual implementation (id="efficiencyFactor_activityDetailPage"). Post-delivery validation for v1.1 features completed — all 12 acceptance criteria pass._
+
+_Previous: Version 2.6 — 2026-05-29 — Section 13 Race Log: added client-side filtering & search to 13.5 (debounced text search + distance filter chips All/5K/10K/21K/42K/Other; chips only rendered when matching data exists; filters stack); added acceptance criteria for search and filter chip behaviors to 13.7; added test IDs raceSearchInput, raceFilterChip_all, raceFilterChip_5k, raceFilterChip_10k, raceFilterChip_21k, raceFilterChip_42k, raceFilterChip_other to 13.9._
 
 _Previous: Version 2.5 — Section 13 Race Log synced with actual implementation: (1) DB columns renamed position_overall/position_category → position_place/position_male throughout schema, API specs, validations table. (2) UI spec updated from card layout to table layout; table columns documented. (3) "Add from activity" flow (addRaceFromActivityBtn + ActivityPickerDialog + RaceConfirmDialog) documented. (4) Race Log detail page /running/race-log/[id] added as Section 13.5b with own test IDs. (5) GET /api/running/v1/race-log/:id endpoint added to Section 13.4. (6) Test IDs section split into list page / detail page; missing IDs (raceLogLoadingSkeleton, raceLogList, raceLogCard, raceLogDeleteBtn on list) flagged as known gaps for Tester._
