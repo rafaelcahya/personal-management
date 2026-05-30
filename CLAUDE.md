@@ -18,13 +18,13 @@ Personal productivity web app for one user, two domains: **Inventory Management*
 
 ## Key Files
 
-| File                                        | Purpose                                                |
-| ------------------------------------------- | ------------------------------------------------------ |
-| `.claude/prd/PRD_Personal_Management.md`    | PRD for Inventory + Stock Trading — PM Agent owns this |
-| `.claude/prd/PRD_Running_Tracker.md`        | PRD for Running Tracker + AI Coach                     |
-| `.claude/agents/signals/pending-signals.md` | Cross-agent inbox — all agents check at kickoff        |
-| `cypress/fixtures/app-constants.json`       | Test IDs + endpoint registry (Cypress runtime)         |
-| `cypress/fixtures/app-constants.yaml`       | Same data, human-readable source of truth              |
+| File                                     | Purpose                                                          |
+| ---------------------------------------- | ---------------------------------------------------------------- |
+| `.claude/prd/PRD_Personal_Management.md` | PRD for Inventory + Stock Trading — PM Agent owns this           |
+| `.claude/prd/PRD_Running_Tracker.md`     | PRD for Running Tracker + AI Coach                               |
+| `cypress/fixtures/app-constants.json`    | Test IDs + endpoint registry (Cypress runtime)                   |
+| `cypress/fixtures/app-constants.yaml`    | Same data, human-readable source of truth                        |
+| GitHub Project #3                        | Planning board — https://github.com/users/rafaelcahya/projects/3 |
 
 ## Agent System
 
@@ -119,10 +119,13 @@ Use the **Orchestrator** when delivering a complete feature end-to-end.
 
 ## Cross-Agent Communication
 
-All signals between agents go through one central file:
-`.claude/agents/signals/pending-signals.md`
+All cross-agent signals are tracked via **GitHub Issues + Project board** (Project #3: Personal Management — Planning).
 
-Each agent checks this file at kickoff and resolves `[PENDING]` signals before starting new work.
+- Each agent creates a GitHub Issue for their work with the appropriate **Role**, **Module**, **Priority**, and **Release** fields set
+- Status flow: **Todo** → **In Progress** → **Done** (user sets Done manually after Tester confirms 100% pass)
+- Agents reference issue numbers in branches, commits, and PRs so GitHub auto-links everything
+
+`.claude/agents/signals/pending-signals.md` is kept as historical record only — no longer active.
 
 ## Git Workflow
 
