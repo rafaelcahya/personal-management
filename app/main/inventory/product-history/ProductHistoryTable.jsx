@@ -97,7 +97,7 @@ export default function ProductHistoryTable({
   return (
     <div className="flex-1 overflow-auto">
       <Table id="productHistoryTable_productHistoryPage" className="w-full table-auto">
-        <TableHeader className="bg-slate-100 sticky top-0 z-20">
+        <TableHeader className="bg-slate-100">
           <TableRow className="border-none">
             <TableHead className="py-2 text-slate-foreground rounded-l-lg text-center w-[40px]">
               #

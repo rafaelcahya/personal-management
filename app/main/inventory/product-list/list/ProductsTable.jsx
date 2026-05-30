@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -134,6 +135,7 @@ export default function ProductsTable({
   const [editProduct, setEditProduct] = useState(null)
   const [loadingFavorite, setLoadingFavorite] = useState(null)
   const [sortConfig, setSortConfig] = useState({ column: null, direction: 'asc' })
+  const [previewImg, setPreviewImg] = useState(null)
 
   const handleSort = (column) => {
     setSortConfig((prev) => ({
@@ -234,9 +236,25 @@ export default function ProductsTable({
               <div className="flex items-center gap-2 min-w-0">
                 <StarIcon
                   className={`size-3.5 flex-shrink-0 ${
-                    product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'invisible'
+                    product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'
                   }`}
                 />
+                {product.product_image && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setPreviewImg(product.product_image)
+                    }}
+                    className="shrink-0"
+                    aria-label="View product image"
+                  >
+                    <img
+                      src={product.product_image}
+                      alt=""
+                      className="size-8 rounded object-cover border border-slate-200"
+                    />
+                  </button>
+                )}
                 <div className="min-w-0">
                   <p className="text-xs text-slate-400 truncate leading-tight">{product.brand}</p>
                   <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
@@ -350,9 +368,25 @@ export default function ProductsTable({
                 <div className="flex items-center gap-3">
                   <StarIcon
                     className={`size-4 flex-shrink-0 ${
-                      product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'invisible'
+                      product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'
                     }`}
                   />
+                  {product.product_image && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setPreviewImg(product.product_image)
+                      }}
+                      className="shrink-0"
+                      aria-label="View product image"
+                    >
+                      <img
+                        src={product.product_image}
+                        alt=""
+                        className="size-8 rounded object-cover border border-slate-200"
+                      />
+                    </button>
+                  )}
                   <div className="min-w-0">
                     <p className="text-xs text-slate-400 truncate">{product.brand}</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -426,6 +460,23 @@ export default function ProductsTable({
         }}
         onUpdated={onRefresh}
       />
+
+      <Dialog
+        open={!!previewImg}
+        onOpenChange={(open) => {
+          if (!open) setPreviewImg(null)
+        }}
+      >
+        <DialogContent id="imagePreviewDialog_productListPage" className="max-w-lg p-2">
+          {previewImg && (
+            <img
+              src={previewImg}
+              alt="Product preview"
+              className="w-full rounded object-contain max-h-[80vh]"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

@@ -14,7 +14,6 @@ import { Filter, Check, Loader2 } from 'lucide-react'
 const LOW_STOCK_THRESHOLD = 5
 
 const FILTER_OPTIONS = [
-  { value: null, label: 'All Products', icon: '📦', group: 'general' },
   { value: 'active', label: 'Active Products', icon: '✅', group: 'status' },
   {
     value: 'inactive',
@@ -102,21 +101,6 @@ export default function ProductFilterDropdown({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {/* General */}
-        <DropdownMenuItem
-          onClick={() => onFilterChange(null)}
-          className="flex items-center justify-between cursor-pointer hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
-        >
-          <span className="flex items-center gap-2">
-            📦 <span>All Products</span>
-          </span>
-          <span className="flex items-center gap-2 text-muted-foreground text-xs">
-            {getFilterCount(null)}
-            {filter === null && <Check className="size-4 text-violet-500" />}
-          </span>
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-xs text-muted-foreground">Status</DropdownMenuLabel>
 
         {/* Status Group */}
