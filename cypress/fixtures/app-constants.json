@@ -99,6 +99,10 @@
     "running_ai_insights": {
       "list": "/api/running/v1/ai/insights",
       "generate": "/api/running/v1/ai/insights/generate"
+    },
+    "running_strava": {
+      "re_enrich": "/api/running/v1/auth/strava/re-enrich",
+      "re_enrich_metrics": "/api/running/v1/auth/strava/re-enrich-metrics"
     }
   },
   "test_ids": {
