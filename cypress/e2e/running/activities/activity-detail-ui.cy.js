@@ -290,8 +290,9 @@ describe('AIInsightCard — empty state with focus buttons when no insight exist
     cy.wait('@getInsight')
   })
 
-  it('card is always rendered with purple left border', () => {
-    cy.get(`#${IDS.ai_insight_card}`).should('exist').and('have.class', 'border-purple-400')
+  it('card root element is always rendered', () => {
+    // Card layout changed in v1.2 — no longer a bordered card, now a space-y-4 container
+    cy.get(`#${IDS.ai_insight_card}`).should('exist')
   })
 
   it('shows "AI Coach" label and BETA badge', () => {
@@ -301,10 +302,12 @@ describe('AIInsightCard — empty state with focus buttons when no insight exist
     })
   })
 
-  it('shows empty state with "Choose analysis focus:" text', () => {
+  it('shows empty state with coaching prompt text', () => {
+    // Text changed in v1.2 to "Get AI-powered coaching insights..."
     cy.get(`#${IDS.ai_insight_empty}`)
+      .scrollIntoView()
       .should('be.visible')
-      .and('contain.text', 'Choose analysis focus:')
+      .and('contain.text', 'Choose a focus to start')
   })
 
   it('renders focus buttons for generating an insight', () => {
@@ -348,7 +351,7 @@ describe('AIInsightCard — clicking generate triggers POST and shows pending st
 
     cy.get(`#${IDS.ai_insight_pending}`).should('be.visible')
     cy.get(`#${IDS.ai_insight_pending}`).within(() => {
-      cy.contains('Analyzing...').should('be.visible')
+      cy.contains('Analyzing your run...').should('be.visible')
       cy.contains('Usually').should('be.visible')
     })
   })
@@ -358,7 +361,8 @@ describe('AIInsightCard — clicking generate triggers POST and shows pending st
     cy.wait('@postGenerate')
 
     cy.get(`#${IDS.ai_insight_pending}`).within(() => {
-      cy.get(`#${IDS.ai_insight_retry}`).should('be.visible').and('contain.text', 'Refresh')
+      // Pending state uses aiInsightRefresh — distinct from aiInsightRetry in error state
+      cy.get(`#${IDS.ai_insight_refresh}`).should('be.visible').and('contain.text', 'Refresh')
     })
   })
 })
@@ -394,7 +398,7 @@ describe('AIInsightCard — content state when insight is completed and valid', 
   })
 
   it('renders aiInsightContent section', () => {
-    cy.get(`#${IDS.ai_insight_content}`).should('be.visible')
+    cy.get(`#${IDS.ai_insight_content}`).scrollIntoView().should('be.visible')
   })
 
   it('renders markdown section headers from content', () => {
@@ -446,12 +450,13 @@ describe('AIInsightCard — error state when GET insight fetch fails', () => {
   it('shows aiInsightError state after a fetch failure', () => {
     cy.get(`#${IDS.ai_insight_error}`).should('exist')
     cy.get(`#${IDS.ai_insight_error}`).within(() => {
-      cy.contains('Failed to load').should('exist')
+      // Text changed in v1.2 from "Failed to load" to "Could not load analysis."
+      cy.contains('Could not load analysis').should('exist')
     })
   })
 
   it('shows a retry button in the error state', () => {
-    cy.get(`#${IDS.ai_insight_retry}`).should('be.visible')
+    cy.get(`#${IDS.ai_insight_retry}`).scrollIntoView().should('be.visible')
   })
 
   it('clicking retry re-fetches and shows empty state on null response', () => {
@@ -496,7 +501,7 @@ describe('AIInsightCard — completed but invalid insight shows empty/focus stat
   })
 
   it('shows empty state (focus buttons) when insight is completed but is_valid=false', () => {
-    cy.get(`#${IDS.ai_insight_empty}`).should('be.visible')
+    cy.get('#aiInsightInvalid_activityDetailPage').scrollIntoView().should('be.visible')
     cy.get(`[id^="${IDS.ai_insight_generate_btn}_"]`).should('have.length.gte', 1)
   })
 

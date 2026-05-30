@@ -1,7 +1,7 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-29 (Sidebar UI — sidebar-ui.cy.js 8/8 passing; issue #8 complete; Shared module added with 8 tests)
-**App Version:** 1.22
+**Last Updated:** 2026-05-30 (v1.2 milestone — 55/55 passing; 3 new spec files; issues #33, #34, #37, #42, #44, #47, #55, #56)
+**App Version:** 1.2
 
 ## Coverage Summary
 
@@ -12,7 +12,7 @@
 | Landing Page                    | 7              | 7         | 0           | 0          | 100%       | 33         |
 | Inventory - Dashboard           | 10             | 10        | 0           | 0          | 100%       | 161        |
 | Inventory - Product (API)       | 11             | 11        | 0           | 0          | 100%       | 354        |
-| Inventory - Product List UI     | 12             | 12        | 0           | 0          | 100%       | 102        |
+| Inventory - Product List UI     | 14             | 14        | 0           | 0          | 100%       | 120        |
 | Inventory - Product Detail UI   | 7              | 7         | 0           | 0          | 100%       | 35         |
 | Inventory - Product Brand       | 6              | 6         | 0           | 0          | 100%       | 114        |
 | Inventory - Product Brand UI    | 3              | 3         | 0           | 0          | 100%       | 50         |
@@ -26,9 +26,11 @@
 | Running Tracker - Manual Entry  | 7              | 7         | 0           | 0          | 100%       | 21         |
 | Running Tracker - Dashboard     | 10             | 10        | 0           | 0          | 100%       | 95         |
 | Running Tracker - Race Log      | 7              | 7         | 0           | 0          | 100%       | 72         |
-| Running Tracker - Activities    | 9              | 9         | 0           | 0          | 100%       | 152        |
+| Running Tracker - Activities    | 10             | 10        | 0           | 0          | 100%       | 162        |
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **150**        | **149**   | **1**       | **0**      | **99%**    | **2,073**  |
+| **Total**                       | **152**        | **151**   | **1**       | **0**      | **99%**    | **2,101**  |
+
+> **Note (2026-05-30 v1.2 milestone frontend fixes):** 55/55 passing (100%). 3 new spec files added: activities-page-title.cy.js (10 tests — #42 Activities title inside container, #44 pagination text-center, #55 Race Log title + empty state), product-list-star-image.cy.js (9 tests — #33 non-favorite star text-slate-300 desktop+mobile, #34 image preview dialog), product-filter-no-category.cy.js (9 tests — #37 category removed from filter dropdown, standard filters unaffected). activity-detail-ui.cy.js (27 tests) re-confirmed passing with v1.2 AI Coach card changes (#47 refresh button, #56 flat layout). Fixes applied: scrollIntoView for below-fold elements, corrected aiInsightInvalid ID, mobile card selector `[id^="mobileCard_"][id$="productListPage"]`, separator count assertion updated to 3. Total: 2,101 tests (+28).
 
 > **Note (2026-05-29 v1.22 Sidebar UI):** sidebar-ui.cy.js 8/8 passing. New `shared/` spec folder added. Covers issue #8: auth guard, collapsed tooltips for Inventory Dashboard/Running Dashboard/Activities, no-tooltip in expanded state, collapse toggle both directions. Key fixes: native `PointerEvent('pointermove')` dispatch to trigger Radix UI tooltip (CDP-based realHover doesn't fire React's onPointerMove handler in headless Electron); title-attribute wait pattern to confirm React useEffect state sync before interacting. Added ids: `sidebarCollapseBtn_sidebar`, `inventoryDashboardNav_sidebar`, `tradingDashboardNav_sidebar`, `runningDashboardNav_sidebar`. `cypress-real-events` added as devDependency. `sidebar` section added to app-constants.json test_ids.
 

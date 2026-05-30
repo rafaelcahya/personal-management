@@ -315,6 +315,7 @@
       "ai_insight_content": "aiInsightContent_activityDetailPage",
       "ai_insight_error": "aiInsightError_activityDetailPage",
       "ai_insight_retry": "aiInsightRetry_activityDetailPage",
+      "ai_insight_refresh": "aiInsightRefresh_activityDetailPage",
       "ef_trend_arrow": "efTrendArrow"
     },
     "running_dashboard": {
