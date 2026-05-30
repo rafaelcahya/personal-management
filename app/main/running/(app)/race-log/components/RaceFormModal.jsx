@@ -393,7 +393,11 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
 
         <DialogFooter className="gap-2">
           <DialogClose asChild>
-            <Button variant="outline" type="button" disabled={saving}>
+            <Button
+              className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+              type="button"
+              disabled={saving}
+            >
               Cancel
             </Button>
           </DialogClose>

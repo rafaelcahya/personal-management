@@ -685,10 +685,10 @@ export default function ActivityDetailPage() {
                         <div className="flex gap-2 justify-end">
                           <Button
                             id="notesCancelBtn_activityDetailPage"
-                            variant="ghost"
                             size="sm"
                             onClick={() => setNotesEditing(false)}
                             disabled={notesSaving}
+                            className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
                           >
                             Cancel
                           </Button>

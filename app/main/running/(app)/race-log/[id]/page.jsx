@@ -242,7 +242,12 @@ export default function RaceDetailPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel
+              disabled={deleting}
+              className="text-violet-600 hover:text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium border-none"
+            >
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               id="deleteRaceConfirmBtn_raceDetailPage"
               onClick={handleDelete}

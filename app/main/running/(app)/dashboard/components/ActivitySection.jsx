@@ -20,6 +20,9 @@ import {
   Activity,
   PersonStanding,
   Wind,
+  MapPin,
+  Gauge,
+  Clock,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
@@ -500,17 +503,27 @@ function RecentColumn({ activities, activityType, selectedDate, onSelectDate }) 
                     <div className="flex items-center gap-1.5 mb-1"></div>
                     {/* Line 3: stats */}
                     <div className="flex items-center gap-2 text-xs text-slate-500 flex-wrap">
-                      <span className="font-medium text-slate-700">
+                      <span className="flex items-center gap-1 font-medium text-slate-700">
+                        <MapPin className="size-3 text-slate-400 shrink-0" aria-hidden="true" />
                         {fmtDistance(a.distance_m)} km
                       </span>
                       <span className="text-slate-300">·</span>
-                      <span>{fmtPace(a.avg_pace_sec_per_km)} /km</span>
+                      <span className="flex items-center gap-1">
+                        <Gauge className="size-3 text-slate-400 shrink-0" aria-hidden="true" />
+                        {fmtPace(a.avg_pace_sec_per_km)} /km
+                      </span>
                       <span className="text-slate-300">·</span>
-                      <span>{fmtDuration(a.duration_sec)}</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="size-3 text-slate-400 shrink-0" aria-hidden="true" />
+                        {fmtDuration(a.duration_sec)}
+                      </span>
                       {a.avg_hr != null && (
                         <>
                           <span className="text-slate-300">·</span>
-                          <span>{a.avg_hr} bpm</span>
+                          <span className="flex items-center gap-1">
+                            <Heart className="size-3 text-slate-400 shrink-0" aria-hidden="true" />
+                            {a.avg_hr} bpm
+                          </span>
                         </>
                       )}
                       {elevation && (
