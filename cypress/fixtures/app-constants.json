@@ -103,6 +103,9 @@
     "running_strava": {
       "re_enrich": "/api/running/v1/auth/strava/re-enrich",
       "re_enrich_metrics": "/api/running/v1/auth/strava/re-enrich-metrics"
+    },
+    "running_analytics": {
+      "vo2max_stat": "/api/running/v1/analytics/vo2max-stat"
     }
   },
   "test_ids": {
