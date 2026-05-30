@@ -122,7 +122,7 @@ function HrChart({ data }) {
         </div>
       )}
       <ResponsiveContainer width="100%" height={220}>
-        <LineChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
+        <LineChart data={chartData} margin={{ top: 12, right: 8, left: -12, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis
             dataKey="date"
@@ -190,7 +190,7 @@ function SinglePaceChart({ bracket, runs }) {
 
   return (
     <ResponsiveContainer width="100%" height={250}>
-      <LineChart data={chartData} margin={{ top: 8, right: 12, left: -4, bottom: 0 }}>
+      <LineChart data={chartData} margin={{ top: 12, right: 12, left: -4, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
         <XAxis
           dataKey="date"
@@ -514,7 +514,7 @@ function EffortChart({ data }) {
         </span>
       </div>
       <ResponsiveContainer width="100%" height={220}>
-        <LineChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
+        <LineChart data={chartData} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis
             dataKey="date"
@@ -596,7 +596,7 @@ function PowerChart({ data }) {
 
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <LineChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
+      <LineChart data={chartData} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
         <XAxis
           dataKey="date"
