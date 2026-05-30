@@ -75,6 +75,14 @@ function renderMarkdown(content) {
         }
         continue
       }
+      if (line.trim() === '---') {
+        if (listItems.length > 0) {
+          bodyParts.push({ type: 'list', items: [...listItems] })
+          listItems = []
+        }
+        bodyParts.push({ type: 'hr' })
+        continue
+      }
       if (line.trim().startsWith('- ')) {
         listItems.push(line.trim().slice(2))
       } else {
@@ -91,7 +99,9 @@ function renderMarkdown(content) {
       <div key={i} className="mb-3 last:mb-0">
         {header && <p className="text-sm font-semibold text-slate-700 mb-1">{header}</p>}
         {bodyParts.map((part, j) =>
-          part.type === 'list' ? (
+          part.type === 'hr' ? (
+            <hr key={j} className="border-slate-200 my-2" />
+          ) : part.type === 'list' ? (
             <ul key={j} className="list-disc list-inside space-y-0.5 mb-1">
               {part.items.map((item, k) => (
                 <li key={k} className="text-sm text-slate-600">

@@ -267,7 +267,7 @@ function GearCard({ gear, onUpdate }) {
 
       {/* Distance + mileage bar */}
       <div className="mt-3">
-        <div className="flex items-baseline justify-between mb-2">
+        <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-baseline sm:justify-between mb-2">
           <span className="text-lg font-bold text-slate-800 tabular-nums">
             {distanceKm.toFixed(2)}
             <span className="text-xs font-normal text-slate-400 ml-1">km</span>
