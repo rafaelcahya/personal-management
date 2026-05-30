@@ -166,10 +166,9 @@ function GearEditForm({ gear, onSave, onCancel }) {
         <Button
           type="button"
           size="sm"
-          variant="ghost"
           disabled={isSubmitting}
           onClick={onCancel}
-          className="h-7 px-3 text-xs gap-1.5 text-slate-500"
+          className="h-7 px-3 text-xs gap-1.5 text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
           aria-label="Cancel editing"
         >
           <X className="size-3" aria-hidden="true" />

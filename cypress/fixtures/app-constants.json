@@ -214,7 +214,8 @@
       "product_usage_log": "usageLog_productListPage",
       "usage_log_duration_col": "durationCol_usageLogTable",
       "log_row_duration": "logRowDuration_usageLogTable",
-      "log_row_ongoing_label": "ongoingLabel_usageLogTable"
+      "log_row_ongoing_label": "ongoingLabel_usageLogTable",
+      "image_preview_dialog": "imagePreviewDialog_productListPage"
     },
     "product_detail": {
       "page": "container_productDetailPage",
