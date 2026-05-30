@@ -1,5 +1,36 @@
 # Regression Testing Report
 
+**Date:** 2026-05-30
+**App Version:** 1.2
+**Scope:** v1.2 milestone frontend fixes — issues #33, #34, #37, #42, #44, #47, #55, #56
+**Tester:** QA Agent
+
+## Summary (2026-05-30 Focused Run — v1.2 Milestone)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 55          | 55     | 0      | 0       | **100%**         |
+
+### v1.2 Milestone — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Pending | Failed | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------- | ------ | -------- |
+| 1  | running/activities/activity-detail-ui.cy.js                            | 27    | 27     | 0       | 0      | ✅ PASS  |
+| 2  | running/activities/activities-page-title.cy.js                         | 10    | 10     | 0       | 0      | ✅ PASS  |
+| 3  | inventory_management/product/product-list-star-image.cy.js             | 9     | 9      | 0       | 0      | ✅ PASS  |
+| 4  | inventory_management/product/product-filter-no-category.cy.js          | 9     | 9      | 0       | 0      | ✅ PASS  |
+| —  | **Total**                                                              | **55** | **55** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `activity-detail-ui.cy.js` (27 tests): HrZonesChart (sections A–C) + AIInsightCard states (sections D–I). AI Coach card v1.2 redesign — flat space-y-4 container (#56), refresh button in pending state (#47), error text "Could not load analysis". Fixes: scrollIntoView before visibility assertions for below-fold elements; `#aiInsightInvalid_activityDetailPage` (not aiInsightEmpty) for the invalid-insight state.
+- `activities-page-title.cy.js` (10 tests): Activities page title "🏃 Activities" + description inside white container (#42); pagination span has text-center class (#44); Race Log title "🏆 Race Log" + description inside white container when entries present (#55); Race Log title hidden in empty state.
+- `product-list-star-image.cy.js` (9 tests): Favorite star fill-yellow-400 on desktop; non-favorite star text-slate-300 (not invisible) on desktop and mobile; image thumbnail visible for products with product_image; thumbnail click opens imagePreviewDialog; products without image show no thumbnail. Mobile card selector fixed to `[id^="mobileCard_"][id$="productListPage"]` (actual IDs: mobileCard_{id}_productListPage).
+- `product-filter-no-category.cy.js` (9 tests): Category label absent; type-based items (Hair Care, Skincare) absent; 3 separators remain (Status/Inventory/Usage groups); Active/Inactive/Low Stock/Out of Stock filters present; button label shows "Active" not "type:..." value.
+
+---
+
+## Previous Run — 2026-05-29 Focused Run — Sidebar UI
+
 **Date:** 2026-05-29
 **App Version:** 1.22
 **Scope:** Sidebar nav tooltips — sidebar-ui.cy.js (issue #8)
