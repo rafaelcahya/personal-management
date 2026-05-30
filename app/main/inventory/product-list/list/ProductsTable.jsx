@@ -228,7 +228,7 @@ export default function ProductsTable({
         {products.map((product) => (
           <div
             key={product.id}
-            id="mobileCard_productListPage"
+            id={`mobileCard_${product.id}_productListPage`}
             className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
           >
             {/* Row 1: name + status + actions */}
@@ -250,7 +250,7 @@ export default function ProductsTable({
                   >
                     <img
                       src={product.product_image}
-                      alt=""
+                      alt={product.product}
                       className="size-8 rounded object-cover border border-slate-200"
                     />
                   </button>
@@ -323,7 +323,7 @@ export default function ProductsTable({
 
       {/* ── Desktop Table (sm+) ── */}
       <Table id="desktopTable_productListPage" className="hidden sm:table w-full table-auto">
-        <TableHeader className="bg-slate-100 sticky top-0 z-20">
+        <TableHeader className="bg-slate-100">
           <TableRow className="border-none uppercase text-xs">
             <TableHead
               className="py-2 text-slate-foreground rounded-l-lg w-[35%] cursor-pointer select-none"
@@ -382,7 +382,7 @@ export default function ProductsTable({
                     >
                       <img
                         src={product.product_image}
-                        alt=""
+                        alt={product.product}
                         className="size-8 rounded object-cover border border-slate-200"
                       />
                     </button>

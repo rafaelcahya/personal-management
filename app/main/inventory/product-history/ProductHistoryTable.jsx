@@ -128,7 +128,8 @@ export default function ProductHistoryTable({
                     {history.brand || '—'}
                   </p>
                   <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                    {history.product_list_id ? (
+                    {history.product_list_id &&
+                    Number.isInteger(Number(history.product_list_id)) ? (
                       <Link
                         href={`/main/inventory/product-list/${history.product_list_id}`}
                         className="font-medium text-violet-700 text-sm truncate hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1 rounded"

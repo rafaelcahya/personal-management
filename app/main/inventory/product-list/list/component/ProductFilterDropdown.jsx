@@ -78,7 +78,7 @@ export default function ProductFilterDropdown({
           size="sm"
           className="gap-2 focus-visible:ring-violet-200 focus-visible:border-violet-500"
         >
-          <Filter className="size-4" />
+          <Filter className="size-4" aria-hidden="true" />
           <span>{currentFilterLabel}</span>
         </Button>
       </DropdownMenuTrigger>
