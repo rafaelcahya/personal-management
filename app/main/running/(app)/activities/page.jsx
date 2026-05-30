@@ -246,6 +246,19 @@ function ActivitiesInner() {
       />
 
       <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden flex flex-col">
+        {/* Title */}
+        <div className="px-3 sm:px-5 pt-3 sm:pt-5">
+          <div className="space-y-2 mb-4">
+            <div>
+              <h2 className="text-xl font-bold text-slate-800">🏃 Activities</h2>
+              <p className="text-sm text-slate-600 leading-relaxed mt-1.5 max-w-2xl">
+                Browse and filter all your recorded workouts — runs, rides, and everything in
+                between.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Filter bar */}
         <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5">
           {/* Search input */}
@@ -548,7 +561,7 @@ function ActivitiesInner() {
                 <ChevronLeft className="size-4" aria-hidden="true" />
                 Prev
               </button>
-              <span className="text-xs text-slate-400" aria-live="polite">
+              <span className="text-xs text-slate-400 text-center" aria-live="polite">
                 Page {page} of {totalPages} · {total} activities
               </span>
               <button
