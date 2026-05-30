@@ -30,7 +30,7 @@ export default function Vo2maxTrendChart({ activities }) {
   const data = rolling30DayAvg(pts, 'date', 'vo2max')
 
   return (
-    <div>
+    <div className="outline-none">
       <p className="text-xs text-slate-400 mb-3">
         Last {pts.length} runs with HR data · purple line = 30-day rolling average
       </p>

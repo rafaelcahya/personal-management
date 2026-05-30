@@ -30,7 +30,7 @@ export default function EfTrendChart({ activities }) {
   const data = rolling30DayAvg(basePts, 'date', 'ef')
 
   return (
-    <div>
+    <div className="outline-none">
       <p className="text-xs text-slate-400 mb-3">
         Last {basePts.length} runs · colored dots vs 30-day average
       </p>
