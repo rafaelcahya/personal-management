@@ -181,6 +181,18 @@ export default function RaceLogPage() {
       {/* Search + filter bar + Race table */}
       {!error && (loading || entries.length > 0) && (
         <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden flex flex-col">
+          {/* Title */}
+          <div className="px-3 sm:px-5 pt-3 sm:pt-5">
+            <div className="space-y-2 mb-4">
+              <div>
+                <h2 className="text-xl font-bold text-slate-800">🏆 Race Log</h2>
+                <p className="text-sm text-slate-600 leading-relaxed mt-1.5 max-w-2xl">
+                  Every finish line you&apos;ve crossed — your full race history in one place.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Search + filter bar */}
           <div className="border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-3 flex flex-col gap-2">
             <div className="relative">
