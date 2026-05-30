@@ -15,6 +15,9 @@ import {
   Activity,
   PersonStanding,
   Wind,
+  MapPin,
+  Gauge,
+  Clock,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { fmtDistance, fmtDuration, fmtPace, fmtDate } from '../utils/format'
@@ -65,11 +68,7 @@ export default function RecentActivities({ activities }) {
       <Card className="border border-slate-200/70 shadow-sm overflow-hidden">
         {shown.length === 0 ? (
           <CardContent className="py-10 text-center">
-            <p className="text-slate-400 text-sm">
-              {activeType
-                ? `No ${getConfig(activeType).label ?? activeType} activities`
-                : 'No activities yet'}
-            </p>
+            <p className="text-slate-400 text-sm">No activities yet</p>
           </CardContent>
         ) : (
           <ul>
@@ -94,17 +93,27 @@ export default function RecentActivities({ activities }) {
                         {cfg.label ?? a.activity_type}
                       </span>
                       <div className="flex items-center gap-3 text-sm text-slate-800">
-                        <span>{fmtDistance(a.distance_m)} km</span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="size-3 text-slate-400" aria-hidden="true" />
+                          {fmtDistance(a.distance_m)} km
+                        </span>
                         <span className="text-slate-300">·</span>
-                        <span>{fmtPace(a.avg_pace_sec_per_km)} /km</span>
+                        <span className="flex items-center gap-1">
+                          <Gauge className="size-3 text-slate-400" aria-hidden="true" />
+                          {fmtPace(a.avg_pace_sec_per_km)} /km
+                        </span>
                         {a.avg_hr != null && (
                           <>
                             <span className="text-slate-300">·</span>
-                            <span>{a.avg_hr} bpm</span>
+                            <span className="flex items-center gap-1">
+                              <Heart className="size-3 text-slate-400" aria-hidden="true" />
+                              {a.avg_hr} bpm
+                            </span>
                           </>
                         )}
                         <span className="text-slate-300">·</span>
-                        <span className="text-slate-500 text-xs">
+                        <span className="flex items-center gap-1">
+                          <Clock className="size-3 text-slate-400" aria-hidden="true" />
                           {fmtDuration(a.duration_sec)}
                         </span>
                       </div>

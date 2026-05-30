@@ -155,7 +155,7 @@ export default function RunningDashboardPage() {
   }
 
   return (
-    <div id="dashboardPage">
+    <div id="dashboardPage" className="flex flex-col gap-5">
       <PageHeader
         title="Dashboard"
         description="Overview of your training, load, and performance trends."
