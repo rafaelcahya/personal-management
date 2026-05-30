@@ -14,6 +14,7 @@ import { Filter, Check, Loader2 } from 'lucide-react'
 const LOW_STOCK_THRESHOLD = 5
 
 const FILTER_OPTIONS = [
+  { value: null, label: 'All Products', icon: '📦', group: 'general' },
   { value: 'active', label: 'Active Products', icon: '✅', group: 'status' },
   {
     value: 'inactive',
@@ -45,11 +46,8 @@ export default function ProductFilterDropdown({
   products = [],
 }) {
   const currentFilter = FILTER_OPTIONS.find((opt) => opt.value === filter)
-  const currentFilterLabel = filter?.startsWith('type:')
-    ? filter.slice(5)
-    : currentFilter?.label || 'All Products'
+  const currentFilterLabel = currentFilter?.label || 'All Products'
 
-  const types = [...new Set(products.map((p) => p.type).filter(Boolean))].sort()
   const lowStock = products.filter((p) => p.quantity > 0 && p.quantity < LOW_STOCK_THRESHOLD).length
   const outOfStock = products.filter((p) => p.quantity === 0).length
   const neverUsed = products.filter((p) => !p.usage_date).length
@@ -99,8 +97,21 @@ export default function ProductFilterDropdown({
             </Button>
           )}
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        {/* General */}
+        <DropdownMenuItem
+          onClick={() => onFilterChange(null)}
+          className="flex items-center justify-between cursor-pointer hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
+        >
+          <span className="flex items-center gap-2">
+            📦 <span>All Products</span>
+          </span>
+          <span className="flex items-center gap-2 text-muted-foreground text-xs">
+            {getFilterCount(null)}
+            {filter === null && <Check className="size-4 text-violet-500" />}
+          </span>
+        </DropdownMenuItem>
 
+        <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-xs text-muted-foreground">Status</DropdownMenuLabel>
 
         {/* Status Group */}
@@ -159,34 +170,6 @@ export default function ProductFilterDropdown({
             </span>
           </DropdownMenuItem>
         ))}
-
-        {/* Category Group */}
-        {types.length > 0 && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Category
-            </DropdownMenuLabel>
-            {types.map((type) => {
-              const typeFilter = `type:${type}`
-              return (
-                <DropdownMenuItem
-                  key={typeFilter}
-                  onClick={() => onFilterChange(typeFilter)}
-                  className="flex items-center justify-between cursor-pointer hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
-                >
-                  <span className="flex items-center gap-2">
-                    🏷️ <span>{type}</span>
-                  </span>
-                  <span className="flex items-center gap-2 text-muted-foreground text-xs">
-                    {products.filter((p) => p.type === type).length}
-                    {filter === typeFilter && <Check className="size-4 text-violet-500" />}
-                  </span>
-                </DropdownMenuItem>
-              )
-            })}
-          </>
-        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
