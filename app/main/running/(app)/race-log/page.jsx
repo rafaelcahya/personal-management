@@ -307,7 +307,7 @@ export default function RaceLogPage() {
                       return (
                         <TableRow
                           key={entry.id}
-                          id="raceLogCard"
+                          id={`raceLogCard_${entry.id}`}
                           className="cursor-pointer hover:bg-slate-100 transition-colors"
                           onClick={() => router.push(`/main/running/race-log/${entry.id}`)}
                         >

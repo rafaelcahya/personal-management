@@ -68,11 +68,7 @@ export default function RecentActivities({ activities }) {
       <Card className="border border-slate-200/70 shadow-sm overflow-hidden">
         {shown.length === 0 ? (
           <CardContent className="py-10 text-center">
-            <p className="text-slate-400 text-sm">
-              {activeType
-                ? `No ${getConfig(activeType).label ?? activeType} activities`
-                : 'No activities yet'}
-            </p>
+            <p className="text-slate-400 text-sm">No activities yet</p>
           </CardContent>
         ) : (
           <ul>

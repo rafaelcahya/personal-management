@@ -294,7 +294,7 @@ export default function AIInsightCard({ activityId }) {
           </div>
           <p className="text-xs text-slate-400">Usually &lt; 30 seconds</p>
           <Button
-            id="aiInsightRetry_activityDetailPage"
+            id="aiInsightRefresh_activityDetailPage"
             variant="outline"
             size="sm"
             onClick={handleRefresh}
@@ -346,7 +346,7 @@ export default function AIInsightCard({ activityId }) {
 
       {/* Completed but invalid */}
       {!loadError && insight && insight.status === 'completed' && !isValidInsight && (
-        <div id="aiInsightEmpty_activityDetailPage" className="space-y-3">
+        <div id="aiInsightInvalid_activityDetailPage" className="space-y-3">
           <p className="text-sm text-slate-400">Choose analysis focus:</p>
           <FocusButtons onSelect={handleGenerate} generating={generating} variant="primary" />
         </div>
