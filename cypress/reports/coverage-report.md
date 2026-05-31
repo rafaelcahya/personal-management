@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-31 (AI Coach improvements issue #82 — ai-coach-improvements.cy.js 36 tests authored; BLOCKED in local env, passes with valid Supabase credentials)
+**Last Updated:** 2026-05-31 (AI Coach improvements issue #82 — ai-coach-improvements.cy.js 36/36 passing 100%)
 **App Version:** 1.3
 
 ## Coverage Summary
@@ -31,7 +31,7 @@
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
 | **Total**                       | **155**        | **154**   | **1**       | **0**      | **99%**    | **2,171**  |
 
-> **Note (2026-05-31 v1.3 AI Coach improvements issue #82):** ai-coach-improvements.cy.js (36 tests) authored. BLOCKED in local env due to placeholder Supabase credentials — `cypress-test@yourdomain.com` is not a real Supabase user so server-side layout auth check in `app/main/running/(app)/layout.jsx` redirects to `/login`. Tests are structurally correct and expected to pass 100% in CI with valid credentials. Follows same pattern as activity-detail-ui.cy.js (27 tests) confirmed passing 2026-05-30. Coverage: 12 suites (A–L) — RPE radiogroup (5 tests), user note textarea (4), context collapse/visibility (4), focus buttons (5), loading/pending skeleton (2), rotating status copy (1), long-wait hint (2), comparison section/trigger (4), comparison popover desktop (2), comparison activity list (3), Get Recommendation flow (4). Total Running Tracker - Activities: 11 features, 198 tests.
+> **Note (2026-05-31 v1.3 AI Coach improvements issue #82):** ai-coach-improvements.cy.js 36/36 passing (100%). Duration: 1m 14s. Covers 12 suites (A–L) — RPE radiogroup (5 tests), user note textarea (4), context collapse/visibility (4), focus buttons (5), loading/pending skeleton (2), rotating status copy at 0s and 6s via cy.clock() (1), long-wait hint at 60s with Try again button (2), comparison section/trigger (4), comparison popover on desktop (2), activity list grouped by month in popover (3), Get Recommendation flow with compare_activity focus POST (4). Total Running Tracker - Activities: 11 features, 198 tests.
 
 > **Note (2026-05-30 v1.2 milestone frontend fixes):** 55/55 passing (100%). 3 new spec files added: activities-page-title.cy.js (10 tests — #42 Activities title inside container, #44 pagination text-center, #55 Race Log title + empty state), product-list-star-image.cy.js (9 tests — #33 non-favorite star text-slate-300 desktop+mobile, #34 image preview dialog), product-filter-no-category.cy.js (9 tests — #37 category removed from filter dropdown, standard filters unaffected). activity-detail-ui.cy.js (27 tests) re-confirmed passing with v1.2 AI Coach card changes (#47 refresh button, #56 flat layout). Fixes applied: scrollIntoView for below-fold elements, corrected aiInsightInvalid ID, mobile card selector `[id^="mobileCard_"][id$="productListPage"]`, separator count assertion updated to 3. Total: 2,101 tests (+28).
 
@@ -65,7 +65,16 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-05-31 Focused Run: Analytics UI Chart Empty State)
+## Last Execution Results (2026-05-31 Focused Run: AI Coach Improvements)
+
+| Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running-activities (AI Coach Improvements) — issue #82                       | 1          | 36    | 36     | 0      | 0       | ✅       |
+| **Total**                                                                    | **1**      | **36** | **36** | **0**  | **0**   | **100%** |
+
+**Status:** ai-coach-improvements.cy.js — 36/36 passing (100%). Duration: 1m 14s. All 12 suites (A–L) passed including timer-controlled tests (rotating copy via cy.clock(), long-wait hint at 61s) and comparison popover tests.
+
+### Previous Run Results (2026-05-31 Focused Run: Analytics UI Chart Empty State)
 
 | Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |

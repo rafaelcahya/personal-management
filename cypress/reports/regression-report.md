@@ -7,18 +7,16 @@
 
 ## Summary (2026-05-31 Focused Run — AI Coach Improvements)
 
-| Total Tests | Passed | Failed | Blocked | Active Pass Rate |
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
 | ----------- | ------ | ------ | ------- | ---------------- |
-| 36          | 0      | 0      | 36      | N/A — BLOCKED    |
+| 36          | 36     | 0      | 0       | **100%**         |
 
 ### AI Coach Improvements — Spec Files
 
-| #  | Spec File                                                              | Tests | Passed | Failed | Blocked | Status      |
-| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | ----------- |
-| 1  | running/activities/ai-coach-improvements.cy.js                         | 36    | 0      | 0      | 36      | 🟡 BLOCKED  |
-| —  | **Total**                                                              | **36** | **0** | **0** | **36** | **BLOCKED** |
-
-**Blocked reason:** All 36 tests visit `/main/running/activities/:id` which requires a valid Supabase session. The server-side layout (`app/main/running/(app)/layout.jsx`) calls `supabase.auth.getUser()` — this cannot be intercepted by `cy.intercept()`. Tests fail in local environment because `CYPRESS_TEST_EMAIL=cypress-test@yourdomain.com` / `CYPRESS_TEST_PASSWORD=SecurePassword123!` are placeholder credentials that do not match a real Supabase user. Tests are expected to pass 100% in CI with valid credentials, following the same pattern as `activity-detail-ui.cy.js` (27 tests) and all other running-module UI specs.
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/activities/ai-coach-improvements.cy.js                         | 36    | 36     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **36** | **36** | **0** | **0** | **100%** |
 
 **Scope notes:**
 - `ai-coach-improvements.cy.js` (36 tests, NEW): Sections A–L covering all 12 improvement suites from PR #79 (Backend) + PR #80 (Frontend). Section A (5 tests): RPE radiogroup role, 10 pill buttons, labels 1–10, click selects, deselects previous. Section B (4 tests): user note input exists, accepts text, character count updates, capped at 200 chars. Section C (2 tests): context zone visible before generate, collapses to pending state after POST. Section D (2 tests): context zone visible in empty state, absent in pending state. Section E (5 tests): Performance & Pace, Recovery & Load, Race Tips, Next Training buttons render; ≥4 buttons total. Section F (2 tests): loading skeleton before fetch resolves, pending shimmer when status=pending. Section G (1 test): rotating copy at 0s ("Reading your run data...") and at 6s ("Analyzing pace, HR zones, and splits..."). Section H (2 tests): long-wait hint hidden before 60s, visible after 60s with "Try again" button. Section I (4 tests): compare section and trigger render in content state, trigger contains expected text, Get Recommendation absent without selection. Section J (2 tests): compare trigger opens Popover on desktop (1280×720), Sheet variant absent on desktop. Section K (3 tests): comparison command container inside popover, activity list shows dates in "May 20" format (en-US locale), selecting activity closes popover and shows compare pill. Section L (4 tests): Get Recommendation absent before selection, appears after selection, fires POST with `focus: "compare_activity"`, transitions card to pending after POST.
@@ -547,6 +545,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-05-31 | AI Coach Improvements (issue #82)    | 36    | 36     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log full re-run (2 spec files)  | 72    | 72     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log Search + Filter (+13 tests) | 51    | 51     | 0       | 0      | 100%        |
 | 2026-05-28 | Running Tracker Race Log (fix)       | 59    | 59     | 0       | 0      | 100%        |

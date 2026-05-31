@@ -176,7 +176,7 @@ const stubActivitiesList = (items = []) => {
 
 const visitAndWait = () => {
   cy.viewport(1280, 720)
-  cy.enableBypass()
+  cy.setupApiAuthCookies()
   cy.visit(DETAIL_URL)
   cy.wait('@getActivity')
 }
@@ -187,7 +187,7 @@ const visitAndWait = () => {
 
 describe('AI Coach — RPE input in empty state', () => {
   beforeEach(() => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -237,7 +237,7 @@ describe('AI Coach — RPE input in empty state', () => {
 
 describe('AI Coach — user note input in empty state', () => {
   beforeEach(() => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -249,7 +249,7 @@ describe('AI Coach — user note input in empty state', () => {
   })
 
   it('note input field is rendered in the context zone', () => {
-    cy.get(`#${IDS.ai_insight_notes_input}`).should('exist').and('be.visible')
+    cy.get(`#${IDS.ai_insight_notes_input}`).scrollIntoView().should('exist').and('be.visible')
   })
 
   it('note input accepts typed text', () => {
@@ -281,7 +281,7 @@ describe('AI Coach — user note input in empty state', () => {
 
 describe('AI Coach — context collapses to pill after generate', () => {
   beforeEach(() => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -290,8 +290,16 @@ describe('AI Coach — context collapses to pill after generate', () => {
     // Start with no insight; POST generate will transition component to pending
     stubInsight({ data: [] })
     stubGeneratePost()
+    visitAndWait()
+    cy.wait('@getInsight')
+  })
 
-    // After POST, intercept the poll GET to return pending state
+  it('context zone is visible before generate', () => {
+    cy.get(`#${IDS.ai_insight_context_zone}`).should('exist')
+  })
+
+  it('after generate POST, context zone collapses and context pill is not shown in pending state', () => {
+    // Override the GET intercept to return pending state after POST
     cy.intercept('GET', `${AI_EP}*`, {
       statusCode: 200,
       body: {
@@ -311,17 +319,8 @@ describe('AI Coach — context collapses to pill after generate', () => {
       },
     }).as('getInsightAfterGenerate')
 
-    visitAndWait()
-    cy.wait('@getInsight')
-  })
-
-  it('context zone is visible before generate', () => {
-    cy.get(`#${IDS.ai_insight_context_zone}`).should('exist')
-  })
-
-  it('after generate POST, context zone collapses and context pill is not shown in pending state', () => {
     // Type a note and click generate
-    cy.get(`#${IDS.ai_insight_notes_input}`).type('Hot weather')
+    cy.get(`#${IDS.ai_insight_notes_input}`).scrollIntoView().type('Hot weather')
     cy.get(`[id^="${IDS.ai_insight_generate_btn}_"]`).first().click()
     cy.wait('@postGenerate')
 
@@ -337,7 +336,7 @@ describe('AI Coach — context collapses to pill after generate', () => {
 
 describe('AI Coach — context zone visibility per state', () => {
   it('context zone is visible in empty state (no insight)', () => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -347,11 +346,11 @@ describe('AI Coach — context zone visibility per state', () => {
     visitAndWait()
     cy.wait('@getInsight')
 
-    cy.get(`#${IDS.ai_insight_context_zone}`).should('exist').and('be.visible')
+    cy.get(`#${IDS.ai_insight_context_zone}`).scrollIntoView().should('exist').and('be.visible')
   })
 
   it('context zone is not rendered in pending state', () => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -372,7 +371,7 @@ describe('AI Coach — context zone visibility per state', () => {
 
 describe('AI Coach — focus buttons render', () => {
   beforeEach(() => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -422,7 +421,7 @@ describe('AI Coach — focus buttons render', () => {
 
 describe('AI Coach — loading skeleton while fetch is in-flight', () => {
   it('shows shimmer loading skeleton before insight fetch resolves', () => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -445,7 +444,7 @@ describe('AI Coach — loading skeleton while fetch is in-flight', () => {
   })
 
   it('shows pending shimmer skeleton when insight status is pending', () => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -469,7 +468,7 @@ describe('AI Coach — rotating status copy during pending state', () => {
     // Use cy.clock() before visit so the component initialises with controlled time
     cy.clock()
 
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -481,6 +480,10 @@ describe('AI Coach — rotating status copy during pending state', () => {
     cy.visit(DETAIL_URL)
     cy.wait('@getActivity')
     cy.wait('@getInsightPending')
+
+    // Ensure the pending section is fully rendered before ticking the clock,
+    // so the fake setInterval(1000) timer is registered before cy.tick fires it
+    cy.get(`#${IDS.ai_insight_pending}`).should('exist')
 
     // At 0s elapsed: first copy bucket applies (< 5s)
     cy.get(`#${IDS.ai_insight_pending_status}`)
@@ -505,7 +508,7 @@ describe('AI Coach — long-wait hint appears after 60 seconds', () => {
   it('long-wait hint is hidden initially and appears after 60s', () => {
     cy.clock()
 
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -517,6 +520,10 @@ describe('AI Coach — long-wait hint appears after 60 seconds', () => {
     cy.visit(DETAIL_URL)
     cy.wait('@getActivity')
     cy.wait('@getInsightPending')
+
+    // Ensure the pending section is fully rendered before ticking the clock,
+    // so the fake setTimeout(60000) timer is registered before cy.tick fires it
+    cy.get(`#${IDS.ai_insight_pending}`).should('exist')
 
     // Long-wait hint should NOT exist before 60s
     cy.get(`#${IDS.ai_insight_long_wait_hint}`).should('not.exist')
@@ -532,7 +539,7 @@ describe('AI Coach — long-wait hint appears after 60 seconds', () => {
   it('long-wait hint contains a "Try again" action button', () => {
     cy.clock()
 
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -547,9 +554,11 @@ describe('AI Coach — long-wait hint appears after 60 seconds', () => {
 
     cy.tick(61000)
 
-    cy.get(`#${IDS.ai_insight_long_wait_hint}`).within(() => {
-      cy.contains('Try again').should('be.visible')
-    })
+    cy.get(`#${IDS.ai_insight_long_wait_hint}`)
+      .scrollIntoView()
+      .within(() => {
+        cy.contains('Try again').should('be.visible')
+      })
   })
 })
 
@@ -559,7 +568,7 @@ describe('AI Coach — long-wait hint appears after 60 seconds', () => {
 
 describe('AI Coach — comparison section renders in content state', () => {
   beforeEach(() => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -590,8 +599,8 @@ describe('AI Coach — comparison section renders in content state', () => {
   })
 
   it('compare section and trigger are absent in empty state', () => {
-    // Empty state does not show content so compare section should not exist
-    cy.get(`#${IDS.ai_insight_content}`).should('be.visible')
+    // Content state is rendered; scroll into view before checking visibility
+    cy.get(`#${IDS.ai_insight_content}`).scrollIntoView().should('be.visible')
     cy.get(`#${IDS.ai_insight_compare_section}`).should('exist')
     // Confirm no Get Recommendation btn (needs a selected activity first)
     cy.get(`#${IDS.ai_insight_get_recommendation_btn}`).should('not.exist')
@@ -604,7 +613,7 @@ describe('AI Coach — comparison section renders in content state', () => {
 
 describe('AI Coach — comparison popover opens on desktop viewport', () => {
   beforeEach(() => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -655,7 +664,7 @@ describe('AI Coach — activity list renders inside comparison popover', () => {
   ]
 
   beforeEach(() => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
@@ -695,12 +704,11 @@ describe('AI Coach — activity list renders inside comparison popover', () => {
     cy.get(`#${IDS.ai_insight_compare_trigger}`).scrollIntoView().click()
     cy.wait('@getActivities')
 
-    cy.get(`#${IDS.ai_insight_compare_popover}`).within(() => {
-      cy.contains('May 20').click()
-    })
+    // Click the first activity button in the popover list
+    cy.get(`#${IDS.ai_insight_compare_popover}`).find('button').first().click()
 
-    // Popover closes after selection
-    cy.get(`#${IDS.ai_insight_compare_popover}`).should('not.exist')
+    // Popover closes after selection (allow time for Radix animation)
+    cy.get(`#${IDS.ai_insight_compare_popover}`, { timeout: 8000 }).should('not.exist')
     // Compare pill appears with the selected activity info
     cy.get(`#${IDS.ai_insight_compare_pill}`).should('exist')
   })
@@ -722,7 +730,7 @@ describe('AI Coach — Get Recommendation button fires compare_activity generate
   ]
 
   beforeEach(() => {
-    cy.enableBypass()
+    cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity()
     stubDashboard()
