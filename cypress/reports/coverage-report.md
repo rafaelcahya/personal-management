@@ -1,7 +1,7 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-30 (v1.2 milestone — 55/55 passing; 3 new spec files; issues #33, #34, #37, #42, #44, #47, #55, #56)
-**App Version:** 1.2
+**Last Updated:** 2026-05-31 (chart empty state copy update #63 — analytics-ui 9/9 passing; Running Tracker Analytics module added)
+**App Version:** 1.3
 
 ## Coverage Summary
 
@@ -27,8 +27,9 @@
 | Running Tracker - Dashboard     | 10             | 10        | 0           | 0          | 100%       | 95         |
 | Running Tracker - Race Log      | 7              | 7         | 0           | 0          | 100%       | 72         |
 | Running Tracker - Activities    | 10             | 10        | 0           | 0          | 100%       | 162        |
+| Running Tracker - Analytics     | 2              | 2         | 0           | 0          | 100%       | 34         |
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **152**        | **151**   | **1**       | **0**      | **99%**    | **2,101**  |
+| **Total**                       | **154**        | **153**   | **1**       | **0**      | **99%**    | **2,135**  |
 
 > **Note (2026-05-30 v1.2 milestone frontend fixes):** 55/55 passing (100%). 3 new spec files added: activities-page-title.cy.js (10 tests — #42 Activities title inside container, #44 pagination text-center, #55 Race Log title + empty state), product-list-star-image.cy.js (9 tests — #33 non-favorite star text-slate-300 desktop+mobile, #34 image preview dialog), product-filter-no-category.cy.js (9 tests — #37 category removed from filter dropdown, standard filters unaffected). activity-detail-ui.cy.js (27 tests) re-confirmed passing with v1.2 AI Coach card changes (#47 refresh button, #56 flat layout). Fixes applied: scrollIntoView for below-fold elements, corrected aiInsightInvalid ID, mobile card selector `[id^="mobileCard_"][id$="productListPage"]`, separator count assertion updated to 3. Total: 2,101 tests (+28).
 
@@ -62,7 +63,16 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-05-29 Focused Run: Sidebar UI)
+## Last Execution Results (2026-05-31 Focused Run: Analytics UI Chart Empty State)
+
+| Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running-analytics (Analytics UI) — empty state copy updated for fix #63      | 1          | 9     | 9      | 0      | 0       | ✅       |
+| **Total**                                                                    | **1**      | **9** | **9**  | **0**  | **0**   | **100%** |
+
+**Status:** analytics-ui.cy.js — 9/9 passing. Updated 4 assertions to new empty state copy (`Not enough VO₂max data yet`, `Not enough Efficiency Factor data yet`) and added 2 new details assertions (`Needs 3+ runs with a VO₂max estimate`, `Needs 3+ runs with an Efficiency Factor`).
+
+### Previous Run Results (2026-05-29 Focused Run: Sidebar UI)
 
 | Group                                                          | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | -------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
@@ -274,8 +284,10 @@
 | 86  | cypress/e2e/running/activities/hr-zones-api.cy.js                    | Running Tracker HR Zones API         | 6        | GET /activities/:id zones field — null vs populated, zone array shape, min/max/time fields |
 | 87  | cypress/e2e/running/activities/stream-charts-api.cy.js               | Running Tracker Stream Charts API    | 7        | GET /activities/:id/streams — 200 + shape (meta + data), 400 invalid resolution, 401, 404 non-existent |
 | 88  | cypress/e2e/running/activities/stream-charts-ui.cy.js                | Running Tracker StreamCharts UI      | 14       | Loading skeleton, happy path (pace/HR/elevation charts), partial data (no cadence), empty state, error state, retry → success, accessibility sr-only |
+| 89  | cypress/e2e/running/analytics/vo2max-stat.cy.js                      | Running Tracker VO2max Stat          | 25       | GET /analytics/vo2max-stat — auth guard, response shape, null state; UI: auth guard, loading skeleton, null state, happy path value, trend arrow, trend label, error + retry |
+| 90  | cypress/e2e/running/analytics/analytics-ui.cy.js                     | Running Tracker Analytics UI         | 9        | Auth guard, VO2max trend section (empty state copy + details, chart renders), EF trend section (empty state copy + details, chart renders) — updated for fix #63 |
 
-**Total Automated Test Cases: 2,044** (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
+**Total Automated Test Cases: 2,078** (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
 
 ## Manual Test Cases (not yet automated)
 
