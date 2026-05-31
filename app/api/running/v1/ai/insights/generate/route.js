@@ -22,6 +22,18 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
     }
 
+    const VALID_FOCUS = [
+      'general',
+      'performance',
+      'recovery',
+      'next_race',
+      'next_training',
+      'detail_training',
+      'zone_analysis',
+      'compare_baseline',
+      'compare_activity',
+    ]
+
     const {
       activity_id,
       focus = 'general',
@@ -31,6 +43,17 @@ export async function POST(request) {
     } = body
     if (!activity_id) {
       return NextResponse.json({ error: 'activity_id required' }, { status: 422 })
+    }
+
+    if (!VALID_FOCUS.includes(focus)) {
+      return NextResponse.json({ error: 'Invalid focus value' }, { status: 422 })
+    }
+
+    if (focus === 'compare_activity' && !compare_activity_id) {
+      return NextResponse.json(
+        { error: 'compare_activity_id required for compare_activity focus' },
+        { status: 422 }
+      )
     }
 
     if (
