@@ -24,7 +24,12 @@ export default function EfTrendChart({ activities }) {
     }))
 
   if (basePts.length < 3) {
-    return <EmptyState message="Efficiency Factor requires HR and pace data" />
+    return (
+      <EmptyState
+        message="Not enough Efficiency Factor data yet"
+        details="Needs 3+ runs with an Efficiency Factor — record with HR for 20+ min to generate one"
+      />
+    )
   }
 
   const data = rolling30DayAvg(basePts, 'date', 'ef')
