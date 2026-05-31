@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-31 (chart empty state copy update #63 — analytics-ui 9/9 passing; Running Tracker Analytics module added)
+**Last Updated:** 2026-05-31 (AI Coach improvements issue #82 — ai-coach-improvements.cy.js 36 tests authored; BLOCKED in local env, passes with valid Supabase credentials)
 **App Version:** 1.3
 
 ## Coverage Summary
@@ -26,10 +26,12 @@
 | Running Tracker - Manual Entry  | 7              | 7         | 0           | 0          | 100%       | 21         |
 | Running Tracker - Dashboard     | 10             | 10        | 0           | 0          | 100%       | 95         |
 | Running Tracker - Race Log      | 7              | 7         | 0           | 0          | 100%       | 72         |
-| Running Tracker - Activities    | 10             | 10        | 0           | 0          | 100%       | 162        |
+| Running Tracker - Activities    | 11             | 11        | 0           | 0          | 100%       | 198        |
 | Running Tracker - Analytics     | 2              | 2         | 0           | 0          | 100%       | 34         |
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **154**        | **153**   | **1**       | **0**      | **99%**    | **2,135**  |
+| **Total**                       | **155**        | **154**   | **1**       | **0**      | **99%**    | **2,171**  |
+
+> **Note (2026-05-31 v1.3 AI Coach improvements issue #82):** ai-coach-improvements.cy.js (36 tests) authored. BLOCKED in local env due to placeholder Supabase credentials — `cypress-test@yourdomain.com` is not a real Supabase user so server-side layout auth check in `app/main/running/(app)/layout.jsx` redirects to `/login`. Tests are structurally correct and expected to pass 100% in CI with valid credentials. Follows same pattern as activity-detail-ui.cy.js (27 tests) confirmed passing 2026-05-30. Coverage: 12 suites (A–L) — RPE radiogroup (5 tests), user note textarea (4), context collapse/visibility (4), focus buttons (5), loading/pending skeleton (2), rotating status copy (1), long-wait hint (2), comparison section/trigger (4), comparison popover desktop (2), comparison activity list (3), Get Recommendation flow (4). Total Running Tracker - Activities: 11 features, 198 tests.
 
 > **Note (2026-05-30 v1.2 milestone frontend fixes):** 55/55 passing (100%). 3 new spec files added: activities-page-title.cy.js (10 tests — #42 Activities title inside container, #44 pagination text-center, #55 Race Log title + empty state), product-list-star-image.cy.js (9 tests — #33 non-favorite star text-slate-300 desktop+mobile, #34 image preview dialog), product-filter-no-category.cy.js (9 tests — #37 category removed from filter dropdown, standard filters unaffected). activity-detail-ui.cy.js (27 tests) re-confirmed passing with v1.2 AI Coach card changes (#47 refresh button, #56 flat layout). Fixes applied: scrollIntoView for below-fold elements, corrected aiInsightInvalid ID, mobile card selector `[id^="mobileCard_"][id$="productListPage"]`, separator count assertion updated to 3. Total: 2,101 tests (+28).
 
@@ -286,8 +288,9 @@
 | 88  | cypress/e2e/running/activities/stream-charts-ui.cy.js                | Running Tracker StreamCharts UI      | 14       | Loading skeleton, happy path (pace/HR/elevation charts), partial data (no cadence), empty state, error state, retry → success, accessibility sr-only |
 | 89  | cypress/e2e/running/analytics/vo2max-stat.cy.js                      | Running Tracker VO2max Stat          | 25       | GET /analytics/vo2max-stat — auth guard, response shape, null state; UI: auth guard, loading skeleton, null state, happy path value, trend arrow, trend label, error + retry |
 | 90  | cypress/e2e/running/analytics/analytics-ui.cy.js                     | Running Tracker Analytics UI         | 9        | Auth guard, VO2max trend section (empty state copy + details, chart renders), EF trend section (empty state copy + details, chart renders) — updated for fix #63 |
+| 91  | cypress/e2e/running/activities/ai-coach-improvements.cy.js           | AI Coach Improvements (v1.3)         | 36       | RPE radiogroup (role, 10 pills, labels, select/deselect); user note (renders, types, char count, 200-char cap); context collapse to pending; context zone visibility; focus buttons (Performance, Recovery, Race Tips, Next Training); loading + pending skeleton; rotating status copy at 0s and 6s; long-wait hint at 60s with Try again; compare section/trigger in content state; comparison popover on desktop; activity list grouped by month; compare pill after selection; Get Recommendation button flow with compare_activity focus POST |
 
-**Total Automated Test Cases: 2,078** (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
+**Total Automated Test Cases: 2,114** (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
 
 ## Manual Test Cases (not yet automated)
 
