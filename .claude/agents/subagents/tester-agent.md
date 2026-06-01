@@ -108,10 +108,10 @@ Save updates to `cypress/reports/coverage-report.md`. Always read the existing f
 
 Every test file must be either **API-only** or **UI-only** — never mixed in the same file.
 
-| Type | Suffix | Rule |
-| ---- | ------ | ---- |
+| Type     | Suffix                | Rule                                                                                                            |
+| -------- | --------------------- | --------------------------------------------------------------------------------------------------------------- |
 | API-only | `{feature}-api.cy.js` | No `cy.visit`, no DOM assertions. Uses `cy.request`, custom commands (e.g. `cy.AddProduct`), or `cy.task` only. |
-| UI-only | `{feature}-ui.cy.js` | Uses `cy.visit` and DOM assertions. API commands in `before()`/`beforeEach()` for data seeding are fine. |
+| UI-only  | `{feature}-ui.cy.js`  | Uses `cy.visit` and DOM assertions. API commands in `before()`/`beforeEach()` for data seeding are fine.        |
 
 **When to split:** If an existing file has distinct API describe blocks AND UI describe blocks, split it into two files — one `-api.cy.js` and one `-ui.cy.js`. Delete the original with `git rm -f`.
 
@@ -229,7 +229,6 @@ This outputs a compact markdown summary directly into the Claude conversation.
    - `test-status-report.md` — update Last Tested date for all tested groups, recalculate Staleness Alert
 5. Check memory for any new bugs not previously recorded — propose memory update before writing
 
-
 ## Requirements Reference
 
 Read only the PRD file relevant to the module under test:
@@ -262,7 +261,7 @@ Do NOT write, edit, or create any file until the user replies with approval. If 
 
 ## GitHub Issue & Branch Workflow
 
-Tester starts work after Frontend and Backend branches are merged into `release/vX.Y`.
+Tester starts work after Frontend and Backend branches are merged into the feature branch (or `release/vX.Y` if no feature branch).
 
 ### 1. GitHub Issue
 
@@ -276,30 +275,30 @@ Assign: Module, Priority, Release, Role = Tester.
 
 **Issue title format:**
 
-| Type | Format | Example |
-|---|---|---|
-| New test suite | `[Tester] {Module}: {feature description}` | `[Tester] Inventory: product list Cypress tests` |
-| Fix failing tests | `[Tester] Fix: {what broke}` | `[Tester] Fix: logout test missing element id` |
-| Cleanup / refactor | `[Tester] Cleanup: {what changed}` | `[Tester] Cleanup: split mixed api/ui test files` |
+| Type               | Format                                     | Example                                           |
+| ------------------ | ------------------------------------------ | ------------------------------------------------- |
+| New test suite     | `[Tester] {Module}: {feature description}` | `[Tester] Inventory: product list Cypress tests`  |
+| Fix failing tests  | `[Tester] Fix: {what broke}`               | `[Tester] Fix: logout test missing element id`    |
+| Cleanup / refactor | `[Tester] Cleanup: {what changed}`         | `[Tester] Cleanup: split mixed api/ui test files` |
 
 ### 2. Branch
 
-Create a branch from `release/vX.Y`:
+If a `feature/issue-{n}-{desc}` branch exists, create your branch from there. Otherwise branch from `release/vX.Y`.
 
 ```
 test/issue-{n}-{short-description}
 ```
 
-Example: `test/issue-19-analytics-cypress`
+Example: `test/issue-97-strava-cypress`
 
 ### 3. After 100% Pass
 
 1. Push branch to remote
-2. Create PR targeting `release/vX.Y`
+2. Create PR targeting `feature/issue-{n}-{desc}` (if feature branch exists) or `release/vX.Y` (if not)
 3. Include `Closes #n` in the PR body
 4. Update all 3 reports: `regression-report.md`, `coverage-report.md`, `test-status-report.md`
 5. **Notify the user** that tests are 100% passing — this is the signal for the user to manually set Frontend and Backend issue statuses to DONE
-6. Merge branch into `release/vX.Y`
+6. Merge branch into the feature branch (or `release/vX.Y`)
 
 ## Kickoff Protocol
 
@@ -312,7 +311,7 @@ Before starting any task, execute these steps in order:
 5. After planning, grep the fixture files for the module you need — do not load both files in full:
    - Grep `cypress/fixtures/api-endpoints.js` for the relevant export (e.g. `INVENTORY_ENDPOINTS`)
    - Grep `cypress/fixtures/app-constants.json` for the relevant module key (e.g. `"product"`, `"trading"`)
-   Add any missing entries before writing tests.
+     Add any missing entries before writing tests.
 6. Only check `cypress/plugin/tasks/` if your test plan includes `cy.task()` calls (DB verification). For UI-only tests, skip this step entirely. When needed, read only the task file for your module (e.g. `inventoryTasks.js`), not the full directory.
 7. Select the right cypress skill for the task:
    - **Writing or fixing tests** → invoke `cypress-author`

@@ -188,11 +188,11 @@ Assign: Module, Priority, Release (milestone), Role = PM.
 
 **Issue title format:**
 
-| Type | Format | Example |
-|---|---|---|
-| Feature discovery / discussion | `[PM] {Module}: {feature description}` | `[PM] Inventory: bulk delete for product list` |
-| PRD update | `[PM] PRD: {what changed}` | `[PM] PRD: add product history filter spec` |
-| Analysis report | `[PM] Analysis: {module} — {what was reviewed}` | `[PM] Analysis: Trading — gap review v1.2` |
+| Type                           | Format                                          | Example                                        |
+| ------------------------------ | ----------------------------------------------- | ---------------------------------------------- |
+| Feature discovery / discussion | `[PM] {Module}: {feature description}`          | `[PM] Inventory: bulk delete for product list` |
+| PRD update                     | `[PM] PRD: {what changed}`                      | `[PM] PRD: add product history filter spec`    |
+| Analysis report                | `[PM] Analysis: {module} — {what was reviewed}` | `[PM] Analysis: Trading — gap review v1.2`     |
 
 ### 2. Release Branch
 
@@ -203,6 +203,21 @@ release/vX.Y
 ```
 
 Push it to remote immediately so other agents can target it for their PRs.
+
+### 3. Feature Branch (multi-agent features)
+
+For features that involve 2 or more agents building code (Backend + Frontend + Tester), create a feature branch from `release/vX.Y` at the start of Phase 2:
+
+```
+feature/issue-{n}-{short-description}
+```
+
+Example: `feature/issue-93-strava-reconnect`
+
+Push it immediately. All agent branches (Backend, Frontend, Tester) branch off from here and PR back here — not directly to `release/vX.Y`. After all agent work is merged into the feature branch, create one final PR from `feature/...` → `release/vX.Y`.
+
+**When to create a feature branch:** multi-agent feature (Backend + Frontend both have work).
+**When NOT to:** single-agent fix, hotfix, or Tester-only work.
 
 ## Kickoff Protocol
 

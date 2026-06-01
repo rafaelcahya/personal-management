@@ -23,7 +23,7 @@ Personal productivity web app for one user, two domains: **Inventory Management*
 | `.claude/prd/PRD_Shared.md`              | PRD header, overview, API standards, UI/UX standards, DB tables  |
 | `.claude/prd/PRD_Inventory.md`           | PRD for Inventory Management module (section 3.1)                |
 | `.claude/prd/PRD_Trading.md`             | PRD for Trading Management module (section 3.2)                  |
-| `.claude/prd/PRD_Auth.md`               | PRD for Auth + User Settings (sections 3.3–3.4)                  |
+| `.claude/prd/PRD_Auth.md`                | PRD for Auth + User Settings (sections 3.3–3.4)                  |
 | `.claude/prd/PRD_Running_Tracker.md`     | PRD for Running Tracker + AI Coach                               |
 | `.claude/prd/PRD_Personal_Management.md` | Legacy monolith — history only, do not update                    |
 | `cypress/fixtures/app-constants.json`    | Test IDs + endpoint registry (Cypress runtime)                   |
@@ -73,10 +73,11 @@ After PRD is approved:
    - Status **TODO** = planning done, ready to start
    - Status **IN PROGRESS** = actively developing
    - Status **DONE** = user manually sets after Tester confirms 100% pass
-3. **UI/UX** — produces design decision doc; no branch needed (design spec output only)
-4. **Backend** — builds API endpoints; creates branch `feat/issue-{n}-{desc}`
-5. **Frontend** — builds UI using design spec + API contract; creates branch `feat/issue-{n}-{desc}`
-6. After development done: push branch to remote and create PR targeting `release/vX.Y`
+3. **PM creates a feature branch** from `release/vX.Y` for multi-agent features: `feature/issue-{n}-{desc}`
+4. **UI/UX** — produces design decision doc; no branch needed (design spec output only)
+5. **Backend** — builds API endpoints; creates branch from `feature/issue-{n}-{desc}`
+6. **Frontend** — builds UI using design spec + API contract; creates branch from `feature/issue-{n}-{desc}`
+7. After development done: push branch to remote and create PR targeting `feature/issue-{n}-{desc}`
 
 ### Phase 3 — Code Reviewer + Security Reviewer
 
@@ -85,35 +86,52 @@ After Frontend and Backend PRs are open:
 1. Code Reviewer reviews both PRs — no GitHub issue needed
 2. Security Reviewer reviews both PRs (conditional\*) — no GitHub issue needed
 3. If CRITICAL issues found → Frontend/Backend fix on the **same branch**, push again → Reviewer re-checks
-4. After all CRITICAL issues resolved → Frontend and Backend merge their branches into `release/vX.Y`
+4. After all CRITICAL issues resolved → Frontend and Backend merge their branches into `feature/issue-{n}-{desc}`
 
 \*Security Reviewer is conditional — triggered when new API routes, auth/session/permissions, admin client, new env vars, or user-generated content is involved.
 
 ### Phase 4 — Tester
 
-After Frontend and Backend branches are merged into `release/vX.Y`:
+After Frontend and Backend branches are merged into `feature/issue-{n}-{desc}`:
 
 1. Tester does planning, then creates a **GitHub Issue**:
    - Status **TODO** = planning done, ready to write tests
    - Status **IN PROGRESS** = writing Cypress test automation
    - Status **DONE** = user manually sets after Tester notifies 100% pass
-2. Tester creates branch: `test/issue-{n}-{desc}`
+2. Tester creates branch from `feature/issue-{n}-{desc}`: `test/issue-{n}-{desc}`
 3. Tester writes tests until 100% passing
-4. After 100% pass: push branch, create PR targeting `release/vX.Y`, update all 3 reports
+4. After 100% pass: push branch, create PR targeting `feature/issue-{n}-{desc}`, update all 3 reports
 5. Tester notifies user of 100% pass — user then manually sets Frontend and Backend issue statuses to **DONE**
-6. Tester branch is merged into `release/vX.Y`
+6. Tester branch is merged into `feature/issue-{n}-{desc}`
 
-### Phase 5 — Merge to master
+### Phase 5 — Feature Branch → Release → Master
 
-After all branches (Frontend, Backend, Tester) are merged into `release/vX.Y`:
+After all branches (Frontend, Backend, Tester) are merged into `feature/issue-{n}-{desc}`:
 
-1. Create PR from `release/vX.Y` → `master`
-2. Merge → product release shipped
+1. Create PR from `feature/issue-{n}-{desc}` → `release/vX.Y`
+2. After all feature branches are merged into `release/vX.Y`:
+3. Create PR from `release/vX.Y` → `master`
+4. Merge → product release shipped
+
+## When to Use a Feature Branch
+
+Use `feature/issue-{n}-{desc}` when a feature involves **2 or more agents building code** (Backend + Frontend, or Backend + Frontend + Tester). PM creates this branch from `release/vX.Y` at the start of Phase 2.
+
+**Use feature branch:**
+
+- Multi-agent feature: Backend + Frontend + Tester all have work
+- Feature is isolated enough that it can be reviewed as one unit before hitting release
+
+**Skip feature branch (go direct to `release/vX.Y`):**
+
+- Hotfix or single-agent fix (only Backend or only Frontend)
+- Quick isolated change with no cross-agent dependency
+- Tester-only work (adding tests for existing features)
 
 ## Hotfix Workflow
 
 ```
-Backend/Frontend (targeted fix) → Tester (scope-limited) → merge to master
+Backend/Frontend (targeted fix) → Tester (scope-limited) → merge to release/vX.Y or master
 ```
 
 For bugs and regressions — skips PM and UI/UX. Use the **Orchestrator** and it will detect the hotfix path automatically.
@@ -138,6 +156,7 @@ Every feature is tied to a GitHub Issue. Branches, commits, and PRs must referen
 ### Branch naming
 
 ```
+feature/issue-{n}-{short-description} # PM creates — per-feature integration branch (multi-agent)
 feat/issue-{n}-{short-description}    # Frontend or Backend new feature
 fix/issue-{n}-{short-description}     # Frontend or Backend bug fix
 test/issue-{n}-{short-description}    # Tester branch
@@ -147,10 +166,13 @@ release/vX.Y                          # PM creates — milestone integration bra
 Examples:
 
 ```
-feat/issue-15-ef-trend-arrow          # Frontend
-feat/issue-12-ef-30d-avg              # Backend
-test/issue-19-analytics-cypress       # Tester
-release/v1.2                          # PM
+feature/issue-93-strava-reconnect     # PM — parent branch for multi-agent feature
+feat/issue-94-strava-backend          # Backend — branches from feature/
+feat/issue-96-strava-frontend         # Frontend — branches from feature/
+test/issue-97-strava-cypress          # Tester — branches from feature/
+feat/issue-15-ef-trend-arrow          # Frontend — direct to release (single-agent)
+feat/issue-12-ef-30d-avg              # Backend — direct to release (single-agent)
+release/v1.2                          # PM — milestone branch
 ```
 
 ### Commit message format

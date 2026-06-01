@@ -201,27 +201,27 @@ Assign: Module, Priority, Release, Role = Frontend.
 
 **Issue title format:**
 
-| Type | Format | Example |
-|---|---|---|
-| New feature | `[Frontend] {Module}: {feature description}` | `[Frontend] Inventory: product list UI` |
-| Bug fix | `[Frontend] Fix: {what broke}` | `[Frontend] Fix: sidebar tooltip not showing` |
-| Refactor | `[Frontend] Refactor: {what changed}` | `[Frontend] Refactor: extract chart components` |
+| Type        | Format                                       | Example                                         |
+| ----------- | -------------------------------------------- | ----------------------------------------------- |
+| New feature | `[Frontend] {Module}: {feature description}` | `[Frontend] Inventory: product list UI`         |
+| Bug fix     | `[Frontend] Fix: {what broke}`               | `[Frontend] Fix: sidebar tooltip not showing`   |
+| Refactor    | `[Frontend] Refactor: {what changed}`        | `[Frontend] Refactor: extract chart components` |
 
 ### 2. Branch
 
-Create a branch from `release/vX.Y`:
+If a `feature/issue-{n}-{desc}` branch exists for this feature (PM creates it for multi-agent features), branch from there. Otherwise branch from `release/vX.Y`.
 
 ```
 feat/issue-{n}-{short-description}    # new feature
 fix/issue-{n}-{short-description}     # bug fix
 ```
 
-Example: `feat/issue-15-ef-trend-arrow`
+Example: `feat/issue-96-strava-frontend`
 
 ### 3. After Development Done
 
 1. Push branch to remote
-2. Create PR targeting `release/vX.Y`
+2. Create PR targeting `feature/issue-{n}-{desc}` (if feature branch exists) or `release/vX.Y` (if not)
 3. Include `Closes #n` in the PR body
 4. Wait for Code Reviewer and Security Reviewer to pass before merging
 

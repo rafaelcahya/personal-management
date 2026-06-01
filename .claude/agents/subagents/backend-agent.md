@@ -145,27 +145,27 @@ Assign: Module, Priority, Release, Role = Backend.
 
 **Issue title format:**
 
-| Type | Format | Example |
-|---|---|---|
-| New feature | `[Backend] {Module}: {feature description}` | `[Backend] Inventory: product list API` |
-| Bug fix | `[Backend] Fix: {what broke}` | `[Backend] Fix: 401 not returned on missing auth` |
-| Schema change | `[Backend] Schema: {what changed}` | `[Backend] Schema: add deleted_at to product_list` |
+| Type          | Format                                      | Example                                            |
+| ------------- | ------------------------------------------- | -------------------------------------------------- |
+| New feature   | `[Backend] {Module}: {feature description}` | `[Backend] Inventory: product list API`            |
+| Bug fix       | `[Backend] Fix: {what broke}`               | `[Backend] Fix: 401 not returned on missing auth`  |
+| Schema change | `[Backend] Schema: {what changed}`          | `[Backend] Schema: add deleted_at to product_list` |
 
 ### 2. Branch
 
-Create a branch from `release/vX.Y`:
+If a `feature/issue-{n}-{desc}` branch exists for this feature (PM creates it for multi-agent features), branch from there. Otherwise branch from `release/vX.Y`.
 
 ```
 feat/issue-{n}-{short-description}    # new feature
 fix/issue-{n}-{short-description}     # bug fix
 ```
 
-Example: `feat/issue-12-ef-30d-avg`
+Example: `feat/issue-94-strava-backend`
 
 ### 3. After Development Done
 
 1. Push branch to remote
-2. Create PR targeting `release/vX.Y`
+2. Create PR targeting `feature/issue-{n}-{desc}` (if feature branch exists) or `release/vX.Y` (if not)
 3. Include `Closes #n` in the PR body
 4. Wait for Code Reviewer and Security Reviewer to pass before merging
 
