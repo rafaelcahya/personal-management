@@ -61,40 +61,7 @@ For every feature, write tests covering:
 
 Only generate if user confirms. If user says no, skip both reports.
 
-If generating, save to `cypress/reports/regression-report.md` (overwrite each time — regression report reflects the latest run only):
-
-```markdown
-# Regression Testing Report
-
-**Date:** YYYY-MM-DD
-**App Version:** X.X ← read from `.claude/prd/PRD_Personal_Management.md` → `Version:` field in the header
-**Scope:** [module or feature tested]
-**Tester:** QA Agent
-
-## Summary
-
-| Total Features | Passed | Failed | Pass Rate |
-| -------------- | ------ | ------ | --------- |
-| X              | X      | X      | XX%       |
-
-## Feature Test Results
-
-| #   | Feature                     | Test Type   | Status  | Notes       |
-| --- | --------------------------- | ----------- | ------- | ----------- |
-| 1   | Login - Google OAuth        | Manual/Auto | ✅ PASS | -           |
-| 2   | Logout - session terminated | Manual/Auto | ❌ FAIL | Reason: ... |
-
-## Failed Test Details
-
-### [Feature Name]
-
-- **Status:** FAILED
-- **Reason:** Exact reason why it failed
-- **Steps to Reproduce:** 1. ... 2. ... 3. ...
-- **Expected:** What should happen
-- **Actual:** What actually happens
-- **Priority:** P0 / P1 / P2
-```
+Save to `cypress/reports/regression-report.md` (overwrite each time — reflects the latest run only). Read the existing file first to copy its structure, then overwrite with actual results. Include: Date, App Version (from `PRD_Shared.md` header), Scope, Summary table, Feature Test Results table, and Failed Test Details section.
 
 ### 4. Test Coverage Report
 
@@ -135,36 +102,45 @@ Rules:
 - If a feature is removed, mark the row as `[DEPRECATED]` — never delete rows
 - Date format: YYYY-MM-DD
 
-Save to `cypress/reports/coverage-report.md`:
+Save updates to `cypress/reports/coverage-report.md`. Always read the existing file first — copy its structure and update only the rows and totals that changed.
 
-```markdown
-# Test Coverage Report
+### Cypress File Naming Convention
 
-**Last Updated:** YYYY-MM-DD
-**App Version:** X.X ← read from `.claude/prd/PRD_Personal_Management.md` → `Version:` field in the header
+Every test file must be either **API-only** or **UI-only** — never mixed in the same file.
 
-## Coverage Summary
+| Type | Suffix | Rule |
+| ---- | ------ | ---- |
+| API-only | `{feature}-api.cy.js` | No `cy.visit`, no DOM assertions. Uses `cy.request`, custom commands (e.g. `cy.AddProduct`), or `cy.task` only. |
+| UI-only | `{feature}-ui.cy.js` | Uses `cy.visit` and DOM assertions. API commands in `before()`/`beforeEach()` for data seeding are fine. |
 
-| Module | Total Features | Automated | Manual Only | Not Tested | Coverage % |
-| ------ | -------------- | --------- | ----------- | ---------- | ---------- |
-| Auth   | X              | X         | X           | X          | XX%        |
+**When to split:** If an existing file has distinct API describe blocks AND UI describe blocks, split it into two files — one `-api.cy.js` and one `-ui.cy.js`. Delete the original with `git rm -f`.
 
-## Automated Test Cases
+**Examples:**
 
-| #   | File                         | Test Suite | Test Cases | Feature Covered    |
-| --- | ---------------------------- | ---------- | ---------- | ------------------ |
-| 1   | cypress/e2e/auth/login.cy.js | Login Flow | 5          | Google OAuth login |
-
-## Manual Test Cases (not yet automated)
-
-| #   | Feature       | Reason Not Automated      | Priority to Automate |
-| --- | ------------- | ------------------------- | -------------------- |
-| 1   | Avatar upload | Requires file system mock | P2                   |
-
-## Coverage Gap Analysis
-
-List features with 0% automation coverage and recommend priority to automate.
 ```
+add-product-api.cy.js    ← cy.AddProduct, cy.request only
+add-product-ui.cy.js     ← cy.visit + DOM assertions, seeds via cy.AddProduct in before()
+list-product-brand-ui.cy.js
+update-product-name-ui.cy.js
+restock-predictions-api.cy.js
+```
+
+### Task Scope Discipline
+
+Stay strictly within the scope of what was requested. Out-of-context changes cause hidden regressions and bloat PRs.
+
+**Do NOT:**
+
+- Edit or rename test files outside the feature being tested
+- Add `describe` blocks for features not covered by the current GitHub issue
+- Modify fixture files (`app-constants.json`, `api-endpoints.js`) beyond adding entries directly required by your new tests
+- Rewrite or restructure test files that are already passing and not in scope
+
+**Do:**
+
+- Only create/edit the spec files explicitly in scope for the current issue
+- Add fixture entries only when a required endpoint or test_id is missing
+- Reference the GitHub issue number in every commit (`feat: ... (#n)`)
 
 ### Cypress Test Structure
 
@@ -204,7 +180,7 @@ After writing all test files, **always run the tests immediately** using Cypress
 3. Run only the newly written test files (do NOT run all tests):
 
    ```bash
-   npx cypress run --config-file=cypress.config.js --headless --spec "cypress/e2e/auth/logout.cy.js,cypress/e2e/auth/session.cy.js"
+   npx cypress run --config-file=cypress.config.js --headless --spec "cypress/e2e/auth/login.cy.js,cypress/e2e/auth/session.cy.js"
    ```
 
 4. Capture the output and update `cypress/reports/regression-report.md` with **actual** results:
@@ -253,40 +229,17 @@ This outputs a compact markdown summary directly into the Claude conversation.
    - `test-status-report.md` — update Last Tested date for all tested groups, recalculate Staleness Alert
 5. Check memory for any new bugs not previously recorded — propose memory update before writing
 
-**parse-results output format reference:**
-
-```markdown
-# Cypress Regression Run
-
-**Date:** YYYY-MM-DD HH:mm
-**Scope:** api-auth, auth, dashboard, product
-
-## GROUP: API-AUTH
-
-### Spec Results
-
-\`\`\`
-[cypress spec table with timing and pass/fail per spec file]
-\`\`\`
-
-### Summary
-
-| Tests | Passed | Failed | Pending | Skipped | Pass% | Status |
-...
-
-## GROUP: AUTH
-
-...
-
-## GRAND TOTAL
-
-| Tests | Passed | Failed | Skipped | Pass% | Status |
-...
-```
 
 ## Requirements Reference
 
-Always read `.claude/prd/PRD_Personal_Management.md` before starting any task. The PRD defines all features, validations, and error states that must be tested.
+Read only the PRD file relevant to the module under test:
+
+- Inventory features → `.claude/prd/PRD_Inventory.md`
+- Trading features → `.claude/prd/PRD_Trading.md`
+- Auth / User Settings → `.claude/prd/PRD_Auth.md`
+- API standards, global rules → `.claude/prd/PRD_Shared.md`
+
+Do not read `PRD_Personal_Management.md` — it's the legacy monolith kept for history only.
 
 ## Approval Gate (MANDATORY)
 
@@ -344,23 +297,24 @@ Example: `test/issue-19-analytics-cypress`
 
 Before starting any task, execute these steps in order:
 
-1. Read `.claude/prd/PRD_Personal_Management.md` — understand what features and edge cases must be tested
+1. Read the relevant module PRD (see Requirements Reference above) using offset/limit to read only the specific feature section, not the whole file. Read `PRD_Shared.md` only if you need API standards or global rules.
 2. Read `.claude/agents/memory/tester-agent-memory.md` — recall known flaky tests, persistent bugs, coverage gaps
-3. Read `.claude/agents/knowledge/tester-knowledge.md` — follow component audit, endpoint audit, and DB verification workflows
-4. Read `.claude/agents/knowledge/shared-knowledge.md` — check cross-agent signal formats and global DoD
-5. Load `cypress/fixtures/app-constants.json` — verify all needed testIds and endpoints are registered before writing tests
-6. Check `cypress/plugin/tasks/` — identify existing domain-specific DB tasks before using `supabaseRawQuery`; if needed task doesn't exist, create it following the pattern in `tester-knowledge.md`
-7. Check `.claude/agents/signals/pending-signals.md` — any pending signals addressed to Tester Agent? Handle them before starting new work.
-8. Select the right cypress skill for the task:
+3. Load `tester-knowledge.md` **on-demand only** — do NOT read it at kickoff. Open it when you need a specific pattern (e.g. auth bypass, DB verification, network intercept). Reference the section you need by name so you can use offset/limit.
+4. Skip `shared-knowledge.md` at kickoff — its content is already in CLAUDE.md (always in context). Only read it if you need a non-standard cross-agent signal format.
+5. After planning, grep the fixture files for the module you need — do not load both files in full:
+   - Grep `cypress/fixtures/api-endpoints.js` for the relevant export (e.g. `INVENTORY_ENDPOINTS`)
+   - Grep `cypress/fixtures/app-constants.json` for the relevant module key (e.g. `"product"`, `"trading"`)
+   Add any missing entries before writing tests.
+6. Only check `cypress/plugin/tasks/` if your test plan includes `cy.task()` calls (DB verification). For UI-only tests, skip this step entirely. When needed, read only the task file for your module (e.g. `inventoryTasks.js`), not the full directory.
+7. Select the right cypress skill for the task:
    - **Writing or fixing tests** → invoke `cypress-author`
    - **Explaining tests or Cypress concepts** → invoke `cypress-explain`
    - **Looking up Cypress API/docs** → invoke `cypress-docs`
-9. Present plan to user and wait for approval (see Approval Gate above)
-10. Start work only after approval is received
+8. Present plan to user and wait for approval (see Approval Gate above)
+9. Start work only after approval is received
 
 ## Memory
 
-- **Read** `.claude/agents/memory/tester-agent-memory.md` at the start of every session to recall known flaky tests, persistent bugs, coverage gaps, and blocked tests.
 - **Propose before writing** — when you identify something worth remembering (flaky test, persistent bug, coverage gap, blocked test, cross-agent signal), present it to the user in this format before writing anything:
 
   ```

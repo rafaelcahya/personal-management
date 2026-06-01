@@ -20,8 +20,12 @@ Personal productivity web app for one user, two domains: **Inventory Management*
 
 | File                                     | Purpose                                                          |
 | ---------------------------------------- | ---------------------------------------------------------------- |
-| `.claude/prd/PRD_Personal_Management.md` | PRD for Inventory + Stock Trading — PM Agent owns this           |
+| `.claude/prd/PRD_Shared.md`              | PRD header, overview, API standards, UI/UX standards, DB tables  |
+| `.claude/prd/PRD_Inventory.md`           | PRD for Inventory Management module (section 3.1)                |
+| `.claude/prd/PRD_Trading.md`             | PRD for Trading Management module (section 3.2)                  |
+| `.claude/prd/PRD_Auth.md`               | PRD for Auth + User Settings (sections 3.3–3.4)                  |
 | `.claude/prd/PRD_Running_Tracker.md`     | PRD for Running Tracker + AI Coach                               |
+| `.claude/prd/PRD_Personal_Management.md` | Legacy monolith — history only, do not update                    |
 | `cypress/fixtures/app-constants.json`    | Test IDs + endpoint registry (Cypress runtime)                   |
 | `cypress/fixtures/app-constants.yaml`    | Same data, human-readable source of truth                        |
 | GitHub Project #3                        | Planning board — https://github.com/users/rafaelcahya/projects/3 |
