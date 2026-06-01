@@ -1,0 +1,540 @@
+import { faker } from '@faker-js/faker'
+import { ROUTES } from '../../../fixtures/routes.js'
+import { INVENTORY_ENDPOINTS } from '../../../fixtures/endpoints.js'
+
+const PRODUCT_NAME_URL = ROUTES.inventory_product_name
+const PRODUCT_NAME_LIST_API = INVENTORY_ENDPOINTS.PRODUCT_NAME_LIST
+
+/** Search and locate a row by name text, then open the update dialog via row click */
+const searchAndOpenDialog = (nameValue) => {
+  cy.get('#searchInput_productNamePage').clear().type(nameValue)
+  cy.get('#productNamesTable_productNamePage')
+    .contains('td', nameValue)
+    .closest('tr')
+    .scrollIntoView()
+    .should('be.visible')
+    .click()
+  cy.get('#updateProductNameDialog_productNamePage').should('be.visible')
+}
+
+describe('Update Product Name Dialog - Open & Close', () => {
+  let nameId
+  let nameValue
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    nameValue = 'UPD-OC-' + faker.string.alphanumeric(8)
+    cy.AddProductName({
+      product_name: nameValue,
+      product_name_status: 'active',
+      note: faker.word.words(4),
+    }).then((res) => {
+      nameId = res.body.productName.id
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should open update dialog when clicking a table row', () => {
+    searchAndOpenDialog(nameValue)
+    cy.get('#updateProductNameDialog_productNamePage').should('be.visible')
+  })
+
+  it('should open update dialog when clicking the edit pencil button', () => {
+    cy.get('#searchInput_productNamePage').clear().type(nameValue)
+
+    cy.get(`#editProductNameBtn_${nameId}_productNamePage`)
+      .scrollIntoView()
+      .should('be.visible')
+      .click()
+
+    cy.get('#updateProductNameDialog_productNamePage').should('be.visible')
+  })
+
+  it('should close update dialog when Cancel button is clicked', () => {
+    searchAndOpenDialog(nameValue)
+    cy.get('#cancelUpdateProductNameBtn_productNamePage').click()
+    cy.get('#updateProductNameDialog_productNamePage').should('not.exist')
+  })
+
+  it('should pre-fill name, status and note from the selected row', () => {
+    const prefillValue = 'PREFILL-' + faker.string.alphanumeric(8)
+    const prefillNote = faker.word.words(5)
+
+    cy.AddProductName({
+      product_name: prefillValue,
+      product_name_status: 'inactive',
+      note: prefillNote,
+    }).then(() => {
+      cy.reload()
+      cy.wait(1000)
+
+      searchAndOpenDialog(prefillValue)
+
+      // The name input and note textarea should reflect the seeded data
+      cy.get('#updateProductNameDialog_productNamePage').within(() => {
+        cy.get('input[placeholder="e.g. Clear"]').should('have.value', prefillValue)
+        cy.get('textarea').should('have.value', prefillNote)
+      })
+    })
+  })
+})
+
+describe('Update Product Name Dialog - Success Flow', () => {
+  let nameId
+  let nameValue
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    nameValue = 'UPD-SF-' + faker.string.alphanumeric(8)
+    cy.AddProductName({
+      product_name: nameValue,
+      product_name_status: 'active',
+      note: faker.word.words(4),
+    }).then((res) => {
+      nameId = res.body.productName.id
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should update name and close dialog → updated name appears in table', () => {
+    const updatedName = 'UPD-NEW-' + faker.string.alphanumeric(8)
+
+    // Stub PUT so the UI call succeeds without touching real DB
+    cy.intercept('PUT', `/api/inventory/v1/product-name/update/${nameId}`, {
+      statusCode: 200,
+      body: {
+        success: true,
+        productName: {
+          id: nameId,
+          product_name: updatedName,
+          product_name_status: 'active',
+          note: '',
+          updated_at: new Date().toISOString(),
+        },
+      },
+    }).as('updateName')
+
+    // Stub list refresh with updated row
+    cy.intercept('GET', PRODUCT_NAME_LIST_API, {
+      statusCode: 200,
+      body: {
+        success: true,
+        data: [
+          {
+            id: nameId,
+            product_name: updatedName,
+            product_name_status: 'active',
+            note: '',
+            product_count: 0,
+          },
+        ],
+      },
+    }).as('listNames')
+
+    searchAndOpenDialog(nameValue)
+
+    cy.get('#updateProductNameDialog_productNamePage')
+      .find('input[placeholder="e.g. Clear"]')
+      .clear()
+      .type(updatedName)
+
+    cy.get('#submitUpdateProductNameBtn_productNamePage').click()
+
+    cy.wait('@updateName')
+
+    // Dialog should close after success
+    cy.get('#updateProductNameDialog_productNamePage').should('not.exist')
+
+    // Updated name should appear in the refreshed table
+    cy.get('#searchInput_productNamePage').clear()
+    cy.get('#productNamesTable_productNamePage').should('contain', updatedName)
+  })
+
+  it('should update note and close dialog', () => {
+    const updatedNote = faker.word.words(6)
+
+    cy.intercept('PUT', `/api/inventory/v1/product-name/update/${nameId}`, {
+      statusCode: 200,
+      body: {
+        success: true,
+        productName: {
+          id: nameId,
+          product_name: nameValue,
+          product_name_status: 'active',
+          note: updatedNote,
+          updated_at: new Date().toISOString(),
+        },
+      },
+    }).as('updateName')
+
+    searchAndOpenDialog(nameValue)
+
+    cy.get('#updateProductNameDialog_productNamePage').find('textarea').clear().type(updatedNote)
+
+    cy.get('#submitUpdateProductNameBtn_productNamePage').click()
+
+    cy.wait('@updateName')
+
+    cy.get('#updateProductNameDialog_productNamePage').should('not.exist')
+  })
+})
+
+describe('Update Product Name Dialog - Validation', () => {
+  let nameValue
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    nameValue = 'UPD-VAL-' + faker.string.alphanumeric(8)
+    cy.AddProductName({ product_name: nameValue, product_name_status: 'active' })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should show validation error when name field is cleared → dialog stays open', () => {
+    searchAndOpenDialog(nameValue)
+
+    cy.get('#updateProductNameDialog_productNamePage')
+      .find('input[placeholder="e.g. Clear"]')
+      .clear()
+
+    cy.get('#submitUpdateProductNameBtn_productNamePage').click()
+
+    // Inline validation error should appear; dialog must remain open
+    cy.get('#productNameField_errorMessage_updateDialog').should('be.visible')
+    cy.get('#updateProductNameDialog_productNamePage').should('be.visible')
+  })
+})
+
+describe('Update Product Name Dialog - Duplicate Name Conflict', () => {
+  let idA
+  let nameA
+  let idB
+  let nameB
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    nameA = 'DUP-A-' + faker.string.alphanumeric(8)
+    nameB = 'DUP-B-' + faker.string.alphanumeric(8)
+
+    cy.AddProductName({ product_name: nameA, product_name_status: 'active' }).then((res) => {
+      idA = res.body.productName.id
+    })
+
+    cy.AddProductName({ product_name: nameB, product_name_status: 'active' }).then((res) => {
+      idB = res.body.productName.id
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should show error when updating to a name already taken → dialog stays open', () => {
+    cy.intercept('PUT', `/api/inventory/v1/product-name/update/${idB}`, {
+      statusCode: 409,
+      body: { success: false, error: 'Product name already exists' },
+    }).as('updateName')
+
+    searchAndOpenDialog(nameB)
+
+    // Attempt to rename B to A (which already exists)
+    cy.get('#updateProductNameDialog_productNamePage')
+      .find('input[placeholder="e.g. Clear"]')
+      .clear()
+      .type(nameA)
+
+    cy.get('#submitUpdateProductNameBtn_productNamePage').click()
+
+    cy.wait('@updateName').its('response.statusCode').should('eq', 409)
+
+    // Error message should surface; dialog must stay open
+    cy.get('#productNameField_errorMessage_updateDialog').should('be.visible')
+    cy.get('#updateProductNameDialog_productNamePage').should('be.visible')
+  })
+
+  it('should succeed after correcting the duplicate name to a unique one', () => {
+    const uniqueName = 'UPD-FIXED-' + faker.string.alphanumeric(8)
+
+    // First call: 409 conflict
+    cy.intercept('PUT', `/api/inventory/v1/product-name/update/${idB}`, {
+      statusCode: 409,
+      body: { success: false, error: 'Product name already exists' },
+    }).as('conflictUpdate')
+
+    searchAndOpenDialog(nameB)
+
+    cy.get('#updateProductNameDialog_productNamePage')
+      .find('input[placeholder="e.g. Clear"]')
+      .clear()
+      .type(nameA)
+
+    cy.get('#submitUpdateProductNameBtn_productNamePage').click()
+    cy.wait('@conflictUpdate')
+
+    // Dialog stays open after 409
+    cy.get('#updateProductNameDialog_productNamePage').should('be.visible')
+
+    // Second call: 200 success with corrected unique name
+    cy.intercept('PUT', `/api/inventory/v1/product-name/update/${idB}`, {
+      statusCode: 200,
+      body: {
+        success: true,
+        productName: {
+          id: idB,
+          product_name: uniqueName,
+          product_name_status: 'active',
+          note: '',
+          updated_at: new Date().toISOString(),
+        },
+      },
+    }).as('successUpdate')
+
+    cy.intercept('GET', PRODUCT_NAME_LIST_API, {
+      statusCode: 200,
+      body: {
+        success: true,
+        data: [
+          {
+            id: idA,
+            product_name: nameA,
+            product_name_status: 'active',
+            note: '',
+            product_count: 0,
+          },
+          {
+            id: idB,
+            product_name: uniqueName,
+            product_name_status: 'active',
+            note: '',
+            product_count: 0,
+          },
+        ],
+      },
+    }).as('listNames')
+
+    cy.get('#updateProductNameDialog_productNamePage')
+      .find('input[placeholder="e.g. Clear"]')
+      .clear()
+      .type(uniqueName)
+
+    cy.get('#submitUpdateProductNameBtn_productNamePage').click()
+    cy.wait('@successUpdate')
+
+    cy.get('#updateProductNameDialog_productNamePage').should('not.exist')
+    cy.get('#searchInput_productNamePage').clear()
+    cy.get('#productNamesTable_productNamePage').should('contain', uniqueName)
+  })
+})
+
+describe('Update Product Name Dialog - Delete Flow', () => {
+  let nameId
+  let nameValue
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    nameValue = 'UPD-DEL-' + faker.string.alphanumeric(8)
+    cy.AddProductName({
+      product_name: nameValue,
+      product_name_status: 'active',
+      note: faker.word.words(3),
+    }).then((res) => {
+      nameId = res.body.productName.id
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should show confirm dialog when Delete button is clicked → row disappears after confirm', () => {
+    cy.intercept('DELETE', `/api/inventory/v1/product-name/delete/${nameId}`, {
+      statusCode: 200,
+      body: { success: true },
+    }).as('deleteName')
+
+    cy.intercept('GET', PRODUCT_NAME_LIST_API, {
+      statusCode: 200,
+      body: { success: true, data: [] },
+    }).as('listNames')
+
+    searchAndOpenDialog(nameValue)
+
+    cy.get('#deleteProductNameBtn_productNamePage').click()
+    cy.get('#deleteProductNameConfirmBtn_productNamePage').should('be.visible').click()
+
+    cy.wait('@deleteName')
+
+    // Dialog and confirmation should close; row should disappear from table
+    cy.get('#updateProductNameDialog_productNamePage').should('not.exist')
+    cy.get('#productNamesTable_productNamePage').should('not.contain', nameValue)
+  })
+})
+
+describe('Update Product Name Dialog - In-Use Guard', () => {
+  let nameId
+  let nameValue
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    nameValue = 'UPD-INUSE-' + faker.string.alphanumeric(6)
+
+    // Create a name and link it to a product so product_count > 0
+    cy.AddProductName({
+      product_name: nameValue,
+      product_name_status: 'active',
+      note: faker.word.words(3),
+    }).then((nameRes) => {
+      nameId = nameRes.body.productName.id
+
+      cy.AddProductBrand({
+        brand: 'INUSE-BRAND-' + faker.string.alphanumeric(6),
+        brand_status: 'active',
+        note: '',
+      }).then((brandRes) => {
+        cy.AddProduct({
+          product_id: nameId,
+          brand_id: brandRes.body.productBrand.id,
+          type: faker.word.noun(),
+          usage_quantity: 1,
+          note: faker.word.words(2),
+          product_image: '',
+        })
+      })
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should disable Delete button when product name has linked products', () => {
+    searchAndOpenDialog(nameValue)
+    cy.get('#deleteProductNameBtn_productNamePage').should('be.disabled')
+  })
+
+  it('should show in-use warning when product name has linked products', () => {
+    searchAndOpenDialog(nameValue)
+    cy.get('#productNameInUseWarning_updateDialog').should('be.visible')
+  })
+})
+
+describe('Update Product Name Dialog - Restore Flow', () => {
+  let nameId
+  let nameValue
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    nameValue = 'UPD-RST-' + faker.string.alphanumeric(8)
+    cy.AddProductName({
+      product_name: nameValue,
+      product_name_status: 'active',
+      note: faker.word.words(3),
+    }).then((res) => {
+      nameId = res.body.productName.id
+      cy.DeleteProductName(nameId)
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should show Restore button and disabled Submit when name is deleted', () => {
+    // Switch to deleted filter to find the soft-deleted name
+    cy.get('#filterSortBtn_productNamePage').click()
+    cy.get('#filterOption_deleted_productNamePage').click()
+    cy.wait(500)
+
+    cy.get('#searchInput_productNamePage').clear().type(nameValue)
+
+    cy.get('#productNamesTable_productNamePage')
+      .contains('td', nameValue)
+      .closest('tr')
+      .scrollIntoView()
+      .click()
+
+    cy.get('#updateProductNameDialog_productNamePage').should('be.visible')
+    cy.get('#restoreProductNameBtn_productNamePage').should('be.visible')
+    cy.get('#submitUpdateProductNameBtn_productNamePage').should('be.disabled')
+  })
+
+  it('should restore name and remove it from deleted filter view', () => {
+    cy.intercept('PUT', `/api/inventory/v1/product-name/update/${nameId}`, {
+      statusCode: 200,
+      body: {
+        success: true,
+        productName: {
+          id: nameId,
+          product_name: nameValue,
+          product_name_status: 'active',
+          note: '',
+          deleted_at: null,
+          updated_at: new Date().toISOString(),
+        },
+      },
+    }).as('restoreName')
+
+    cy.intercept('GET', PRODUCT_NAME_LIST_API, {
+      statusCode: 200,
+      body: { success: true, data: [] },
+    }).as('listNames')
+
+    // Switch to deleted filter
+    cy.get('#filterSortBtn_productNamePage').click()
+    cy.get('#filterOption_deleted_productNamePage').click()
+    cy.wait(500)
+
+    cy.get('#searchInput_productNamePage').clear().type(nameValue)
+
+    cy.get('#productNamesTable_productNamePage')
+      .contains('td', nameValue)
+      .closest('tr')
+      .scrollIntoView()
+      .click()
+
+    cy.get('#updateProductNameDialog_productNamePage').should('be.visible')
+    cy.get('#restoreProductNameBtn_productNamePage').click()
+
+    cy.wait('@restoreName')
+
+    // Dialog closes and row disappears from deleted view
+    cy.get('#updateProductNameDialog_productNamePage').should('not.exist')
+    cy.get('#productNamesTable_productNamePage').should('not.contain', nameValue)
+  })
+})

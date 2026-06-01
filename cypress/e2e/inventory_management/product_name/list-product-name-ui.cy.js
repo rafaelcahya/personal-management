@@ -1,0 +1,313 @@
+import { faker } from '@faker-js/faker'
+import { ROUTES } from '../../../fixtures/routes.js'
+
+const PRODUCT_NAME_URL = ROUTES.inventory_product_name
+
+const openFilterAndSelect = (filterId) => {
+  cy.get('#filterSortBtn_productNamePage').click()
+  cy.get(`#filterOption_${filterId}_productNamePage`).click()
+}
+
+const openSortAndSelect = (sortId) => {
+  cy.get('#filterSortBtn_productNamePage').click()
+  cy.get(`#sortOption_${sortId}_productNamePage`).click()
+}
+
+describe('Product Name List - Search', () => {
+  let nameA
+  let nameB
+  let idA
+  let idB
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    nameA = 'SRCH-A-' + faker.string.alphanumeric(8)
+    nameB = 'SRCH-B-' + faker.string.alphanumeric(8)
+
+    cy.AddProductName({ product_name: nameA, product_name_status: 'active' }).then((res) => {
+      idA = res.body.productName.id
+    })
+
+    cy.AddProductName({ product_name: nameB, product_name_status: 'active' }).then((res) => {
+      idB = res.body.productName.id
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should show only matching row when searching by product name', () => {
+    cy.get('#searchInput_productNamePage').type(nameA)
+
+    // nameA row should be visible; nameB should be filtered out
+    cy.get('#productNamesTable_productNamePage').should('contain', nameA)
+    cy.get('#productNamesTable_productNamePage').should('not.contain', nameB)
+  })
+
+  it('should show empty state when searching a non-existent string', () => {
+    cy.get('#searchInput_productNamePage').type('NONEXISTENT_' + faker.string.alphanumeric(12))
+    cy.get('#emptyState_productNamePage').should('be.visible')
+  })
+
+  it('should show all names again after clearing search', () => {
+    cy.get('#searchInput_productNamePage').type(nameA)
+    cy.get('#productNamesTable_productNamePage').should('not.contain', nameB)
+
+    cy.get('#clearSearchBtn_productNamePage').click()
+
+    // After clear, both names are back in the table
+    cy.get('#productNamesTable_productNamePage').should('contain', nameA)
+    cy.get('#productNamesTable_productNamePage').should('contain', nameB)
+  })
+})
+
+describe('Product Name List - Filter by Status', () => {
+  let activeName
+  let inactiveName
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    activeName = 'FLT-ACT-' + faker.string.alphanumeric(8)
+    inactiveName = 'FLT-INA-' + faker.string.alphanumeric(8)
+
+    cy.AddProductName({ product_name: activeName, product_name_status: 'active' })
+    cy.AddProductName({ product_name: inactiveName, product_name_status: 'inactive' })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should show only inactive names when inactive filter is selected', () => {
+    openFilterAndSelect('inactive')
+
+    // Search to narrow the table to our seed data
+    cy.get('#searchInput_productNamePage').clear().type('FLT-INA-')
+    cy.get('#productNamesTable_productNamePage').should('contain', inactiveName)
+    cy.get('#productNamesTable_productNamePage').should('not.contain', activeName)
+  })
+
+  it('should show all names after clearing filter', () => {
+    openFilterAndSelect('inactive')
+    cy.wait(300)
+
+    // Reopen dropdown to hit Clear
+    cy.get('#filterSortBtn_productNamePage').click()
+    cy.get('#clearFilterBtn_productNamePage').should('be.visible').click()
+    cy.wait(300)
+
+    // Both names exist without filter
+    cy.get('#searchInput_productNamePage').clear({ force: true }).type(activeName, { force: true })
+    cy.get('#productNamesTable_productNamePage').should('contain', activeName)
+
+    cy.get('#searchInput_productNamePage').clear().type(inactiveName)
+    cy.get('#productNamesTable_productNamePage').should('contain', inactiveName)
+  })
+
+  it('should show deleted names in deleted filter view', () => {
+    const deletedName = 'FLT-DEL-' + faker.string.alphanumeric(8)
+
+    cy.AddProductName({ product_name: deletedName, product_name_status: 'active' }).then((res) => {
+      cy.DeleteProductName(res.body.productName.id).then(() => {
+        cy.reload()
+        cy.wait(1000)
+
+        openFilterAndSelect('deleted')
+        cy.get('#searchInput_productNamePage').clear().type(deletedName)
+        cy.get('#productNamesTable_productNamePage').should('contain', deletedName)
+      })
+    })
+  })
+})
+
+describe('Product Name List - Sort', () => {
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    // Create names with predictable alphabetical positions
+    cy.AddProductName({
+      product_name: 'AAAA-SORT-' + faker.string.alphanumeric(6),
+      product_name_status: 'active',
+    })
+    cy.AddProductName({
+      product_name: 'ZZZZ-SORT-' + faker.string.alphanumeric(6),
+      product_name_status: 'active',
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should sort names descending by name → first visible row starts with Z', () => {
+    openSortAndSelect('name-desc')
+    cy.wait(500)
+
+    cy.get('#searchInput_productNamePage').clear().type('SORT-')
+    cy.wait(300)
+
+    // After desc sort the first row should contain ZZZZ-SORT
+    cy.get('#productNamesTable_productNamePage')
+      .find('tbody tr')
+      .first()
+      .should('contain', 'ZZZZ-SORT-')
+  })
+
+  it('should reset sort → AAAA-SORT appears before ZZZZ-SORT', () => {
+    openSortAndSelect('name-desc')
+    cy.wait(300)
+
+    // Reset sort
+    cy.get('#filterSortBtn_productNamePage').click()
+    cy.get('#resetSortBtn_productNamePage').click()
+    cy.wait(300)
+
+    cy.get('#searchInput_productNamePage').clear().type('SORT-')
+    cy.wait(300)
+
+    cy.get('#productNamesTable_productNamePage')
+      .find('tbody tr')
+      .then(($rows) => {
+        const texts = [...$rows].map((r) => r.innerText)
+        const aIdx = texts.findIndex((t) => t.includes('AAAA-SORT-'))
+        const zIdx = texts.findIndex((t) => t.includes('ZZZZ-SORT-'))
+        expect(aIdx).to.be.greaterThan(-1, 'AAAA-SORT- row not found')
+        expect(zIdx).to.be.greaterThan(-1, 'ZZZZ-SORT- row not found')
+        expect(aIdx).to.be.lessThan(
+          zIdx,
+          'AAAA-SORT should come before ZZZZ-SORT in name-asc order'
+        )
+      })
+  })
+})
+
+describe('Product Name List - Filter & Sort Badge Dot Counter', () => {
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    // Ensure at least one active and one inactive name exist
+    cy.AddProductName({
+      product_name: 'BADGE-ACT-' + faker.string.alphanumeric(6),
+      product_name_status: 'active',
+    })
+    cy.AddProductName({
+      product_name: 'BADGE-INA-' + faker.string.alphanumeric(6),
+      product_name_status: 'inactive',
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should show no badge dot when no filter and default sort are active', () => {
+    cy.get('#filterSortBtn_productNamePage').find('span.absolute').should('not.exist')
+  })
+
+  it("should show badge dot with '1' when one filter is applied", () => {
+    openFilterAndSelect('inactive')
+
+    cy.get('#filterSortBtn_productNamePage')
+      .find('span.absolute')
+      .should('be.visible')
+      .and('contain', '1')
+  })
+
+  it("should show badge dot with '2' when filter + non-default sort are both active", () => {
+    openFilterAndSelect('active')
+    cy.wait(300)
+
+    openSortAndSelect('name-desc')
+
+    cy.get('#filterSortBtn_productNamePage')
+      .find('span.absolute')
+      .should('be.visible')
+      .and('contain', '2')
+  })
+
+  it("should drop badge from '2' to '1' after clearing the filter only", () => {
+    openFilterAndSelect('active')
+    cy.wait(300)
+    openSortAndSelect('name-desc')
+
+    cy.get('#filterSortBtn_productNamePage').find('span.absolute').should('contain', '2')
+
+    // Clear filter — sort stays active
+    cy.get('#filterSortBtn_productNamePage').click()
+    cy.get('#clearFilterBtn_productNamePage').should('be.visible').click()
+    cy.wait(300)
+
+    cy.get('#filterSortBtn_productNamePage')
+      .find('span.absolute')
+      .should('be.visible')
+      .and('contain', '1')
+  })
+
+  it('should hide badge dot after resetting sort back to default', () => {
+    openSortAndSelect('name-desc')
+    cy.wait(300)
+
+    cy.get('#filterSortBtn_productNamePage').find('span.absolute').should('contain', '1')
+
+    cy.get('#filterSortBtn_productNamePage').click()
+    cy.get('#resetSortBtn_productNamePage').click()
+
+    cy.get('#filterSortBtn_productNamePage').find('span.absolute').should('not.exist')
+  })
+})
+
+describe('Product Name List - Edit Button', () => {
+  let nameId
+  let nameValue
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    nameValue = 'EDITBTN-' + faker.string.alphanumeric(8)
+    cy.AddProductName({ product_name: nameValue, product_name_status: 'active' }).then((res) => {
+      nameId = res.body.productName.id
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_NAME_URL)
+    cy.wait(1000)
+  })
+
+  it('should open update dialog when the edit pencil button is clicked', () => {
+    cy.get('#searchInput_productNamePage').clear().type(nameValue)
+
+    cy.get(`#editProductNameBtn_${nameId}_productNamePage`)
+      .scrollIntoView()
+      .should('be.visible')
+      .click()
+
+    cy.get('#updateProductNameDialog_productNamePage').should('be.visible')
+  })
+
+  it('should open update dialog when the table row is clicked', () => {
+    cy.get('#searchInput_productNamePage').clear().type(nameValue)
+
+    // The row is identified by name text — click anywhere in the row (not on the edit button)
+    cy.get('#productNamesTable_productNamePage').contains('td', nameValue).closest('tr').click()
+
+    cy.get('#updateProductNameDialog_productNamePage').should('be.visible')
+  })
+})

@@ -1,20 +1,13 @@
-// Covers: AI Coach card on the Running Dashboard
-//   Issues: #22 (card states), #23 (retry button)
-//
-// AUTH STRATEGY:
-//   - Uses cy.setupApiAuthCookies() for a real Supabase session.
-//   - Stubs rt_users, dashboard, and ai/insights APIs.
-//   - All states (loading, empty, error, content) are covered via intercept.
+import { TEST_IDS } from '../../../fixtures/test-ids.js'
+import { ROUTES } from '../../../fixtures/routes.js'
+import { RUNNING_ENDPOINTS } from '../../../fixtures/endpoints.js'
 
-import constants from '../../../fixtures/app-constants.json'
+const IDS = TEST_IDS.running_dashboard
+const DASHBOARD_URL = ROUTES.running_dashboard
+const DASHBOARD_API = RUNNING_ENDPOINTS.DASHBOARD
+const AI_EP = RUNNING_ENDPOINTS.AI_INSIGHTS_LIST
 
-const IDS = constants.test_ids.running_dashboard
-const DASHBOARD_URL = constants.routes.running_dashboard
-const AI_EP = constants.endpoints.running_ai_insights.list
-
-// ---------------------------------------------------------------------------
 // Shared stubs
-// ---------------------------------------------------------------------------
 
 const stubRtUsers = () => {
   cy.intercept('GET', '**/rest/v1/rt_users*', {
@@ -24,7 +17,7 @@ const stubRtUsers = () => {
 }
 
 const stubDashboard = () => {
-  cy.intercept('GET', '/api/running/v1/dashboard*', {
+  cy.intercept('GET', `${DASHBOARD_API}*`, {
     statusCode: 200,
     body: {
       data: {
@@ -56,10 +49,6 @@ const completedInsight = {
   data_refs: { activity_id: 'act-123' },
 }
 
-// ---------------------------------------------------------------------------
-// A. Auth guard
-// ---------------------------------------------------------------------------
-
 describe('Dashboard AI Coach — Auth guard', () => {
   it('unauthenticated visit redirects to /login', () => {
     cy.clearAllCookies()
@@ -68,10 +57,6 @@ describe('Dashboard AI Coach — Auth guard', () => {
     cy.url().should('include', '/login')
   })
 })
-
-// ---------------------------------------------------------------------------
-// B. Card root always renders (#22)
-// ---------------------------------------------------------------------------
 
 describe('Dashboard AI Coach — Card root', () => {
   beforeEach(() => {
@@ -89,10 +74,6 @@ describe('Dashboard AI Coach — Card root', () => {
     cy.get(`#${IDS.ai_coach_card}`).should('exist')
   })
 })
-
-// ---------------------------------------------------------------------------
-// C. Empty state — no completed insights (#22)
-// ---------------------------------------------------------------------------
 
 describe('Dashboard AI Coach — Empty state', () => {
   beforeEach(() => {
@@ -125,10 +106,6 @@ describe('Dashboard AI Coach — Empty state', () => {
     cy.get(`#${IDS.ai_coach_error}`).should('not.exist')
   })
 })
-
-// ---------------------------------------------------------------------------
-// D. Content state — completed valid insight (#22)
-// ---------------------------------------------------------------------------
 
 describe('Dashboard AI Coach — Content state', () => {
   beforeEach(() => {
@@ -173,10 +150,6 @@ describe('Dashboard AI Coach — Content state', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// E. Pending/invalid insights fall back to empty state (#22)
-// ---------------------------------------------------------------------------
-
 describe('Dashboard AI Coach — Pending insight shows empty state', () => {
   beforeEach(() => {
     cy.setupApiAuthCookies()
@@ -200,10 +173,6 @@ describe('Dashboard AI Coach — Pending insight shows empty state', () => {
     cy.get(`#${IDS.ai_coach_content}`).should('not.exist')
   })
 })
-
-// ---------------------------------------------------------------------------
-// F. Error state — API failure (#22)
-// ---------------------------------------------------------------------------
 
 describe('Dashboard AI Coach — Error state', () => {
   beforeEach(() => {
@@ -240,10 +209,6 @@ describe('Dashboard AI Coach — Error state', () => {
     cy.get(`#${IDS.ai_coach_empty}`).should('not.exist')
   })
 })
-
-// ---------------------------------------------------------------------------
-// G. Retry button triggers reload (#23)
-// ---------------------------------------------------------------------------
 
 describe('Dashboard AI Coach — Retry reloads insights', () => {
   beforeEach(() => {
@@ -304,10 +269,6 @@ describe('Dashboard AI Coach — Retry reloads insights', () => {
     cy.get(`#${IDS.ai_coach_error}`).should('be.visible')
   })
 })
-
-// ---------------------------------------------------------------------------
-// H. Multi-card rendering — up to 3 insights shown (#7)
-// ---------------------------------------------------------------------------
 
 describe('Dashboard AI Coach — Multi-card rendering', () => {
   const makeInsight = (n) => ({

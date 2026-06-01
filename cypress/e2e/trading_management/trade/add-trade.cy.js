@@ -1,5 +1,8 @@
 import { faker } from "@faker-js/faker";
 import { formatToRupiah } from "../../../support/common/helper";
+import { ROUTES } from "../../../fixtures/routes.js";
+
+const TRADING_TRADE_URL = ROUTES.trading_trade;
 
 describe("Trade Add API and Database Comparison", () => {
     describe("Add Trade API", () => {
@@ -1463,7 +1466,7 @@ describe("Add Trade Form - UI Tests", () => {
         beforeEach(() => {
             cy.viewport(1280, 720);
             cy.loginWithBypass();
-            cy.visit("/main/trading/trade");
+            cy.visit(TRADING_TRADE_URL);
             cy.wait(1000);
         });
         describe("Dialog Behavior", () => {
@@ -1710,7 +1713,7 @@ describe("Add Trade Form - UI Tests", () => {
         beforeEach(() => {
             cy.viewport(768, 1024);
             cy.loginWithBypass();
-            cy.visit("/main/trading/trade");
+            cy.visit(TRADING_TRADE_URL);
             cy.wait(1000);
         });
         describe("Dialog Behavior", () => {
@@ -1957,7 +1960,7 @@ describe("Add Trade Form - UI Tests", () => {
         beforeEach(() => {
             cy.viewport(375, 667);
             cy.loginWithBypass();
-            cy.visit("/main/trading/trade");
+            cy.visit(TRADING_TRADE_URL);
             cy.wait(1000);
         });
         describe("Dialog Behavior", () => {
