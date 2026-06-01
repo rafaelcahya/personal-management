@@ -199,6 +199,14 @@ Create a GitHub Issue for your frontend work:
 
 Assign: Module, Priority, Release, Role = Frontend.
 
+**Issue title format:**
+
+| Type | Format | Example |
+|---|---|---|
+| New feature | `[Frontend] {Module}: {feature description}` | `[Frontend] Inventory: product list UI` |
+| Bug fix | `[Frontend] Fix: {what broke}` | `[Frontend] Fix: sidebar tooltip not showing` |
+| Refactor | `[Frontend] Refactor: {what changed}` | `[Frontend] Refactor: extract chart components` |
+
 ### 2. Branch
 
 Create a branch from `release/vX.Y`:

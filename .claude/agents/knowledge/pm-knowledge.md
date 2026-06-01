@@ -7,7 +7,7 @@
 
 ## Stack Identity
 
-- **Domains**: Inventory Management, Stock Trading
+- **Domains**: Inventory Management, Stock Trading, Running Tracker
 - **Tech**: Next.js 15, Supabase, Claude Sonnet 4.6
 - **PRD location**: `.claude/prd/` — split by module: `PRD_Inventory.md`, `PRD_Trading.md`, `PRD_Auth.md`, `PRD_Shared.md`, `PRD_Running_Tracker.md` (you own all of these)
 - **Users**: Individual users managing personal inventory and stock portfolio
@@ -175,7 +175,36 @@ When notifying another agent of a change, include in the PRD comment or analysis
 
 ---
 
-## 8. Feature Deprecation Format
+## 8. PRD Section Numbering Convention
+
+When adding a new feature to an existing PRD, follow the numbering already established in that file.
+
+**Rule:** append at the end of the module's section with the next sequential number.
+
+```
+Existing: 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6
+New feature: → 3.1.7
+```
+
+For sub-features within an existing section (e.g. a new sub-flow inside Product List):
+```
+Existing: 3.1.1 A, B, C, D
+New sub-feature: → 3.1.1 E (or next available letter)
+```
+
+**Never renumber existing sections** — other PRD references, GitHub issues, and commit messages use the old numbers.
+
+**Cross-file additions:** if a feature touches multiple modules (e.g. auth + inventory), add the spec to the primary owner's file and reference it from the other:
+
+```markdown
+#### 3.1.7 Product Export
+
+> Auth requirements for this feature: see PRD_Auth.md § 3.3.0
+```
+
+---
+
+## 9. Feature Deprecation Format
 
 ```markdown
 ## Feature: Bulk CSV Import [DEPRECATED]

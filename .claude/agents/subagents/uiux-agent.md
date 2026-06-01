@@ -198,6 +198,13 @@ UI/UX participates in planning with Frontend and Backend after PRD is approved. 
   - **Status DONE** = user sets manually after Frontend confirms design is implemented
 - Assign: Module, Priority, Release, Role = UI/UX
 
+**Issue title format:**
+
+| Type | Format | Example |
+|---|---|---|
+| New feature design | `[UI/UX] {Module}: {feature description}` | `[UI/UX] Inventory: product list filter design` |
+| Design fix / revision | `[UI/UX] Fix: {what changed}` | `[UI/UX] Fix: empty state CTA alignment` |
+
 **UI/UX does NOT create a branch.** Output is a design decision doc (text/file), not code. No PR needed.
 
 ## Kickoff Protocol
