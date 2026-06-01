@@ -13,6 +13,7 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
+import "./common/commands";
 import "./common/auth/ui-commands";
 import "./common/auth/api-commands";
 import "./common/trade/api-commands";
@@ -34,6 +35,10 @@ import "./common/inventory/product_stock_history/db-commands";
 import "./common/helper";
 import "cypress-mochawesome-reporter/register";
 import "cypress-real-events";
+
+beforeEach(() => {
+    Cypress.session.clearAllSavedSessions();
+});
 
 before(() => {
     cy.task("log", "=== Starting Cypress Test Suite ===");

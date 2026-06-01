@@ -1,6 +1,35 @@
-import { RUNNING_ENDPOINTS } from '../../../fixtures/endpoints.js'
+// Covers: Race Log API endpoints
+//   GET    /api/running/v1/race-log
+//     - 200 with data array and message when authenticated
+//     - each entry has required fields (id, title, race_date, distance_m)
+//     - entries ordered by race_date DESC
+//     - 401 when unauthenticated
+//
+//   POST   /api/running/v1/race-log
+//     - 201 with created entry on valid payload
+//     - avg_pace_sec_per_km computed server-side (not sent by client)
+//     - 400 on missing required fields (title, race_date, distance_m)
+//     - 400 when finish_time_sec missing and did_not_finish=false
+//     - 401 when unauthenticated
+//
+//   PATCH  /api/running/v1/race-log/:id
+//     - 200 with updated entry on valid partial payload
+//     - 400 when body is empty
+//     - 404 for entry not owned by user
+//     - 401 when unauthenticated
+//
+//   DELETE /api/running/v1/race-log/:id
+//     - 200 with message on successful delete
+//     - 404 for entry not owned by user
+//     - 401 when unauthenticated
 
-const BASE_EP = RUNNING_ENDPOINTS.RACE_LOG_LIST
+import constants from '../../../fixtures/app-constants.json'
+
+const BASE_EP = constants.endpoints.running_race_log.list
+
+// ---------------------------------------------------------------------------
+// A. GET — Authenticated
+// ---------------------------------------------------------------------------
 
 describe('Race Log API — GET (authenticated)', () => {
   before(() => {
@@ -84,6 +113,10 @@ describe('Race Log API — GET (authenticated)', () => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// B. GET — Unauthenticated
+// ---------------------------------------------------------------------------
+
 describe('Race Log API — GET (unauthenticated)', () => {
   it('returns 401 without a session', () => {
     cy.clearAllCookies()
@@ -96,6 +129,10 @@ describe('Race Log API — GET (unauthenticated)', () => {
     })
   })
 })
+
+// ---------------------------------------------------------------------------
+// C. POST — Authenticated (create + cleanup)
+// ---------------------------------------------------------------------------
 
 describe('Race Log API — POST (authenticated)', () => {
   let createdId
@@ -156,6 +193,7 @@ describe('Race Log API — POST (authenticated)', () => {
     }).then((res) => {
       if (res.status === 201) {
         const entry = res.body.data
+        // avg_pace = finish_time_sec / (distance_m / 1000) = 1500 / 5 = 300 sec/km
         expect(entry.avg_pace_sec_per_km).to.eq(300)
         // cleanup
         cy.request({
@@ -255,6 +293,10 @@ describe('Race Log API — POST (authenticated)', () => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// D. POST — Unauthenticated
+// ---------------------------------------------------------------------------
+
 describe('Race Log API — POST (unauthenticated)', () => {
   it('returns 401 without a session', () => {
     cy.clearAllCookies()
@@ -273,6 +315,10 @@ describe('Race Log API — POST (unauthenticated)', () => {
     })
   })
 })
+
+// ---------------------------------------------------------------------------
+// E. PATCH — Authenticated
+// ---------------------------------------------------------------------------
 
 describe('Race Log API — PATCH (authenticated)', () => {
   let entryId
@@ -368,6 +414,10 @@ describe('Race Log API — PATCH (authenticated)', () => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// F. PATCH — Unauthenticated
+// ---------------------------------------------------------------------------
+
 describe('Race Log API — PATCH (unauthenticated)', () => {
   it('returns 401 without a session', () => {
     cy.clearAllCookies()
@@ -381,6 +431,10 @@ describe('Race Log API — PATCH (unauthenticated)', () => {
     })
   })
 })
+
+// ---------------------------------------------------------------------------
+// G. DELETE — Authenticated
+// ---------------------------------------------------------------------------
 
 describe('Race Log API — DELETE (authenticated)', () => {
   let entryId
@@ -432,6 +486,10 @@ describe('Race Log API — DELETE (authenticated)', () => {
     })
   })
 })
+
+// ---------------------------------------------------------------------------
+// H. DELETE — Unauthenticated
+// ---------------------------------------------------------------------------
 
 describe('Race Log API — DELETE (unauthenticated)', () => {
   it('returns 401 without a session', () => {

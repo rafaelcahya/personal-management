@@ -1,10 +1,18 @@
-import { INVENTORY_ENDPOINTS } from '../../../fixtures/endpoints.js'
-import { ROUTES } from '../../../fixtures/routes.js'
+// Product Detail Page - UI E2E Tests (v1.11)
+// Covers: layout, navigation, status badge, stat cards, purchase/usage history,
+// loading and error states with retry functionality
 
-const PRODUCT_DETAIL_URL = (id) => `${ROUTES.inventory_product_list}/${id}`
+import { INVENTORY_ENDPOINTS } from '../../../fixtures/api-endpoints.js'
+const constants = require('../../../fixtures/app-constants.json')
+
+const PRODUCT_DETAIL_URL = (id) => `/main/inventory/product-list/${id}`
 const PRODUCT_DETAIL_API = INVENTORY_ENDPOINTS.PRODUCT_DETAIL
 const STOCK_HISTORY_API = INVENTORY_ENDPOINTS.PRODUCT_STOCK_HISTORY
-const PRODUCT_USAGE_HISTORY_API = INVENTORY_ENDPOINTS.PRODUCT_HISTORY
+const PRODUCT_USAGE_HISTORY_API = constants.endpoints.product.product_history
+
+// ---------------------------------------------------------------------------
+// Stub factories
+// ---------------------------------------------------------------------------
 
 const stubProductDetail = (product = {}) => {
   const defaultProduct = {
@@ -47,6 +55,10 @@ const stubUsageHistory = (products = []) => {
     body: { success: true, products },
   }).as('usageHistoryApi')
 }
+
+// ---------------------------------------------------------------------------
+// Sample data
+// ---------------------------------------------------------------------------
 
 const sampleProduct = {
   id: 1,
@@ -105,12 +117,18 @@ const sampleUsageHistory = [
   },
 ]
 
+// ===========================================================================
+// Suite
+// ===========================================================================
+
 describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', () => {
   beforeEach(() => {
     cy.loginWithBypass()
   })
 
+  // =========================================================================
   // Page Load & Navigation
+  // =========================================================================
   describe('Page Load & Navigation', () => {
     it('should load the product detail page without errors → page content is visible', () => {
       stubProductDetail()
@@ -180,7 +198,9 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
     })
   })
 
+  // =========================================================================
   // Status Badge
+  // =========================================================================
   describe('Status Badge', () => {
     it('should show "active" badge in emerald color for active products → badge displays "active" with emerald styling', () => {
       stubProductDetail({ product_status: 'active' })
@@ -216,11 +236,14 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.visit(PRODUCT_DETAIL_URL(1))
       cy.wait('@productDetailApi')
 
+      // Badge should be positioned at top right (after title)
       cy.get(`#${constants.test_ids.product_detail.status_badge}`).should('be.visible')
     })
   })
 
+  // =========================================================================
   // Stat Cards (4 cards)
+  // =========================================================================
   describe('Stat Cards', () => {
     it('should display 4 stat cards: Current Stock, Total Added, Total Spent, Usage Sessions', () => {
       stubProductDetail({ quantity: 5 })
@@ -332,6 +355,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
       cy.wait('@usageHistoryApi')
 
+      // 2 usage sessions
       cy.get(`#${constants.test_ids.product_detail.stats}`).within(() => {
         cy.contains('Usage Sessions').parent().should('contain.text', '2')
       })
@@ -358,7 +382,9 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
     })
   })
 
+  // =========================================================================
   // Purchase History Section
+  // =========================================================================
   describe('Purchase History Section', () => {
     it('should display Purchase History section with table', () => {
       stubProductDetail()
@@ -431,6 +457,7 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
       cy.wait('@productDetailApi')
       cy.wait('@stockHistoryApi')
 
+      // Should be sorted: 05 Apr, 15 Mar, 01 Feb
       cy.get(`[id="${constants.test_ids.product_detail.purchase_row}"]`)
         .first()
         .should('contain.text', '5 Apr 2026')
@@ -484,7 +511,9 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
     })
   })
 
+  // =========================================================================
   // Usage History Section
+  // =========================================================================
   describe('Usage History Section', () => {
     it('should display Usage History section', () => {
       stubProductDetail()
@@ -534,7 +563,9 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
     })
   })
 
+  // =========================================================================
   // Loading State
+  // =========================================================================
   describe('Loading State', () => {
     it('should show skeleton while data is loading', () => {
       cy.intercept('GET', PRODUCT_DETAIL_API(1), (req) => {
@@ -563,7 +594,9 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
     })
   })
 
+  // =========================================================================
   // Error State
+  // =========================================================================
   describe('Error State', () => {
     it('should show error message when API fails', () => {
       cy.intercept('GET', PRODUCT_DETAIL_API(1), {
@@ -636,7 +669,9 @@ describe('Product Detail Page UI - /main/inventory/product-list/[id] (v1.11)', (
     })
   })
 
+  // =========================================================================
   // Validation
+  // =========================================================================
   describe('Validation', () => {
     it('should validate productId as integer', () => {
       // Invalid ID should be handled gracefully

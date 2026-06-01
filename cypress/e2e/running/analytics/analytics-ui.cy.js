@@ -1,10 +1,19 @@
-import { TEST_IDS } from '../../../fixtures/test-ids.js'
-import { ROUTES } from '../../../fixtures/routes.js'
+// Covers: Analytics page UI — VO2max Trend + EF Trend sections
+//   Issues: #19 (VO2max section), #20 (EF trend section)
+//
+// AUTH STRATEGY:
+//   - Uses cy.setupApiAuthCookies() for a real Supabase session.
+//   - Stubs rt_users, activities, performance trends, and dashboard APIs.
+//   - All tests are deterministic — no real DB required.
 
-const IDS = TEST_IDS.running_analytics
-const ANALYTICS_URL = ROUTES.running_analytics
+import constants from '../../../fixtures/app-constants.json'
 
+const IDS = constants.test_ids.running_analytics
+const ANALYTICS_URL = constants.routes.running_analytics
+
+// ---------------------------------------------------------------------------
 // Shared stubs
+// ---------------------------------------------------------------------------
 
 const stubRtUsers = () => {
   cy.intercept('GET', '**/rest/v1/rt_users*', {
@@ -75,6 +84,10 @@ const visitAndWait = () => {
   cy.wait('@getActivities')
 }
 
+// ---------------------------------------------------------------------------
+// A. Auth guard
+// ---------------------------------------------------------------------------
+
 describe('Analytics UI — Auth guard', () => {
   it('unauthenticated visit redirects to /login', () => {
     cy.clearAllCookies()
@@ -83,6 +96,10 @@ describe('Analytics UI — Auth guard', () => {
     cy.url().should('include', '/login')
   })
 })
+
+// ---------------------------------------------------------------------------
+// B. VO2max trend section — empty state (#19)
+// ---------------------------------------------------------------------------
 
 describe('Analytics UI — VO2max trend section (empty state)', () => {
   beforeEach(() => {
@@ -107,6 +124,10 @@ describe('Analytics UI — VO2max trend section (empty state)', () => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// C. VO2max trend section — chart renders with data (#19)
+// ---------------------------------------------------------------------------
+
 describe('Analytics UI — VO2max trend section (with data)', () => {
   beforeEach(() => {
     cy.setupApiAuthCookies()
@@ -127,6 +148,10 @@ describe('Analytics UI — VO2max trend section (with data)', () => {
     })
   })
 })
+
+// ---------------------------------------------------------------------------
+// D. EF trend section — empty state (#20)
+// ---------------------------------------------------------------------------
 
 describe('Analytics UI — EF trend section (empty state)', () => {
   beforeEach(() => {
@@ -150,6 +175,10 @@ describe('Analytics UI — EF trend section (empty state)', () => {
       })
   })
 })
+
+// ---------------------------------------------------------------------------
+// E. EF trend section — chart renders with data (#20)
+// ---------------------------------------------------------------------------
 
 describe('Analytics UI — EF trend section (with data)', () => {
   beforeEach(() => {

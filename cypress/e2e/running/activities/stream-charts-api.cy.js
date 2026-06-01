@@ -1,6 +1,18 @@
-import { RUNNING_ENDPOINTS } from '../../../fixtures/endpoints.js'
+// Covers: GET /api/running/v1/activities/:id/streams
+//   - 200 with valid session and real activity
+//   - response meta shape validation
+//   - 401 without session
+//   - 404 for activity not owned by user
+//   - 400 for invalid resolution param
+//   - 200 for resolution=raw and resolution=60s
+
+import constants from '../../../fixtures/app-constants.json'
 
 const STREAMS_BASE = '/api/running/v1/activities'
+
+// ---------------------------------------------------------------------------
+// A. Authenticated — happy path & meta shape
+// ---------------------------------------------------------------------------
 
 describe('Streams API — Authenticated', () => {
   let activityId
@@ -8,7 +20,7 @@ describe('Streams API — Authenticated', () => {
   before(() => {
     cy.setupApiAuthCookies()
     // Get the first available activity ID for this user
-    cy.apiRequestWithSession('GET', RUNNING_ENDPOINTS.ACTIVITIES).then((res) => {
+    cy.apiRequestWithSession('GET', constants.endpoints.running_manual.activities).then((res) => {
       expect(res.status).to.eq(200)
       const activities = res.body?.data ?? res.body
       if (Array.isArray(activities) && activities.length > 0) {
@@ -67,6 +79,10 @@ describe('Streams API — Authenticated', () => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// B. Auth — 401 without session
+// ---------------------------------------------------------------------------
+
 describe('Streams API — Unauthenticated', () => {
   it('returns 401 when no session is present', () => {
     cy.clearAllCookies()
@@ -80,6 +96,10 @@ describe('Streams API — Unauthenticated', () => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// C. Ownership — 404 for activity not belonging to user
+// ---------------------------------------------------------------------------
+
 describe('Streams API — Ownership check', () => {
   beforeEach(() => {
     cy.setupApiAuthCookies()
@@ -92,6 +112,10 @@ describe('Streams API — Ownership check', () => {
     })
   })
 })
+
+// ---------------------------------------------------------------------------
+// D. Validation — 400 for invalid resolution
+// ---------------------------------------------------------------------------
 
 describe('Streams API — Input validation', () => {
   beforeEach(() => {
