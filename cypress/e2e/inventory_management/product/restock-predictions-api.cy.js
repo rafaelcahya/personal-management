@@ -1,5 +1,3 @@
-const constants = require('../../../fixtures/app-constants.json')
-
 describe('GET Restock Predictions API - /api/inventory/v1/product/restock-predictions', () => {
   before(() => {
     cy.setupApiAuthCookies()

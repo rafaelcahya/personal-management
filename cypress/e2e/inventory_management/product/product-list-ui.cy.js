@@ -1,20 +1,14 @@
-// Product List Page - UI E2E Tests
-// Covers: sticky controls bar, edit/record usage dialogs, usage log duration,
-// mobile card layout, and English localization
+import { INVENTORY_ENDPOINTS } from '../../../fixtures/endpoints.js'
+import { ROUTES } from '../../../fixtures/routes.js'
+import { TEST_IDS } from '../../../fixtures/test-ids.js'
 
-import { INVENTORY_ENDPOINTS } from '../../../fixtures/api-endpoints.js'
-const constants = require('../../../fixtures/app-constants.json')
-
-const PRODUCT_LIST_URL = '/main/inventory/product-list'
+const constants = { test_ids: TEST_IDS }
+const PRODUCT_LIST_URL = ROUTES.inventory_product_list
 const PRODUCT_LIST_API = INVENTORY_ENDPOINTS.PRODUCT_LIST
 const PRODUCT_SUMMARY_API = INVENTORY_ENDPOINTS.PRODUCT_SUMMARY
 const PRODUCT_BRAND_LIST_API = INVENTORY_ENDPOINTS.PRODUCT_BRAND_LIST
 const PRODUCT_NAME_LIST_API = INVENTORY_ENDPOINTS.PRODUCT_NAME_LIST
 const PRODUCT_HISTORY_DETAIL_API = INVENTORY_ENDPOINTS.PRODUCT_HISTORY_DETAIL('**')
-
-// ---------------------------------------------------------------------------
-// Stub factories
-// ---------------------------------------------------------------------------
 
 const stubProductList = (products = []) => {
   cy.intercept('GET', PRODUCT_LIST_API, {
@@ -68,10 +62,6 @@ const stubRestockPredictions = (data = []) => {
     body: { success: true, data },
   }).as('restockPredictionsApi')
 }
-
-// ---------------------------------------------------------------------------
-// Sample data
-// ---------------------------------------------------------------------------
 
 const sampleProduct = {
   id: 1,
@@ -133,10 +123,6 @@ const completedHistoryItem = {
   remaining_quantity: 0,
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 const openRecordUsageDialog = () => {
   // Click on the first action menu trigger
   cy.get(`#${constants.test_ids.product_list.action_menu_trigger}`).first().click({ force: true })
@@ -156,9 +142,7 @@ const openEditProductDialog = () => {
   cy.get(`#${constants.test_ids.product_list.edit_brand_select}`, { timeout: 5000 }).should('exist')
 }
 
-// ===========================================================================
 // Suite
-// ===========================================================================
 
 describe('Product List Page UI - /main/inventory/product-list', () => {
   beforeEach(() => {
@@ -166,9 +150,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     stubProductSummary({ totalProducts: 1, activeProducts: 1 })
   })
 
-  // =========================================================================
   // Page Load
-  // =========================================================================
   describe('Page Load', () => {
     it('should load the product list page without errors', () => {
       stubProductList([sampleProduct])
@@ -194,9 +176,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // Sticky Controls Bar (v1.10)
-  // =========================================================================
   describe('Sticky Controls Bar', () => {
     it('should render the controls bar → element is present on load', () => {
       stubProductList([sampleProduct])
@@ -241,9 +221,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // Language: English text only (v1.9)
-  // =========================================================================
   describe('Language: English text', () => {
     it('should display English column headers in the desktop table', () => {
       stubProductList([sampleProduct])
@@ -311,9 +289,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // Desktop Table Layout
-  // =========================================================================
   describe('Desktop Table', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -360,9 +336,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // Mobile Card Layout (v1.9)
-  // =========================================================================
   describe('Mobile Card Layout', () => {
     beforeEach(() => {
       cy.viewport(375, 812) // iPhone-6 dimensions
@@ -452,9 +426,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // Edit Product Dialog (v1.9)
-  // =========================================================================
   describe('Edit Product Dialog', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -575,9 +547,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // Record Usage Dialog (v1.9)
-  // =========================================================================
   describe('Record Usage Dialog', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -747,9 +717,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // Usage Log: Duration column and "(ongoing)" label (v1.9)
-  // =========================================================================
   describe('Usage Log - Duration Column', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -897,9 +865,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // Filter & Search
-  // =========================================================================
   describe('Filter & Search', () => {
     it('should show empty state when search yields no matches', () => {
       stubProductList([sampleProduct])
@@ -936,12 +902,8 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // P2-7: URL Param Pre-filter (v1.17)
-  // Generated by Cypress Author — 2026-05-18
-  // Covers: ?brand= and ?name= URL params pre-populate the search field so users
   // arriving from Product Brand or Product Name pages see the relevant results.
-  // =========================================================================
   describe('URL Param Pre-filter', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -1020,9 +982,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // Loading States
-  // =========================================================================
   describe('Loading States', () => {
     it('should show skeleton loading while product list API is loading', () => {
       cy.intercept('GET', PRODUCT_LIST_API, (req) => {
@@ -1036,9 +996,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // V1.11 Features: Summary Cards Clickable (P1)
-  // =========================================================================
   describe('Summary Cards - Clickable for Filter (v1.11)', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -1121,9 +1079,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // V1.11 Features: Column Sorting (P1)
-  // =========================================================================
   describe('Column Sorting (v1.11)', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -1258,9 +1214,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // V1.11 Features: Category Filter (P1)
-  // =========================================================================
   describe('Category Filter - Dynamic Types (v1.11)', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -1340,9 +1294,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // V1.11 Features: Last Purchase Price Hint (P0)
-  // =========================================================================
   describe('Add Stock Dialog - Last Purchase Price Hint (v1.11)', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -1363,10 +1315,10 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
         .find(`#${constants.test_ids.product_list.action_menu_trigger}`)
         .first()
         .click()
-      cy.get('#addStockBtn-productList').click()
+      cy.get(`#${constants.test_ids.product_list.add_stock_btn}`).click()
 
       // Should show loading hint (visible while API is delayed 3s)
-      cy.get('#addStockPopup')
+      cy.get(`#${constants.test_ids.product_list.add_stock_popup}`)
         .contains('Loading last price...', { timeout: 4000 })
         .should('be.visible')
       cy.wait('@lastPriceApi')
@@ -1392,7 +1344,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
         .find(`#${constants.test_ids.product_list.action_menu_trigger}`)
         .first()
         .click()
-      cy.get('#addStockBtn-productList').click()
+      cy.get(`#${constants.test_ids.product_list.add_stock_btn}`).click()
 
       cy.wait('@lastPriceApi')
 
@@ -1418,7 +1370,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
         .find(`#${constants.test_ids.product_list.action_menu_trigger}`)
         .first()
         .click()
-      cy.get('#addStockBtn-productList').click()
+      cy.get(`#${constants.test_ids.product_list.add_stock_btn}`).click()
 
       cy.wait('@lastPriceApi')
 
@@ -1426,9 +1378,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // V1.11 Features: Recent Purchases Section (P2)
-  // =========================================================================
   describe('Add Stock Dialog - Recent Purchases Section (v1.11)', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -1477,7 +1427,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
         .find(`#${constants.test_ids.product_list.action_menu_trigger}`)
         .first()
         .click()
-      cy.get('#addStockBtn-productList').click()
+      cy.get(`#${constants.test_ids.product_list.add_stock_btn}`).click()
 
       cy.wait('@stockHistoryApi')
 
@@ -1498,12 +1448,12 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
         .find(`#${constants.test_ids.product_list.action_menu_trigger}`)
         .first()
         .click()
-      cy.get('#addStockBtn-productList').click()
+      cy.get(`#${constants.test_ids.product_list.add_stock_btn}`).click()
 
       cy.wait('@stockHistoryApi')
 
       // Should show only 3 entries (most recent) — verify by counting rows with purchase data
-      cy.get('#addStockPopup').within(() => {
+      cy.get(`#${constants.test_ids.product_list.add_stock_popup}`).within(() => {
         cy.get('div.flex.items-center.justify-between.text-xs').should('have.length', 3)
       })
     })
@@ -1522,12 +1472,12 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
         .find(`#${constants.test_ids.product_list.action_menu_trigger}`)
         .first()
         .click()
-      cy.get('#addStockBtn-productList').click()
+      cy.get(`#${constants.test_ids.product_list.add_stock_btn}`).click()
 
       cy.wait('@stockHistoryApi')
 
       // Should show formatted date (05 Apr 2026), qty (2), and price (Rp 50.000)
-      cy.get('#addStockPopup').within(() => {
+      cy.get(`#${constants.test_ids.product_list.add_stock_popup}`).within(() => {
         cy.contains('5 Apr 2026').should('be.visible') // format is 'd MMM yyyy' not 'dd MMM yyyy'
         cy.contains('qty:').should('be.visible')
         cy.contains('Rp').should('be.visible')
@@ -1548,7 +1498,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
         .find(`#${constants.test_ids.product_list.action_menu_trigger}`)
         .first()
         .click()
-      cy.get('#addStockBtn-productList').click()
+      cy.get(`#${constants.test_ids.product_list.add_stock_btn}`).click()
 
       cy.wait('@stockHistoryApi')
 
@@ -1556,9 +1506,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // V1.11 Features: Note Display in Usage Log (P1)
-  // =========================================================================
   describe('Usage Log - Note Display (v1.11)', () => {
     beforeEach(() => {
       cy.viewport(1280, 800)
@@ -1671,9 +1619,7 @@ describe('Product List Page UI - /main/inventory/product-list', () => {
     })
   })
 
-  // =========================================================================
   // V1.11 Features: Restock Prediction Hint (P2)
-  // =========================================================================
   describe('Quantity Column - Restock Prediction Hint (v1.11)', () => {
     const RESTOCK_PREDICTIONS_API = INVENTORY_ENDPOINTS.PRODUCT_RESTOCK_PREDICTIONS
 

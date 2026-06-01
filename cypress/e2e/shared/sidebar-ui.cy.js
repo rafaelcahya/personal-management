@@ -1,22 +1,18 @@
-// Covers: Sidebar nav tooltips — collapsed state (#8)
-//
-// AUTH STRATEGY:
-//   - Uses cy.setupApiAuthCookies() for a real Supabase session.
-//   - Stubs inventory dashboard API so page content doesn't interfere.
-//   - Sidebar collapsed state is set via localStorage before page load.
-//
 // NOTE: Tooltip triggering uses native PointerEvent dispatch because
 // CDP-based realHover() does not reliably fire Radix UI's onPointerMove
 // handler in Cypress Electron headless mode. Dispatching a PointerEvent
 // directly on the DOM node triggers React's synthetic event delegation.
 
-import constants from '../../fixtures/app-constants.json'
+import { TEST_IDS } from '../../fixtures/test-ids.js'
+import { ROUTES } from '../../fixtures/routes.js'
+import { INVENTORY_ENDPOINTS } from '../../fixtures/endpoints.js'
 
-const IDS = constants.test_ids.sidebar
-const VISIT_URL = constants.routes.inventory
+const IDS = TEST_IDS.sidebar
+const VISIT_URL = ROUTES.inventory
+const INVENTORY_DASHBOARD_API = INVENTORY_ENDPOINTS.DASHBOARD
 
 const stubInventoryApi = () => {
-  cy.intercept('GET', '/api/inventory/v1/dashboard*', {
+  cy.intercept('GET', `${INVENTORY_DASHBOARD_API}*`, {
     statusCode: 200,
     body: { success: true, data: {} },
   }).as('getInventoryDashboard')
@@ -37,9 +33,6 @@ const hoverTriggerTooltip = (selector) => {
   cy.wait(50)
 }
 
-// ---------------------------------------------------------------------------
-// A. Auth guard
-// ---------------------------------------------------------------------------
 
 describe('Sidebar — Auth guard', () => {
   it('unauthenticated visit redirects to /login', () => {
@@ -50,9 +43,6 @@ describe('Sidebar — Auth guard', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// B. Collapsed sidebar — tooltips appear on hover
-// ---------------------------------------------------------------------------
 
 describe('Sidebar — Collapsed: tooltips visible on hover', () => {
   beforeEach(() => {
@@ -86,9 +76,6 @@ describe('Sidebar — Collapsed: tooltips visible on hover', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// C. Expanded sidebar — no tooltips on hover
-// ---------------------------------------------------------------------------
 
 describe('Sidebar — Expanded: no tooltips on hover', () => {
   beforeEach(() => {
@@ -115,9 +102,6 @@ describe('Sidebar — Expanded: no tooltips on hover', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// D. Collapse toggle — sidebar collapses and expands
-// ---------------------------------------------------------------------------
 
 describe('Sidebar — Collapse toggle', () => {
   beforeEach(() => {

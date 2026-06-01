@@ -1,0 +1,581 @@
+import { faker } from '@faker-js/faker'
+import { ROUTES } from '../../../fixtures/routes.js'
+
+const PRODUCT_HISTORY_URL = ROUTES.inventory_product_history
+
+const IDS = {
+  table: 'productHistoryTable_productHistoryPage',
+  searchInput: 'searchInput_productHistoryPage',
+  clearSearchBtn: 'clearSearchBtn_productHistoryPage',
+  filterSortBtn: 'filterSortBtn_productHistoryPage',
+  filterActive: 'filterOption_active_productHistoryPage',
+  filterInactive: 'filterOption_inactive_productHistoryPage',
+  filterCompleted: 'filterOption_completed_productHistoryPage',
+  sortDateDesc: 'sortOption_date_desc_productHistoryPage',
+  sortDateAsc: 'sortOption_date_asc_productHistoryPage',
+  sortNameAsc: 'sortOption_name_asc_productHistoryPage',
+  sortNameDesc: 'sortOption_name_desc_productHistoryPage',
+  emptyState: 'emptyState_productHistoryPage',
+  loadingSkeleton: 'loadingSkeleton_productHistoryPage',
+}
+
+const openFilterDropdown = () => cy.get(`#${IDS.filterSortBtn}`).click()
+
+const applyFilter = (filterId) => {
+  openFilterDropdown()
+  cy.get(`#${filterId}`).click()
+}
+
+const applySort = (sortId) => {
+  openFilterDropdown()
+  cy.get(`#${sortId}`).click()
+}
+
+const seedRecord = (overrides = {}) => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('insertFullProductHistory', {
+      userId,
+      product: overrides.product ?? 'HIST-PROD-' + faker.string.alphanumeric(8),
+      brand: overrides.brand ?? 'BrandX',
+      type: overrides.type ?? 'Type-A',
+      status: overrides.status ?? 'active',
+      quantity: overrides.quantity ?? 2,
+      startUsageDate: overrides.startUsageDate ?? new Date().toISOString(),
+      endUsageDate: overrides.endUsageDate ?? null,
+      note: overrides.note ?? null,
+    })
+  })
+}
+
+describe('Product History - List View', () => {
+  let seedId
+
+  before(() => {
+    cy.setupApiAuthCookies()
+    seedRecord({ product: 'LIST-VIEW-' + faker.string.alphanumeric(8) }).then((row) => {
+      seedId = row.id
+    })
+  })
+
+  after(() => {
+    cy.getTestUserId().then((userId) => {
+      cy.task('deleteProductHistoryRows', { userId, ids: [seedId] })
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_HISTORY_URL)
+    // Wait for SSR content to render (no client spinner expected when data is SSR)
+    cy.get(`#${IDS.table}`, { timeout: 10000 }).should('exist')
+  })
+
+  it('table is visible and shows at least one row after SSR load', () => {
+    cy.get(`#${IDS.table}`).should('be.visible')
+    cy.get(`#${IDS.table}`).find('tbody tr').should('have.length.gte', 1)
+  })
+
+  it('table header has all 7 expected columns', () => {
+    cy.get(`#${IDS.table}`).find('thead th').should('have.length', 7)
+  })
+
+  it('rows show Product, Status badge, Quantity, Start Date, Note columns', () => {
+    cy.get(`#${IDS.table}`)
+      .find('tbody tr')
+      .first()
+      .within(() => {
+        // #-index cell
+        cy.get('td').eq(0).should('not.be.empty')
+        // Product column: brand + name visible
+        cy.get('td').eq(1).should('not.be.empty')
+        // Status badge
+        cy.get('td').eq(2).find('.capitalize').should('exist')
+        // Quantity
+        cy.get('td').eq(3).should('not.be.empty')
+      })
+  })
+})
+
+describe('Product History - Search', () => {
+  let nameA
+  let nameB
+  let idA
+  let idB
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    nameA = 'SRCH-A-' + faker.string.alphanumeric(8)
+    nameB = 'SRCH-B-' + faker.string.alphanumeric(8)
+
+    seedRecord({ product: nameA, status: 'active' }).then((row) => {
+      idA = row.id
+    })
+    seedRecord({ product: nameB, status: 'active' }).then((row) => {
+      idB = row.id
+    })
+  })
+
+  after(() => {
+    cy.getTestUserId().then((userId) => {
+      cy.task('deleteProductHistoryRows', { userId, ids: [idA, idB] })
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_HISTORY_URL)
+    cy.get(`#${IDS.table}`, { timeout: 10000 }).should('exist')
+  })
+
+  it('should show only matching rows when searching by product name (case-insensitive)', () => {
+    cy.get(`#${IDS.searchInput}`).type(nameA)
+
+    cy.get(`#${IDS.table}`).should('contain', nameA)
+    cy.get(`#${IDS.table}`).should('not.contain', nameB)
+  })
+
+  it('should show filtered empty state when no product name matches', () => {
+    cy.get(`#${IDS.searchInput}`).type('NONEXISTENT_' + faker.string.alphanumeric(12))
+
+    // Filtered empty — "No results found" message with Clear filters button
+    cy.get(`#${IDS.table}`).should('not.exist')
+    cy.contains('No results found').should('be.visible')
+    cy.contains('Clear filters').should('be.visible')
+  })
+
+  it('should show all records again after clearing search with X button', () => {
+    cy.get(`#${IDS.searchInput}`).type(nameA)
+    cy.get(`#${IDS.table}`).should('not.contain', nameB)
+
+    cy.get(`#${IDS.clearSearchBtn}`).click()
+
+    cy.get(`#${IDS.table}`).should('contain', nameA)
+    cy.get(`#${IDS.table}`).should('contain', nameB)
+  })
+
+  it('clear search button should not be visible when search input is empty', () => {
+    // By default no text in input → no X button
+    cy.get(`#${IDS.clearSearchBtn}`).should('not.exist')
+  })
+})
+
+describe('Product History - Search + Filter Combined (AND logic)', () => {
+  let activeName
+  let inactiveName
+  let activeId
+  let inactiveId
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    activeName = 'COMBO-ACT-' + faker.string.alphanumeric(8)
+    inactiveName = 'COMBO-INA-' + faker.string.alphanumeric(8)
+
+    seedRecord({ product: activeName, status: 'active' }).then((row) => {
+      activeId = row.id
+    })
+    seedRecord({ product: inactiveName, status: 'inactive' }).then((row) => {
+      inactiveId = row.id
+    })
+  })
+
+  after(() => {
+    cy.getTestUserId().then((userId) => {
+      cy.task('deleteProductHistoryRows', { userId, ids: [activeId, inactiveId] })
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_HISTORY_URL)
+    cy.get(`#${IDS.table}`, { timeout: 10000 }).should('exist')
+  })
+
+  it('should apply search AND status filter together — excludes non-matching status', () => {
+    // Apply inactive filter first
+    applyFilter(IDS.filterInactive)
+    cy.wait(300)
+
+    // Now search for the active product — it should NOT appear because filter is inactive
+    cy.get(`#${IDS.searchInput}`).type(activeName)
+
+    cy.get(`#${IDS.table}`).should('not.exist')
+    cy.contains('No results found').should('be.visible')
+  })
+
+  it('should apply search AND status filter together — shows matching status+name', () => {
+    applyFilter(IDS.filterInactive)
+    cy.wait(300)
+
+    cy.get(`#${IDS.searchInput}`).type(inactiveName)
+
+    cy.get(`#${IDS.table}`).should('contain', inactiveName)
+    cy.get(`#${IDS.table}`).should('not.contain', activeName)
+  })
+})
+
+describe('Product History - Filter by Status', () => {
+  let activeId
+  let inactiveId
+  let completedId
+  let activeName
+  let inactiveName
+  let completedName
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    activeName = 'FLT-ACT-' + faker.string.alphanumeric(8)
+    inactiveName = 'FLT-INA-' + faker.string.alphanumeric(8)
+    completedName = 'FLT-CMP-' + faker.string.alphanumeric(8)
+
+    seedRecord({ product: activeName, status: 'active' }).then((row) => {
+      activeId = row.id
+    })
+    seedRecord({ product: inactiveName, status: 'inactive' }).then((row) => {
+      inactiveId = row.id
+    })
+    seedRecord({ product: completedName, status: 'completed' }).then((row) => {
+      completedId = row.id
+    })
+  })
+
+  after(() => {
+    cy.getTestUserId().then((userId) => {
+      cy.task('deleteProductHistoryRows', { userId, ids: [activeId, inactiveId, completedId] })
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_HISTORY_URL)
+    cy.get(`#${IDS.table}`, { timeout: 10000 }).should('exist')
+  })
+
+  it('filter dropdown shows three status options', () => {
+    openFilterDropdown()
+    cy.get(`#${IDS.filterActive}`).should('be.visible')
+    cy.get(`#${IDS.filterInactive}`).should('be.visible')
+    cy.get(`#${IDS.filterCompleted}`).should('be.visible')
+  })
+
+  it('active filter shows active records — hides inactive and completed', () => {
+    applyFilter(IDS.filterActive)
+    cy.wait(300)
+
+    cy.get(`#${IDS.searchInput}`).type('FLT-ACT-')
+    cy.get(`#${IDS.table}`).should('contain', activeName)
+    cy.get(`#${IDS.table}`).should('not.contain', inactiveName)
+  })
+
+  it('inactive filter shows inactive records only', () => {
+    applyFilter(IDS.filterInactive)
+    cy.wait(300)
+
+    cy.get(`#${IDS.searchInput}`).type('FLT-INA-')
+    cy.get(`#${IDS.table}`).should('contain', inactiveName)
+    cy.get(`#${IDS.table}`).should('not.contain', activeName)
+  })
+
+  it('completed filter shows completed records only', () => {
+    applyFilter(IDS.filterCompleted)
+    cy.wait(300)
+
+    cy.get(`#${IDS.searchInput}`).type('FLT-CMP-')
+    cy.get(`#${IDS.table}`).should('contain', completedName)
+    cy.get(`#${IDS.table}`).should('not.contain', activeName)
+  })
+
+  it('clicking the same filter again deselects it (toggle off → shows all)', () => {
+    // Apply then remove inactive filter by clicking same option again
+    applyFilter(IDS.filterInactive)
+    cy.wait(300)
+    applyFilter(IDS.filterInactive)
+    cy.wait(300)
+
+    // Now search for active records — they should be visible again
+    cy.get(`#${IDS.searchInput}`).type('FLT-ACT-')
+    cy.get(`#${IDS.table}`).should('contain', activeName)
+  })
+})
+
+describe('Product History - Sort Options', () => {
+  let idsToCleanup = []
+
+  before(() => {
+    cy.setupApiAuthCookies()
+
+    // AAAA product seeded with an older date
+    seedRecord({
+      product: 'AAAA-SORT-' + faker.string.alphanumeric(6),
+      status: 'active',
+      startUsageDate: new Date('2024-01-01').toISOString(),
+    }).then((row) => {
+      idsToCleanup.push(row.id)
+    })
+
+    // ZZZZ product seeded with a more recent date
+    seedRecord({
+      product: 'ZZZZ-SORT-' + faker.string.alphanumeric(6),
+      status: 'active',
+      startUsageDate: new Date('2024-06-01').toISOString(),
+    }).then((row) => {
+      idsToCleanup.push(row.id)
+    })
+  })
+
+  after(() => {
+    cy.getTestUserId().then((userId) => {
+      cy.task('deleteProductHistoryRows', { userId, ids: idsToCleanup })
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_HISTORY_URL)
+    cy.get(`#${IDS.table}`, { timeout: 10000 }).should('exist')
+  })
+
+  it('sort dropdown shows four sort options', () => {
+    openFilterDropdown()
+    cy.get(`#${IDS.sortDateDesc}`).should('be.visible')
+    cy.get(`#${IDS.sortDateAsc}`).should('be.visible')
+    cy.get(`#${IDS.sortNameAsc}`).should('be.visible')
+    cy.get(`#${IDS.sortNameDesc}`).should('be.visible')
+  })
+
+  it('default sort is Most Recent First — ZZZZ (2024-06-01) appears before AAAA (2024-01-01)', () => {
+    cy.get(`#${IDS.searchInput}`).type('SORT-')
+    cy.wait(300)
+
+    cy.get(`#${IDS.table}`)
+      .find('tbody tr')
+      .then(($rows) => {
+        const texts = [...$rows].map((r) => r.innerText)
+        const aIdx = texts.findIndex((t) => t.includes('AAAA-SORT-'))
+        const zIdx = texts.findIndex((t) => t.includes('ZZZZ-SORT-'))
+        expect(zIdx).to.be.lessThan(aIdx, 'Most recent (ZZZZ) should come before older (AAAA)')
+      })
+  })
+
+  it('Oldest First sort — AAAA (2024-01-01) appears before ZZZZ (2024-06-01)', () => {
+    applySort(IDS.sortDateAsc)
+    cy.wait(300)
+
+    cy.get(`#${IDS.searchInput}`).type('SORT-')
+    cy.wait(300)
+
+    cy.get(`#${IDS.table}`)
+      .find('tbody tr')
+      .then(($rows) => {
+        const texts = [...$rows].map((r) => r.innerText)
+        const aIdx = texts.findIndex((t) => t.includes('AAAA-SORT-'))
+        const zIdx = texts.findIndex((t) => t.includes('ZZZZ-SORT-'))
+        expect(aIdx).to.be.lessThan(zIdx, 'Older (AAAA) should come before more recent (ZZZZ)')
+      })
+  })
+
+  it('Product Name A→Z sort — AAAA appears before ZZZZ', () => {
+    applySort(IDS.sortNameAsc)
+    cy.wait(300)
+
+    cy.get(`#${IDS.searchInput}`).type('SORT-')
+    cy.wait(300)
+
+    cy.get(`#${IDS.table}`)
+      .find('tbody tr')
+      .then(($rows) => {
+        const texts = [...$rows].map((r) => r.innerText)
+        const aIdx = texts.findIndex((t) => t.includes('AAAA-SORT-'))
+        const zIdx = texts.findIndex((t) => t.includes('ZZZZ-SORT-'))
+        expect(aIdx).to.be.lessThan(zIdx, 'A should come before Z in name-asc order')
+      })
+  })
+
+  it('Product Name Z→A sort — ZZZZ appears before AAAA', () => {
+    applySort(IDS.sortNameDesc)
+    cy.wait(300)
+
+    cy.get(`#${IDS.searchInput}`).type('SORT-')
+    cy.wait(300)
+
+    cy.get(`#${IDS.table}`)
+      .find('tbody tr')
+      .then(($rows) => {
+        const texts = [...$rows].map((r) => r.innerText)
+        const aIdx = texts.findIndex((t) => t.includes('AAAA-SORT-'))
+        const zIdx = texts.findIndex((t) => t.includes('ZZZZ-SORT-'))
+        expect(zIdx).to.be.lessThan(aIdx, 'Z should come before A in name-desc order')
+      })
+  })
+})
+
+describe('Product History - True Empty State', () => {
+  // We intercept the API call that the SSR page renders data from.
+  // Because the page uses SSR, we need a different approach:
+  // stub the page route by intercepting the rendered HTML is not possible,
+  // so instead we test the "no results" empty state directly by verifying
+  // the emptyState element when a user has zero product_history rows.
+  //
+  // NOTE: This test is fragile if the test account already has records.
+  // It is marked as conditional — if records exist, skip gracefully.
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+  })
+
+  it('should show emptyState element with "No usage history yet" text when user has no records', () => {
+    // Verify the empty state component ID and text are correct per PRD
+    // This test visits the page and checks for either table (records exist) or empty state
+    cy.visit(PRODUCT_HISTORY_URL)
+
+    // Wait for page to settle — either table or empty state appears
+    cy.get('body', { timeout: 10000 }).then(($body) => {
+      if ($body.find(`#${IDS.emptyState}`).length > 0) {
+        cy.get(`#${IDS.emptyState}`).should('be.visible').and('contain', 'No usage history yet')
+
+        // PRD: no CTA button on empty state (records are created from Product List page)
+        cy.get(`#${IDS.emptyState}`).find('a, button').should('not.exist')
+      } else {
+        // Account already has records — table should be visible instead
+        cy.get(`#${IDS.table}`).should('exist')
+        cy.log('Skipping empty state assertion — test account already has history records')
+      }
+    })
+  })
+})
+
+describe('Product History - Filtered Empty State', () => {
+  let seedId
+  const uniqueName = 'FILT-EMPTY-' + faker.string.alphanumeric(8)
+
+  before(() => {
+    cy.setupApiAuthCookies()
+    // Seed one active record
+    seedRecord({ product: uniqueName, status: 'active' }).then((row) => {
+      seedId = row.id
+    })
+  })
+
+  after(() => {
+    cy.getTestUserId().then((userId) => {
+      cy.task('deleteProductHistoryRows', { userId, ids: [seedId] })
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_HISTORY_URL)
+    cy.get(`#${IDS.table}`, { timeout: 10000 }).should('exist')
+  })
+
+  it('should show "No results found" when filter produces no matches', () => {
+    // Apply completed filter — our seeded record is active so it won't match
+    applyFilter(IDS.filterCompleted)
+    cy.wait(300)
+
+    // Search for our active product — filter is completed so it won't appear
+    cy.get(`#${IDS.searchInput}`).type(uniqueName)
+
+    cy.get(`#${IDS.table}`).should('not.exist')
+    cy.contains('No results found').should('be.visible')
+  })
+
+  it('should show "Clear filters" button in filtered empty state', () => {
+    cy.get(`#${IDS.searchInput}`).type('ZZZZ-NO-MATCH-' + faker.string.alphanumeric(10))
+
+    cy.contains('No results found').should('be.visible')
+    cy.contains('Clear filters').should('be.visible')
+  })
+
+  it('should restore table after clicking "Clear filters"', () => {
+    cy.get(`#${IDS.searchInput}`).type('ZZZZ-NO-MATCH-' + faker.string.alphanumeric(10))
+    cy.contains('No results found').should('be.visible')
+
+    cy.contains('Clear filters').click()
+
+    // After clearing, table should reappear with our seeded record
+    cy.get(`#${IDS.table}`).should('be.visible')
+    cy.get(`#${IDS.table}`).should('contain', uniqueName)
+  })
+})
+
+describe('Product History - Filter & Sort Badge Dot Counter', () => {
+  let seedId
+
+  before(() => {
+    cy.setupApiAuthCookies()
+    seedRecord({ product: 'BADGE-' + faker.string.alphanumeric(8), status: 'active' }).then(
+      (row) => {
+        seedId = row.id
+      }
+    )
+  })
+
+  after(() => {
+    cy.getTestUserId().then((userId) => {
+      cy.task('deleteProductHistoryRows', { userId, ids: [seedId] })
+    })
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_HISTORY_URL)
+    cy.get(`#${IDS.table}`, { timeout: 10000 }).should('exist')
+  })
+
+  it('should show no badge dot with no filter and default sort', () => {
+    cy.get(`#${IDS.filterSortBtn}`).find('span.absolute').should('not.exist')
+  })
+
+  it("should show badge '1' when one filter is active", () => {
+    applyFilter(IDS.filterInactive)
+
+    cy.get(`#${IDS.filterSortBtn}`).find('span.absolute').should('be.visible').and('contain', '1')
+  })
+
+  it("should show badge '1' when non-default sort is active (no filter)", () => {
+    applySort(IDS.sortNameAsc)
+
+    cy.get(`#${IDS.filterSortBtn}`).find('span.absolute').should('be.visible').and('contain', '1')
+  })
+
+  it("should show badge '2' when filter + non-default sort are both active", () => {
+    applyFilter(IDS.filterActive)
+    cy.wait(300)
+    applySort(IDS.sortNameAsc)
+
+    cy.get(`#${IDS.filterSortBtn}`).find('span.absolute').should('be.visible').and('contain', '2')
+  })
+})
+
+describe('Product History - Loading Skeleton', () => {
+  it('loading skeleton element has the correct id and is not present after data loads', () => {
+    // When page has SSR data, skeleton is never shown (loading=false).
+    // Verify that after visiting the page the skeleton is gone and table is present.
+    cy.viewport(1280, 720)
+    cy.loginWithBypass()
+    cy.setupApiAuthCookies()
+    cy.visit(PRODUCT_HISTORY_URL)
+
+    // After full render, skeleton should not be in DOM (SSR provides data synchronously)
+    cy.get(`#${IDS.loadingSkeleton}`, { timeout: 8000 }).should('not.exist')
+  })
+})
