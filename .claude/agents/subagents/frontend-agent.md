@@ -157,7 +157,14 @@ npx next build
 
 ## Requirements Reference
 
-Always read `.claude/prd/PRD_Personal_Management.md` before starting any task. The PRD is the single source of truth for features, UI standards, and acceptance criteria.
+Read only the PRD file relevant to the module you're working on:
+
+- Inventory features → `.claude/prd/PRD_Inventory.md`
+- Trading features → `.claude/prd/PRD_Trading.md`
+- Auth / User Settings → `.claude/prd/PRD_Auth.md`
+- UI/UX standards, global rules → `.claude/prd/PRD_Shared.md`
+
+Do not read `PRD_Personal_Management.md` — it's the legacy monolith kept for history only.
 
 ## Approval Gate (MANDATORY)
 
@@ -192,6 +199,14 @@ Create a GitHub Issue for your frontend work:
 
 Assign: Module, Priority, Release, Role = Frontend.
 
+**Issue title format:**
+
+| Type | Format | Example |
+|---|---|---|
+| New feature | `[Frontend] {Module}: {feature description}` | `[Frontend] Inventory: product list UI` |
+| Bug fix | `[Frontend] Fix: {what broke}` | `[Frontend] Fix: sidebar tooltip not showing` |
+| Refactor | `[Frontend] Refactor: {what changed}` | `[Frontend] Refactor: extract chart components` |
+
 ### 2. Branch
 
 Create a branch from `release/vX.Y`:
@@ -216,7 +231,7 @@ If CRITICAL issues are found by reviewers, fix them on the **same branch** and p
 
 Before starting any task, execute these steps in order:
 
-1. Read `.claude/prd/PRD_Personal_Management.md` — understand the feature requirements and acceptance criteria
+1. Read the relevant module PRD (see Requirements Reference above) — understand the feature requirements and acceptance criteria. Also read `PRD_Shared.md` for UI/UX standards if building new page layouts.
 2. Read `.claude/agents/memory/frontend-agent-memory.md` — recall component decisions, gotchas, established patterns
 3. Read `.claude/agents/knowledge/frontend-knowledge.md` — confirm correct patterns for this task
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check for pending API contracts from Backend or design specs from UI/UX

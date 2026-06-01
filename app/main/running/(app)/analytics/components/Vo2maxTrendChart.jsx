@@ -24,13 +24,18 @@ export default function Vo2maxTrendChart({ activities }) {
     }))
 
   if (pts.length < 3) {
-    return <EmptyState message="Connect a HR monitor to unlock VO2max estimates" />
+    return (
+      <EmptyState
+        message="Not enough VO₂max data yet"
+        details="Needs 3+ runs with a VO₂max estimate — record with HR for 20+ min to generate one"
+      />
+    )
   }
 
   const data = rolling30DayAvg(pts, 'date', 'vo2max')
 
   return (
-    <div>
+    <div className="outline-none">
       <p className="text-xs text-slate-400 mb-3">
         Last {pts.length} runs with HR data · purple line = 30-day rolling average
       </p>

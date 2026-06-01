@@ -18,16 +18,11 @@
 
 <!-- Bugs found during QA that are not yet resolved — avoid re-reporting them -->
 
-| Date Found | Module                            | Bug Description                                                                                                                            | Priority | Status              |
-| ---------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------- |
-| 2026-05-13 | Auth — logout.cy.js               | Missing `id="logoutBtn"` on LogoutButton component — causes 8 test failures                                                                | P0       | Resolved 2026-05-17 |
-| 2026-05-13 | Auth — logout.cy.js               | Missing `id="userMenuTrigger_landingPage"` on UserMenu trigger — causes 6 test failures                                                    | P0       | Resolved 2026-05-17 |
-| 2026-05-13 | Auth — login.cy.js                | Session persistence redirect bug — after reload, redirects to `/main/inventory` instead of `/main/landing`                                 | P1       | Open                |
-| 2026-05-13 | Auth — session.cy.js              | `id="logoutBtn"` not found — 1 test failure in toast content verification                                                                  | P1       | Resolved 2026-05-17 |
-| 2026-05-13 | Product (multiple files)          | `cy.getAuthToken()` custom command undefined — affects 9 tests across add, list, delete, update, favorite, stock, history, detail, summary | P1       | Resolved 2026-05-17 |
-| 2026-05-13 | Product — product-detail-ui.cy.js | `cy.logout()` custom command not defined — 1 failure in auth validation test                                                               | P1       | Resolved 2026-05-17 |
-| 2026-05-13 | Product — product-detail-ui.cy.js | Element visibility clipping — status badge, purchase history, usage history elements clipped by overflow-hidden; need `.scrollIntoView()`  | P1       | Open                |
-| 2026-05-13 | Product — add-product.cy.js       | Mobile dialog form overflow — form fields covered by dialog footer (position: fixed) on mobile viewports                                   | P1       | Open                |
+| Date Found | Module                            | Bug Description                                                                                                                           | Priority | Status |
+| ---------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ |
+| 2026-05-13 | Auth — login.cy.js                | Session persistence redirect bug — after reload, redirects to `/main/inventory` instead of `/main/landing`                                | P1       | Open   |
+| 2026-05-13 | Product — product-detail-ui.cy.js | Element visibility clipping — status badge, purchase history, usage history elements clipped by overflow-hidden; need `.scrollIntoView()` | P1       | Open   |
+| 2026-05-13 | Product — add-product.cy.js       | Mobile dialog form overflow — form fields covered by dialog footer (position: fixed) on mobile viewports                                  | P1       | Open   |
 
 ---
 
@@ -51,7 +46,6 @@
 
 <!-- Classes of bugs that keep appearing across modules — signals a systemic gap -->
 
-- 2026-05-13: **Missing custom commands** — `cy.getAuthToken()` and `cy.logout()` used in tests but never defined in `cypress/support/commands.js`. Root cause: commands were planned but not implemented. Affects all product module API tests. Fix: define both commands in support/commands.js.
 - 2026-05-13: **Element visibility clipping** — elements inside scrollable containers assert `be.visible` but fail because they are clipped by CSS overflow. Seen in product-detail-ui (status badge, purchase/usage history) and add-product (mobile dialog). Fix pattern: always add `.scrollIntoView()` before visibility assertions on elements inside containers.
 
 ---
@@ -70,15 +64,12 @@
 
 - 2026-05-14: **Regression run workflow** — `npm run cy:regression` (defined in package.json, runs `cypress/run-regression.mjs`) runs 4 groups headless with live output + saves to `cypress/reports/logs/{group}.log`. Then `! npm run cy:summary` (runs `cypress/parse-results.js`) sends compact markdown into Claude conversation. Use this to update all 3 reports. Never estimate pass/fail — wait for actual output.
 - 2026-05-07: Cypress tidak support `.yaml` sebagai fixture format — `cy.fixture('app-constants')` akan gagal jika file-nya `.yaml`. File yang dipakai adalah `app-constants.json`. File `.yaml` tetap ada tapi hanya untuk human readability — selalu update keduanya jika ada perubahan constants.
-- 2026-05-07: Report conventions yang disepakati user — (1) selalu tanya dulu sebelum buat report; (2) app version diambil dari `.claude/prd/PRD_Personal_Management.md` header `Version:` field; (3) `coverage-report.md` bersifat kumulatif — jangan overwrite, hanya update/append.
+- 2026-05-07: Report conventions yang disepakati user — (1) selalu tanya dulu sebelum buat report; (2) app version diambil dari `.claude/prd/PRD_Shared.md` header `Version:` field; (3) `coverage-report.md` bersifat kumulatif — jangan overwrite, hanya update/append.
 
 ---
 
 ## Cross-Agent Signals
 
-| Date       | To Agent | Finding                                                                               | Severity | Resolution          |
-| ---------- | -------- | ------------------------------------------------------------------------------------- | -------- | ------------------- |
-| 2026-05-13 | Frontend | Add `id="logoutBtn"` to LogoutButton component in inventory + trading layouts         | CRITICAL | Resolved 2026-05-17 |
-| 2026-05-13 | Frontend | Add `id="userMenuTrigger_landingPage"` to UserMenu trigger on landing page            | CRITICAL | Resolved 2026-05-17 |
-| 2026-05-13 | Frontend | Define `cy.getAuthToken()` in `cypress/support/commands.js` — used in 9 product tests | HIGH     | Resolved 2026-05-17 |
-| 2026-05-13 | Frontend | Define `cy.logout()` in `cypress/support/commands.js` — used in product-detail-ui     | HIGH     | Resolved 2026-05-17 |
+| Date | To Agent | Finding | Severity | Resolution |
+| ---- | -------- | ------- | -------- | ---------- |
+| —    | —        | No open signals | — | — |

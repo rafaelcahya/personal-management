@@ -101,7 +101,14 @@ npx eslint app/api/ lib/services/ --fix
 
 ## Requirements Reference
 
-Always read `.claude/prd/PRD_Personal_Management.md` before starting any task. The PRD is the single source of truth for features, API standards, and data models.
+Read only the PRD file relevant to the module you're working on:
+
+- Inventory features → `.claude/prd/PRD_Inventory.md`
+- Trading features → `.claude/prd/PRD_Trading.md`
+- Auth / User Settings → `.claude/prd/PRD_Auth.md`
+- API standards, DB tables, global rules → `.claude/prd/PRD_Shared.md`
+
+Do not read `PRD_Personal_Management.md` — it's the legacy monolith kept for history only.
 
 ## Approval Gate (MANDATORY)
 
@@ -136,6 +143,14 @@ Create a GitHub Issue for your backend work:
 
 Assign: Module, Priority, Release, Role = Backend.
 
+**Issue title format:**
+
+| Type | Format | Example |
+|---|---|---|
+| New feature | `[Backend] {Module}: {feature description}` | `[Backend] Inventory: product list API` |
+| Bug fix | `[Backend] Fix: {what broke}` | `[Backend] Fix: 401 not returned on missing auth` |
+| Schema change | `[Backend] Schema: {what changed}` | `[Backend] Schema: add deleted_at to product_list` |
+
 ### 2. Branch
 
 Create a branch from `release/vX.Y`:
@@ -160,7 +175,7 @@ If CRITICAL issues are found by reviewers, fix them on the **same branch** and p
 
 Before starting any task, execute these steps in order:
 
-1. Read `.claude/prd/PRD_Personal_Management.md` — understand the feature, data model, and validation requirements
+1. Read the relevant module PRD (see Requirements Reference above) — understand the feature, data model, and validation requirements. Also read `PRD_Shared.md` for API standards if touching endpoint contracts.
 2. Read `.claude/agents/memory/backend-agent-memory.md` — recall API decisions, schema gotchas, security choices
 3. Read `.claude/agents/knowledge/backend-knowledge.md` — follow the new endpoint checklist and patterns
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check for pending endpoint gap requests from Tester

@@ -75,7 +75,7 @@ function PaceChart({ data }) {
   return (
     <div>
       <SubLabel>Pace</SubLabel>
-      <div className="h-[180px] sm:h-[210px]" id="streamChartPace_activityDetailPage">
+      <div className="h-[180px] sm:h-[210px] outline-none" id="streamChartPace_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -118,7 +118,7 @@ function HrStreamChart({ data, zones }) {
   return (
     <div>
       <SubLabel>Heart Rate</SubLabel>
-      <div className="h-[170px] sm:h-[200px]" id="streamChartHr_activityDetailPage">
+      <div className="h-[170px] sm:h-[200px] outline-none" id="streamChartHr_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -167,7 +167,10 @@ function ElevationChart({ data }) {
   return (
     <div>
       <SubLabel>Elevation</SubLabel>
-      <div className="h-[150px] sm:h-[180px]" id="streamChartElevation_activityDetailPage">
+      <div
+        className="h-[150px] sm:h-[180px] outline-none"
+        id="streamChartElevation_activityDetailPage"
+      >
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -205,7 +208,10 @@ function CadenceChart({ data }) {
   return (
     <div>
       <SubLabel>Cadence</SubLabel>
-      <div className="h-[150px] sm:h-[180px]" id="streamChartCadence_activityDetailPage">
+      <div
+        className="h-[150px] sm:h-[180px] outline-none"
+        id="streamChartCadence_activityDetailPage"
+      >
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}

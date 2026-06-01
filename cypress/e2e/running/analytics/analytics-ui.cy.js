@@ -98,11 +98,13 @@ describe('Analytics UI — VO2max trend section (empty state)', () => {
     cy.get(`#${IDS.vo2max_trend_section}`).should('exist')
   })
 
+  // Updated 2026-05-31 (cypress-author): reflects new empty state copy from fix #63
   it('shows empty state copy when no HR data', () => {
     cy.get(`#${IDS.vo2max_trend_section}`)
       .scrollIntoView()
       .within(() => {
-        cy.contains('Connect a HR monitor').should('be.visible')
+        cy.contains('Not enough VO₂max data yet').should('be.visible')
+        cy.contains('Needs 3+ runs with a VO₂max estimate').should('be.visible')
       })
   })
 })
@@ -123,7 +125,7 @@ describe('Analytics UI — VO2max trend section (with data)', () => {
 
   it('does not show empty state when ≥3 runs have VO2max data', () => {
     cy.get(`#${IDS.vo2max_trend_section}`).within(() => {
-      cy.contains('Connect a HR monitor').should('not.exist')
+      cy.contains('Not enough VO₂max data yet').should('not.exist')
     })
   })
 })
@@ -142,11 +144,13 @@ describe('Analytics UI — EF trend section (empty state)', () => {
     cy.get(`#${IDS.ef_trend_section}`).should('exist')
   })
 
+  // Updated 2026-05-31 (cypress-author): reflects new empty state copy from fix #63
   it('shows empty state copy when no EF data', () => {
     cy.get(`#${IDS.ef_trend_section}`)
       .scrollIntoView()
       .within(() => {
-        cy.contains('Efficiency Factor requires HR').should('be.visible')
+        cy.contains('Not enough Efficiency Factor data yet').should('be.visible')
+        cy.contains('Needs 3+ runs with an Efficiency Factor').should('be.visible')
       })
   })
 })
@@ -167,7 +171,7 @@ describe('Analytics UI — EF trend section (with data)', () => {
 
   it('does not show empty state when ≥3 runs have EF data', () => {
     cy.get(`#${IDS.ef_trend_section}`).within(() => {
-      cy.contains('Efficiency Factor requires HR').should('not.exist')
+      cy.contains('Not enough Efficiency Factor data yet').should('not.exist')
     })
   })
 })

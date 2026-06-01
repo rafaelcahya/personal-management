@@ -173,10 +173,9 @@ Always produce a findings report in this format:
 
 Before starting any review, execute these steps in order:
 
-1. Read `.claude/prd/PRD_Personal_Management.md` — understand the feature scope and acceptance criteria
+1. Read the relevant module PRD for the feature being reviewed: `PRD_Inventory.md`, `PRD_Trading.md`, or `PRD_Auth.md` in `.claude/prd/`. Read `PRD_Shared.md` for API standards and global rules. Do not read `PRD_Personal_Management.md`.
 2. Read `.claude/agents/knowledge/shared-knowledge.md` — recall collaboration map and response format standards
-3. Read `.claude/agents/signals/pending-signals.md` — check what Backend and Frontend reported as done (API contracts, UI Ready signals)
-4. Identify all files changed for this feature — use `pending-signals.md` as the file list
+3. Identify all files changed for this feature — ask the user or check the PR diff directly
 5. Run the Backend Checklist against all `app/api/` and `lib/services/` files
 6. Run the Frontend Checklist against all `app/main/`, `components/`, and `lib/api/` files
 7. Produce the findings report

@@ -160,7 +160,14 @@ Before handing off any design decision to the Frontend Engineer:
 
 ## Requirements Reference
 
-Always read `.claude/prd/PRD_Personal_Management.md` before producing any design output. The PRD defines the features, user stories, and acceptance criteria that design must serve.
+Read only the PRD file relevant to the module you're designing for:
+
+- Inventory features → `.claude/prd/PRD_Inventory.md`
+- Trading features → `.claude/prd/PRD_Trading.md`
+- Auth / User Settings → `.claude/prd/PRD_Auth.md`
+- UI/UX standards, design tokens, global rules → `.claude/prd/PRD_Shared.md`
+
+Do not read `PRD_Personal_Management.md` — it's the legacy monolith kept for history only.
 
 ## Approval Gate (MANDATORY)
 
@@ -191,13 +198,20 @@ UI/UX participates in planning with Frontend and Backend after PRD is approved. 
   - **Status DONE** = user sets manually after Frontend confirms design is implemented
 - Assign: Module, Priority, Release, Role = UI/UX
 
+**Issue title format:**
+
+| Type | Format | Example |
+|---|---|---|
+| New feature design | `[UI/UX] {Module}: {feature description}` | `[UI/UX] Inventory: product list filter design` |
+| Design fix / revision | `[UI/UX] Fix: {what changed}` | `[UI/UX] Fix: empty state CTA alignment` |
+
 **UI/UX does NOT create a branch.** Output is a design decision doc (text/file), not code. No PR needed.
 
 ## Kickoff Protocol
 
 Before starting any task, execute these steps in order:
 
-1. Read `.claude/prd/PRD_Personal_Management.md` — understand the feature, user stories, and acceptance criteria to design for
+1. Read the relevant module PRD (see Requirements Reference above) — understand the feature, user stories, and acceptance criteria to design for. Also read `PRD_Shared.md` for design tokens and global UI/UX standards.
 2. Read `.claude/agents/memory/uiux-agent-memory.md` — recall past design decisions, token usage, UX gaps found
 3. Read `.claude/agents/knowledge/uiux-knowledge.md` — confirm correct patterns, tokens, and component mappings
 4. Read `.claude/agents/knowledge/shared-knowledge.md` — check collaboration map and handoff format

@@ -848,7 +848,11 @@ export default function ActivityDetailPage() {
 
                   <div className="border-t border-slate-100" />
                   <div className="rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-200/60 p-4">
-                    <AIInsightCard activityId={id} />
+                    <AIInsightCard
+                      activityId={id}
+                      initialPerceivedEffort={activity?.perceived_effort ?? null}
+                      initialUserNote={activity?.user_note ?? null}
+                    />
                   </div>
 
                   <SplitsTable splits={splits} />

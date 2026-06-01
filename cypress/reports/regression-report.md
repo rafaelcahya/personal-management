@@ -1,5 +1,30 @@
 # Regression Testing Report
 
+**Date:** 2026-05-31
+**App Version:** 1.3
+**Scope:** AI Coach improvements — issue #82 (RPE input, user note, comparison selector, rotating status copy, long-wait hint)
+**Tester:** QA Agent
+
+## Summary (2026-05-31 Focused Run — AI Coach Improvements)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 36          | 36     | 0      | 0       | **100%**         |
+
+### AI Coach Improvements — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/activities/ai-coach-improvements.cy.js                         | 36    | 36     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **36** | **36** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `ai-coach-improvements.cy.js` (36 tests, NEW): Sections A–L covering all 12 improvement suites from PR #79 (Backend) + PR #80 (Frontend). Section A (5 tests): RPE radiogroup role, 10 pill buttons, labels 1–10, click selects, deselects previous. Section B (4 tests): user note input exists, accepts text, character count updates, capped at 200 chars. Section C (2 tests): context zone visible before generate, collapses to pending state after POST. Section D (2 tests): context zone visible in empty state, absent in pending state. Section E (5 tests): Performance & Pace, Recovery & Load, Race Tips, Next Training buttons render; ≥4 buttons total. Section F (2 tests): loading skeleton before fetch resolves, pending shimmer when status=pending. Section G (1 test): rotating copy at 0s ("Reading your run data...") and at 6s ("Analyzing pace, HR zones, and splits..."). Section H (2 tests): long-wait hint hidden before 60s, visible after 60s with "Try again" button. Section I (4 tests): compare section and trigger render in content state, trigger contains expected text, Get Recommendation absent without selection. Section J (2 tests): compare trigger opens Popover on desktop (1280×720), Sheet variant absent on desktop. Section K (3 tests): comparison command container inside popover, activity list shows dates in "May 20" format (en-US locale), selecting activity closes popover and shows compare pill. Section L (4 tests): Get Recommendation absent before selection, appears after selection, fires POST with `focus: "compare_activity"`, transitions card to pending after POST.
+
+---
+
+## Previous Run — 2026-05-30 Focused Run — v1.2 Milestone
+
 **Date:** 2026-05-30
 **App Version:** 1.2
 **Scope:** v1.2 milestone frontend fixes — issues #33, #34, #37, #42, #44, #47, #55, #56
@@ -520,6 +545,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-05-31 | AI Coach Improvements (issue #82)    | 36    | 36     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log full re-run (2 spec files)  | 72    | 72     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log Search + Filter (+13 tests) | 51    | 51     | 0       | 0      | 100%        |
 | 2026-05-28 | Running Tracker Race Log (fix)       | 59    | 59     | 0       | 0      | 100%        |

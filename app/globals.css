@@ -3,79 +3,85 @@
 @tailwind utilities;
 
 @layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --black: 0 0% 0%; /* black */
-        --slate-foreground: 215 16% 47%; /* slate-500 */
-        --primary: 262 83% 58%; /* violet-500 */
-        --primary-foreground: 0 0% 98%; /* white */
-        --primary-hover: 263 70% 50%; /* violet-700 */
-        --secondary: 250 100% 98%; /* violet-50 */
-        --secondary-foreground: 262 83% 58%; /* violet-500 */
-        --secondary-hover: 251 91% 95%; /* violet-100 */
-        --tertiary: 214 100% 97%; /* blue-50 */
-        --tertiary-foreground: 217 91% 60%; /* blue-500 */
-        --tertiary-hover: 214 95% 93%; /* blue-100 */
-        --trade-profit: 138 76% 97%; /* green-50 */
-        --trade-profit-foreground: 160 84% 39%; /* green-500 */
-        --trade-loss: 0 86% 97%; /* red-50 */
-        --trade-loss-foreground: 0 84% 60%; /* red-500 */
-        --trade-warning: 33 100% 96%; /* orange-50 */
-        --trade-warning-foreground: 25 95% 53%; /* orange-500 */
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
-    }
-    .dark {
-        --background: 0 0% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 0 0% 14.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 14.9%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 14.9%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.9%;
-        --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --black: 0 0% 0%; /* black */
+    --slate-foreground: 215 16% 47%; /* slate-500 */
+    --primary: 262 83% 58%; /* violet-500 */
+    --primary-foreground: 0 0% 98%; /* white */
+    --primary-hover: 263 70% 50%; /* violet-700 */
+    --secondary: 250 100% 98%; /* violet-50 */
+    --secondary-foreground: 262 83% 58%; /* violet-500 */
+    --secondary-hover: 251 91% 95%; /* violet-100 */
+    --tertiary: 214 100% 97%; /* blue-50 */
+    --tertiary-foreground: 217 91% 60%; /* blue-500 */
+    --tertiary-hover: 214 95% 93%; /* blue-100 */
+    --trade-profit: 138 76% 97%; /* green-50 */
+    --trade-profit-foreground: 160 84% 39%; /* green-500 */
+    --trade-loss: 0 86% 97%; /* red-50 */
+    --trade-loss-foreground: 0 84% 60%; /* red-500 */
+    --trade-warning: 33 100% 96%; /* orange-50 */
+    --trade-warning-foreground: 25 95% 53%; /* orange-500 */
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
 }
 
 @layer base {
-    * {
-        @apply border-border;
-    }
-    body {
-        @apply bg-background text-foreground;
-    }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.recharts-wrapper,
+.recharts-wrapper svg,
+.recharts-wrapper *:focus {
+  outline: none;
 }
