@@ -9,14 +9,14 @@
 
 - **Domains**: Inventory Management, Stock Trading
 - **Tech**: Next.js 15, Supabase, Claude Sonnet 4.6
-- **PRD location**: `.claude/prd/PRD_Personal_Management.md` (single source of truth — you own this)
+- **PRD location**: `.claude/prd/` — split by module: `PRD_Inventory.md`, `PRD_Trading.md`, `PRD_Auth.md`, `PRD_Shared.md`, `PRD_Running_Tracker.md` (you own all of these)
 - **Users**: Individual users managing personal inventory and stock portfolio
 
 ---
 
 ## 1. PRD Feature Section Template
 
-Every new feature added to `.claude/prd/PRD_Personal_Management.md` must follow this structure:
+Every new feature added to the relevant PRD file must follow this structure:
 
 ```markdown
 ## Feature: [Feature Name]
