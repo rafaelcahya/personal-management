@@ -1,7 +1,5 @@
 import { faker } from '@faker-js/faker'
 
-const constants = require('../../../fixtures/app-constants.json')
-
 describe('GET Last Purchase Price API - /api/inventory/v1/product/[id]/last-price', () => {
   let validProductListId
   let createdProduct

@@ -1,16 +1,10 @@
-// Covers: StreamCharts component on the Activity Detail page
-//   /main/running/activities/:id — loading, happy path, empty, error, retry,
-//   partial data, accessibility
+import { TEST_IDS } from '../../../fixtures/test-ids.js'
 
-import constants from '../../../fixtures/app-constants.json'
-
-const IDS = constants.test_ids.running_activity_detail
+const IDS = TEST_IDS.running_activity_detail
 const ACTIVITY_ID = 'test-activity-id-stream'
 const DETAIL_URL = `/main/running/activities/${ACTIVITY_ID}`
 
-// ---------------------------------------------------------------------------
 // Fixtures
-// ---------------------------------------------------------------------------
 
 const activityFixture = {
   activity: {
@@ -66,9 +60,7 @@ const streamFixture = {
   ],
 }
 
-// ---------------------------------------------------------------------------
 // Helpers
-// ---------------------------------------------------------------------------
 
 const stubRtUsers = () => {
   cy.intercept('GET', '**/rest/v1/rt_users*', {
@@ -98,10 +90,6 @@ const stubStreams = (body, statusCode = 200) => {
   }).as('getStreams')
 }
 
-// ---------------------------------------------------------------------------
-// A. Auth guard
-// ---------------------------------------------------------------------------
-
 describe('Activity Detail StreamCharts — Auth Guard', () => {
   it('unauthenticated visit redirects to /login', () => {
     cy.clearAllCookies()
@@ -110,10 +98,6 @@ describe('Activity Detail StreamCharts — Auth Guard', () => {
     cy.url().should('include', '/login')
   })
 })
-
-// ---------------------------------------------------------------------------
-// B. Loading state
-// ---------------------------------------------------------------------------
 
 describe('Activity Detail StreamCharts — Loading state', () => {
   it('shows stream charts skeleton while fetch is in-flight', () => {
@@ -135,10 +119,6 @@ describe('Activity Detail StreamCharts — Loading state', () => {
     cy.get(`#${IDS.stream_charts_loading}`).should('exist')
   })
 })
-
-// ---------------------------------------------------------------------------
-// C. Happy path — all three charts render
-// ---------------------------------------------------------------------------
 
 describe('Activity Detail StreamCharts — Happy path', () => {
   beforeEach(() => {
@@ -173,10 +153,6 @@ describe('Activity Detail StreamCharts — Happy path', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// D. Empty state
-// ---------------------------------------------------------------------------
-
 describe('Activity Detail StreamCharts — Empty state', () => {
   it('shows empty state when stream data is empty', () => {
     cy.setupApiAuthCookies()
@@ -205,10 +181,6 @@ describe('Activity Detail StreamCharts — Empty state', () => {
     cy.get(`#${IDS.stream_chart_elevation}`).should('not.exist')
   })
 })
-
-// ---------------------------------------------------------------------------
-// E. Error state & retry
-// ---------------------------------------------------------------------------
 
 describe('Activity Detail StreamCharts — Error state', () => {
   it('shows error state when stream fetch fails', () => {
@@ -252,10 +224,6 @@ describe('Activity Detail StreamCharts — Error state', () => {
     cy.get(`#${IDS.stream_charts_section}`).should('exist')
   })
 })
-
-// ---------------------------------------------------------------------------
-// F. Partial data
-// ---------------------------------------------------------------------------
 
 describe('Activity Detail StreamCharts — Partial data', () => {
   it('hides HR chart when has_hr is false', () => {
@@ -316,10 +284,6 @@ describe('Activity Detail StreamCharts — Partial data', () => {
     cy.get(`#${IDS.stream_chart_hr}`).should('exist')
   })
 })
-
-// ---------------------------------------------------------------------------
-// G. Accessibility
-// ---------------------------------------------------------------------------
 
 describe('Activity Detail StreamCharts — Accessibility', () => {
   it('loading skeleton has aria-label', () => {
