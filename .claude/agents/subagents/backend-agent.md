@@ -136,6 +136,14 @@ Create a GitHub Issue for your backend work:
 
 Assign: Module, Priority, Release, Role = Backend.
 
+**Issue title format:**
+
+| Type | Format | Example |
+|---|---|---|
+| New feature | `[Backend] {Module}: {feature description}` | `[Backend] Inventory: product list API` |
+| Bug fix | `[Backend] Fix: {what broke}` | `[Backend] Fix: 401 not returned on missing auth` |
+| Schema change | `[Backend] Schema: {what changed}` | `[Backend] Schema: add deleted_at to product_list` |
+
 ### 2. Branch
 
 Create a branch from `release/vX.Y`:

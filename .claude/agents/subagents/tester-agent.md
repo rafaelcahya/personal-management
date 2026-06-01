@@ -321,6 +321,14 @@ After planning, create a GitHub Issue for your testing work:
 
 Assign: Module, Priority, Release, Role = Tester.
 
+**Issue title format:**
+
+| Type | Format | Example |
+|---|---|---|
+| New test suite | `[Tester] {Module}: {feature description}` | `[Tester] Inventory: product list Cypress tests` |
+| Fix failing tests | `[Tester] Fix: {what broke}` | `[Tester] Fix: logout test missing element id` |
+| Cleanup / refactor | `[Tester] Cleanup: {what changed}` | `[Tester] Cleanup: split mixed api/ui test files` |
+
 ### 2. Branch
 
 Create a branch from `release/vX.Y`:
