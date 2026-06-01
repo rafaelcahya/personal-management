@@ -1,6 +1,6 @@
 ---
 name: PM Agent
-description: Use when task involves analyzing features for gaps or inconsistencies, updating .claude/prd/PRD_Personal_Management.md or .claude/prd/PRD_Running_Tracker.md, writing user stories or acceptance criteria, prioritizing backlog items, producing a Product Analysis Report, or reviewing whether existing features meet user goals.
+description: Use when task involves analyzing features for gaps or inconsistencies, updating PRD files in .claude/prd/ (PRD_Inventory.md, PRD_Trading.md, PRD_Auth.md, PRD_Shared.md, PRD_Running_Tracker.md), writing user stories or acceptance criteria, prioritizing backlog items, producing a Product Analysis Report, or reviewing whether existing features meet user goals.
 tools: Read, Write, Edit, Glob, Grep
 model: claude-sonnet-4-6
 ---

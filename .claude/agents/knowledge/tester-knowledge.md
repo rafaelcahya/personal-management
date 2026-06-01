@@ -50,7 +50,7 @@ Only generate if user confirms. If user says no, skip both.
 ### Regression Report (`cypress/reports/regression-report.md`)
 
 - Overwrite each run — reflects the latest run only
-- Always include `**App Version:**` — read from `.claude/prd/PRD_Personal_Management.md` → `Version:` field in the header
+- Always include `**App Version:**` — read from `.claude/prd/PRD_Shared.md` → `Version:` field in the header
 
 ### Coverage Report (`cypress/reports/coverage-report.md`)
 
@@ -61,7 +61,7 @@ Only generate if user confirms. If user says no, skip both.
   - Never delete existing rows — mark removed features as `[DEPRECATED]`
   - Append new entries to Automated Test Cases table
   - Recalculate Coverage Summary totals to reflect cumulative state
-- Always include `**App Version:**` — read from `.claude/prd/PRD_Personal_Management.md`
+- Always include `**App Version:**` — read from `.claude/prd/PRD_Shared.md`
 
 ### Test Status Report (`cypress/reports/test-status-report.md`)
 
@@ -91,9 +91,9 @@ Read the component file and identify every element that needs to be:
 - Asserted (tables, error messages, empty states, skeletons, toasts)
 - Navigated via keyboard
 
-### Step 2 — Check against app-constants.yaml
+### Step 2 — Check against app-constants.json
 
-Cross-reference each element against `cypress/fixtures/app-constants.yaml`.
+Cross-reference each element against `cypress/fixtures/app-constants.json` under `test_ids`.
 
 ### Step 3 — If id is missing, request it from Frontend Agent
 
@@ -106,7 +106,7 @@ Missing IDs:
   - [id-value] → [which element: e.g., "the main <table> element"]
   - [id-value] → [which element: e.g., "the row-level actions dropdown"]
 Needed for: [test file name, e.g., cypress/e2e/inventory/create-item.cy.js]
-Action: Please add these id attributes and register them in cypress/fixtures/app-constants.yaml
+Action: Please add these id attributes and register them in cypress/fixtures/app-constants.json
         under test_ids.[module].[key]
 ```
 
@@ -114,7 +114,7 @@ Wait for Frontend Agent to confirm before writing the test.
 
 ### Step 4 — After Frontend adds the IDs
 
-Verify the IDs are added in both the component file and `app-constants.yaml`, then proceed.
+Verify the IDs are added in both the component file and `app-constants.json`, then proceed.
 
 ---
 
@@ -160,7 +160,7 @@ Action: Please add handling for these cases so tests can assert the correct beha
 ## 1. Test File Structure
 
 ```js
-// cypress/e2e/inventory/create-item.cy.js
+// cypress/e2e/inventory/create-item-api.cy.js  (API-only) or create-item-ui.cy.js (UI-only)
 import { recurse } from 'cypress-recurse' // if needed for retries
 
 describe('Inventory — Create Item', () => {
@@ -173,12 +173,8 @@ describe('Inventory — Create Item', () => {
   })
 
   beforeEach(() => {
-    cy.loginBypass()
+    cy.loginWithBypass()        // login + enable bypass in one call
     cy.visit(C.routes.inventory)
-  })
-
-  afterEach(() => {
-    cy.cleanupInventory()
   })
 
   it('should create an item successfully', () => {
@@ -209,20 +205,23 @@ describe('Inventory — Create Item', () => {
 
 ## 2. Auth Bypass Command
 
+Auth commands live in `cypress/support/common/commands.js`. For most tests, use `cy.loginWithBypass()`:
+
 ```js
-// cypress/support/commands.js
-Cypress.Commands.add('loginBypass', () => {
-  cy.fixture('app-constants').then((C) => {
-    cy.request({
-      method: 'POST',
-      url: C.endpoints.auth.cypress_login,
-      body: { secret: Cypress.env('CYPRESS_AUTH_SECRET') },
-    }).then((res) => {
-      expect(res.status).to.eq(200)
-    })
-  })
-})
+// Standard — login + bypass in one call (most tests use this)
+cy.loginWithBypass()
+
+// Or separately when you need fine-grained control:
+cy.login()           // full Supabase session via TEST_EMAIL + TEST_PASSWORD
+cy.enableBypass()    // sets cypress-bypass cookie with CYPRESS_AUTH_SECRET
+
+// Auth guard test — verify redirect when not authenticated
+cy.clearAuth()       // clears session + cookies (equivalent to logout)
+cy.visit(C.routes.inventory, { failOnStatusCode: false })
+cy.url().should('include', C.routes.login)
 ```
+
+Required env vars: `TEST_EMAIL`, `TEST_PASSWORD`, `CYPRESS_AUTH_SECRET` (in `cypress.config.js` via `.env.local`)
 
 ---
 
@@ -358,17 +357,37 @@ it('should be keyboard accessible', () => {
 
 ## 10. Custom Commands Reference
 
-```js
-// cypress/support/commands.js — all reusable flows go here, never inline
+### Auth commands — `cypress/support/common/commands.js`
 
-cy.loginBypass()              // Auth: bypass Supabase SSR auth using CYPRESS_AUTH_SECRET
-cy.seedInventory(items?)      // DB: insert test inventory items (uses seed defaults from app-constants)
-cy.cleanupInventory()         // DB: delete all test data created in this test run
-cy.seedTrades(trades?)        // DB: insert test trades
-cy.cleanupTrades()            // DB: delete test trades
-cy.visitInventory()           // Shorthand: loginBypass + visit inventory route
-cy.visitTrading()             // Shorthand: loginBypass + visit trading route
+```js
+cy.login(email?, password?)       // Full Supabase login — creates + caches session via cy.session()
+cy.loginWithBypass(email?, password?) // login + enableBypass in one call — use this for most tests
+cy.enableBypass()                 // Sets cypress-bypass cookie using CYPRESS_AUTH_SECRET
+cy.disableBypass()                // Removes bypass cookie — use to test auth-guarded paths
+cy.getSession()                   // Returns session object from localStorage (or null)
+cy.getAuthToken()                 // Returns access_token string from localStorage (or null)
+cy.clearAuth()                    // Clears session, token, and all cookies — equivalent to logout
 ```
+
+### Domain API commands — `cypress/support/common/{module}/api-commands.js`
+
+Domain commands follow PascalCase and wrap the actual API endpoints. Examples:
+
+```js
+// Inventory — product
+cy.AddProduct(body)               // POST /api/inventory/v1/product/create
+cy.AddProductNoAuth(body)         // same, without auth (expect 401)
+cy.GetProductList()               // GET /api/inventory/v1/product/list
+cy.GetProductDetail(id)           // GET /api/inventory/v1/product/:id
+// ... more in cypress/support/common/inventory/product/api-commands.js
+
+// Trading, fee, event — same pattern in their respective folders
+// cypress/support/common/trade/api-commands.js
+// cypress/support/common/fee/api-commands.js
+// cypress/support/common/event/api-commands.js
+```
+
+Before writing a test, grep the relevant `api-commands.js` for available commands — never call `cy.request()` directly for endpoints that already have a command.
 
 When a flow is used in 2+ test files, extract it into a custom command — never repeat it inline.
 
@@ -384,15 +403,66 @@ Project sudah punya dua layer task untuk DB access:
 
 **Layer 1 — Domain-specific tasks** (selalu gunakan ini lebih dulu):
 
+All tasks are registered via `cypress/plugin/tasks/index.js`. Available tasks per module:
+
 ```js
-// cypress/plugin/tasks/ → domain-specific queries, lebih ekspresif
+// ── Product ──────────────────────────────────────────────────────────────
 cy.task('getSingleProductFromDb', { productId, userId })
-cy.task('getProductListFromDb', { userId })
+cy.task('getSingleProductIncludeDeletedFromDb', { productId, userId })
 cy.task('getTotalProductsFromDb', { userId })
+cy.task('getProductListFromDb', { userId })
+cy.task('getProductSummaryFromDb', { userId })
 cy.task('getProductWithQuantityFromDb', { productId, userId })
 cy.task('getLatestProductHistoryFromDb', { productId, userId })
+cy.task('getProductHistoryCountFromDb', { productId, userId })
 cy.task('getProductFavoriteStatusFromDb', { productId, userId })
-cy.task('getSingleProductIncludeDeletedFromDb', { productId, userId })
+cy.task('setProductQuantityInDb', { productId, quantity })
+cy.task('insertProductHistory', { productListId, userId, startUsageDate, depletedQuantity })
+cy.task('insertFullProductHistory', record)   // for UI test seeding
+cy.task('deleteProductHistoryRows', { userId, ids? })
+
+// ── Product Brand ─────────────────────────────────────────────────────────
+cy.task('getSingleProductBrandFromDb', { brandId, userId })
+cy.task('getTotalProductBrandsFromDb', { userId })
+cy.task('getActiveProductCountByBrandFromDb', { brandId, userId })
+
+// ── Product Name ──────────────────────────────────────────────────────────
+cy.task('getSingleProductNameFromDb', { nameId, userId })
+cy.task('getTotalProductNamesFromDb', { userId })
+
+// ── Product Quantity / Stock ──────────────────────────────────────────────
+cy.task('getLatestProductQuantityFromDb', { productId, userId })
+cy.task('getProductQuantityCountFromDb', { productId, userId })
+cy.task('getProductQuantityListFromDb', { productId, userId })
+cy.task('getProductQuantityHistoryFromDb', { productId, userId })
+cy.task('getLastPurchasePriceFromDb', { productId, userId })
+cy.task('getActiveProductsWithHistoryFromDb', { userId })
+
+// ── Trade ─────────────────────────────────────────────────────────────────
+cy.task('getSingleTradeFromDb', { tradeId, userId })
+cy.task('getTradesFromDb', { userId })
+cy.task('getTotalTradesFromDb', { userId })
+cy.task('getTotalWinsFromDb', { userId })
+cy.task('getTotalLossesFromDb', { userId })
+cy.task('getStockTypeSummaryFromDb', { userId })
+cy.task('getEntrySessionSummaryFromDb', { userId })
+cy.task('getEntryOccasionSummaryFromDb', { userId })
+cy.task('getOptionFromDbTask', { tradeId, userId })
+
+// ── Fee ───────────────────────────────────────────────────────────────────
+cy.task('getSingleFeeFromDb', { feeId, userId })
+cy.task('getFeesFromDb', { userId })
+cy.task('getTotalFeesFromDb', { userId })
+cy.task('getTotalFeesPaidFromDb', { userId })
+
+// ── Event ─────────────────────────────────────────────────────────────────
+cy.task('getSingleEventFromDb', { eventId, userId })
+cy.task('getEventsFromDb', { userId })
+cy.task('getEventSummaryFromDb', { userId })
+
+// ── Auth ──────────────────────────────────────────────────────────────────
+cy.task('getSupabaseSession', { email, password })
+cy.task('createTestUser', { email, password })
 ```
 
 **Layer 2 — Generic task** (untuk kasus yang belum punya domain task):
@@ -512,7 +582,7 @@ cy.wait('@getList').its('response.body.data.items').should('have.length.gt', 0)
 
 ---
 
-## 12. Run Commands Reference
+## 13. Run Commands Reference
 
 ```bash
 # Run a single spec headless
@@ -527,7 +597,7 @@ npx is-port-free 3000
 
 ---
 
-## 13. CI — GitHub Actions
+## 14. CI — GitHub Actions
 
 Workflow: `.github/workflows/cypress.yml`
 Trigger: setiap **push** dan **pull request** ke branch `master`
