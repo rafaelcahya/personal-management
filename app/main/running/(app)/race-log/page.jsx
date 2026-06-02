@@ -14,13 +14,14 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { fmtDistance } from '../dashboard/utils/format'
-import { fetchRaceLog } from '@/lib/api/running'
+import { fetchRaceLog, fetchUpcomingRaces } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
 import RaceFormModal from './components/RaceFormModal'
 import ActivityPickerDialog from './components/ActivityPickerDialog'
 import RaceConfirmDialog from './components/RaceConfirmDialog'
 import { getDistanceLabel, secsToHMS, secsToMMSS, formatDate } from './components/raceLogUtils'
+import UpcomingRacesSection from './components/UpcomingRacesSection'
 
 const DISTANCE_BUCKETS = [
   { key: '5k', label: '5K', min: 4500, max: 5499 },
@@ -48,6 +49,9 @@ export default function RaceLogPage() {
   const [pagePickerOpen, setPagePickerOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [pendingActivity, setPendingActivity] = useState(null)
+
+  const [upcomingRaces, setUpcomingRaces] = useState([])
+  const [upcomingLoading, setUpcomingLoading] = useState(true)
 
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
@@ -87,6 +91,10 @@ export default function RaceLogPage() {
 
   useEffect(() => {
     load()
+    fetchUpcomingRaces()
+      .then((res) => setUpcomingRaces(res.data ?? []))
+      .catch(() => {})
+      .finally(() => setUpcomingLoading(false))
   }, [])
 
   function openAddFromActivity(activity) {
@@ -105,6 +113,20 @@ export default function RaceLogPage() {
       }
       return [newOrUpdated, ...prev]
     })
+  }
+
+  function handleUpcomingAdd(race) {
+    setUpcomingRaces((prev) =>
+      [race, ...prev].sort((a, b) => new Date(a.race_date) - new Date(b.race_date))
+    )
+  }
+
+  function handleUpcomingUpdated(race) {
+    setUpcomingRaces((prev) => prev.map((r) => (r.id === race.id ? race : r)))
+  }
+
+  function handleUpcomingDeleted(id) {
+    setUpcomingRaces((prev) => prev.filter((r) => r.id !== id))
   }
 
   return (
@@ -140,6 +162,14 @@ export default function RaceLogPage() {
           </Button>
         </div>
       </div>
+
+      <UpcomingRacesSection
+        races={upcomingRaces}
+        loading={upcomingLoading}
+        onAdd={handleUpcomingAdd}
+        onUpdated={handleUpcomingUpdated}
+        onDeleted={handleUpcomingDeleted}
+      />
 
       {/* Error */}
       {!loading && error && (
