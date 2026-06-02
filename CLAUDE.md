@@ -51,82 +51,106 @@ All agent files are in `.claude/agents/subagents/`.
 ## Standard Feature Workflow
 
 ```
-Phase 1: PM + Researcher → Phase 2: UI/UX + Frontend + Backend → Phase 3: Code Reviewer + Security Reviewer → Phase 4: Tester → Phase 5: Merge to master
+Phase 1: PM + Researcher + UI/UX → Phase 2: Backend + Frontend (1 branch, 1 issue) → Phase 3: Code Reviewer + Security Reviewer → Phase 4: Tester → Phase 5: Merge to master
 ```
 
-### Phase 1 — PM + Researcher (Feature Discovery & PRD)
+### Phase 1 — Discovery (PM + Researcher + UI/UX)
 
-1. PM and Researcher discuss features to develop — both create a **GitHub Issue** to track the discussion
-   - Status **TODO** = actively discussing what to build
-   - Status **IN PROGRESS** = writing PRD from the discussion output
-   - Status **DONE** = user manually sets after PRD is approved
-2. PM creates the milestone integration branch: `release/vX.Y`
-3. PM writes PRD; Researcher validates requirements, benchmarks UX/tech
-4. User reviews and approves PRD → manually sets issue status to **DONE**
+1. Orchestrator triggers PM, Researcher, and UI/UX to elaborate the task together
+2. PM writes PRD; Researcher validates requirements and benchmarks UX/tech; UI/UX produces design spec
+3. PM **creates a single GitHub Issue** for the feature using the standard issue format (see below)
+4. PM **notifies the user** that the issue is ready — user reviews and forwards the issue to developers
+5. User reviews and approves PRD before development starts
 
-### Phase 2 — UI/UX + Frontend + Backend (Planning & Development)
+### Phase 2 — Development (Backend + Frontend)
 
-After PRD is approved:
+After user shares the issue:
 
-1. UI/UX, Frontend, and Backend do planning together based on the PRD
-2. After planning, each agent creates a **GitHub Issue** for their own work:
-   - Status **TODO** = planning done, ready to start
-   - Status **IN PROGRESS** = actively developing
-   - Status **DONE** = user manually sets after Tester confirms 100% pass
-3. **PM creates a feature branch** from `release/vX.Y` for multi-agent features: `feature/issue-{n}-{desc}`
-4. **UI/UX** — produces design decision doc; no branch needed (design spec output only)
-5. **Backend** — builds API endpoints; creates branch from `feature/issue-{n}-{desc}`
-6. **Frontend** — builds UI using design spec + API contract; creates branch from `feature/issue-{n}-{desc}`
-7. After development done: push branch to remote and create PR targeting `feature/issue-{n}-{desc}`
+1. Backend and Frontend each **analyze what needs to be done** based on the issue
+2. **[MANDATORY GATE]** Backend and Frontend **must write their task list in the GitHub issue** (Tasks section) before writing any code — coding cannot start until this is done
+3. All development happens on **one shared branch** created from `release/vX.Y`:
+   - Branch name: `feat/issue-{n}-{short-description}`
+4. Backend builds API endpoints; Frontend builds UI — both push to the same branch
+5. After development is done: push branch, create PR targeting `release/vX.Y`
 
 ### Phase 3 — Code Reviewer + Security Reviewer
 
-After Frontend and Backend PRs are open:
+After the PR is open:
 
-1. Code Reviewer reviews both PRs — no GitHub issue needed
-2. Security Reviewer reviews both PRs (conditional\*) — no GitHub issue needed
-3. If CRITICAL issues found → Frontend/Backend fix on the **same branch**, push again → Reviewer re-checks
-4. After all CRITICAL issues resolved → Frontend and Backend merge their branches into `feature/issue-{n}-{desc}`
+1. Code Reviewer reviews the PR — no GitHub issue needed
+2. Security Reviewer reviews the PR (conditional\*) — no GitHub issue needed
+3. If CRITICAL issues found → Backend/Frontend fix on the **same branch**, push again → Reviewer re-checks
 
 \*Security Reviewer is conditional — triggered when new API routes, auth/session/permissions, admin client, new env vars, or user-generated content is involved.
 
 ### Phase 4 — Tester
 
-After Frontend and Backend branches are merged into `feature/issue-{n}-{desc}`:
+After all CRITICAL issues are resolved:
 
-1. Tester does planning, then creates a **GitHub Issue**:
-   - Status **TODO** = planning done, ready to write tests
-   - Status **IN PROGRESS** = writing Cypress test automation
-   - Status **DONE** = user manually sets after Tester notifies 100% pass
-2. Tester creates branch from `feature/issue-{n}-{desc}`: `test/issue-{n}-{desc}`
-3. Tester writes tests until 100% passing
-4. After 100% pass: push branch, create PR targeting `feature/issue-{n}-{desc}`, update all 3 reports
-5. Tester notifies user of 100% pass — user then manually sets Frontend and Backend issue statuses to **DONE**
-6. Tester branch is merged into `feature/issue-{n}-{desc}`
+1. Tester analyzes the issue and **writes their task plan in the same GitHub issue** (Tasks section)
+2. Tester writes Cypress tests on the **same branch**
+3. **[MANDATORY]** Tester must run all tests **with `--headed` flag** (never headless):
+   ```
+   npx cypress run --config-file=cypress.config.js --headed --browser chrome --spec "..."
+   ```
+4. Tester runs tests until 100% passing, then updates all 3 QA reports
+5. Tester notifies user of 100% pass
+6. User sets issue status to **DONE** and merges the PR
 
-### Phase 5 — Feature Branch → Release → Master
+### Phase 5 — Release → Master
 
-After all branches (Frontend, Backend, Tester) are merged into `feature/issue-{n}-{desc}`:
-
-1. Create PR from `feature/issue-{n}-{desc}` → `release/vX.Y`
-2. After all feature branches are merged into `release/vX.Y`:
+1. PR from `feat/issue-{n}-{desc}` → `release/vX.Y` is merged
+2. After all features for the milestone are in `release/vX.Y`:
 3. Create PR from `release/vX.Y` → `master`
 4. Merge → product release shipped
 
-## When to Use a Feature Branch
+## GitHub Issue Format
 
-Use `feature/issue-{n}-{desc}` when a feature involves **2 or more agents building code** (Backend + Frontend, or Backend + Frontend + Tester). PM creates this branch from `release/vX.Y` at the start of Phase 2.
+Every feature issue must use this template:
 
-**Use feature branch:**
+```markdown
+## 👤 User Story
 
-- Multi-agent feature: Backend + Frontend + Tester all have work
-- Feature is isolated enough that it can be reviewed as one unit before hitting release
+As a [persona], I want [goal] so that [reason].
 
-**Skip feature branch (go direct to `release/vX.Y`):**
+## 📋 Description
 
-- Hotfix or single-agent fix (only Backend or only Frontend)
-- Quick isolated change with no cross-agent dependency
-- Tester-only work (adding tests for existing features)
+[Context and explanation of the feature]
+
+## ✅ Acceptance Criteria
+
+- [ ] ...
+- [ ] ...
+
+## 🛠️ Tasks
+
+### PM / UI/UX
+
+- [ ] ...
+
+### Backend
+
+- [ ] ...
+
+### Frontend
+
+- [ ] ...
+
+### Tester
+
+- [ ] ...
+
+## 📝 Notes
+
+[Technical decisions, edge cases, design constraints, etc.]
+```
+
+**Rules:**
+
+- PM fills in User Story, Description, Acceptance Criteria, and initial Notes when creating the issue
+- Backend and Frontend fill in their Tasks section after analysis, before coding
+- Tester fills in their Tasks section after development is done
+- All agents work in the same issue — no separate issues per agent
 
 ## Hotfix Workflow
 
@@ -143,9 +167,9 @@ Use the **Orchestrator** when delivering a complete feature end-to-end.
 
 All cross-agent signals are tracked via **GitHub Issues + Project board** (Project #3: Personal Management — Planning).
 
-- Each agent creates a GitHub Issue for their work with the appropriate **Role**, **Module**, **Priority**, and **Release** fields set
+- One issue per feature — all agents update the same issue
 - Status flow: **Todo** → **In Progress** → **Done** (user sets Done manually after Tester confirms 100% pass)
-- Agents reference issue numbers in branches, commits, and PRs so GitHub auto-links everything
+- Agents reference the issue number in branch names, commits, and PRs so GitHub auto-links everything
 
 `.claude/agents/signals/pending-signals.md` is kept as historical record only — no longer active.
 
@@ -156,23 +180,17 @@ Every feature is tied to a GitHub Issue. Branches, commits, and PRs must referen
 ### Branch naming
 
 ```
-feature/issue-{n}-{short-description} # PM creates — per-feature integration branch (multi-agent)
-feat/issue-{n}-{short-description}    # Frontend or Backend new feature
-fix/issue-{n}-{short-description}     # Frontend or Backend bug fix
-test/issue-{n}-{short-description}    # Tester branch
+feat/issue-{n}-{short-description}    # shared branch — all agents (Backend, Frontend, Tester)
+fix/issue-{n}-{short-description}     # hotfix branch — all agents
 release/vX.Y                          # PM creates — milestone integration branch
 ```
 
 Examples:
 
 ```
-feature/issue-93-strava-reconnect     # PM — parent branch for multi-agent feature
-feat/issue-94-strava-backend          # Backend — branches from feature/
-feat/issue-96-strava-frontend         # Frontend — branches from feature/
-test/issue-97-strava-cypress          # Tester — branches from feature/
-feat/issue-15-ef-trend-arrow          # Frontend — direct to release (single-agent)
-feat/issue-12-ef-30d-avg              # Backend — direct to release (single-agent)
-release/v1.2                          # PM — milestone branch
+feat/issue-115-race-detail-page       # shared branch for all agents on this feature
+fix/issue-120-activity-sync-bug       # hotfix — all agents work here
+release/v1.4                          # PM — milestone branch
 ```
 
 ### Commit message format

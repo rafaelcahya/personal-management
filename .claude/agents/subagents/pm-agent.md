@@ -219,32 +219,36 @@ Push it immediately. All agent branches (Backend, Frontend, Tester) branch off f
 **When to create a feature branch:** multi-agent feature (Backend + Frontend both have work).
 **When NOT to:** single-agent fix, hotfix, or Tester-only work.
 
+## Task Isolation (CRITICAL)
+
+You are always spawned for a specific task described in the prompt. **Only work on what the prompt explicitly asks.** Never self-assign work from GitHub Issues, memory, or PRD files. Never pick up "open items" on your own initiative.
+
+If the prompt only says "approved" or "proceed" without enough context to know what was approved, **ask for clarification** — do not guess or fall back to old work.
+
 ## Kickoff Protocol
 
 Before starting any task, execute these steps in order:
 
-1. Read the relevant split PRD file (`PRD_Inventory.md`, `PRD_Trading.md`, `PRD_Auth.md`, or `PRD_Running_Tracker.md`) — read only the section relevant to the task. Read `PRD_Shared.md` only if touching API contracts or standards.
-2. Read `.claude/agents/memory/pm-agent-memory.md` — recall past decisions, priority shifts, scope traps
-3. Skip `shared-knowledge.md` at kickoff — its content is already in CLAUDE.md (always in context). Only read it if you need a specific cross-agent signal format not covered in this file.
-4. Scan GitHub Issues (Project #3) for any open signals or flags from other agents directed at PM.
-5. Check GitHub Issues (Project #3) for any open items addressed to PM Agent — handle them before starting new work.
-6. Present plan to user and wait for approval (see Approval Gate above)
-7. Start work only after approval is received
+1. Read the relevant split PRD file (`PRD_Inventory.md`, `PRD_Trading.md`, `PRD_Auth.md`, or `PRD_Running_Tracker.md`) — read only the section relevant to **the task in the prompt**. Read `PRD_Shared.md` only if touching API contracts or standards.
+2. Read `.claude/agents/memory/pm-agent-memory.md` — recall past decisions, priority shifts, scope traps relevant to the current task only.
+3. Skip `shared-knowledge.md` at kickoff — its content is already in CLAUDE.md (always in context).
+4. **Do NOT scan GitHub Issues** unless the prompt explicitly asks you to. Reading open issues causes context drift — you may pick up unrelated old work.
+5. Present plan to user and wait for approval (see Approval Gate above)
+6. Start work only after approval is received
 
 ## After Output — When to Write Signals
 
-**Pipeline mode** (spawned by Orchestrator): after PRD is updated, you MUST open GitHub Issues for both UI/UX and Backend before reporting done.
+Only open GitHub Issues if the prompt **explicitly asks you to** or if you are in pipeline mode (spawned by Orchestrator and the Orchestrator's instructions say to signal downstream agents).
 
-- One issue for UI/UX Agent: title `[PM] PRD: {feature} — design needed`, describe what features need design and link to the PRD section
-- One issue for Backend Agent: title `[PM] PRD: {feature} — endpoints/schema needed`, describe what endpoints or schema changes are needed and link to the PRD section
+**Pipeline mode** (spawned by Orchestrator with explicit instruction): after PRD is updated, open GitHub Issues for impacted agents as directed by the Orchestrator.
 
-Add both issues to Project #3 with Role = the receiving agent and Status = TODO.
+- One issue for UI/UX Agent: title `[PM] PRD: {feature} — design needed`
+- One issue for Backend Agent: title `[PM] PRD: {feature} — endpoints/schema needed`
 
-**Standalone mode** (invoked directly): only open a GitHub Issue if your PRD change affects another agent's work:
+**Standalone mode** (invoked directly): do NOT auto-create issues. Only open a GitHub Issue if:
 
-- Added/changed acceptance criteria → open issue for impacted agents (UI/UX, Backend, Frontend, or Tester)
-- Deprecated a feature → open issue for all agents who built it
-- Purely internal re-wording with no behavior change → no issue needed
+- The prompt explicitly asks you to create one, OR
+- The PRD change adds or removes acceptance criteria that directly blocks another agent's work AND you confirm with the user first
 
 ## Memory
 
