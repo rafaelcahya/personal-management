@@ -10,7 +10,7 @@ import { format, parseISO } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
   DialogContent,
@@ -26,60 +26,62 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { createRaceLog } from '@/lib/api/running'
-import { createRaceLogSchema } from '@/schemas/raceLog'
-import { DISTANCE_PRESETS, hmsToSecs, secsToHMSInput } from './raceLogUtils'
+import { createUpcomingRace, updateUpcomingRace } from '@/lib/api/running'
+import { createUpcomingRaceSchema, updateUpcomingRaceSchema } from '@/schemas/upcomingRace'
+import { DISTANCE_PRESETS } from './raceLogUtils'
 
-export default function RaceFormModal({ open, onClose, onSaved }) {
+export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) {
+  const isEdit = race != null
   const [distanceMode, setDistanceMode] = useState('preset')
   const [saving, setSaving] = useState(false)
   const [serverError, setServerError] = useState(null)
   const [datePickerOpen, setDatePickerOpen] = useState(false)
-  const [finishTimeStr, setFinishTimeStr] = useState('')
 
   const {
     register,
     handleSubmit,
     control,
-    watch,
     reset,
     setError,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(createRaceLogSchema),
+    resolver: zodResolver(isEdit ? updateUpcomingRaceSchema : createUpcomingRaceSchema),
     defaultValues: {
       title: '',
       race_date: '',
       distance_m: null,
-      finish_time_sec: null,
-      position_place: null,
-      position_male: null,
-      did_not_finish: false,
+      location: '',
       notes: '',
     },
   })
 
-  const dnf = watch('did_not_finish')
-
   useEffect(() => {
     if (open) {
-      setDistanceMode('preset')
-      setFinishTimeStr('')
-      reset({
-        title: '',
-        race_date: '',
-        distance_m: null,
-        finish_time_sec: null,
-        position_place: null,
-        position_male: null,
-        did_not_finish: false,
-        notes: '',
-      })
       setServerError(null)
+      if (isEdit) {
+        const presetValues = DISTANCE_PRESETS.map((p) => p.value)
+        const isPreset = presetValues.includes(race.distance_m)
+        setDistanceMode(isPreset ? 'preset' : 'custom')
+        reset({
+          title: race.title ?? '',
+          race_date: race.race_date ?? '',
+          distance_m: race.distance_m ?? null,
+          location: race.location ?? '',
+          notes: race.notes ?? '',
+        })
+      } else {
+        setDistanceMode('preset')
+        reset({
+          title: '',
+          race_date: '',
+          distance_m: null,
+          location: '',
+          notes: '',
+        })
+      }
     }
-  }, [open, reset])
+  }, [open, isEdit, race, reset])
 
   async function onSubmit(data) {
     if (data.distance_m == null) {
@@ -89,8 +91,21 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
     setSaving(true)
     setServerError(null)
     try {
-      const result = await createRaceLog(data)
-      toast.success('Race entry added')
+      const payload = {
+        title: data.title,
+        race_date: data.race_date,
+        distance_m: data.distance_m,
+        location: data.location || null,
+        notes: data.notes || null,
+      }
+      let result
+      if (isEdit) {
+        result = await updateUpcomingRace(race.id, payload)
+        toast.success('Upcoming race updated')
+      } else {
+        result = await createUpcomingRace(payload)
+        toast.success('Upcoming race added')
+      }
       onSaved(result.data)
       onClose()
     } catch (err) {
@@ -102,26 +117,29 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent id="raceLogFormModal" className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        id="upcomingRaceFormModal_raceLogPage"
+        className="max-w-lg max-h-[90vh] overflow-y-auto"
+      >
         <DialogHeader>
-          <DialogTitle>Log a Race</DialogTitle>
+          <DialogTitle>{isEdit ? 'Edit Upcoming Race' : 'Add Upcoming Race'}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
           {/* Title */}
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="raceTitle">
+            <Label htmlFor="upcomingRaceTitle">
               Race name <span className="text-red-500">*</span>
             </Label>
             <Input
-              id="raceTitle"
-              placeholder="e.g. Jakarta Marathon 2025"
+              id="upcomingRaceTitle"
+              placeholder="e.g. Bali Marathon 2026"
               className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
               {...register('title')}
-              aria-describedby={errors.title ? 'raceTitleError' : undefined}
+              aria-describedby={errors.title ? 'upcomingRaceTitleError' : undefined}
             />
             {errors.title && (
-              <p id="raceTitleError" className="text-xs text-red-600" role="alert">
+              <p id="upcomingRaceTitleError" className="text-xs text-red-600" role="alert">
                 {errors.title.message}
               </p>
             )}
@@ -139,10 +157,10 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                 <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
-                      id="raceDate"
+                      id="upcomingRaceDate"
                       variant="outline"
                       className={`w-full justify-start text-left text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 ${!field.value ? 'text-slate-400' : 'text-slate-900'}`}
-                      aria-describedby={errors.race_date ? 'raceDateError' : undefined}
+                      aria-describedby={errors.race_date ? 'upcomingRaceDateError' : undefined}
                     >
                       <CalendarIcon
                         className="size-4 mr-2 shrink-0 text-slate-400"
@@ -166,7 +184,7 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
               )}
             />
             {errors.race_date && (
-              <p id="raceDateError" className="text-xs text-red-600" role="alert">
+              <p id="upcomingRaceDateError" className="text-xs text-red-600" role="alert">
                 {errors.race_date.message}
               </p>
             )}
@@ -240,107 +258,23 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
             )}
           </div>
 
-          {/* DNF checkbox */}
-          <div className="flex items-center gap-2.5">
-            <Controller
-              name="did_not_finish"
-              control={control}
-              render={({ field }) => (
-                <Checkbox id="dnf" checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
-            <Label htmlFor="dnf" className="cursor-pointer select-none">
-              Did not finish (DNF)
-            </Label>
-          </div>
-
-          {/* Finish time — hidden when DNF */}
-          {!dnf && (
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="finishTime">
-                Finish time (HH:MM:SS) <span className="text-red-500">*</span>
-              </Label>
-              <Controller
-                name="finish_time_sec"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="finishTime"
-                    placeholder="e.g. 00:45:30"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={finishTimeStr}
-                    onChange={(e) => setFinishTimeStr(e.target.value)}
-                    onBlur={() => {
-                      const secs = hmsToSecs(finishTimeStr)
-                      field.onChange(secs ?? null)
-                      if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
-                    }}
-                    aria-describedby={errors.finish_time_sec ? 'finishTimeError' : undefined}
-                  />
-                )}
-              />
-              {errors.finish_time_sec && (
-                <p id="finishTimeError" className="text-xs text-red-600" role="alert">
-                  {errors.finish_time_sec.message}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Optional fields — 2 columns */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="posPlace">Position (place)</Label>
-              <Controller
-                name="position_place"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="posPlace"
-                    type="number"
-                    placeholder="e.g. 42"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
-              {errors.position_place && (
-                <p className="text-xs text-red-600" role="alert">
-                  {errors.position_place.message}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="posMale">Position (male)</Label>
-              <Controller
-                name="position_male"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="posMale"
-                    type="number"
-                    placeholder="e.g. 8"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
-              {errors.position_male && (
-                <p className="text-xs text-red-600" role="alert">
-                  {errors.position_male.message}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Notes */}
+          {/* Location (optional) */}
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="raceNotes">Notes</Label>
+            <Label htmlFor="upcomingRaceLocation">Location</Label>
+            <Input
+              id="upcomingRaceLocation"
+              placeholder="e.g. Bali, Indonesia"
+              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+              {...register('location')}
+            />
+          </div>
+
+          {/* Notes (optional) */}
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="upcomingRaceNotes">Notes</Label>
             <Textarea
-              id="raceNotes"
-              placeholder="Weather, conditions, how you felt…"
+              id="upcomingRaceNotes"
+              placeholder="Goals, target time, anything else…"
               className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
               rows={3}
               {...register('notes')}
@@ -366,12 +300,18 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
             </Button>
           </DialogClose>
           <Button
-            id="raceLogSaveBtn"
+            id="upcomingRaceSaveBtn_raceLogPage"
             onClick={handleSubmit(onSubmit)}
             disabled={saving}
             className="min-w-[80px]"
           >
-            {saving ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Log race'}
+            {saving ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            ) : isEdit ? (
+              'Save changes'
+            ) : (
+              'Add race'
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
