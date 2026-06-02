@@ -30,11 +30,12 @@
 
 <!-- High-level log of significant PRD edits. Detailed history lives in PRD.md version section. -->
 
-| Date       | Section              | Change Type | Summary                                                                                                                                                                                      |
-| ---------- | -------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-05-30 | 10.4 Derived Metrics | Updated     | Marked EF trend arrow, VO2max trend on Analytics page, and full Analytics page as DONE. Updated EF tile testid. Bumped to v2.7. Post-delivery validation for v1.1: 12/12 criteria PASS.      |
-| 2026-05-27 | 13 Race Log          | Updated     | Synced PRD with actual implementation: column names position_place/position_male, table layout, detail page, GET :id endpoint, "add from activity" flow, known test ID gaps. Bumped to v2.5. |
-| 2026-05-17 | 3.1.3 Product Name   | Updated     | Removed P0 gap table and "not yet implemented" notes from API specs — all gaps resolved by Backend + Frontend. Bumped to v1.15.                                                              |
+| Date       | Section              | Change Type | Summary                                                                                                                                                                                                                                     |
+| ---------- | -------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-06-02 | 5.8 + 5.2 + 8.2      | Added       | Strava Connection Health & Broken State: needs_reconnect flag, Inngest exit behavior, amber banner (stravaDisconnectBanner/stravaReconnectBtn), Settings reconnect path, 401 vs 5xx error classification. Bumped to v2.8. GitHub Issue #93. |
+| 2026-05-30 | 10.4 Derived Metrics | Updated     | Marked EF trend arrow, VO2max trend on Analytics page, and full Analytics page as DONE. Updated EF tile testid. Bumped to v2.7. Post-delivery validation for v1.1: 12/12 criteria PASS.                                                     |
+| 2026-05-27 | 13 Race Log          | Updated     | Synced PRD with actual implementation: column names position_place/position_male, table layout, detail page, GET :id endpoint, "add from activity" flow, known test ID gaps. Bumped to v2.5.                                                |
+| 2026-05-17 | 3.1.3 Product Name   | Updated     | Removed P0 gap table and "not yet implemented" notes from API specs — all gaps resolved by Backend + Frontend. Bumped to v1.15.                                                                                                             |
 
 ---
 
