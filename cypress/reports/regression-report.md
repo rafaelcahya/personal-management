@@ -1,5 +1,32 @@
 # Regression Testing Report
 
+**Date:** 2026-06-02
+**App Version:** 1.3
+**Scope:** Upcoming Races UI — issue #107 (upcoming races section on race-log page: add/edit/delete/link activity/save-as-completed)
+**Tester:** QA Agent
+
+## Summary (2026-06-02 Focused Run — Upcoming Races UI)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 56          | 56     | 0      | 0       | **100%**         |
+
+### Upcoming Races — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/race-log/upcoming-races-api.cy.js ⭐ NEW                       | 18    | 18     | 0      | 0       | ✅ PASS  |
+| 2  | running/race-log/upcoming-races-ui.cy.js ⭐ NEW                        | 38    | 38     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **56** | **56** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `upcoming-races-api.cy.js` (18 tests, NEW): GET list (200 + shape, field presence on non-empty list, 401); POST create (201 with required fields, optional location+notes with cleanup, 400 missing title, 400 missing race_date, 400 missing distance_m, 400 past date, 400 zero distance, 401); PATCH update (200 partial update title+location, 400 empty body, 404 for non-existent/unowned id, 401); DELETE (200 + message, 404 for non-existent/unowned id, 401). All created records cleaned up in after() hooks. **Bug fixed:** `deleteUpcomingRace` service now does SELECT first to verify ownership before DELETE — correctly returns false (→ HTTP 404) when the id doesn't belong to the authenticated user.
+- `upcoming-races-ui.cy.js` (38 tests, NEW): Auth guard (unauthenticated → /login). Section renders (3 tests): section heading exists, add btn visible, touch target ≥32px (uses Math.ceil for sub-pixel rendering). Empty state (4 tests): renders, message text, CTA button, no cards. Error state (2 tests): retry btn visible on 500, retry re-fetches and renders card. Card renders (9 tests): 2 cards for 2 races, titles, location, countdown badge, amber info guide (role=alert), link activity btn, add-to-calendar btn, no save-as-completed on unlinked, save-as-completed only on linked race. Add modal open/close (4 tests): not visible on load, opens via header btn, opens via empty-state CTA, Cancel closes. Form validation (2 tests): role=alert on empty submit, title error element visible. Successful add (2 tests): POST stub, modal closes, card appears; server error keeps modal open with alert. Edit modal (4 tests): not visible on load, pre-filled title on pencil click, PATCH success closes modal, PATCH fail keeps open with alert. Delete dialog (4 tests): opens on trash click, race title shown, Cancel closes + card remains, Confirm calls DELETE + empty state shown. Mobile 375px (3 tests): no horizontal overflow, add btn visible, card visible.
+
+---
+
+## Previous Run — 2026-05-31 Focused Run — AI Coach Improvements
+
 **Date:** 2026-05-31
 **App Version:** 1.3
 **Scope:** AI Coach improvements — issue #82 (RPE input, user note, comparison selector, rotating status copy, long-wait hint)
@@ -545,6 +572,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-02 | Upcoming Races UI (issue #107)       | 56    | 56     | 0       | 0      | 100%        |
 | 2026-05-31 | AI Coach Improvements (issue #82)    | 36    | 36     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log full re-run (2 spec files)  | 72    | 72     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log Search + Filter (+13 tests) | 51    | 51     | 0       | 0      | 100%        |

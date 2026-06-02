@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-31 (AI Coach improvements issue #82 — ai-coach-improvements.cy.js 36/36 passing 100%)
+**Last Updated:** 2026-06-02 (Upcoming Races UI issue #107 — upcoming-races-api.cy.js 18/18 + upcoming-races-ui.cy.js 38/38 passing 100%)
 **App Version:** 1.3
 
 ## Coverage Summary
@@ -25,11 +25,13 @@
 | Running Tracker - Sync API      | 3              | 3         | 0           | 0          | 100%       | 8          |
 | Running Tracker - Manual Entry  | 7              | 7         | 0           | 0          | 100%       | 21         |
 | Running Tracker - Dashboard     | 10             | 10        | 0           | 0          | 100%       | 95         |
-| Running Tracker - Race Log      | 7              | 7         | 0           | 0          | 100%       | 72         |
+| Running Tracker - Race Log      | 9              | 9         | 0           | 0          | 100%       | 128        |
 | Running Tracker - Activities    | 11             | 11        | 0           | 0          | 100%       | 198        |
 | Running Tracker - Analytics     | 2              | 2         | 0           | 0          | 100%       | 34         |
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **155**        | **154**   | **1**       | **0**      | **99%**    | **2,171**  |
+| **Total**                       | **157**        | **156**   | **1**       | **0**      | **99%**    | **2,227**  |
+
+> **Note (2026-06-02 v1.3 Upcoming Races UI issue #107):** upcoming-races-api.cy.js 18/18 + upcoming-races-ui.cy.js 38/38 passing (100%). Duration: API 10s, UI 47s. 2 new spec files. API spec: GET list (200 + shape, 401), POST create (6 tests — 201 + optional fields, 400 missing title/date/distance, 400 past date, 400 zero distance, 401), PATCH update (4 tests — 200 partial, 400 empty body, 404 unowned, 401), DELETE (3 tests — 200, 404 via SELECT-first service fix, 401). UI spec: 9 describe blocks — auth guard, section renders (heading, add btn, touch target height), empty state (no-upcoming message + CTA), error + retry, card renders (title/distance/date/countdown badge/amber info guide/link btn/calendar btn/save-as-completed toggle), add modal (open/close via header + CTA, form validation, successful POST + card appears, server error stays open), edit modal (pre-filled title, PATCH success closes modal, PATCH fail stays open), delete dialog (open, title, cancel + card stays, confirm + empty state), mobile 375px (no overflow, add btn, card visible). Bug fixed this session: `deleteUpcomingRace` service now does SELECT before DELETE — correctly returns false (→ 404) for non-existent or unowned IDs. Total Running Tracker - Race Log: 9 features, 128 tests.
 
 > **Note (2026-05-31 v1.3 AI Coach improvements issue #82):** ai-coach-improvements.cy.js 36/36 passing (100%). Duration: 1m 14s. Covers 12 suites (A–L) — RPE radiogroup (5 tests), user note textarea (4), context collapse/visibility (4), focus buttons (5), loading/pending skeleton (2), rotating status copy at 0s and 6s via cy.clock() (1), long-wait hint at 60s with Try again button (2), comparison section/trigger (4), comparison popover on desktop (2), activity list grouped by month in popover (3), Get Recommendation flow with compare_activity focus POST (4). Total Running Tracker - Activities: 11 features, 198 tests.
 
@@ -298,8 +300,10 @@
 | 89  | cypress/e2e/running/analytics/vo2max-stat.cy.js                      | Running Tracker VO2max Stat          | 25       | GET /analytics/vo2max-stat — auth guard, response shape, null state; UI: auth guard, loading skeleton, null state, happy path value, trend arrow, trend label, error + retry |
 | 90  | cypress/e2e/running/analytics/analytics-ui.cy.js                     | Running Tracker Analytics UI         | 9        | Auth guard, VO2max trend section (empty state copy + details, chart renders), EF trend section (empty state copy + details, chart renders) — updated for fix #63 |
 | 91  | cypress/e2e/running/activities/ai-coach-improvements.cy.js           | AI Coach Improvements (v1.3)         | 36       | RPE radiogroup (role, 10 pills, labels, select/deselect); user note (renders, types, char count, 200-char cap); context collapse to pending; context zone visibility; focus buttons (Performance, Recovery, Race Tips, Next Training); loading + pending skeleton; rotating status copy at 0s and 6s; long-wait hint at 60s with Try again; compare section/trigger in content state; comparison popover on desktop; activity list grouped by month; compare pill after selection; Get Recommendation button flow with compare_activity focus POST |
+| 92  | cypress/e2e/running/race-log/upcoming-races-api.cy.js                | Running Tracker Upcoming Races API   | 18       | GET list (200 + shape + field presence, list non-empty fields, 401), POST (201 + body, optional fields cleanup, 400 missing title/date/distance, 400 past date, 400 zero distance, 401), PATCH (200 partial update, 400 empty body, 404 unowned id, 401), DELETE (200 + message, 404 unowned id via SELECT-first fix, 401) |
+| 93  | cypress/e2e/running/race-log/upcoming-races-ui.cy.js                 | Running Tracker Upcoming Races UI    | 38       | Auth guard (unauthenticated → /login); section renders (heading, add btn, touch target ≥32px); empty state (message, CTA, no cards); error state (Try again btn, retry re-fetches + card appears); card renders (2 cards, titles, location, countdown badge, amber info guide role=alert, link btn, calendar btn, no save-as-completed on unlinked, save-as-completed on linked); add modal (not visible on load, opens via header btn, opens via CTA, Cancel closes); form validation (role=alert on empty submit, title error); successful save (modal closes, card appears); server error (modal stays open, role=alert); edit modal (not visible, pre-filled title, PATCH success closes, PATCH fail stays open); delete dialog (opens, title shown, Cancel closes, Confirm removes card + empty state); mobile 375px (no overflow, add btn visible, card visible) |
 
-**Total Automated Test Cases: 2,114** (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
+**Total Automated Test Cases: 2,170** (added 56 upcoming races tests 2026-06-02; previous total: 2,114) (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
 
 ## Manual Test Cases (not yet automated)
 
