@@ -110,6 +110,40 @@ function renderMarkdown(content) {
   })
 }
 
+function RoleInsight({ content }) {
+  const parsed = useMemo(() => {
+    if (!content) return null
+    try {
+      const obj = JSON.parse(content)
+      if (obj.running_coach || obj.performance_analyst || obj.summary) return obj
+    } catch {}
+    return null
+  }, [content])
+
+  if (!parsed) return <div className="prose-sm">{renderMarkdown(content)}</div>
+
+  return (
+    <div className="space-y-3">
+      <div className="rounded-lg border border-violet-100 bg-violet-50/50 p-3 space-y-1">
+        <p className="text-xs font-semibold text-violet-700 uppercase tracking-wide">
+          Running Coach
+        </p>
+        <p className="text-sm text-slate-700 leading-relaxed">{parsed.running_coach}</p>
+      </div>
+      <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-3 space-y-1">
+        <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">
+          Performance Analyst
+        </p>
+        <p className="text-sm text-slate-700 leading-relaxed">{parsed.performance_analyst}</p>
+      </div>
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 space-y-1">
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Summary</p>
+        <p className="text-sm text-slate-600 leading-relaxed italic">{parsed.summary}</p>
+      </div>
+    </div>
+  )
+}
+
 function groupInsightsByMonth(insights) {
   const groups = {}
   for (const insight of insights) {
@@ -362,7 +396,7 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
             </div>
           )}
 
-          <div className="prose-sm">{renderMarkdown(latestInsight.content)}</div>
+          <RoleInsight content={latestInsight.content} />
 
           <div className="flex items-center justify-between pt-1">
             {latestInsight.created_at && (
@@ -470,7 +504,7 @@ function HistoryItem({ insight }) {
       </button>
       {expanded && (
         <div className="px-4 pb-4 pt-1 border-t border-slate-100">
-          <div className="prose-sm">{renderMarkdown(insight.content)}</div>
+          <RoleInsight content={insight.content} />
         </div>
       )}
     </div>
