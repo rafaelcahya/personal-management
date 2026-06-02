@@ -2,7 +2,12 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { BarChart2, TrendingUp, Zap, Activity } from 'lucide-react'
-import { fetchActivities, fetchPerformanceTrends, getDashboard } from '@/lib/api/running'
+import {
+  fetchActivities,
+  fetchPerformanceTrends,
+  getDashboard,
+  fetchAnalyticsStaleness,
+} from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import { RUN_TYPES } from './components/utils'
 import Section from './components/Section'
@@ -15,6 +20,7 @@ import Vo2maxTrendChart from './components/Vo2maxTrendChart'
 import CurrentVo2maxStat from './components/CurrentVo2maxStat'
 import EfTrendChart from './components/EfTrendChart'
 import RacePredictor from './components/RacePredictor'
+import AnalyticsAICard from './components/AnalyticsAICard'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -22,6 +28,7 @@ export default function AnalyticsPage() {
   const [trainingLoad, setTrainingLoad] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isPageStale, setIsPageStale] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -30,10 +37,11 @@ export default function AnalyticsPage() {
       setLoading(true)
       setError(null)
       try {
-        const [activitiesRes, trendsRes, dashboardRes] = await Promise.allSettled([
+        const [activitiesRes, trendsRes, dashboardRes, stalenessRes] = await Promise.allSettled([
           fetchActivities({ page: 1, limit: 200 }),
           fetchPerformanceTrends(50),
           getDashboard(),
+          fetchAnalyticsStaleness(),
         ])
 
         if (cancelled) return
@@ -46,6 +54,9 @@ export default function AnalyticsPage() {
         }
         if (dashboardRes.status === 'fulfilled') {
           setTrainingLoad(dashboardRes.value?.training_load ?? null)
+        }
+        if (stalenessRes.status === 'fulfilled') {
+          setIsPageStale(stalenessRes.value?.is_stale ?? false)
         }
       } catch (err) {
         if (!cancelled) setError(err.message || 'Failed to load analytics data')
@@ -128,6 +139,7 @@ export default function AnalyticsPage() {
             icon={BarChart2}
           >
             <WeeklyDistanceChart activities={activities} />
+            <AnalyticsAICard section="weekly_distance" isPageStale={isPageStale} />
           </Section>
 
           <Section
@@ -137,6 +149,7 @@ export default function AnalyticsPage() {
             icon={TrendingUp}
           >
             <PaceTrendChart trendData={runTrendData} />
+            <AnalyticsAICard section="pace_trend" isPageStale={isPageStale} />
           </Section>
 
           <Section
@@ -155,6 +168,7 @@ export default function AnalyticsPage() {
             icon={Activity}
           >
             <TrainingLoadChart trainingLoad={trainingLoad} />
+            <AnalyticsAICard section="training_load" isPageStale={isPageStale} />
           </Section>
 
           <Section
@@ -173,6 +187,7 @@ export default function AnalyticsPage() {
             icon={Activity}
           >
             <Vo2maxTrendChart activities={activities} />
+            <AnalyticsAICard section="vo2max_trend" isPageStale={isPageStale} />
           </Section>
 
           <Section
@@ -182,6 +197,7 @@ export default function AnalyticsPage() {
             icon={TrendingUp}
           >
             <EfTrendChart activities={activities} />
+            <AnalyticsAICard section="ef_trend" isPageStale={isPageStale} />
           </Section>
 
           <Section
@@ -191,6 +207,7 @@ export default function AnalyticsPage() {
             icon={TrendingUp}
           >
             <RacePredictor activities={activities} />
+            <AnalyticsAICard section="race_predictor" isPageStale={isPageStale} />
           </Section>
         </>
       )}

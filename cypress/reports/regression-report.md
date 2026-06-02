@@ -2,26 +2,26 @@
 
 **Date:** 2026-06-02
 **App Version:** 1.3
-**Scope:** Upcoming Races UI — issue #107 (upcoming races section on race-log page: add/edit/delete/link activity/save-as-completed)
+**Scope:** Analytics AI Card — issue #100 (GET insights, POST generate, GET staleness — API contract + UI states)
 **Tester:** QA Agent
 
-## Summary (2026-06-02 Focused Run — Upcoming Races UI)
+## Summary (2026-06-02 Focused Run — Analytics AI Card)
 
 | Total Tests | Passed | Failed | Pending | Active Pass Rate |
 | ----------- | ------ | ------ | ------- | ---------------- |
-| 56          | 56     | 0      | 0       | **100%**         |
+| 29          | 29     | 0      | 0       | **100%**         |
 
-### Upcoming Races — Spec Files
+### Analytics AI Card — Spec Files
 
 | #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
 | -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
-| 1  | running/race-log/upcoming-races-api.cy.js ⭐ NEW                       | 18    | 18     | 0      | 0       | ✅ PASS  |
-| 2  | running/race-log/upcoming-races-ui.cy.js ⭐ NEW                        | 38    | 38     | 0      | 0       | ✅ PASS  |
-| —  | **Total**                                                              | **56** | **56** | **0** | **0** | **100%** |
+| 1  | running/analytics/analytics-ai-api.cy.js                               | 15    | 15     | 0       | 0       | ✅ PASS  |
+| 2  | running/analytics/analytics-ai-ui.cy.js                                | 14    | 14     | 0       | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **29** | **29** | **0** | **0** | **100%** |
 
 **Scope notes:**
-- `upcoming-races-api.cy.js` (18 tests, NEW): GET list (200 + shape, field presence on non-empty list, 401); POST create (201 with required fields, optional location+notes with cleanup, 400 missing title, 400 missing race_date, 400 missing distance_m, 400 past date, 400 zero distance, 401); PATCH update (200 partial update title+location, 400 empty body, 404 for non-existent/unowned id, 401); DELETE (200 + message, 404 for non-existent/unowned id, 401). All created records cleaned up in after() hooks. **Bug fixed:** `deleteUpcomingRace` service now does SELECT first to verify ownership before DELETE — correctly returns false (→ HTTP 404) when the id doesn't belong to the authenticated user.
-- `upcoming-races-ui.cy.js` (38 tests, NEW): Auth guard (unauthenticated → /login). Section renders (3 tests): section heading exists, add btn visible, touch target ≥32px (uses Math.ceil for sub-pixel rendering). Empty state (4 tests): renders, message text, CTA button, no cards. Error state (2 tests): retry btn visible on 500, retry re-fetches and renders card. Card renders (9 tests): 2 cards for 2 races, titles, location, countdown badge, amber info guide (role=alert), link activity btn, add-to-calendar btn, no save-as-completed on unlinked, save-as-completed only on linked race. Add modal open/close (4 tests): not visible on load, opens via header btn, opens via empty-state CTA, Cancel closes. Form validation (2 tests): role=alert on empty submit, title error element visible. Successful add (2 tests): POST stub, modal closes, card appears; server error keeps modal open with alert. Edit modal (4 tests): not visible on load, pre-filled title on pencil click, PATCH success closes modal, PATCH fail keeps open with alert. Delete dialog (4 tests): opens on trash click, race title shown, Cancel closes + card remains, Confirm calls DELETE + empty state shown. Mobile 375px (3 tests): no horizontal overflow, add btn visible, card visible.
+- `analytics-ai-api.cy.js` (15 tests, NEW): 7 describe blocks. GET /insights authenticated (4 tests): 200 + data array, section param filter, type param filter, insight field shape. GET /insights unauthenticated (1 test): 401. POST /generate analytics_summary authenticated (1 test): 200 + queued=true. POST /generate validation (3 tests): 422/500 missing activity_id, 422/500 invalid focus, 400/422/500 malformed JSON. POST /generate unauthenticated (1 test): 401. GET /staleness authenticated (4 tests): is_stale boolean, latest_activity_at + latest_insight_at fields, valid section param, 422/500 invalid section. GET /staleness unauthenticated (1 test): 401. Auth: `cy.setupApiAuthCookies()` in `beforeEach` per suite, accepts [200,500] for transient Supabase init errors, strict 401 only for unauthenticated suites.
+- `analytics-ai-ui.cy.js` (14 tests, NEW): 14 describe blocks (A–N), one test per suite. Section=weekly_distance used as representative section (sectionId=weeklydistance). A: auth guard. B: loading skeleton (5s delayed response). C: empty state — "No recommendations yet" + enabled Generate button. D: generate flow — POST fires with `{type:"analytics_summary"}`. E: content state — insight text visible, Refresh button. F: staleness badge for 48h-old insight. G: no staleness badge for 30min-old insight. H: error state — "Could not load recommendations" + Try again. I: retry flow — success re-fetch shows empty state. J: history modal — History button for 2 insights, modal opens. K: history button absent with 1 insight. L: Refresh fires POST. M: generate error — "Failed to start analysis" inline. N: pending state on initial load. Key fix: use `{ method: 'GET', pathname: INSIGHTS_PATH }` URL object for intercepts — Cypress plain string matching is substring-based (accidentally matches /staleness sub-path) but pathname matching is exact-path-only.
 
 ---
 
@@ -572,7 +572,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
-| 2026-06-02 | Upcoming Races UI (issue #107)       | 56    | 56     | 0       | 0      | 100%        |
+| 2026-06-02 | Analytics AI Card (issue #100)       | 29    | 29     | 0       | 0      | 100%        |
 | 2026-05-31 | AI Coach Improvements (issue #82)    | 36    | 36     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log full re-run (2 spec files)  | 72    | 72     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log Search + Filter (+13 tests) | 51    | 51     | 0       | 0      | 100%        |

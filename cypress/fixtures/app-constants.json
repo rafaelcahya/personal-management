@@ -107,6 +107,11 @@
     "running_analytics": {
       "vo2max_stat": "/api/running/v1/analytics/vo2max-stat"
     },
+    "running_analytics_ai": {
+      "insights": "/api/running/v1/ai/insights",
+      "generate": "/api/running/v1/ai/insights/generate",
+      "staleness": "/api/running/v1/ai/insights/staleness"
+    },
     "running_upcoming_races": {
       "list": "/api/running/v1/upcoming-races",
       "create": "/api/running/v1/upcoming-races",
@@ -451,7 +456,19 @@
       "vo2max_trend_arrow": "vo2maxTrendArrow_analyticsPage",
       "vo2max_category": "vo2maxCategory_analyticsPage",
       "vo2max_maintenance_status": "vo2maxMaintenanceStatus_analyticsPage",
-      "vo2max_improvement_signal": "vo2maxImprovementSignal_analyticsPage"
+      "vo2max_improvement_signal": "vo2maxImprovementSignal_analyticsPage",
+      "ai_card": "analyticsAiCard_{section}_analyticsPage",
+      "ai_loading": "analyticsAiLoading_{section}_analyticsPage",
+      "ai_empty": "analyticsAiEmpty_{section}_analyticsPage",
+      "ai_generate_btn": "analyticsAiGenerateBtn_{section}_analyticsPage",
+      "ai_pending": "analyticsAiPending_{section}_analyticsPage",
+      "ai_content": "analyticsAiContent_{section}_analyticsPage",
+      "ai_error": "analyticsAiError_{section}_analyticsPage",
+      "ai_retry_btn": "analyticsAiRetryBtn_{section}_analyticsPage",
+      "ai_refresh_btn": "analyticsAiRefreshBtn_{section}_analyticsPage",
+      "ai_staleness_badge": "analyticsAiStalenessBadge_{section}_analyticsPage",
+      "ai_history_btn": "analyticsAiHistoryBtn_{section}_analyticsPage",
+      "ai_history_modal": "analyticsAiHistoryModal_{section}_analyticsPage"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",
