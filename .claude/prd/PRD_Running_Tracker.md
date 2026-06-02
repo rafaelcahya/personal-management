@@ -2,8 +2,8 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 2.7
-**Last Updated:** 2026-05-30
+**Version:** 2.8
+**Last Updated:** 2026-06-02
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6) · Strava API
 
@@ -1926,6 +1926,157 @@ Registered in `cypress/fixtures/app-constants.json` under `test_ids.race_log.*`:
 
 ---
 
+### 13.10 Upcoming Races
+
+User bisa tambahkan race yang belum dijalani ke dalam Race Log page sebagai planning list. Setelah race selesai, user link activity Strava untuk melengkapi data, lalu race pindah ke completed list.
+
+#### Lifecycle
+
+```
+User tambah upcoming race (title, date, distance, location, notes)
+        ↓
+Race muncul di section "Upcoming" di atas race history table
+Info guide amber ditampilkan, manual result fields disabled
+        ↓
+User selesai berlari → buka Race Log → klik "Link activity"
+User search dan pilih Strava activity yang sesuai
+        ↓
+PATCH /api/running/v1/upcoming-races/:id { linked_activity_id }
+Backend copy distance + date dari activity
+Manual result fields jadi enabled
+        ↓
+User isi data tambahan (posisi lomba, dll) → klik "Save as completed"
+Race pindah dari upcoming section ke race history table
+```
+
+#### Database
+
+Tabel baru `rt_upcoming_races`:
+
+| Column               | Type        | Notes                                     |
+| -------------------- | ----------- | ----------------------------------------- |
+| `id`                 | uuid        | primary key                               |
+| `user_id`            | uuid        | FK ke auth.users, RLS enforced            |
+| `title`              | text        | nama race, required                       |
+| `race_date`          | date        | harus >= today saat create                |
+| `distance_m`         | numeric     | required, > 0                             |
+| `location`           | text        | opsional, untuk Google Calendar link      |
+| `notes`              | text        | opsional                                  |
+| `linked_activity_id` | uuid        | nullable FK ke rt_activities.id           |
+| `finish_position`    | integer     | nullable, hanya bisa diisi setelah linked |
+| `created_at`         | timestamptz | auto                                      |
+
+RLS: `auth.uid() = user_id` — user hanya bisa akses data sendiri.
+
+#### API Endpoints
+
+| Method   | Path                                 | Description                                                                                      |
+| -------- | ------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `GET`    | `/api/running/v1/upcoming-races`     | List semua upcoming races, ordered `race_date ASC`                                               |
+| `POST`   | `/api/running/v1/upcoming-races`     | Create upcoming race baru                                                                        |
+| `GET`    | `/api/running/v1/upcoming-races/:id` | Detail satu upcoming race                                                                        |
+| `PATCH`  | `/api/running/v1/upcoming-races/:id` | Update. Jika `linked_activity_id` di-set, backend copy `distance_m` + `started_at` dari activity |
+| `DELETE` | `/api/running/v1/upcoming-races/:id` | Hapus upcoming race                                                                              |
+
+#### UI — Race Log Page
+
+**Layout:** Upcoming Races section tampil di atas completed race history table.
+
+**Upcoming race card** (card pattern, bukan table row — responsive grid 1/2/3 kolom):
+
+- Title, date, distance, location
+- Countdown badge: merah ≤7 hari, amber ≤30 hari, slate otherwise (reuse logic dari NextRace.jsx)
+- **Amber info guide** — `bg-amber-50 border border-amber-200`, icon `Info` warna `text-amber-500`, teks `text-xs text-amber-800`, `role="note"`:
+  > _"Race ini belum dijalankan. Setelah race selesai, link activity Strava untuk melengkapi data."_
+  > Hilang dari DOM setelah activity di-link.
+- **Disabled result fields** — tampil sebagai metric chips (Finish time, Position, Avg HR, Elevation) dengan nilai `—` dalam `text-slate-300 font-mono` di atas `bg-slate-50 border border-slate-100`. Tooltip: _"Link a Strava activity to fill in results."_ Setelah linked, chip diganti dengan real input fields.
+- Tombol **"Link activity"** (primary, kiri bawah) — buka `ActivityPickerDialog` (reuse dari "Add from activity" flow)
+- Tombol **"Add to Google Calendar"** (outline, kanan bawah) — generate Google Calendar URL, buka di tab baru
+
+**Setelah activity di-link:**
+
+- Amber info guide hilang dari DOM
+- Metric chips diganti dengan input fields yang enabled
+- Tombol **"Save as completed"** muncul — klik → card fade-out 300ms → race muncul di race history table
+
+**Google Calendar URL:**
+
+```
+https://calendar.google.com/calendar/render?action=TEMPLATE
+  &text={encodeURIComponent(title)}
+  &dates={YYYYMMDD}/{YYYYMMDD+1}
+  &details={encodeURIComponent(distance + notes)}
+  &location={encodeURIComponent(location)}
+```
+
+Format all-day untuk menghindari timezone bugs. Pure frontend, tidak ada backend atau API key.
+
+**Add upcoming race modal** — fields: title (required), race_date (required, harus future), distance (preset Select), location (opsional), notes (opsional). Zod + react-hook-form, same pattern seperti existing modals.
+
+**Empty state** — dashed border container (`border-dashed border-slate-200 rounded-xl bg-slate-50`) dengan icon Flag, teks penjelasan, dan tombol "Add a race".
+
+#### Acceptance Criteria
+
+```
+GIVEN user klik "Add upcoming race"
+WHEN form diisi dengan title, date (future), distance
+THEN upcoming race tersimpan dan muncul di upcoming section
+
+GIVEN upcoming race belum di-link ke activity
+WHEN user lihat card
+THEN amber info guide ditampilkan
+AND result fields tampil sebagai disabled metric chips
+
+GIVEN user klik "Link activity"
+WHEN user pilih activity dari picker
+THEN PATCH dipanggil dengan linked_activity_id
+AND amber info guide hilang dari DOM
+AND metric chips diganti dengan enabled input fields
+
+GIVEN manual fields sudah enabled
+WHEN user isi data dan klik "Save as completed"
+THEN card fade-out 300ms
+AND race muncul di race history table
+
+GIVEN user klik "Add to Google Calendar"
+WHEN link di-generate
+THEN tab baru terbuka dengan Google Calendar pre-filled
+
+GIVEN race_date sudah lewat tapi belum di-link
+WHEN user lihat card
+THEN amber info guide tetap tampil (tidak auto-expire)
+```
+
+#### Validations
+
+| Field             | Rule                                              |
+| ----------------- | ------------------------------------------------- |
+| `title`           | Required, max 200 chars                           |
+| `race_date`       | Required, harus >= today saat create              |
+| `distance_m`      | Required, > 0                                     |
+| `location`        | Optional, max 300 chars                           |
+| `finish_position` | Optional, integer > 0, hanya valid setelah linked |
+
+#### Test IDs
+
+Registered di `cypress/fixtures/app-constants.json` under `test_ids.upcoming_races.*`:
+
+| ID                                         | Element                            |
+| ------------------------------------------ | ---------------------------------- |
+| `upcomingRacesSection_raceLogPage`         | Section container di race-log page |
+| `addUpcomingRaceBtn_raceLogPage`           | "Add upcoming race" button         |
+| `upcomingRaceCard_raceLogPage`             | Individual race card               |
+| `upcomingRaceInfoGuide_raceLogPage`        | Amber info guide callout           |
+| `linkActivityBtn_raceLogPage`              | "Link activity" button per card    |
+| `addToCalendarBtn_raceLogPage`             | "Add to Google Calendar" button    |
+| `upcomingRaceFormModal_raceLogPage`        | Add/edit modal root                |
+| `upcomingRaceSaveBtn_raceLogPage`          | Save button di modal               |
+| `saveAsCompletedBtn_raceLogPage`           | "Save as completed" button         |
+| `deleteUpcomingRaceBtn_raceLogPage`        | Delete button per card             |
+| `deleteUpcomingRaceConfirmBtn_raceLogPage` | Confirm button di delete dialog    |
+
+---
+
 ## 14. Computed Metrics Formulas
 
 ### Training Stress Score (rTSS)
@@ -2357,7 +2508,9 @@ Zone boundaries (% dari masing-masing metodologi):
 
 ---
 
-_End of document. Version 2.7 — 2026-05-30 — Section 10.4 Implementation Status: marked EF trend arrow (id="efTrendArrow"), VO2max 30-day rolling average on Analytics page (Vo2maxTrendChart.jsx), and Analytics page /running/analytics as DONE. Updated EF stat tile testid to reflect actual implementation (id="efficiencyFactor_activityDetailPage"). Post-delivery validation for v1.1 features completed — all 12 acceptance criteria pass._
+_End of document. Version 2.8 — 2026-06-02 — Section 13.10 added: Upcoming Races feature. Covers rt_upcoming_races table, 5 CRUD endpoints, lifecycle (upcoming → linked activity → completed), amber info guide, disabled metric chips pattern, Google Calendar URL generation, 6 acceptance criteria, validations, 11 test IDs._
+
+_Previous: Version 2.7 — 2026-05-30 — Section 10.4 Implementation Status: marked EF trend arrow (id="efTrendArrow"), VO2max 30-day rolling average on Analytics page (Vo2maxTrendChart.jsx), and Analytics page /running/analytics as DONE. Updated EF stat tile testid to reflect actual implementation (id="efficiencyFactor_activityDetailPage"). Post-delivery validation for v1.1 features completed — all 12 acceptance criteria pass._
 
 _Previous: Version 2.6 — 2026-05-29 — Section 13 Race Log: added client-side filtering & search to 13.5 (debounced text search + distance filter chips All/5K/10K/21K/42K/Other; chips only rendered when matching data exists; filters stack); added acceptance criteria for search and filter chip behaviors to 13.7; added test IDs raceSearchInput, raceFilterChip_all, raceFilterChip_5k, raceFilterChip_10k, raceFilterChip_21k, raceFilterChip_42k, raceFilterChip_other to 13.9._
 
