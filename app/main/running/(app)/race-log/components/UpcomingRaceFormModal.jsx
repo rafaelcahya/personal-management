@@ -43,6 +43,7 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
     handleSubmit,
     control,
     reset,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(isEdit ? updateUpcomingRaceSchema : createUpcomingRaceSchema),
@@ -83,6 +84,10 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
   }, [open, isEdit, race, reset])
 
   async function onSubmit(data) {
+    if (data.distance_m == null) {
+      setError('distance_m', { message: 'Distance is required' })
+      return
+    }
     setSaving(true)
     setServerError(null)
     try {
@@ -246,7 +251,9 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
             )}
             {errors.distance_m && (
               <p className="text-xs text-red-600" role="alert">
-                {errors.distance_m.message}
+                {errors.distance_m.type === 'invalid_type'
+                  ? 'Distance is required'
+                  : errors.distance_m.message}
               </p>
             )}
           </div>

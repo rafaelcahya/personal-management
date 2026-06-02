@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Medal, Plus, AlertTriangle, Flag, Trophy, Link2, Search, X } from 'lucide-react'
+import { Medal, Plus, AlertTriangle, Flag, Trophy, Search, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -18,8 +18,6 @@ import { fetchRaceLog, fetchUpcomingRaces } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
 import RaceFormModal from './components/RaceFormModal'
-import ActivityPickerDialog from './components/ActivityPickerDialog'
-import RaceConfirmDialog from './components/RaceConfirmDialog'
 import { getDistanceLabel, secsToHMS, secsToMMSS, formatDate } from './components/raceLogUtils'
 import UpcomingRacesSection from './components/UpcomingRacesSection'
 
@@ -46,9 +44,6 @@ export default function RaceLogPage() {
   const [error, setError] = useState(null)
 
   const [formOpen, setFormOpen] = useState(false)
-  const [pagePickerOpen, setPagePickerOpen] = useState(false)
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [pendingActivity, setPendingActivity] = useState(null)
 
   const [upcomingRaces, setUpcomingRaces] = useState([])
   const [upcomingLoading, setUpcomingLoading] = useState(true)
@@ -104,12 +99,6 @@ export default function RaceLogPage() {
       .finally(() => setUpcomingLoading(false))
   }, [])
 
-  function openAddFromActivity(activity) {
-    setPendingActivity(activity)
-    setPagePickerOpen(false)
-    setConfirmOpen(true)
-  }
-
   function handleSaved(newOrUpdated) {
     setEntries((prev) => {
       const idx = prev.findIndex((e) => e.id === newOrUpdated.id)
@@ -136,6 +125,10 @@ export default function RaceLogPage() {
     setUpcomingRaces((prev) => prev.filter((r) => r.id !== id))
   }
 
+  function handleUpcomingCompleted(newEntry) {
+    handleSaved(newEntry)
+  }
+
   return (
     <div id="raceLogPage" className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
@@ -148,16 +141,6 @@ export default function RaceLogPage() {
           ]}
         />
         <div className="flex items-center gap-2 shrink-0">
-          <Button
-            id="addRaceFromActivityBtn"
-            onClick={() => setPagePickerOpen(true)}
-            size="sm"
-            variant="outline"
-            className="flex items-center gap-1.5"
-          >
-            <Link2 className="size-4" aria-hidden="true" />
-            Add from activity
-          </Button>
           <Button
             id="addRaceBtn"
             onClick={() => setFormOpen(true)}
@@ -191,6 +174,7 @@ export default function RaceLogPage() {
         onAdd={handleUpcomingAdd}
         onUpdated={handleUpcomingUpdated}
         onDeleted={handleUpcomingDeleted}
+        onCompleted={handleUpcomingCompleted}
       />
 
       {/* Error */}
@@ -434,21 +418,6 @@ export default function RaceLogPage() {
           handleSaved(newEntry)
           router.push(`/main/running/race-log/${newEntry.id}`)
         }}
-      />
-      <RaceConfirmDialog
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        activity={pendingActivity}
-        onSaved={(newEntry) => {
-          handleSaved(newEntry)
-          router.push(`/main/running/race-log/${newEntry.id}`)
-        }}
-      />
-      <ActivityPickerDialog
-        open={pagePickerOpen}
-        onClose={() => setPagePickerOpen(false)}
-        currentActivityId={null}
-        onSelect={openAddFromActivity}
       />
     </div>
   )

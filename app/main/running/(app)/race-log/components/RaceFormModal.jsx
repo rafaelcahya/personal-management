@@ -45,6 +45,7 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
     control,
     watch,
     reset,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(createRaceLogSchema),
@@ -53,8 +54,6 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
       race_date: '',
       distance_m: null,
       finish_time_sec: null,
-      avg_hr: null,
-      elevation_gain_m: null,
       position_place: null,
       position_male: null,
       did_not_finish: false,
@@ -73,8 +72,6 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
         race_date: '',
         distance_m: null,
         finish_time_sec: null,
-        avg_hr: null,
-        elevation_gain_m: null,
         position_place: null,
         position_male: null,
         did_not_finish: false,
@@ -85,6 +82,10 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
   }, [open, reset])
 
   async function onSubmit(data) {
+    if (data.distance_m == null) {
+      setError('distance_m', { message: 'Distance is required' })
+      return
+    }
     setSaving(true)
     setServerError(null)
     try {
@@ -232,7 +233,9 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
             )}
             {errors.distance_m && (
               <p className="text-xs text-red-600" role="alert">
-                {errors.distance_m.message}
+                {errors.distance_m.type === 'invalid_type'
+                  ? 'Distance is required'
+                  : errors.distance_m.message}
               </p>
             )}
           </div>
@@ -286,45 +289,6 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
 
           {/* Optional fields — 2 columns */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="avgHr">Avg HR (bpm)</Label>
-              <Controller
-                name="avg_hr"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="avgHr"
-                    type="number"
-                    placeholder="e.g. 165"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
-              {errors.avg_hr && (
-                <p className="text-xs text-red-600" role="alert">
-                  {errors.avg_hr.message}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="elevation">Elevation gain (m)</Label>
-              <Controller
-                name="elevation_gain_m"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="elevation"
-                    type="number"
-                    placeholder="e.g. 250"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
-            </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="posPlace">Position (place)</Label>
               <Controller

@@ -60,7 +60,7 @@ function CountdownBadge({ dateStr }) {
   )
 }
 
-export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
+export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onCompleted }) {
   const [pickerOpen, setPickerOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -68,8 +68,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
     race.finish_time_sec ? secsToHMSInput(race.finish_time_sec) : ''
   )
   const [positionPlace, setPositionPlace] = useState(race.position_place ?? '')
-  const [avgHr, setAvgHr] = useState(race.avg_hr ?? '')
-  const [elevationGain, setElevationGain] = useState(race.elevation_gain_m ?? '')
+  const [positionMale, setPositionMale] = useState(race.position_male ?? '')
   const [linking, setLinking] = useState(false)
   const [completing, setCompleting] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -112,7 +111,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
     setCompleting(true)
     try {
       await deleteUpcomingRace(race.id)
-      await createRaceLog({
+      const result = await createRaceLog({
         title: race.title,
         race_date: race.race_date,
         distance_m: race.distance_m,
@@ -120,11 +119,11 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
         notes: race.notes || null,
         finish_time_sec: hmsToSecs(finishTimeStr) || null,
         position_place: positionPlace ? Number(positionPlace) : null,
-        avg_hr: avgHr ? Number(avgHr) : null,
-        elevation_gain_m: elevationGain ? Number(elevationGain) : null,
+        position_male: positionMale ? Number(positionMale) : null,
         activity_id: race.linked_activity_id || null,
       })
       onDeleted(race.id)
+      if (result?.data) onCompleted(result.data)
       toast.success('Race saved to history!')
     } catch (err) {
       toast.error(err.message || 'Failed to save race')
@@ -151,7 +150,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
     <>
       <div
         id={`upcomingRaceCard_${race.id}_raceLogPage`}
-        className="border border-slate-200/50 shadow-sm rounded-xl bg-white p-4 flex flex-col gap-4"
+        className="border border-slate-200/50 rounded-xl bg-white p-4 flex flex-col gap-4"
       >
         {/* Header row */}
         <div className="flex items-start justify-between gap-3">
@@ -178,8 +177,8 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
           >
             <AlertTriangle className="size-4 shrink-0 mt-0.5 text-amber-500" aria-hidden="true" />
             <span>
-              Race ini belum dijalankan. Setelah race selesai, link activity Strava untuk melengkapi
-              data.
+              This race hasn&apos;t been run yet. Once you&apos;ve finished, link your Strava
+              activity to fill in the results.
             </span>
           </div>
         )}
@@ -202,7 +201,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
 
         {/* Manual result fields */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1.5">
+          <div className="col-span-2 flex flex-col gap-1.5">
             <Label htmlFor={`finishTime_${race.id}`} className="text-xs">
               Finish time (hh:mm:ss)
             </Label>
@@ -221,48 +220,33 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor={`position_${race.id}`} className="text-xs">
-              Position
+            <Label htmlFor={`positionPlace_${race.id}`} className="text-xs">
+              Position (overall)
             </Label>
             <Input
-              id={`position_${race.id}`}
+              id={`positionPlace_${race.id}`}
               type="number"
               placeholder="e.g. 42"
               value={positionPlace}
               onChange={(e) => setPositionPlace(e.target.value)}
               disabled={fieldsDisabled}
               className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Position"
+              aria-label="Overall position"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor={`avgHr_${race.id}`} className="text-xs">
-              Avg HR (bpm)
+            <Label htmlFor={`positionMale_${race.id}`} className="text-xs">
+              Position (male)
             </Label>
             <Input
-              id={`avgHr_${race.id}`}
+              id={`positionMale_${race.id}`}
               type="number"
-              placeholder="e.g. 165"
-              value={avgHr}
-              onChange={(e) => setAvgHr(e.target.value)}
+              placeholder="e.g. 8"
+              value={positionMale}
+              onChange={(e) => setPositionMale(e.target.value)}
               disabled={fieldsDisabled}
               className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Average heart rate"
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor={`elevation_${race.id}`} className="text-xs">
-              Elevation gain (m)
-            </Label>
-            <Input
-              id={`elevation_${race.id}`}
-              type="number"
-              placeholder="e.g. 250"
-              value={elevationGain}
-              onChange={(e) => setElevationGain(e.target.value)}
-              disabled={fieldsDisabled}
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Elevation gain"
+              aria-label="Male position"
             />
           </div>
         </div>

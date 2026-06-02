@@ -377,4 +377,19 @@ export const TEST_IDS = {
     delete_cancel_btn: 'cancelDeleteBrandBtn_productBrandPage',
     delete_confirm_btn: 'confirmDeleteBrandBtn_productBrandPage',
   },
+
+  upcoming_races: {
+    section: 'upcomingRacesSection_raceLogPage',
+    add_btn: 'addUpcomingRaceBtn_raceLogPage',
+    card: 'upcomingRaceCard_raceLogPage',
+    info_guide: 'upcomingRaceInfoGuide_raceLogPage',
+    link_activity_btn: 'linkActivityBtn_raceLogPage',
+    add_to_calendar_btn: 'addToCalendarBtn_raceLogPage',
+    form_modal: 'upcomingRaceFormModal_raceLogPage',
+    save_btn: 'upcomingRaceSaveBtn_raceLogPage',
+    save_as_completed_btn: 'saveAsCompletedBtn_raceLogPage',
+    delete_btn: 'deleteUpcomingRaceBtn_raceLogPage',
+    delete_confirm_btn: 'deleteUpcomingRaceConfirmBtn_raceLogPage',
+    empty_state: 'upcomingRacesEmptyState_raceLogPage',
+  },
 }

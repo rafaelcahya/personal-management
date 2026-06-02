@@ -14,6 +14,7 @@ export default function UpcomingRacesSection({
   onAdd,
   onUpdated,
   onDeleted,
+  onCompleted,
 }) {
   const [formOpen, setFormOpen] = useState(false)
 
@@ -35,7 +36,11 @@ export default function UpcomingRacesSection({
 
       {/* Loading skeleton */}
       {loading && (
-        <div className="flex flex-col gap-3" aria-busy="true" aria-label="Loading upcoming races">
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+          aria-busy="true"
+          aria-label="Loading upcoming races"
+        >
           <div className="h-40 rounded-xl bg-slate-100 animate-pulse" />
           <div className="h-40 rounded-xl bg-slate-100 animate-pulse" />
         </div>
@@ -76,9 +81,15 @@ export default function UpcomingRacesSection({
 
       {/* Race cards */}
       {!loading && !error && races.length > 0 && (
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {races.map((r) => (
-            <UpcomingRaceCard key={r.id} race={r} onUpdated={onUpdated} onDeleted={onDeleted} />
+            <UpcomingRaceCard
+              key={r.id}
+              race={r}
+              onUpdated={onUpdated}
+              onDeleted={onDeleted}
+              onCompleted={onCompleted}
+            />
           ))}
         </div>
       )}
