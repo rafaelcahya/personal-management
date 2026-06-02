@@ -52,6 +52,7 @@ export default function RaceLogPage() {
 
   const [upcomingRaces, setUpcomingRaces] = useState([])
   const [upcomingLoading, setUpcomingLoading] = useState(true)
+  const [upcomingError, setUpcomingError] = useState(null)
 
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
@@ -93,7 +94,13 @@ export default function RaceLogPage() {
     load()
     fetchUpcomingRaces()
       .then((res) => setUpcomingRaces(res.data ?? []))
-      .catch(() => {})
+      .catch((err) => {
+        if (err.message === 'UNAUTHORIZED') {
+          window.location.href = '/login'
+          return
+        }
+        setUpcomingError(err.message || 'Failed to load upcoming races')
+      })
       .finally(() => setUpcomingLoading(false))
   }, [])
 
@@ -166,6 +173,21 @@ export default function RaceLogPage() {
       <UpcomingRacesSection
         races={upcomingRaces}
         loading={upcomingLoading}
+        error={upcomingError}
+        onRetry={() => {
+          setUpcomingError(null)
+          setUpcomingLoading(true)
+          fetchUpcomingRaces()
+            .then((res) => setUpcomingRaces(res.data ?? []))
+            .catch((err) => {
+              if (err.message === 'UNAUTHORIZED') {
+                window.location.href = '/login'
+                return
+              }
+              setUpcomingError(err.message || 'Failed to load upcoming races')
+            })
+            .finally(() => setUpcomingLoading(false))
+        }}
         onAdd={handleUpcomingAdd}
         onUpdated={handleUpcomingUpdated}
         onDeleted={handleUpcomingDeleted}

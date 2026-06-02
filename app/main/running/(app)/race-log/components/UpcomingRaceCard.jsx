@@ -92,13 +92,14 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
   }
 
   function handleAddToCalendar() {
-    const nextDay = new Date(race.race_date)
-    nextDay.setDate(nextDay.getDate() + 1)
-    const fmt = (d) => d.toISOString().slice(0, 10).replace(/-/g, '')
+    const startStr = race.race_date.replace(/-/g, '')
+    const [y, m, d] = race.race_date.split('-').map(Number)
+    const nextDay = new Date(Date.UTC(y, m - 1, d + 1))
+    const endStr = nextDay.toISOString().slice(0, 10).replace(/-/g, '')
     const params = new URLSearchParams({
       action: 'TEMPLATE',
       text: race.title,
-      dates: `${fmt(new Date(race.race_date))}/${fmt(nextDay)}`,
+      dates: `${startStr}/${endStr}`,
       details: [race.distance_m ? getDistanceLabel(race.distance_m) : '', race.notes || '']
         .filter(Boolean)
         .join(' — '),
@@ -110,21 +111,21 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
   async function handleSaveAsCompleted() {
     setCompleting(true)
     try {
-      const finish_time_sec = hmsToSecs(finishTimeStr) ?? null
+      await deleteUpcomingRace(race.id)
       await createRaceLog({
         title: race.title,
         race_date: race.race_date,
         distance_m: race.distance_m,
         location: race.location || null,
         notes: race.notes || null,
-        finish_time_sec,
+        finish_time_sec: hmsToSecs(finishTimeStr) || null,
         position_place: positionPlace ? Number(positionPlace) : null,
         avg_hr: avgHr ? Number(avgHr) : null,
         elevation_gain_m: elevationGain ? Number(elevationGain) : null,
+        activity_id: race.linked_activity_id || null,
       })
-      await deleteUpcomingRace(race.id)
       onDeleted(race.id)
-      toast.success('Race saved to race log')
+      toast.success('Race saved to history!')
     } catch (err) {
       toast.error(err.message || 'Failed to save race')
     } finally {
@@ -149,7 +150,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted }) {
   return (
     <>
       <div
-        id={`upcomingRaceCard_raceLogPage`}
+        id={`upcomingRaceCard_${race.id}_raceLogPage`}
         className="border border-slate-200/50 shadow-sm rounded-xl bg-white p-4 flex flex-col gap-4"
       >
         {/* Header row */}

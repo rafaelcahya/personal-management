@@ -1,12 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { Flag, Plus } from 'lucide-react'
+import { Flag, Plus, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import UpcomingRaceCard from './UpcomingRaceCard'
 import UpcomingRaceFormModal from './UpcomingRaceFormModal'
 
-export default function UpcomingRacesSection({ races, loading, onAdd, onUpdated, onDeleted }) {
+export default function UpcomingRacesSection({
+  races,
+  loading,
+  error,
+  onRetry,
+  onAdd,
+  onUpdated,
+  onDeleted,
+}) {
   const [formOpen, setFormOpen] = useState(false)
 
   return (
@@ -33,8 +41,19 @@ export default function UpcomingRacesSection({ races, loading, onAdd, onUpdated,
         </div>
       )}
 
+      {/* Error state */}
+      {!loading && error && (
+        <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+          <AlertTriangle className="size-6 text-red-400" aria-hidden="true" />
+          <p className="text-sm text-slate-600">{error}</p>
+          <Button variant="outline" size="sm" onClick={onRetry}>
+            Try again
+          </Button>
+        </div>
+      )}
+
       {/* Empty state */}
-      {!loading && races.length === 0 && (
+      {!loading && !error && races.length === 0 && (
         <div
           id="upcomingRacesEmptyState_raceLogPage"
           className="flex flex-col items-center justify-center py-16 gap-4 text-center border border-slate-200/50 rounded-xl bg-white"
@@ -56,7 +75,7 @@ export default function UpcomingRacesSection({ races, loading, onAdd, onUpdated,
       )}
 
       {/* Race cards */}
-      {!loading && races.length > 0 && (
+      {!loading && !error && races.length > 0 && (
         <div className="flex flex-col gap-3">
           {races.map((r) => (
             <UpcomingRaceCard key={r.id} race={r} onUpdated={onUpdated} onDeleted={onDeleted} />
