@@ -20,6 +20,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url)
     const activityId = searchParams.get('activity_id')
     const type = searchParams.get('type')
+    const section = searchParams.get('section')
     const limit = Math.min(50, parseInt(searchParams.get('limit') ?? '10', 10) || 10)
 
     let query = supabase
@@ -33,6 +34,7 @@ export async function GET(request) {
 
     if (type) query = query.eq('insight_type', type)
     if (activityId) query = query.contains('data_refs', { activity_id: activityId })
+    if (section) query = query.contains('data_refs', { section })
 
     const { data, error } = await query
     if (error) throw error

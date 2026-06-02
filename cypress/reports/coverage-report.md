@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-05-31 (AI Coach improvements issue #82 — ai-coach-improvements.cy.js 36/36 passing 100%)
+**Last Updated:** 2026-06-02 (Analytics AI Card issue #100 — analytics-ai-api.cy.js 15/15 + analytics-ai-ui.cy.js 14/14 passing 100%)
 **App Version:** 1.3
 
 ## Coverage Summary
@@ -27,9 +27,11 @@
 | Running Tracker - Dashboard     | 10             | 10        | 0           | 0          | 100%       | 95         |
 | Running Tracker - Race Log      | 7              | 7         | 0           | 0          | 100%       | 72         |
 | Running Tracker - Activities    | 11             | 11        | 0           | 0          | 100%       | 198        |
-| Running Tracker - Analytics     | 2              | 2         | 0           | 0          | 100%       | 34         |
+| Running Tracker - Analytics     | 5              | 5         | 0           | 0          | 100%       | 63         |
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **155**        | **154**   | **1**       | **0**      | **99%**    | **2,171**  |
+| **Total**                       | **158**        | **157**   | **1**       | **0**      | **99%**    | **2,200**  |
+
+> **Note (2026-06-02 v1.3 Analytics AI Card issue #100):** analytics-ai-api.cy.js 15/15 + analytics-ai-ui.cy.js 14/14 passing (100%). 2 new spec files under `cypress/e2e/running/analytics/`. API spec covers GET /insights (auth + filters + field shape), POST /generate (queued, validation errors, unauthenticated), GET /staleness (is_stale boolean, section filter, unauthenticated). UI spec covers 14 states: auth guard, loading skeleton, empty, generate flow, content, staleness badge (stale/fresh), error, retry, history modal (≥2 insights), no history button (1 insight), refresh, generate error, pending. Running Tracker - Analytics: 5 features, 63 tests. Total: 158 features, 2,200 tests.
 
 > **Note (2026-05-31 v1.3 AI Coach improvements issue #82):** ai-coach-improvements.cy.js 36/36 passing (100%). Duration: 1m 14s. Covers 12 suites (A–L) — RPE radiogroup (5 tests), user note textarea (4), context collapse/visibility (4), focus buttons (5), loading/pending skeleton (2), rotating status copy at 0s and 6s via cy.clock() (1), long-wait hint at 60s with Try again button (2), comparison section/trigger (4), comparison popover on desktop (2), activity list grouped by month in popover (3), Get Recommendation flow with compare_activity focus POST (4). Total Running Tracker - Activities: 11 features, 198 tests.
 
@@ -65,7 +67,17 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-05-31 Focused Run: AI Coach Improvements)
+## Last Execution Results (2026-06-02 Focused Run: Analytics AI Card)
+
+| Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running-analytics (Analytics AI Card API) — issue #100                       | 1          | 15    | 15     | 0      | 0       | ✅       |
+| running-analytics (Analytics AI Card UI) — issue #100                        | 1          | 14    | 14     | 0      | 0       | ✅       |
+| **Total**                                                                    | **2**      | **29** | **29** | **0**  | **0**   | **100%** |
+
+**Status:** analytics-ai-api.cy.js 15/15 passing (7s). analytics-ai-ui.cy.js 14/14 passing (22s). Combined: 29/29 passing (100%). Key lesson: Cypress plain-string intercept URL matching is substring-based — use `{ pathname: '...' }` URL object for exact-path matching that ignores query params without matching sub-paths.
+
+### Previous Execution Results (2026-05-31 Focused Run: AI Coach Improvements)
 
 | Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |

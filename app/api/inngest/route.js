@@ -1,6 +1,7 @@
 import { serve } from 'inngest/next'
 import { inngest } from '@/lib/inngest/client'
 import { generatePostActivityInsight } from '@/lib/inngest/functions/generatePostActivityInsight'
+import { generateAnalyticsSummary } from '@/lib/inngest/functions/generateAnalyticsSummary'
 import { checkAnomaly } from '@/lib/inngest/functions/checkAnomaly'
 import { weeklyReview } from '@/lib/inngest/functions/weeklyReview'
 import { dailyInsight } from '@/lib/inngest/functions/dailyInsight'
@@ -13,6 +14,7 @@ export const { GET, POST, PUT } = serve({
   client: inngest,
   functions: [
     generatePostActivityInsight,
+    generateAnalyticsSummary,
     checkAnomaly,
     weeklyReview,
     dailyInsight,

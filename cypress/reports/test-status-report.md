@@ -1,6 +1,6 @@
 # Test Status Report
 
-**Last Updated:** 2026-05-31 (AI Coach improvements issue #82 — ai-coach-improvements.cy.js 36/36 passing 100%)
+**Last Updated:** 2026-06-02 (Analytics AI Card issue #100 — analytics-ai-api.cy.js 15/15 + analytics-ai-ui.cy.js 14/14 passing 100%)
 **App Version:** 1.3
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
@@ -18,6 +18,7 @@
 > ✅ **Running Tracker Dashboard (2026-05-23):** 2 new spec files added (dashboard-api.cy.js, dashboard-ui.cy.js). 36/36 passing in focused run. API spec: GET /dashboard response shape (weekly_stats, training_load, recent_activities, calendar_activities, health_today), integer checks, 401 guard. UI spec: auth guard, loading skeleton, happy path 6 sections, empty state, health logged state, error+retry, training load badge variants (Low/Caution/High Risk).
 > ✅ **Sidebar UI (2026-05-29):** sidebar-ui.cy.js 8/8 passing (100%). New `shared/` spec folder. Covers issue #8: auth guard, collapsed tooltips (Inventory Dashboard/Running Dashboard/Activities label), expanded no-tooltip, collapse toggle (both directions). Tooltip fix: native `PointerEvent('pointermove')` dispatch triggers Radix `onPointerMove` handler; collapse state fix: wait for `title="Expand/Collapse sidebar"` to confirm React useEffect has run. Added `sidebarCollapseBtn_sidebar` id and 3 Dashboard nav item ids. Shared module: 8 tests.
 > ✅ **Running Tracker AI Coach improvements (2026-05-31):** ai-coach-improvements.cy.js 36/36 passing (100%). Duration: 1m 14s. Issue #82 (PR #79 backend + PR #80 frontend). Covers: RPE radiogroup (A), user note textarea (B), context collapse/visibility (C+D), focus buttons (E), loading/pending skeleton (F), rotating status copy at 0s and 6s via cy.clock() (G), long-wait hint at 60s with Try again button (H), comparison section+trigger (I), comparison popover on desktop (J), activity list in popover (K), Get Recommendation flow with compare_activity POST (L).
+> ✅ **Running Tracker Analytics AI Card (2026-06-02):** analytics-ai-api.cy.js 15/15 + analytics-ai-ui.cy.js 14/14 passing (100%). Issue #100. API spec: GET /insights (auth+filters+field shape), POST /generate (queued, validation, unauthenticated), GET /staleness (is_stale, section filter). UI spec (14 tests, 14 suites A-N): auth guard, loading skeleton, empty state, generate flow, content state, staleness badge (stale/fresh), error state, retry, history modal, no-history-btn, refresh, generate error, pending state.
 > ✅ **Running Tracker Analytics (2026-05-31):** analytics-ui.cy.js 9/9 passing (100%). Updated empty state assertions to new copy introduced in fix #63: VO2max section now asserts `Not enough VO₂max data yet` + `Needs 3+ runs with a VO₂max estimate`; EF section asserts `Not enough Efficiency Factor data yet` + `Needs 3+ runs with an Efficiency Factor`. vo2max-stat.cy.js (25 tests) also registered for the Analytics module from issue #71.
 > ✅ **v1.2 Milestone Frontend Fixes (2026-05-30):** 55/55 passing (100%). 3 new spec files + 1 updated. activities-page-title.cy.js (10 tests): Activities page title #42, pagination text-center #44, Race Log page title #55, Race Log empty state. product-list-star-image.cy.js (9 tests): non-favorite star text-slate-300 #33 (desktop+mobile), image preview dialog opens on click #34. product-filter-no-category.cy.js (9 tests): category section removed #37, standard filters unaffected. activity-detail-ui.cy.js (27 tests): all AI Coach card v1.2 states confirmed including redesigned card #56, refresh button #47; fixes: scrollIntoView for below-fold elements, aiInsightInvalid ID for invalid state.
 > ✅ **Running Tracker AI Coach UI (2026-05-29):** ai-coach-ui.cy.js 20/20 passing (100%). Covers issues #7, #22, #23: auth guard, empty state, content state, pending/invalid fallback, error state, retry flows, and new Section H multi-card rendering (3 cards, 1 card, pending filter, is_valid filter). Root fix: added `scrollIntoView()` before visibility assertions to handle overflow-y-auto clipping. Dashboard total now 95 tests.
@@ -48,9 +49,9 @@
 | Running Tracker - Dashboard     | 2026-05-29   | 0      | 95         | 95    |
 | Running Tracker - Race Log      | 2026-05-29   | 0      | 72         | 72    |
 | Running Tracker - Activities    | 2026-05-31   | 0      | 198        | 198   |
-| Running Tracker - Analytics     | 2026-05-31   | 0      | 34         | 34    |
+| Running Tracker - Analytics     | 2026-06-02   | 0      | 63         | 63    |
 | Shared - Sidebar                | 2026-05-29   | 0      | 8          | 8     |
-| **Total**                       |              | **1**  | **2,170**  | **2,171** |
+| **Total**                       |              | **1**  | **2,199**  | **2,200** |
 
 ---
 
@@ -60,10 +61,10 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-01):
 
 | Module                    | Last Tested | Days Since Last Test |
 | ------------------------- | ----------- | -------------------- |
-| Landing Page              | 2026-05-08  | 23 hari              |
-| Trading - Trade           | 2026-03-15  | 77 hari 🔴           |
-| Trading - Fee             | 2026-03-15  | 77 hari 🔴           |
-| Trading - Event           | 2026-03-15  | 77 hari 🔴           |
+| Landing Page              | 2026-05-08  | 25 hari              |
+| Trading - Trade           | 2026-03-15  | 79 hari 🔴           |
+| Trading - Fee             | 2026-03-15  | 79 hari 🔴           |
+| Trading - Event           | 2026-03-15  | 79 hari 🔴           |
 
 > **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Running Tracker Dashboard Extended authored 2026-05-25 — run focused spec before merging. Running Tracker Dashboard tests fresh (tested 2026-05-23). Product History UI fresh (tested 2026-05-17). Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
 
@@ -256,6 +257,8 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-01):
 | -- | ---------------------------------------------------- | ----------------------------------------------------------- | ----------- | ------ | ---------- | -------------- |
 | 1  | VO2max Stat tile — API + UI                          | running/analytics/vo2max-stat.cy.js                         | 2026-05-30  | 0      | 25         | ✅ 25/25 pass  |
 | 2  | Analytics page — VO2max + EF chart sections          | running/analytics/analytics-ui.cy.js                        | 2026-05-31  | 0      | 9          | ✅ 9/9 pass    |
+| 3  | Analytics AI Card — API contract                     | running/analytics/analytics-ai-api.cy.js                    | 2026-06-02  | 0      | 15         | ✅ 15/15 pass  |
+| 4  | Analytics AI Card — UI states (all 7 sections)       | running/analytics/analytics-ai-ui.cy.js                     | 2026-06-02  | 0      | 14         | ✅ 14/14 pass  |
 
 ---
 
