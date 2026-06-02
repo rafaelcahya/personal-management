@@ -106,6 +106,13 @@
     },
     "running_analytics": {
       "vo2max_stat": "/api/running/v1/analytics/vo2max-stat"
+    },
+    "running_upcoming_races": {
+      "list": "/api/running/v1/upcoming-races",
+      "create": "/api/running/v1/upcoming-races",
+      "detail": "/api/running/v1/upcoming-races",
+      "update": "/api/running/v1/upcoming-races",
+      "delete": "/api/running/v1/upcoming-races"
     }
   },
   "test_ids": {
@@ -427,6 +434,19 @@
       "edit_btn": "editRaceBtn_raceDetailPage",
       "edit_modal": "editRaceModal_raceDetailPage",
       "edit_save_btn": "editRaceSaveBtn_raceDetailPage"
+    },
+    "upcoming_races": {
+      "section": "upcomingRacesSection_raceLogPage",
+      "add_btn": "addUpcomingRaceBtn_raceLogPage",
+      "card": "upcomingRaceCard_raceLogPage",
+      "info_guide": "upcomingRaceInfoGuide_raceLogPage",
+      "link_activity_btn": "linkActivityBtn_raceLogPage",
+      "add_to_calendar_btn": "addToCalendarBtn_raceLogPage",
+      "form_modal": "upcomingRaceFormModal_raceLogPage",
+      "save_btn": "upcomingRaceSaveBtn_raceLogPage",
+      "delete_btn": "deleteUpcomingRaceBtn_raceLogPage",
+      "delete_confirm_btn": "deleteUpcomingRaceConfirmBtn_raceLogPage",
+      "empty_state": "upcomingRacesEmptyState_raceLogPage"
     },
     "running_analytics": {
       "page": "analyticsPage",
