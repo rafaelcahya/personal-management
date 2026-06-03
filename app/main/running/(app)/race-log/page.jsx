@@ -125,18 +125,20 @@ export default function RaceLogPage() {
             size="sm"
             variant="outline"
             className="flex items-center gap-1.5"
+            aria-label="Add race from activity"
           >
             <Link2 className="size-4" aria-hidden="true" />
-            Add from activity
+            <span className="hidden sm:inline">Add from activity</span>
           </Button>
           <Button
             id="addRaceBtn"
             onClick={() => setFormOpen(true)}
             size="sm"
             className="flex items-center gap-1.5"
+            aria-label="Log race"
           >
             <Plus className="size-4" aria-hidden="true" />
-            Log race
+            <span className="hidden sm:inline">Log race</span>
           </Button>
         </div>
       </div>
