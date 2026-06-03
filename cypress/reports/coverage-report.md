@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-06-02 (Analytics AI Card issue #100 — analytics-ai-api.cy.js 15/15 + analytics-ai-ui.cy.js 14/14 passing 100%)
+**Last Updated:** 2026-06-03 (Strava broken connection issue #119 — strava-connection-api.cy.js 6/6 + strava-connection-ui.cy.js 8/8 passing 100%)
 **App Version:** 1.3
 
 ## Coverage Summary
@@ -23,13 +23,14 @@
 | Trading - Event                 | 6              | 6         | 0           | 0          | 100%       | 134        |
 | Running Tracker - Onboarding    | 6              | 6         | 0           | 0          | 100%       | 52         |
 | Running Tracker - Sync API      | 3              | 3         | 0           | 0          | 100%       | 8          |
+| Running Tracker - Strava Connection | 5          | 5         | 0           | 0          | 100%       | 14         |
 | Running Tracker - Manual Entry  | 7              | 7         | 0           | 0          | 100%       | 21         |
 | Running Tracker - Dashboard     | 10             | 10        | 0           | 0          | 100%       | 95         |
 | Running Tracker - Race Log      | 9              | 9         | 0           | 0          | 100%       | 128        |
 | Running Tracker - Activities    | 11             | 11        | 0           | 0          | 100%       | 198        |
 | Running Tracker - Analytics     | 5              | 5         | 0           | 0          | 100%       | 63         |
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **158**        | **157**   | **1**       | **0**      | **99%**    | **2,200**  |
+| **Total**                       | **163**        | **162**   | **1**       | **0**      | **99%**    | **2,214**  |
 
 > **Note (2026-06-02 v1.3 Analytics AI Card issue #100):** analytics-ai-api.cy.js 15/15 + analytics-ai-ui.cy.js 14/14 passing (100%). 2 new spec files under `cypress/e2e/running/analytics/`. API spec covers GET /insights (auth + filters + field shape), POST /generate (queued, validation errors, unauthenticated), GET /staleness (is_stale boolean, section filter, unauthenticated). UI spec covers 14 states: auth guard, loading skeleton, empty, generate flow, content, staleness badge (stale/fresh), error, retry, history modal (≥2 insights), no history button (1 insight), refresh, generate error, pending. Running Tracker - Analytics: 5 features, 63 tests. Total: 158 features, 2,200 tests.
 

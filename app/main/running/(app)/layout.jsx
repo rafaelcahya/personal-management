@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import RunningAppShell from './components/RunningAppShell'
 
 export default async function RunningAppLayout({ children }) {
   const supabase = await createClient()
@@ -21,11 +22,5 @@ export default async function RunningAppLayout({ children }) {
     redirect('/main/running/onboarding')
   }
 
-  return (
-    <div className="relative">
-      <div className="w-full max-w-5xl xl:max-w-7xl mx-auto px-4 pb-6 lg:py-8">
-        <div className="mt-6">{children}</div>
-      </div>
-    </div>
-  )
+  return <RunningAppShell>{children}</RunningAppShell>
 }

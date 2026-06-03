@@ -145,4 +145,7 @@ export const RUNNING_ENDPOINTS = {
 
   UPCOMING_RACES: '/api/running/v1/upcoming-races',
   UPCOMING_RACE_DETAIL: '/api/running/v1/upcoming-races',
+
+  STRAVA_STATUS: '/api/running/v1/user/strava-status',
+  SYNC_WEBHOOK: '/api/running/v1/sync/webhook',
 }

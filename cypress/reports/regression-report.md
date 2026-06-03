@@ -1,5 +1,32 @@
 # Regression Testing Report
 
+**Date:** 2026-06-03
+**App Version:** 1.4
+**Scope:** Strava broken connection — issue #119 (strava-status API, webhook HMAC verification, reconnect banner, settings page states)
+**Tester:** QA Agent
+
+## Summary (2026-06-03 Focused Run — Strava Broken Connection)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 14          | 14     | 0      | 0       | **100%**         |
+
+### Strava Broken Connection — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/strava/strava-connection-api.cy.js                             | 6     | 6      | 0      | 0       | ✅ PASS  |
+| 2  | running/strava/strava-connection-ui.cy.js                              | 8     | 8      | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **14** | **14** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `strava-connection-api.cy.js` (6 tests): GET /user/strava-status authenticated (200 + shape: connected, needs_reconnect, athlete_id, last_sync_at), needs_reconnect=false by default, unauthenticated 401. Webhook HMAC: missing signature → 401, wrong value → 401, invalid format → 401.
+- `strava-connection-ui.cy.js` (8 tests): Banner visible when needs_reconnect=true (dashboard), banner absent when false, no dismiss/close button, Reconnect CTA visible. Settings: broken state, connected state, disconnected state, loading skeleton with delayed response.
+
+---
+
+## Previous Run — 2026-06-02 Focused Run — Analytics AI Card
+
 **Date:** 2026-06-02
 **App Version:** 1.3
 **Scope:** Analytics AI Card — issue #100 (GET insights, POST generate, GET staleness — API contract + UI states)
