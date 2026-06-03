@@ -1,5 +1,30 @@
 # Regression Testing Report
 
+**Date:** 2026-06-04
+**App Version:** 1.4
+**Scope:** AI Coach page — issue #131 (ai-coach-page.cy.js, 56 tests, 12 scenario groups)
+**Tester:** QA Agent
+
+## Summary (2026-06-04 Focused Run — AI Coach Page)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 56          | 56     | 0      | 0       | **100%**         |
+
+### AI Coach Page — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/ai-coach/ai-coach-page.cy.js                                   | 56    | 56     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **56** | **56** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `ai-coach-page.cy.js` (56 tests, +17 new): 12 scenario groups covering the full AI Coach page at `/main/running/ai`. Group A (auth guard): unauthenticated redirect to login. Group B (page structure): page header, all 5 section containers render. Group C (Training Load Tiles): ACWR/CTL/ATL tiles render with correct values and ACWR color coding (green <1.3, amber 1.3–1.5, red >1.5). Group D (Anomaly Alerts): anomaly cards list with type label, content excerpt, and Acknowledge button; optimistic removal on acknowledge; empty state when no unacknowledged anomalies. Group E (Daily Insight Card): no-insight state shows trigger button; generate flow calls POST /ai/insights/daily and shows pending state; polling resolves to content state; insight-exists state shows content + Regenerate button. Group F (Race Countdown Card): race name + days-to-go badge + AI note from weekly review; empty state when no upcoming race. Group G (Weekly Review Card): collapsed shows date + first 2 lines; chevron toggle expands to full markdown; aria-expanded attribute updates correctly. Group H (error/loading states): loading skeleton renders 5 shimmer blocks; page-level error state shows retry button; retry success renders all sections. Group I (Daily insight recommendation pills, 4 tests): NEW — recommendation pill chips render, clicking a pill selects it, selected pill shows active state, deselecting restores default state. Group J (Daily insight ask coach field, 5 tests): NEW — free text input field renders, accepts typed text, submit button present, submitting fires POST with typed question, clears field after submit. Group K (Daily insight follow-up inline response, 5 tests): NEW — follow-up response container renders after submit, response text visible, loading state shown while pending, error state shows retry, retry re-fires POST. Group L (Daily insight context strip, 3 tests): NEW — context strip renders with activity reference, strip is collapsible, collapsed state hides activity detail.
+
+---
+
+## Previous Run — 2026-06-03 Focused Run — Compare Runs Selector Fix
+
 **Date:** 2026-06-03
 **App Version:** 1.4
 **Scope:** Compare Runs selector fix — issue #121 (AIInsightCard ActivitySelector envelope bug)
@@ -624,6 +649,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-04 | AI Coach page (issue #131)           | 56    | 56     | 0       | 0      | 100%        |
 | 2026-06-03 | Compare Runs selector fix (issue #121) | 19  | 19     | 0       | 0      | 100%        |
 | 2026-06-03 | Strava broken connection (issue #119) | 14   | 14     | 0       | 0      | 100%        |
 | 2026-06-02 | Analytics AI Card (issue #100)       | 29    | 29     | 0       | 0      | 100%        |

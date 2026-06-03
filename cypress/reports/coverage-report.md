@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-06-03 (Compare Runs selector fix issue #121 — compare-runs-ui.cy.js 19/19 passing 100%)
+**Last Updated:** 2026-06-04 (AI Coach page issue #131 — ai-coach-page.cy.js 56/56 passing 100%, +17 new tests: recommendation pills, ask coach field, follow-up inline response, context strip)
 **App Version:** 1.4
 
 ## Coverage Summary
@@ -29,8 +29,11 @@
 | Running Tracker - Race Log      | 9              | 9         | 0           | 0          | 100%       | 128        |
 | Running Tracker - Activities    | 12             | 12        | 0           | 0          | 100%       | 217        |
 | Running Tracker - Analytics     | 5              | 5         | 0           | 0          | 100%       | 63         |
+| Running Tracker - AI Coach Page | 12             | 12        | 0           | 0          | 100%       | 56         |
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **164**        | **163**   | **1**       | **0**      | **99%**    | **2,233**  |
+| **Total**                       | **176**        | **175**   | **1**       | **0**      | **99%**    | **2,289**  |
+
+> **Note (2026-06-04 v1.4 AI Coach page issue #131 +17 tests):** ai-coach-page.cy.js 56/56 passing (100%). 4 new describe blocks added (tests 40–56): "Daily insight recommendation pills" (4 tests — pills render, click selects, active state, deselect restores), "Daily insight ask coach field" (5 tests — input renders, accepts text, submit button present, POST fires with question, field clears after submit), "Daily insight follow-up inline response" (5 tests — response container renders, text visible, loading state shown, error + retry, retry re-fires POST), "Daily insight context strip" (3 tests — renders with activity reference, collapsible, collapsed hides detail). Total now 12 scenario groups, 56 tests. Running Tracker - AI Coach Page: 12 features, 56 tests. Total: 176 features, 2,289 tests.
 
 > **Note (2026-06-03 v1.4 Compare Runs selector fix issue #121):** compare-runs-ui.cy.js 19/19 passing (100%). Regression spec for `fetchActivities()` envelope bug — old code in `AIInsightCard.ActivitySelector.handleOpen()` called `.filter()` directly on the `{ data, total, page, limit }` envelope returned by `fetchActivities()`, resulting in TypeError (empty selector). Fix: `const list = result?.data ?? []`. 4 suites (A–D): selector opens + shows activities, search filters by name/date, selecting shows pill, removing pill clears selection. Running Tracker - Activities: 12 features, 217 tests. Total: 164 features, 2,233 tests.
 
@@ -70,7 +73,16 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-06-03 Focused Run: Compare Runs Selector Fix)
+## Last Execution Results (2026-06-04 Focused Run: AI Coach Page +17 tests)
+
+| Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running-ai-coach (AI Coach Page) — issue #131                                | 1          | 56    | 56     | 0      | 0       | ✅       |
+| **Total**                                                                    | **1**      | **56** | **56** | **0**  | **0**   | **100%** |
+
+**Status:** ai-coach-page.cy.js 56/56 passing (100%). All 12 scenario groups passed. +17 new tests added in this run: recommendation pills (4), ask coach free text field (5), follow-up inline response (5), context strip (3). Covers full page: auth guard, 5-section structure, Training Load Tiles color coding, Anomaly Alerts acknowledge flow, Daily Insight Card (trigger/pending/content/regenerate/pills/ask coach/follow-up/context strip), Race Countdown Card, Weekly Review Card expand/collapse, and page-level error/loading states.
+
+### Previous Execution Results (2026-06-03 Focused Run: Compare Runs Selector Fix)
 
 | Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
@@ -326,7 +338,7 @@
 | 92  | cypress/e2e/running/race-log/upcoming-races-api.cy.js                | Running Tracker Upcoming Races API   | 18       | GET list (200 + shape + field presence, list non-empty fields, 401), POST (201 + body, optional fields cleanup, 400 missing title/date/distance, 400 past date, 400 zero distance, 401), PATCH (200 partial update, 400 empty body, 404 unowned id, 401), DELETE (200 + message, 404 unowned id via SELECT-first fix, 401) |
 | 93  | cypress/e2e/running/race-log/upcoming-races-ui.cy.js                 | Running Tracker Upcoming Races UI    | 38       | Auth guard (unauthenticated → /login); section renders (heading, add btn, touch target ≥32px); empty state (message, CTA, no cards); error state (Try again btn, retry re-fetches + card appears); card renders (2 cards, titles, location, countdown badge, amber info guide role=alert, link btn, calendar btn, no save-as-completed on unlinked, save-as-completed on linked); add modal (not visible on load, opens via header btn, opens via CTA, Cancel closes); form validation (role=alert on empty submit, title error); successful save (modal closes, card appears); server error (modal stays open, role=alert); edit modal (not visible, pre-filled title, PATCH success closes, PATCH fail stays open); delete dialog (opens, title shown, Cancel closes, Confirm removes card + empty state); mobile 375px (no overflow, add btn visible, card visible) |
 
-**Total Automated Test Cases: 2,189** (added 19 compare-runs tests 2026-06-03; previous total: 2,170) (added 56 upcoming races tests 2026-06-02; previous total: 2,114) (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
+**Total Automated Test Cases: 2,206** (added 17 AI Coach page tests 2026-06-04; previous total: 2,189) (added 19 compare-runs tests 2026-06-03; previous total: 2,170) (added 56 upcoming races tests 2026-06-02; previous total: 2,114) (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
 
 ## Manual Test Cases (not yet automated)
 
