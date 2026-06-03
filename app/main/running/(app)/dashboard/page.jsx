@@ -211,57 +211,42 @@ export default function RunningDashboardPage() {
             {/* Sync status bar */}
             <div
               id="syncStatusBar"
-              className="rounded-lg bg-slate-50 border border-slate-200/70 px-4 py-2.5"
+              className="flex items-center justify-between gap-3 rounded-lg bg-slate-50 border border-slate-200/70 px-4 py-2.5"
             >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                  <span>Last synced:</span>
-                  <span className="font-medium text-slate-500">
-                    {lastSyncAt ? formatRelativeTime(lastSyncAt) : 'Never'}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {syncResult !== null && (
-                    <span
-                      id="syncResultMsg"
-                      className={`hidden sm:flex items-center gap-1.5 text-xs font-medium ${
-                        syncResult.count > 0 ? 'text-green-600' : 'text-slate-400'
-                      }`}
-                    >
-                      <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
-                      {syncResult.count > 0
-                        ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
-                        : 'Already up to date'}
-                    </span>
-                  )}
-                  <button
-                    id="syncBtn_dashboard"
-                    onClick={runSync}
-                    disabled={syncing}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500 hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:pointer-events-none"
-                  >
-                    <RefreshCw
-                      className={`size-3 ${syncing ? 'animate-spin' : ''}`}
-                      aria-hidden="true"
-                    />
-                    {syncing ? 'Syncing…' : 'Sync'}
-                  </button>
-                </div>
+              <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                <span>Last synced:</span>
+                <span className="font-medium text-slate-500">
+                  {lastSyncAt ? formatRelativeTime(lastSyncAt) : 'Never'}
+                </span>
               </div>
 
-              {syncResult !== null && (
-                <div
-                  className={`mt-1.5 sm:hidden flex items-center gap-1.5 text-xs font-medium ${
-                    syncResult.count > 0 ? 'text-green-600' : 'text-slate-400'
-                  }`}
+              <div className="flex items-center gap-3">
+                {syncResult !== null && (
+                  <span
+                    id="syncResultMsg"
+                    className={`flex items-center gap-1.5 text-xs font-medium ${
+                      syncResult.count > 0 ? 'text-green-600' : 'text-slate-400'
+                    }`}
+                  >
+                    <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
+                    {syncResult.count > 0
+                      ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
+                      : 'Already up to date'}
+                  </span>
+                )}
+                <button
+                  id="syncBtn_dashboard"
+                  onClick={runSync}
+                  disabled={syncing}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500 hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:pointer-events-none"
                 >
-                  <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
-                  {syncResult.count > 0
-                    ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
-                    : 'Already up to date'}
-                </div>
-              )}
+                  <RefreshCw
+                    className={`size-3 ${syncing ? 'animate-spin' : ''}`}
+                    aria-hidden="true"
+                  />
+                  {syncing ? 'Syncing…' : 'Sync'}
+                </button>
+              </div>
             </div>
           </div>
 

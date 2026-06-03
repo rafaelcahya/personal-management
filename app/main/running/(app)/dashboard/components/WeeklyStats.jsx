@@ -132,17 +132,17 @@ export default function WeeklyStats({ data }) {
       </h2>
 
       <Card className="border border-slate-200/70 shadow-sm py-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-y-5 md:gap-y-0">
           {statTiles.map((t, i) => {
             const Icon = t.icon
             const border =
               i === 0
-                ? 'border-b md:border-b-0 md:border-r border-slate-200'
+                ? 'border-b md:border-b-0 md:border-r border-slate-100'
                 : i === 1
-                  ? 'border-b md:border-b-0 md:border-r border-slate-200'
-                  : 'border-b md:border-b-0 lg:border-r border-slate-200'
+                  ? 'border-b md:border-b-0 md:border-r border-slate-100'
+                  : 'border-b md:border-b-0 lg:border-r border-slate-100'
             return (
-              <div key={t.label} className={`px-4 py-3 ${border}`}>
+              <div key={t.label} className={`px-4 ${border}`}>
                 <div className="flex items-center gap-1.5 mb-2">
                   <div className={`p-1 rounded-md ${t.iconBg}`}>
                     <Icon className={`size-3 ${t.iconColor}`} aria-hidden="true" />
@@ -160,7 +160,7 @@ export default function WeeklyStats({ data }) {
 
           {/* Avg Pace combined — mobile + tablet only (hidden on desktop) */}
           <div
-            className="md:col-span-3 lg:hidden md:border-t border-slate-200 px-4 py-3"
+            className="md:col-span-3 lg:hidden md:border-t border-slate-100 px-4 md:pt-5"
             aria-label={`Avg Pace vs last week: ${paceDeltaDesc}`}
           >
             <div className="flex items-center gap-1.5 mb-2">
@@ -226,7 +226,7 @@ export default function WeeklyStats({ data }) {
 
           {/* Moving Pace — desktop only, 4th col */}
           {hasMovingPace && (
-            <div className="hidden lg:block border-r border-slate-200 px-4 py-3">
+            <div className="hidden lg:block border-r border-slate-100 px-4">
               <div className="flex items-center gap-1.5 mb-2">
                 <div className="p-1 rounded-md bg-orange-50">
                   <Zap className="size-3 text-orange-600" aria-hidden="true" />
@@ -248,7 +248,7 @@ export default function WeeklyStats({ data }) {
           )}
 
           {/* Elapsed Pace — desktop only, 5th col (spans 2 if no moving pace) */}
-          <div className={`hidden lg:block px-4 py-3 ${!hasMovingPace ? 'lg:col-span-2' : ''}`}>
+          <div className={`hidden lg:block px-4 ${!hasMovingPace ? 'lg:col-span-2' : ''}`}>
             <div className="flex items-center gap-1.5 mb-2">
               <div className="p-1 rounded-md bg-orange-50">
                 <Zap className="size-3 text-orange-600" aria-hidden="true" />

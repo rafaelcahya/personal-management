@@ -17,6 +17,7 @@ import { fmtDistance } from '../dashboard/utils/format'
 import { fetchRaceLog } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
+import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 import RaceFormModal from './components/RaceFormModal'
 import ActivityPickerDialog from './components/ActivityPickerDialog'
 import RaceConfirmDialog from './components/RaceConfirmDialog'
@@ -142,6 +143,7 @@ export default function RaceLogPage() {
           </Button>
         </div>
       </div>
+      <SyncStravaButton id="syncStravaBtn_raceLog" />
 
       {/* Error */}
       {!loading && error && (

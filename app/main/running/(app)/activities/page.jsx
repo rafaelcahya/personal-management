@@ -44,6 +44,7 @@ import { fetchActivities } from '@/lib/api/running'
 import { fmtDistance, fmtPace, fmtDuration } from '../dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
+import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 
 // ─── activity config ──────────────────────────────────────────────────────────
 
@@ -244,6 +245,7 @@ function ActivitiesInner() {
           { label: 'Activities' },
         ]}
       />
+      <SyncStravaButton id="syncStravaBtn_activities" />
 
       <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden flex flex-col">
         {/* Title */}
