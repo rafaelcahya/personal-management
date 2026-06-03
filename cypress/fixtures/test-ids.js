@@ -418,4 +418,15 @@ export const TEST_IDS = {
     delete_confirm_btn: 'deleteUpcomingRaceConfirmBtn_raceLogPage',
     empty_state: 'upcomingRacesEmptyState_raceLogPage',
   },
+
+  running_strava_connection: {
+    disconnect_banner: 'stravaDisconnectBanner',
+    reconnect_btn: 'stravaReconnectBtn',
+    reconnect_btn_settings: 'stravaReconnectBtn_settings',
+    settings_section: 'stravaConnectionSection_settings',
+    settings_loading: 'stravaConnectionLoading_settings',
+    settings_connected_state: 'stravaConnectedState_settings',
+    settings_broken_state: 'stravaBrokenState_settings',
+    settings_disconnected_state: 'stravaDisconnectedState_settings',
+  },
 }

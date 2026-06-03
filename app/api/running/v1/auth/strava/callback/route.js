@@ -64,6 +64,7 @@ export async function GET(request) {
         refresh_token: encryptedRefreshToken,
         expires_at: new Date(tokenData.expires_at * 1000).toISOString(),
         scope: tokenData.scope,
+        needs_reconnect: false,
       },
       { onConflict: 'user_id' }
     )
