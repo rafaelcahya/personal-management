@@ -112,7 +112,9 @@
     "running_analytics_ai": {
       "insights": "/api/running/v1/ai/insights",
       "generate": "/api/running/v1/ai/insights/generate",
-      "staleness": "/api/running/v1/ai/insights/staleness"
+      "staleness": "/api/running/v1/ai/insights/staleness",
+      "daily": "/api/running/v1/ai/insights/daily",
+      "acknowledge": "/api/running/v1/ai/insights/:id/ack"
     },
     "running_upcoming_races": {
       "list": "/api/running/v1/upcoming-races",
@@ -372,6 +374,19 @@
       "sync_status_bar": "syncStatusBar",
       "sync_btn": "syncBtn_dashboard",
       "sync_result_msg": "syncResultMsg"
+    },
+    "running_ai_coach": {
+      "page": "aiCoachPage",
+      "training_load_tiles": "trainingLoadTiles_aiCoachPage",
+      "anomaly_alerts_section": "anomalyAlertsSection_aiCoachPage",
+      "daily_insight_card": "dailyInsightCard_aiCoachPage",
+      "daily_insight_generate_btn": "dailyInsightGenerateBtn_aiCoachPage",
+      "daily_insight_generate_from_stale_btn": "dailyInsightGenerateFromStaleBtn_aiCoachPage",
+      "daily_insight_regenerate_btn": "dailyInsightRegenerateBtn_aiCoachPage",
+      "race_countdown_card": "raceCountdownCard_aiCoachPage",
+      "weekly_review_card": "weeklyReviewCard_aiCoachPage",
+      "loading_skeleton": "aiCoachLoadingSkeleton",
+      "error": "aiCoachError"
     },
     "running_onboarding": {
       "page": "runningOnboardingPage",

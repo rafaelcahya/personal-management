@@ -419,6 +419,25 @@ export const TEST_IDS = {
     empty_state: 'upcomingRacesEmptyState_raceLogPage',
   },
 
+  running_ai_coach: {
+    page: 'aiCoachPage',
+    loading_skeleton: 'aiCoachLoadingSkeleton',
+    error: 'aiCoachError',
+    training_load_tiles: 'trainingLoadTiles_aiCoachPage',
+    anomaly_alerts_section: 'anomalyAlertsSection_aiCoachPage',
+    daily_insight_card: 'dailyInsightCard_aiCoachPage',
+    daily_insight_generate_btn: 'dailyInsightGenerateBtn_aiCoachPage',
+    daily_insight_generate_from_stale_btn: 'dailyInsightGenerateFromStaleBtn_aiCoachPage',
+    daily_insight_regenerate_btn: 'dailyInsightRegenerateBtn_aiCoachPage',
+    daily_insight_tags: 'dailyInsightTags_aiCoachPage',
+    daily_insight_ask_coach: 'dailyInsightAskCoach_aiCoachPage',
+    daily_insight_ask_btn: 'dailyInsightAskBtn_aiCoachPage',
+    daily_insight_follow_up: 'dailyInsightFollowUp_aiCoachPage',
+    daily_insight_context: 'dailyInsightContext_aiCoachPage',
+    race_countdown_card: 'raceCountdownCard_aiCoachPage',
+    weekly_review_card: 'weeklyReviewCard_aiCoachPage',
+  },
+
   running_strava_connection: {
     disconnect_banner: 'stravaDisconnectBanner',
     reconnect_btn: 'stravaReconnectBtn',

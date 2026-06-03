@@ -139,6 +139,9 @@ export const RUNNING_ENDPOINTS = {
 
   AI_INSIGHTS_LIST: '/api/running/v1/ai/insights',
   AI_INSIGHTS_GENERATE: '/api/running/v1/ai/insights/generate',
+  AI_INSIGHTS_DAILY: '/api/running/v1/ai/insights/daily',
+  AI_INSIGHTS_FOLLOWUP: '/api/running/v1/ai/insights/followup',
+  AI_INSIGHTS_ACK: (id) => `/api/running/v1/ai/insights/${id}/ack`,
 
   STRAVA_RE_ENRICH: '/api/running/v1/auth/strava/re-enrich',
   STRAVA_RE_ENRICH_METRICS: '/api/running/v1/auth/strava/re-enrich-metrics',
