@@ -9,6 +9,7 @@ import {
   fetchAnalyticsStaleness,
 } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
+import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 import { RUN_TYPES } from './components/utils'
 import Section from './components/Section'
 import SummaryStats from './components/SummaryStats'
@@ -86,6 +87,7 @@ export default function AnalyticsPage() {
           { label: 'Analytics' },
         ]}
       />
+      <SyncStravaButton id="syncStravaBtn_analytics" />
 
       {loading && (
         <div

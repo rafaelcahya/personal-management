@@ -17,6 +17,7 @@ import { fmtDistance } from '../dashboard/utils/format'
 import { fetchRaceLog, fetchUpcomingRaces } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
+import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 import RaceFormModal from './components/RaceFormModal'
 import { getDistanceLabel, secsToHMS, secsToMMSS, formatDate } from './components/raceLogUtils'
 import UpcomingRacesSection from './components/UpcomingRacesSection'
@@ -146,12 +147,14 @@ export default function RaceLogPage() {
             onClick={() => setFormOpen(true)}
             size="sm"
             className="flex items-center gap-1.5"
+            aria-label="Log race"
           >
             <Plus className="size-4" aria-hidden="true" />
-            Log race
+            <span className="hidden sm:inline">Log race</span>
           </Button>
         </div>
       </div>
+      <SyncStravaButton id="syncStravaBtn_raceLog" />
 
       <UpcomingRacesSection
         races={upcomingRaces}
