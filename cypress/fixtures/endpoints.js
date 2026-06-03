@@ -142,4 +142,10 @@ export const RUNNING_ENDPOINTS = {
 
   STRAVA_RE_ENRICH: '/api/running/v1/auth/strava/re-enrich',
   STRAVA_RE_ENRICH_METRICS: '/api/running/v1/auth/strava/re-enrich-metrics',
+
+  UPCOMING_RACES: '/api/running/v1/upcoming-races',
+  UPCOMING_RACE_DETAIL: '/api/running/v1/upcoming-races',
+
+  STRAVA_STATUS: '/api/running/v1/user/strava-status',
+  SYNC_WEBHOOK: '/api/running/v1/sync/webhook',
 }

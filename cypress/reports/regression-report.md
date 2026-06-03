@@ -1,5 +1,59 @@
 # Regression Testing Report
 
+**Date:** 2026-06-03
+**App Version:** 1.4
+**Scope:** Strava broken connection — issue #119 (strava-status API, webhook HMAC verification, reconnect banner, settings page states)
+**Tester:** QA Agent
+
+## Summary (2026-06-03 Focused Run — Strava Broken Connection)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 14          | 14     | 0      | 0       | **100%**         |
+
+### Strava Broken Connection — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/strava/strava-connection-api.cy.js                             | 6     | 6      | 0      | 0       | ✅ PASS  |
+| 2  | running/strava/strava-connection-ui.cy.js                              | 8     | 8      | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **14** | **14** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `strava-connection-api.cy.js` (6 tests): GET /user/strava-status authenticated (200 + shape: connected, needs_reconnect, athlete_id, last_sync_at), needs_reconnect=false by default, unauthenticated 401. Webhook HMAC: missing signature → 401, wrong value → 401, invalid format → 401.
+- `strava-connection-ui.cy.js` (8 tests): Banner visible when needs_reconnect=true (dashboard), banner absent when false, no dismiss/close button, Reconnect CTA visible. Settings: broken state, connected state, disconnected state, loading skeleton with delayed response.
+
+---
+
+## Previous Run — 2026-06-02 Focused Run — Analytics AI Card
+
+**Date:** 2026-06-02
+**App Version:** 1.3
+**Scope:** Analytics AI Card — issue #100 (GET insights, POST generate, GET staleness — API contract + UI states)
+**Tester:** QA Agent
+
+## Summary (2026-06-02 Focused Run — Analytics AI Card)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 29          | 29     | 0      | 0       | **100%**         |
+
+### Analytics AI Card — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/analytics/analytics-ai-api.cy.js                               | 15    | 15     | 0       | 0       | ✅ PASS  |
+| 2  | running/analytics/analytics-ai-ui.cy.js                                | 14    | 14     | 0       | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **29** | **29** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `analytics-ai-api.cy.js` (15 tests, NEW): 7 describe blocks. GET /insights authenticated (4 tests): 200 + data array, section param filter, type param filter, insight field shape. GET /insights unauthenticated (1 test): 401. POST /generate analytics_summary authenticated (1 test): 200 + queued=true. POST /generate validation (3 tests): 422/500 missing activity_id, 422/500 invalid focus, 400/422/500 malformed JSON. POST /generate unauthenticated (1 test): 401. GET /staleness authenticated (4 tests): is_stale boolean, latest_activity_at + latest_insight_at fields, valid section param, 422/500 invalid section. GET /staleness unauthenticated (1 test): 401. Auth: `cy.setupApiAuthCookies()` in `beforeEach` per suite, accepts [200,500] for transient Supabase init errors, strict 401 only for unauthenticated suites.
+- `analytics-ai-ui.cy.js` (14 tests, NEW): 14 describe blocks (A–N), one test per suite. Section=weekly_distance used as representative section (sectionId=weeklydistance). A: auth guard. B: loading skeleton (5s delayed response). C: empty state — "No recommendations yet" + enabled Generate button. D: generate flow — POST fires with `{type:"analytics_summary"}`. E: content state — insight text visible, Refresh button. F: staleness badge for 48h-old insight. G: no staleness badge for 30min-old insight. H: error state — "Could not load recommendations" + Try again. I: retry flow — success re-fetch shows empty state. J: history modal — History button for 2 insights, modal opens. K: history button absent with 1 insight. L: Refresh fires POST. M: generate error — "Failed to start analysis" inline. N: pending state on initial load. Key fix: use `{ method: 'GET', pathname: INSIGHTS_PATH }` URL object for intercepts — Cypress plain string matching is substring-based (accidentally matches /staleness sub-path) but pathname matching is exact-path-only.
+
+---
+
+## Previous Run — 2026-05-31 Focused Run — AI Coach Improvements
+
 **Date:** 2026-05-31
 **App Version:** 1.3
 **Scope:** AI Coach improvements — issue #82 (RPE input, user note, comparison selector, rotating status copy, long-wait hint)
@@ -545,6 +599,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-02 | Analytics AI Card (issue #100)       | 29    | 29     | 0       | 0      | 100%        |
 | 2026-05-31 | AI Coach Improvements (issue #82)    | 36    | 36     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log full re-run (2 spec files)  | 72    | 72     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log Search + Filter (+13 tests) | 51    | 51     | 0       | 0      | 100%        |

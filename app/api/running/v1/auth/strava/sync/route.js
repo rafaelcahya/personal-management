@@ -118,12 +118,16 @@ export async function POST(_request) {
 
     const { data: credentials, error: credError } = await admin
       .from('rt_strava_credentials')
-      .select('access_token, refresh_token, expires_at, last_sync_at')
+      .select('access_token, refresh_token, expires_at, last_sync_at, needs_reconnect')
       .eq('user_id', user.id)
       .single()
 
     if (credError || !credentials) {
       return NextResponse.json({ error: 'Strava not connected' }, { status: 400 })
+    }
+
+    if (credentials.needs_reconnect === true) {
+      return NextResponse.json({ synced: 0, skipped: true, reason: 'needs_reconnect' })
     }
 
     const accessToken = await getValidAccessToken(credentials, admin, user.id)
