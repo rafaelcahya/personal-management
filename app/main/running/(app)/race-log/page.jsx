@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Medal, Plus, AlertTriangle, Flag, Trophy, Link2, Search, X } from 'lucide-react'
+import { Medal, Plus, AlertTriangle, Flag, Trophy, Search, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -14,13 +14,13 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { fmtDistance } from '../dashboard/utils/format'
-import { fetchRaceLog } from '@/lib/api/running'
+import { fetchRaceLog, fetchUpcomingRaces } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
+import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 import RaceFormModal from './components/RaceFormModal'
-import ActivityPickerDialog from './components/ActivityPickerDialog'
-import RaceConfirmDialog from './components/RaceConfirmDialog'
 import { getDistanceLabel, secsToHMS, secsToMMSS, formatDate } from './components/raceLogUtils'
+import UpcomingRacesSection from './components/UpcomingRacesSection'
 
 const DISTANCE_BUCKETS = [
   { key: '5k', label: '5K', min: 4500, max: 5499 },
@@ -45,9 +45,10 @@ export default function RaceLogPage() {
   const [error, setError] = useState(null)
 
   const [formOpen, setFormOpen] = useState(false)
-  const [pagePickerOpen, setPagePickerOpen] = useState(false)
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [pendingActivity, setPendingActivity] = useState(null)
+
+  const [upcomingRaces, setUpcomingRaces] = useState([])
+  const [upcomingLoading, setUpcomingLoading] = useState(true)
+  const [upcomingError, setUpcomingError] = useState(null)
 
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
@@ -87,13 +88,17 @@ export default function RaceLogPage() {
 
   useEffect(() => {
     load()
+    fetchUpcomingRaces()
+      .then((res) => setUpcomingRaces(res.data ?? []))
+      .catch((err) => {
+        if (err.message === 'UNAUTHORIZED') {
+          window.location.href = '/login'
+          return
+        }
+        setUpcomingError(err.message || 'Failed to load upcoming races')
+      })
+      .finally(() => setUpcomingLoading(false))
   }, [])
-
-  function openAddFromActivity(activity) {
-    setPendingActivity(activity)
-    setPagePickerOpen(false)
-    setConfirmOpen(true)
-  }
 
   function handleSaved(newOrUpdated) {
     setEntries((prev) => {
@@ -105,6 +110,24 @@ export default function RaceLogPage() {
       }
       return [newOrUpdated, ...prev]
     })
+  }
+
+  function handleUpcomingAdd(race) {
+    setUpcomingRaces((prev) =>
+      [race, ...prev].sort((a, b) => new Date(a.race_date) - new Date(b.race_date))
+    )
+  }
+
+  function handleUpcomingUpdated(race) {
+    setUpcomingRaces((prev) => prev.map((r) => (r.id === race.id ? race : r)))
+  }
+
+  function handleUpcomingDeleted(id) {
+    setUpcomingRaces((prev) => prev.filter((r) => r.id !== id))
+  }
+
+  function handleUpcomingCompleted(newEntry) {
+    handleSaved(newEntry)
   }
 
   return (
@@ -120,26 +143,42 @@ export default function RaceLogPage() {
         />
         <div className="flex items-center gap-2 shrink-0">
           <Button
-            id="addRaceFromActivityBtn"
-            onClick={() => setPagePickerOpen(true)}
-            size="sm"
-            variant="outline"
-            className="flex items-center gap-1.5"
-          >
-            <Link2 className="size-4" aria-hidden="true" />
-            Add from activity
-          </Button>
-          <Button
             id="addRaceBtn"
             onClick={() => setFormOpen(true)}
             size="sm"
             className="flex items-center gap-1.5"
+            aria-label="Log race"
           >
             <Plus className="size-4" aria-hidden="true" />
-            Log race
+            <span className="hidden sm:inline">Log race</span>
           </Button>
         </div>
       </div>
+      <SyncStravaButton id="syncStravaBtn_raceLog" />
+
+      <UpcomingRacesSection
+        races={upcomingRaces}
+        loading={upcomingLoading}
+        error={upcomingError}
+        onRetry={() => {
+          setUpcomingError(null)
+          setUpcomingLoading(true)
+          fetchUpcomingRaces()
+            .then((res) => setUpcomingRaces(res.data ?? []))
+            .catch((err) => {
+              if (err.message === 'UNAUTHORIZED') {
+                window.location.href = '/login'
+                return
+              }
+              setUpcomingError(err.message || 'Failed to load upcoming races')
+            })
+            .finally(() => setUpcomingLoading(false))
+        }}
+        onAdd={handleUpcomingAdd}
+        onUpdated={handleUpcomingUpdated}
+        onDeleted={handleUpcomingDeleted}
+        onCompleted={handleUpcomingCompleted}
+      />
 
       {/* Error */}
       {!loading && error && (
@@ -382,21 +421,6 @@ export default function RaceLogPage() {
           handleSaved(newEntry)
           router.push(`/main/running/race-log/${newEntry.id}`)
         }}
-      />
-      <RaceConfirmDialog
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        activity={pendingActivity}
-        onSaved={(newEntry) => {
-          handleSaved(newEntry)
-          router.push(`/main/running/race-log/${newEntry.id}`)
-        }}
-      />
-      <ActivityPickerDialog
-        open={pagePickerOpen}
-        onClose={() => setPagePickerOpen(false)}
-        currentActivityId={null}
-        onSelect={openAddFromActivity}
       />
     </div>
   )
