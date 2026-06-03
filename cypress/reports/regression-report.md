@@ -2,6 +2,31 @@
 
 **Date:** 2026-06-03
 **App Version:** 1.4
+**Scope:** Compare Runs selector fix — issue #121 (AIInsightCard ActivitySelector envelope bug)
+**Tester:** QA Agent
+
+## Summary (2026-06-03 Focused Run — Compare Runs Selector Fix)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 19          | 19     | 0      | 0       | **100%**         |
+
+### Compare Runs Selector Fix — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/activities/compare-runs-ui.cy.js                               | 19    | 19     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **19** | **19** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `compare-runs-ui.cy.js` (19 tests, NEW): Regression spec for issue #121 — `fetchActivities()` returned `{ data, total, page, limit }` envelope but old code called `.filter()` on the envelope object (TypeError). Fix: destructure `result?.data ?? []` before filtering. Suite A (5 tests): compare section/trigger visible in content state, clicking trigger opens popover, command container present, activities list rendered (not "No matching runs found"), month group header visible. Suite B (5 tests): search input present, name filter shows single result, date fragment filter shows single result, no-match query shows empty message, clearing search restores full list. Suite C (5 tests): no pill before selection, selecting closes popover, pill appears after selection, pill contains activity date, Get Recommendation button appears. Suite D (4 tests): remove button present in pill, clicking remove hides pill, remove hides Get Recommendation, trigger visible again after remove. Key: stub returns paginated envelope `{ data: [...], total, page, limit }` (not plain array) to match real API shape.
+
+---
+
+## Previous Run — 2026-06-03 Focused Run — Strava Broken Connection
+
+**Date:** 2026-06-03
+**App Version:** 1.4
 **Scope:** Strava broken connection — issue #119 (strava-status API, webhook HMAC verification, reconnect banner, settings page states)
 **Tester:** QA Agent
 
@@ -599,6 +624,8 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-03 | Compare Runs selector fix (issue #121) | 19  | 19     | 0       | 0      | 100%        |
+| 2026-06-03 | Strava broken connection (issue #119) | 14   | 14     | 0       | 0      | 100%        |
 | 2026-06-02 | Analytics AI Card (issue #100)       | 29    | 29     | 0       | 0      | 100%        |
 | 2026-05-31 | AI Coach Improvements (issue #82)    | 36    | 36     | 0       | 0      | 100%        |
 | 2026-05-29 | Race Log full re-run (2 spec files)  | 72    | 72     | 0       | 0      | 100%        |
