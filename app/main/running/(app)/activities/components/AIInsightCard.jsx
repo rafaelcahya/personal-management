@@ -15,10 +15,11 @@ import {
   ChevronsUpDown,
   X,
   Pencil,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { fetchActivityInsight, requestInsightGeneration, fetchActivities } from '@/lib/api/running'
 
@@ -341,22 +342,49 @@ function ContextPill({ rpe, note, onEdit }) {
   )
 }
 
-function ActivitySelector({ activityId, onSelect, isMobile }) {
+const COMPARE_PAGE_SIZE = 8
+
+function ActivitySelector({ activityId, onSelect }) {
   const [open, setOpen] = useState(false)
-  const [activities, setActivities] = useState(null)
+  const [activities, setActivities] = useState([])
+  const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState(null)
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
 
-  async function handleOpen() {
-    setOpen(true)
-    if (!activities) {
-      try {
-        const data = await fetchActivities({ limit: 100, sort: 'newest' })
-        setActivities((data || []).filter((a) => a.id !== activityId))
-      } catch {
-        setActivities([])
-      }
+  const totalPages = Math.max(1, Math.ceil(total / COMPARE_PAGE_SIZE))
+
+  async function loadPage(pageNum) {
+    setLoading(true)
+    try {
+      const result = await fetchActivities({
+        limit: COMPARE_PAGE_SIZE,
+        page: pageNum,
+        sort: 'newest',
+      })
+      const list = (result?.data ?? []).filter((a) => a.id !== activityId)
+      setActivities(list)
+      setTotal(result?.total ?? 0)
+    } catch {
+      setActivities([])
+      setTotal(0)
+    } finally {
+      setLoading(false)
     }
+  }
+
+  function handleOpen() {
+    setSearch('')
+    setPage(1)
+    setOpen(true)
+    loadPage(1)
+  }
+
+  async function handlePageChange(newPage) {
+    setPage(newPage)
+    setSearch('')
+    await loadPage(newPage)
   }
 
   function handleSelect(activity) {
@@ -370,7 +398,7 @@ function ActivitySelector({ activityId, onSelect, isMobile }) {
     onSelect(null)
   }
 
-  const filtered = (activities || []).filter((a) => {
+  const filtered = activities.filter((a) => {
     if (!search) return true
     const date = new Date(a.started_at).toLocaleDateString('en-US', {
       day: 'numeric',
@@ -386,54 +414,6 @@ function ActivitySelector({ activityId, onSelect, isMobile }) {
 
   const groups = groupActivitiesByMonth(filtered)
 
-  const selectorContent = (
-    <div id="aiInsightCompareCommand_activityDetailPage" className="flex flex-col">
-      <div className="p-2 border-b border-slate-100">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by date or name..."
-          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600"
-        />
-      </div>
-      <ScrollArea className="max-h-64">
-        {groups.length === 0 ? (
-          <p className="text-sm text-slate-500 py-4 text-center">No matching runs found.</p>
-        ) : (
-          groups.map((group) => (
-            <div key={group.label}>
-              <p className="px-3 py-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wide bg-slate-50">
-                {group.label}
-              </p>
-              {group.items.map((a) => {
-                const date = new Date(a.started_at).toLocaleDateString('en-US', {
-                  day: 'numeric',
-                  month: 'short',
-                })
-                const dist = fmtDistance(a.distance_m)
-                const pace = fmtPace(a.avg_pace_sec_per_km)
-                return (
-                  <button
-                    key={a.id}
-                    onClick={() => handleSelect(a)}
-                    className="w-full flex justify-between gap-2 px-3 py-2 text-left hover:bg-violet-50 transition-colors"
-                  >
-                    <span className="text-sm font-medium text-slate-700">{date}</span>
-                    <span className="flex gap-3">
-                      {dist && <span className="text-sm text-slate-500">{dist}</span>}
-                      {pace && <span className="text-sm text-slate-500 tabular-nums">{pace}</span>}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          ))
-        )}
-      </ScrollArea>
-    </div>
-  )
-
   if (selected) {
     const date = new Date(selected.started_at).toLocaleDateString('en-US', {
       day: 'numeric',
@@ -447,68 +427,145 @@ function ActivitySelector({ activityId, onSelect, isMobile }) {
     return (
       <div
         id="aiInsightComparePill_activityDetailPage"
-        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-100 border border-violet-200 text-violet-700 text-xs font-medium"
+        className="flex items-start gap-2 px-3 py-2 rounded-xl bg-violet-100 border border-violet-200 text-xs"
       >
-        <span className="text-violet-400 font-normal">vs.</span>
-        {date}
-        {label ? ` · ${label}` : ''}
+        <span className="text-violet-400 font-normal mt-0.5 flex-shrink-0">vs.</span>
+        <div className="flex-1 min-w-0">
+          {selected.name && (
+            <p className="font-medium text-violet-700 leading-snug line-clamp-2 break-words">
+              {selected.name}
+            </p>
+          )}
+          <p className="font-normal text-violet-500 leading-snug mt-0.5">
+            {date}
+            {label ? ` · ${label}` : ''}
+          </p>
+        </div>
         <button
           onClick={handleRemove}
           aria-label="Remove comparison activity"
-          className="ml-1 rounded-full p-0.5 hover:bg-violet-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
+          className="flex-shrink-0 mt-0.5 rounded-full p-0.5 hover:bg-violet-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
         >
-          <X className="h-3 w-3" aria-hidden="true" />
+          <X className="h-3 w-3 text-violet-500" aria-hidden="true" />
         </button>
       </div>
     )
   }
 
-  const triggerButton = (
-    <Button
-      id="aiInsightCompareTrigger_activityDetailPage"
-      variant="outline"
-      onClick={handleOpen}
-      className="w-full justify-between text-slate-600 hover:border-violet-400 hover:text-violet-600 focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600"
-    >
-      <span className="flex items-center gap-2">
-        <GitCompare className="h-4 w-4 text-slate-400" aria-hidden="true" />
-        Compare with another run
-      </span>
-      <ChevronsUpDown className="h-4 w-4 text-slate-400" aria-hidden="true" />
-    </Button>
-  )
-
-  if (isMobile) {
-    return (
-      <>
-        {triggerButton}
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetContent
-            id="aiInsightCompareSheet_activityDetailPage"
-            side="bottom"
-            className="max-h-[70vh]"
-          >
-            <SheetHeader>
-              <SheetTitle>Compare with another run</SheetTitle>
-            </SheetHeader>
-            {selectorContent}
-          </SheetContent>
-        </Sheet>
-      </>
-    )
-  }
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
-      <PopoverContent
-        id="aiInsightComparePopover_activityDetailPage"
-        className="w-72 p-0"
-        align="start"
+    <>
+      <Button
+        id="aiInsightCompareTrigger_activityDetailPage"
+        variant="outline"
+        onClick={handleOpen}
+        className="w-full justify-between text-slate-600 hover:border-violet-400 hover:text-violet-600 focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600"
       >
-        {selectorContent}
-      </PopoverContent>
-    </Popover>
+        <span className="flex items-center gap-2">
+          <GitCompare className="h-4 w-4 text-slate-400" aria-hidden="true" />
+          Compare with another run
+        </span>
+        <ChevronsUpDown className="h-4 w-4 text-slate-400" aria-hidden="true" />
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent
+          id="aiInsightComparePopover_activityDetailPage"
+          className="sm:max-w-sm p-0 gap-0"
+        >
+          <DialogHeader className="px-4 pt-4 pb-3 border-b border-slate-100">
+            <DialogTitle className="text-sm font-semibold text-slate-700">
+              Compare with another run
+            </DialogTitle>
+          </DialogHeader>
+
+          <div id="aiInsightCompareCommand_activityDetailPage" className="flex flex-col">
+            <div className="px-4 py-3 border-b border-slate-100">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by date or name..."
+                className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600"
+                autoFocus
+              />
+            </div>
+
+            <ScrollArea className="max-h-72">
+              {loading ? (
+                <div className="space-y-px py-1">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="px-4 py-3 flex flex-col gap-1.5 animate-pulse">
+                      <div className="h-3.5 bg-slate-200 rounded w-3/4" />
+                      <div className="h-3 bg-slate-100 rounded w-1/2" />
+                    </div>
+                  ))}
+                </div>
+              ) : groups.length === 0 ? (
+                <p className="text-sm text-slate-500 py-6 text-center">No matching runs found.</p>
+              ) : (
+                groups.map((group) => (
+                  <div key={group.label}>
+                    <p className="px-4 py-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wide bg-slate-50">
+                      {group.label}
+                    </p>
+                    {group.items.map((a) => {
+                      const date = new Date(a.started_at).toLocaleDateString('en-US', {
+                        day: 'numeric',
+                        month: 'short',
+                      })
+                      const dist = fmtDistance(a.distance_m)
+                      const pace = fmtPace(a.avg_pace_sec_per_km)
+                      return (
+                        <button
+                          key={a.id}
+                          onClick={() => handleSelect(a)}
+                          className="w-full flex flex-col gap-0.5 px-4 py-3 text-left hover:bg-violet-50 transition-colors border-b border-slate-100 last:border-0"
+                        >
+                          {a.name && (
+                            <span className="text-sm font-medium text-slate-700 leading-snug line-clamp-2">
+                              {a.name}
+                            </span>
+                          )}
+                          <span className="flex gap-2 text-xs text-slate-500">
+                            <span>{date}</span>
+                            {dist && <span>{dist}</span>}
+                            {pace && <span className="tabular-nums">{pace}</span>}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                ))
+              )}
+            </ScrollArea>
+
+            {totalPages > 1 && !search && (
+              <div className="flex items-center justify-between px-4 py-2 border-t border-slate-100">
+                <button
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1 || loading}
+                  aria-label="Previous page"
+                  className="p-1 rounded hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="h-4 w-4 text-slate-500" />
+                </button>
+                <span className="text-xs text-slate-500">
+                  {page} / {totalPages}
+                </span>
+                <button
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page === totalPages || loading}
+                  aria-label="Next page"
+                  className="p-1 rounded hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="h-4 w-4 text-slate-500" />
+                </button>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
@@ -525,7 +582,6 @@ export default function AIInsightCard({
   const [note, setNote] = useState(initialUserNote ?? '')
   const [contextExpanded, setContextExpanded] = useState(true)
   const [compareActivity, setCompareActivity] = useState(null)
-  const [isMobile, setIsMobile] = useState(false)
   const [pendingElapsed, setPendingElapsed] = useState(0)
   const [longWait, setLongWait] = useState(false)
   const pollRef = useRef(null)
@@ -534,13 +590,6 @@ export default function AIInsightCard({
   const pendingStartRef = useRef(null)
   const pendingTimerRef = useRef(null)
   const longWaitTimerRef = useRef(null)
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
 
   const loadInsight = useCallback(async () => {
     setLoadError(false)
@@ -840,11 +889,7 @@ export default function AIInsightCard({
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 Compare runs
               </p>
-              <ActivitySelector
-                activityId={activityId}
-                onSelect={setCompareActivity}
-                isMobile={isMobile}
-              />
+              <ActivitySelector activityId={activityId} onSelect={setCompareActivity} />
               {compareActivity && (
                 <Button
                   id="aiInsightGetRecommendationBtn_activityDetailPage"

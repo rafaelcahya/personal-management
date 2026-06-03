@@ -1,7 +1,7 @@
 # Test Status Report
 
-**Last Updated:** 2026-06-03 (Strava broken connection issue #119 — strava-connection-api.cy.js 6/6 + strava-connection-ui.cy.js 8/8 passing 100%)
-**App Version:** 1.3
+**Last Updated:** 2026-06-03 (Compare Runs selector fix issue #121 — compare-runs-ui.cy.js 19/19 passing 100%)
+**App Version:** 1.4
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
 > "Last Tested" mengacu pada tanggal test file terakhir dijalankan secara eksplisit atau tanggal report update untuk full regression run.
@@ -19,6 +19,7 @@
 > ✅ **Sidebar UI (2026-05-29):** sidebar-ui.cy.js 8/8 passing (100%). New `shared/` spec folder. Covers issue #8: auth guard, collapsed tooltips (Inventory Dashboard/Running Dashboard/Activities label), expanded no-tooltip, collapse toggle (both directions). Tooltip fix: native `PointerEvent('pointermove')` dispatch triggers Radix `onPointerMove` handler; collapse state fix: wait for `title="Expand/Collapse sidebar"` to confirm React useEffect has run. Added `sidebarCollapseBtn_sidebar` id and 3 Dashboard nav item ids. Shared module: 8 tests.
 > ✅ **Running Tracker Upcoming Races UI (2026-06-02):** upcoming-races-api.cy.js 18/18 + upcoming-races-ui.cy.js 38/38 passing (100%). Issue #107. API spec: GET list (200 + shape, 401), POST create (201 + body, optional fields, 400 for missing title/date/distance, 400 past date, 400 zero distance, 401), PATCH update (200 + partial, 400 empty body, 404 unowned, 401), DELETE (200, 404 unowned via SELECT-first fix, 401). UI spec: auth guard, section renders (heading + add btn + touch target), empty state (message + CTA), error + retry, card renders (title/distance/date/countdown badge/amber info guide/link btn/calendar btn/no save-as-completed on unlinked), add modal (open/close, validation, successful save, server error 500), edit modal (pre-filled, PATCH success, PATCH fail), delete dialog (open, title shown, cancel, confirm + empty state), mobile 375px (no overflow, add btn, card visible). Bug fixed: deleteUpcomingRace service now does SELECT before DELETE to correctly return 404 for non-existent IDs. Race Log total: 128 tests.
 > ✅ **Running Tracker AI Coach improvements (2026-05-31):** ai-coach-improvements.cy.js 36/36 passing (100%). Duration: 1m 14s. Issue #82 (PR #79 backend + PR #80 frontend). Covers: RPE radiogroup (A), user note textarea (B), context collapse/visibility (C+D), focus buttons (E), loading/pending skeleton (F), rotating status copy at 0s and 6s via cy.clock() (G), long-wait hint at 60s with Try again button (H), comparison section+trigger (I), comparison popover on desktop (J), activity list in popover (K), Get Recommendation flow with compare_activity POST (L).
+> ✅ **Running Tracker Compare Runs selector fix (2026-06-03):** compare-runs-ui.cy.js 19/19 passing (100%). Issue #121. Regression spec for `fetchActivities()` envelope bug — old code called `.filter()` on the `{ data, total, page, limit }` envelope object (TypeError); fix destructures `result?.data ?? []`. Suite A: compare section/trigger visible, popover opens, command container present, activity list shows activities (not "No matching runs found"), month group header visible. Suite B: search input present, name filter, date fragment filter, no-match message, clear search restores list. Suite C: no pill before selection, selecting closes popover, pill appears, pill contains date, Get Recommendation button appears. Suite D: remove button present, clicking remove hides pill, hides Get Recommendation, trigger visible again. Stub uses paginated envelope `{ data: [...], total, page, limit }` to match real API shape.
 > ✅ **Running Tracker Strava Broken Connection (2026-06-03):** strava-connection-api.cy.js 6/6 + strava-connection-ui.cy.js 8/8 passing (100%). Issue #119. API spec: GET /user/strava-status authenticated (200 + correct shape: connected, needs_reconnect, athlete_id, last_sync_at), needs_reconnect defaults false when no Strava, unauthenticated 401. Webhook HMAC verification: missing x-hub-signature → 401, wrong signature value → 401, invalid format → 401. UI spec: banner visible when needs_reconnect=true, banner absent when false, no dismiss/close button on banner, Reconnect CTA visible. Settings page: broken state (connected+needs_reconnect=true), connected state (connected+needs_reconnect=false), disconnected state (connected=false), loading skeleton before status resolves. New routes: running_settings. New endpoints: STRAVA_STATUS, SYNC_WEBHOOK.
 
 > ✅ **Running Tracker Analytics AI Card (2026-06-02):** analytics-ai-api.cy.js 15/15 + analytics-ai-ui.cy.js 14/14 passing (100%). Issue #100. API spec: GET /insights (auth+filters+field shape), POST /generate (queued, validation, unauthenticated), GET /staleness (is_stale, section filter). UI spec (14 tests, 14 suites A-N): auth guard, loading skeleton, empty state, generate flow, content state, staleness badge (stale/fresh), error state, retry, history modal, no-history-btn, refresh, generate error, pending state.
@@ -52,10 +53,10 @@
 | Running Tracker - Manual Entry  | 2026-05-23   | 0      | 21         | 21    |
 | Running Tracker - Dashboard     | 2026-05-29   | 0      | 95         | 95    |
 | Running Tracker - Race Log      | 2026-06-02   | 0      | 128        | 128   |
-| Running Tracker - Activities    | 2026-05-31   | 0      | 198        | 198   |
+| Running Tracker - Activities    | 2026-06-03   | 0      | 217        | 217   |
 | Running Tracker - Analytics     | 2026-06-02   | 0      | 63         | 63    |
 | Shared - Sidebar                | 2026-05-29   | 0      | 8          | 8     |
-| **Total**                       |              | **1**  | **2,213**  | **2,214** |
+| **Total**                       |              | **1**  | **2,232**  | **2,233** |
 
 ---
 
@@ -254,6 +255,7 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-01):
 | 8  | Stream Charts API — shape + validation               | running/activities/stream-charts-api.cy.js                  | 2026-05-27  | 0      | 7          | ✅ 7/7 pass    |
 | 9  | StreamCharts UI — loading/happy/empty/error/retry    | running/activities/stream-charts-ui.cy.js                   | 2026-05-27  | 0      | 14         | ✅ 14/14 pass  |
 | 11 | AI Coach improvements — RPE, note, compare, hints    | running/activities/ai-coach-improvements.cy.js              | 2026-05-31  | 0      | 36         | ✅ 36/36 pass  |
+| 12 | Compare Runs selector fix — envelope bug regression  | running/activities/compare-runs-ui.cy.js                    | 2026-06-03  | 0      | 19         | ✅ 19/19 pass  |
 
 ---
 
