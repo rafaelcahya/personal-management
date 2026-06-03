@@ -12,6 +12,7 @@
     "running_activities": "/main/running/activities",
     "running_race_log": "/main/running/race-log",
     "running_analytics": "/main/running/analytics",
+    "running_settings": "/main/running/settings",
     "trading": "/main/trading",
     "trading_dashboard": "/main/trading/dashboard",
     "trading_trade": "/main/trading/trade",
@@ -69,7 +70,8 @@
     "running_sync": {
       "sync_strava": "/api/running/v1/sync/strava",
       "sync_status": "/api/running/v1/sync/status",
-      "strava_callback": "/api/running/v1/auth/strava/callback"
+      "strava_callback": "/api/running/v1/auth/strava/callback",
+      "strava_status": "/api/running/v1/user/strava-status"
     },
     "running_manual": {
       "activities": "/api/running/v1/activities",
@@ -106,6 +108,18 @@
     },
     "running_analytics": {
       "vo2max_stat": "/api/running/v1/analytics/vo2max-stat"
+    },
+    "running_analytics_ai": {
+      "insights": "/api/running/v1/ai/insights",
+      "generate": "/api/running/v1/ai/insights/generate",
+      "staleness": "/api/running/v1/ai/insights/staleness"
+    },
+    "running_upcoming_races": {
+      "list": "/api/running/v1/upcoming-races",
+      "create": "/api/running/v1/upcoming-races",
+      "detail": "/api/running/v1/upcoming-races",
+      "update": "/api/running/v1/upcoming-races",
+      "delete": "/api/running/v1/upcoming-races"
     }
   },
   "test_ids": {
@@ -444,7 +458,19 @@
       "vo2max_trend_arrow": "vo2maxTrendArrow_analyticsPage",
       "vo2max_category": "vo2maxCategory_analyticsPage",
       "vo2max_maintenance_status": "vo2maxMaintenanceStatus_analyticsPage",
-      "vo2max_improvement_signal": "vo2maxImprovementSignal_analyticsPage"
+      "vo2max_improvement_signal": "vo2maxImprovementSignal_analyticsPage",
+      "ai_card": "analyticsAiCard_{section}_analyticsPage",
+      "ai_loading": "analyticsAiLoading_{section}_analyticsPage",
+      "ai_empty": "analyticsAiEmpty_{section}_analyticsPage",
+      "ai_generate_btn": "analyticsAiGenerateBtn_{section}_analyticsPage",
+      "ai_pending": "analyticsAiPending_{section}_analyticsPage",
+      "ai_content": "analyticsAiContent_{section}_analyticsPage",
+      "ai_error": "analyticsAiError_{section}_analyticsPage",
+      "ai_retry_btn": "analyticsAiRetryBtn_{section}_analyticsPage",
+      "ai_refresh_btn": "analyticsAiRefreshBtn_{section}_analyticsPage",
+      "ai_staleness_badge": "analyticsAiStalenessBadge_{section}_analyticsPage",
+      "ai_history_btn": "analyticsAiHistoryBtn_{section}_analyticsPage",
+      "ai_history_modal": "analyticsAiHistoryModal_{section}_analyticsPage"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",
@@ -488,6 +514,30 @@
       "delete_confirm_dialog": "deleteBrandConfirmDialog_productBrandPage",
       "delete_cancel_btn": "cancelDeleteBrandBtn_productBrandPage",
       "delete_confirm_btn": "confirmDeleteBrandBtn_productBrandPage"
+    },
+    "upcoming_races": {
+      "section": "upcomingRacesSection_raceLogPage",
+      "add_btn": "addUpcomingRaceBtn_raceLogPage",
+      "card": "upcomingRaceCard_raceLogPage",
+      "info_guide": "upcomingRaceInfoGuide_raceLogPage",
+      "link_activity_btn": "linkActivityBtn_raceLogPage",
+      "add_to_calendar_btn": "addToCalendarBtn_raceLogPage",
+      "form_modal": "upcomingRaceFormModal_raceLogPage",
+      "save_btn": "upcomingRaceSaveBtn_raceLogPage",
+      "save_as_completed_btn": "saveAsCompletedBtn_raceLogPage",
+      "delete_btn": "deleteUpcomingRaceBtn_raceLogPage",
+      "delete_confirm_btn": "deleteUpcomingRaceConfirmBtn_raceLogPage",
+      "empty_state": "upcomingRacesEmptyState_raceLogPage"
+    },
+    "running_strava_connection": {
+      "disconnect_banner": "stravaDisconnectBanner",
+      "reconnect_btn": "stravaReconnectBtn",
+      "reconnect_btn_settings": "stravaReconnectBtn_settings",
+      "settings_section": "stravaConnectionSection_settings",
+      "settings_loading": "stravaConnectionLoading_settings",
+      "settings_connected_state": "stravaConnectedState_settings",
+      "settings_broken_state": "stravaBrokenState_settings",
+      "settings_disconnected_state": "stravaDisconnectedState_settings"
     }
   },
   "seed": {

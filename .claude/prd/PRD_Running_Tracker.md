@@ -2,8 +2,8 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 2.7
-**Last Updated:** 2026-05-30
+**Version:** 2.9
+**Last Updated:** 2026-06-02
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6) · Strava API
 
@@ -181,6 +181,15 @@ if (Date.now() / 1000 > credentials.expires_at - 300) {
 }
 ```
 
+**Failure branches:**
+
+| HTTP status from Strava | Meaning                                                                                                                   | Action                                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `401 Unauthorized`      | Strava permanently revoked the token — user disconnected the app from their Strava settings, or the app was de-authorized | Set `needs_reconnect = TRUE` in `strava_credentials`. Abort the current Inngest job immediately (do not retry). Log error to Sentry. |
+| `5xx` / network error   | Transient — Strava server issue or network blip                                                                           | Normal exponential backoff retry (existing Inngest behavior, unchanged).                                                             |
+
+The `needs_reconnect` flag is the single source of truth for broken-connection state. Once set, all Strava Inngest jobs check this flag at the start of each run and exit early if it is `true` — this prevents pointless retries and Sentry noise while the connection is broken.
+
 ### 5.3 Webhook subscription
 
 Real-time sync via Strava webhook — lebih efisien dari polling:
@@ -298,6 +307,121 @@ Dashboard (user buka app)
 ```
 
 User yang ingin hapus data historis juga bisa melakukannya secara manual via halaman Settings → Danger Zone → "Delete all activity data".
+
+### 5.8 Connection Health & Broken State
+
+Sometimes Strava permanently revokes a user's token without the user going through our Disconnect flow — for example, the user removed our app from their Strava settings directly, or Strava de-authorized the app for policy reasons. In this case, the next token refresh attempt returns a `401` and syncing stops silently.
+
+This section defines how the system detects, surfaces, and recovers from that broken-connection state.
+
+#### The `needs_reconnect` flag
+
+A boolean column on `strava_credentials` tracks the broken state:
+
+```sql
+ALTER TABLE strava_credentials
+  ADD COLUMN needs_reconnect BOOLEAN NOT NULL DEFAULT FALSE;
+```
+
+**Lifecycle:**
+
+| Event                                            | Flag value                    |
+| ------------------------------------------------ | ----------------------------- |
+| Fresh Strava connect (OAuth callback)            | `FALSE` (default)             |
+| Token refresh returns `401`                      | Set to `TRUE`                 |
+| User completes reconnect OAuth flow successfully | Reset to `FALSE`              |
+| User disconnects Strava (§5.7 normal disconnect) | Row deleted — flag irrelevant |
+
+#### Inngest exit behavior
+
+Every Inngest function that calls the Strava API must check the `needs_reconnect` flag **before doing any work**:
+
+```javascript
+// At the top of every Strava Inngest function
+const credentials = await getStravaCredentials(userId)
+if (credentials.needs_reconnect) {
+  // Exit cleanly — no retry, no error thrown to Inngest
+  return { skipped: true, reason: 'needs_reconnect' }
+}
+```
+
+This prevents the job queue from filling up with retries that will always fail, and keeps Sentry clean while the connection is broken.
+
+#### User Stories
+
+> As a user, I want to be told when my Strava connection has been broken so that I know why new runs are not appearing.
+
+> As a user, I want a clear path to reconnect Strava so that I can resume syncing without confusion.
+
+#### Acceptance Criteria
+
+```
+GIVEN Strava returns 401 during token refresh
+WHEN the refresh handler runs
+THEN needs_reconnect is set to TRUE in strava_credentials
+AND the current Inngest job exits without retry
+AND the error is logged to Sentry
+
+GIVEN needs_reconnect = TRUE
+WHEN any Strava Inngest job starts
+THEN the job exits immediately with { skipped: true, reason: 'needs_reconnect' }
+AND no retry is scheduled
+
+GIVEN needs_reconnect = TRUE
+WHEN user opens any Running Tracker page
+THEN a persistent amber banner appears below the top nav with text:
+  "Your Strava connection has been revoked. Reconnect to resume syncing."
+  and a "Reconnect Strava" button
+AND the banner is not dismissible
+
+GIVEN the banner is showing
+WHEN user clicks "Reconnect Strava" and completes the OAuth flow successfully
+THEN needs_reconnect is reset to FALSE
+AND the banner disappears on the next page render
+AND Strava sync resumes normally
+
+GIVEN user is on the Settings page and needs_reconnect = TRUE
+WHEN the "Strava Connection" section renders
+THEN a warning state is shown with a "Reconnect Strava" button (same OAuth flow as onboarding)
+THEN clicking "Reconnect Strava" starts the OAuth flow
+```
+
+#### UI Spec — Persistent Broken-Connection Banner
+
+The banner shows on **all Running Tracker pages** when `needs_reconnect = true`. It sits below the top navigation bar and above all page content. It is not dismissible — it stays until the user reconnects.
+
+| Property    | Value                                                                           |
+| ----------- | ------------------------------------------------------------------------------- |
+| Placement   | Below top nav, above all page content                                           |
+| Color       | Amber / warning (`bg-amber-50 border-amber-200 text-amber-800`)                 |
+| Icon        | `AlertTriangle` (amber)                                                         |
+| Message     | "Your Strava connection has been revoked. Reconnect to resume syncing."         |
+| CTA button  | "Reconnect Strava" → same OAuth flow as onboarding (`/api/auth/strava/connect`) |
+| Dismissible | No — stays until reconnect succeeds                                             |
+| Test IDs    | `stravaDisconnectBanner`, `stravaReconnectBtn`                                  |
+
+#### Settings — Strava Connection Section
+
+The Settings page must have a "Strava Connection" section that handles both states:
+
+**Connected state** (existing, no change to §5.7 behavior):
+
+- Athlete name + `last_sync_at` timestamp
+- "Disconnect" button
+
+**Broken state** (`needs_reconnect = TRUE`):
+
+- Warning message: "Your Strava connection has been revoked. Reconnect to resume syncing."
+- "Reconnect Strava" button → triggers same OAuth flow as onboarding
+- After successful reconnect: `needs_reconnect` cleared to `FALSE`, banner disappears, sync resumes
+
+#### Error States
+
+| Scenario                                       | Classification                           | Handling                                                                  |
+| ---------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------- |
+| Token refresh returns `401`                    | Permanent — Strava revoked authorization | Set `needs_reconnect = TRUE`, abort Inngest job (no retry), log to Sentry |
+| Token refresh returns `5xx` or network timeout | Transient                                | Normal exponential backoff retry (existing behavior, unchanged)           |
+| OAuth reconnect fails                          | User-facing error                        | Show error message in Settings / banner area; flag stays `TRUE`           |
 
 ---
 
@@ -424,8 +548,12 @@ CREATE TABLE strava_credentials (
   expires_at TIMESTAMPTZ,
   scope TEXT,
   last_sync_at TIMESTAMPTZ,
-  webhook_subscription_id BIGINT
+  webhook_subscription_id BIGINT,
+  needs_reconnect BOOLEAN NOT NULL DEFAULT FALSE  -- TRUE when Strava returns 401 on refresh; cleared on successful reconnect
 );
+
+-- Migration for existing installations:
+-- ALTER TABLE strava_credentials ADD COLUMN needs_reconnect BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- ==================== ACTIVITIES ====================
 CREATE TABLE activities (
@@ -662,6 +790,7 @@ PATCH  /api/user/profile               ← update biometric + display name
 GET    /api/user/settings              ← baca preferences (HR zones method, notif, dll)
 PATCH  /api/user/settings              ← update preferences
 GET    /api/user/strava-status         ← cek apakah Strava sudah connected + last_sync_at
+                                      ← response shape: { connected: boolean, athlete_id, last_sync_at, needs_reconnect: boolean }
 DELETE /api/user/activities            ← hapus semua activity data (Danger Zone)
 ```
 
@@ -977,6 +1106,31 @@ body: { activity_id: "uuid", type: "post_activity" }
 
 ---
 
+#### 10.2.6 Analytics Section Recommendations (`analytics_summary`)
+
+Setiap kali ada activity baru, AI akan otomatis analyze data di halaman Analytics dan kasih rekomendasi per section. Trigger-nya event-driven — nggak ada activity baru = nggak ada analisis.
+
+**Trigger:** Inngest event chaining dari post-activity flow. Setelah `generatePostActivityInsight` selesai, fire event `ai/generate-analytics-summary` dengan `triggered_by_activity_id`.
+
+**Staleness check:** Saat halaman Analytics load, API cek apakah `max(rt_activities.started_at)` lebih baru dari `max(rt_ai_insights.created_at WHERE insight_type = 'analytics_summary')`. Kalau iya → queue job. Kalau nggak → tampilkan insight terakhir langsung.
+
+**Claude call design:** 1 call untuk semua section. Claude return JSON dengan key per section: `weekly_distance`, `pace_trend`, `training_load`, `vo2max_trend`, `ef_trend`, `race_predictor`. Tiap key punya `{ headline, body_markdown }`.
+
+**Section coverage (6 section, skip SummaryStats dan CurrentVO2max):**
+
+- Weekly Distance
+- Pace Trend
+- Training Load (ACWR)
+- VO2max Trend
+- EF Trend
+- Race Predictor
+
+**Output language:** English.
+
+**Storage:** Simpan 1 row per section di `rt_ai_insights` dengan `insight_type = 'analytics_summary'` dan `data_refs: { section: 'weekly_distance', triggered_by_activity_id: '...' }`.
+
+---
+
 ### 10.3 Context injection
 
 AI tidak punya akses langsung ke DB. Semua data disiapkan sebelum call ke Claude API dalam format **plain text terstruktur** (bukan JSON mentah).
@@ -1029,7 +1183,7 @@ Tidak pakai tool use untuk Insight Engine — semua data sudah tersedia saat cal
 
 ```javascript
 {
-  insight_type: 'post_activity',   // 'post_activity' | 'weekly_review' | 'anomaly' | 'daily' | 'on_demand'
+  insight_type: 'post_activity',   // 'post_activity' | 'weekly_review' | 'anomaly' | 'daily' | 'on_demand' | 'analytics_summary'
   severity: 'info',                // 'info' | 'attention' | 'warning'
   status: 'completed',             // 'pending' | 'completed' | 'failed'
   is_valid: true,
@@ -1042,6 +1196,17 @@ Tidak pakai tool use untuk Insight Engine — semua data sudah tersedia saat cal
   acknowledged: false,
 }
 ```
+
+**Insight types:**
+
+| Type                | Description                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------ |
+| `post_activity`     | Analisis otomatis setelah setiap aktivitas selesai di-sync dari Strava                           |
+| `weekly_review`     | Review mingguan via Vercel Cron setiap Minggu 19:00                                              |
+| `anomaly`           | Alert anomali setelah post-activity insight selesai (rules-based check + Claude narration)       |
+| `daily`             | Insight harian via Vercel Cron 06:00 (readiness / recovery / motivational)                       |
+| `on_demand`         | Analisis manual yang di-trigger user dari halaman detail aktivitas                               |
+| `analytics_summary` | Rekomendasi per section di halaman Analytics, di-trigger otomatis setelah activity baru disimpan |
 
 Schema tambahan dari PRD awal:
 
@@ -1089,7 +1254,8 @@ ALTER TABLE ai_insights
 | Daily insight         | ~22x            | ~700            | ~400         | ~$0.09           |
 | On-demand             | ~10x            | ~950            | ~500         | ~$0.09           |
 | Friday prep           | 4x              | 0 (rules-based) | 0            | $0               |
-| **Total**             |                 |                 |              | **~$0.46/bulan** |
+| Analytics summary     | ~16x            | ~2.000          | ~600         | ~$0.55           |
+| **Total**             |                 |                 |              | **~$1.01/bulan** |
 
 ---
 
@@ -1193,7 +1359,7 @@ Layout dari atas ke bawah:
 
 ## 11. Dashboard & Statistik
 
-### 10.1 Dashboard utama (Phase 1)
+### 11.1 Dashboard utama (Phase 1)
 
 **Header stats (weekly):**
 
@@ -1226,7 +1392,7 @@ Layout dari atas ke bawah:
 - Shortcut input mood, sleep, energy untuk hari ini
 - Status indicator apakah sudah log hari ini atau belum
 
-### 10.2 Analytics page
+### 11.2 Analytics page
 
 **Tier 1 — Paling valuable:**
 
@@ -1257,7 +1423,7 @@ Layout dari atas ke bawah:
 | Energy level vs training load  | `morning_energy` + `acwr`               | Overreaching early warning      |
 | Activity consistency heatmap   | `activities.started_at`                 | GitHub-style, visual motivation |
 
-### 10.3 Activity detail page
+### 11.3 Activity detail page
 
 **Route:** `/main/running/activities/[id]`
 **Root testid:** `data-testid="activityDetailPage"`
@@ -1310,7 +1476,7 @@ Then (non-blocking, after activity date known): `fetchSubjectiveHealthByDate(act
 
 ---
 
-### 10.4 Derived Metrics
+### 11.4 Derived Metrics
 
 Tiga metric dihitung **saat ingest time** (Strava webhook / manual sync) dan disimpan di `rt_activities`. Tidak dihitung saat render. Kalau gate conditions tidak terpenuhi, kolom di-set NULL.
 
@@ -1362,6 +1528,35 @@ These use data already synced from Strava — just need UI surfacing:
 | P1       | Estimated VO₂max stat tile on activity detail             | DONE — `id="estimatedVo2max_activityDetailPage"`, 1 decimal                                                                             |
 | P2       | Estimated VO2max 30-day rolling average on Analytics page | DONE — `Vo2maxTrendChart.jsx` in `analytics/components/`; individual dots (#c4b5fd) + rolling avg line (#7c3aed); empty state at <3 pts |
 | P2       | Analytics page `/running/analytics` (Section 10.2 spec)   | DONE — `analytics/page.jsx`; sections: Weekly Distance, Pace Trend, Best Pace, Training Load, Race Predictor, VO2max Trend, EF Trend    |
+
+---
+
+### 11.5 AI Recommendation Cards
+
+Ada 6 AI card di halaman Analytics, masing-masing di bawah chartnya. Plus 1 tombol "Riwayat Analisis" di header halaman yang buka modal berisi history semua analisis.
+
+**6 AI card slots:**
+
+- Weekly Distance
+- Pace Trend
+- Training Load (ACWR)
+- VO2max Trend
+- EF Trend
+- Race Predictor
+
+**UI states per card:**
+
+- **Loading:** skeleton violet saat pertama load
+- **Pending:** polling setiap 8 detik, max 2 menit. Copy: "Membaca tren…" → "Menganalisis pola…" → "Menulis rekomendasi…"
+- **Completed:** tampilkan headline + body_markdown. Tanggal generate di pojok kanan.
+- **Error:** "Analisis tidak tersedia" (muted), ada link retry
+- **Empty:** "Belum ada analisis. Activity berikutnya akan otomatis di-analisis."
+- **Stale badge:** kalau `insight.created_at` lebih lama dari activity terbaru → tampilkan badge "Sebelum lari terakhir"
+
+**History modal:** shadcn Dialog/Sheet, list semua `rt_ai_insights` dengan `insight_type = 'analytics_summary'`, sorted newest first, grouped by bulan. Tiap entry: tanggal, section coverage, expand untuk lihat full content.
+
+**Phase 1 (awal):** Weekly Distance, Pace Trend, Training Load + staleness check logic
+**Phase 2:** VO2max Trend, EF Trend, Race Predictor + history modal
 
 ---
 
@@ -1926,6 +2121,157 @@ Registered in `cypress/fixtures/app-constants.json` under `test_ids.race_log.*`:
 
 ---
 
+### 13.10 Upcoming Races
+
+User bisa tambahkan race yang belum dijalani ke dalam Race Log page sebagai planning list. Setelah race selesai, user link activity Strava untuk melengkapi data, lalu race pindah ke completed list.
+
+#### Lifecycle
+
+```
+User tambah upcoming race (title, date, distance, location, notes)
+        ↓
+Race muncul di section "Upcoming" di atas race history table
+Info guide amber ditampilkan, manual result fields disabled
+        ↓
+User selesai berlari → buka Race Log → klik "Link activity"
+User search dan pilih Strava activity yang sesuai
+        ↓
+PATCH /api/running/v1/upcoming-races/:id { linked_activity_id }
+Backend copy distance + date dari activity
+Manual result fields jadi enabled
+        ↓
+User isi data tambahan (posisi lomba, dll) → klik "Save as completed"
+Race pindah dari upcoming section ke race history table
+```
+
+#### Database
+
+Tabel baru `rt_upcoming_races`:
+
+| Column               | Type        | Notes                                     |
+| -------------------- | ----------- | ----------------------------------------- |
+| `id`                 | uuid        | primary key                               |
+| `user_id`            | uuid        | FK ke auth.users, RLS enforced            |
+| `title`              | text        | nama race, required                       |
+| `race_date`          | date        | harus >= today saat create                |
+| `distance_m`         | numeric     | required, > 0                             |
+| `location`           | text        | opsional, untuk Google Calendar link      |
+| `notes`              | text        | opsional                                  |
+| `linked_activity_id` | uuid        | nullable FK ke rt_activities.id           |
+| `finish_position`    | integer     | nullable, hanya bisa diisi setelah linked |
+| `created_at`         | timestamptz | auto                                      |
+
+RLS: `auth.uid() = user_id` — user hanya bisa akses data sendiri.
+
+#### API Endpoints
+
+| Method   | Path                                 | Description                                                                                      |
+| -------- | ------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `GET`    | `/api/running/v1/upcoming-races`     | List semua upcoming races, ordered `race_date ASC`                                               |
+| `POST`   | `/api/running/v1/upcoming-races`     | Create upcoming race baru                                                                        |
+| `GET`    | `/api/running/v1/upcoming-races/:id` | Detail satu upcoming race                                                                        |
+| `PATCH`  | `/api/running/v1/upcoming-races/:id` | Update. Jika `linked_activity_id` di-set, backend copy `distance_m` + `started_at` dari activity |
+| `DELETE` | `/api/running/v1/upcoming-races/:id` | Hapus upcoming race                                                                              |
+
+#### UI — Race Log Page
+
+**Layout:** Upcoming Races section tampil di atas completed race history table.
+
+**Upcoming race card** (card pattern, bukan table row — responsive grid 1/2/3 kolom):
+
+- Title, date, distance, location
+- Countdown badge: merah ≤7 hari, amber ≤30 hari, slate otherwise (reuse logic dari NextRace.jsx)
+- **Amber info guide** — `bg-amber-50 border border-amber-200`, icon `Info` warna `text-amber-500`, teks `text-xs text-amber-800`, `role="note"`:
+  > _"Race ini belum dijalankan. Setelah race selesai, link activity Strava untuk melengkapi data."_
+  > Hilang dari DOM setelah activity di-link.
+- **Disabled result fields** — tampil sebagai metric chips (Finish time, Position, Avg HR, Elevation) dengan nilai `—` dalam `text-slate-300 font-mono` di atas `bg-slate-50 border border-slate-100`. Tooltip: _"Link a Strava activity to fill in results."_ Setelah linked, chip diganti dengan real input fields.
+- Tombol **"Link activity"** (primary, kiri bawah) — buka `ActivityPickerDialog` (reuse dari "Add from activity" flow)
+- Tombol **"Add to Google Calendar"** (outline, kanan bawah) — generate Google Calendar URL, buka di tab baru
+
+**Setelah activity di-link:**
+
+- Amber info guide hilang dari DOM
+- Metric chips diganti dengan input fields yang enabled
+- Tombol **"Save as completed"** muncul — klik → card fade-out 300ms → race muncul di race history table
+
+**Google Calendar URL:**
+
+```
+https://calendar.google.com/calendar/render?action=TEMPLATE
+  &text={encodeURIComponent(title)}
+  &dates={YYYYMMDD}/{YYYYMMDD+1}
+  &details={encodeURIComponent(distance + notes)}
+  &location={encodeURIComponent(location)}
+```
+
+Format all-day untuk menghindari timezone bugs. Pure frontend, tidak ada backend atau API key.
+
+**Add upcoming race modal** — fields: title (required), race_date (required, harus future), distance (preset Select), location (opsional), notes (opsional). Zod + react-hook-form, same pattern seperti existing modals.
+
+**Empty state** — dashed border container (`border-dashed border-slate-200 rounded-xl bg-slate-50`) dengan icon Flag, teks penjelasan, dan tombol "Add a race".
+
+#### Acceptance Criteria
+
+```
+GIVEN user klik "Add upcoming race"
+WHEN form diisi dengan title, date (future), distance
+THEN upcoming race tersimpan dan muncul di upcoming section
+
+GIVEN upcoming race belum di-link ke activity
+WHEN user lihat card
+THEN amber info guide ditampilkan
+AND result fields tampil sebagai disabled metric chips
+
+GIVEN user klik "Link activity"
+WHEN user pilih activity dari picker
+THEN PATCH dipanggil dengan linked_activity_id
+AND amber info guide hilang dari DOM
+AND metric chips diganti dengan enabled input fields
+
+GIVEN manual fields sudah enabled
+WHEN user isi data dan klik "Save as completed"
+THEN card fade-out 300ms
+AND race muncul di race history table
+
+GIVEN user klik "Add to Google Calendar"
+WHEN link di-generate
+THEN tab baru terbuka dengan Google Calendar pre-filled
+
+GIVEN race_date sudah lewat tapi belum di-link
+WHEN user lihat card
+THEN amber info guide tetap tampil (tidak auto-expire)
+```
+
+#### Validations
+
+| Field             | Rule                                              |
+| ----------------- | ------------------------------------------------- |
+| `title`           | Required, max 200 chars                           |
+| `race_date`       | Required, harus >= today saat create              |
+| `distance_m`      | Required, > 0                                     |
+| `location`        | Optional, max 300 chars                           |
+| `finish_position` | Optional, integer > 0, hanya valid setelah linked |
+
+#### Test IDs
+
+Registered di `cypress/fixtures/app-constants.json` under `test_ids.upcoming_races.*`:
+
+| ID                                         | Element                            |
+| ------------------------------------------ | ---------------------------------- |
+| `upcomingRacesSection_raceLogPage`         | Section container di race-log page |
+| `addUpcomingRaceBtn_raceLogPage`           | "Add upcoming race" button         |
+| `upcomingRaceCard_raceLogPage`             | Individual race card               |
+| `upcomingRaceInfoGuide_raceLogPage`        | Amber info guide callout           |
+| `linkActivityBtn_raceLogPage`              | "Link activity" button per card    |
+| `addToCalendarBtn_raceLogPage`             | "Add to Google Calendar" button    |
+| `upcomingRaceFormModal_raceLogPage`        | Add/edit modal root                |
+| `upcomingRaceSaveBtn_raceLogPage`          | Save button di modal               |
+| `saveAsCompletedBtn_raceLogPage`           | "Save as completed" button         |
+| `deleteUpcomingRaceBtn_raceLogPage`        | Delete button per card             |
+| `deleteUpcomingRaceConfirmBtn_raceLogPage` | Confirm button di delete dialog    |
+
+---
+
 ## 14. Computed Metrics Formulas
 
 ### Training Stress Score (rTSS)
@@ -2357,7 +2703,9 @@ Zone boundaries (% dari masing-masing metodologi):
 
 ---
 
-_End of document. Version 2.7 — 2026-05-30 — Section 10.4 Implementation Status: marked EF trend arrow (id="efTrendArrow"), VO2max 30-day rolling average on Analytics page (Vo2maxTrendChart.jsx), and Analytics page /running/analytics as DONE. Updated EF stat tile testid to reflect actual implementation (id="efficiencyFactor_activityDetailPage"). Post-delivery validation for v1.1 features completed — all 12 acceptance criteria pass._
+_End of document. Version 2.8 — 2026-06-01 — GitHub Issue #93. Added §5.8 Connection Health & Broken State: needs_reconnect flag lifecycle, Inngest exit behavior on flag=true, persistent amber banner spec (test IDs: stravaDisconnectBanner / stravaReconnectBtn), Settings reconnect path, and error state classification (401 permanent vs 5xx transient). Updated §5.2 Token Refresh failure branch: 401 → set needs_reconnect=TRUE + abort Inngest job (no retry) + log Sentry; 5xx/network → existing exponential backoff unchanged. Updated strava_credentials schema: added needs_reconnect BOOLEAN NOT NULL DEFAULT FALSE with migration ALTER TABLE statement. Updated GET /api/user/strava-status response shape to include needs_reconnect: boolean._
+
+_Previous: Version 2.7 — 2026-05-30 — Section 10.4 Implementation Status: marked EF trend arrow (id="efTrendArrow"), VO2max 30-day rolling average on Analytics page (Vo2maxTrendChart.jsx), and Analytics page /running/analytics as DONE. Updated EF stat tile testid to reflect actual implementation (id="efficiencyFactor_activityDetailPage"). Post-delivery validation for v1.1 features completed — all 12 acceptance criteria pass._
 
 _Previous: Version 2.6 — 2026-05-29 — Section 13 Race Log: added client-side filtering & search to 13.5 (debounced text search + distance filter chips All/5K/10K/21K/42K/Other; chips only rendered when matching data exists; filters stack); added acceptance criteria for search and filter chip behaviors to 13.7; added test IDs raceSearchInput, raceFilterChip_all, raceFilterChip_5k, raceFilterChip_10k, raceFilterChip_21k, raceFilterChip_42k, raceFilterChip_other to 13.9._
 

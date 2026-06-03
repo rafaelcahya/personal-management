@@ -11,6 +11,7 @@ export const ROUTES = {
   running_activities: '/main/running/activities',
   running_race_log: '/main/running/race-log',
   running_analytics: '/main/running/analytics',
+  running_settings: '/main/running/settings',
   trading: '/main/trading',
   trading_dashboard: '/main/trading/dashboard',
   trading_trade: '/main/trading/trade',
