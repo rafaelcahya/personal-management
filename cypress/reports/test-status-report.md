@@ -1,6 +1,6 @@
 # Test Status Report
 
-**Last Updated:** 2026-06-04 (AI Coach page issue #131 — ai-coach-page.cy.js 56/56 passing 100%, +17 new tests across 4 new groups)
+**Last Updated:** 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%; upcoming-races-target-time-ui 19, vo2max-target-effort-api 4, vo2max-target-effort-ui 31)
 **App Version:** 1.4
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
@@ -19,6 +19,7 @@
 > ✅ **Sidebar UI (2026-05-29):** sidebar-ui.cy.js 8/8 passing (100%). New `shared/` spec folder. Covers issue #8: auth guard, collapsed tooltips (Inventory Dashboard/Running Dashboard/Activities label), expanded no-tooltip, collapse toggle (both directions). Tooltip fix: native `PointerEvent('pointermove')` dispatch triggers Radix `onPointerMove` handler; collapse state fix: wait for `title="Expand/Collapse sidebar"` to confirm React useEffect has run. Added `sidebarCollapseBtn_sidebar` id and 3 Dashboard nav item ids. Shared module: 8 tests.
 > ✅ **Running Tracker Upcoming Races UI (2026-06-02):** upcoming-races-api.cy.js 18/18 + upcoming-races-ui.cy.js 38/38 passing (100%). Issue #107. API spec: GET list (200 + shape, 401), POST create (201 + body, optional fields, 400 for missing title/date/distance, 400 past date, 400 zero distance, 401), PATCH update (200 + partial, 400 empty body, 404 unowned, 401), DELETE (200, 404 unowned via SELECT-first fix, 401). UI spec: auth guard, section renders (heading + add btn + touch target), empty state (message + CTA), error + retry, card renders (title/distance/date/countdown badge/amber info guide/link btn/calendar btn/no save-as-completed on unlinked), add modal (open/close, validation, successful save, server error 500), edit modal (pre-filled, PATCH success, PATCH fail), delete dialog (open, title shown, cancel, confirm + empty state), mobile 375px (no overflow, add btn, card visible). Bug fixed: deleteUpcomingRace service now does SELECT before DELETE to correctly return 404 for non-existent IDs. Race Log total: 128 tests.
 > ✅ **Running Tracker AI Coach improvements (2026-05-31):** ai-coach-improvements.cy.js 36/36 passing (100%). Duration: 1m 14s. Issue #82 (PR #79 backend + PR #80 frontend). Covers: RPE radiogroup (A), user note textarea (B), context collapse/visibility (C+D), focus buttons (E), loading/pending skeleton (F), rotating status copy at 0s and 6s via cy.clock() (G), long-wait hint at 60s with Try again button (H), comparison section+trigger (I), comparison popover on desktop (J), activity list in popover (K), Get Recommendation flow with compare_activity POST (L).
+> ✅ **Running Tracker VO2max Target Effort (2026-06-05):** 3 new spec files, 54/54 passing (100%). Issue #137. upcoming-races-target-time-ui.cy.js (19 tests): H/M/S target time inputs present in add/edit modal, empty on new race, pre-populated on edit, target time badge visible on card when set, absent when null, mixed list single badge, edit modal pre-populates correct H/M/S values. vo2max-target-effort-api.cy.js (4 tests): auth guard 401, 200 + data object, status field in [no_goal/no_target_time/insufficient_data/ok], full field shape when ok. vo2max-target-effort-ui.cy.js (31 tests): auth guard; no_goal empty state + CTA; no_target_time amber warning + "Add target time" link; insufficient_data "Need more data" + required VO2max; ok/On Track status badge + gap numbers + weeks-to-goal + training recommendation + projection chart; ok/Goal Reached trophy text + status badge; ok/Goal Expired expired message + "Set a new goal" btn + no chart; loading skeleton; error state role=alert + no gap card.
 > ✅ **Running Tracker AI Coach Page (2026-06-04):** ai-coach-page.cy.js 56/56 passing (100%). Issue #131. 12 scenario groups (was 8, +4 new groups, +17 tests): Group A — auth guard. Group B — page structure. Group C — Training Load Tiles (ACWR/CTL/ATL + color coding). Group D — Anomaly Alerts (cards, acknowledge, empty state). Group E — Daily Insight Card (trigger, POST, pending, polling, content, regenerate). Group F — Race Countdown Card (race + AI note + empty state). Group G — Weekly Review Card (collapsed/expanded + aria-expanded). Group H — error/loading states (skeleton, retry, success). Group I (NEW) — Daily insight recommendation pills (4 tests): pills render, click selects, active state shown, deselect restores default. Group J (NEW) — Daily insight ask coach field (5 tests): input renders, accepts text, submit button present, POST fires with typed question, field clears after submit. Group K (NEW) — Daily insight follow-up inline response (5 tests): response container renders, text visible, loading state while pending, error + retry, retry re-fires POST. Group L (NEW) — Daily insight context strip (3 tests): renders with activity reference, collapsible toggle, collapsed hides activity detail.
 
 > ✅ **Running Tracker Compare Runs selector fix (2026-06-03):** compare-runs-ui.cy.js 19/19 passing (100%). Issue #121. Regression spec for `fetchActivities()` envelope bug — old code called `.filter()` on the `{ data, total, page, limit }` envelope object (TypeError); fix destructures `result?.data ?? []`. Suite A: compare section/trigger visible, popover opens, command container present, activity list shows activities (not "No matching runs found"), month group header visible. Suite B: search input present, name filter, date fragment filter, no-match message, clear search restores list. Suite C: no pill before selection, selecting closes popover, pill appears, pill contains date, Get Recommendation button appears. Suite D: remove button present, clicking remove hides pill, hides Get Recommendation, trigger visible again. Stub uses paginated envelope `{ data: [...], total, page, limit }` to match real API shape.
@@ -54,12 +55,12 @@
 | Running Tracker - Strava Connection | 2026-06-03 | 0    | 14         | 14    |
 | Running Tracker - Manual Entry  | 2026-05-23   | 0      | 21         | 21    |
 | Running Tracker - Dashboard     | 2026-05-29   | 0      | 95         | 95    |
-| Running Tracker - Race Log      | 2026-06-02   | 0      | 128        | 128   |
+| Running Tracker - Race Log      | 2026-06-05   | 0      | 147        | 147   |
 | Running Tracker - Activities    | 2026-06-03   | 0      | 217        | 217   |
-| Running Tracker - Analytics     | 2026-06-02   | 0      | 63         | 63    |
+| Running Tracker - Analytics     | 2026-06-05   | 0      | 98         | 98    |
 | Running Tracker - AI Coach Page | 2026-06-04   | 0      | 56         | 56    |
 | Shared - Sidebar                | 2026-05-29   | 0      | 8          | 8     |
-| **Total**                       |              | **1**  | **2,288**  | **2,289** |
+| **Total**                       |              | **1**  | **2,342**  | **2,343** |
 
 ---
 
@@ -240,6 +241,7 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-05):
 | 5  | Race Log UI — full CRUD + all states             | running/race-log/race-log-ui.cy.js           | 2026-05-29  | 0      | 51         | ✅ 51/51 pass (+13 search + distance filter) |
 | 6  | Upcoming Races API — CRUD + auth guard           | running/race-log/upcoming-races-api.cy.js    | 2026-06-02  | 0      | 18         | ✅ 18/18 pass |
 | 7  | Upcoming Races UI — section, cards, modals       | running/race-log/upcoming-races-ui.cy.js     | 2026-06-02  | 0      | 38         | ✅ 38/38 pass |
+| 8  | Upcoming Races Target Time — H/M/S inputs + badge | running/race-log/upcoming-races-target-time-ui.cy.js | 2026-06-05 | 0 | 19 | ✅ 19/19 pass |
 
 ---
 
@@ -270,6 +272,8 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-05):
 | 2  | Analytics page — VO2max + EF chart sections          | running/analytics/analytics-ui.cy.js                        | 2026-05-31  | 0      | 9          | ✅ 9/9 pass    |
 | 3  | Analytics AI Card — API contract                     | running/analytics/analytics-ai-api.cy.js                    | 2026-06-02  | 0      | 15         | ✅ 15/15 pass  |
 | 4  | Analytics AI Card — UI states (all 7 sections)       | running/analytics/analytics-ai-ui.cy.js                     | 2026-06-02  | 0      | 14         | ✅ 14/14 pass  |
+| 5  | VO2max Target Effort API — auth guard + field shape  | running/analytics/vo2max-target-effort-api.cy.js            | 2026-06-05  | 0      | 4          | ✅ 4/4 pass    |
+| 6  | VO2max Target Effort UI — all status variants        | running/analytics/vo2max-target-effort-ui.cy.js             | 2026-06-05  | 0      | 31         | ✅ 31/31 pass  |
 
 ---
 

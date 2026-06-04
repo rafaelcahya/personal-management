@@ -22,6 +22,7 @@ import CurrentVo2maxStat from './components/CurrentVo2maxStat'
 import EfTrendChart from './components/EfTrendChart'
 import RacePredictor from './components/RacePredictor'
 import AnalyticsAICard from './components/AnalyticsAICard'
+import Vo2maxTargetEffortSection from './components/Vo2maxTargetEffortSection'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -190,6 +191,15 @@ export default function AnalyticsPage() {
           >
             <Vo2maxTrendChart activities={activities} />
             <AnalyticsAICard section="vo2max_trend" isPageStale={isPageStale} />
+          </Section>
+
+          <Section
+            id="vo2maxTargetEffortSection"
+            title="VO2max Target Effort"
+            description="How your current VO2max compares to what you need for your race goal — and how long it will take to close the gap."
+            icon={Activity}
+          >
+            <Vo2maxTargetEffortSection activities={activities} />
           </Section>
 
           <Section

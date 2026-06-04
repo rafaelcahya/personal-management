@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { syncStrava, redirectToStravaConnect, getStravaStatus } from '@/lib/api/running'
+import ProfileSection from './components/ProfileSection'
 
 export default function RunningSettingsPage() {
   const [syncing, setSyncing] = useState(false)
@@ -60,6 +61,8 @@ export default function RunningSettingsPage() {
         <h1 className="text-xl font-semibold text-slate-800">Settings</h1>
         <p className="text-sm text-slate-500 mt-0.5">Profile & preferences</p>
       </div>
+
+      <ProfileSection />
 
       {/* Strava Connection */}
       <section aria-label="Strava connection" id="stravaConnectionSection_settings">
