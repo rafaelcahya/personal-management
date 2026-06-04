@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { updateUpcomingRace, deleteUpcomingRace, createRaceLog } from '@/lib/api/running'
-import { getDistanceLabel, hmsToSecs, secsToHMSInput, formatDate } from './raceLogUtils'
+import { getDistanceLabel, hmsToSecs, secsToHMS, secsToHMSInput, formatDate } from './raceLogUtils'
 import ActivityPickerDialog from './ActivityPickerDialog'
 import UpcomingRaceFormModal from './UpcomingRaceFormModal'
 
@@ -184,7 +184,25 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
         )}
 
         {/* Race details row */}
-        <div className="flex items-center gap-4 flex-wrap text-xs text-slate-500">
+        <div className="flex items-center gap-3 flex-wrap text-xs text-slate-500">
+          {race.target_time_sec && (
+            <span
+              id={`targetTimeBadge_${race.id}_raceLogPage`}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 font-semibold"
+            >
+              <svg className="size-3 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5" />
+                <path
+                  d="M8 5v3.5l2 1.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              {secsToHMS(race.target_time_sec)}
+            </span>
+          )}
           {race.race_date && (
             <span className="flex items-center gap-1.5">
               <Calendar className="size-3.5 shrink-0" aria-hidden="true" />

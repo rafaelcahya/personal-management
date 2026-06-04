@@ -139,6 +139,9 @@ export const RUNNING_ENDPOINTS = {
 
   AI_INSIGHTS_LIST: '/api/running/v1/ai/insights',
   AI_INSIGHTS_GENERATE: '/api/running/v1/ai/insights/generate',
+  AI_INSIGHTS_DAILY: '/api/running/v1/ai/insights/daily',
+  AI_INSIGHTS_FOLLOWUP: '/api/running/v1/ai/insights/followup',
+  AI_INSIGHTS_ACK: (id) => `/api/running/v1/ai/insights/${id}/ack`,
 
   STRAVA_RE_ENRICH: '/api/running/v1/auth/strava/re-enrich',
   STRAVA_RE_ENRICH_METRICS: '/api/running/v1/auth/strava/re-enrich-metrics',
@@ -148,4 +151,10 @@ export const RUNNING_ENDPOINTS = {
 
   STRAVA_STATUS: '/api/running/v1/user/strava-status',
   SYNC_WEBHOOK: '/api/running/v1/sync/webhook',
+
+  USER_PROFILE: '/api/running/v1/user/profile',
+  USER_SETTINGS: '/api/running/v1/user/settings',
+  USER_ACTIVITIES: '/api/running/v1/user/activities',
+  STRAVA_DISCONNECT: '/api/running/v1/auth/strava/disconnect',
+  TARGET_EFFORT: '/api/running/v1/analytics/target-effort',
 }

@@ -14,6 +14,12 @@ export const createUpcomingRaceSchema = z.object({
     .max(1000000, 'Distance is too large'),
   location: z.string().max(300, 'Location is too long').optional().nullable(),
   notes: z.string().max(5000).optional().nullable(),
+  target_time_sec: z
+    .number({ invalid_type_error: 'Target time must be a number' })
+    .int('Target time must be a whole number of seconds')
+    .positive('Target time must be greater than 0')
+    .optional()
+    .nullable(),
 })
 
 export const updateUpcomingRaceSchema = z
@@ -30,6 +36,12 @@ export const updateUpcomingRaceSchema = z
       .optional(),
     location: z.string().max(300, 'Location is too long').optional().nullable(),
     notes: z.string().max(5000).optional().nullable(),
+    target_time_sec: z
+      .number({ invalid_type_error: 'Target time must be a number' })
+      .int('Target time must be a whole number of seconds')
+      .positive('Target time must be greater than 0')
+      .optional()
+      .nullable(),
     linked_activity_id: z.string().uuid('Invalid activity ID').optional().nullable(),
     finish_position: z.number().int().min(1, 'Position must be 1 or greater').optional().nullable(),
   })

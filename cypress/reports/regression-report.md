@@ -1,5 +1,84 @@
 # Regression Testing Report
 
+**Date:** 2026-06-05
+**App Version:** 1.4
+**Scope:** VO2max Target Effort — issue #137 (3 new spec files: upcoming-races-target-time-ui, vo2max-target-effort-api, vo2max-target-effort-ui — 54 tests)
+**Tester:** QA Agent
+
+## Summary (2026-06-05 Focused Run — VO2max Target Effort)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 54          | 54     | 0      | 0       | **100%**         |
+
+### VO2max Target Effort — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/analytics/vo2max-target-effort-api.cy.js                       | 4     | 4      | 0      | 0       | ✅ PASS  |
+| 2  | running/race-log/upcoming-races-target-time-ui.cy.js                   | 19    | 19     | 0      | 0       | ✅ PASS  |
+| 3  | running/analytics/vo2max-target-effort-ui.cy.js                        | 31    | 31     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **54** | **54** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `vo2max-target-effort-api.cy.js` (4 tests): Section A — auth guard: GET returns 401 when unauthenticated. Section B — authenticated shape: returns 200 with top-level `data` object; `data.status` is one of `[no_goal, no_target_time, insufficient_data, ok]`. Section C — ok field shape: when status=ok, all required fields present (currentVo2max, requiredVo2max, gapMlKgMin, statusBadge, weeksToGoal, goal); statusBadge is one of [On Track, Behind Schedule, Goal Reached, Goal Expired].
+- `upcoming-races-target-time-ui.cy.js` (19 tests): 6 suites (A–F). Suite A — Add form H/M/S inputs: hours/minutes/seconds inputs present and visible, empty on new race, accept numeric input. Suite B — target time badge visible: badge renders on card and shows correct formatted time (4:00:00 for 14400s). Suite C — no badge when null: badge absent when target_time_sec=null. Suite D — mixed list: exactly one badge for the card with target_time_sec. Suite E — edit modal pre-populates: opens on pencil click, pre-populates hours=4, minutes=00, seconds=00. Suite F — edit modal empty when no target time: H/M/S fields empty when race has no target_time_sec.
+- `vo2max-target-effort-ui.cy.js` (31 tests): 9 suites (A–I). Suite A — auth guard: unauthenticated redirects to /login. Suite B — no_goal: gap card renders, no-goal empty state visible, "No active race goal set." text, "Set a race goal" CTA. Suite C — no_target_time: gap card renders, amber warning with "doesn't have a target time yet", "Add target time" link. Suite D — insufficient_data: gap card renders, insufficient data element, "Need more data" heading, required VO2max value shown. Suite E — ok/On Track: gap card + On Track status badge + gap numbers (42/45) + weeks-to-goal "Weeks to goal" + training recommendation "interval sessions" + projection chart visible. Suite F — ok/Goal Reached: gap card + "Goal Reached" badge + "You're there!" trophy text + gap numbers with 48. Suite G — ok/Goal Expired: gap card + "Goal Expired" badge + "Your race goal date has passed." + "Set a new goal" button + no projection chart. Suite H — loading state: loading skeleton visible while target-effort fetch is delayed. Suite I — error state (500): error element visible + role=alert + no gap card rendered.
+
+---
+
+## Previous Run — 2026-06-04 Focused Run — Running Settings Page
+
+**Date:** 2026-06-04
+**App Version:** 1.4
+**Scope:** Running Settings page — issue #132 (settings-ui.cy.js, 17 tests, 7 describe blocks)
+**Tester:** QA Agent
+
+## Summary (2026-06-04 Focused Run — Running Settings Page)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 17          | 17     | 0      | 0       | **100%**         |
+
+### Running Settings Page — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/settings/settings-ui.cy.js                                     | 17    | 17     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **17** | **17** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `settings-ui.cy.js` (17 tests, NEW): 7 describe blocks covering the Settings page at `/main/running/settings`. Auth Guard (1 test): unauthenticated redirect to /login. Page Load (1 test): #settingsPage container visible after loading. Profile Section (3 tests): profile form renders after skeleton disappears, save success on 200, save error on 422. HR Zones Section (4 tests): threshold input hidden for max_hr method, selecting Lactate Threshold reveals threshold input, client-side validation prevents API call when threshold empty, save success on 200 for Karvonen. Notifications Section (2 tests): all 4 toggle IDs present (#notifyPostActivityToggle_settingsPage, #notifyWeeklyReviewToggle_settingsPage, #notifyFridayPrepToggle_settingsPage, #notifyAnomalyToggle_settingsPage), clicking a toggle fires PATCH to /user/settings. Strava Connection (2 tests): connected state shows #stravaConnectedState_settings + Disconnect button, clicking Disconnect fires POST /strava/disconnect then re-fetches status + shows disconnected state. Danger Zone (4 tests): Delete All button opens dialog, confirm button disabled on open, wrong text keeps it disabled, typing "DELETE" enables button + delete fires DELETE /user/activities + dialog closes. Key fix: `scrollIntoView()` added before Strava connected-state assertions because parent CardContent has overflow:hidden.
+
+---
+
+## Previous Run — 2026-06-04 Focused Run — AI Coach Page
+
+**Date:** 2026-06-04
+**App Version:** 1.4
+**Scope:** AI Coach page — issue #131 (ai-coach-page.cy.js, 56 tests, 12 scenario groups)
+**Tester:** QA Agent
+
+## Summary (2026-06-04 Focused Run — AI Coach Page)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 56          | 56     | 0      | 0       | **100%**         |
+
+### AI Coach Page — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/ai-coach/ai-coach-page.cy.js                                   | 56    | 56     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **56** | **56** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `ai-coach-page.cy.js` (56 tests, +17 new): 12 scenario groups covering the full AI Coach page at `/main/running/ai`. Group A (auth guard): unauthenticated redirect to login. Group B (page structure): page header, all 5 section containers render. Group C (Training Load Tiles): ACWR/CTL/ATL tiles render with correct values and ACWR color coding (green <1.3, amber 1.3–1.5, red >1.5). Group D (Anomaly Alerts): anomaly cards list with type label, content excerpt, and Acknowledge button; optimistic removal on acknowledge; empty state when no unacknowledged anomalies. Group E (Daily Insight Card): no-insight state shows trigger button; generate flow calls POST /ai/insights/daily and shows pending state; polling resolves to content state; insight-exists state shows content + Regenerate button. Group F (Race Countdown Card): race name + days-to-go badge + AI note from weekly review; empty state when no upcoming race. Group G (Weekly Review Card): collapsed shows date + first 2 lines; chevron toggle expands to full markdown; aria-expanded attribute updates correctly. Group H (error/loading states): loading skeleton renders 5 shimmer blocks; page-level error state shows retry button; retry success renders all sections. Group I (Daily insight recommendation pills, 4 tests): NEW — recommendation pill chips render, clicking a pill selects it, selected pill shows active state, deselecting restores default state. Group J (Daily insight ask coach field, 5 tests): NEW — free text input field renders, accepts typed text, submit button present, submitting fires POST with typed question, clears field after submit. Group K (Daily insight follow-up inline response, 5 tests): NEW — follow-up response container renders after submit, response text visible, loading state shown while pending, error state shows retry, retry re-fires POST. Group L (Daily insight context strip, 3 tests): NEW — context strip renders with activity reference, strip is collapsible, collapsed state hides activity detail.
+
+---
+
+## Previous Run — 2026-06-03 Focused Run — Compare Runs Selector Fix
+
 **Date:** 2026-06-03
 **App Version:** 1.4
 **Scope:** Compare Runs selector fix — issue #121 (AIInsightCard ActivitySelector envelope bug)
@@ -624,6 +703,9 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-05 | VO2max Target Effort (issue #137)    | 54    | 54     | 0       | 0      | 100%        |
+| 2026-06-04 | Running Settings page (issue #132)   | 17    | 17     | 0       | 0      | 100%        |
+| 2026-06-04 | AI Coach page (issue #131)           | 56    | 56     | 0       | 0      | 100%        |
 | 2026-06-03 | Compare Runs selector fix (issue #121) | 19  | 19     | 0       | 0      | 100%        |
 | 2026-06-03 | Strava broken connection (issue #119) | 14   | 14     | 0       | 0      | 100%        |
 | 2026-06-02 | Analytics AI Card (issue #100)       | 29    | 29     | 0       | 0      | 100%        |
