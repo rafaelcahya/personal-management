@@ -33,7 +33,7 @@ const schema = z.object({
   weight_kg: z.coerce.number().positive().optional().or(z.literal('')),
   max_hr: z.coerce.number().int().min(60).max(250).optional().or(z.literal('')),
   resting_hr_baseline: z.coerce.number().int().min(30).max(120).optional().or(z.literal('')),
-  sex: z.enum(['male', 'female', '']).optional(),
+  sex: z.enum(['male', 'female', 'none']).optional(),
 })
 
 export default function ProfileSection() {
@@ -58,7 +58,7 @@ export default function ProfileSection() {
     async function load() {
       try {
         const data = await getUserProfile()
-        if (!cancelled) reset(data ?? {})
+        if (!cancelled) reset({ ...(data ?? {}), sex: data?.sex ?? 'none' })
       } catch (err) {
         if (!cancelled) setLoadError(err.message || 'Failed to load profile')
       } finally {
@@ -81,7 +81,7 @@ export default function ProfileSection() {
         return v !== '' && v != null
       })
     )
-    if (cleaned.sex === '') cleaned.sex = null
+    if (cleaned.sex === 'none') cleaned.sex = null
     try {
       await updateUserProfile(cleaned)
       setSaveSuccess(true)
@@ -253,12 +253,12 @@ export default function ProfileSection() {
                       <Select onValueChange={field.onChange} value={field.value ?? ''}>
                         <SelectTrigger
                           id="sexSelect_settingsPage"
-                          className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
+                          className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 cursor-pointer"
                         >
                           <SelectValue placeholder="Prefer not to say" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Prefer not to say</SelectItem>
+                          <SelectItem value="none">Prefer not to say</SelectItem>
                           <SelectItem value="male">Male</SelectItem>
                           <SelectItem value="female">Female</SelectItem>
                         </SelectContent>
