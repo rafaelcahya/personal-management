@@ -27,6 +27,31 @@
 
 ---
 
+## Previous Run — 2026-06-04 Focused Run — Running Settings Page
+
+**Date:** 2026-06-04
+**App Version:** 1.4
+**Scope:** Running Settings page — issue #132 (settings-ui.cy.js, 17 tests, 7 describe blocks)
+**Tester:** QA Agent
+
+## Summary (2026-06-04 Focused Run — Running Settings Page)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 17          | 17     | 0      | 0       | **100%**         |
+
+### Running Settings Page — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/settings/settings-ui.cy.js                                     | 17    | 17     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **17** | **17** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `settings-ui.cy.js` (17 tests, NEW): 7 describe blocks covering the Settings page at `/main/running/settings`. Auth Guard (1 test): unauthenticated redirect to /login. Page Load (1 test): #settingsPage container visible after loading. Profile Section (3 tests): profile form renders after skeleton disappears, save success on 200, save error on 422. HR Zones Section (4 tests): threshold input hidden for max_hr method, selecting Lactate Threshold reveals threshold input, client-side validation prevents API call when threshold empty, save success on 200 for Karvonen. Notifications Section (2 tests): all 4 toggle IDs present (#notifyPostActivityToggle_settingsPage, #notifyWeeklyReviewToggle_settingsPage, #notifyFridayPrepToggle_settingsPage, #notifyAnomalyToggle_settingsPage), clicking a toggle fires PATCH to /user/settings. Strava Connection (2 tests): connected state shows #stravaConnectedState_settings + Disconnect button, clicking Disconnect fires POST /strava/disconnect then re-fetches status + shows disconnected state. Danger Zone (4 tests): Delete All button opens dialog, confirm button disabled on open, wrong text keeps it disabled, typing "DELETE" enables button + delete fires DELETE /user/activities + dialog closes. Key fix: `scrollIntoView()` added before Strava connected-state assertions because parent CardContent has overflow:hidden.
+
+---
+
 ## Previous Run — 2026-06-04 Focused Run — AI Coach Page
 
 **Date:** 2026-06-04
@@ -679,6 +704,7 @@
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
 | 2026-06-05 | VO2max Target Effort (issue #137)    | 54    | 54     | 0       | 0      | 100%        |
+| 2026-06-04 | Running Settings page (issue #132)   | 17    | 17     | 0       | 0      | 100%        |
 | 2026-06-04 | AI Coach page (issue #131)           | 56    | 56     | 0       | 0      | 100%        |
 | 2026-06-03 | Compare Runs selector fix (issue #121) | 19  | 19     | 0       | 0      | 100%        |
 | 2026-06-03 | Strava broken connection (issue #119) | 14   | 14     | 0       | 0      | 100%        |

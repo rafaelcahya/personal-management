@@ -153,5 +153,8 @@ export const RUNNING_ENDPOINTS = {
   SYNC_WEBHOOK: '/api/running/v1/sync/webhook',
 
   USER_PROFILE: '/api/running/v1/user/profile',
+  USER_SETTINGS: '/api/running/v1/user/settings',
+  USER_ACTIVITIES: '/api/running/v1/user/activities',
+  STRAVA_DISCONNECT: '/api/running/v1/auth/strava/disconnect',
   TARGET_EFFORT: '/api/running/v1/analytics/target-effort',
 }

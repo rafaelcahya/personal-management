@@ -1,6 +1,6 @@
 'use client'
 
-import { useStravaStatus } from '@/app/main/running/(app)/hooks/useStravaStatus'
+import { useStravaStatus } from '@/app/main/hooks/useStravaStatus'
 import StravaReconnectBanner from './StravaReconnectBanner'
 
 export default function RunningAppShell({ children }) {

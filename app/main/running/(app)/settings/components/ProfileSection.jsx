@@ -1,22 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { format } from 'date-fns'
-import {
-  CalendarIcon,
-  RulerIcon,
-  UserIcon,
-  HeartPulseIcon,
-  CheckCircle2,
-  AlertCircle,
-  LoaderIcon,
-} from 'lucide-react'
+import { format, parseISO } from 'date-fns'
+import { CalendarIcon, CheckCircle2, AlertCircle } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -27,388 +20,270 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { cn } from '@/lib/utils'
-import { getProfile, updateProfile } from '@/lib/api/running'
+import { getUserProfile, updateUserProfile } from '@/lib/api/running'
 
-const profileSchema = z.object({
+const schema = z.object({
+  display_name: z.string().min(1).max(100).optional(),
   birth_date: z
     .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
     .optional()
-    .refine((val) => {
-      if (!val) return true
-      const d = new Date(val)
-      return !isNaN(d.getTime()) && d < new Date()
-    }, 'Enter a valid birth date in the past'),
-  height_cm: z
-    .string()
-    .optional()
-    .refine((val) => {
-      if (!val || val === '') return true
-      const n = Number(val)
-      return !isNaN(n) && n >= 100 && n <= 250
-    }, 'Height must be between 100 and 250 cm'),
-  weight_kg: z
-    .string()
-    .optional()
-    .refine((val) => {
-      if (!val || val === '') return true
-      const n = Number(val)
-      return !isNaN(n) && n >= 30 && n <= 300
-    }, 'Weight must be between 30 and 300 kg'),
-  max_hr: z
-    .string()
-    .optional()
-    .refine((val) => {
-      if (!val || val === '') return true
-      const n = Number(val)
-      return !isNaN(n) && n >= 100 && n <= 250
-    }, 'Max HR must be between 100 and 250 bpm'),
-  resting_hr_baseline: z
-    .string()
-    .optional()
-    .refine((val) => {
-      if (!val || val === '') return true
-      const n = Number(val)
-      return !isNaN(n) && n >= 30 && n <= 120
-    }, 'Resting HR must be between 30 and 120 bpm'),
-  sex: z.enum(['male', 'female', 'unspecified']).optional(),
+    .or(z.literal('').transform(() => undefined)),
+  height_cm: z.coerce.number().positive().optional().or(z.literal('')),
+  weight_kg: z.coerce.number().positive().optional().or(z.literal('')),
+  max_hr: z.coerce.number().int().min(60).max(250).optional().or(z.literal('')),
+  resting_hr_baseline: z.coerce.number().int().min(30).max(120).optional().or(z.literal('')),
+  sex: z.enum(['male', 'female', '']).optional(),
 })
 
-function toFormValues(profile) {
-  return {
-    birth_date: profile?.birth_date ?? '',
-    height_cm: profile?.height_cm != null ? String(profile.height_cm) : '',
-    weight_kg: profile?.weight_kg != null ? String(profile.weight_kg) : '',
-    max_hr: profile?.max_hr != null ? String(profile.max_hr) : '',
-    resting_hr_baseline:
-      profile?.resting_hr_baseline != null ? String(profile.resting_hr_baseline) : '',
-    sex: profile?.sex ?? 'unspecified',
-  }
-}
-
 export default function ProfileSection() {
-  const [profile, setProfile] = useState(null)
-  const [loadError, setLoadError] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [saveSuccess, setSaveSuccess] = useState(false)
+  const [loadError, setLoadError] = useState(null)
+  const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
+  const [saveSuccess, setSaveSuccess] = useState(false)
 
-  const form = useForm({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      birth_date: '',
-      height_cm: '',
-      weight_kg: '',
-      max_hr: '',
-      resting_hr_baseline: '',
-      sex: 'unspecified',
-    },
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
   })
 
   useEffect(() => {
     let cancelled = false
-
     async function load() {
       try {
-        const data = await getProfile()
-        if (!cancelled) {
-          setProfile(data)
-          form.reset(toFormValues(data))
-        }
+        const data = await getUserProfile()
+        if (!cancelled) reset(data ?? {})
       } catch (err) {
         if (!cancelled) setLoadError(err.message || 'Failed to load profile')
       } finally {
         if (!cancelled) setLoading(false)
       }
     }
-
     load()
     return () => {
       cancelled = true
     }
-  }, [form])
+  }, [reset])
 
   async function onSubmit(values) {
-    setSaveSuccess(false)
+    setSaving(true)
     setSaveError(null)
-
-    const payload = {}
-    if (values.birth_date) payload.birth_date = values.birth_date
-    if (values.height_cm) payload.height_cm = Number(values.height_cm)
-    if (values.weight_kg) payload.weight_kg = Number(values.weight_kg)
-    if (values.max_hr) payload.max_hr = Number(values.max_hr)
-    if (values.resting_hr_baseline) payload.resting_hr_baseline = Number(values.resting_hr_baseline)
-    if (values.sex && values.sex !== 'unspecified') payload.sex = values.sex
-    else if (values.sex === 'unspecified') payload.sex = null
-
+    setSaveSuccess(false)
+    const cleaned = Object.fromEntries(
+      Object.entries(values).filter(([k, v]) => {
+        if (k === 'sex') return true
+        return v !== '' && v != null
+      })
+    )
+    if (cleaned.sex === '') cleaned.sex = null
     try {
-      await updateProfile(payload)
+      await updateUserProfile(cleaned)
       setSaveSuccess(true)
-      setTimeout(() => setSaveSuccess(false), 4000)
+      setTimeout(() => setSaveSuccess(false), 3000)
     } catch (err) {
       setSaveError(err.message || 'Failed to save profile')
+    } finally {
+      setSaving(false)
     }
   }
 
   return (
-    <section aria-label="Profile" id="profileSection_settings">
+    <section aria-label="Profile">
       <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Profile</h2>
 
-      {loading && (
-        <Card className="border border-slate-200/70 shadow-sm">
-          <CardContent id="profileLoading_settings" className="px-5 py-4 flex flex-col gap-3">
+      {loading ? (
+        <Card className="border border-slate-200/70 py-0">
+          <CardContent id="profileLoading_settingsPage" className="px-5 py-4 flex flex-col gap-3">
             <Skeleton className="h-4 w-40 rounded" />
-            <Skeleton className="h-8 w-full rounded" />
-            <Skeleton className="h-4 w-32 rounded" />
-            <Skeleton className="h-8 w-full rounded" />
-            <Skeleton className="h-4 w-36 rounded" />
-            <Skeleton className="h-8 w-full rounded" />
+            <Skeleton className="h-4 w-full rounded" />
+            <Skeleton className="h-4 w-full rounded" />
+            <Skeleton className="h-4 w-3/4 rounded" />
           </CardContent>
         </Card>
-      )}
-
-      {!loading && loadError && (
-        <Card className="border border-red-200 shadow-sm bg-red-50">
+      ) : loadError ? (
+        <Card className="border border-red-200 py-0 bg-red-50">
           <CardContent className="px-5 py-4">
-            <p id="profileLoadError_settings" className="text-sm text-red-700" role="alert">
-              {loadError}
-            </p>
+            <p className="text-sm text-red-700">{loadError}</p>
           </CardContent>
         </Card>
-      )}
+      ) : (
+        <Card className="border border-slate-200/70 py-0">
+          <CardContent className="px-5 py-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="displayNameInput_settingsPage" className="text-sm font-medium">
+                    Display Name
+                  </Label>
+                  <Input
+                    id="displayNameInput_settingsPage"
+                    {...register('display_name')}
+                    placeholder="Your name"
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  />
+                  {errors.display_name && (
+                    <p className="text-xs text-red-600">{errors.display_name.message}</p>
+                  )}
+                </div>
 
-      {!loading && !loadError && (
-        <Card className="border border-slate-200/70 shadow-sm">
-          <CardContent className="px-5 py-5">
-            <Form {...form}>
-              <form
-                id="profileForm_settings"
-                onSubmit={form.handleSubmit(onSubmit)}
-                noValidate
-                className="space-y-5"
-              >
-                {/* Birth date */}
-                <FormField
-                  control={form.control}
-                  name="birth_date"
-                  render={({ field }) => {
-                    const selectedDate = field.value
-                      ? new Date(field.value + 'T00:00:00')
-                      : undefined
-                    return (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
-                          <CalendarIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                          Birth date
-                        </FormLabel>
+                <div className="flex flex-col gap-1.5">
+                  <Label className="text-sm font-medium">Date of Birth</Label>
+                  <Controller
+                    name="birth_date"
+                    control={control}
+                    render={({ field }) => {
+                      const selected = field.value ? parseISO(field.value) : undefined
+                      return (
                         <Popover>
                           <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                id="birthDateInput_settings"
-                                variant="outline"
-                                className={cn(
-                                  'w-full justify-start text-left font-normal text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600',
-                                  !field.value && 'text-muted-foreground'
-                                )}
-                              >
-                                <CalendarIcon
-                                  className="size-4 mr-2 text-slate-400"
-                                  aria-hidden="true"
-                                />
-                                {field.value
-                                  ? format(selectedDate, 'd MMM yyyy')
-                                  : 'Select your birth date'}
-                              </Button>
-                            </FormControl>
+                            <Button
+                              id="birthDateInput_settingsPage"
+                              variant="outline"
+                              className="w-full justify-start text-sm font-medium text-left focus-visible:ring-violet-200 focus-visible:border-violet-600"
+                            >
+                              <CalendarIcon
+                                className="mr-2 h-4 w-4 shrink-0 text-slate-400"
+                                aria-hidden="true"
+                              />
+                              {selected ? (
+                                format(selected, 'dd MMM yyyy')
+                              ) : (
+                                <span className="text-slate-400">Pick a date</span>
+                              )}
+                            </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                               mode="single"
-                              captionLayout="dropdown"
-                              selected={selectedDate}
+                              selected={selected}
                               onSelect={(date) =>
                                 field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
                               }
-                              disabled={(date) => date > new Date()}
-                              defaultMonth={selectedDate ?? new Date(1990, 0)}
-                              fromYear={1930}
-                              toYear={new Date().getFullYear()}
+                              captionLayout="dropdown"
+                              defaultMonth={selected ?? new Date(1990, 0, 1)}
+                              fromYear={1940}
+                              toYear={new Date().getFullYear() - 10}
+                              autoFocus
                             />
                           </PopoverContent>
                         </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )
-                  }}
-                />
+                      )
+                    }}
+                  />
+                  {errors.birth_date && (
+                    <p className="text-xs text-red-600">{errors.birth_date.message}</p>
+                  )}
+                </div>
 
-                {/* Sex */}
-                <FormField
-                  control={form.control}
-                  name="sex"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
-                        <UserIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                        Sex
-                      </FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value ?? 'unspecified'}>
-                        <FormControl>
-                          <SelectTrigger
-                            id="sexSelect_settings"
-                            className="w-full text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                            aria-label="Select sex"
-                          >
-                            <SelectValue placeholder="Select sex" />
-                          </SelectTrigger>
-                        </FormControl>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="heightInput_settingsPage" className="text-sm font-medium">
+                    Height (cm)
+                  </Label>
+                  <Input
+                    id="heightInput_settingsPage"
+                    type="number"
+                    {...register('height_cm')}
+                    placeholder="e.g. 170"
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  />
+                  {errors.height_cm && (
+                    <p className="text-xs text-red-600">{errors.height_cm.message}</p>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="weightInput_settingsPage" className="text-sm font-medium">
+                    Weight (kg)
+                  </Label>
+                  <Input
+                    id="weightInput_settingsPage"
+                    type="number"
+                    step="0.1"
+                    {...register('weight_kg')}
+                    placeholder="e.g. 65"
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  />
+                  {errors.weight_kg && (
+                    <p className="text-xs text-red-600">{errors.weight_kg.message}</p>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="maxHrInput_settingsPage" className="text-sm font-medium">
+                    Max HR (bpm)
+                  </Label>
+                  <Input
+                    id="maxHrInput_settingsPage"
+                    type="number"
+                    {...register('max_hr')}
+                    placeholder="e.g. 190"
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  />
+                  {errors.max_hr && <p className="text-xs text-red-600">{errors.max_hr.message}</p>}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="restingHrInput_settingsPage" className="text-sm font-medium">
+                    Resting HR (bpm)
+                  </Label>
+                  <Input
+                    id="restingHrInput_settingsPage"
+                    type="number"
+                    {...register('resting_hr_baseline')}
+                    placeholder="e.g. 55"
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  />
+                  {errors.resting_hr_baseline && (
+                    <p className="text-xs text-red-600">{errors.resting_hr_baseline.message}</p>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label className="text-sm font-medium">Sex</Label>
+                  <Controller
+                    name="sex"
+                    control={control}
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                        <SelectTrigger
+                          id="sexSelect_settingsPage"
+                          className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
+                        >
+                          <SelectValue placeholder="Prefer not to say" />
+                        </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="unspecified">Prefer not to say</SelectItem>
+                          <SelectItem value="">Prefer not to say</SelectItem>
                           <SelectItem value="male">Male</SelectItem>
                           <SelectItem value="female">Female</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Height + Weight */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="height_cm"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
-                          <RulerIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                          Height (cm)
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            id="heightInput_settings"
-                            type="number"
-                            inputMode="decimal"
-                            placeholder="170"
-                            min={100}
-                            max={250}
-                            className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="weight_kg"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
-                          <RulerIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                          Weight (kg)
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            id="weightInput_settings"
-                            type="number"
-                            inputMode="decimal"
-                            placeholder="65"
-                            min={30}
-                            max={300}
-                            className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
                     )}
                   />
                 </div>
+              </div>
 
-                {/* HR fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="resting_hr_baseline"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
-                          <HeartPulseIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                          Resting HR (bpm)
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            id="restingHrInput_settings"
-                            type="number"
-                            inputMode="numeric"
-                            placeholder="55"
-                            min={30}
-                            max={120}
-                            className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="max_hr"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
-                          <HeartPulseIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                          Max HR (bpm)
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            id="maxHrInput_settings"
-                            type="number"
-                            inputMode="numeric"
-                            placeholder="185"
-                            min={100}
-                            max={250}
-                            className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Save feedback */}
+              <div className="flex items-center justify-end gap-3 pt-1">
                 {saveSuccess && (
                   <div
-                    id="profileSaveSuccess_settings"
-                    className="flex items-center gap-2 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-sm text-green-700"
+                    id="profileSaveSuccess_settingsPage"
+                    className="flex items-center gap-1.5 text-sm text-green-700"
                     role="status"
                     aria-live="polite"
                   >
                     <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
-                    Profile updated successfully.
+                    Profile saved
                   </div>
                 )}
-
                 {saveError && (
                   <div
-                    id="profileSaveError_settings"
-                    className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700"
+                    id="profileSaveError_settingsPage"
+                    className="flex items-center gap-1.5 text-sm text-red-600"
                     role="alert"
                     aria-live="assertive"
                   >
@@ -416,25 +291,11 @@ export default function ProfileSection() {
                     {saveError}
                   </div>
                 )}
-
-                <Button
-                  id="saveProfileBtn_settings"
-                  type="submit"
-                  disabled={form.formState.isSubmitting}
-                  size="sm"
-                  className="bg-violet-600 hover:bg-violet-700 text-white min-h-11"
-                >
-                  {form.formState.isSubmitting ? (
-                    <>
-                      <LoaderIcon className="w-4 h-4 animate-spin" aria-hidden="true" />
-                      Saving…
-                    </>
-                  ) : (
-                    'Save changes'
-                  )}
+                <Button id="profileSaveBtn_settingsPage" type="submit" disabled={saving} size="sm">
+                  {saving ? 'Saving…' : 'Save'}
                 </Button>
-              </form>
-            </Form>
+              </div>
+            </form>
           </CardContent>
         </Card>
       )}
