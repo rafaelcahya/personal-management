@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
 const PROFILE_FIELDS =
-  'id, email, display_name, birth_date, height_cm, weight_kg, max_hr, resting_hr_baseline'
+  'id, email, display_name, birth_date, height_cm, weight_kg, max_hr, resting_hr_baseline, sex'
 
 const patchSchema = z.object({
   display_name: z.string().min(1).max(100).optional(),
@@ -15,6 +15,7 @@ const patchSchema = z.object({
   weight_kg: z.number().positive().optional(),
   max_hr: z.number().int().min(60).max(250).optional(),
   resting_hr_baseline: z.number().int().min(30).max(120).optional(),
+  sex: z.enum(['male', 'female']).nullable().optional(),
 })
 
 export async function GET() {

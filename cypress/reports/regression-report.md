@@ -1,5 +1,34 @@
 # Regression Testing Report
 
+**Date:** 2026-06-05
+**App Version:** 1.4
+**Scope:** VO2max Target Effort — issue #137 (3 new spec files: upcoming-races-target-time-ui, vo2max-target-effort-api, vo2max-target-effort-ui — 54 tests)
+**Tester:** QA Agent
+
+## Summary (2026-06-05 Focused Run — VO2max Target Effort)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 54          | 54     | 0      | 0       | **100%**         |
+
+### VO2max Target Effort — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/analytics/vo2max-target-effort-api.cy.js                       | 4     | 4      | 0      | 0       | ✅ PASS  |
+| 2  | running/race-log/upcoming-races-target-time-ui.cy.js                   | 19    | 19     | 0      | 0       | ✅ PASS  |
+| 3  | running/analytics/vo2max-target-effort-ui.cy.js                        | 31    | 31     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **54** | **54** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `vo2max-target-effort-api.cy.js` (4 tests): Section A — auth guard: GET returns 401 when unauthenticated. Section B — authenticated shape: returns 200 with top-level `data` object; `data.status` is one of `[no_goal, no_target_time, insufficient_data, ok]`. Section C — ok field shape: when status=ok, all required fields present (currentVo2max, requiredVo2max, gapMlKgMin, statusBadge, weeksToGoal, goal); statusBadge is one of [On Track, Behind Schedule, Goal Reached, Goal Expired].
+- `upcoming-races-target-time-ui.cy.js` (19 tests): 6 suites (A–F). Suite A — Add form H/M/S inputs: hours/minutes/seconds inputs present and visible, empty on new race, accept numeric input. Suite B — target time badge visible: badge renders on card and shows correct formatted time (4:00:00 for 14400s). Suite C — no badge when null: badge absent when target_time_sec=null. Suite D — mixed list: exactly one badge for the card with target_time_sec. Suite E — edit modal pre-populates: opens on pencil click, pre-populates hours=4, minutes=00, seconds=00. Suite F — edit modal empty when no target time: H/M/S fields empty when race has no target_time_sec.
+- `vo2max-target-effort-ui.cy.js` (31 tests): 9 suites (A–I). Suite A — auth guard: unauthenticated redirects to /login. Suite B — no_goal: gap card renders, no-goal empty state visible, "No active race goal set." text, "Set a race goal" CTA. Suite C — no_target_time: gap card renders, amber warning with "doesn't have a target time yet", "Add target time" link. Suite D — insufficient_data: gap card renders, insufficient data element, "Need more data" heading, required VO2max value shown. Suite E — ok/On Track: gap card + On Track status badge + gap numbers (42/45) + weeks-to-goal "Weeks to goal" + training recommendation "interval sessions" + projection chart visible. Suite F — ok/Goal Reached: gap card + "Goal Reached" badge + "You're there!" trophy text + gap numbers with 48. Suite G — ok/Goal Expired: gap card + "Goal Expired" badge + "Your race goal date has passed." + "Set a new goal" button + no projection chart. Suite H — loading state: loading skeleton visible while target-effort fetch is delayed. Suite I — error state (500): error element visible + role=alert + no gap card rendered.
+
+---
+
+## Previous Run — 2026-06-04 Focused Run — Running Settings Page
+
 **Date:** 2026-06-04
 **App Version:** 1.4
 **Scope:** Running Settings page — issue #132 (settings-ui.cy.js, 17 tests, 7 describe blocks)
@@ -674,6 +703,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-05 | VO2max Target Effort (issue #137)    | 54    | 54     | 0       | 0      | 100%        |
 | 2026-06-04 | Running Settings page (issue #132)   | 17    | 17     | 0       | 0      | 100%        |
 | 2026-06-04 | AI Coach page (issue #131)           | 56    | 56     | 0       | 0      | 100%        |
 | 2026-06-03 | Compare Runs selector fix (issue #121) | 19  | 19     | 0       | 0      | 100%        |

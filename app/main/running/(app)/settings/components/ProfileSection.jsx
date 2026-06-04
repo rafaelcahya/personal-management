@@ -13,6 +13,13 @@ import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { getUserProfile, updateUserProfile } from '@/lib/api/running'
 
 const schema = z.object({
@@ -26,6 +33,7 @@ const schema = z.object({
   weight_kg: z.coerce.number().positive().optional().or(z.literal('')),
   max_hr: z.coerce.number().int().min(60).max(250).optional().or(z.literal('')),
   resting_hr_baseline: z.coerce.number().int().min(30).max(120).optional().or(z.literal('')),
+  sex: z.enum(['male', 'female', '']).optional(),
 })
 
 export default function ProfileSection() {
@@ -68,8 +76,12 @@ export default function ProfileSection() {
     setSaveError(null)
     setSaveSuccess(false)
     const cleaned = Object.fromEntries(
-      Object.entries(values).filter(([, v]) => v !== '' && v != null)
+      Object.entries(values).filter(([k, v]) => {
+        if (k === 'sex') return true
+        return v !== '' && v != null
+      })
     )
+    if (cleaned.sex === '') cleaned.sex = null
     try {
       await updateUserProfile(cleaned)
       setSaveSuccess(true)
@@ -230,6 +242,29 @@ export default function ProfileSection() {
                   {errors.resting_hr_baseline && (
                     <p className="text-xs text-red-600">{errors.resting_hr_baseline.message}</p>
                   )}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <Label className="text-sm font-medium">Sex</Label>
+                  <Controller
+                    name="sex"
+                    control={control}
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                        <SelectTrigger
+                          id="sexSelect_settingsPage"
+                          className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
+                        >
+                          <SelectValue placeholder="Prefer not to say" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Prefer not to say</SelectItem>
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                 </div>
               </div>
 

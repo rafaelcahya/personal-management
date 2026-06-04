@@ -108,7 +108,12 @@
       "re_enrich_metrics": "/api/running/v1/auth/strava/re-enrich-metrics"
     },
     "running_analytics": {
-      "vo2max_stat": "/api/running/v1/analytics/vo2max-stat"
+      "vo2max_stat": "/api/running/v1/analytics/vo2max-stat",
+      "target_effort": "/api/running/v1/analytics/target-effort"
+    },
+    "running_user_profile": {
+      "get": "/api/running/v1/user/profile",
+      "patch": "/api/running/v1/user/profile"
     },
     "running_analytics_ai": {
       "insights": "/api/running/v1/ai/insights",
@@ -385,16 +390,22 @@
     },
     "running_ai_coach": {
       "page": "aiCoachPage",
+      "loading_skeleton": "aiCoachLoadingSkeleton",
+      "error": "aiCoachError",
       "training_load_tiles": "trainingLoadTiles_aiCoachPage",
       "anomaly_alerts_section": "anomalyAlertsSection_aiCoachPage",
       "daily_insight_card": "dailyInsightCard_aiCoachPage",
       "daily_insight_generate_btn": "dailyInsightGenerateBtn_aiCoachPage",
       "daily_insight_generate_from_stale_btn": "dailyInsightGenerateFromStaleBtn_aiCoachPage",
       "daily_insight_regenerate_btn": "dailyInsightRegenerateBtn_aiCoachPage",
+      "daily_insight_tags": "dailyInsightTags_aiCoachPage",
+      "daily_insight_ask_coach": "dailyInsightAskCoach_aiCoachPage",
+      "daily_insight_ask_btn": "dailyInsightAskBtn_aiCoachPage",
+      "daily_insight_follow_up": "dailyInsightFollowUp_aiCoachPage",
+      "daily_insight_context": "dailyInsightContext_aiCoachPage",
       "race_countdown_card": "raceCountdownCard_aiCoachPage",
       "weekly_review_card": "weeklyReviewCard_aiCoachPage",
-      "loading_skeleton": "aiCoachLoadingSkeleton",
-      "error": "aiCoachError"
+      "weekly_review_card_body": "weeklyReviewCardBody_aiCoachPage"
     },
     "running_onboarding": {
       "page": "runningOnboardingPage",
@@ -493,7 +504,23 @@
       "ai_refresh_btn": "analyticsAiRefreshBtn_{section}_analyticsPage",
       "ai_staleness_badge": "analyticsAiStalenessBadge_{section}_analyticsPage",
       "ai_history_btn": "analyticsAiHistoryBtn_{section}_analyticsPage",
-      "ai_history_modal": "analyticsAiHistoryModal_{section}_analyticsPage"
+      "ai_history_modal": "analyticsAiHistoryModal_{section}_analyticsPage",
+      "vo2max_target_effort_section": "vo2maxTargetEffortSection",
+      "vo2max_target_effort_loading": "vo2maxTargetEffortLoading_analyticsPage",
+      "vo2max_target_effort_error": "vo2maxTargetEffortError_analyticsPage",
+      "vo2max_gap_card": "vo2maxGapCard_analyticsPage",
+      "vo2max_gap_no_goal": "vo2maxGapNoGoal_analyticsPage",
+      "vo2max_gap_insufficient_data": "vo2maxGapInsufficientData_analyticsPage",
+      "vo2max_gap_status_badge": "vo2maxGapStatusBadge_analyticsPage",
+      "vo2max_category_badge": "vo2maxCategoryBadge_analyticsPage",
+      "vo2max_physiological_warning": "vo2maxPhysiologicalWarning_analyticsPage",
+      "vo2max_gap_numbers": "vo2maxGapNumbers_analyticsPage",
+      "vo2max_weeks_to_goal": "vo2maxWeeksToGoal_analyticsPage",
+      "vo2max_recommended_training": "vo2maxRecommendedTraining_analyticsPage",
+      "vo2max_projection_chart": "vo2maxProjectionChart_analyticsPage",
+      "set_goal_btn": "setGoalBtn_analyticsPage",
+      "set_new_goal_btn": "setNewGoalBtn_analyticsPage",
+      "vo2max_sex_missing_hint": "vo2maxSexMissingHint_analyticsPage"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",
@@ -550,7 +577,25 @@
       "save_as_completed_btn": "saveAsCompletedBtn_raceLogPage",
       "delete_btn": "deleteUpcomingRaceBtn_raceLogPage",
       "delete_confirm_btn": "deleteUpcomingRaceConfirmBtn_raceLogPage",
-      "empty_state": "upcomingRacesEmptyState_raceLogPage"
+      "empty_state": "upcomingRacesEmptyState_raceLogPage",
+      "target_time_hours_input": "targetTimeHoursInput_upcomingRacePage",
+      "target_time_minutes_input": "targetTimeMinutesInput_upcomingRacePage",
+      "target_time_seconds_input": "targetTimeSecondsInput_upcomingRacePage"
+    },
+    "running_profile_settings": {
+      "section": "profileSection_settings",
+      "loading": "profileLoading_settings",
+      "load_error": "profileLoadError_settings",
+      "form": "profileForm_settings",
+      "birth_date_input": "birthDateInput_settings",
+      "sex_select": "sexSelect_settings",
+      "height_input": "heightInput_settings",
+      "weight_input": "weightInput_settings",
+      "resting_hr_input": "restingHrInput_settings",
+      "max_hr_input": "maxHrInput_settings",
+      "save_btn": "saveProfileBtn_settings",
+      "save_success": "profileSaveSuccess_settings",
+      "save_error": "profileSaveError_settings"
     },
     "running_strava_connection": {
       "disconnect_banner": "stravaDisconnectBanner",

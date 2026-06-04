@@ -31,12 +31,28 @@ import { createUpcomingRace, updateUpcomingRace } from '@/lib/api/running'
 import { createUpcomingRaceSchema, updateUpcomingRaceSchema } from '@/schemas/upcomingRace'
 import { DISTANCE_PRESETS } from './raceLogUtils'
 
+function secondsToHms(totalSec) {
+  if (!totalSec) return { h: '', m: '', s: '' }
+  const h = Math.floor(totalSec / 3600)
+  const m = Math.floor((totalSec % 3600) / 60)
+  const s = totalSec % 60
+  return { h: h > 0 ? String(h) : '', m: String(m).padStart(2, '0'), s: String(s).padStart(2, '0') }
+}
+
+function hmsToSeconds(h, m, s) {
+  const total = (Number(h) || 0) * 3600 + (Number(m) || 0) * 60 + (Number(s) || 0)
+  return total > 0 ? total : null
+}
+
 export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) {
   const isEdit = race != null
   const [distanceMode, setDistanceMode] = useState('preset')
   const [saving, setSaving] = useState(false)
   const [serverError, setServerError] = useState(null)
   const [datePickerOpen, setDatePickerOpen] = useState(false)
+  const [targetH, setTargetH] = useState('')
+  const [targetM, setTargetM] = useState('')
+  const [targetS, setTargetS] = useState('')
 
   const {
     register,
@@ -70,6 +86,10 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
           location: race.location ?? '',
           notes: race.notes ?? '',
         })
+        const hms = secondsToHms(race.target_time_sec)
+        setTargetH(hms.h)
+        setTargetM(hms.m)
+        setTargetS(hms.s)
       } else {
         setDistanceMode('preset')
         reset({
@@ -79,6 +99,9 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
           location: '',
           notes: '',
         })
+        setTargetH('')
+        setTargetM('')
+        setTargetS('')
       }
     }
   }, [open, isEdit, race, reset])
@@ -97,6 +120,7 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
         distance_m: data.distance_m,
         location: data.location || null,
         notes: data.notes || null,
+        target_time_sec: hmsToSeconds(targetH, targetM, targetS),
       }
       let result
       if (isEdit) {
@@ -279,6 +303,59 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
               rows={3}
               {...register('notes')}
             />
+          </div>
+
+          {/* Target time (optional) */}
+          <div className="flex flex-col gap-1.5">
+            <Label>
+              Target time <span className="text-slate-400 font-normal text-xs">(optional)</span>
+            </Label>
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-0.5 flex-1">
+                <Input
+                  id="targetTimeHoursInput_upcomingRacePage"
+                  type="number"
+                  min={0}
+                  max={23}
+                  placeholder="0"
+                  value={targetH}
+                  onChange={(e) => setTargetH(e.target.value)}
+                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-center"
+                  aria-label="Hours"
+                />
+                <span className="text-[10px] text-slate-400 text-center">hrs</span>
+              </div>
+              <span className="text-slate-400 font-medium mb-3">:</span>
+              <div className="flex flex-col gap-0.5 flex-1">
+                <Input
+                  id="targetTimeMinutesInput_upcomingRacePage"
+                  type="number"
+                  min={0}
+                  max={59}
+                  placeholder="00"
+                  value={targetM}
+                  onChange={(e) => setTargetM(e.target.value)}
+                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-center"
+                  aria-label="Minutes"
+                />
+                <span className="text-[10px] text-slate-400 text-center">min</span>
+              </div>
+              <span className="text-slate-400 font-medium mb-3">:</span>
+              <div className="flex flex-col gap-0.5 flex-1">
+                <Input
+                  id="targetTimeSecondsInput_upcomingRacePage"
+                  type="number"
+                  min={0}
+                  max={59}
+                  placeholder="00"
+                  value={targetS}
+                  onChange={(e) => setTargetS(e.target.value)}
+                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-center"
+                  aria-label="Seconds"
+                />
+                <span className="text-[10px] text-slate-400 text-center">sec</span>
+              </div>
+            </div>
           </div>
 
           {serverError && (
