@@ -1,6 +1,6 @@
 # Test Status Report
 
-**Last Updated:** 2026-06-04 (AI Coach page issue #131 — ai-coach-page.cy.js 56/56 passing 100%, +17 new tests across 4 new groups)
+**Last Updated:** 2026-06-04 (Running Settings page issue #132 — settings-ui.cy.js 17/17 passing 100%, NEW module: Running Tracker - Settings)
 **App Version:** 1.4
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
@@ -19,6 +19,8 @@
 > ✅ **Sidebar UI (2026-05-29):** sidebar-ui.cy.js 8/8 passing (100%). New `shared/` spec folder. Covers issue #8: auth guard, collapsed tooltips (Inventory Dashboard/Running Dashboard/Activities label), expanded no-tooltip, collapse toggle (both directions). Tooltip fix: native `PointerEvent('pointermove')` dispatch triggers Radix `onPointerMove` handler; collapse state fix: wait for `title="Expand/Collapse sidebar"` to confirm React useEffect has run. Added `sidebarCollapseBtn_sidebar` id and 3 Dashboard nav item ids. Shared module: 8 tests.
 > ✅ **Running Tracker Upcoming Races UI (2026-06-02):** upcoming-races-api.cy.js 18/18 + upcoming-races-ui.cy.js 38/38 passing (100%). Issue #107. API spec: GET list (200 + shape, 401), POST create (201 + body, optional fields, 400 for missing title/date/distance, 400 past date, 400 zero distance, 401), PATCH update (200 + partial, 400 empty body, 404 unowned, 401), DELETE (200, 404 unowned via SELECT-first fix, 401). UI spec: auth guard, section renders (heading + add btn + touch target), empty state (message + CTA), error + retry, card renders (title/distance/date/countdown badge/amber info guide/link btn/calendar btn/no save-as-completed on unlinked), add modal (open/close, validation, successful save, server error 500), edit modal (pre-filled, PATCH success, PATCH fail), delete dialog (open, title shown, cancel, confirm + empty state), mobile 375px (no overflow, add btn, card visible). Bug fixed: deleteUpcomingRace service now does SELECT before DELETE to correctly return 404 for non-existent IDs. Race Log total: 128 tests.
 > ✅ **Running Tracker AI Coach improvements (2026-05-31):** ai-coach-improvements.cy.js 36/36 passing (100%). Duration: 1m 14s. Issue #82 (PR #79 backend + PR #80 frontend). Covers: RPE radiogroup (A), user note textarea (B), context collapse/visibility (C+D), focus buttons (E), loading/pending skeleton (F), rotating status copy at 0s and 6s via cy.clock() (G), long-wait hint at 60s with Try again button (H), comparison section+trigger (I), comparison popover on desktop (J), activity list in popover (K), Get Recommendation flow with compare_activity POST (L).
+> ✅ **Running Tracker Settings Page (2026-06-04):** settings-ui.cy.js 17/17 passing (100%). Issue #132. NEW spec file under `cypress/e2e/running/settings/`. 7 describe blocks: Auth Guard (1 test: unauthenticated redirect), Page Load (1 test: #settingsPage visible), Profile Section (3 tests: form renders, save 200, save 422), HR Zones Section (4 tests: threshold hidden for max_hr, Lactate Threshold reveals input, client-side validation blocks empty threshold API call, Karvonen save success), Notifications Section (2 tests: all 4 toggles present, toggle fires PATCH), Strava Connection (2 tests: connected state + Disconnect btn, POST disconnect + disconnected state), Danger Zone (4 tests: dialog opens, confirm disabled on open, wrong text still disabled, DELETE enables + API fires + dialog closes). Key lesson: `scrollIntoView()` needed before visibility assertions on elements clipped by overflow:hidden parent. Added `running_settings` to test-ids.js (22 IDs), added USER_PROFILE/USER_SETTINGS/USER_ACTIVITIES/STRAVA_DISCONNECT to endpoints.js.
+
 > ✅ **Running Tracker AI Coach Page (2026-06-04):** ai-coach-page.cy.js 56/56 passing (100%). Issue #131. 12 scenario groups (was 8, +4 new groups, +17 tests): Group A — auth guard. Group B — page structure. Group C — Training Load Tiles (ACWR/CTL/ATL + color coding). Group D — Anomaly Alerts (cards, acknowledge, empty state). Group E — Daily Insight Card (trigger, POST, pending, polling, content, regenerate). Group F — Race Countdown Card (race + AI note + empty state). Group G — Weekly Review Card (collapsed/expanded + aria-expanded). Group H — error/loading states (skeleton, retry, success). Group I (NEW) — Daily insight recommendation pills (4 tests): pills render, click selects, active state shown, deselect restores default. Group J (NEW) — Daily insight ask coach field (5 tests): input renders, accepts text, submit button present, POST fires with typed question, field clears after submit. Group K (NEW) — Daily insight follow-up inline response (5 tests): response container renders, text visible, loading state while pending, error + retry, retry re-fires POST. Group L (NEW) — Daily insight context strip (3 tests): renders with activity reference, collapsible toggle, collapsed hides activity detail.
 
 > ✅ **Running Tracker Compare Runs selector fix (2026-06-03):** compare-runs-ui.cy.js 19/19 passing (100%). Issue #121. Regression spec for `fetchActivities()` envelope bug — old code called `.filter()` on the `{ data, total, page, limit }` envelope object (TypeError); fix destructures `result?.data ?? []`. Suite A: compare section/trigger visible, popover opens, command container present, activity list shows activities (not "No matching runs found"), month group header visible. Suite B: search input present, name filter, date fragment filter, no-match message, clear search restores list. Suite C: no pill before selection, selecting closes popover, pill appears, pill contains date, Get Recommendation button appears. Suite D: remove button present, clicking remove hides pill, hides Get Recommendation, trigger visible again. Stub uses paginated envelope `{ data: [...], total, page, limit }` to match real API shape.
@@ -58,8 +60,9 @@
 | Running Tracker - Activities    | 2026-06-03   | 0      | 217        | 217   |
 | Running Tracker - Analytics     | 2026-06-02   | 0      | 63         | 63    |
 | Running Tracker - AI Coach Page | 2026-06-04   | 0      | 56         | 56    |
+| Running Tracker - Settings      | 2026-06-04   | 0      | 17         | 17    |
 | Shared - Sidebar                | 2026-05-29   | 0      | 8          | 8     |
-| **Total**                       |              | **1**  | **2,288**  | **2,289** |
+| **Total**                       |              | **1**  | **2,305**  | **2,306** |
 
 ---
 
@@ -74,7 +77,7 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-05):
 | Trading - Fee             | 2026-03-15  | 81 hari 🔴           |
 | Trading - Event           | 2026-03-15  | 81 hari 🔴           |
 
-> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Landing Page 27 hari — approaching 30 day threshold. Running Tracker - AI Coach Page baru di-test hari ini (2026-06-04), 56/56 passing. Running Tracker Dashboard Extended authored 2026-05-25 — run focused spec before merging. Product History UI fresh (tested 2026-05-17). Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
+> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Landing Page 27 hari — approaching 30 day threshold. Running Tracker - Settings baru di-test hari ini (2026-06-04), 17/17 passing. Running Tracker - AI Coach Page juga di-test hari ini, 56/56 passing. Running Tracker Dashboard Extended authored 2026-05-25 — run focused spec before merging. Product History UI fresh (tested 2026-05-17). Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
 
 ---
 
@@ -289,6 +292,20 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-05):
 | 10 | Daily insight ask coach free text field              | running/ai-coach/ai-coach-page.cy.js                        | 2026-06-04  | 0      | 5          | ✅ 5/5 pass    |
 | 11 | Daily insight follow-up inline response              | running/ai-coach/ai-coach-page.cy.js                        | 2026-06-04  | 0      | 5          | ✅ 5/5 pass    |
 | 12 | Daily insight context strip                          | running/ai-coach/ai-coach-page.cy.js                        | 2026-06-04  | 0      | 3          | ✅ 3/3 pass    |
+
+---
+
+### Running Tracker - Settings
+
+| #  | Feature                                              | File                                                        | Last Tested | Manual | Automation | Status         |
+| -- | ---------------------------------------------------- | ----------------------------------------------------------- | ----------- | ------ | ---------- | -------------- |
+| 1  | Auth guard — unauthenticated redirect                | running/settings/settings-ui.cy.js                          | 2026-06-04  | 0      | 1          | ✅ 1/1 pass    |
+| 2  | Page load — #settingsPage visible                    | running/settings/settings-ui.cy.js                          | 2026-06-04  | 0      | 1          | ✅ 1/1 pass    |
+| 3  | Profile section — form render, save success, save error | running/settings/settings-ui.cy.js                       | 2026-06-04  | 0      | 3          | ✅ 3/3 pass    |
+| 4  | HR Zones section — method select, threshold, validation, save | running/settings/settings-ui.cy.js                 | 2026-06-04  | 0      | 4          | ✅ 4/4 pass    |
+| 5  | Notifications — toggles render + PATCH on click      | running/settings/settings-ui.cy.js                          | 2026-06-04  | 0      | 2          | ✅ 2/2 pass    |
+| 6  | Strava Connection — connected state + Disconnect flow | running/settings/settings-ui.cy.js                         | 2026-06-04  | 0      | 2          | ✅ 2/2 pass    |
+| 7  | Danger Zone — dialog, confirm guard, DELETE flow     | running/settings/settings-ui.cy.js                          | 2026-06-04  | 0      | 4          | ✅ 4/4 pass    |
 
 ---
 

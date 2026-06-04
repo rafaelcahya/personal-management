@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-06-04 (AI Coach page issue #131 — ai-coach-page.cy.js 56/56 passing 100%, +17 new tests: recommendation pills, ask coach field, follow-up inline response, context strip)
+**Last Updated:** 2026-06-04 (Running Settings page issue #132 — settings-ui.cy.js 17/17 passing 100%, NEW: Profile section, HR Zones section, Notifications section, Strava Connection, Danger Zone)
 **App Version:** 1.4
 
 ## Coverage Summary
@@ -30,8 +30,11 @@
 | Running Tracker - Activities    | 12             | 12        | 0           | 0          | 100%       | 217        |
 | Running Tracker - Analytics     | 5              | 5         | 0           | 0          | 100%       | 63         |
 | Running Tracker - AI Coach Page | 12             | 12        | 0           | 0          | 100%       | 56         |
+| Running Tracker - Settings      | 5              | 5         | 0           | 0          | 100%       | 17         |
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **176**        | **175**   | **1**       | **0**      | **99%**    | **2,289**  |
+| **Total**                       | **181**        | **180**   | **1**       | **0**      | **99%**    | **2,306**  |
+
+> **Note (2026-06-04 v1.4 Running Settings page issue #132 +17 tests):** settings-ui.cy.js 17/17 passing (100%). NEW module: Running Tracker - Settings. 5 features: Auth guard + page load (1 test), Profile section (3 tests — form renders, save 200, save 422), HR Zones section (4 tests — threshold hidden for max_hr, Lactate Threshold reveals input, client-side validation prevents empty threshold API call, Karvonen save success), Notifications section (2 tests — all 4 toggles present, toggle fires PATCH), Strava Connection (2 tests — connected state + Disconnect btn, POST disconnect + disconnected state shows), Danger Zone (4 tests — dialog opens, btn disabled on open, wrong text still disabled, DELETE text enables + delete fires). Key lesson: `scrollIntoView()` needed before assertions on CardContent elements with overflow:hidden clipping. test-ids.js updated with running_settings section (22 IDs). endpoints.js updated with USER_PROFILE, USER_SETTINGS, USER_ACTIVITIES, STRAVA_DISCONNECT. Total: 181 features, 2,306 tests.
 
 > **Note (2026-06-04 v1.4 AI Coach page issue #131 +17 tests):** ai-coach-page.cy.js 56/56 passing (100%). 4 new describe blocks added (tests 40–56): "Daily insight recommendation pills" (4 tests — pills render, click selects, active state, deselect restores), "Daily insight ask coach field" (5 tests — input renders, accepts text, submit button present, POST fires with question, field clears after submit), "Daily insight follow-up inline response" (5 tests — response container renders, text visible, loading state shown, error + retry, retry re-fires POST), "Daily insight context strip" (3 tests — renders with activity reference, collapsible, collapsed hides detail). Total now 12 scenario groups, 56 tests. Running Tracker - AI Coach Page: 12 features, 56 tests. Total: 176 features, 2,289 tests.
 
@@ -73,7 +76,16 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-06-04 Focused Run: AI Coach Page +17 tests)
+## Last Execution Results (2026-06-04 Focused Run: Running Settings Page)
+
+| Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running-settings (Settings page UI) — issue #132                             | 1          | 17    | 17     | 0      | 0       | ✅       |
+| **Total**                                                                    | **1**      | **17** | **17** | **0**  | **0**   | **100%** |
+
+**Status:** settings-ui.cy.js 17/17 passing (100%). 7 describe blocks all passed. Auth guard redirects unauthenticated users to /login. Profile section: form renders, save success shown on 200, save error shown on 422. HR Zones: threshold input hidden by default (max_hr), Lactate Threshold option shows input, client-side validation blocks empty threshold, Karvonen save success. Notifications: all 4 toggles render and toggle click fires PATCH. Strava Connection: connected card + Disconnect button render, Disconnect POST fires then disconnected state shows. Danger Zone: dialog opens, confirm disabled on empty text + on wrong text, correct "DELETE" enables button and DELETE API fires. Duration: 27 seconds.
+
+### Previous Execution Results (2026-06-04 Focused Run: AI Coach Page +17 tests)
 
 | Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
@@ -338,7 +350,9 @@
 | 92  | cypress/e2e/running/race-log/upcoming-races-api.cy.js                | Running Tracker Upcoming Races API   | 18       | GET list (200 + shape + field presence, list non-empty fields, 401), POST (201 + body, optional fields cleanup, 400 missing title/date/distance, 400 past date, 400 zero distance, 401), PATCH (200 partial update, 400 empty body, 404 unowned id, 401), DELETE (200 + message, 404 unowned id via SELECT-first fix, 401) |
 | 93  | cypress/e2e/running/race-log/upcoming-races-ui.cy.js                 | Running Tracker Upcoming Races UI    | 38       | Auth guard (unauthenticated → /login); section renders (heading, add btn, touch target ≥32px); empty state (message, CTA, no cards); error state (Try again btn, retry re-fetches + card appears); card renders (2 cards, titles, location, countdown badge, amber info guide role=alert, link btn, calendar btn, no save-as-completed on unlinked, save-as-completed on linked); add modal (not visible on load, opens via header btn, opens via CTA, Cancel closes); form validation (role=alert on empty submit, title error); successful save (modal closes, card appears); server error (modal stays open, role=alert); edit modal (not visible, pre-filled title, PATCH success closes, PATCH fail stays open); delete dialog (opens, title shown, Cancel closes, Confirm removes card + empty state); mobile 375px (no overflow, add btn visible, card visible) |
 
-**Total Automated Test Cases: 2,206** (added 17 AI Coach page tests 2026-06-04; previous total: 2,189) (added 19 compare-runs tests 2026-06-03; previous total: 2,170) (added 56 upcoming races tests 2026-06-02; previous total: 2,114) (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
+| 95  | cypress/e2e/running/settings/settings-ui.cy.js               | Running Settings page UI (issue #132) | 17       | Auth guard (unauthenticated → /login); page load (#settingsPage visible); Profile section (form renders after skeleton, save 200 → #profileSaveSuccess, save 422 → #profileSaveError); HR Zones section (threshold input absent for max_hr, Lactate Threshold option shows #thresholdHrInput, client-side validation blocks API when threshold empty, Karvonen save → #hrZonesSaveSuccess); Notifications section (all 4 toggle IDs present, toggle click fires PATCH /user/settings); Strava Connection (connected state + #stravaDisconnectBtn, Disconnect POST + disconnected state); Danger Zone (#dangerZoneDialog opens, confirm disabled on empty, disabled on "WRONG", "DELETE" enables confirm btn, DELETE fires + dialog closes). Fix: scrollIntoView() for CardContent with overflow:hidden clipping. |
+
+**Total Automated Test Cases: 2,223** (added 17 Settings page tests 2026-06-04; previous total: 2,206) (added 17 AI Coach page tests 2026-06-04; previous total: 2,189) (added 19 compare-runs tests 2026-06-03; previous total: 2,170) (added 56 upcoming races tests 2026-06-02; previous total: 2,114) (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
 
 ## Manual Test Cases (not yet automated)
 
