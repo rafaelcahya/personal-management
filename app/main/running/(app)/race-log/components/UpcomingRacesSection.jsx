@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Flag, Plus, AlertTriangle } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import UpcomingRaceCard from './UpcomingRaceCard'
 import UpcomingRaceFormModal from './UpcomingRaceFormModal'
@@ -21,17 +22,8 @@ export default function UpcomingRacesSection({
   return (
     <section id="upcomingRacesSection_raceLogPage" aria-label="Upcoming races">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 mb-4">
+      <div className="mb-4">
         <h2 className="text-xl font-bold text-slate-800">Upcoming Races</h2>
-        <Button
-          id="addUpcomingRaceBtn_raceLogPage"
-          size="sm"
-          onClick={() => setFormOpen(true)}
-          className="flex items-center gap-1.5"
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          Add upcoming race
-        </Button>
       </div>
 
       {/* Loading skeleton */}

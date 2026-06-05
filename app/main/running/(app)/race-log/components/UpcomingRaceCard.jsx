@@ -6,6 +6,7 @@ import {
   Calendar,
   MapPin,
   AlertTriangle,
+  Info,
   Link2,
   CalendarPlus,
   Pencil,
@@ -36,6 +37,14 @@ function daysUntil(dateStr) {
   const race = new Date(dateStr)
   race.setHours(0, 0, 0, 0)
   return Math.round((race - today) / 86400000)
+}
+
+function getCardStyle(days) {
+  if (days <= 1) return 'border-2 border-red-300 bg-red-50/40'
+  if (days <= 3) return 'border border-orange-300 bg-orange-50/40'
+  if (days <= 7) return 'border border-amber-300 bg-amber-50/50'
+  if (days <= 14) return 'border border-amber-200 bg-amber-50/25'
+  return 'border border-slate-200/50 bg-white'
 }
 
 function CountdownBadge({ dateStr }) {
@@ -148,11 +157,13 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
     }
   }
 
+  const days = race.race_date ? daysUntil(race.race_date) : Infinity
+
   return (
     <>
       <div
         id={`upcomingRaceCard_${race.id}_raceLogPage`}
-        className="border border-slate-200/50 rounded-xl bg-white p-4 flex flex-col gap-4"
+        className={`${getCardStyle(days)} rounded-xl p-4 flex flex-col gap-4`}
       >
         {/* Header row */}
         <div className="flex items-start justify-between gap-3">
@@ -181,6 +192,20 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
             <span>
               This race hasn&apos;t been run yet. Once you&apos;ve finished, link your Strava
               activity to fill in the results.
+            </span>
+          </div>
+        )}
+
+        {/* Racepack pickup guide — shown at ≤7 days and ≤3 days, not at ≤1 day */}
+        {days > 1 && days <= 7 && (
+          <div
+            id={`racepackGuide_${race.id}_raceLogPage`}
+            className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2 text-sm text-blue-800"
+          >
+            <Info className="size-4 shrink-0 mt-0.5 text-blue-500" aria-hidden="true" />
+            <span>
+              🎽 Racepack pickup is usually H&#8209;3 to H&#8209;1. Check the event page for your
+              schedule and pickup location.
             </span>
           </div>
         )}
