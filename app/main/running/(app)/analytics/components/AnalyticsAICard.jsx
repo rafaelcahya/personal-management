@@ -168,8 +168,10 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
   const [generating, setGenerating] = useState(false)
   const [generateError, setGenerateError] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
+  const [localStale, setLocalStale] = useState(null)
   const pollRef = useRef(null)
   const pollCountRef = useRef(0)
+  const prevLatestIdRef = useRef(null)
 
   const stopPolling = useCallback(() => {
     if (pollRef.current) {
@@ -200,10 +202,15 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
       try {
         const data = await fetchAnalyticsInsight(section)
         const latest = data?.[0]
-        const isDone = latest && latest.status === 'completed' && latest.is_valid === true
+        const isNewCompleted =
+          latest &&
+          latest.status === 'completed' &&
+          latest.is_valid === true &&
+          latest.id !== prevLatestIdRef.current
         const timedOut = pollCountRef.current >= MAX_POLLS
-        if (isDone || timedOut) {
+        if (isNewCompleted || timedOut) {
           setInsights(data)
+          if (isNewCompleted) setLocalStale(false)
           stopPolling()
         }
       } catch {
@@ -233,10 +240,12 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
     setGenerating(true)
     setGenerateError(false)
     try {
+      // Snapshot the current latest id so polling can tell old data from new
+      prevLatestIdRef.current = insights?.[0]?.id ?? null
       await generateAnalyticsInsight(section)
-      const data = await fetchAnalyticsInsight(section)
-      setInsights(data)
-      startPolling()
+      // Optimistic pending state keeps the useEffect-controlled poller alive
+      // while Inngest asynchronously inserts real pending rows
+      setInsights([{ status: 'pending', is_valid: false, created_at: new Date().toISOString() }])
     } catch {
       setGenerateError(true)
     } finally {
@@ -250,7 +259,8 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
     latestInsight.is_valid === true &&
     latestInsight.content
 
-  const stale = isPageStale || isStale(latestInsight?.created_at)
+  const stale =
+    (localStale !== null ? localStale : isPageStale) || isStale(latestInsight?.created_at)
   const historyInsights = useMemo(
     () => (insights ?? []).filter((ins) => ins.status === 'completed' && ins.is_valid === true),
     [insights]
