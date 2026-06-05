@@ -231,6 +231,12 @@ export const TEST_IDS = {
     training_load_card: 'trainingLoadCard',
     ytd_stats_card: 'ytdStatsCard',
     next_race_card: 'nextRaceCard',
+    next_race_empty_state: 'nextRaceEmptyState',
+    next_race_list: 'nextRaceList',
+    next_race_card_item: 'nextRaceCardItem',
+    next_race_location: 'nextRaceLocation',
+    next_race_target_time: 'nextRaceTargetTime',
+    next_race_progress_bar: 'nextRaceProgressBar',
     activity_calendar_card: 'activityCalendarCard',
     recent_activities_card: 'recentActivitiesCard',
     ai_coach_card: 'aiCoachCard',
@@ -452,6 +458,8 @@ export const TEST_IDS = {
     daily_insight_context: 'dailyInsightContext_aiCoachPage',
     race_countdown_card: 'raceCountdownCard_aiCoachPage',
     weekly_review_card: 'weeklyReviewCard_aiCoachPage',
+    friday_prep_card: 'fridayPrepCard_aiCoachPage',
+    friday_prep_card_body: 'fridayPrepCardBody_aiCoachPage',
   },
 
   running_strava_connection: {

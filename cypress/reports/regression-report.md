@@ -2,6 +2,31 @@
 
 **Date:** 2026-06-05
 **App Version:** 1.4
+**Scope:** Next Race Widget — issue #153 (1 spec file: dashboard-ui-extended.cy.js — 14 tests)
+**Tester:** QA Agent
+
+## Summary (2026-06-05 Focused Run — Next Race Widget)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 14          | 14     | 0      | 0       | **100%**         |
+
+### Next Race Widget — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/dashboard/dashboard-ui-extended.cy.js                          | 14    | 14     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **14** | **14** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `dashboard-ui-extended.cy.js` (14 tests, updated for issue #153): NextRace widget — null state (no next race), title display, race-week badge render. YtdStats renders when distance_m > 0, hidden when 0, hidden when null, distance format (150.00 km). SyncStatusBar: Never label, sync btn visible, POST trigger on click, syncResultMsg (X new activities / Already up to date). Activity type filter: renders with active ring state. All 14 tests confirming the Next Race widget correctly reflects NextRace data shape from the updated dashboard page.
+
+---
+
+## Previous Run — 2026-06-05 Focused Run — VO2max Target Effort
+
+**Date:** 2026-06-05
+**App Version:** 1.4
 **Scope:** VO2max Target Effort — issue #137 (3 new spec files: upcoming-races-target-time-ui, vo2max-target-effort-api, vo2max-target-effort-ui — 54 tests)
 **Tester:** QA Agent
 
@@ -703,6 +728,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-05 | Next Race Widget (issue #153)        | 14    | 14     | 0       | 0      | 100%        |
 | 2026-06-05 | VO2max Target Effort (issue #137)    | 54    | 54     | 0       | 0      | 100%        |
 | 2026-06-04 | Running Settings page (issue #132)   | 17    | 17     | 0       | 0      | 100%        |
 | 2026-06-04 | AI Coach page (issue #131)           | 56    | 56     | 0       | 0      | 100%        |

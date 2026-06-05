@@ -6,11 +6,13 @@ import {
   Calendar,
   MapPin,
   AlertTriangle,
+  Info,
   Link2,
   CalendarPlus,
   Pencil,
   Trash2,
   Loader2,
+  ChevronDown,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -35,6 +37,14 @@ function daysUntil(dateStr) {
   const race = new Date(dateStr)
   race.setHours(0, 0, 0, 0)
   return Math.round((race - today) / 86400000)
+}
+
+function getCardStyle(days) {
+  if (days <= 1) return 'border-2 border-red-300 bg-red-50/40'
+  if (days <= 3) return 'border border-orange-300 bg-orange-50/40'
+  if (days <= 7) return 'border border-amber-300 bg-amber-50/50'
+  if (days <= 14) return 'border border-amber-200 bg-amber-50/25'
+  return 'border border-slate-200/50 bg-white'
 }
 
 function CountdownBadge({ dateStr }) {
@@ -75,6 +85,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
 
   const linked = !!race.linked_activity_id
   const fieldsDisabled = !linked
+  const [resultsOpen, setResultsOpen] = useState(linked)
 
   async function handleLinkActivity(activity) {
     setPickerOpen(false)
@@ -146,11 +157,13 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
     }
   }
 
+  const days = race.race_date ? daysUntil(race.race_date) : Infinity
+
   return (
     <>
       <div
         id={`upcomingRaceCard_${race.id}_raceLogPage`}
-        className="border border-slate-200/50 rounded-xl bg-white p-4 flex flex-col gap-4"
+        className={`${getCardStyle(days)} rounded-xl p-4 flex flex-col gap-4`}
       >
         {/* Header row */}
         <div className="flex items-start justify-between gap-3">
@@ -179,6 +192,20 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
             <span>
               This race hasn&apos;t been run yet. Once you&apos;ve finished, link your Strava
               activity to fill in the results.
+            </span>
+          </div>
+        )}
+
+        {/* Racepack pickup guide — shown at ≤7 days and ≤3 days, not at ≤1 day */}
+        {days > 1 && days <= 7 && (
+          <div
+            id={`racepackGuide_${race.id}_raceLogPage`}
+            className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2 text-sm text-blue-800"
+          >
+            <Info className="size-4 shrink-0 mt-0.5 text-blue-500" aria-hidden="true" />
+            <span>
+              🎽 Racepack pickup is usually H&#8209;3 to H&#8209;1. Check the event page for your
+              schedule and pickup location.
             </span>
           </div>
         )}
@@ -217,56 +244,73 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
           )}
         </div>
 
-        {/* Manual result fields */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-2 flex flex-col gap-1.5">
-            <Label htmlFor={`finishTime_${race.id}`} className="text-xs">
-              Finish time (hh:mm:ss)
-            </Label>
-            <Input
-              id={`finishTime_${race.id}`}
-              placeholder="00:45:30"
-              value={finishTimeStr}
-              onChange={(e) => setFinishTimeStr(e.target.value)}
-              onBlur={() => {
-                const secs = hmsToSecs(finishTimeStr)
-                if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
-              }}
-              disabled={fieldsDisabled}
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Finish time"
+        {/* Manual result fields — collapsible */}
+        <div className="border border-slate-200/70 rounded-lg overflow-hidden">
+          <button
+            id={`resultsToggle_${race.id}_raceLogPage`}
+            type="button"
+            onClick={() => setResultsOpen((v) => !v)}
+            className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50 transition-colors"
+            aria-expanded={resultsOpen}
+          >
+            <span>Log result</span>
+            <ChevronDown
+              className={`size-3.5 transition-transform duration-200 ${resultsOpen ? 'rotate-180' : ''}`}
+              aria-hidden="true"
             />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor={`positionPlace_${race.id}`} className="text-xs">
-              Position (overall)
-            </Label>
-            <Input
-              id={`positionPlace_${race.id}`}
-              type="number"
-              placeholder="e.g. 42"
-              value={positionPlace}
-              onChange={(e) => setPositionPlace(e.target.value)}
-              disabled={fieldsDisabled}
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Overall position"
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor={`positionMale_${race.id}`} className="text-xs">
-              Position (male)
-            </Label>
-            <Input
-              id={`positionMale_${race.id}`}
-              type="number"
-              placeholder="e.g. 8"
-              value={positionMale}
-              onChange={(e) => setPositionMale(e.target.value)}
-              disabled={fieldsDisabled}
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Male position"
-            />
-          </div>
+          </button>
+          {resultsOpen && (
+            <div className="grid grid-cols-2 gap-3 px-3 pb-3 pt-2 border-t border-slate-200/70">
+              <div className="col-span-2 flex flex-col gap-1.5">
+                <Label htmlFor={`finishTime_${race.id}`} className="text-xs">
+                  Finish time (hh:mm:ss)
+                </Label>
+                <Input
+                  id={`finishTime_${race.id}`}
+                  placeholder="00:45:30"
+                  value={finishTimeStr}
+                  onChange={(e) => setFinishTimeStr(e.target.value)}
+                  onBlur={() => {
+                    const secs = hmsToSecs(finishTimeStr)
+                    if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
+                  }}
+                  disabled={fieldsDisabled}
+                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Finish time"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor={`positionPlace_${race.id}`} className="text-xs">
+                  Position (overall)
+                </Label>
+                <Input
+                  id={`positionPlace_${race.id}`}
+                  type="number"
+                  placeholder="e.g. 42"
+                  value={positionPlace}
+                  onChange={(e) => setPositionPlace(e.target.value)}
+                  disabled={fieldsDisabled}
+                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Overall position"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor={`positionMale_${race.id}`} className="text-xs">
+                  Position (male)
+                </Label>
+                <Input
+                  id={`positionMale_${race.id}`}
+                  type="number"
+                  placeholder="e.g. 8"
+                  value={positionMale}
+                  onChange={(e) => setPositionMale(e.target.value)}
+                  disabled={fieldsDisabled}
+                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Male position"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Actions row */}

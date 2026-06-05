@@ -7,11 +7,13 @@ import {
   fetchDailyInsight,
   fetchUpcomingRaces,
   fetchWeeklyReviewInsight,
+  fetchFridayPrepInsight,
 } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import TrainingLoadTiles from './components/TrainingLoadTiles'
 import AnomalyAlertsSection from './components/AnomalyAlertsSection'
 import DailyInsightCard from './components/DailyInsightCard'
+import FridayPrepCard from './components/FridayPrepCard'
 import RaceCountdownCard from './components/RaceCountdownCard'
 import WeeklyReviewCard from './components/WeeklyReviewCard'
 
@@ -21,6 +23,7 @@ export default function AICoachPage() {
   const [dailyInsight, setDailyInsight] = useState(null)
   const [upcomingRace, setUpcomingRace] = useState(null)
   const [weeklyReview, setWeeklyReview] = useState(null)
+  const [fridayPrep, setFridayPrep] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -31,13 +34,14 @@ export default function AICoachPage() {
       setLoading(true)
       setError(null)
       try {
-        const [dashboardRes, anomaliesRes, dailyRes, racesRes, weeklyRes] =
+        const [dashboardRes, anomaliesRes, dailyRes, racesRes, weeklyRes, fridayRes] =
           await Promise.allSettled([
             getDashboard(),
             fetchAnomalyInsights(),
             fetchDailyInsight(),
             fetchUpcomingRaces(),
             fetchWeeklyReviewInsight(),
+            fetchFridayPrepInsight(),
           ])
 
         if (cancelled) return
@@ -59,6 +63,9 @@ export default function AICoachPage() {
         }
         if (weeklyRes.status === 'fulfilled') {
           setWeeklyReview(weeklyRes.value ?? null)
+        }
+        if (fridayRes.status === 'fulfilled') {
+          setFridayPrep(fridayRes.value ?? null)
         }
       } catch (err) {
         if (!cancelled) setError(err.message || 'Failed to load AI Coach data')
@@ -127,6 +134,7 @@ export default function AICoachPage() {
           <TrainingLoadTiles trainingLoad={trainingLoad} />
           <AnomalyAlertsSection anomalies={anomalies} />
           <DailyInsightCard initialInsight={dailyInsight} trainingLoad={trainingLoad} />
+          <FridayPrepCard fridayPrep={fridayPrep} />
           <RaceCountdownCard upcomingRace={upcomingRace} weeklyReview={weeklyReview} />
           <WeeklyReviewCard weeklyReview={weeklyReview} />
         </>

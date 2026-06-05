@@ -1,6 +1,6 @@
 # Test Status Report
 
-**Last Updated:** 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%; upcoming-races-target-time-ui 19, vo2max-target-effort-api 4, vo2max-target-effort-ui 31) | 2026-06-04 (Running Settings page issue #132 — settings-ui.cy.js 17/17 passing 100%, NEW module: Running Tracker - Settings)
+**Last Updated:** 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%; upcoming-races-target-time-ui 19, vo2max-target-effort-api 4, vo2max-target-effort-ui 31) | 2026-06-04 (Running Settings page issue #132 — settings-ui.cy.js 17/17 passing 100%, NEW module: Running Tracker - Settings)
 **App Version:** 1.4
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
@@ -56,7 +56,7 @@
 | Running Tracker - Sync API      | 2026-05-23   | 0      | 8          | 8     |
 | Running Tracker - Strava Connection | 2026-06-03 | 0    | 14         | 14    |
 | Running Tracker - Manual Entry  | 2026-05-23   | 0      | 21         | 21    |
-| Running Tracker - Dashboard     | 2026-05-29   | 0      | 95         | 95    |
+| Running Tracker - Dashboard     | 2026-06-05   | 0      | 95         | 95    |
 | Running Tracker - Race Log      | 2026-06-05   | 0      | 147        | 147   |
 | Running Tracker - Activities    | 2026-06-03   | 0      | 217        | 217   |
 | Running Tracker - Analytics     | 2026-06-05   | 0      | 98         | 98    |
@@ -69,16 +69,16 @@
 
 ## Staleness Alert
 
-Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-05):
+Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-06):
 
 | Module                    | Last Tested | Days Since Last Test |
 | ------------------------- | ----------- | -------------------- |
-| Landing Page              | 2026-05-08  | 27 hari              |
-| Trading - Trade           | 2026-03-15  | 81 hari 🔴           |
-| Trading - Fee             | 2026-03-15  | 81 hari 🔴           |
-| Trading - Event           | 2026-03-15  | 81 hari 🔴           |
+| Landing Page              | 2026-05-08  | 28 hari              |
+| Trading - Trade           | 2026-03-15  | 82 hari 🔴           |
+| Trading - Fee             | 2026-03-15  | 82 hari 🔴           |
+| Trading - Event           | 2026-03-15  | 82 hari 🔴           |
 
-> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Landing Page 27 hari — approaching 30 day threshold. Running Tracker - VO2max Target Effort baru di-test 2026-06-05, 54/54 passing. Running Tracker - Settings baru di-test 2026-06-04, 17/17 passing. Running Tracker - AI Coach Page 2026-06-04, 56/56 passing. Running Tracker Dashboard Extended authored 2026-05-25 — run focused spec before merging. Product History UI fresh (tested 2026-05-17). Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
+> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Landing Page 28 hari — approaching 30 day threshold. Running Tracker - Dashboard Extended baru di-test 2026-06-05 (Next Race Widget issue #153), 14/14 passing. Running Tracker - VO2max Target Effort baru di-test 2026-06-05, 54/54 passing. Running Tracker - Settings baru di-test 2026-06-04, 17/17 passing. Running Tracker - AI Coach Page 2026-06-04, 56/56 passing. Product History UI fresh (tested 2026-05-17). Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
 
 ---
 
@@ -226,10 +226,10 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-05):
 | 13 | Gear UI — near retirement warning            | running/dashboard/gear-ui.cy.js                       | 2026-05-25  | 0      | 1          | ✅ 1/1 pass   |
 | 14 | Gear UI — edit form open/save/cancel         | running/dashboard/gear-ui.cy.js                       | 2026-05-25  | 0      | 3          | ✅ 3/3 pass   |
 | 15 | GET /performance-trends — shape, params, 401 | running/dashboard/performance-trends-api.cy.js        | 2026-05-25  | 0      | 5          | ✅ 5/5 pass   |
-| 16 | YtdStats — renders, distance format, hidden  | running/dashboard/dashboard-ui-extended.cy.js         | 2026-05-25  | 0      | 4          | ✅ 4/4 pass   |
-| 17 | NextRace — null, title, race-week badge      | running/dashboard/dashboard-ui-extended.cy.js         | 2026-05-25  | 0      | 3          | ✅ 3/3 pass   |
-| 18 | SyncStatusBar — Never, btn, POST, resultMsg  | running/dashboard/dashboard-ui-extended.cy.js         | 2026-05-25  | 0      | 5          | ✅ 5/5 pass   |
-| 19 | Activity type filter — render, active ring   | running/dashboard/dashboard-ui-extended.cy.js         | 2026-05-25  | 0      | 2          | ✅ 2/2 pass   |
+| 16 | YtdStats — renders, distance format, hidden  | running/dashboard/dashboard-ui-extended.cy.js         | 2026-06-05  | 0      | 4          | ✅ 4/4 pass   |
+| 17 | NextRace — null, title, race-week badge      | running/dashboard/dashboard-ui-extended.cy.js         | 2026-06-05  | 0      | 3          | ✅ 3/3 pass   |
+| 18 | SyncStatusBar — Never, btn, POST, resultMsg  | running/dashboard/dashboard-ui-extended.cy.js         | 2026-06-05  | 0      | 5          | ✅ 5/5 pass   |
+| 19 | Activity type filter — render, active ring   | running/dashboard/dashboard-ui-extended.cy.js         | 2026-06-05  | 0      | 2          | ✅ 2/2 pass   |
 
 ---
 

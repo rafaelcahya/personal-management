@@ -111,7 +111,7 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
                       max={remainingQty}
                     />
                   </FormControl>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-slate-400">
                     Max: {remainingQty} {remainingQty === 1 ? 'unit' : 'units'}
                   </p>
                   <FormMessage />
@@ -153,7 +153,7 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
                       />
                     </PopoverContent>
                   </Popover>
-                  <p className="text-xs text-muted-foreground">When did this run out?</p>
+                  <p className="text-xs text-slate-400">When did this run out?</p>
                   <FormMessage />
                 </FormItem>
               )}

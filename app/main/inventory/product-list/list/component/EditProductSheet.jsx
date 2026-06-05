@@ -153,7 +153,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                         )}
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-muted-foreground">Which brand is this from? 🏷️</p>
+                    <p className="text-xs text-slate-400">Which brand is this from? 🏷️</p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -189,7 +189,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                         )}
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-muted-foreground">What's the product called? 📦</p>
+                    <p className="text-xs text-slate-400">What's the product called? 📦</p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -213,7 +213,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                         }`}
                       />
                     </FormControl>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-slate-400">
                       What kind is it? (serum, lotion, toner, etc.) 💡
                     </p>
                     <FormMessage />
@@ -242,7 +242,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                         <SelectItem value="inactive">Inactive</SelectItem>
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-slate-400">
                       Active products appear in your inventory, inactive ones are hidden from stock
                       tracking. 🔄
                     </p>

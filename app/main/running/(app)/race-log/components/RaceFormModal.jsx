@@ -120,6 +120,7 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
               {...register('title')}
               aria-describedby={errors.title ? 'raceTitleError' : undefined}
             />
+            <p className="text-xs text-slate-400">Name it after the official race event 🏁</p>
             {errors.title && (
               <p id="raceTitleError" className="text-xs text-red-600" role="alert">
                 {errors.title.message}
@@ -165,6 +166,7 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                 </Popover>
               )}
             />
+            <p className="text-xs text-slate-400">The date you actually ran the race 📅</p>
             {errors.race_date && (
               <p id="raceDateError" className="text-xs text-red-600" role="alert">
                 {errors.race_date.message}
@@ -231,6 +233,9 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                 )}
               />
             )}
+            <p className="text-xs text-slate-400">
+              Pick a preset or enter exact meters for custom races 📏
+            </p>
             {errors.distance_m && (
               <p className="text-xs text-red-600" role="alert">
                 {errors.distance_m.type === 'invalid_type'
@@ -241,17 +246,20 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
           </div>
 
           {/* DNF checkbox */}
-          <div className="flex items-center gap-2.5">
-            <Controller
-              name="did_not_finish"
-              control={control}
-              render={({ field }) => (
-                <Checkbox id="dnf" checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
-            <Label htmlFor="dnf" className="cursor-pointer select-none">
-              Did not finish (DNF)
-            </Label>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2.5">
+              <Controller
+                name="did_not_finish"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox id="dnf" checked={field.value} onCheckedChange={field.onChange} />
+                )}
+              />
+              <Label htmlFor="dnf" className="cursor-pointer select-none">
+                Did not finish (DNF)
+              </Label>
+            </div>
+            <p className="text-xs text-slate-400">Check this if you did not finish the race 🚫</p>
           </div>
 
           {/* Finish time — hidden when DNF */}
@@ -279,6 +287,7 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                   />
                 )}
               />
+              <p className="text-xs text-slate-400">Your official chip or gun time (hh:mm:ss) ⏱️</p>
               {errors.finish_time_sec && (
                 <p id="finishTimeError" className="text-xs text-red-600" role="alert">
                   {errors.finish_time_sec.message}
@@ -305,6 +314,7 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                   />
                 )}
               />
+              <p className="text-xs text-slate-400">Your overall finisher position 🥇</p>
               {errors.position_place && (
                 <p className="text-xs text-red-600" role="alert">
                   {errors.position_place.message}
@@ -327,6 +337,7 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                   />
                 )}
               />
+              <p className="text-xs text-slate-400">Your position within the male category 👟</p>
               {errors.position_male && (
                 <p className="text-xs text-red-600" role="alert">
                   {errors.position_male.message}
@@ -345,6 +356,7 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
               rows={3}
               {...register('notes')}
             />
+            <p className="text-xs text-slate-400">Conditions, how you felt, lessons learned 📝</p>
           </div>
 
           {serverError && (
