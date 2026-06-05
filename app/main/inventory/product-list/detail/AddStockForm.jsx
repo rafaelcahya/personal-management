@@ -181,7 +181,7 @@ export default function AddStockForm({ product, onAdded }) {
                         min={1}
                       />
                     </FormControl>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-slate-400">
                       Right now you've got {product.quantity} units in on hand 📦
                     </p>
                     <FormMessage />
@@ -208,9 +208,9 @@ export default function AddStockForm({ product, onAdded }) {
                       />
                     </FormControl>
                     {lastPriceLoading ? (
-                      <p className="text-xs text-muted-foreground">Loading last price...</p>
+                      <p className="text-xs text-slate-400">Loading last price...</p>
                     ) : lastPrice?.last_purchase_price != null ? (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-slate-400">
                         Last purchase price: Rp{' '}
                         {lastPrice.last_purchase_price.toLocaleString('id-ID')}
                         {lastPrice.last_purchase_date && (
@@ -221,9 +221,7 @@ export default function AddStockForm({ product, onAdded }) {
                         )}
                       </p>
                     ) : (
-                      <p className="text-xs text-muted-foreground">
-                        No previous purchase data available
-                      </p>
+                      <p className="text-xs text-slate-400">No previous purchase data available</p>
                     )}
                     <FormMessage />
                   </FormItem>
@@ -270,7 +268,7 @@ export default function AddStockForm({ product, onAdded }) {
                         />
                       </PopoverContent>
                     </Popover>
-                    <p className="text-xs text-muted-foreground">When did you buy this? 📅</p>
+                    <p className="text-xs text-slate-400">When did you buy this? 📅</p>
                     <FormMessage />
                   </FormItem>
                 )}
