@@ -452,6 +452,8 @@ export const TEST_IDS = {
     daily_insight_context: 'dailyInsightContext_aiCoachPage',
     race_countdown_card: 'raceCountdownCard_aiCoachPage',
     weekly_review_card: 'weeklyReviewCard_aiCoachPage',
+    friday_prep_card: 'fridayPrepCard_aiCoachPage',
+    friday_prep_card_body: 'fridayPrepCardBody_aiCoachPage',
   },
 
   running_strava_connection: {
