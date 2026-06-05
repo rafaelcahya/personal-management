@@ -11,7 +11,7 @@ const stubRtUsers = () => {
   }).as('rtUsersCheck')
 }
 
-const stubSupportingApis = () => {
+const stubSupportingApis = ({ upcomingRaces = [] } = {}) => {
   cy.intercept('GET', '/api/running/v1/gear', {
     statusCode: 200,
     body: { data: [] },
@@ -26,6 +26,11 @@ const stubSupportingApis = () => {
     statusCode: 200,
     body: { data: [] },
   }).as('getCalendar')
+
+  cy.intercept('GET', '/api/running/v1/upcoming-races*', {
+    statusCode: 200,
+    body: { data: upcomingRaces },
+  }).as('getUpcomingRaces')
 }
 
 const buildDashboardBody = ({
@@ -157,14 +162,14 @@ describe('Running Dashboard Extended — NextRace card', () => {
     cy.setupApiAuthCookies()
   })
 
-  it('shows "No race goal set" when next_race_goal is null', () => {
+  it('shows empty state when no upcoming races', () => {
     cy.setupApiAuthCookies()
     stubRtUsers()
-    stubSupportingApis()
+    stubSupportingApis({ upcomingRaces: [] })
 
     cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
-      body: buildDashboardBody({ next_race_goal: null }),
+      body: buildDashboardBody(),
     }).as('getDashboard')
 
     cy.viewport(1280, 720)
@@ -172,25 +177,28 @@ describe('Running Dashboard Extended — NextRace card', () => {
     cy.wait('@getDashboard')
 
     cy.get(`#${IDS.next_race_card}`).scrollIntoView().should('be.visible')
-    cy.get(`#${IDS.next_race_card}`).contains('No race goal set').should('be.visible')
+    cy.get(`#${IDS.next_race_empty_state}`).should('be.visible')
   })
 
-  it('shows race title when next_race_goal has a title', () => {
+  it('shows race title when upcoming races has a title', () => {
     cy.setupApiAuthCookies()
     stubRtUsers()
-    stubSupportingApis()
+    stubSupportingApis({
+      upcomingRaces: [
+        {
+          id: 'race-1',
+          title: 'Jakarta Marathon 2026',
+          distance_m: 42195,
+          race_date: '2026-10-18',
+          location: null,
+          target_time_sec: null,
+        },
+      ],
+    })
 
     cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
-      body: buildDashboardBody({
-        next_race_goal: {
-          title: 'Jakarta Marathon 2026',
-          distance_m: 42195,
-          target_date: '2026-10-18',
-          days_until: 145,
-          description: 'Sub-4 hour target',
-        },
-      }),
+      body: buildDashboardBody(),
     }).as('getDashboard')
 
     cy.viewport(1280, 720)
@@ -203,22 +211,30 @@ describe('Running Dashboard Extended — NextRace card', () => {
       .should('be.visible')
   })
 
-  it('shows "Race week!" badge when days_until <= 7', () => {
+  it('shows "Race week!" badge when race is within 7 days', () => {
     cy.setupApiAuthCookies()
     stubRtUsers()
-    stubSupportingApis()
+
+    const raceDate = new Date()
+    raceDate.setDate(raceDate.getDate() + 5)
+    const raceDateStr = raceDate.toISOString().split('T')[0]
+
+    stubSupportingApis({
+      upcomingRaces: [
+        {
+          id: 'race-2',
+          title: 'Bandung Fun Run',
+          distance_m: 10000,
+          race_date: raceDateStr,
+          location: null,
+          target_time_sec: null,
+        },
+      ],
+    })
 
     cy.intercept('GET', '/api/running/v1/dashboard*', {
       statusCode: 200,
-      body: buildDashboardBody({
-        next_race_goal: {
-          title: 'Bandung Fun Run',
-          distance_m: 10000,
-          target_date: '2026-05-30',
-          days_until: 5,
-          description: null,
-        },
-      }),
+      body: buildDashboardBody(),
     }).as('getDashboard')
 
     cy.viewport(1280, 720)

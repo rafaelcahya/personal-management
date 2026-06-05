@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%; +19 upcoming-race target time tests, +35 analytics target effort tests) | 2026-06-04 (Running Settings page issue #132 — settings-ui.cy.js 17/17 passing 100%, NEW: Profile section, HR Zones section, Notifications section, Strava Connection, Danger Zone)
+**Last Updated:** 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated with title, description, edit-from-activity support) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%; +19 upcoming-race target time tests, +35 analytics target effort tests) | 2026-06-04 (Running Settings page issue #132 — settings-ui.cy.js 17/17 passing 100%, NEW: Profile section, HR Zones section, Notifications section, Strava Connection, Danger Zone)
 **App Version:** 1.4
 
 ## Coverage Summary
@@ -78,7 +78,16 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-06-05 Focused Run: VO2max Target Effort #137)
+## Last Execution Results (2026-06-05 Focused Run: Next Race Widget #153)
+
+| Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running-dashboard (Dashboard UI Extended) — issue #153                       | 1          | 14    | 14     | 0      | 0       | ✅       |
+| **Total**                                                                    | **1**      | **14** | **14** | **0**  | **0**   | **100%** |
+
+**Status:** 14/14 passing (100%). dashboard-ui-extended.cy.js confirmed passing. Covers NextRace null state, title display, race-week badge; YtdStats visibility + distance format; SyncStatusBar Never/btn/POST/resultMsg; activity type filter render + active ring.
+
+### Previous Execution Results (2026-06-05 Focused Run: VO2max Target Effort #137)
 
 | Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
