@@ -112,7 +112,7 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
                   max={product.quantity}
                 />
               </FormControl>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-slate-400">
                 How many units are you opening? {product.quantity} available in stock.
               </p>
               <FormMessage />
@@ -162,7 +162,7 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
                   />
                 </PopoverContent>
               </Popover>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-slate-400">
                 When did you open and start using this product?
               </p>
               <FormMessage />
