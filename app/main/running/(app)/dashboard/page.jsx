@@ -18,7 +18,7 @@ import {
   RefreshCw,
   CheckCircle2,
 } from 'lucide-react'
-import { getDashboard, syncStrava } from '@/lib/api/running'
+import { getDashboard, syncStrava, fetchUpcomingRaces } from '@/lib/api/running'
 import WeeklyStats from './components/WeeklyStats'
 import TrainingLoad from './components/TrainingLoad'
 import ActivitySection from './components/ActivitySection'
@@ -83,6 +83,7 @@ function formatRelativeTime(isoString) {
 
 export default function RunningDashboardPage() {
   const [dashboardData, setDashboardData] = useState(null)
+  const [upcomingRaces, setUpcomingRaces] = useState([])
   const [lastSyncAt, setLastSyncAt] = useState(null)
   const [availableTypes, setAvailableTypes] = useState([])
   const [activeType, setActiveType] = useState(null)
@@ -139,7 +140,12 @@ export default function RunningDashboardPage() {
 
   useEffect(() => {
     async function init() {
-      const data = await loadDashboard()
+      const [data] = await Promise.all([
+        loadDashboard(),
+        fetchUpcomingRaces()
+          .then((res) => setUpcomingRaces(res.data ?? []))
+          .catch(() => setUpcomingRaces([])),
+      ])
       if (data && shouldAutoSync(data.last_sync_at)) {
         await runSync()
       }
@@ -274,7 +280,7 @@ export default function RunningDashboardPage() {
           )}
           <YtdStats ytd_stats={dashboardData.training_load?.ytd_stats} />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <NextRace next_race_goal={dashboardData.training_load?.next_race_goal} />
+            <NextRace upcoming_races={upcomingRaces} />
             <ShoeRotation />
           </div>
           <ActivitySection
