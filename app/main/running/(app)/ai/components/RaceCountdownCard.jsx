@@ -39,7 +39,7 @@ export default function RaceCountdownCard({ upcomingRace, weeklyReview }) {
         </p>
       ) : (
         <div className="space-y-3">
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="text-base font-semibold text-slate-800 truncate">
                 {race.title ?? race.distance ?? 'Race'}
