@@ -162,6 +162,7 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
               {...register('title')}
               aria-describedby={errors.title ? 'upcomingRaceTitleError' : undefined}
             />
+            <p className="text-xs text-slate-400">Name it after the official race event 🏁</p>
             {errors.title && (
               <p id="upcomingRaceTitleError" className="text-xs text-red-600" role="alert">
                 {errors.title.message}
@@ -207,6 +208,9 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
                 </Popover>
               )}
             />
+            <p className="text-xs text-slate-400">
+              The day of the race, not the racepack pickup date 📅
+            </p>
             {errors.race_date && (
               <p id="upcomingRaceDateError" className="text-xs text-red-600" role="alert">
                 {errors.race_date.message}
@@ -273,6 +277,9 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
                 )}
               />
             )}
+            <p className="text-xs text-slate-400">
+              Pick a preset or enter exact meters for custom races 📏
+            </p>
             {errors.distance_m && (
               <p className="text-xs text-red-600" role="alert">
                 {errors.distance_m.type === 'invalid_type'
@@ -291,6 +298,9 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
               className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
               {...register('location')}
             />
+            <p className="text-xs text-slate-400">
+              City or venue — helps you remember where you raced 📍
+            </p>
           </div>
 
           {/* Notes (optional) */}
@@ -303,6 +313,9 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
               rows={3}
               {...register('notes')}
             />
+            <p className="text-xs text-slate-400">
+              Goals, pacing strategy, anything you want to remember 📝
+            </p>
           </div>
 
           {/* Target time (optional) */}
@@ -356,6 +369,7 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
                 <span className="text-[10px] text-slate-400 text-center">sec</span>
               </div>
             </div>
+            <p className="text-xs text-slate-400">Your goal finish time for this race ⏱️</p>
           </div>
 
           {serverError && (
