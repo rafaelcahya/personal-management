@@ -33,7 +33,7 @@ const schema = z.object({
   weight_kg: z.coerce.number().positive().optional().or(z.literal('')),
   max_hr: z.coerce.number().int().min(60).max(250).optional().or(z.literal('')),
   resting_hr_baseline: z.coerce.number().int().min(30).max(120).optional().or(z.literal('')),
-  sex: z.enum(['male', 'female', '']).optional(),
+  sex: z.enum(['male', 'female', 'none']).optional(),
 })
 
 export default function ProfileSection() {
@@ -58,7 +58,7 @@ export default function ProfileSection() {
     async function load() {
       try {
         const data = await getUserProfile()
-        if (!cancelled) reset(data ?? {})
+        if (!cancelled) reset({ ...(data ?? {}), sex: data?.sex ?? 'none' })
       } catch (err) {
         if (!cancelled) setLoadError(err.message || 'Failed to load profile')
       } finally {
@@ -81,7 +81,7 @@ export default function ProfileSection() {
         return v !== '' && v != null
       })
     )
-    if (cleaned.sex === '') cleaned.sex = null
+    if (cleaned.sex === 'none') cleaned.sex = null
     try {
       await updateUserProfile(cleaned)
       setSaveSuccess(true)
@@ -127,6 +127,7 @@ export default function ProfileSection() {
                     placeholder="Your name"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
+                  <p className="text-xs text-slate-400">How your name appears across the app 👤</p>
                   {errors.display_name && (
                     <p className="text-xs text-red-600">{errors.display_name.message}</p>
                   )}
@@ -176,6 +177,9 @@ export default function ProfileSection() {
                       )
                     }}
                   />
+                  <p className="text-xs text-slate-400">
+                    Used to calculate age-graded performance 🎂
+                  </p>
                   {errors.birth_date && (
                     <p className="text-xs text-red-600">{errors.birth_date.message}</p>
                   )}
@@ -192,6 +196,7 @@ export default function ProfileSection() {
                     placeholder="e.g. 170"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
+                  <p className="text-xs text-slate-400">Used for stride and pace estimations 📐</p>
                   {errors.height_cm && (
                     <p className="text-xs text-red-600">{errors.height_cm.message}</p>
                   )}
@@ -209,6 +214,9 @@ export default function ProfileSection() {
                     placeholder="e.g. 65"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
+                  <p className="text-xs text-slate-400">
+                    Helps estimate running economy and VO₂max ⚖️
+                  </p>
                   {errors.weight_kg && (
                     <p className="text-xs text-red-600">{errors.weight_kg.message}</p>
                   )}
@@ -225,6 +233,9 @@ export default function ProfileSection() {
                     placeholder="e.g. 190"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
+                  <p className="text-xs text-slate-400">
+                    Your highest recorded heart rate — used for HR zone calculation ❤️
+                  </p>
                   {errors.max_hr && <p className="text-xs text-red-600">{errors.max_hr.message}</p>}
                 </div>
 
@@ -239,6 +250,9 @@ export default function ProfileSection() {
                     placeholder="e.g. 55"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
+                  <p className="text-xs text-slate-400">
+                    Your heart rate first thing in the morning — used for Karvonen HR zones 😴
+                  </p>
                   {errors.resting_hr_baseline && (
                     <p className="text-xs text-red-600">{errors.resting_hr_baseline.message}</p>
                   )}
@@ -250,7 +264,7 @@ export default function ProfileSection() {
                     name="sex"
                     control={control}
                     render={({ field }) => (
-                      <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                      <Select onValueChange={field.onChange} value={field.value ?? 'none'}>
                         <SelectTrigger
                           id="sexSelect_settingsPage"
                           className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
@@ -258,13 +272,16 @@ export default function ProfileSection() {
                           <SelectValue placeholder="Prefer not to say" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Prefer not to say</SelectItem>
+                          <SelectItem value="none">Prefer not to say</SelectItem>
                           <SelectItem value="male">Male</SelectItem>
                           <SelectItem value="female">Female</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
                   />
+                  <p className="text-xs text-slate-400">
+                    Used for age-graded performance and category comparisons 🧬
+                  </p>
                 </div>
               </div>
 
