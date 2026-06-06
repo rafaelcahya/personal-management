@@ -1,7 +1,7 @@
 # Test Status Report
 
-**Last Updated:** 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%; upcoming-races-target-time-ui 19, vo2max-target-effort-api 4, vo2max-target-effort-ui 31) | 2026-06-04 (Running Settings page issue #132 — settings-ui.cy.js 17/17 passing 100%, NEW module: Running Tracker - Settings)
-**App Version:** 1.4
+**Last Updated:** 2026-06-06 (Web Push Notifications issue #135 — settings-ui.cy.js +4 tests 21/21 passing, push-subscription-api.cy.js NEW 4/4 passing 100%; Running Tracker - Settings now 6 features 25 tests) | 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%)
+**App Version:** 1.7
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
 > "Last Tested" mengacu pada tanggal test file terakhir dijalankan secara eksplisit atau tanggal report update untuk full regression run.
@@ -21,6 +21,7 @@
 > ✅ **Running Tracker AI Coach improvements (2026-05-31):** ai-coach-improvements.cy.js 36/36 passing (100%). Duration: 1m 14s. Issue #82 (PR #79 backend + PR #80 frontend). Covers: RPE radiogroup (A), user note textarea (B), context collapse/visibility (C+D), focus buttons (E), loading/pending skeleton (F), rotating status copy at 0s and 6s via cy.clock() (G), long-wait hint at 60s with Try again button (H), comparison section+trigger (I), comparison popover on desktop (J), activity list in popover (K), Get Recommendation flow with compare_activity POST (L).
 
 > ✅ **Running Tracker VO2max Target Effort (2026-06-05):** 3 new spec files, 54/54 passing (100%). Issue #137. upcoming-races-target-time-ui.cy.js (19 tests): H/M/S target time inputs present in add/edit modal, empty on new race, pre-populated on edit, target time badge visible on card when set, absent when null, mixed list single badge, edit modal pre-populates correct H/M/S values. vo2max-target-effort-api.cy.js (4 tests): auth guard 401, 200 + data object, status field in [no_goal/no_target_time/insufficient_data/ok], full field shape when ok. vo2max-target-effort-ui.cy.js (31 tests): auth guard; no_goal empty state + CTA; no_target_time amber warning + "Add target time" link; insufficient_data "Need more data" + required VO2max; ok/On Track status badge + gap numbers + weeks-to-goal + training recommendation + projection chart; ok/Goal Reached trophy text + status badge; ok/Goal Expired expired message + "Set a new goal" btn + no chart; loading skeleton; error state role=alert + no gap card.
+> ✅ **Running Tracker Web Push Notifications (2026-06-06):** settings-ui.cy.js +4 tests 21/21 passing + push-subscription-api.cy.js NEW 4/4 passing (100%). Issue #135. Push toggle UI: enable flow (Notification.requestPermission → granted, serviceWorker stub, POST subscription fired), disable flow (null subscription POST), permission denied (#pushNotificationsError visible + toggle stays OFF), persist after reload (toggle stays ON after cy.reload()). API tests: valid subscription → 200 + enabled:true, null → 200 + enabled:false, endpoint present but keys missing → 400, unauthenticated → 401. New fixture entries: PUSH_SUBSCRIPTION in endpoints.js, push_notifications_toggle + push_notifications_error in test-ids.js. Key lessons: use plain functions (not cy.stub) in onBeforeLoad; only override requestPermission method (not permission getter); use beforeEach for setupApiAuthCookies in API test isolation.
 > ✅ **Running Tracker Settings Page (2026-06-04):** settings-ui.cy.js 17/17 passing (100%). Issue #132. NEW spec file under `cypress/e2e/running/settings/`. 7 describe blocks: Auth Guard (1 test: unauthenticated redirect), Page Load (1 test: #settingsPage visible), Profile Section (3 tests: form renders, save 200, save 422), HR Zones Section (4 tests: threshold hidden for max_hr, Lactate Threshold reveals input, client-side validation blocks empty threshold API call, Karvonen save success), Notifications Section (2 tests: all 4 toggles present, toggle fires PATCH), Strava Connection (2 tests: connected state + Disconnect btn, POST disconnect + disconnected state), Danger Zone (4 tests: dialog opens, confirm disabled on open, wrong text still disabled, DELETE enables + API fires + dialog closes). Key lesson: `scrollIntoView()` needed before visibility assertions on elements clipped by overflow:hidden parent. Added `running_settings` to test-ids.js (22 IDs), added USER_PROFILE/USER_SETTINGS/USER_ACTIVITIES/STRAVA_DISCONNECT to endpoints.js.
 > ✅ **Running Tracker AI Coach Page (2026-06-04):** ai-coach-page.cy.js 56/56 passing (100%). Issue #131. 12 scenario groups (was 8, +4 new groups, +17 tests): Group A — auth guard. Group B — page structure. Group C — Training Load Tiles (ACWR/CTL/ATL + color coding). Group D — Anomaly Alerts (cards, acknowledge, empty state). Group E — Daily Insight Card (trigger, POST, pending, polling, content, regenerate). Group F — Race Countdown Card (race + AI note + empty state). Group G — Weekly Review Card (collapsed/expanded + aria-expanded). Group H — error/loading states (skeleton, retry, success). Group I (NEW) — Daily insight recommendation pills (4 tests): pills render, click selects, active state shown, deselect restores default. Group J (NEW) — Daily insight ask coach field (5 tests): input renders, accepts text, submit button present, POST fires with typed question, field clears after submit. Group K (NEW) — Daily insight follow-up inline response (5 tests): response container renders, text visible, loading state while pending, error + retry, retry re-fires POST. Group L (NEW) — Daily insight context strip (3 tests): renders with activity reference, collapsible toggle, collapsed hides activity detail.
 
@@ -61,24 +62,24 @@
 | Running Tracker - Activities    | 2026-06-03   | 0      | 217        | 217   |
 | Running Tracker - Analytics     | 2026-06-05   | 0      | 98         | 98    |
 | Running Tracker - AI Coach Page | 2026-06-04   | 0      | 56         | 56    |
-| Running Tracker - Settings      | 2026-06-04   | 0      | 17         | 17    |
+| Running Tracker - Settings      | 2026-06-06   | 0      | 25         | 25    |
 | Shared - Sidebar                | 2026-05-29   | 0      | 8          | 8     |
-| **Total**                       |              | **1**  | **2,359**  | **2,360** |
+| **Total**                       |              | **1**  | **2,367**  | **2,368** |
 
 ---
 
 ## Staleness Alert
 
-Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-06):
+Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-07):
 
 | Module                    | Last Tested | Days Since Last Test |
 | ------------------------- | ----------- | -------------------- |
-| Landing Page              | 2026-05-08  | 28 hari              |
-| Trading - Trade           | 2026-03-15  | 82 hari 🔴           |
-| Trading - Fee             | 2026-03-15  | 82 hari 🔴           |
-| Trading - Event           | 2026-03-15  | 82 hari 🔴           |
+| Landing Page              | 2026-05-08  | 29 hari              |
+| Trading - Trade           | 2026-03-15  | 83 hari 🔴           |
+| Trading - Fee             | 2026-03-15  | 83 hari 🔴           |
+| Trading - Event           | 2026-03-15  | 83 hari 🔴           |
 
-> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Landing Page 28 hari — approaching 30 day threshold. Running Tracker - Dashboard Extended baru di-test 2026-06-05 (Next Race Widget issue #153), 14/14 passing. Running Tracker - VO2max Target Effort baru di-test 2026-06-05, 54/54 passing. Running Tracker - Settings baru di-test 2026-06-04, 17/17 passing. Running Tracker - AI Coach Page 2026-06-04, 56/56 passing. Product History UI fresh (tested 2026-05-17). Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
+> **Rekomendasi:** Run full regression suite untuk Trading module sebelum production release. Landing Page 29 hari — approaching 30 day threshold. Running Tracker - Settings baru di-test 2026-06-06 (Web Push Notifications issue #135), 25/25 passing. Running Tracker - Dashboard Extended baru di-test 2026-06-05 (Next Race Widget issue #153), 14/14 passing. Running Tracker - VO2max Target Effort baru di-test 2026-06-05, 54/54 passing. Running Tracker - AI Coach Page 2026-06-04, 56/56 passing. Product History UI fresh (tested 2026-05-17). Product Name sudah fresh (tested 2026-05-17). Product Brand fresh (tested 2026-05-16).
 
 ---
 
@@ -320,15 +321,17 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-06):
 
 ### Running Tracker - Settings
 
-| #  | Feature                                              | File                                                        | Last Tested | Manual | Automation | Status         |
-| -- | ---------------------------------------------------- | ----------------------------------------------------------- | ----------- | ------ | ---------- | -------------- |
-| 1  | Auth guard — unauthenticated redirect                | running/settings/settings-ui.cy.js                          | 2026-06-04  | 0      | 1          | ✅ 1/1 pass    |
-| 2  | Page load — #settingsPage visible                    | running/settings/settings-ui.cy.js                          | 2026-06-04  | 0      | 1          | ✅ 1/1 pass    |
-| 3  | Profile section — form render, save success, save error | running/settings/settings-ui.cy.js                       | 2026-06-04  | 0      | 3          | ✅ 3/3 pass    |
-| 4  | HR Zones section — method select, threshold, validation, save | running/settings/settings-ui.cy.js                 | 2026-06-04  | 0      | 4          | ✅ 4/4 pass    |
-| 5  | Notifications — toggles render + PATCH on click      | running/settings/settings-ui.cy.js                          | 2026-06-04  | 0      | 2          | ✅ 2/2 pass    |
-| 6  | Strava Connection — connected state + Disconnect flow | running/settings/settings-ui.cy.js                         | 2026-06-04  | 0      | 2          | ✅ 2/2 pass    |
-| 7  | Danger Zone — dialog, confirm guard, DELETE flow     | running/settings/settings-ui.cy.js                          | 2026-06-04  | 0      | 4          | ✅ 4/4 pass    |
+| #  | Feature                                              | File                                                                        | Last Tested | Manual | Automation | Status         |
+| -- | ---------------------------------------------------- | --------------------------------------------------------------------------- | ----------- | ------ | ---------- | -------------- |
+| 1  | Auth guard — unauthenticated redirect                | running/settings/settings-ui.cy.js                                          | 2026-06-06  | 0      | 1          | ✅ 1/1 pass    |
+| 2  | Page load — #settingsPage visible                    | running/settings/settings-ui.cy.js                                          | 2026-06-06  | 0      | 1          | ✅ 1/1 pass    |
+| 3  | Profile section — form render, save success, save error | running/settings/settings-ui.cy.js                                       | 2026-06-06  | 0      | 3          | ✅ 3/3 pass    |
+| 4  | HR Zones section — method select, threshold, validation, save | running/settings/settings-ui.cy.js                             | 2026-06-06  | 0      | 4          | ✅ 4/4 pass    |
+| 5  | Notifications — toggles render + PATCH on click      | running/settings/settings-ui.cy.js                                          | 2026-06-06  | 0      | 2          | ✅ 2/2 pass    |
+| 6  | Strava Connection — connected state + Disconnect flow | running/settings/settings-ui.cy.js                                         | 2026-06-06  | 0      | 2          | ✅ 2/2 pass    |
+| 7  | Danger Zone — dialog, confirm guard, DELETE flow     | running/settings/settings-ui.cy.js                                          | 2026-06-06  | 0      | 4          | ✅ 4/4 pass    |
+| 8  | Push Notifications toggle — enable/disable/permission-denied/persist | running/settings/settings-ui.cy.js                          | 2026-06-06  | 0      | 4          | ✅ 4/4 pass    |
+| 9  | Push Subscription API — POST contract + auth guard   | running/push-subscription/push-subscription-api.cy.js                       | 2026-06-06  | 0      | 4          | ✅ 4/4 pass    |
 
 ---
 

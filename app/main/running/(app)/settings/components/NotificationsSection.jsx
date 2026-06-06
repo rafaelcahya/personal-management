@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { AlertCircle, Info } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { Info } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
-import { getUserSettings, updateUserSettings } from '@/lib/api/running'
+import { getUserSettings, updateUserSettings, savePushSubscription } from '@/lib/api/running'
 
 const TOGGLES = [
   {
@@ -34,6 +34,13 @@ const TOGGLES = [
   },
 ]
 
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const rawData = window.atob(base64)
+  return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)))
+}
+
 export default function NotificationsSection() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
@@ -43,6 +50,16 @@ export default function NotificationsSection() {
     notify_friday_prep: false,
     notify_anomaly: false,
   })
+  const [pushEnabled, setPushEnabled] = useState(false)
+  const [pushPending, setPushPending] = useState(false)
+  const [pushError, setPushError] = useState(null)
+  const [swSupported, setSwSupported] = useState(false)
+
+  useEffect(() => {
+    setSwSupported(
+      typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window
+    )
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -56,6 +73,7 @@ export default function NotificationsSection() {
             notify_friday_prep: data.notify_friday_prep ?? false,
             notify_anomaly: data.notify_anomaly ?? false,
           })
+          setPushEnabled(data.push_notifications_enabled ?? false)
         }
       } catch (err) {
         if (!cancelled) setLoadError(err.message || 'Failed to load notification settings')
@@ -68,6 +86,64 @@ export default function NotificationsSection() {
       cancelled = true
     }
   }, [])
+
+  const registerServiceWorker = useCallback(async () => {
+    if (!swSupported) return null
+    const registration = await navigator.serviceWorker.register('/sw.js')
+    await navigator.serviceWorker.ready
+    return registration
+  }, [swSupported])
+
+  async function handlePushToggle(newValue) {
+    setPushPending(true)
+    setPushError(null)
+
+    try {
+      if (newValue) {
+        const permission = await Notification.requestPermission()
+        if (permission !== 'granted') {
+          setPushError('Permission denied. Please allow notifications in your browser settings.')
+          setPushPending(false)
+          return
+        }
+
+        const registration = await registerServiceWorker()
+        if (!registration) {
+          setPushError('Push notifications are not supported in this browser.')
+          setPushPending(false)
+          return
+        }
+
+        const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+        if (!vapidKey) {
+          setPushError('Push notifications are not configured.')
+          setPushPending(false)
+          return
+        }
+
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidKey),
+        })
+
+        await savePushSubscription(subscription.toJSON())
+        setPushEnabled(true)
+      } else {
+        // Unsubscribe from PushManager if subscribed
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.ready
+          const existing = await registration.pushManager.getSubscription()
+          if (existing) await existing.unsubscribe()
+        }
+        await savePushSubscription(null)
+        setPushEnabled(false)
+      }
+    } catch (err) {
+      setPushError(err.message || 'Failed to update push notification setting.')
+    } finally {
+      setPushPending(false)
+    }
+  }
 
   async function handleToggle(key, newValue) {
     const prev = values[key]
@@ -91,8 +167,8 @@ export default function NotificationsSection() {
             id="notificationsLoading_settingsPage"
             className="px-5 py-4 flex flex-col gap-4"
           >
-            {TOGGLES.map((t) => (
-              <div key={t.key} className="flex items-center justify-between gap-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between gap-4">
                 <div className="flex flex-col gap-1">
                   <Skeleton className="h-4 w-36 rounded" />
                   <Skeleton className="h-3 w-56 rounded" />
@@ -113,16 +189,47 @@ export default function NotificationsSection() {
           <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
             <Info className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" aria-hidden="true" />
             <p className="text-xs text-amber-700">
-              Preferences are saved but push delivery isn&apos;t active yet. Enable push
-              notifications coming soon.
+              Push notifications are in beta. Some browsers or devices may behave differently.
             </p>
           </div>
+
           <Card className="border border-slate-200/70 py-0">
             <CardContent className="px-5 py-4 flex flex-col divide-y divide-slate-100">
+              {/* Push notifications master toggle */}
+              <div className="flex items-start justify-between gap-4 pb-4">
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <p className="text-sm font-medium text-slate-800">Enable push notifications</p>
+                  <p className="text-xs text-slate-400">
+                    {swSupported
+                      ? 'Allow this app to send browser push notifications'
+                      : 'Not supported in this browser'}
+                  </p>
+                  {pushError && (
+                    <p
+                      id="pushNotificationsError_settingsPage"
+                      className="text-xs text-red-600 mt-1"
+                      role="alert"
+                      aria-live="polite"
+                    >
+                      {pushError}
+                    </p>
+                  )}
+                </div>
+                <Switch
+                  id="pushNotificationsToggle_settingsPage"
+                  checked={pushEnabled}
+                  onCheckedChange={handlePushToggle}
+                  disabled={!swSupported || pushPending}
+                  aria-label="Enable push notifications"
+                  className="shrink-0 mt-0.5"
+                />
+              </div>
+
+              {/* Per-notification toggles */}
               {TOGGLES.map((toggle, i) => (
                 <div
                   key={toggle.key}
-                  className={`flex items-center justify-between gap-4 ${i === 0 ? 'pb-4' : i === TOGGLES.length - 1 ? 'pt-4' : 'py-4'}`}
+                  className={`flex items-center justify-between gap-4 ${i === TOGGLES.length - 1 ? 'pt-4' : 'py-4'}`}
                 >
                   <div className="flex flex-col gap-0.5 min-w-0">
                     <p className="text-sm font-medium text-slate-800">{toggle.label}</p>
