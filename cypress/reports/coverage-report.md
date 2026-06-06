@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-06-06 (Web Push Notifications issue #135 — settings-ui.cy.js +4 tests 21/21 passing, push-subscription-api.cy.js new 4/4 passing 100%; push toggle enable/disable/permission-denied/persist flows + API contract) | 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated with title, description, edit-from-activity support) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%; +19 upcoming-race target time tests, +35 analytics target effort tests)
+**Last Updated:** 2026-06-06 (Injury AI Roles issue #160 — injury-coach-api.cy.js 6/6, injury-coach-ui.cy.js 12/12, symptom-log-api.cy.js 6/6 — all 24/24 passing 100%; NEW module Running Tracker - Injury AI) | 2026-06-06 (Web Push Notifications issue #135 — settings-ui.cy.js +4 tests 21/21 passing, push-subscription-api.cy.js new 4/4 passing 100%; push toggle enable/disable/permission-denied/persist flows + API contract) | 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated with title, description, edit-from-activity support) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%; +19 upcoming-race target time tests, +35 analytics target effort tests)
 **App Version:** 1.7
 
 ## Coverage Summary
@@ -31,8 +31,11 @@
 | Running Tracker - Analytics     | 7              | 7         | 0           | 0          | 100%       | 98         |
 | Running Tracker - AI Coach Page | 12             | 12        | 0           | 0          | 100%       | 56         |
 | Running Tracker - Settings      | 6              | 6         | 0           | 0          | 100%       | 25         |
+| Running Tracker - Injury AI     | 3              | 3         | 0           | 0          | 100%       | 24         |
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **184**        | **183**   | **1**       | **0**      | **99%**    | **2,368**  |
+| **Total**                       | **187**        | **186**   | **1**       | **0**      | **99%**    | **2,392**  |
+
+> **Note (2026-06-06 v1.7 Injury AI Roles issue #160 +24 tests):** 3 new spec files all passing 100%. injury-coach-api.cy.js (6 tests): POST physio/physician → 200 with data.content + escalate; POST missing question/short question/invalid role → 400; unauthenticated → 401. injury-coach-ui.cy.js (12 tests): disclaimer strip, role card selection reveals form, phase pill select/deselect, submit button disabled/enabled based on question length, emergency block on "10/10", successful submission output card, escalation banner (role=alert), API error state. symptom-log-api.cy.js (6 tests): POST valid symptom → 201; POST missing body_region → 400; POST pain_level 11 → 400; GET active logs → 200 + array; PATCH archive { archived:true } → 200; PATCH non-existent UUID → 404. NEW module: Running Tracker - Injury AI (3 features, 24 tests). Fixes applied: `.error.issues[0]` (Zod v4 breaking change) in symptoms/route.js, symptoms/[id]/route.js, ai/injury-coach/route.js; PATCH test body `{ archived: true }` to match archiveSymptomSchema. Total: 187 features, 2,392 tests.
 
 > **Note (2026-06-06 v1.7 Web Push Notifications issue #135 +8 tests):** settings-ui.cy.js updated with 4 new push notification tests (21 total, 100%). push-subscription-api.cy.js created with 4 new API tests (100%). Running Tracker - Settings: 6 features, 25 tests. NEW spec file: push-subscription-api.cy.js under `cypress/e2e/running/push-subscription/`. New fixture entries: PUSH_SUBSCRIPTION endpoint in endpoints.js, push_notifications_toggle + push_notifications_error in test-ids.js running_settings section. Key lessons: `Notification.permission` is a read-only getter in Chrome — only override `requestPermission` method directly (`win.Notification.requestPermission = () => Promise.resolve('granted')`); `cy.stub()` cannot be used inside `onBeforeLoad` — use plain arrow functions; `beforeEach` (not `before`) required for `setupApiAuthCookies()` in API tests to handle Cypress test isolation (cookies cleared between tests); `scrollIntoView()` needed before asserting visibility on error element inside overflow:hidden card parent. Total: 184 features, 2,368 tests.
 
@@ -80,7 +83,18 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-06-06 Focused Run: Web Push Notifications #135)
+## Last Execution Results (2026-06-06 Focused Run: Injury AI Roles #160)
+
+| Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running/ai (Injury Coach API) — issue #160                                   | 1          | 6     | 6      | 0      | 0       | ✅       |
+| running/ai (Injury Coach UI) — issue #160                                    | 1          | 12    | 12     | 0      | 0       | ✅       |
+| running/ai (Symptom Log API) — issue #160                                    | 1          | 6     | 6      | 0      | 0       | ✅       |
+| **Total**                                                                    | **3**      | **24** | **24** | **0**  | **0**   | **100%** |
+
+**Status:** 24/24 passing (100%). injury-coach-api.cy.js 6/6 (POST physio/physician → 200, POST missing question/short question/invalid role → 400, unauthenticated → 401). injury-coach-ui.cy.js 12/12 (disclaimer strip, role selection form reveal, phase pills, submit button validation, emergency block, successful submission, escalation banner, API error handling). symptom-log-api.cy.js 6/6 (POST valid → 201, POST missing body_region → 400, POST pain_level 11 → 400, GET active logs → 200, PATCH archive existing → 200, PATCH non-existent UUID → 404). Fixes: `.error.errors[0]` → `.error.issues[0]` in 3 route files (Zod v4 breaking change); PATCH payload `{ status: 'archived' }` → `{ archived: true }` to match `archiveSymptomSchema`.
+
+### Previous Execution Results (2026-06-06 Focused Run: Web Push Notifications #135)
 
 | Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
@@ -390,7 +404,11 @@
 | 95  | cypress/e2e/running/settings/settings-ui.cy.js               | Running Settings page UI (issue #132 + #135) | 21     | Auth guard (unauthenticated → /login); page load (#settingsPage visible); Profile section (form renders after skeleton, save 200 → #profileSaveSuccess, save 422 → #profileSaveError); HR Zones section (threshold input absent for max_hr, Lactate Threshold option shows #thresholdHrInput, client-side validation blocks API when threshold empty, Karvonen save → #hrZonesSaveSuccess); Notifications section (all 4 toggle IDs present, toggle click fires PATCH /user/settings); Strava Connection (connected state + #stravaDisconnectBtn, Disconnect POST + disconnected state); Danger Zone (#dangerZoneDialog opens, confirm disabled on empty, disabled on "WRONG", "DELETE" enables confirm btn, DELETE fires + dialog closes); Push Notifications — enable flow (Notification.requestPermission → granted, SW stub, POST subscription fired with non-null body), disable flow (POST { subscription: null }), permission denied (#pushNotificationsError visible + aria-checked=false), persist after reload (toggle ON after page reload). Fix: scrollIntoView() for CardContent with overflow:hidden clipping. |
 | 98  | cypress/e2e/running/push-subscription/push-subscription-api.cy.js | Push Subscription API (issue #135) | 4   | POST with valid `{ endpoint, keys: { p256dh, auth } }` → 200 + `push_notifications_enabled: true`; POST `{ subscription: null }` → 200 + `push_notifications_enabled: false`; POST endpoint present but keys missing → 400 validation error; unauthenticated POST → 401. |
 
-**Total Automated Test Cases: 2,285** (added 54 VO2max Target Effort tests 2026-06-05 — issue #137; previous total: 2,223) (added 17 Settings page tests 2026-06-04 — issue #132; previous total: 2,206) (added 17 AI Coach page tests 2026-06-04; previous total: 2,189) (added 19 compare-runs tests 2026-06-03; previous total: 2,170) (added 56 upcoming races tests 2026-06-02; previous total: 2,114) (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
+| 99  | cypress/e2e/running/ai/injury-coach-api.cy.js    | Injury Coach API (issue #160)         | 6          | POST physio/physician → 200 with data.content + escalate field; POST missing question → 400; POST short question (<10 chars) → 400; POST invalid role → 400; unauthenticated → 401 |
+| 100 | cypress/e2e/running/ai/injury-coach-ui.cy.js     | Injury Coach UI (issue #160)          | 12         | Disclaimer strip visible before role selection; Physiotherapist card shows form; Physician card shows form + placeholder change; Acute phase pill select + deselect; submit disabled <10 chars, enabled ≥10; emergency block on "10/10"; successful submission → output card; escalate:true → red banner role=alert; 500 → error state |
+| 101 | cypress/e2e/running/ai/symptom-log-api.cy.js     | Symptom Log API (issue #160)          | 6          | POST body_region + pain_level:5 → 201 with data.id; POST missing body_region → 400; POST pain_level:11 → 400; GET active logs → 200 + data array; PATCH archive existing { archived:true } → 200; PATCH non-existent UUID → 404 |
+
+**Total Automated Test Cases: 2,309** (added 54 VO2max Target Effort tests 2026-06-05 — issue #137; previous total: 2,223) (added 17 Settings page tests 2026-06-04 — issue #132; previous total: 2,206) (added 17 AI Coach page tests 2026-06-04; previous total: 2,189) (added 19 compare-runs tests 2026-06-03; previous total: 2,170) (added 56 upcoming races tests 2026-06-02; previous total: 2,114) (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
 
 ## Manual Test Cases (not yet automated)
 

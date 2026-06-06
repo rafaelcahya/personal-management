@@ -13,6 +13,7 @@ import PageHeader from '@/app/main/components/PageHeader'
 import TrainingLoadTiles from './components/TrainingLoadTiles'
 import AnomalyAlertsSection from './components/AnomalyAlertsSection'
 import DailyInsightCard from './components/DailyInsightCard'
+import InjuryCoachCard from './components/InjuryCoachCard'
 import FridayPrepCard from './components/FridayPrepCard'
 import RaceCountdownCard from './components/RaceCountdownCard'
 import WeeklyReviewCard from './components/WeeklyReviewCard'
@@ -134,6 +135,7 @@ export default function AICoachPage() {
           <TrainingLoadTiles trainingLoad={trainingLoad} />
           <AnomalyAlertsSection anomalies={anomalies} />
           <DailyInsightCard initialInsight={dailyInsight} trainingLoad={trainingLoad} />
+          <InjuryCoachCard />
           <FridayPrepCard fridayPrep={fridayPrep} />
           <RaceCountdownCard upcomingRace={upcomingRace} weeklyReview={weeklyReview} />
           <WeeklyReviewCard weeklyReview={weeklyReview} />
