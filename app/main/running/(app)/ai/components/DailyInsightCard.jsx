@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Sparkles, Loader2, RefreshCw, Send, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { fetchDailyInsight, generateDailyInsight, generateFollowUp } from '@/lib/api/running'
-import { renderMarkdown, parseQuickTags, stripQuickTags } from './utils'
+import { renderMarkdown, parseInline, parseQuickTags, stripQuickTags } from './utils'
 
 const POLL_INTERVAL_MS = 8000
 const MAX_POLLS = 15
@@ -51,6 +51,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
 
   const pollRef = useRef(null)
   const pollCountRef = useRef(0)
+  const prevInsightIdRef = useRef(null)
 
   const stopPolling = useCallback(() => {
     if (pollRef.current) {
@@ -67,9 +68,13 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
       pollCountRef.current += 1
       try {
         const data = await fetchDailyInsight()
-        const isDone = data && data.status === 'completed' && data.is_valid === true
+        const isNewCompleted =
+          data &&
+          data.status === 'completed' &&
+          data.is_valid === true &&
+          data.id !== prevInsightIdRef.current
         const timedOut = pollCountRef.current >= MAX_POLLS
-        if (isDone || timedOut) {
+        if (isNewCompleted || timedOut) {
           setInsight(data)
           stopPolling()
         }
@@ -106,6 +111,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
     setGenerating(true)
     setGenerateError(false)
     try {
+      prevInsightIdRef.current = insight?.id ?? null
       await generateDailyInsight(force)
       setInsight({ status: 'pending' })
     } catch {
@@ -335,7 +341,9 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
               )}
 
               {!followUpLoading && followUpContent && (
-                <p className="text-sm text-slate-600 leading-relaxed">{followUpContent}</p>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  {parseInline(followUpContent)}
+                </p>
               )}
             </div>
           )}

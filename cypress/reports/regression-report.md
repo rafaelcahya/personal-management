@@ -1,5 +1,62 @@
 # Regression Testing Report
 
+**Date:** 2026-06-06
+**App Version:** 1.7
+**Scope:** Injury AI Roles — issue #160 (3 spec files: injury-coach-api.cy.js, injury-coach-ui.cy.js, symptom-log-api.cy.js — 24 tests total)
+**Tester:** QA Agent
+
+## Summary (2026-06-06 Focused Run — Injury AI Roles)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 24          | 24     | 0      | 0       | **100%**         |
+
+### Injury AI Roles — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/ai/injury-coach-api.cy.js                                      | 6     | 6      | 0      | 0       | ✅ PASS  |
+| 2  | running/ai/injury-coach-ui.cy.js                                       | 12    | 12     | 0      | 0       | ✅ PASS  |
+| 3  | running/ai/symptom-log-api.cy.js                                       | 6     | 6      | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **24** | **24** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `injury-coach-api.cy.js` (6 tests): POST with `role:physio` and valid question → 200 with `data.content` and `escalate` field; POST with `role:physician` → 200; POST without `question` field → 400; POST with question shorter than 10 chars → 400; POST with `role:invalid_role` → 400; POST without authentication → 401.
+- `injury-coach-ui.cy.js` (12 tests): Disclaimer strip visible before role selection; Physiotherapist card shows injury form; Physician card shows form + placeholder changes; Phase pills (Acute select, deselect); Submit button disabled when question <10 chars, enabled when ≥10; typing "10/10" triggers emergency message + hides submit; successful POST → output card visible; `escalate:true` response → red escalation banner with `role="alert"`; 500 error → error state shown.
+- `symptom-log-api.cy.js` (6 tests): POST with `body_region` + `pain_level:5` → 201 Created with `data.id`; POST without `body_region` → 400; POST with `pain_level:11` (out of range) → 400; GET active symptom logs → 200 with data array; PATCH archive existing symptom with `{ archived: true }` → 200; PATCH non-existent UUID with `{ archived: true }` → 404.
+- Fixes applied: `.error.errors[0]` → `.error.issues[0]` in 3 backend route files (`symptoms/route.js`, `symptoms/[id]/route.js`, `ai/injury-coach/route.js`) — Zod v4 uses `.issues` not `.errors`; PATCH test payload changed from `{ status: 'archived' }` to `{ archived: true }` to match the `archiveSymptomSchema` that expects `archived: z.literal(true)`.
+
+---
+
+## Previous Run — 2026-06-06 Focused Run — Web Push Notification Delivery
+
+**Date:** 2026-06-06
+**App Version:** 1.7
+**Scope:** Web Push Notification Delivery — issue #135 (2 spec files: settings-ui.cy.js updated +4 tests, push-subscription-api.cy.js new — 25 tests total)
+**Tester:** QA Agent
+
+## Summary (2026-06-06 Focused Run — Web Push Notification Delivery)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 25          | 25     | 0      | 0       | **100%**         |
+
+### Web Push Notification Delivery — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/settings/settings-ui.cy.js                                     | 21    | 21     | 0      | 0       | ✅ PASS  |
+| 2  | running/push-subscription/push-subscription-api.cy.js                  | 4     | 4      | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **25** | **25** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `settings-ui.cy.js` (21 tests, +4 new in "Push Notifications" describe block): All 17 previous tests continue passing. 4 new push notification tests: (1) enable flow — stubs `Notification.requestPermission → 'granted'` and `navigator.serviceWorker.register`, intercepts POST /push-subscription → 200, clicks toggle (force:true), verifies POST fired with non-null subscription object. (2) disable flow — starts with `push_notifications_enabled: true`, stubs serviceWorker.ready with unsubscribe, clicks toggle off, verifies POST body `{ subscription: null }`. (3) permission denied — stubs `requestPermission → 'denied'`, clicks toggle, verifies `#pushNotificationsError_settingsPage` visible (scrollIntoView needed for overflow:hidden card), verifies toggle `aria-checked=false`. (4) persist after reload — stubs settings with `push_notifications_enabled: true`, verifies toggle `aria-checked=true`, reloads, re-stubs settings endpoint, verifies toggle still ON. Key fixes: `Object.defineProperty` cannot set `Notification.permission` (read-only getter in Chrome) — only `requestPermission` method is overridden; `cy.stub()` cannot be used inside `onBeforeLoad` (Sinon context not available) — plain arrow functions used instead; `uncaughtException` handler added spec-wide to suppress ServiceWorker redirect errors from Chrome's background SW logic.
+- `push-subscription-api.cy.js` (4 tests, NEW): 2 authenticated describes + 1 unauthenticated. POST with valid `{ endpoint, keys: { p256dh, auth } }` → 200 + `push_notifications_enabled: true`. POST `{ subscription: null }` → 200 + `push_notifications_enabled: false`. POST subscription with endpoint but missing keys (`keys.p256dh` and `keys.auth` absent) → 400 validation error. Unauthenticated POST → 401. Uses `beforeEach` (not `before`) for `setupApiAuthCookies()` to ensure cookies are set for each test in isolation mode.
+
+---
+
+## Previous Run — 2026-06-05 Focused Run — Next Race Widget
+
 **Date:** 2026-06-05
 **App Version:** 1.4
 **Scope:** Next Race Widget — issue #153 (1 spec file: dashboard-ui-extended.cy.js — 14 tests)
@@ -728,6 +785,8 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-06 | Injury AI Roles (issue #160)         | 24    | 24     | 0       | 0      | 100%        |
+| 2026-06-06 | Web Push Notifications (issue #135)  | 25    | 25     | 0       | 0      | 100%        |
 | 2026-06-05 | Next Race Widget (issue #153)        | 14    | 14     | 0       | 0      | 100%        |
 | 2026-06-05 | VO2max Target Effort (issue #137)    | 54    | 54     | 0       | 0      | 100%        |
 | 2026-06-04 | Running Settings page (issue #132)   | 17    | 17     | 0       | 0      | 100%        |
