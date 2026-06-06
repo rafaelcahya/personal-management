@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { upsertRunnerSettings } from '@/lib/services/running/user/upsertRunnerProfile'
 
 const SETTINGS_FIELDS =
-  'user_id, hr_zones_method, threshold_hr, notify_post_activity, notify_weekly_review, notify_friday_prep, notify_anomaly'
+  'user_id, hr_zones_method, threshold_hr, notify_post_activity, notify_weekly_review, notify_friday_prep, notify_anomaly, push_notifications_enabled'
 
 const DEFAULT_SETTINGS = {
   hr_zones_method: 'max_hr',

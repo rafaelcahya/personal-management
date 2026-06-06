@@ -1,5 +1,32 @@
 # Regression Testing Report
 
+**Date:** 2026-06-06
+**App Version:** 1.7
+**Scope:** Web Push Notification Delivery — issue #135 (2 spec files: settings-ui.cy.js updated +4 tests, push-subscription-api.cy.js new — 25 tests total)
+**Tester:** QA Agent
+
+## Summary (2026-06-06 Focused Run — Web Push Notification Delivery)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 25          | 25     | 0      | 0       | **100%**         |
+
+### Web Push Notification Delivery — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/settings/settings-ui.cy.js                                     | 21    | 21     | 0      | 0       | ✅ PASS  |
+| 2  | running/push-subscription/push-subscription-api.cy.js                  | 4     | 4      | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **25** | **25** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `settings-ui.cy.js` (21 tests, +4 new in "Push Notifications" describe block): All 17 previous tests continue passing. 4 new push notification tests: (1) enable flow — stubs `Notification.requestPermission → 'granted'` and `navigator.serviceWorker.register`, intercepts POST /push-subscription → 200, clicks toggle (force:true), verifies POST fired with non-null subscription object. (2) disable flow — starts with `push_notifications_enabled: true`, stubs serviceWorker.ready with unsubscribe, clicks toggle off, verifies POST body `{ subscription: null }`. (3) permission denied — stubs `requestPermission → 'denied'`, clicks toggle, verifies `#pushNotificationsError_settingsPage` visible (scrollIntoView needed for overflow:hidden card), verifies toggle `aria-checked=false`. (4) persist after reload — stubs settings with `push_notifications_enabled: true`, verifies toggle `aria-checked=true`, reloads, re-stubs settings endpoint, verifies toggle still ON. Key fixes: `Object.defineProperty` cannot set `Notification.permission` (read-only getter in Chrome) — only `requestPermission` method is overridden; `cy.stub()` cannot be used inside `onBeforeLoad` (Sinon context not available) — plain arrow functions used instead; `uncaughtException` handler added spec-wide to suppress ServiceWorker redirect errors from Chrome's background SW logic.
+- `push-subscription-api.cy.js` (4 tests, NEW): 2 authenticated describes + 1 unauthenticated. POST with valid `{ endpoint, keys: { p256dh, auth } }` → 200 + `push_notifications_enabled: true`. POST `{ subscription: null }` → 200 + `push_notifications_enabled: false`. POST subscription with endpoint but missing keys (`keys.p256dh` and `keys.auth` absent) → 400 validation error. Unauthenticated POST → 401. Uses `beforeEach` (not `before`) for `setupApiAuthCookies()` to ensure cookies are set for each test in isolation mode.
+
+---
+
+## Previous Run — 2026-06-05 Focused Run — Next Race Widget
+
 **Date:** 2026-06-05
 **App Version:** 1.4
 **Scope:** Next Race Widget — issue #153 (1 spec file: dashboard-ui-extended.cy.js — 14 tests)
@@ -728,6 +755,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-06 | Web Push Notifications (issue #135)  | 25    | 25     | 0       | 0      | 100%        |
 | 2026-06-05 | Next Race Widget (issue #153)        | 14    | 14     | 0       | 0      | 100%        |
 | 2026-06-05 | VO2max Target Effort (issue #137)    | 54    | 54     | 0       | 0      | 100%        |
 | 2026-06-04 | Running Settings page (issue #132)   | 17    | 17     | 0       | 0      | 100%        |

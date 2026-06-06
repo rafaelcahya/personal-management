@@ -134,7 +134,8 @@
       "profile": "/api/running/v1/user/profile",
       "settings": "/api/running/v1/user/settings",
       "activities": "/api/running/v1/user/activities",
-      "strava_disconnect": "/api/running/v1/auth/strava/disconnect"
+      "strava_disconnect": "/api/running/v1/auth/strava/disconnect",
+      "push_subscription": "/api/running/v1/user/push-subscription"
     }
   },
   "test_ids": {
@@ -634,6 +635,8 @@
       "hr_zones_save_success": "hrZonesSaveSuccess_settingsPage",
       "hr_zones_save_error": "hrZonesSaveError_settingsPage",
       "notifications_loading": "notificationsLoading_settingsPage",
+      "push_notifications_toggle": "pushNotificationsToggle_settingsPage",
+      "push_notifications_error": "pushNotificationsError_settingsPage",
       "notify_post_activity_toggle": "notifyPostActivityToggle_settingsPage",
       "notify_weekly_review_toggle": "notifyWeeklyReviewToggle_settingsPage",
       "notify_friday_prep_toggle": "notifyFridayPrepToggle_settingsPage",

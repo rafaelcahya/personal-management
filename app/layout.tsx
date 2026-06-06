@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import "./style/index.css";
 import { AuthListener } from "@/components/AuthListener";
+import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
 
 const defaultUrl = process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
@@ -44,6 +45,7 @@ export default function RootLayout({
                         disableTransitionOnChange
                     >
                         <AuthListener />
+                        <ServiceWorkerRegistrar />
                         {children}
                         <div id="toast">
                             <Toaster richColors position="top-center" />
