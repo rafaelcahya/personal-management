@@ -462,6 +462,21 @@ export const TEST_IDS = {
     friday_prep_card_body: 'fridayPrepCardBody_aiCoachPage',
   },
 
+  // Injury AI roles (issue #160)
+  running_ai: {
+    injury_physio_card: 'injuryPhysioCard_aiPage',
+    injury_physician_card: 'injuryPhysicianCard_aiPage',
+    injury_body_part_input: 'injuryBodyPartInput_aiPage',
+    injury_phase_acute: 'injuryPhaseAcute_aiPage',
+    injury_phase_subacute: 'injuryPhaseSubacute_aiPage',
+    injury_phase_recovery: 'injuryPhaseRecovery_aiPage',
+    injury_question_input: 'injuryQuestionInput_aiPage',
+    injury_submit_btn: 'injurySubmitBtn_aiPage',
+    injury_disclaimer: 'injuryDisclaimer_aiPage',
+    injury_escalate_banner: 'injuryEscalateBanner_aiPage',
+    injury_output_card: 'injuryOutputCard_aiPage',
+  },
+
   running_strava_connection: {
     disconnect_banner: 'stravaDisconnectBanner',
     reconnect_btn: 'stravaReconnectBtn',

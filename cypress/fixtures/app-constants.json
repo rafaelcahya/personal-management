@@ -136,6 +136,11 @@
       "activities": "/api/running/v1/user/activities",
       "strava_disconnect": "/api/running/v1/auth/strava/disconnect",
       "push_subscription": "/api/running/v1/user/push-subscription"
+    },
+    "running_ai": {
+      "symptoms": "/api/running/v1/symptoms",
+      "symptoms_by_id": "/api/running/v1/symptoms/:id",
+      "injury_coach": "/api/running/v1/ai/injury-coach"
     }
   },
   "test_ids": {
@@ -415,6 +420,19 @@
       "weekly_review_card_body": "weeklyReviewCardBody_aiCoachPage",
       "friday_prep_card": "fridayPrepCard_aiCoachPage",
       "friday_prep_card_body": "fridayPrepCardBody_aiCoachPage"
+    },
+    "running_ai": {
+      "injury_physio_card": "injuryPhysioCard_aiPage",
+      "injury_physician_card": "injuryPhysicianCard_aiPage",
+      "injury_body_part_input": "injuryBodyPartInput_aiPage",
+      "injury_phase_acute": "injuryPhaseAcute_aiPage",
+      "injury_phase_subacute": "injuryPhaseSubacute_aiPage",
+      "injury_phase_recovery": "injuryPhaseRecovery_aiPage",
+      "injury_question_input": "injuryQuestionInput_aiPage",
+      "injury_submit_btn": "injurySubmitBtn_aiPage",
+      "injury_disclaimer": "injuryDisclaimer_aiPage",
+      "injury_escalate_banner": "injuryEscalateBanner_aiPage",
+      "injury_output_card": "injuryOutputCard_aiPage"
     },
     "running_onboarding": {
       "page": "runningOnboardingPage",

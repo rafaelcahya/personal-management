@@ -2,6 +2,36 @@
 
 **Date:** 2026-06-06
 **App Version:** 1.7
+**Scope:** Injury AI Roles — issue #160 (3 spec files: injury-coach-api.cy.js, injury-coach-ui.cy.js, symptom-log-api.cy.js — 24 tests total)
+**Tester:** QA Agent
+
+## Summary (2026-06-06 Focused Run — Injury AI Roles)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 24          | 24     | 0      | 0       | **100%**         |
+
+### Injury AI Roles — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/ai/injury-coach-api.cy.js                                      | 6     | 6      | 0      | 0       | ✅ PASS  |
+| 2  | running/ai/injury-coach-ui.cy.js                                       | 12    | 12     | 0      | 0       | ✅ PASS  |
+| 3  | running/ai/symptom-log-api.cy.js                                       | 6     | 6      | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **24** | **24** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `injury-coach-api.cy.js` (6 tests): POST with `role:physio` and valid question → 200 with `data.content` and `escalate` field; POST with `role:physician` → 200; POST without `question` field → 400; POST with question shorter than 10 chars → 400; POST with `role:invalid_role` → 400; POST without authentication → 401.
+- `injury-coach-ui.cy.js` (12 tests): Disclaimer strip visible before role selection; Physiotherapist card shows injury form; Physician card shows form + placeholder changes; Phase pills (Acute select, deselect); Submit button disabled when question <10 chars, enabled when ≥10; typing "10/10" triggers emergency message + hides submit; successful POST → output card visible; `escalate:true` response → red escalation banner with `role="alert"`; 500 error → error state shown.
+- `symptom-log-api.cy.js` (6 tests): POST with `body_region` + `pain_level:5` → 201 Created with `data.id`; POST without `body_region` → 400; POST with `pain_level:11` (out of range) → 400; GET active symptom logs → 200 with data array; PATCH archive existing symptom with `{ archived: true }` → 200; PATCH non-existent UUID with `{ archived: true }` → 404.
+- Fixes applied: `.error.errors[0]` → `.error.issues[0]` in 3 backend route files (`symptoms/route.js`, `symptoms/[id]/route.js`, `ai/injury-coach/route.js`) — Zod v4 uses `.issues` not `.errors`; PATCH test payload changed from `{ status: 'archived' }` to `{ archived: true }` to match the `archiveSymptomSchema` that expects `archived: z.literal(true)`.
+
+---
+
+## Previous Run — 2026-06-06 Focused Run — Web Push Notification Delivery
+
+**Date:** 2026-06-06
+**App Version:** 1.7
 **Scope:** Web Push Notification Delivery — issue #135 (2 spec files: settings-ui.cy.js updated +4 tests, push-subscription-api.cy.js new — 25 tests total)
 **Tester:** QA Agent
 
@@ -755,6 +785,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-06 | Injury AI Roles (issue #160)         | 24    | 24     | 0       | 0      | 100%        |
 | 2026-06-06 | Web Push Notifications (issue #135)  | 25    | 25     | 0       | 0      | 100%        |
 | 2026-06-05 | Next Race Widget (issue #153)        | 14    | 14     | 0       | 0      | 100%        |
 | 2026-06-05 | VO2max Target Effort (issue #137)    | 54    | 54     | 0       | 0      | 100%        |
