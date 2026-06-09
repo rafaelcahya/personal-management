@@ -57,7 +57,7 @@ export default function ActivitySection({
 
   return (
     <>
-      <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden relative z-0 isolate">
+      <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden">
         <MediaCarousel polyline={activity.summary_polyline} photos={photos} />
       </div>
 

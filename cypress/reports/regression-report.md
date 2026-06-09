@@ -2,10 +2,36 @@
 
 **Date:** 2026-06-09
 **App Version:** 1.7
+**Scope:** Map Style Toggle — issue #172 (1 spec file: map-style-toggle-ui.cy.js — 14 tests)
+**Tester:** QA Agent
+
+## Summary (2026-06-09 Focused Run — Map Style Toggle)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 14          | 14     | 0      | 0       | **100%**         |
+
+### Map Style Toggle — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/activities/map-style-toggle-ui.cy.js                           | 14    | 14     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **14** | **14** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `map-style-toggle-ui.cy.js` (14 tests): Suite A — toggle visibility + aria-pressed (5 tests): `#mapStyleToggle_activityDetailPage` exists when polyline is present; Map button has `aria-pressed=true` by default; Satellite button has `aria-pressed=false` by default; clicking Satellite flips both states; clicking Map restores both states. Suite B — expanded modal (4 tests): expand button opens `role="dialog"` modal; modal footer contains `#mapStyleToggle_activityDetailPage`; Escape key closes modal; style sync — Satellite selected before expand is reflected inside modal's toggle. Suite C — no-polyline fallback (2 tests): toggle absent when `summary_polyline=null`; expand button absent (MediaCarousel returns null when both polyline and photos are absent). Suite D — regression / ID presence (3 tests): both button IDs exist; Map button text "Map" visible; Satellite button text "Satellite" visible.
+- Fix applied mid-run: initial Suite C test asserted `cy.contains('No GPS data')` — incorrect because `MediaCarousel` short-circuits to `return null` when both polyline and photos are absent, so `RouteMap` is never rendered and the "No GPS data" fallback never appears. Replaced with assertion that the expand button does not exist.
+
+---
+
+## Previous Run — 2026-06-09 Focused Run — Lazy Compute Derived Metrics
+
+**Date:** 2026-06-09
+**App Version:** 1.7
 **Scope:** Lazy Compute Derived Metrics — issue #168 (1 spec file: lazy-compute-metrics-api.cy.js — 7 tests, 5 passing, 2 pending)
 **Tester:** QA Agent
 
-## Summary (2026-06-09 Focused Run — Lazy Compute Derived Metrics)
+### Summary (2026-06-09 Focused Run — Lazy Compute Derived Metrics)
 
 | Total Tests | Passed | Failed | Pending | Active Pass Rate |
 | ----------- | ------ | ------ | ------- | ---------------- |
@@ -812,6 +838,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-09 | Map Style Toggle (issue #172)        | 14    | 14     | 0       | 0      | 100%        |
 | 2026-06-09 | Lazy Compute Metrics (issue #168)    | 7     | 5      | 2       | 0      | 100% active |
 | 2026-06-06 | Injury AI Roles (issue #160)         | 24    | 24     | 0       | 0      | 100%        |
 | 2026-06-06 | Web Push Notifications (issue #135)  | 25    | 25     | 0       | 0      | 100%        |
