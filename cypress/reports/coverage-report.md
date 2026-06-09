@@ -1,6 +1,6 @@
 # Test Coverage Report
 
-**Last Updated:** 2026-06-06 (Injury AI Roles issue #160 — injury-coach-api.cy.js 6/6, injury-coach-ui.cy.js 12/12, symptom-log-api.cy.js 6/6 — all 24/24 passing 100%; NEW module Running Tracker - Injury AI) | 2026-06-06 (Web Push Notifications issue #135 — settings-ui.cy.js +4 tests 21/21 passing, push-subscription-api.cy.js new 4/4 passing 100%; push toggle enable/disable/permission-denied/persist flows + API contract) | 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated with title, description, edit-from-activity support) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%; +19 upcoming-race target time tests, +35 analytics target effort tests)
+**Last Updated:** 2026-06-09 (Lazy Compute Derived Metrics issue #168 — lazy-compute-metrics-api.cy.js 5/5 active passing (2 pending, data-dependent), 100% active; Running Tracker - Activities +7 tests) | 2026-06-06 (Injury AI Roles issue #160 — injury-coach-api.cy.js 6/6, injury-coach-ui.cy.js 12/12, symptom-log-api.cy.js 6/6 — all 24/24 passing 100%; NEW module Running Tracker - Injury AI) | 2026-06-06 (Web Push Notifications issue #135 — settings-ui.cy.js +4 tests 21/21 passing, push-subscription-api.cy.js new 4/4 passing 100%; push toggle enable/disable/permission-denied/persist flows + API contract) | 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated with title, description, edit-from-activity support) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%; +19 upcoming-race target time tests, +35 analytics target effort tests)
 **App Version:** 1.7
 
 ## Coverage Summary
@@ -27,13 +27,15 @@
 | Running Tracker - Manual Entry  | 7              | 7         | 0           | 0          | 100%       | 21         |
 | Running Tracker - Dashboard     | 10             | 10        | 0           | 0          | 100%       | 95         |
 | Running Tracker - Race Log      | 10             | 10        | 0           | 0          | 100%       | 147        |
-| Running Tracker - Activities    | 12             | 12        | 0           | 0          | 100%       | 217        |
+| Running Tracker - Activities    | 13             | 13        | 0           | 0          | 100%       | 224        |
 | Running Tracker - Analytics     | 7              | 7         | 0           | 0          | 100%       | 98         |
 | Running Tracker - AI Coach Page | 12             | 12        | 0           | 0          | 100%       | 56         |
 | Running Tracker - Settings      | 6              | 6         | 0           | 0          | 100%       | 25         |
 | Running Tracker - Injury AI     | 3              | 3         | 0           | 0          | 100%       | 24         |
 | Shared - Sidebar                | 4              | 4         | 0           | 0          | 100%       | 8          |
-| **Total**                       | **187**        | **186**   | **1**       | **0**      | **99%**    | **2,392**  |
+| **Total**                       | **188**        | **187**   | **1**       | **0**      | **99%**    | **2,399**  |
+
+> **Note (2026-06-09 v1.7 Lazy Compute Derived Metrics issue #168 +7 tests):** lazy-compute-metrics-api.cy.js 5/5 active passing (2 pending, data-dependent). 4 describe blocks: (1) compute triggered — GET activity with moving_time > 1200 + avg_hr → at least one derived metric non-null; (2) idempotency — two successive GETs return identical metric values; (3) gate fails — short/no-HR activity → 200 with all metrics null; (4) response shape contract — 200 always includes aerobic_decoupling, efficiency_factor, estimated_vo2max keys; unauthenticated → 401. Describes 1 and 2 are skipped via this.skip() because no activity in the test DB meets the gate condition at this time — they will auto-run when qualifying data exists. Running Tracker - Activities: 13 features, 224 tests. Total: 188 features, 2,399 tests.
 
 > **Note (2026-06-06 v1.7 Injury AI Roles issue #160 +24 tests):** 3 new spec files all passing 100%. injury-coach-api.cy.js (6 tests): POST physio/physician → 200 with data.content + escalate; POST missing question/short question/invalid role → 400; unauthenticated → 401. injury-coach-ui.cy.js (12 tests): disclaimer strip, role card selection reveals form, phase pill select/deselect, submit button disabled/enabled based on question length, emergency block on "10/10", successful submission output card, escalation banner (role=alert), API error state. symptom-log-api.cy.js (6 tests): POST valid symptom → 201; POST missing body_region → 400; POST pain_level 11 → 400; GET active logs → 200 + array; PATCH archive { archived:true } → 200; PATCH non-existent UUID → 404. NEW module: Running Tracker - Injury AI (3 features, 24 tests). Fixes applied: `.error.issues[0]` (Zod v4 breaking change) in symptoms/route.js, symptoms/[id]/route.js, ai/injury-coach/route.js; PATCH test body `{ archived: true }` to match archiveSymptomSchema. Total: 187 features, 2,392 tests.
 
@@ -83,7 +85,16 @@
 
 > **Note (2026-05-13):** Full regression run completed for 4 groups: api-auth (59 tests), auth (123 tests), dashboard (161 tests), product (490 tests). Total 833 tests executed. Issues found in auth (testId missing), product module (cy.getAuthToken() undefined), and product-detail-ui (visibility clipping).
 
-## Last Execution Results (2026-06-06 Focused Run: Injury AI Roles #160)
+## Last Execution Results (2026-06-09 Focused Run: Lazy Compute Derived Metrics #168)
+
+| Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
+| ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
+| running/activities (Lazy Compute Metrics API) — issue #168                   | 1          | 7     | 5      | 0      | 2       | ✅       |
+| **Total**                                                                    | **1**      | **7** | **5**  | **0**  | **2**   | **100% active** |
+
+**Status:** 5/5 active passing (100%). 2 pending (data-dependent skips). lazy-compute-metrics-api.cy.js: Describe 1 (PENDING — no qualifying activity with moving_time > 1200 + avg_hr + incomplete metrics in test DB). Describe 2 (PENDING — same gate). Describe 3 (PASS) — GET activity below gate → 200 with all 3 derived metrics null. Describe 4 (4 PASS) — response always includes aerobic_decoupling, efficiency_factor, estimated_vo2max keys; unauthenticated → 401.
+
+### Previous Execution Results (2026-06-06 Focused Run: Injury AI Roles #160)
 
 | Group                                                                        | Spec Files | Tests | Passed | Failed | Pending | Status   |
 | ---------------------------------------------------------------------------- | ---------- | ----- | ------ | ------ | ------- | -------- |
@@ -407,8 +418,9 @@
 | 99  | cypress/e2e/running/ai/injury-coach-api.cy.js    | Injury Coach API (issue #160)         | 6          | POST physio/physician → 200 with data.content + escalate field; POST missing question → 400; POST short question (<10 chars) → 400; POST invalid role → 400; unauthenticated → 401 |
 | 100 | cypress/e2e/running/ai/injury-coach-ui.cy.js     | Injury Coach UI (issue #160)          | 12         | Disclaimer strip visible before role selection; Physiotherapist card shows form; Physician card shows form + placeholder change; Acute phase pill select + deselect; submit disabled <10 chars, enabled ≥10; emergency block on "10/10"; successful submission → output card; escalate:true → red banner role=alert; 500 → error state |
 | 101 | cypress/e2e/running/ai/symptom-log-api.cy.js     | Symptom Log API (issue #160)          | 6          | POST body_region + pain_level:5 → 201 with data.id; POST missing body_region → 400; POST pain_level:11 → 400; GET active logs → 200 + data array; PATCH archive existing { archived:true } → 200; PATCH non-existent UUID → 404 |
+| 102 | cypress/e2e/running/activities/lazy-compute-metrics-api.cy.js | Lazy Compute Derived Metrics API (issue #168) | 7 | Compute triggered — GET for activity with moving_time > 1200 + avg_hr → at least one metric non-null (PENDING: no qualifying DB data). Idempotency — two successive GETs return identical metric values (PENDING: no qualifying DB data). Gate fails — short/no-HR activity → 200 with all 3 metrics null. Response shape — 200 always includes aerobic_decoupling, efficiency_factor, estimated_vo2max keys. Unauthenticated → 401. |
 
-**Total Automated Test Cases: 2,309** (added 54 VO2max Target Effort tests 2026-06-05 — issue #137; previous total: 2,223) (added 17 Settings page tests 2026-06-04 — issue #132; previous total: 2,206) (added 17 AI Coach page tests 2026-06-04; previous total: 2,189) (added 19 compare-runs tests 2026-06-03; previous total: 2,170) (added 56 upcoming races tests 2026-06-02; previous total: 2,114) (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
+**Total Automated Test Cases: 2,316** (added 54 VO2max Target Effort tests 2026-06-05 — issue #137; previous total: 2,223) (added 17 Settings page tests 2026-06-04 — issue #132; previous total: 2,206) (added 17 AI Coach page tests 2026-06-04; previous total: 2,189) (added 19 compare-runs tests 2026-06-03; previous total: 2,170) (added 56 upcoming races tests 2026-06-02; previous total: 2,114) (added 34 analytics tests 2026-05-31; previous total: 2,044) (added 13 race-log search+filter tests 2026-05-29; previous total: 2,031)
 
 ## Manual Test Cases (not yet automated)
 
