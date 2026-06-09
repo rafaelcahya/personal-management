@@ -1,5 +1,32 @@
 # Regression Testing Report
 
+**Date:** 2026-06-09
+**App Version:** 1.7
+**Scope:** Lazy Compute Derived Metrics — issue #168 (1 spec file: lazy-compute-metrics-api.cy.js — 7 tests, 5 passing, 2 pending)
+**Tester:** QA Agent
+
+## Summary (2026-06-09 Focused Run — Lazy Compute Derived Metrics)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 7           | 5      | 0      | 2       | **100%**         |
+
+> **Pending (2):** Describe blocks 1 ("compute triggered") and 2 ("idempotency") were skipped via `this.skip()` because no activity in the test database meets the gate condition (moving_time_sec > 1200 AND avg_hr != null with incomplete metrics). These are data-dependent tests, not failures.
+
+### Lazy Compute Derived Metrics — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/activities/lazy-compute-metrics-api.cy.js                      | 7     | 5      | 0      | 2       | ✅ PASS  |
+| —  | **Total**                                                              | **7** | **5** | **0** | **2** | **100% active** |
+
+**Scope notes:**
+- `lazy-compute-metrics-api.cy.js` (7 tests): Describe 1 — Compute triggered (1 test, PENDING — no qualifying activity in DB): GET for an activity with moving_time_sec > 1200 + avg_hr present → at least one derived metric non-null. Describe 2 — Idempotency (1 test, PENDING — no qualifying activity in DB): Two successive GETs return identical aerobic_decoupling/efficiency_factor/estimated_vo2max values. Describe 3 — Gate fails (1 test, PASS): GET for a short (<20 min) or no-HR activity → 200 with all three derived metrics null. Describe 4 — Response shape contract (4 tests, all PASS): 200 response always includes `aerobic_decoupling`, `efficiency_factor`, `estimated_vo2max` keys; unauthenticated GET → 401.
+
+---
+
+## Previous Run — 2026-06-06 Focused Run — Injury AI Roles
+
 **Date:** 2026-06-06
 **App Version:** 1.7
 **Scope:** Injury AI Roles — issue #160 (3 spec files: injury-coach-api.cy.js, injury-coach-ui.cy.js, symptom-log-api.cy.js — 24 tests total)
@@ -785,6 +812,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-09 | Lazy Compute Metrics (issue #168)    | 7     | 5      | 2       | 0      | 100% active |
 | 2026-06-06 | Injury AI Roles (issue #160)         | 24    | 24     | 0       | 0      | 100%        |
 | 2026-06-06 | Web Push Notifications (issue #135)  | 25    | 25     | 0       | 0      | 100%        |
 | 2026-06-05 | Next Race Widget (issue #153)        | 14    | 14     | 0       | 0      | 100%        |
