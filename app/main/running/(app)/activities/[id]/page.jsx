@@ -224,7 +224,7 @@ export default function ActivityDetailPage() {
             <>
               <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden pb-6 pt-0 lg:pt-6">
                 {/* Carousel: 80% of card, centered */}
-                <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden relative z-0 isolate">
+                <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden">
                   <MediaCarousel polyline={activity.summary_polyline} photos={photos} />
                 </div>
 

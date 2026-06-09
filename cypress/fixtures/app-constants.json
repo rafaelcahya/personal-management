@@ -370,7 +370,10 @@
       "ai_insight_compare_command": "aiInsightCompareCommand_activityDetailPage",
       "ai_insight_compare_pill": "aiInsightComparePill_activityDetailPage",
       "ai_insight_get_recommendation_btn": "aiInsightGetRecommendationBtn_activityDetailPage",
-      "ef_trend_arrow": "efTrendArrow"
+      "ef_trend_arrow": "efTrendArrow",
+      "map_style_toggle": "mapStyleToggle_activityDetailPage",
+      "map_style_map_btn": "mapStyleMap_activityDetailPage",
+      "map_style_satellite_btn": "mapStyleSatellite_activityDetailPage"
     },
     "running_dashboard": {
       "page": "dashboardPage",

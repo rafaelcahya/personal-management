@@ -223,6 +223,9 @@ export const TEST_IDS = {
     ai_insight_retry: 'aiInsightRetry_activityDetailPage',
     ai_insight_refresh: 'aiInsightRefresh_activityDetailPage',
     ef_trend_arrow: 'efTrendArrow',
+    map_style_toggle: 'mapStyleToggle_activityDetailPage',
+    map_style_map_btn: 'mapStyleMap_activityDetailPage',
+    map_style_satellite_btn: 'mapStyleSatellite_activityDetailPage',
   },
 
   running_dashboard: {
