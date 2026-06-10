@@ -27,7 +27,7 @@ import { getActivityCfg, tempStyle } from './activityConfig'
 import { StatTile, SectionLabel } from './activityShared'
 import MediaCarousel from './MediaCarousel'
 import HealthContext from './HealthContext'
-import SplitsTable from './SplitsTable'
+import SplitsSection from '../../activities/components/SplitsSection'
 import BestEffortsTable from './BestEffortsTable'
 import LapsTable from './LapsTable'
 import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../../dashboard/utils/format'
@@ -357,7 +357,7 @@ export default function ActivitySection({
           <AIInsightCard activityId={activityId} />
         </div>
 
-        <SplitsTable splits={splits} />
+        <SplitsSection splits={splits} pagePrefix="raceDetailPage" />
         <BestEffortsTable bestEfforts={bestEfforts} />
         <LapsTable laps={laps} />
 

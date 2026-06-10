@@ -42,7 +42,7 @@ import HrZonesChart from '../components/HrZonesChart'
 import AIInsightCard from '../components/AIInsightCard'
 import MediaCarousel from '../components/MediaCarousel'
 import EditGoalModal from '../components/EditGoalModal'
-import SplitsTable from '../components/SplitsTable'
+import SplitsSection from '../components/SplitsSection'
 import LapsTable from '../components/LapsTable'
 import BestEffortsTable from '../components/BestEffortsTable'
 import { getActivityCfg, tempStyle } from '../components/activityConfig'
@@ -855,7 +855,7 @@ export default function ActivityDetailPage() {
                     />
                   </div>
 
-                  <SplitsTable splits={splits} />
+                  <SplitsSection splits={splits} />
                   <BestEffortsTable bestEfforts={bestEfforts} />
                   <LapsTable laps={laps} />
 
