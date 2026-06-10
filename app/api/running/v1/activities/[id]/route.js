@@ -130,6 +130,7 @@ export async function GET(_request, { params }) {
       .eq('user_id', user.id)
       .not('avg_hr', 'is', null)
       .neq('id', id)
+      .in('activity_type', ['Run', 'TrailRun', 'VirtualRun'])
 
     if (hrError) throw hrError
 
@@ -147,9 +148,40 @@ export async function GET(_request, { params }) {
       if (totalDuration > 0) historical_avg_hr = Math.round(weightedSum / totalDuration)
     }
 
+    const { data: cadenceRows, error: cadenceError } = await supabase
+      .from('rt_activities')
+      .select('avg_cadence, moving_time_sec, duration_sec')
+      .eq('user_id', user.id)
+      .not('avg_cadence', 'is', null)
+      .neq('id', id)
+      .in('activity_type', ['Run', 'TrailRun', 'VirtualRun'])
+
+    if (cadenceError) throw cadenceError
+
+    let historical_avg_cadence = null
+    if (cadenceRows && cadenceRows.length > 0) {
+      let weightedSum = 0
+      let totalDuration = 0
+      for (const row of cadenceRows) {
+        const dur = row.moving_time_sec ?? row.duration_sec ?? 0
+        if (dur > 0) {
+          weightedSum += Number(row.avg_cadence) * dur
+          totalDuration += dur
+        }
+      }
+      if (totalDuration > 0) historical_avg_cadence = Math.round(weightedSum / totalDuration) * 2
+    }
+
     return NextResponse.json(
       {
-        activity: { ...activity, gear, efficiency_factor_30d_avg, historical_avg_hr, user_max_hr },
+        activity: {
+          ...activity,
+          gear,
+          efficiency_factor_30d_avg,
+          historical_avg_hr,
+          historical_avg_cadence,
+          user_max_hr,
+        },
         splits: splits ?? [],
         laps: laps ?? [],
         best_efforts: bestEfforts ?? [],

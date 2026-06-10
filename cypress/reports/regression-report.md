@@ -2,6 +2,32 @@
 
 **Date:** 2026-06-10
 **App Version:** 1.7
+**Scope:** Cadence Chart Enhancements — issue #166 (1 spec file: cadence-chart-enhancements-ui.cy.js 16 tests)
+**Tester:** QA Agent
+
+## Summary (2026-06-10 Focused Run — Cadence Chart Enhancements)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 16          | 16     | 0      | 0       | **100%**         |
+
+### Cadence Chart Enhancements — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/activities/cadence-chart-enhancements-ui.cy.js                 | 16    | 16     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **16** | **16** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `cadence-chart-enhancements-ui.cy.js` (16 tests, NEW): 5 describe blocks. Benchmark bands (5 tests): `#streamChartCadence_activityDetailPage` renders; `#cadenceBand_beginner_activityDetailPage`, `#cadenceBand_recreational_activityDetailPage`, `#cadenceBand_semiathlete_activityDetailPage`, `#cadenceBand_elite_activityDetailPage` all exist. Historical avg cadence line (3 tests): `#cadenceHistoricalAvgLine_activityDetailPage` exists when `historical_avg_cadence` present; label "Your avg: 172 spm" visible inside chart; element absent when `historical_avg_cadence=null`. Fatigue drop detection (2 tests): `#cadenceFatigueRegion_activityDetailPage` exists when first-25% avg minus last-25% avg >5 spm; absent when drop ≤5 spm. Stability score badge (3 tests): `#cadenceStabilityScore_activityDetailPage` renders near chart title; text matches `/Stability:\s*\d+/`; value is between 0 and 100. Info tooltip (3 tests): `#cadenceInfoTrigger_activityDetailPage` renders; has `aria-label` attribute; `#cadenceInfoTooltip_activityDetailPage` appears on hover (dispatched via `new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', isPrimary: true })`).
+- Key implementation details — 4 benchmark bands (Beginner 140–165 red, Recreational 165–175 orange, Semi-athlete 175–185 yellow, Elite 185–210 green) rendered as `ReferenceArea` with `fillOpacity=0.07`. Fatigue detection: first-25% vs last-25% quartile comparison; `fatigueDrop > 5 && fatigueStart != null` gates the `#cadenceFatigueRegion` overlay. Stability score: 100 − (σ/μ × 100) clamped to 0–100; only computed when ≥8 valid cadence points (130–220 spm range). Historical avg line: `#cadenceHistoricalAvgLine_{pagePrefix}` via `historicalAvgCadence` prop passed from activity's `historical_avg_cadence` field. Info tooltip fix: test initially used `trigger('pointerenter')` which Radix tooltips ignore — corrected to native `PointerEvent('pointermove')` dispatch (same pattern as `sidebar-ui.cy.js`).
+
+---
+
+## Previous Run — 2026-06-10 Focused Run — HR Chart Enhancements
+
+**Date:** 2026-06-10
+**App Version:** 1.7
 **Scope:** HR Chart Enhancements — issue #165 (2 spec files: hr-chart-enhancements-ui.cy.js 18 tests, hr-zones-ai-insight-ui.cy.js 24 tests)
 **Tester:** QA Agent
 
