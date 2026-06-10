@@ -14,7 +14,6 @@ import {
   GitCompare,
   ChevronsUpDown,
   X,
-  Pencil,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
@@ -213,132 +212,6 @@ function FocusButtons({ onSelect, generating, variant = 'primary' }) {
         </button>
       ))}
     </div>
-  )
-}
-
-function RpeInput({ value, onChange, disabled }) {
-  const pillsRef = useRef([])
-
-  function handleKeyDown(e, idx) {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      e.preventDefault()
-      const next = (idx + 1) % 10
-      onChange(next + 1)
-      pillsRef.current[next]?.focus()
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault()
-      const prev = (idx - 1 + 10) % 10
-      onChange(prev + 1)
-      pillsRef.current[prev]?.focus()
-    } else if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      onChange(value === idx + 1 ? null : idx + 1)
-    }
-  }
-
-  return (
-    <div
-      id="aiInsightRpeGroup_activityDetailPage"
-      role="radiogroup"
-      aria-label="Rate of Perceived Exertion, 1 to 10"
-    >
-      <div className="flex gap-1 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-        {Array.from({ length: 10 }, (_, i) => i + 1).map((n, idx) => {
-          const selected = value === n
-          return (
-            <button
-              key={n}
-              id={`aiInsightRpePill_${n}_activityDetailPage`}
-              ref={(el) => (pillsRef.current[idx] = el)}
-              role="radio"
-              aria-checked={selected}
-              aria-label={`RPE ${n}`}
-              tabIndex={selected ? 0 : value == null && n === 1 ? 0 : -1}
-              disabled={disabled}
-              onClick={() => onChange(selected ? null : n)}
-              onKeyDown={(e) => handleKeyDown(e, idx)}
-              className={`flex-shrink-0 min-w-[36px] h-9 rounded-full text-xs font-medium transition-colors
-                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600
-                disabled:opacity-40 disabled:pointer-events-none
-                ${
-                  selected
-                    ? 'bg-violet-600 border border-violet-600 text-white'
-                    : 'bg-white border border-slate-200 text-slate-500 hover:border-violet-400 hover:text-violet-600'
-                }`}
-            >
-              {n}
-            </button>
-          )
-        })}
-      </div>
-      <div className="flex justify-between mt-1" aria-hidden="true">
-        <span className="text-xs text-slate-400">1 (very easy)</span>
-        <span className="text-xs text-slate-400">10 (max effort)</span>
-      </div>
-    </div>
-  )
-}
-
-function ContextZone({ rpe, onRpeChange, note, onNoteChange, disabled }) {
-  const maxNote = 200
-  const noteLen = note.length
-  const countColor =
-    noteLen >= maxNote ? 'text-red-400' : noteLen >= 180 ? 'text-amber-500' : 'text-slate-400'
-
-  return (
-    <div
-      id="aiInsightContextZone_activityDetailPage"
-      className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-3"
-    >
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-        How did this run feel?
-      </p>
-      <RpeInput value={rpe} onChange={onRpeChange} disabled={disabled} />
-      <div className="space-y-1">
-        <input
-          id="aiInsightNotesInput_activityDetailPage"
-          type="text"
-          value={note}
-          onChange={(e) => onNoteChange(e.target.value.slice(0, maxNote))}
-          disabled={disabled}
-          placeholder="Anything else? (e.g. tired legs, hot weather, new shoes)"
-          aria-label="Additional run context"
-          aria-describedby="aiInsightNotesCount_activityDetailPage"
-          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600
-            selection:bg-violet-500 disabled:opacity-40"
-        />
-        <p
-          id="aiInsightNotesCount_activityDetailPage"
-          className={`text-xs text-right ${countColor}`}
-          aria-live="polite"
-        >
-          {noteLen} / {maxNote}
-        </p>
-      </div>
-    </div>
-  )
-}
-
-function ContextPill({ rpe, note, onEdit }) {
-  if (!rpe && !note) {
-    return (
-      <button onClick={onEdit} className="text-xs text-violet-600 hover:underline">
-        Add run context
-      </button>
-    )
-  }
-  const label = [rpe ? `RPE ${rpe}` : null, note || null].filter(Boolean).join(' · ')
-  return (
-    <button
-      id="aiInsightContextPill_activityDetailPage"
-      onClick={onEdit}
-      aria-label={`Run context: ${label}. Click to edit.`}
-      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium cursor-pointer hover:bg-slate-200 transition-colors"
-    >
-      {label}
-      <Pencil className="h-3 w-3 text-slate-400" aria-hidden="true" />
-    </button>
   )
 }
 
@@ -569,18 +442,11 @@ function ActivitySelector({ activityId, onSelect }) {
   )
 }
 
-export default function AIInsightCard({
-  activityId,
-  initialPerceivedEffort = null,
-  initialUserNote = null,
-}) {
+export default function AIInsightCard({ activityId }) {
   const [insight, setInsight] = useState(undefined)
   const [loadError, setLoadError] = useState(false)
   const [generating, setGenerating] = useState(null)
   const [generateError, setGenerateError] = useState(false)
-  const [rpe, setRpe] = useState(initialPerceivedEffort)
-  const [note, setNote] = useState(initialUserNote ?? '')
-  const [contextExpanded, setContextExpanded] = useState(true)
   const [compareActivity, setCompareActivity] = useState(null)
   const [pendingElapsed, setPendingElapsed] = useState(0)
   const [longWait, setLongWait] = useState(false)
@@ -686,12 +552,9 @@ export default function AIInsightCard({
     setLongWait(false)
     try {
       await requestInsightGeneration(activityId, focus, {
-        perceived_effort: rpe,
-        user_note: note || null,
         compare_activity_id: compareActivity?.id ?? null,
       })
       setInsight({ status: 'pending', is_valid: true })
-      setContextExpanded(false)
     } catch {
       setGenerateError(true)
     } finally {
@@ -779,13 +642,6 @@ export default function AIInsightCard({
               Get AI-powered coaching insights for this run. Choose a focus to start.
             </p>
           </div>
-          <ContextZone
-            rpe={rpe}
-            onRpeChange={setRpe}
-            note={note}
-            onNoteChange={setNote}
-            disabled={isGenerating}
-          />
           {generateError && (
             <p className="text-xs text-red-400">Failed to start analysis. Try again.</p>
           )}
@@ -855,18 +711,6 @@ export default function AIInsightCard({
           </div>
 
           <div className="bg-white/60 border border-violet-100 rounded-lg p-3 space-y-4">
-            {contextExpanded ? (
-              <ContextZone
-                rpe={rpe}
-                onRpeChange={setRpe}
-                note={note}
-                onNoteChange={setNote}
-                disabled={isGenerating}
-              />
-            ) : (
-              <ContextPill rpe={rpe} note={note} onEdit={() => setContextExpanded(true)} />
-            )}
-
             <div className="space-y-2">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 Analyze with a different focus

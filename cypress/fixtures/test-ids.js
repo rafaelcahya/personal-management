@@ -241,6 +241,16 @@ export const TEST_IDS = {
     map_style_toggle: 'mapStyleToggle_activityDetailPage',
     map_style_map_btn: 'mapStyleMap_activityDetailPage',
     map_style_satellite_btn: 'mapStyleSatellite_activityDetailPage',
+    rpe_section: 'rpeSection_activityDetailPage',
+    rpe_info_trigger: 'rpeInfoTrigger_activityDetailPage',
+    rpe_info_tooltip: 'rpeInfoTooltip_activityDetailPage',
+    rpe_null_prompt: 'rpeNullPrompt_activityDetailPage',
+    rpe_picker: 'rpePicker',
+    rpe_hover_label: 'rpeHoverLabel_activityDetailPage',
+    rpe_session_load: 'rpeSessionLoad_activityDetailPage',
+    rpe_guide_toggle: 'rpeGuideToggle_activityDetailPage',
+    rpe_guide_table: 'rpeGuideTable_activityDetailPage',
+    rpe_saved_msg: 'rpeSavedMsg_activityDetailPage',
   },
 
   running_dashboard: {
