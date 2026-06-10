@@ -1,6 +1,6 @@
 # Test Status Report
 
-**Last Updated:** 2026-06-10 (Cadence Chart Enhancements issue #166 — cadence-chart-enhancements-ui.cy.js 16/16 passing 100%; Running Tracker - Activities +16 tests, now 320 total, 18 features) | 2026-06-10 (HR Chart Enhancements issue #165 — hr-chart-enhancements-ui.cy.js 18/18 passing 100%, hr-zones-ai-insight-ui.cy.js 24/24 passing 100%; Running Tracker - Activities +42 tests, now 304 total) | 2026-06-10 (Splits Bar Chart issue #164 — splits-bar-chart-ui.cy.js 24/24 passing 100%; Running Tracker - Activities +24 tests, now 262 total) | 2026-06-10 (Personal Bests Table issue #174 — personal-bests-api.cy.js 7/7 passing 100%, personal-bests-ui.cy.js 19/19 passing 100%; Running Tracker - Analytics +26 tests, now 124 total) | 2026-06-09 (Map Style Toggle issue #172 — map-style-toggle-ui.cy.js 14/14 passing 100%; Running Tracker - Activities +14 tests, now 238 total) | 2026-06-09 (Lazy Compute Derived Metrics issue #168 — lazy-compute-metrics-api.cy.js 5/5 active passing, 2 pending data-dependent; Running Tracker - Activities +7 tests) | 2026-06-06 (Injury AI Roles issue #160 — injury-coach-api.cy.js 6/6, injury-coach-ui.cy.js 12/12, symptom-log-api.cy.js 6/6 — all 24/24 passing 100%; NEW module Running Tracker - Injury AI added) | 2026-06-06 (Web Push Notifications issue #135 — settings-ui.cy.js +4 tests 21/21 passing, push-subscription-api.cy.js NEW 4/4 passing 100%; Running Tracker - Settings now 6 features 25 tests) | 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%)
+**Last Updated:** 2026-06-10 (Qualifying Run Count issue #170 — qualifying-run-count-ui.cy.js 13/13 passing 100%; Running Tracker - Analytics +13 tests, now 137 total, 9 features) | 2026-06-10 (Cadence Chart Enhancements issue #166 — cadence-chart-enhancements-ui.cy.js 16/16 passing 100%; Running Tracker - Activities +16 tests, now 320 total, 18 features) | 2026-06-10 (HR Chart Enhancements issue #165 — hr-chart-enhancements-ui.cy.js 18/18 passing 100%, hr-zones-ai-insight-ui.cy.js 24/24 passing 100%; Running Tracker - Activities +42 tests, now 304 total) | 2026-06-10 (Splits Bar Chart issue #164 — splits-bar-chart-ui.cy.js 24/24 passing 100%; Running Tracker - Activities +24 tests, now 262 total) | 2026-06-10 (Personal Bests Table issue #174 — personal-bests-api.cy.js 7/7 passing 100%, personal-bests-ui.cy.js 19/19 passing 100%; Running Tracker - Analytics +26 tests, now 124 total) | 2026-06-09 (Map Style Toggle issue #172 — map-style-toggle-ui.cy.js 14/14 passing 100%; Running Tracker - Activities +14 tests, now 238 total) | 2026-06-09 (Lazy Compute Derived Metrics issue #168 — lazy-compute-metrics-api.cy.js 5/5 active passing, 2 pending data-dependent; Running Tracker - Activities +7 tests) | 2026-06-06 (Injury AI Roles issue #160 — injury-coach-api.cy.js 6/6, injury-coach-ui.cy.js 12/12, symptom-log-api.cy.js 6/6 — all 24/24 passing 100%; NEW module Running Tracker - Injury AI added) | 2026-06-06 (Web Push Notifications issue #135 — settings-ui.cy.js +4 tests 21/21 passing, push-subscription-api.cy.js NEW 4/4 passing 100%; Running Tracker - Settings now 6 features 25 tests) | 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%)
 **App Version:** 1.7
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
@@ -67,12 +67,12 @@
 | Running Tracker - Dashboard     | 2026-06-05   | 0      | 95         | 95    |
 | Running Tracker - Race Log      | 2026-06-05   | 0      | 147        | 147   |
 | Running Tracker - Activities    | 2026-06-10   | 0      | 320        | 320   |
-| Running Tracker - Analytics     | 2026-06-10   | 0      | 124        | 124   |
+| Running Tracker - Analytics     | 2026-06-10   | 0      | 137        | 137   |
 | Running Tracker - AI Coach Page | 2026-06-04   | 0      | 56         | 56    |
 | Running Tracker - Settings      | 2026-06-06   | 0      | 25         | 25    |
 | Running Tracker - Injury AI     | 2026-06-06   | 0      | 24         | 24    |
 | Shared - Sidebar                | 2026-05-29   | 0      | 8          | 8     |
-| **Total**                       |              | **1**  | **2,520**  | **2,521** |
+| **Total**                       |              | **1**  | **2,533**  | **2,534** |
 
 ---
 
@@ -292,6 +292,9 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-10):
 | 4  | Analytics AI Card — UI states (all 7 sections)       | running/analytics/analytics-ai-ui.cy.js                     | 2026-06-02  | 0      | 14         | ✅ 14/14 pass  |
 | 5  | VO2max Target Effort API — auth guard + field shape  | running/analytics/vo2max-target-effort-api.cy.js            | 2026-06-05  | 0      | 4          | ✅ 4/4 pass    |
 | 6  | VO2max Target Effort UI — all status variants        | running/analytics/vo2max-target-effort-ui.cy.js             | 2026-06-05  | 0      | 31         | ✅ 31/31 pass  |
+| 7  | Personal Bests API — shape + auth guard              | running/analytics/personal-bests-api.cy.js                  | 2026-06-10  | 0      | 7          | ✅ 7/7 pass    |
+| 8  | Personal Bests UI — table, empty, error, row click  | running/analytics/personal-bests-ui.cy.js                   | 2026-06-10  | 0      | 19         | ✅ 19/19 pass  |
+| 9  | Qualifying Run Count — VO2max stat + trend + EF     | running/analytics/qualifying-run-count-ui.cy.js             | 2026-06-10  | 0      | 13         | ✅ 13/13 pass  |
 
 ---
 

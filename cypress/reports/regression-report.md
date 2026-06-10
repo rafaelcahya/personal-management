@@ -1,6 +1,34 @@
 # Regression Testing Report
 
 **Date:** 2026-06-10
+**App Version:** 1.8
+**Scope:** Qualifying Run Count on Analytics — issue #170 (2 spec files: qualifying-run-count-ui.cy.js 13 tests, analytics-ui.cy.js 9 tests updated)
+**Tester:** QA Agent
+
+## Summary (2026-06-10 Focused Run — Qualifying Run Count)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 22          | 22     | 0      | 0       | **100%**         |
+
+### Qualifying Run Count — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/analytics/qualifying-run-count-ui.cy.js                        | 13    | 13     | 0      | 0       | ✅ PASS  |
+| 2  | running/analytics/analytics-ui.cy.js (updated)                         | 9     | 9      | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **22** | **22** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `qualifying-run-count-ui.cy.js` (13 tests, NEW): 6 describe blocks. Current VO2max (data exists, 3 tests): `#vo2maxSampleSize_analyticsPage` renders; contains "Based on 12 qualifying runs (last 30 days)"; singular "run" when count=1 (stub reload). Current VO2max (empty state, 2 tests): `#vo2maxEmptyCount_analyticsPage` contains "Currently have 3 qualifying runs"; contains "Need at least 5 runs with HR data in the last 30 days". VO2max Trend (data exists, 2 tests): `#vo2maxTrendDataCount_analyticsPage` renders; contains "Showing 5 data points from last 90 activities". VO2max Trend (empty state, 2 tests): `#vo2maxTrendEmptyCount_analyticsPage` contains "Currently have 0"; contains "Need at least 3 runs with VO₂max estimates" + "Qualifying runs require 20+ min with HR data". EF Trend (data exists, 2 tests): `#efTrendDataCount_analyticsPage` renders; contains "Showing 5 data points from last 90 activities". EF Trend (empty state, 2 tests): `#efTrendEmptyCount_analyticsPage` contains "Currently have 0"; contains "Need at least 3 runs with EF calculated" + "Qualifying runs require 20+ min with HR data".
+- `analytics-ui.cy.js` (9 tests, UPDATED): Updated 2 empty state text assertions to match new copy from issue #170 — VO2max Trend now asserts "Need at least 3 runs with VO₂max estimates" (was "Needs 3+ runs with a VO₂max estimate"); EF Trend now asserts "Need at least 3 runs with EF calculated" (was "Needs 3+ runs with an Efficiency Factor"). All 9 tests passing.
+- Key implementation: `CurrentVo2maxStat.jsx` — `data.sample_size` shown as subtext when data exists; empty state uses `data?.sample_size ?? 0` for count. `Vo2maxTrendChart.jsx` and `EfTrendChart.jsx` — empty state replaced inline div (no longer uses `EmptyState` component) to allow ID on count element; data count subtext updated format + added ID. 6 new test IDs added to `test-ids.js` and `app-constants.json`: `vo2maxSampleSize_analyticsPage`, `vo2maxEmptyCount_analyticsPage`, `vo2maxTrendDataCount_analyticsPage`, `vo2maxTrendEmptyCount_analyticsPage`, `efTrendDataCount_analyticsPage`, `efTrendEmptyCount_analyticsPage`.
+
+---
+
+## Previous Run — 2026-06-10 Focused Run — Cadence Chart Enhancements
+
+**Date:** 2026-06-10
 **App Version:** 1.7
 **Scope:** Cadence Chart Enhancements — issue #166 (1 spec file: cadence-chart-enhancements-ui.cy.js 16 tests)
 **Tester:** QA Agent
