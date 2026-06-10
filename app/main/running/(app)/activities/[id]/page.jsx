@@ -25,7 +25,6 @@ import {
   TrendingDown,
   Minus,
   BarChart2,
-  Info,
 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
@@ -44,6 +43,7 @@ import EditGoalModal from '../components/EditGoalModal'
 import SplitsSection from '../components/SplitsSection'
 import LapsTable from '../components/LapsTable'
 import BestEffortsTable from '../components/BestEffortsTable'
+import PerceivedEffortSection from '../components/PerceivedEffortSection'
 import { getActivityCfg, tempStyle } from '../components/activityConfig'
 import { StatTile, SectionLabel } from '../components/activityShared'
 import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../../dashboard/utils/format'
@@ -364,14 +364,6 @@ export default function ActivityDetailPage() {
                           icon={Zap}
                           label="Relative Effort"
                           value={Math.round(activity.relative_effort)}
-                        />
-                      )}
-                      {activity.perceived_exertion != null && (
-                        <StatTile
-                          icon={Activity}
-                          label="RPE"
-                          value={activity.perceived_exertion}
-                          unit="/ 10"
                         />
                       )}
                       {activity.kilojoules != null && (
@@ -846,12 +838,16 @@ export default function ActivityDetailPage() {
                     })()}
 
                   <div className="border-t border-slate-100" />
+                  <PerceivedEffortSection
+                    activityId={id}
+                    initialRpe={activity.perceived_exertion ?? null}
+                    movingTimeSec={activity.moving_time_sec ?? activity.duration_sec ?? null}
+                    startedAt={activity.started_at ?? null}
+                  />
+
+                  <div className="border-t border-slate-100" />
                   <div className="rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-200/60 p-4">
-                    <AIInsightCard
-                      activityId={id}
-                      initialPerceivedEffort={activity?.perceived_effort ?? null}
-                      initialUserNote={activity?.user_note ?? null}
-                    />
+                    <AIInsightCard activityId={id} />
                   </div>
 
                   <SplitsSection splits={splits} />
