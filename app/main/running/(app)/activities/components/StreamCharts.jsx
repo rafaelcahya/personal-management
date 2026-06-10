@@ -13,7 +13,13 @@ import {
   ReferenceLine,
   ReferenceDot,
 } from 'recharts'
-import { AlertCircle, Activity } from 'lucide-react'
+import { AlertCircle, Activity, Info } from 'lucide-react'
+import {
+  Tooltip as UITooltip,
+  TooltipContent as UITooltipContent,
+  TooltipProvider as UITooltipProvider,
+  TooltipTrigger as UITooltipTrigger,
+} from '@/components/ui/tooltip'
 import { fetchActivityStreams } from '@/lib/api/running'
 
 function SectionLabel({ children }) {
@@ -110,6 +116,44 @@ function PaceChart({ data }) {
       </div>
     </div>
   )
+}
+
+// ─── Cadence benchmark bands ────────────────────────────────────────────────
+
+const CADENCE_BANDS = [
+  { label: 'Beginner', min: 140, max: 165, color: '#ef4444', opacity: 0.07 },
+  { label: 'Recreational', min: 165, max: 175, color: '#f97316', opacity: 0.07 },
+  { label: 'Semi-athlete', min: 175, max: 185, color: '#eab308', opacity: 0.07 },
+  { label: 'Elite', min: 185, max: 210, color: '#10b981', opacity: 0.07 },
+]
+
+const CADENCE_INFO =
+  'The widely cited 180 spm target comes from Jack Daniels’ observation of elite Olympic runners at race pace — not a controlled study. Optimal cadence is individual and depends on leg length and speed. A cadence below 170 spm is associated with higher ground reaction forces and injury risk.'
+
+function computeCadenceStats(data) {
+  const validPts = data.filter(
+    (d) => d.cadence_spm != null && d.cadence_spm >= 130 && d.cadence_spm <= 220
+  )
+
+  if (validPts.length < 8) return { stabilityScore: null, fatigueDrop: null, fatigueStart: null }
+
+  const values = validPts.map((d) => d.cadence_spm)
+  const mean = values.reduce((a, b) => a + b, 0) / values.length
+  const variance = values.reduce((s, v) => s + (v - mean) ** 2, 0) / values.length
+  const stddev = Math.sqrt(variance)
+  const stabilityScore = Math.max(0, Math.min(100, Math.round(100 - (stddev / mean) * 100)))
+
+  const q1End = Math.floor(validPts.length * 0.25)
+  const q3Start = Math.floor(validPts.length * 0.75)
+  const first25 = validPts.slice(0, q1End)
+  const last25 = validPts.slice(q3Start)
+  const avg1 = first25.reduce((s, d) => s + d.cadence_spm, 0) / first25.length
+  const avg4 = last25.reduce((s, d) => s + d.cadence_spm, 0) / last25.length
+  const fatigueDrop = Math.round(avg1 - avg4)
+
+  const fatigueStart = fatigueDrop > 5 ? (validPts[q3Start]?.dist_km ?? null) : null
+
+  return { stabilityScore, fatigueDrop, fatigueStart }
 }
 
 const ZONE_COLORS = ['#3b82f6', '#10b981', '#eab308', '#f97316', '#ef4444']
@@ -358,14 +402,49 @@ function ElevationChart({ data }) {
   )
 }
 
-function CadenceChart({ data }) {
+function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
+  const { stabilityScore, fatigueDrop, fatigueStart } = computeCadenceStats(data)
+  const hasFatigue = fatigueDrop != null && fatigueDrop > 5 && fatigueStart != null
+
+  const cadenceValues = data.map((d) => d.cadence_spm).filter((v) => v != null && v > 0)
+  const dataMax = cadenceValues.length ? Math.max(...cadenceValues) : 0
+  const fatigueEnd = data[data.length - 1]?.dist_km ?? null
+
   return (
     <div>
-      <SubLabel>Cadence</SubLabel>
-      <div
-        className="h-[150px] sm:h-[180px] outline-none"
-        id="streamChartCadence_activityDetailPage"
-      >
+      <div className="flex items-center gap-2 mb-1">
+        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Cadence</p>
+        {stabilityScore != null && (
+          <span
+            id={`cadenceStabilityScore_${pagePrefix}`}
+            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500"
+            title="Cadence stability score: 100 = perfectly consistent form"
+          >
+            Stability: {stabilityScore}
+          </span>
+        )}
+        <UITooltipProvider delayDuration={200}>
+          <UITooltip>
+            <UITooltipTrigger asChild>
+              <button
+                id={`cadenceInfoTrigger_${pagePrefix}`}
+                className="ml-auto text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                aria-label="Cadence info: about the 180 spm target"
+              >
+                <Info className="size-3.5" aria-hidden="true" />
+              </button>
+            </UITooltipTrigger>
+            <UITooltipContent
+              side="top"
+              className="max-w-72 text-xs leading-relaxed"
+              id={`cadenceInfoTooltip_${pagePrefix}`}
+            >
+              {CADENCE_INFO}
+            </UITooltipContent>
+          </UITooltip>
+        </UITooltipProvider>
+      </div>
+      <div className="h-[150px] sm:h-[180px] outline-none" id={`streamChartCadence_${pagePrefix}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -382,6 +461,61 @@ function CadenceChart({ data }) {
             {XAXIS}
             <YAxis width={36} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${v} spm`} />} />
+
+            {CADENCE_BANDS.map((band, i) => (
+              <ReferenceArea
+                key={i}
+                y1={band.min}
+                y2={band.max}
+                fill={band.color}
+                fillOpacity={band.opacity}
+                ifOverflow="hidden"
+                label={{
+                  value: band.label,
+                  position: 'insideLeft',
+                  fontSize: 8,
+                  fill: band.color,
+                  opacity: 0.6,
+                }}
+                id={`cadenceBand_${band.label.replace(/[^a-z]/gi, '').toLowerCase()}_${pagePrefix}`}
+              />
+            ))}
+
+            {hasFatigue && (
+              <ReferenceArea
+                x1={fatigueStart}
+                x2={fatigueEnd}
+                y1={0}
+                y2={dataMax + 10}
+                fill="#f97316"
+                fillOpacity={0.08}
+                ifOverflow="hidden"
+                id={`cadenceFatigueRegion_${pagePrefix}`}
+                label={{
+                  value: `Fatigue drop −${fatigueDrop} spm`,
+                  position: 'insideTopRight',
+                  fontSize: 8,
+                  fill: '#f97316',
+                }}
+              />
+            )}
+
+            {historicalAvgCadence != null && (
+              <ReferenceLine
+                y={historicalAvgCadence}
+                stroke="#6366f1"
+                strokeDasharray="6 3"
+                strokeWidth={1.5}
+                id={`cadenceHistoricalAvgLine_${pagePrefix}`}
+                label={{
+                  value: `Your avg: ${historicalAvgCadence} spm`,
+                  position: 'insideTopRight',
+                  fontSize: 9,
+                  fill: '#6366f1',
+                }}
+              />
+            )}
+
             <Area
               type="monotone"
               dataKey="cadence_spm"
@@ -396,6 +530,23 @@ function CadenceChart({ data }) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
+
+      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+        {CADENCE_BANDS.map((band) => (
+          <div key={band.label} className="flex items-center gap-1.5">
+            <span
+              className="inline-block w-2.5 h-2.5 rounded-sm shrink-0"
+              style={{ backgroundColor: band.color, opacity: 0.7 }}
+            />
+            <span className="text-[10px] text-slate-400">
+              {band.label}{' '}
+              <span className="tabular-nums text-slate-300">
+                {band.min}–{band.max} spm
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -407,6 +558,7 @@ export default function StreamCharts({
   historicalAvgHr,
   maxHr,
   userMaxHr,
+  historicalAvgCadence,
   pagePrefix = 'activityDetailPage',
 }) {
   const [loading, setLoading] = useState(true)
@@ -520,7 +672,13 @@ export default function StreamCharts({
           />
         )}
         {hasAlt && <ElevationChart data={thinned} />}
-        {hasCadence && <CadenceChart data={thinned} />}
+        {hasCadence && (
+          <CadenceChart
+            data={thinned}
+            historicalAvgCadence={historicalAvgCadence ?? null}
+            pagePrefix={pagePrefix}
+          />
+        )}
       </div>
     </div>
   )
