@@ -38,7 +38,6 @@ import {
   fetchSubjectiveHealthByDate,
 } from '@/lib/api/running'
 import StreamCharts from '../components/StreamCharts'
-import HrZonesChart from '../components/HrZonesChart'
 import AIInsightCard from '../components/AIInsightCard'
 import MediaCarousel from '../components/MediaCarousel'
 import EditGoalModal from '../components/EditGoalModal'
@@ -860,9 +859,14 @@ export default function ActivityDetailPage() {
                   <LapsTable laps={laps} />
 
                   <div className="border-t border-slate-100" />
-                  <StreamCharts activityId={id} zones={activity.zones} />
-                  <div className="border-t border-slate-100" />
-                  <HrZonesChart zones={activity.zones} />
+                  <StreamCharts
+                    activityId={id}
+                    zones={activity.zones}
+                    avgHr={activity.avg_hr ?? null}
+                    historicalAvgHr={activity.historical_avg_hr ?? null}
+                    maxHr={activity.max_hr ?? null}
+                    userMaxHr={activity.user_max_hr ?? null}
+                  />
                 </div>
               </div>
             </>

@@ -345,7 +345,6 @@
       "stream_chart_hr": "streamChartHr_activityDetailPage",
       "stream_chart_elevation": "streamChartElevation_activityDetailPage",
       "hr_zones_section": "hrZonesSection_activityDetailPage",
-      "hr_zones_empty": "hrZonesEmpty_activityDetailPage",
       "ai_insight_card": "aiInsightCard_activityDetailPage",
       "ai_insight_loading": "aiInsightLoading_activityDetailPage",
       "ai_insight_empty": "aiInsightEmpty_activityDetailPage",
@@ -386,7 +385,11 @@
       "splits_bar_chart": "splitsBarChart_activityDetailPage",
       "splits_pacing_chip": "splitsPacingChip_activityDetailPage",
       "splits_pace_fade": "splitsPaceFade_activityDetailPage",
-      "splits_cardiac_drift": "cardiacDrift_activityDetailPage"
+      "splits_cardiac_drift": "cardiacDrift_activityDetailPage",
+      "hr_avg_line": "hrAvgLine_activityDetailPage",
+      "hr_historical_avg_line": "hrHistoricalAvgLine_activityDetailPage",
+      "hr_peak_marker": "hrPeakMarker_activityDetailPage",
+      "hr_time_in_zone_section": "hrTimeInZoneSection_activityDetailPage"
     },
     "running_dashboard": {
       "page": "dashboardPage",
@@ -529,7 +532,12 @@
       "splits_bar_chart": "splitsBarChart_raceDetailPage",
       "splits_pacing_chip": "splitsPacingChip_raceDetailPage",
       "splits_pace_fade": "splitsPaceFade_raceDetailPage",
-      "splits_cardiac_drift": "cardiacDrift_raceDetailPage"
+      "splits_cardiac_drift": "cardiacDrift_raceDetailPage",
+      "hr_zones_section": "hrZonesSection_raceDetailPage",
+      "hr_avg_line": "hrAvgLine_raceDetailPage",
+      "hr_historical_avg_line": "hrHistoricalAvgLine_raceDetailPage",
+      "hr_peak_marker": "hrPeakMarker_raceDetailPage",
+      "hr_time_in_zone_section": "hrTimeInZoneSection_raceDetailPage"
     },
     "running_analytics": {
       "page": "analyticsPage",
