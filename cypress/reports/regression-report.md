@@ -1,5 +1,33 @@
 # Regression Testing Report
 
+**Date:** 2026-06-10
+**App Version:** 1.7
+**Scope:** Personal Bests Table — issue #174 (2 spec files: personal-bests-api.cy.js 7 tests, personal-bests-ui.cy.js 19 tests)
+**Tester:** QA Agent
+
+## Summary (2026-06-10 Focused Run — Personal Bests Table)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 26          | 26     | 0      | 0       | **100%**         |
+
+### Personal Bests Table — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/analytics/personal-bests-api.cy.js                             | 7     | 7      | 0      | 0       | ✅ PASS  |
+| 2  | running/analytics/personal-bests-ui.cy.js                              | 19    | 19     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **26** | **26** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `personal-bests-api.cy.js` (7 tests): Auth guard (1) — GET returns 401 when unauthenticated. Authenticated response shape (3) — 200 with top-level data object + message:'OK'; data contains all 5 distance keys (1 mile, 5K, 10K, 15K, Half-Marathon) each as array; each distance array has at most 5 entries. Entry field shape (3) — entry has rank (number), elapsed_time_sec (number), date, activity_id, pace_sec_per_km keys; top entry rank=1; entries within a distance are ordered rank ascending.
+- `personal-bests-ui.cy.js` (19 tests): Auth guard (1) — unauthenticated redirects to /login. Loading state (1) — skeleton visible while personal-bests endpoint is delayed 3s. Table renders with data (10) — section/table IDs visible, 5 distance column headers present, rank-1 row for 5K renders, formatted time 22:30 and pace 4:30 /km shown, date 15 Jan 2026 visible, rank-2 row rendered, 1-mile time 7:00 correct, Half-Marathon 1:45:00 (h:mm:ss format). Empty distances (3) — table still renders when all distances empty, em-dash placeholder shown, no personalBestsRow elements. Error state (3) — personalBestsError renders with "Failed to load personal bests" message, no table in error state. Row click (1) — clicking row navigates to /main/running/activities/[activity_id].
+- Fixes applied to test files: `before()` → `beforeEach()` in both authenticated API describe blocks (Cypress testIsolation clears cookies between tests); `Cypress.on('uncaught:exception')` handler added for ServiceWorker redirect errors (same pattern as settings-ui.cy.js); `cy.on('uncaught:exception', () => false)` added locally in row-click `it()` block to suppress activity-page load errors during navigation. Fix applied to component: `setError(err.message || ...)` → `setError('Failed to load personal bests')` to prevent internal fetch error message leaking to UI.
+
+---
+
+## Previous Run — 2026-06-09 Focused Run — Map Style Toggle
+
 **Date:** 2026-06-09
 **App Version:** 1.7
 **Scope:** Map Style Toggle — issue #172 (1 spec file: map-style-toggle-ui.cy.js — 14 tests)

@@ -109,7 +109,8 @@
     },
     "running_analytics": {
       "vo2max_stat": "/api/running/v1/analytics/vo2max-stat",
-      "target_effort": "/api/running/v1/analytics/target-effort"
+      "target_effort": "/api/running/v1/analytics/target-effort",
+      "personal_bests": "/api/running/v1/analytics/personal-bests"
     },
     "running_user_profile": {
       "get": "/api/running/v1/user/profile",
@@ -550,7 +551,12 @@
       "vo2max_projection_chart": "vo2maxProjectionChart_analyticsPage",
       "set_goal_btn": "setGoalBtn_analyticsPage",
       "set_new_goal_btn": "setNewGoalBtn_analyticsPage",
-      "vo2max_sex_missing_hint": "vo2maxSexMissingHint_analyticsPage"
+      "vo2max_sex_missing_hint": "vo2maxSexMissingHint_analyticsPage",
+      "personal_bests_section": "personalBestsSection_analyticsPage",
+      "personal_bests_loading": "personalBestsLoading_analyticsPage",
+      "personal_bests_error": "personalBestsError_analyticsPage",
+      "personal_bests_table": "personalBestsTable_analyticsPage",
+      "personal_bests_row": "personalBestsRow_{distance}_{rank}_analyticsPage"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",
