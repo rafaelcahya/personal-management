@@ -1358,50 +1358,6 @@ Layout dari atas ke bawah:
 
 ---
 
-### 10.10 Compare Runs Selector (ActivitySelector)
-
-When the user selects "Compare with another run" as the focus type in the AI Coach card, a selector opens that lets them pick another activity. The selected activity is sent alongside the current one when generating the comparison insight.
-
-**How it works:**
-
-- Trigger: user selects "Compare with another run" focus → selector popover opens
-- Fetches up to 100 recent activities via `fetchActivities({ limit: 100, sort: 'newest' })`
-- API returns a paginated envelope: `{ data: [...], total, page, limit }` — always read from `result.data`
-- List is grouped by month, searchable by activity name or date
-- Selected activity is passed as `compare_activity` in the generate request body
-
-**UI states:**
-
-| State         | What the user sees                                           |
-| ------------- | ------------------------------------------------------------ |
-| Idle (closed) | Compare trigger button only                                  |
-| Loading       | List area shows spinner while fetching                       |
-| Populated     | Activities listed, grouped by month, searchable              |
-| Selected      | Chosen activity shown as a chip/pill; clear button available |
-| Cleared       | Chip removed; selector returns to idle                       |
-| Error         | Empty state with "No runs found" message; no crash           |
-
-**Acceptance criteria:**
-
-- GIVEN I open "Compare with another run" WHEN activities exist THEN runs are listed grouped by month (not "No matching runs found")
-- GIVEN the selector is open WHEN I type in the search field THEN only matching activities by name or date are shown
-- GIVEN I select a run WHEN I generate an insight THEN the request includes `compare_activity` with the selected activity id
-- GIVEN a run is selected WHEN I click the clear button THEN the selection is removed and `compare_activity` is excluded from the next generate request
-- GIVEN the activity fetch fails WHEN the selector opens THEN an empty state is shown and the page does not crash
-
-**Test IDs:**
-
-| ID                                           | Element                        |
-| -------------------------------------------- | ------------------------------ |
-| `aiInsightCompareSection_activityDetailPage` | Compare section wrapper        |
-| `aiInsightCompareTrigger_activityDetailPage` | Button that opens the selector |
-| `aiInsightComparePopover_activityDetailPage` | Popover/dropdown container     |
-| `aiInsightCompareSheet_activityDetailPage`   | Sheet variant on mobile        |
-| `aiInsightCompareCommand_activityDetailPage` | Search command input           |
-| `aiInsightComparePill_activityDetailPage`    | Selected activity chip/pill    |
-
----
-
 ## 10.11 Injury & Sports Medicine AI Coach
 
 ### Overview
