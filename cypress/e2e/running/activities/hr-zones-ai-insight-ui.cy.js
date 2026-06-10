@@ -123,6 +123,10 @@ const visitAndWait = () => {
 
 describe('Activity Detail (HR Zones + AI Insight) — Auth guard', () => {
   it('unauthenticated visit redirects to /login', () => {
+    // ServiceWorker registration fails during redirect — suppress to keep test focused on auth
+    cy.on('uncaught:exception', (err) => {
+      if (err.message.includes('ServiceWorker') || err.message.includes('sw.js')) return false
+    })
     cy.clearAllCookies()
     cy.clearAllLocalStorage()
     cy.visit(DETAIL_URL, { failOnStatusCode: false })
@@ -130,82 +134,76 @@ describe('Activity Detail (HR Zones + AI Insight) — Auth guard', () => {
   })
 })
 
-describe('HrZonesChart — empty state when no zone data', () => {
-  beforeEach(() => {
-    cy.setupApiAuthCookies()
-    stubRtUsers()
-    // Activity with zones: null (default)
-    stubActivity()
-    stubDashboard()
-    stubRaceLog()
-    stubStreams()
-    stubInsight({ data: [] })
-    visitAndWait()
-  })
-
-  it('hrZonesSection is always rendered', () => {
-    cy.get(`#${IDS.hr_zones_section}`).should('exist')
-  })
-
-  it('shows "Zone data not available" when activity.zones is null', () => {
-    cy.get(`#${IDS.hr_zones_empty}`).should('exist').and('contain.text', 'Zone data not available')
-  })
-
-  it('does not render zone bar rows when zones is null', () => {
-    // No percentage text should appear in the section
-    cy.get(`#${IDS.hr_zones_section}`).should('not.contain.text', '%')
-  })
-})
-
-describe('HrZonesChart — renders Z1-Z5 rows when zone data is present', () => {
+describe('HR time-in-zone — not rendered when stream has no HR data', () => {
   beforeEach(() => {
     cy.setupApiAuthCookies()
     stubRtUsers()
     stubActivity({ zones: hrZonesData })
     stubDashboard()
     stubRaceLog()
-    stubStreams()
+    stubStreams() // has_hr: false — HR chart won't render
     stubInsight({ data: [] })
     visitAndWait()
   })
 
-  it('does not show empty state when zones are present', () => {
-    cy.get(`#${IDS.hr_zones_empty}`).should('not.exist')
+  it('hrZonesSection is not rendered when stream has no HR data', () => {
+    cy.get(`#${IDS.hr_zones_section}`).should('not.exist')
+  })
+})
+
+describe('HR time-in-zone — renders Z1-Z5 rows when stream has HR data and zones', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+    stubRtUsers()
+    stubActivity({ zones: hrZonesData })
+    stubDashboard()
+    stubRaceLog()
+    cy.intercept('GET', `/api/running/v1/activities/*/streams*`, {
+      statusCode: 200,
+      body: {
+        meta: {
+          has_hr: true,
+          has_cadence: false,
+          has_altitude: false,
+          total_points: 3,
+          returned_points: 3,
+          resolution: '10s',
+        },
+        data: [
+          { dist_m: 0, hr: 140, pace: 360 },
+          { dist_m: 2500, hr: 155, pace: 350 },
+          { dist_m: 5000, hr: 148, pace: 355 },
+        ],
+      },
+    }).as('getStreamsHr')
+    stubInsight({ data: [] })
+    visitAndWait()
   })
 
-  it('renders 5 zone rows', () => {
-    // Each zone row has a label like "Z1 Recovery", "Z2 Aerobic", etc.
+  it('renders hrZonesSection when HR stream and zone data are present', () => {
+    cy.get(`#${IDS.hr_zones_section}`).should('exist')
+  })
+
+  it('renders 5 zone label rows', () => {
     cy.get(`#${IDS.hr_zones_section}`).within(() => {
       cy.contains('Z1 Recovery').should('exist')
       cy.contains('Z2 Aerobic').should('exist')
       cy.contains('Z3 Tempo').should('exist')
       cy.contains('Z4 Threshold').should('exist')
-      cy.contains('Z5 VO2max').should('exist')
-    })
-  })
-
-  it('renders HR range labels for each zone', () => {
-    cy.get(`#${IDS.hr_zones_section}`).within(() => {
-      // Z1 should say "< 114 bpm" and Z5 "> 191 bpm"
-      cy.contains('< 114 bpm').should('exist')
-      cy.contains('> 191 bpm').should('exist')
-      cy.contains('115–152 bpm').should('exist')
+      cy.contains('Z5 VO₂max').should('exist')
     })
   })
 
   it('renders percentage and duration for each zone', () => {
-    // Total time = 600+1800+2100+600+300 = 5400
-    // Z2: 1800/5400 = 33%
+    // Total = 600+1800+2100+600+300 = 5400; Z2: 1800/5400 = 33%, Z3: 2100/5400 = 39%
     cy.get(`#${IDS.hr_zones_section}`).within(() => {
       cy.contains('33%').should('exist')
-      // Z3: 2100/5400 = 39%
       cy.contains('39%').should('exist')
     })
   })
 
-  it('renders a filled bar for each zone (has style with backgroundColor)', () => {
+  it('renders a filled bar for each zone', () => {
     cy.get(`#${IDS.hr_zones_section}`).within(() => {
-      // Each zone bar has an inline backgroundColor style
       cy.get('div[style*="background-color"]').should('have.length', 5)
     })
   })
@@ -307,18 +305,19 @@ describe('AIInsightCard — clicking generate triggers POST and shows pending st
 
     cy.get(`#${IDS.ai_insight_pending}`).should('be.visible')
     cy.get(`#${IDS.ai_insight_pending}`).within(() => {
-      cy.contains('Analyzing your run...').should('be.visible')
-      cy.contains('Usually').should('be.visible')
+      // Initial status copy is "Reading your run data..." (pendingElapsed < 5s)
+      cy.get(`#${IDS.ai_insight_pending_status}`).should('be.visible')
+      cy.get(`#${IDS.ai_insight_pending_bar}`).should('exist')
     })
   })
 
-  it('pending state shows a Refresh button', () => {
+  it('pending state shows progress bar and skeleton content', () => {
     cy.get(`[id^="${IDS.ai_insight_generate_btn}_"]`).first().click()
     cy.wait('@postGenerate')
 
     cy.get(`#${IDS.ai_insight_pending}`).within(() => {
-      // Pending state uses aiInsightRefresh — distinct from aiInsightRetry in error state
-      cy.get(`#${IDS.ai_insight_refresh}`).should('be.visible').and('contain.text', 'Refresh')
+      cy.get(`#${IDS.ai_insight_pending_bar}`).should('exist')
+      cy.get(`#${IDS.ai_insight_pending_skeleton}`).should('exist')
     })
   })
 })

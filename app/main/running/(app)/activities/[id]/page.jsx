@@ -38,11 +38,10 @@ import {
   fetchSubjectiveHealthByDate,
 } from '@/lib/api/running'
 import StreamCharts from '../components/StreamCharts'
-import HrZonesChart from '../components/HrZonesChart'
 import AIInsightCard from '../components/AIInsightCard'
 import MediaCarousel from '../components/MediaCarousel'
 import EditGoalModal from '../components/EditGoalModal'
-import SplitsTable from '../components/SplitsTable'
+import SplitsSection from '../components/SplitsSection'
 import LapsTable from '../components/LapsTable'
 import BestEffortsTable from '../components/BestEffortsTable'
 import { getActivityCfg, tempStyle } from '../components/activityConfig'
@@ -224,7 +223,7 @@ export default function ActivityDetailPage() {
             <>
               <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden pb-6 pt-0 lg:pt-6">
                 {/* Carousel: 80% of card, centered */}
-                <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden relative z-0 isolate">
+                <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden">
                   <MediaCarousel polyline={activity.summary_polyline} photos={photos} />
                 </div>
 
@@ -855,14 +854,20 @@ export default function ActivityDetailPage() {
                     />
                   </div>
 
-                  <SplitsTable splits={splits} />
+                  <SplitsSection splits={splits} />
                   <BestEffortsTable bestEfforts={bestEfforts} />
                   <LapsTable laps={laps} />
 
                   <div className="border-t border-slate-100" />
-                  <StreamCharts activityId={id} zones={activity.zones} />
-                  <div className="border-t border-slate-100" />
-                  <HrZonesChart zones={activity.zones} />
+                  <StreamCharts
+                    activityId={id}
+                    zones={activity.zones}
+                    avgHr={activity.avg_hr ?? null}
+                    historicalAvgHr={activity.historical_avg_hr ?? null}
+                    maxHr={activity.max_hr ?? null}
+                    userMaxHr={activity.user_max_hr ?? null}
+                    historicalAvgCadence={activity.historical_avg_cadence ?? null}
+                  />
                 </div>
               </div>
             </>

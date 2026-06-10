@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { patchActivitySchema } from '@/schemas/runningManualEntry'
+import { computeAndSaveDerivedMetrics } from '@/lib/services/running/metrics'
 
 export async function GET(_request, { params }) {
   try {
@@ -24,7 +25,7 @@ export async function GET(_request, { params }) {
     const { data: activity, error: activityError } = await supabase
       .from('rt_activities')
       .select(
-        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, description, weather_summary, created_at, name, avg_watts, weighted_avg_watts, device_watts, summary_polyline, gear_id, avg_temp_c, pr_count, workout_type, relative_effort, max_pace_sec_per_km, device_name, kilojoules, elev_high_m, elev_low_m, achievement_count, kudos_count, zones, aerobic_decoupling, efficiency_factor, estimated_vo2max, max_watts, commute, trainer, has_heartrate, manual'
+        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, description, weather_summary, created_at, name, avg_watts, weighted_avg_watts, device_watts, summary_polyline, gear_id, avg_temp_c, pr_count, workout_type, relative_effort, device_name, kilojoules, elev_high_m, elev_low_m, achievement_count, kudos_count, zones, aerobic_decoupling, efficiency_factor, estimated_vo2max, max_watts, commute, trainer, has_heartrate, manual'
       )
       .eq('id', id)
       .eq('user_id', user.id)
@@ -37,6 +38,22 @@ export async function GET(_request, { params }) {
         { error: 'Not found', message: 'Activity not found' },
         { status: 404 }
       )
+    }
+
+    const metricsIncomplete =
+      activity.aerobic_decoupling == null ||
+      activity.efficiency_factor == null ||
+      activity.estimated_vo2max == null
+    const gatePassed =
+      (activity.moving_time_sec ?? activity.duration_sec ?? 0) > 1200 && activity.avg_hr != null
+
+    if (metricsIncomplete && gatePassed) {
+      try {
+        const { updated, values } = await computeAndSaveDerivedMetrics(id, user.id)
+        if (updated) Object.assign(activity, values)
+      } catch (computeErr) {
+        console.error('[running/activities/:id] lazy compute failed', computeErr)
+      }
     }
 
     let gear = null
@@ -100,9 +117,71 @@ export async function GET(_request, { params }) {
       efficiency_factor_30d_avg = parseFloat((sum / efRows.length).toFixed(4))
     }
 
+    const { data: userProfile } = await supabase
+      .from('rt_users')
+      .select('max_hr')
+      .eq('id', user.id)
+      .maybeSingle()
+    const user_max_hr = userProfile?.max_hr ?? null
+
+    const { data: hrRows, error: hrError } = await supabase
+      .from('rt_activities')
+      .select('avg_hr, moving_time_sec, duration_sec')
+      .eq('user_id', user.id)
+      .not('avg_hr', 'is', null)
+      .neq('id', id)
+      .in('activity_type', ['Run', 'TrailRun', 'VirtualRun'])
+
+    if (hrError) throw hrError
+
+    let historical_avg_hr = null
+    if (hrRows && hrRows.length > 0) {
+      let weightedSum = 0
+      let totalDuration = 0
+      for (const row of hrRows) {
+        const dur = row.moving_time_sec ?? row.duration_sec ?? 0
+        if (dur > 0) {
+          weightedSum += Number(row.avg_hr) * dur
+          totalDuration += dur
+        }
+      }
+      if (totalDuration > 0) historical_avg_hr = Math.round(weightedSum / totalDuration)
+    }
+
+    const { data: cadenceRows, error: cadenceError } = await supabase
+      .from('rt_activities')
+      .select('avg_cadence, moving_time_sec, duration_sec')
+      .eq('user_id', user.id)
+      .not('avg_cadence', 'is', null)
+      .neq('id', id)
+      .in('activity_type', ['Run', 'TrailRun', 'VirtualRun'])
+
+    if (cadenceError) throw cadenceError
+
+    let historical_avg_cadence = null
+    if (cadenceRows && cadenceRows.length > 0) {
+      let weightedSum = 0
+      let totalDuration = 0
+      for (const row of cadenceRows) {
+        const dur = row.moving_time_sec ?? row.duration_sec ?? 0
+        if (dur > 0) {
+          weightedSum += Number(row.avg_cadence) * dur
+          totalDuration += dur
+        }
+      }
+      if (totalDuration > 0) historical_avg_cadence = Math.round(weightedSum / totalDuration) * 2
+    }
+
     return NextResponse.json(
       {
-        activity: { ...activity, gear, efficiency_factor_30d_avg },
+        activity: {
+          ...activity,
+          gear,
+          efficiency_factor_30d_avg,
+          historical_avg_hr,
+          historical_avg_cadence,
+          user_max_hr,
+        },
         splits: splits ?? [],
         laps: laps ?? [],
         best_efforts: bestEfforts ?? [],
