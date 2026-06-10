@@ -2,6 +2,32 @@
 
 **Date:** 2026-06-10
 **App Version:** 1.7
+**Scope:** Splits Bar Chart — issue #164 (1 spec file: splits-bar-chart-ui.cy.js 24 tests)
+**Tester:** QA Agent
+
+## Summary (2026-06-10 Focused Run — Splits Bar Chart)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 24          | 24     | 0      | 0       | **100%**         |
+
+### Splits Bar Chart — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/activities/splits-bar-chart-ui.cy.js                           | 24    | 24     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **24** | **24** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `splits-bar-chart-ui.cy.js` (24 tests, 8 suites): A — no splits → `#splitsSection_activityDetailPage` absent. B (5 tests) — default bar view: section/chart render, Bar button `aria-pressed=true`, Table button `aria-pressed=false`, Pace metric has `bg-violet-600` class. C (2 tests) — HR tab: visible when splits have `avg_hr`, absent when all null. D (3 tests) — view toggle: Table hides chart, shows Pace/Time headers, Bar restores chart. E (3 tests) — pacing chip: Negative split (2nd half ≥1% faster), Positive split (≥3% slower) + pace fade %, Even split. F (2 tests) — partial split: chart renders, Partial legend appears. G (3 tests) — cardiac drift: visible in bar view, visible in table view, shows `+15 bpm`. H (4 tests) — metric tabs: Time/GAP/EF/HR activate correctly.
+- New component `SplitsSection.jsx` replaces `SplitsTable` in both `activities/[id]/page.jsx` and `race-log/components/ActivitySection.jsx`. GAP computed via Minetti curve: `adj = gradePct >= 0 ? gradePct * 2.5 : Math.max(-10, gradePct) * 1.5`. EF = `(1000/pace) / hr`. Pacing strategy from first-half vs second-half avg of full splits (≥900m). Best bar amber, worst bar red, partial bar 0.4 opacity.
+
+---
+
+## Previous Run — 2026-06-10 Focused Run — Personal Bests Table
+
+**Date:** 2026-06-10
+**App Version:** 1.7
 **Scope:** Personal Bests Table — issue #174 (2 spec files: personal-bests-api.cy.js 7 tests, personal-bests-ui.cy.js 19 tests)
 **Tester:** QA Agent
 

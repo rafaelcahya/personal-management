@@ -1,6 +1,6 @@
 # Test Status Report
 
-**Last Updated:** 2026-06-10 (Personal Bests Table issue #174 — personal-bests-api.cy.js 7/7 passing 100%, personal-bests-ui.cy.js 19/19 passing 100%; Running Tracker - Analytics +26 tests, now 124 total) | 2026-06-09 (Map Style Toggle issue #172 — map-style-toggle-ui.cy.js 14/14 passing 100%; Running Tracker - Activities +14 tests, now 238 total) | 2026-06-09 (Lazy Compute Derived Metrics issue #168 — lazy-compute-metrics-api.cy.js 5/5 active passing, 2 pending data-dependent; Running Tracker - Activities +7 tests) | 2026-06-06 (Injury AI Roles issue #160 — injury-coach-api.cy.js 6/6, injury-coach-ui.cy.js 12/12, symptom-log-api.cy.js 6/6 — all 24/24 passing 100%; NEW module Running Tracker - Injury AI added) | 2026-06-06 (Web Push Notifications issue #135 — settings-ui.cy.js +4 tests 21/21 passing, push-subscription-api.cy.js NEW 4/4 passing 100%; Running Tracker - Settings now 6 features 25 tests) | 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%)
+**Last Updated:** 2026-06-10 (Splits Bar Chart issue #164 — splits-bar-chart-ui.cy.js 24/24 passing 100%; Running Tracker - Activities +24 tests, now 262 total) | 2026-06-10 (Personal Bests Table issue #174 — personal-bests-api.cy.js 7/7 passing 100%, personal-bests-ui.cy.js 19/19 passing 100%; Running Tracker - Analytics +26 tests, now 124 total) | 2026-06-09 (Map Style Toggle issue #172 — map-style-toggle-ui.cy.js 14/14 passing 100%; Running Tracker - Activities +14 tests, now 238 total) | 2026-06-09 (Lazy Compute Derived Metrics issue #168 — lazy-compute-metrics-api.cy.js 5/5 active passing, 2 pending data-dependent; Running Tracker - Activities +7 tests) | 2026-06-06 (Injury AI Roles issue #160 — injury-coach-api.cy.js 6/6, injury-coach-ui.cy.js 12/12, symptom-log-api.cy.js 6/6 — all 24/24 passing 100%; NEW module Running Tracker - Injury AI added) | 2026-06-06 (Web Push Notifications issue #135 — settings-ui.cy.js +4 tests 21/21 passing, push-subscription-api.cy.js NEW 4/4 passing 100%; Running Tracker - Settings now 6 features 25 tests) | 2026-06-05 (Next Race Widget issue #153 — dashboard-ui-extended.cy.js 14/14 passing 100%; NextRace widget updated) | 2026-06-05 (VO2max Target Effort issue #137 — 3 new spec files, 54/54 passing 100%)
 **App Version:** 1.7
 
 > Report ini menampilkan status testing per fitur: kapan terakhir ditest, jumlah test case manual, dan jumlah test case automation.
@@ -66,13 +66,13 @@
 | Running Tracker - Manual Entry  | 2026-05-23   | 0      | 21         | 21    |
 | Running Tracker - Dashboard     | 2026-06-05   | 0      | 95         | 95    |
 | Running Tracker - Race Log      | 2026-06-05   | 0      | 147        | 147   |
-| Running Tracker - Activities    | 2026-06-09   | 0      | 238        | 238   |
+| Running Tracker - Activities    | 2026-06-10   | 0      | 262        | 262   |
 | Running Tracker - Analytics     | 2026-06-10   | 0      | 124        | 124   |
 | Running Tracker - AI Coach Page | 2026-06-04   | 0      | 56         | 56    |
 | Running Tracker - Settings      | 2026-06-06   | 0      | 25         | 25    |
 | Running Tracker - Injury AI     | 2026-06-06   | 0      | 24         | 24    |
 | Shared - Sidebar                | 2026-05-29   | 0      | 8          | 8     |
-| **Total**                       |              | **1**  | **2,438**  | **2,439** |
+| **Total**                       |              | **1**  | **2,462**  | **2,463** |
 
 ---
 
@@ -275,6 +275,7 @@ Fitur berikut belum ditest lebih dari **30 hari** (sejak 2026-05-10):
 | 12 | Compare Runs selector fix — envelope bug regression  | running/activities/compare-runs-ui.cy.js                    | 2026-06-03  | 0      | 19         | ✅ 19/19 pass  |
 | 13 | Lazy compute derived metrics — gate, shape, idempotency | running/activities/lazy-compute-metrics-api.cy.js        | 2026-06-09  | 0      | 7          | ✅ 5/5 active pass (2 pending: data-dependent) |
 | 14 | Map Style Toggle — CartoDB Voyager + Satellite        | running/activities/map-style-toggle-ui.cy.js                | 2026-06-09  | 0      | 14         | ✅ 14/14 pass  |
+| 15 | Splits Bar Chart — GAP, EF, pacing insights           | running/activities/splits-bar-chart-ui.cy.js                | 2026-06-10  | 0      | 24         | ✅ 24/24 pass  |
 
 ---
 

@@ -374,7 +374,19 @@
       "ef_trend_arrow": "efTrendArrow",
       "map_style_toggle": "mapStyleToggle_activityDetailPage",
       "map_style_map_btn": "mapStyleMap_activityDetailPage",
-      "map_style_satellite_btn": "mapStyleSatellite_activityDetailPage"
+      "map_style_satellite_btn": "mapStyleSatellite_activityDetailPage",
+      "splits_section": "splitsSection_activityDetailPage",
+      "splits_view_bar_btn": "splitsViewBarBtn_activityDetailPage",
+      "splits_view_table_btn": "splitsViewTableBtn_activityDetailPage",
+      "splits_metric_pace": "splitsMetricPace_activityDetailPage",
+      "splits_metric_time": "splitsMetricTime_activityDetailPage",
+      "splits_metric_hr": "splitsMetricHR_activityDetailPage",
+      "splits_metric_gap": "splitsMetricGAP_activityDetailPage",
+      "splits_metric_ef": "splitsMetricEF_activityDetailPage",
+      "splits_bar_chart": "splitsBarChart_activityDetailPage",
+      "splits_pacing_chip": "splitsPacingChip_activityDetailPage",
+      "splits_pace_fade": "splitsPaceFade_activityDetailPage",
+      "splits_cardiac_drift": "cardiacDrift_activityDetailPage"
     },
     "running_dashboard": {
       "page": "dashboardPage",
@@ -505,7 +517,19 @@
       "detail_page": "raceDetailPage",
       "edit_btn": "editRaceBtn_raceDetailPage",
       "edit_modal": "editRaceModal_raceDetailPage",
-      "edit_save_btn": "editRaceSaveBtn_raceDetailPage"
+      "edit_save_btn": "editRaceSaveBtn_raceDetailPage",
+      "splits_section": "splitsSection_raceDetailPage",
+      "splits_view_bar_btn": "splitsViewBarBtn_raceDetailPage",
+      "splits_view_table_btn": "splitsViewTableBtn_raceDetailPage",
+      "splits_metric_pace": "splitsMetricPace_raceDetailPage",
+      "splits_metric_time": "splitsMetricTime_raceDetailPage",
+      "splits_metric_hr": "splitsMetricHR_raceDetailPage",
+      "splits_metric_gap": "splitsMetricGAP_raceDetailPage",
+      "splits_metric_ef": "splitsMetricEF_raceDetailPage",
+      "splits_bar_chart": "splitsBarChart_raceDetailPage",
+      "splits_pacing_chip": "splitsPacingChip_raceDetailPage",
+      "splits_pace_fade": "splitsPaceFade_raceDetailPage",
+      "splits_cardiac_drift": "cardiacDrift_raceDetailPage"
     },
     "running_analytics": {
       "page": "analyticsPage",
