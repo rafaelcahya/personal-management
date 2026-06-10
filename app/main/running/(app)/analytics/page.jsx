@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { BarChart2, TrendingUp, Zap, Activity, Trophy } from 'lucide-react'
+import { BarChart2, TrendingUp, Zap, Activity } from 'lucide-react'
 import {
   fetchActivities,
   fetchPerformanceTrends,
@@ -23,7 +23,6 @@ import EfTrendChart from './components/EfTrendChart'
 import RacePredictor from './components/RacePredictor'
 import AnalyticsAICard from './components/AnalyticsAICard'
 import Vo2maxTargetEffortSection from './components/Vo2maxTargetEffortSection'
-import PersonalBestsTable from './components/PersonalBestsTable'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -221,15 +220,6 @@ export default function AnalyticsPage() {
           >
             <RacePredictor activities={activities} />
             <AnalyticsAICard section="race_predictor" isPageStale={isPageStale} />
-          </Section>
-
-          <Section
-            id="personalBestsSection_analyticsPage"
-            title="Personal Bests"
-            description="Your top 5 fastest times for key distances. Click any row to see the activity where you recorded that effort."
-            icon={Trophy}
-          >
-            <PersonalBestsTable />
           </Section>
         </>
       )}

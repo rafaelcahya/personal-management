@@ -20,13 +20,14 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import StreamCharts from '../../activities/components/StreamCharts'
+import HrZonesChart from '../../activities/components/HrZonesChart'
 import AIInsightCard from '../../activities/components/AIInsightCard'
 import DistanceBreakdown from './DistanceBreakdown'
 import { getActivityCfg, tempStyle } from './activityConfig'
 import { StatTile, SectionLabel } from './activityShared'
 import MediaCarousel from './MediaCarousel'
 import HealthContext from './HealthContext'
-import SplitsSection from '../../activities/components/SplitsSection'
+import SplitsTable from './SplitsTable'
 import BestEffortsTable from './BestEffortsTable'
 import LapsTable from './LapsTable'
 import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../../dashboard/utils/format'
@@ -56,7 +57,7 @@ export default function ActivitySection({
 
   return (
     <>
-      <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden">
+      <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden relative z-0 isolate">
         <MediaCarousel polyline={activity.summary_polyline} photos={photos} />
       </div>
 
@@ -356,21 +357,14 @@ export default function ActivitySection({
           <AIInsightCard activityId={activityId} />
         </div>
 
-        <SplitsSection splits={splits} pagePrefix="raceDetailPage" />
+        <SplitsTable splits={splits} />
         <BestEffortsTable bestEfforts={bestEfforts} />
         <LapsTable laps={laps} />
 
         <div className="border-t border-slate-100" />
-        <StreamCharts
-          activityId={activityId}
-          zones={activity.zones}
-          avgHr={activity.avg_hr ?? null}
-          historicalAvgHr={activity.historical_avg_hr ?? null}
-          maxHr={activity.max_hr ?? null}
-          userMaxHr={activity.user_max_hr ?? null}
-          historicalAvgCadence={activity.historical_avg_cadence ?? null}
-          pagePrefix="raceDetailPage"
-        />
+        <StreamCharts activityId={activityId} zones={activity.zones} />
+        <div className="border-t border-slate-100" />
+        <HrZonesChart zones={activity.zones} />
       </div>
     </>
   )

@@ -34,11 +34,9 @@ export default function CurrentVo2maxStat() {
   const { data } = state
 
   if (!data || data.empty) {
-    const count = data?.sample_size ?? 0
     return (
-      <p id="vo2maxEmptyCount_analyticsPage" className="text-sm text-slate-400">
-        Need at least 5 runs with HR data in the last 30 days. Currently have {count} qualifying run
-        {count !== 1 ? 's' : ''}.
+      <p className="text-sm text-slate-400">
+        Need more HR runs to calculate your VO2max (need at least 5)
       </p>
     )
   }
@@ -120,13 +118,6 @@ export default function CurrentVo2maxStat() {
           ? 'Interval training detected'
           : 'No interval sessions in last 14d'}
       </p>
-
-      {data.sample_size != null && (
-        <p id="vo2maxSampleSize_analyticsPage" className="text-xs text-slate-300">
-          Based on {data.sample_size} qualifying run{data.sample_size !== 1 ? 's' : ''} (last 30
-          days)
-        </p>
-      )}
     </div>
   )
 }
