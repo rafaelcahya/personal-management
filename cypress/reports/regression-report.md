@@ -2,6 +2,34 @@
 
 **Date:** 2026-06-10
 **App Version:** 1.7
+**Scope:** HR Chart Enhancements — issue #165 (2 spec files: hr-chart-enhancements-ui.cy.js 18 tests, hr-zones-ai-insight-ui.cy.js 24 tests)
+**Tester:** QA Agent
+
+## Summary (2026-06-10 Focused Run — HR Chart Enhancements)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 42          | 42     | 0      | 0       | **100%**         |
+
+### HR Chart Enhancements — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/activities/hr-chart-enhancements-ui.cy.js                      | 18    | 18     | 0      | 0       | ✅ PASS  |
+| 2  | running/activities/hr-zones-ai-insight-ui.cy.js                        | 24    | 24     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **42** | **42** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `hr-chart-enhancements-ui.cy.js` (18 tests, NEW): 5 describe blocks. Avg HR line (2 tests): `#hrAvgLine_activityDetailPage` exists; label "Avg 148" visible inside chart container. Historical avg HR line (3 tests): `#hrHistoricalAvgLine_activityDetailPage` exists; label "All-time 158" visible inside chart; element absent when `historicalAvgHr=null`. Peak HR marker (2 tests): `#hrPeakMarker_activityDetailPage` exists; value "172" (stream max) visible inside chart. Time-in-zone (6 tests): `#hrZonesSection_activityDetailPage` renders; all 5 zone label rows present (Z1 Recovery/Z2 Aerobic/Z3 Tempo/Z4 Threshold/Z5 VO₂max); percentage values 33% and 39% visible; 5 divs with `background-color` style; section absent when `zones=null`; chart container `#streamChartHr_activityDetailPage` exists even when zones=null (zone bands computed from maxHr fallback). Race Detail (5 tests): avg HR line, historical avg HR line, peak marker, time-in-zone section, zone label rows all present with `raceDetailPage` prefix IDs.
+- `hr-zones-ai-insight-ui.cy.js` (24 tests, UPDATED): Auth guard (1 test) — unauthenticated visit redirects to /login. HR time-in-zone section (5 tests) — hrZonesSection absent when stream has no HR data; renders when HR stream + Strava zones present; 5 zone label rows (Z1–Z5); % + duration text per zone; 5 filled color bars. AIInsightCard (18 tests across 6 describe blocks) — loading skeleton; card root always rendered; BETA badge + coaching prompt text + no other states in empty; focus buttons all 4 present in empty state; no loading/pending/content/error in empty state; first focus button POST fires + transitions to pending with progress bar and skeleton content; content state markdown section headers + list items + re-analyze focus buttons + no other states; error state + retry button; retry returns null → empty state; completed but is_valid=false → empty/focus state, no aiInsightContent. Key updates to existing file: rewrote HrZonesChart describe blocks to match new component behavior (removed old bpm range assertions, updated to time-in-zone semantics), added `cy.on('uncaught:exception')` ServiceWorker handler in auth guard test, replaced pending-state text assertion `'Analyzing your run...'` with `#aiInsightPendingStatus` element check, replaced `#aiInsightRefresh` test with `#aiInsightPendingBar` + `#aiInsightPendingSkeleton` checks. Added 3 missing IDs to `test-ids.js` `running_activity_detail`: `ai_insight_pending_status`, `ai_insight_pending_bar`, `ai_insight_pending_skeleton`.
+- Key implementation details — HR zone bands: `bandZones` uses `zones?.heart_rate?.zones ?? computeZoneRanges(maxHr)` so bands always render if maxHr present; `timeZones` stays Strava-only (time-in-zone section absent without Strava data). Zone palette: Blue(Z1)/#3b82f6 → Emerald(Z2)/#10b981 → Yellow(Z3)/#eab308 → Orange(Z4)/#f97316 → Red(Z5)/#ef4444 (industry-standard Garmin/Ultrahuman palette). Area fill removed (`fill="none"`) to prevent SVG compositing from washing out zone bands. Historical avg line: `showHistoricalLine = historicalAvgHr >= dataMinHr - 15`; when false, renders as `<p>` footnote with same ID. Inline Z-labels (8px, `position="insideRight"`) on each ReferenceArea band. Peak dot: `r=5`, `strokeWidth=2`. Old `HrZonesChart.jsx` deleted.
+
+---
+
+## Previous Run — 2026-06-10 Focused Run — Splits Bar Chart
+
+**Date:** 2026-06-10
+**App Version:** 1.7
 **Scope:** Splits Bar Chart — issue #164 (1 spec file: splits-bar-chart-ui.cy.js 24 tests)
 **Tester:** QA Agent
 
@@ -892,6 +920,7 @@
 
 | Date       | Feature                              | Tests | Passed | Pending | Failed | Pass Rate   |
 | ---------- | ------------------------------------ | ----- | ------ | ------- | ------ | ----------- |
+| 2026-06-10 | HR Chart Enhancements (issue #165)   | 42    | 42     | 0       | 0      | 100%        |
 | 2026-06-09 | Map Style Toggle (issue #172)        | 14    | 14     | 0       | 0      | 100%        |
 | 2026-06-09 | Lazy Compute Metrics (issue #168)    | 7     | 5      | 2       | 0      | 100% active |
 | 2026-06-06 | Injury AI Roles (issue #160)         | 24    | 24     | 0       | 0      | 100%        |

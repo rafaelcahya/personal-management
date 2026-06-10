@@ -10,6 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceArea,
+  ReferenceLine,
+  ReferenceDot,
 } from 'recharts'
 import { AlertCircle, Activity } from 'lucide-react'
 import { fetchActivityStreams } from '@/lib/api/running'
@@ -110,48 +112,147 @@ function PaceChart({ data }) {
   )
 }
 
-const ZONE_COLORS = ['#6b7280', '#3b82f6', '#f59e0b', '#f97316', '#ef4444']
+const ZONE_COLORS = ['#3b82f6', '#10b981', '#eab308', '#f97316', '#ef4444']
+const ZONE_LABELS = ['Z1 Recovery', 'Z2 Aerobic', 'Z3 Tempo', 'Z4 Threshold', 'Z5 VO₂max']
+const ZONE_SHORT_LABELS = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5']
+const ZONE_OPACITIES = [0.15, 0.15, 0.18, 0.22, 0.25]
+const ZONE_PERCENTS = [
+  [0, 0.6],
+  [0.6, 0.7],
+  [0.7, 0.8],
+  [0.8, 0.9],
+  [0.9, 1.1],
+]
 
-function HrStreamChart({ data, zones }) {
-  const hrZones = zones?.heart_rate?.zones ?? []
+function computeZoneRanges(maxHr) {
+  if (!maxHr || maxHr <= 0) return null
+  return ZONE_PERCENTS.map(([lo, hi]) => ({
+    min: Math.round(lo * maxHr),
+    max: Math.round(hi * maxHr),
+    time: 0,
+  }))
+}
+
+function formatZoneDuration(seconds) {
+  if (!seconds || seconds <= 0) return '0s'
+  const h = Math.floor(seconds / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  const s = seconds % 60
+  if (h > 0) return `${h}h ${String(m).padStart(2, '0')}m`
+  if (m > 0) return `${m}m ${String(s).padStart(2, '0')}s`
+  return `${s}s`
+}
+
+function HrStreamChart({ data, zones, avgHr, historicalAvgHr, maxHr, userMaxHr, pagePrefix }) {
+  const stravaZones = zones?.heart_rate?.zones ?? null
+  const fallbackMaxHr = userMaxHr ?? maxHr ?? null
+  const bandZones = stravaZones ?? computeZoneRanges(fallbackMaxHr) ?? []
+  const timeZones = stravaZones ?? []
+
+  const zoneBandSource = stravaZones
+    ? 'strava'
+    : userMaxHr
+      ? { type: 'profile', hr: userMaxHr }
+      : maxHr
+        ? { type: 'activity', hr: maxHr }
+        : null
+
+  const peakPoint = data.reduce(
+    (best, d) => (d.hr != null && (best === null || d.hr > best.hr) ? d : best),
+    null
+  )
+
+  const totalZoneTime = timeZones.reduce((sum, z) => sum + (z.time ?? 0), 0)
+
+  const hrValues = data.map((d) => d.hr).filter((v) => v != null)
+  const dataMinHr = hrValues.length ? Math.min(...hrValues) : 0
+  const showHistoricalLine = historicalAvgHr != null && historicalAvgHr >= dataMinHr - 15
 
   return (
     <div>
       <SubLabel>Heart Rate</SubLabel>
-      <div className="h-[170px] sm:h-[200px] outline-none" id="streamChartHr_activityDetailPage">
+      <div className="h-[170px] sm:h-[200px] outline-none" id={`streamChartHr_${pagePrefix}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
             syncId="streamCharts"
             margin={{ top: 4, right: 8, left: 4, bottom: 0 }}
           >
-            <defs>
-              <linearGradient id="gradHr" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-              </linearGradient>
-            </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
             <YAxis width={36} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${v} bpm`} />} />
-            {hrZones.map((z, i) => (
+            {bandZones.map((z, i) => (
               <ReferenceArea
                 key={i}
                 y1={z.min}
                 y2={z.max}
                 fill={ZONE_COLORS[i] ?? '#94a3b8'}
-                fillOpacity={0.12}
+                fillOpacity={ZONE_OPACITIES[i] ?? 0.15}
                 ifOverflow="hidden"
+                label={{
+                  value: ZONE_SHORT_LABELS[i] ?? `Z${i + 1}`,
+                  position: 'insideRight',
+                  fontSize: 8,
+                  fill: ZONE_COLORS[i] ?? '#94a3b8',
+                  opacity: 0.7,
+                }}
               />
             ))}
+            {showHistoricalLine && (
+              <ReferenceLine
+                y={historicalAvgHr}
+                stroke="#94a3b8"
+                strokeDasharray="2 4"
+                strokeWidth={1.5}
+                id={`hrHistoricalAvgLine_${pagePrefix}`}
+                ifOverflow="hidden"
+                label={{
+                  value: `All-time ${historicalAvgHr}`,
+                  position: 'insideBottomRight',
+                  fontSize: 9,
+                  fill: '#94a3b8',
+                }}
+              />
+            )}
+            {avgHr != null && (
+              <ReferenceLine
+                y={avgHr}
+                stroke="#ef4444"
+                strokeDasharray="6 3"
+                strokeWidth={1.5}
+                id={`hrAvgLine_${pagePrefix}`}
+                label={{
+                  value: `Avg ${avgHr}`,
+                  position: 'insideTopRight',
+                  fontSize: 9,
+                  fill: '#ef4444',
+                }}
+              />
+            )}
+            {peakPoint != null && (
+              <ReferenceDot
+                x={peakPoint.dist_km}
+                y={peakPoint.hr}
+                r={5}
+                fill="#ef4444"
+                stroke="#fff"
+                strokeWidth={2}
+                id={`hrPeakMarker_${pagePrefix}`}
+                label={{
+                  value: `${peakPoint.hr}`,
+                  position: 'top',
+                  fontSize: 9,
+                  fill: '#ef4444',
+                }}
+              />
+            )}
             <Area
               type="monotone"
               dataKey="hr"
               stroke="#ef4444"
-              strokeWidth={1.5}
-              fill="url(#gradHr)"
-              baseValue="dataMin"
+              strokeWidth={2}
+              fill="none"
               dot={false}
               activeDot={{ r: 3 }}
               connectNulls={false}
@@ -159,6 +260,59 @@ function HrStreamChart({ data, zones }) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      {!showHistoricalLine && historicalAvgHr != null && (
+        <p
+          id={`hrHistoricalAvgLine_${pagePrefix}`}
+          className="mt-1 text-[10px] text-slate-400 tabular-nums text-right"
+        >
+          All-time avg: {historicalAvgHr} bpm
+        </p>
+      )}
+
+      {bandZones.length > 0 && (
+        <p className="mt-1 text-[10px] text-slate-300 tabular-nums">
+          {zoneBandSource === 'strava'
+            ? 'Zone bands from Strava'
+            : zoneBandSource?.type === 'profile'
+              ? `Zones estimated · Max HR ${zoneBandSource.hr} bpm (profile)`
+              : zoneBandSource?.type === 'activity'
+                ? `Zones estimated · Max HR ${zoneBandSource.hr} bpm (this run)`
+                : null}
+        </p>
+      )}
+
+      {timeZones.length > 0 && totalZoneTime > 0 && (
+        <div className="mt-3" id={`hrZonesSection_${pagePrefix}`}>
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+            Time in Zone
+          </p>
+          <div className="flex flex-col gap-1.5" id={`hrTimeInZoneSection_${pagePrefix}`}>
+            {timeZones.map((zone, i) => {
+              const pct = Math.round(((zone.time ?? 0) / totalZoneTime) * 100)
+              const color = ZONE_COLORS[i] ?? '#94a3b8'
+              const label = ZONE_LABELS[i] ?? `Z${i + 1}`
+              return (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="w-24 shrink-0">
+                    <p className="text-[10px] font-medium text-slate-600">{label}</p>
+                  </div>
+                  <div className="flex-1 h-3.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full"
+                      style={{ width: `${pct}%`, backgroundColor: color }}
+                    />
+                  </div>
+                  <div className="w-20 shrink-0 text-right">
+                    <span className="text-[10px] text-slate-500 tabular-nums">
+                      {pct}% · {formatZoneDuration(zone.time)}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -246,7 +400,15 @@ function CadenceChart({ data }) {
   )
 }
 
-export default function StreamCharts({ activityId, zones }) {
+export default function StreamCharts({
+  activityId,
+  zones,
+  avgHr,
+  historicalAvgHr,
+  maxHr,
+  userMaxHr,
+  pagePrefix = 'activityDetailPage',
+}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [meta, setMeta] = useState(null)
@@ -346,7 +508,17 @@ export default function StreamCharts({ activityId, zones }) {
       </p>
       <div className="flex flex-col gap-4">
         {hasPace && <PaceChart data={thinned} />}
-        {hasHr && <HrStreamChart data={thinned} zones={zones} />}
+        {hasHr && (
+          <HrStreamChart
+            data={thinned}
+            zones={zones}
+            avgHr={avgHr}
+            historicalAvgHr={historicalAvgHr}
+            maxHr={maxHr}
+            userMaxHr={userMaxHr}
+            pagePrefix={pagePrefix}
+          />
+        )}
         {hasAlt && <ElevationChart data={thinned} />}
         {hasCadence && <CadenceChart data={thinned} />}
       </div>

@@ -117,9 +117,39 @@ export async function GET(_request, { params }) {
       efficiency_factor_30d_avg = parseFloat((sum / efRows.length).toFixed(4))
     }
 
+    const { data: userProfile } = await supabase
+      .from('rt_users')
+      .select('max_hr')
+      .eq('id', user.id)
+      .maybeSingle()
+    const user_max_hr = userProfile?.max_hr ?? null
+
+    const { data: hrRows, error: hrError } = await supabase
+      .from('rt_activities')
+      .select('avg_hr, moving_time_sec, duration_sec')
+      .eq('user_id', user.id)
+      .not('avg_hr', 'is', null)
+      .neq('id', id)
+
+    if (hrError) throw hrError
+
+    let historical_avg_hr = null
+    if (hrRows && hrRows.length > 0) {
+      let weightedSum = 0
+      let totalDuration = 0
+      for (const row of hrRows) {
+        const dur = row.moving_time_sec ?? row.duration_sec ?? 0
+        if (dur > 0) {
+          weightedSum += Number(row.avg_hr) * dur
+          totalDuration += dur
+        }
+      }
+      if (totalDuration > 0) historical_avg_hr = Math.round(weightedSum / totalDuration)
+    }
+
     return NextResponse.json(
       {
-        activity: { ...activity, gear, efficiency_factor_30d_avg },
+        activity: { ...activity, gear, efficiency_factor_30d_avg, historical_avg_hr, user_max_hr },
         splits: splits ?? [],
         laps: laps ?? [],
         best_efforts: bestEfforts ?? [],

@@ -20,7 +20,6 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import StreamCharts from '../../activities/components/StreamCharts'
-import HrZonesChart from '../../activities/components/HrZonesChart'
 import AIInsightCard from '../../activities/components/AIInsightCard'
 import DistanceBreakdown from './DistanceBreakdown'
 import { getActivityCfg, tempStyle } from './activityConfig'
@@ -362,9 +361,15 @@ export default function ActivitySection({
         <LapsTable laps={laps} />
 
         <div className="border-t border-slate-100" />
-        <StreamCharts activityId={activityId} zones={activity.zones} />
-        <div className="border-t border-slate-100" />
-        <HrZonesChart zones={activity.zones} />
+        <StreamCharts
+          activityId={activityId}
+          zones={activity.zones}
+          avgHr={activity.avg_hr ?? null}
+          historicalAvgHr={activity.historical_avg_hr ?? null}
+          maxHr={activity.max_hr ?? null}
+          userMaxHr={activity.user_max_hr ?? null}
+          pagePrefix="raceDetailPage"
+        />
       </div>
     </>
   )
