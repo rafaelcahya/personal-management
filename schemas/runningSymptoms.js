@@ -13,7 +13,7 @@ export const archiveSymptomSchema = z.object({
 })
 
 export const injuryCoachRequestSchema = z.object({
-  role: z.enum(['physio', 'physician']),
+  role: z.enum(['physio', 'sports_medicine']),
   body_part: z.string().max(100).optional(),
   injuryPhase: z.enum(['acute', 'subacute', 'recovery']).optional(),
   question: z.string().min(10, 'Question must be at least 10 characters').max(1000),

@@ -43,6 +43,13 @@ export async function POST(request) {
         activity_id ? getReferenceActivity(supabase, user.id, activity_id) : Promise.resolve(null),
       ])
 
+    if (!profile) {
+      return NextResponse.json(
+        { error: 'Not found', message: 'Runner profile not found' },
+        { status: 404 }
+      )
+    }
+
     if (pain_level !== undefined && body_part) {
       const { error: symptomError } = await supabase.from('rt_symptom_logs').insert({
         user_id: user.id,
@@ -52,13 +59,6 @@ export async function POST(request) {
       if (symptomError) {
         console.error('[running/ai/injury-coach] Failed to log symptom:', symptomError.message)
       }
-    }
-
-    if (!profile) {
-      return NextResponse.json(
-        { error: 'Not found', message: 'Runner profile not found' },
-        { status: 404 }
-      )
     }
 
     const context = buildInjuryContext({

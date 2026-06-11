@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 import {
   Stethoscope,
   PersonStanding,
@@ -25,7 +26,7 @@ const ROLES = [
     placeholder: 'e.g. My left knee clicks when I climb stairs. Is this normal after a long run?',
   },
   {
-    id: 'physician',
+    id: 'sports_medicine',
     cardId: 'injuryPhysicianCard_aiPage',
     label: 'Sports Medicine Physician',
     description: 'Diagnosis, load management & return-to-sport',
@@ -94,15 +95,16 @@ export default function InjuryCoachCard() {
   const [activityOpen, setActivityOpen] = useState(false)
   const [activityLoading, setActivityLoading] = useState(false)
   const pickerRef = useRef(null)
+  const debouncedSearch = useDebounce(activitySearch, 300)
 
   useEffect(() => {
     if (!activityOpen) return
     setActivityLoading(true)
-    fetchActivities({ limit: 20, search: activitySearch || null })
+    fetchActivities({ limit: 20, search: debouncedSearch || null })
       .then((res) => setActivityList(res.data ?? []))
       .catch(() => setActivityList([]))
       .finally(() => setActivityLoading(false))
-  }, [activityOpen, activitySearch])
+  }, [activityOpen, debouncedSearch])
 
   useEffect(() => {
     if (!activityOpen) return
