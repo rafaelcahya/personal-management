@@ -251,6 +251,34 @@ export default function ActivityDetailPage() {
                             {activity.achievement_count} achievements
                           </span>
                         )}
+                        {bestEfforts
+                          .filter(
+                            (e) =>
+                              ['1 mile', '5K', '10K', '15K', 'Half-Marathon'].includes(e.name) &&
+                              e.pr_rank != null &&
+                              e.pr_rank <= 5 &&
+                              e.is_latest_for_rank !== false
+                          )
+                          .map((e) =>
+                            e.pr_rank === 1 ? (
+                              <span
+                                key={e.name}
+                                id={`pbRankChip_${e.name.replace(/\s/g, '')}_activityDetailPage`}
+                                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 text-xs font-semibold shrink-0"
+                              >
+                                <Trophy className="size-3" aria-hidden="true" />
+                                #1 {e.name} all-time
+                              </span>
+                            ) : (
+                              <span
+                                key={e.name}
+                                id={`pbRankChip_${e.name.replace(/\s/g, '')}_activityDetailPage`}
+                                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold shrink-0"
+                              >
+                                #{e.pr_rank} {e.name} all-time
+                              </span>
+                            )
+                          )}
                       </div>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <span className="text-sm text-slate-400">
