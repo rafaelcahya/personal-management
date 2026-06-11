@@ -112,10 +112,6 @@ const setupPageStubs = () => {
       },
     },
   })
-  cy.intercept('GET', '/api/running/v1/analytics/vo2max-stat*', {
-    statusCode: 200,
-    body: { data: { empty: true } },
-  })
   // Stub fetchAnalyticsStaleness — use pathname to match exactly (no query params)
   cy.intercept(
     { method: 'GET', pathname: '/api/running/v1/ai/insights/staleness' },

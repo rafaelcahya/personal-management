@@ -2,8 +2,6 @@ import constants from '../../../fixtures/app-constants.json'
 
 const IDS = constants.test_ids.running_analytics
 const ANALYTICS_URL = constants.routes.running_analytics
-const VO2MAX_STAT_ENDPOINT = '/api/running/v1/analytics/vo2max-stat'
-
 // ─── Shared stubs ────────────────────────────────────────────────────────────
 
 const stubRtUsers = () => {
@@ -43,24 +41,6 @@ const stubDashboard = () => {
   }).as('getDashboard')
 }
 
-const stubVo2maxStat = (overrides = {}) => {
-  const defaultData = {
-    empty: false,
-    current: 48.3,
-    previous: 47.1,
-    trend: 'up',
-    delta: 1.2,
-    sample_size: 12,
-    category: 'Good',
-    maintenance_status: 'ok',
-    improvement_signal: false,
-  }
-  cy.intercept('GET', VO2MAX_STAT_ENDPOINT, {
-    statusCode: 200,
-    body: { data: { ...defaultData, ...overrides } },
-  }).as('getVo2maxStat')
-}
-
 // 5 activities with both estimated_vo2max and efficiency_factor — satisfies both trend charts
 const makeActivities = (count) =>
   Array.from({ length: count }, (_, i) => ({
@@ -95,66 +75,6 @@ const visitAndWait = () => {
   cy.wait('@getActivities')
 }
 
-// ─── Current VO2max — sample size when data exists ───────────────────────────
-
-describe('Qualifying run count — Current VO2max (data exists)', () => {
-  beforeEach(() => {
-    cy.setupApiAuthCookies()
-    stubRtUsers()
-    stubActivitiesEmpty()
-    stubPerformanceTrends()
-    stubDashboard()
-    stubVo2maxStat({ sample_size: 12 })
-    visitAndWait()
-  })
-
-  it('shows sample size subtext below the stat', () => {
-    cy.get(`#${IDS.vo2max_sample_size}`).scrollIntoView().should('exist')
-  })
-
-  it('sample size text shows correct count from API', () => {
-    cy.get(`#${IDS.vo2max_sample_size}`)
-      .scrollIntoView()
-      .should('contain.text', 'Based on 12 qualifying runs (last 30 days)')
-  })
-
-  it('sample size uses singular "run" when count is 1', () => {
-    stubVo2maxStat({ sample_size: 1 })
-    cy.reload()
-    cy.wait('@getActivities')
-    cy.get(`#${IDS.vo2max_sample_size}`)
-      .scrollIntoView()
-      .should('contain.text', 'Based on 1 qualifying run (last 30 days)')
-      .and('not.contain.text', 'runs')
-  })
-})
-
-// ─── Current VO2max — count in empty state ────────────────────────────────────
-
-describe('Qualifying run count — Current VO2max (empty state)', () => {
-  beforeEach(() => {
-    cy.setupApiAuthCookies()
-    stubRtUsers()
-    stubActivitiesEmpty()
-    stubPerformanceTrends()
-    stubDashboard()
-    stubVo2maxStat({ empty: true, current: null, trend: null, delta: null, sample_size: 3 })
-    visitAndWait()
-  })
-
-  it('empty state shows qualifying count from API', () => {
-    cy.get(`#${IDS.vo2max_empty_count}`)
-      .scrollIntoView()
-      .should('contain.text', 'Currently have 3 qualifying runs')
-  })
-
-  it('empty state includes the minimum threshold message', () => {
-    cy.get(`#${IDS.vo2max_empty_count}`)
-      .scrollIntoView()
-      .should('contain.text', 'Need at least 5 runs with HR data in the last 30 days')
-  })
-})
-
 // ─── VO2max Trend — data point count when chart renders ──────────────────────
 
 describe('Qualifying run count — VO2max Trend (data exists)', () => {
@@ -164,7 +84,6 @@ describe('Qualifying run count — VO2max Trend (data exists)', () => {
     stubActivities(5)
     stubPerformanceTrends()
     stubDashboard()
-    stubVo2maxStat()
     visitAndWait()
   })
 
@@ -188,7 +107,6 @@ describe('Qualifying run count — VO2max Trend (empty state)', () => {
     stubActivitiesEmpty()
     stubPerformanceTrends()
     stubDashboard()
-    stubVo2maxStat()
     visitAndWait()
   })
 
@@ -215,7 +133,6 @@ describe('Qualifying run count — EF Trend (data exists)', () => {
     stubActivities(5)
     stubPerformanceTrends()
     stubDashboard()
-    stubVo2maxStat()
     visitAndWait()
   })
 
@@ -239,7 +156,6 @@ describe('Qualifying run count — EF Trend (empty state)', () => {
     stubActivitiesEmpty()
     stubPerformanceTrends()
     stubDashboard()
-    stubVo2maxStat()
     visitAndWait()
   })
 
