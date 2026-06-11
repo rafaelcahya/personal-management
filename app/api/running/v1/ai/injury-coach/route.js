@@ -158,6 +158,7 @@ async function getRecentActivities(supabase, userId) {
 }
 
 async function getReferenceActivity(supabase, userId, activityId) {
+  // `name` is intentionally excluded — it's free-text and a prompt injection surface
   const { data } = await supabase
     .from('rt_activities')
     .select(
@@ -269,7 +270,7 @@ function buildInjuryContext({
 
   if (bodyPart) {
     lines.push('')
-    lines.push(`Focus body part: ${bodyPart}`)
+    lines.push(`Focus body part: ${sanitizeUserText(bodyPart, 100)}`)
   }
   if (injuryPhase) {
     lines.push(`Injury phase: ${injuryPhase}`)
