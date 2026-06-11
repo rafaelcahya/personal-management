@@ -20,6 +20,7 @@ import {
   deleteRaceLog,
   fetchActivity,
   fetchSubjectiveHealthByDate,
+  fetchActivityStreams,
 } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import EditRaceModal from '../components/EditRaceModal'
@@ -66,6 +67,7 @@ export default function RaceDetailPage() {
   const [laps, setLaps] = useState([])
   const [bestEfforts, setBestEfforts] = useState([])
   const [photos, setPhotos] = useState([])
+  const [streams, setStreams] = useState([])
   const [activityLoading, setActivityLoading] = useState(false)
   const [healthLog, setHealthLog] = useState(undefined)
 
@@ -81,16 +83,22 @@ export default function RaceDetailPage() {
           setEntry(res.data)
           if (res.data?.activity_id) {
             setActivityLoading(true)
-            fetchActivity(res.data.activity_id)
-              .then((actRes) => {
+            const activityId = res.data.activity_id
+            Promise.allSettled([fetchActivity(activityId), fetchActivityStreams(activityId)])
+              .then(([actRes, streamsRes]) => {
                 if (!cancelled) {
-                  setActivity(actRes.activity)
-                  setSplits(actRes.splits ?? [])
-                  setLaps(actRes.laps ?? [])
-                  setBestEfforts(actRes.best_efforts ?? [])
-                  setPhotos(actRes.photos ?? [])
+                  if (actRes.status === 'fulfilled') {
+                    setActivity(actRes.value.activity)
+                    setSplits(actRes.value.splits ?? [])
+                    setLaps(actRes.value.laps ?? [])
+                    setBestEfforts(actRes.value.best_efforts ?? [])
+                    setPhotos(actRes.value.photos ?? [])
+                  }
+                  if (streamsRes.status === 'fulfilled') {
+                    setStreams(streamsRes.value?.data ?? [])
+                  }
                   setActivityLoading(false)
-                  const activityDate = actRes.activity?.started_at?.slice(0, 10)
+                  const activityDate = actRes.value?.activity?.started_at?.slice(0, 10)
                   if (activityDate) {
                     fetchSubjectiveHealthByDate(activityDate)
                       .then((log) => {
@@ -201,6 +209,7 @@ export default function RaceDetailPage() {
               laps={laps}
               bestEfforts={bestEfforts}
               photos={photos}
+              streams={streams}
               healthLog={healthLog}
               onEditClick={() => setEditOpen(true)}
               entryDistanceM={entry.distance_m ? Number(entry.distance_m) : null}

@@ -38,6 +38,7 @@ export default function ActivitySection({
   laps,
   bestEfforts,
   photos,
+  streams,
   healthLog,
   onEditClick,
   entryDistanceM,
@@ -57,7 +58,15 @@ export default function ActivitySection({
   return (
     <>
       <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden">
-        <MediaCarousel polyline={activity.summary_polyline} photos={photos} />
+        <MediaCarousel
+          polyline={activity.summary_polyline}
+          photos={photos}
+          laps={laps}
+          bestEfforts={bestEfforts}
+          activityStartedAt={activity.started_at}
+          totalDistanceM={activity.distance_m}
+          streams={streams}
+        />
       </div>
 
       <div className="w-full lg:w-3/5 mx-auto px-4 lg:px-0 flex flex-col gap-5 pt-5">

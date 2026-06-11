@@ -35,6 +35,7 @@ import {
   updateActivity,
   fetchRaceLog,
   fetchSubjectiveHealthByDate,
+  fetchActivityStreams,
 } from '@/lib/api/running'
 import StreamCharts from '../components/StreamCharts'
 import AIInsightCard from '../components/AIInsightCard'
@@ -80,6 +81,7 @@ export default function ActivityDetailPage() {
   const [laps, setLaps] = useState([])
   const [bestEfforts, setBestEfforts] = useState([])
   const [photos, setPhotos] = useState([])
+  const [streams, setStreams] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -115,10 +117,11 @@ export default function ActivityDetailPage() {
       setLoading(true)
       setError(null)
       try {
-        const [actRes, dashRes, raceLogRes] = await Promise.allSettled([
+        const [actRes, dashRes, raceLogRes, streamsRes] = await Promise.allSettled([
           fetchActivity(id),
           getDashboard(),
           fetchRaceLog(),
+          fetchActivityStreams(id),
         ])
 
         const activityDate =
@@ -149,6 +152,9 @@ export default function ActivityDetailPage() {
             const entries = raceLogRes.value?.data ?? raceLogRes.value ?? []
             const matched = entries.find((entry) => entry.activity_id === id)
             setLinkedRace(matched ?? null)
+          }
+          if (streamsRes.status === 'fulfilled') {
+            setStreams(streamsRes.value?.data ?? [])
           }
         }
       } catch (err) {
@@ -224,7 +230,15 @@ export default function ActivityDetailPage() {
               <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden pb-6 pt-0 lg:pt-6">
                 {/* Carousel: 80% of card, centered */}
                 <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden">
-                  <MediaCarousel polyline={activity.summary_polyline} photos={photos} />
+                  <MediaCarousel
+                    polyline={activity.summary_polyline}
+                    photos={photos}
+                    laps={laps}
+                    bestEfforts={bestEfforts}
+                    activityStartedAt={activity.started_at}
+                    totalDistanceM={activity.distance_m}
+                    streams={streams}
+                  />
                 </div>
 
                 {/* Content: 60% of card, centered */}

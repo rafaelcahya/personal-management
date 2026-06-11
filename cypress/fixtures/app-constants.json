@@ -406,7 +406,10 @@
       "cadence_band_elite": "cadenceBand_elite_activityDetailPage",
       "route_start_marker": "routeStartMarker_activityDetailPage",
       "route_end_marker": "routeEndMarker_activityDetailPage",
-      "pb_rank_chip": "pbRankChip_{distance}_activityDetailPage"
+      "pb_rank_chip": "pbRankChip_{distance}_activityDetailPage",
+      "lap_marker": "lapMarker_{n}_activityDetailPage",
+      "pr_effort_start": "prEffortStart_{name}_activityDetailPage",
+      "pr_effort_end": "prEffortEnd_{name}_activityDetailPage"
     },
     "running_dashboard": {
       "page": "dashboardPage",
@@ -575,7 +578,12 @@
       "cadence_band_semiathlete": "cadenceBand_semiathlete_raceDetailPage",
       "cadence_band_elite": "cadenceBand_elite_raceDetailPage",
       "cadence_info_tooltip": "cadenceInfoTooltip_raceDetailPage",
-      "pb_rank_chip": "pbRankChip_{distance}_raceDetailPage"
+      "pb_rank_chip": "pbRankChip_{distance}_raceDetailPage",
+      "route_start_marker": "routeStartMarker_raceDetailPage",
+      "route_end_marker": "routeEndMarker_raceDetailPage",
+      "lap_marker": "lapMarker_{n}_raceDetailPage",
+      "pr_effort_start": "prEffortStart_{name}_raceDetailPage",
+      "pr_effort_end": "prEffortEnd_{name}_raceDetailPage"
     },
     "running_analytics": {
       "page": "analyticsPage",
