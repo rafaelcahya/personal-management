@@ -863,6 +863,7 @@ export default function ActivityDetailPage() {
                     maxHr={activity.max_hr ?? null}
                     userMaxHr={activity.user_max_hr ?? null}
                     historicalAvgCadence={activity.historical_avg_cadence ?? null}
+                    maxPaceSecPerKm={activity.max_pace_sec_per_km ?? null}
                   />
                 </div>
               </div>
