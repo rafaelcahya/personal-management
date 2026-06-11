@@ -519,6 +519,10 @@ export const TEST_IDS = {
     injury_disclaimer: 'injuryDisclaimer_aiPage',
     injury_escalate_banner: 'injuryEscalateBanner_aiPage',
     injury_output_card: 'injuryOutputCard_aiPage',
+    injury_activity_search: 'injuryActivitySearch_aiPage',
+    injury_activity_list: 'injuryActivityList_aiPage',
+    injury_activity_selected_pill: 'injuryActivitySelectedPill_aiPage',
+    injury_activity_clear_btn: 'injuryActivityClearBtn_aiPage',
   },
 
   running_strava_connection: {
