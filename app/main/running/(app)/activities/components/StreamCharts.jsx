@@ -39,7 +39,7 @@ function SubLabel({ children }) {
 function fmtPaceSec(sec) {
   if (!sec || sec <= 0) return ''
   const m = Math.floor(sec / 60)
-  const s = String(sec % 60).padStart(2, '0')
+  const s = String(Math.round(sec % 60)).padStart(2, '0')
   return `${m}:${s}`
 }
 
@@ -80,9 +80,66 @@ const XAXIS = (
 )
 
 function PaceChart({ data }) {
+  const [mode, setMode] = useState('pace')
+  const isSpeed = mode === 'speed'
+
   return (
     <div>
-      <SubLabel>Pace</SubLabel>
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-1.5">
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+            {isSpeed ? 'Speed' : 'Pace'}
+          </p>
+          <UITooltipProvider delayDuration={0}>
+            <UITooltip>
+              <UITooltipTrigger asChild>
+                <button
+                  type="button"
+                  id="paceSpeedInfo_activityDetailPage"
+                  className="text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                  aria-label="Pace and speed chart info"
+                >
+                  <Info className="size-3.5" aria-hidden="true" />
+                </button>
+              </UITooltipTrigger>
+              <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+                <p className="font-semibold mb-1">Pace vs Speed</p>
+                <p>
+                  <span className="text-violet-300 font-medium">Pace (min/km)</span> — standard
+                  runner metric. Y-axis is inverted: lower = faster. Best for reading effort in
+                  familiar terms.
+                </p>
+                <p className="mt-1">
+                  <span className="text-violet-300 font-medium">Speed (km/h)</span> — normal Y-axis:
+                  higher = faster. Better for spotting acceleration and deceleration patterns at a
+                  glance.
+                </p>
+              </UITooltipContent>
+            </UITooltip>
+          </UITooltipProvider>
+        </div>
+        <div
+          id="paceSpeedToggle_activityDetailPage"
+          className="flex rounded-lg overflow-hidden border border-slate-200 text-[10px] font-semibold"
+        >
+          <button
+            type="button"
+            id="paceTab_activityDetailPage"
+            onClick={() => setMode('pace')}
+            className={`px-2.5 py-1 transition-colors ${!isSpeed ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+          >
+            Pace
+          </button>
+          <button
+            type="button"
+            id="speedTab_activityDetailPage"
+            onClick={() => setMode('speed')}
+            className={`px-2.5 py-1 transition-colors ${isSpeed ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+          >
+            Speed
+          </button>
+        </div>
+      </div>
       <div className="h-[240px] sm:h-[300px] outline-none" id="streamChartPace_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
@@ -98,15 +155,28 @@ function PaceChart({ data }) {
             </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
-            <YAxis reversed tickFormatter={fmtPaceSec} width={36} {...AXIS_PROPS} />
-            <Tooltip content={<StreamTooltip formatter={(sec) => `${fmtPaceSec(sec)} /km`} />} />
+            <YAxis
+              reversed={!isSpeed}
+              tickFormatter={isSpeed ? (v) => v.toFixed(1) : fmtPaceSec}
+              width={isSpeed ? 42 : 36}
+              {...AXIS_PROPS}
+            />
+            <Tooltip
+              content={
+                <StreamTooltip
+                  formatter={
+                    isSpeed ? (v) => `${v.toFixed(1)} km/h` : (sec) => `${fmtPaceSec(sec)} /km`
+                  }
+                />
+              }
+            />
             <Area
               type="monotone"
-              dataKey="pace"
+              dataKey={isSpeed ? 'speed_kmh' : 'pace'}
               stroke="#8b5cf6"
               strokeWidth={1.5}
               fill="url(#gradPace)"
-              baseValue="dataMax"
+              baseValue={isSpeed ? 'dataMin' : 'dataMax'}
               dot={false}
               activeDot={{ r: 3 }}
               connectNulls={false}
@@ -586,12 +656,13 @@ export default function StreamCharts({
             dist_km: d.dist_m != null ? d.dist_m / 1000 : null,
             cadence_spm: d.cadence,
             pace: paceValid ? d.pace : null,
+            speed_kmh: paceValid ? parseFloat((v * 3.6).toFixed(2)) : null,
           }
         })
       setMeta(res.meta)
       setThinned(processed)
     } catch (err) {
-      setError(err.message || 'Failed to load stream data')
+      setError('Failed to load stream data')
     } finally {
       setLoading(false)
     }
@@ -637,12 +708,12 @@ export default function StreamCharts({
     )
   }
 
-  const hasPace = thinned.some((d) => d.pace != null && d.pace > 0)
+  const hasPaceOrSpeed = thinned.some((d) => d.pace != null && d.pace > 0)
   const hasHr = meta?.has_hr && thinned.some((d) => d.hr != null)
   const hasAlt = meta?.has_altitude && thinned.some((d) => d.alt != null)
   const hasCadence = thinned.some((d) => d.cadence_spm != null && d.cadence_spm > 0)
 
-  if (!hasPace && !hasHr && !hasAlt && !hasCadence) {
+  if (!hasPaceOrSpeed && !hasHr && !hasAlt && !hasCadence) {
     return (
       <div
         id="streamChartsEmpty_activityDetailPage"
@@ -666,7 +737,7 @@ export default function StreamCharts({
         activity.
       </p>
       <div className="flex flex-col gap-4">
-        {hasPace && <PaceChart data={thinned} />}
+        {hasPaceOrSpeed && <PaceChart data={thinned} />}
         {hasHr && (
           <HrStreamChart
             data={thinned}
