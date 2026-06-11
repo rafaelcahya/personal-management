@@ -83,7 +83,7 @@ function PaceChart({ data }) {
   return (
     <div>
       <SubLabel>Pace</SubLabel>
-      <div className="h-[180px] sm:h-[210px] outline-none" id="streamChartPace_activityDetailPage">
+      <div className="h-[240px] sm:h-[300px] outline-none" id="streamChartPace_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -215,7 +215,7 @@ function HrStreamChart({ data, zones, avgHr, historicalAvgHr, maxHr, userMaxHr, 
   return (
     <div>
       <SubLabel>Heart Rate</SubLabel>
-      <div className="h-[170px] sm:h-[200px] outline-none" id={`streamChartHr_${pagePrefix}`}>
+      <div className="h-[320px] sm:h-[400px] outline-none" id={`streamChartHr_${pagePrefix}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -366,7 +366,7 @@ function ElevationChart({ data }) {
     <div>
       <SubLabel>Elevation</SubLabel>
       <div
-        className="h-[150px] sm:h-[180px] outline-none"
+        className="h-[200px] sm:h-[260px] outline-none"
         id="streamChartElevation_activityDetailPage"
       >
         <ResponsiveContainer width="100%" height="100%">
@@ -444,7 +444,7 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
           </UITooltip>
         </UITooltipProvider>
       </div>
-      <div className="h-[150px] sm:h-[180px] outline-none" id={`streamChartCadence_${pagePrefix}`}>
+      <div className="h-[320px] sm:h-[400px] outline-none" id={`streamChartCadence_${pagePrefix}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -609,9 +609,9 @@ export default function StreamCharts({
         aria-label="Loading performance charts"
       >
         <div className="h-3 bg-slate-100 rounded w-24" />
-        <div className="h-[180px] sm:h-[210px] bg-slate-100 rounded-lg" />
-        <div className="h-[170px] sm:h-[200px] bg-slate-100 rounded-lg" />
-        <div className="h-[150px] sm:h-[180px] bg-slate-100 rounded-lg" />
+        <div className="h-[240px] sm:h-[300px] bg-slate-100 rounded-lg" />
+        <div className="h-[320px] sm:h-[400px] bg-slate-100 rounded-lg" />
+        <div className="h-[200px] sm:h-[260px] bg-slate-100 rounded-lg" />
       </div>
     )
   }
