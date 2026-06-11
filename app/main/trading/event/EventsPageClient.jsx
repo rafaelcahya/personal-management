@@ -1,8 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { fetchEventList, fetchEventSummary } from '@/lib/api/event'
 import { toast } from 'sonner'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import EventListSummary from './component/EventListSummary'
 import PageHeader from '../../components/PageHeader'
 import EventTableHeader from './component/EventTableHeader'
@@ -15,6 +18,11 @@ const FILTER_STORAGE_KEY = 'event-list-filter'
 export default function EventsPageClient({ initialEvents }) {
   const [listEvent, setListEvent] = useState(initialEvents || [])
   const [filter, setFilter] = useState(null)
+  const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [total, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [summary, setSummary] = useState({
     totalEvents: 0,
@@ -22,6 +30,8 @@ export default function EventsPageClient({ initialEvents }) {
     totalBearish: 0,
     totalFavorite: 0,
   })
+
+  const searchDebounceRef = useRef(null)
 
   useEffect(() => {
     try {
@@ -58,54 +68,44 @@ export default function EventsPageClient({ initialEvents }) {
     }
   }, [])
 
-  const fetchEvents = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      const [events] = await Promise.all([fetchEventList(), fetchSummary()])
-      setListEvent(events || [])
-    } catch (err) {
-      console.error('Fetch error:', err)
-      toast.error(err.message || 'Failed to fetch events')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [fetchSummary])
+  const doFetch = useCallback(
+    async ({ searchVal, pageVal, filterVal }) => {
+      try {
+        setIsLoading(true)
+        const [result] = await Promise.all([
+          fetchEventList({ search: searchVal, page: pageVal, filter: filterVal }),
+          fetchSummary(),
+        ])
+        setListEvent(result.events || [])
+        setTotalPages(result.totalPages ?? 1)
+        setTotal(result.total ?? 0)
+      } catch (err) {
+        console.error('Fetch error:', err)
+        toast.error(err.message || 'Failed to fetch events')
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [fetchSummary]
+  )
 
   useEffect(() => {
-    if (initialEvents && initialEvents.length > 0) {
-      setListEvent(initialEvents)
-      fetchSummary()
-    } else {
-      fetchEvents()
-    }
-  }, [initialEvents, fetchEvents])
+    doFetch({ searchVal: search, pageVal: page, filterVal: filter })
+  }, [search, page, filter])
 
-  const filteredEvents = listEvent.filter((event) => {
-    if (!filter) return true
-
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const eventDate = new Date(event.event_date)
-    eventDate.setHours(0, 0, 0, 0)
-
-    switch (filter) {
-      case 'bullish':
-        return event.impact_direction === 'UP'
-      case 'bearish':
-        return event.impact_direction === 'DOWN'
-      case 'favorite':
-        return event.is_favorite === true
-      case 'upcoming':
-        return eventDate >= today
-      case 'past':
-        return eventDate < today
-      default:
-        return true
-    }
-  })
+  const handleSearchChange = (e) => {
+    const val = e.target.value
+    setSearchInput(val)
+    clearTimeout(searchDebounceRef.current)
+    searchDebounceRef.current = setTimeout(() => {
+      setSearch(val)
+      setPage(1)
+    }, 400)
+  }
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter)
+    setPage(1)
 
     const filterMessages = {
       null: 'Showing all events 📅',
@@ -115,10 +115,12 @@ export default function EventsPageClient({ initialEvents }) {
       upcoming: 'Showing upcoming events 🔜',
       past: 'Showing past events 📜',
     }
-
-    const message = filterMessages[newFilter] || filterMessages.null
-    toast.success(message)
+    toast.success(filterMessages[newFilter] || filterMessages.null)
   }
+
+  const handleRefresh = useCallback(() => {
+    doFetch({ searchVal: search, pageVal: page, filterVal: filter })
+  }, [doFetch, search, page, filter])
 
   return (
     <div className="flex flex-col h-full gap-5">
@@ -130,30 +132,41 @@ export default function EventsPageClient({ initialEvents }) {
           { label: 'Market Events' },
         ]}
       />
-      {/* Summary Cards */}
       <EventListSummary summary={summary} />
 
-      {/* Main Table Container */}
       <div className="flex-1 min-h-0 relative border border-slate-200/50 shadow-slate-100 rounded-xl overflow-hidden flex flex-col p-5 bg-white">
         <div className="flex flex-col gap-5 sm:gap-0 h-full overflow-hidden">
-          {/* Header Section */}
+          {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between mb-3 sm:mb-4 gap-3">
             <div className="max-w-[500px]">
               <EventTableHeader />
             </div>
 
             <div className="flex items-center justify-between sm:justify-end gap-2 w-full">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+                <Input
+                  id="eventSearchInput_eventPage"
+                  value={searchInput}
+                  onChange={handleSearchChange}
+                  placeholder="Search events..."
+                  className="pl-8 h-9 w-48 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                />
+              </div>
+
               <EventFilterDropdown
                 filter={filter}
                 onFilterChange={handleFilterChange}
                 events={listEvent}
               />
 
-              <AddEvent onAdded={fetchEvents} />
+              <AddEvent
+                onAdded={() => doFetch({ searchVal: search, pageVal: 1, filterVal: filter })}
+              />
             </div>
           </div>
 
-          {/* Table or Empty State */}
+          {/* Table / empty states */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12 gap-3">
               <div className="size-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
@@ -161,27 +174,68 @@ export default function EventsPageClient({ initialEvents }) {
             </div>
           ) : listEvent.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <p className="text-center font-medium text-slate-600 text-lg">No events yet</p>
-              <p className="text-center text-slate-500 text-sm">
-                Start by adding your first market event to track! 📅
-              </p>
-            </div>
-          ) : filteredEvents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
               <p className="text-center font-medium text-slate-600 text-lg">
-                No events match this filter
+                {search || filter ? 'No events match' : 'No events yet'}
               </p>
               <p className="text-center text-slate-500 text-sm">
-                Try a different filter or add a new event 🔍
+                {search || filter
+                  ? 'Try a different search term or filter'
+                  : 'Start by adding your first market event to track!'}
               </p>
+              {filter && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleFilterChange(null)}
+                  className="text-violet-600 border-violet-200 hover:bg-violet-50"
+                >
+                  Clear filter
+                </Button>
+              )}
             </div>
           ) : (
-            <EventsTable
-              events={filteredEvents}
-              allEvents={listEvent}
-              onEventsChange={setListEvent}
-              onRefresh={fetchEvents}
-            />
+            <>
+              <EventsTable
+                events={listEvent}
+                allEvents={listEvent}
+                onEventsChange={setListEvent}
+                onRefresh={handleRefresh}
+              />
+
+              {totalPages > 1 && (
+                <div
+                  id="eventPagination_eventPage"
+                  className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2 shrink-0"
+                >
+                  <p className="text-xs text-slate-500">
+                    Page {page} of {totalPages} ({total} total)
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      id="prevPageBtn_eventPage"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page <= 1 || isLoading}
+                      className="h-7 w-7 p-0"
+                    >
+                      <ChevronLeft className="size-4" />
+                    </Button>
+                    <span className="text-xs font-medium text-slate-600 px-2">{page}</span>
+                    <Button
+                      id="nextPageBtn_eventPage"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={page >= totalPages || isLoading}
+                      className="h-7 w-7 p-0"
+                    >
+                      <ChevronRight className="size-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
