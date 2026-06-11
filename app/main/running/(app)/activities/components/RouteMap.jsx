@@ -10,7 +10,7 @@ const TILE_CONFIGS = {
     options: { subdomains: 'abcd', maxZoom: 20 },
   },
   satellite: {
-    url: 'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     options: { minZoom: 0, maxZoom: 20 },
   },
 }
