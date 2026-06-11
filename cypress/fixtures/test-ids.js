@@ -251,6 +251,8 @@ export const TEST_IDS = {
     rpe_guide_toggle: 'rpeGuideToggle_activityDetailPage',
     rpe_guide_table: 'rpeGuideTable_activityDetailPage',
     rpe_saved_msg: 'rpeSavedMsg_activityDetailPage',
+    route_start_marker: 'routeStartMarker_activityDetailPage',
+    route_end_marker: 'routeEndMarker_activityDetailPage',
   },
 
   running_dashboard: {
