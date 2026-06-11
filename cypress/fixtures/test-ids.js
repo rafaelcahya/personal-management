@@ -523,6 +523,12 @@ export const TEST_IDS = {
     injury_activity_list: 'injuryActivityList_aiPage',
     injury_activity_selected_pill: 'injuryActivitySelectedPill_aiPage',
     injury_activity_clear_btn: 'injuryActivityClearBtn_aiPage',
+    injury_history_btn: 'injuryHistoryBtn_aiPage',
+    injury_history_back_btn: 'injuryHistoryBackBtn_aiPage',
+    injury_history_panel: 'injuryHistoryPanel_aiPage',
+    injury_history_loading: 'injuryHistoryLoading_aiPage',
+    injury_history_empty: 'injuryHistoryEmpty_aiPage',
+    injury_history_error: 'injuryHistoryError_aiPage',
   },
 
   running_strava_connection: {
