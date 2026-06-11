@@ -18,7 +18,6 @@ import PaceTrendChart from './components/PaceTrendChart'
 import BestPaceChart from './components/BestPaceChart'
 import TrainingLoadChart from './components/TrainingLoadChart'
 import Vo2maxTrendChart from './components/Vo2maxTrendChart'
-import CurrentVo2maxStat from './components/CurrentVo2maxStat'
 import EfTrendChart from './components/EfTrendChart'
 import RacePredictor from './components/RacePredictor'
 import AnalyticsAICard from './components/AnalyticsAICard'
@@ -173,15 +172,6 @@ export default function AnalyticsPage() {
           >
             <TrainingLoadChart trainingLoad={trainingLoad} />
             <AnalyticsAICard section="training_load" isPageStale={isPageStale} />
-          </Section>
-
-          <Section
-            id="vo2maxStatSection"
-            title="Current VO2max"
-            description="Your latest aerobic capacity estimate with trend, fitness category, and training signals."
-            icon={Activity}
-          >
-            <CurrentVo2maxStat />
           </Section>
 
           <Section

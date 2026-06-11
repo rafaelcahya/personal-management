@@ -11,10 +11,18 @@ import {
   AlertTriangle,
   X,
   Search,
+  History,
+  ChevronLeft,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { getInjuryCoachInsight, fetchActivities } from '@/lib/api/running'
+import { getInjuryCoachInsight, fetchActivities, fetchInjuryCoachHistory } from '@/lib/api/running'
 import { renderMarkdown } from './utils'
+
+const ROLE_LABELS = {
+  physio: 'Sports Physiotherapist',
+  sports_medicine: 'Sports Medicine Physician',
+  physician: 'Sports Medicine Physician',
+}
 
 const ROLES = [
   {
@@ -89,6 +97,11 @@ export default function InjuryCoachCard() {
   const [escalate, setEscalate] = useState(false)
   const [emergencyBlock, setEmergencyBlock] = useState(false)
 
+  const [showHistory, setShowHistory] = useState(false)
+  const [historyItems, setHistoryItems] = useState([])
+  const [historyLoading, setHistoryLoading] = useState(false)
+  const [historyError, setHistoryError] = useState(null)
+
   const [selectedActivity, setSelectedActivity] = useState(null)
   const [activitySearch, setActivitySearch] = useState('')
   const [activityList, setActivityList] = useState([])
@@ -114,6 +127,16 @@ export default function InjuryCoachCard() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [activityOpen])
+
+  function openHistory() {
+    setShowHistory(true)
+    setHistoryError(null)
+    setHistoryLoading(true)
+    fetchInjuryCoachHistory()
+      .then((items) => setHistoryItems(items))
+      .catch((err) => setHistoryError(err.message || 'Failed to load history'))
+      .finally(() => setHistoryLoading(false))
+  }
 
   const isQuestionValid = question.trim().length >= 10
 
@@ -166,67 +189,183 @@ export default function InjuryCoachCard() {
       aria-label="Injury and Recovery AI consultation"
     >
       <div className="flex items-center gap-2">
+        {showHistory && (
+          <button
+            id="injuryHistoryBackBtn_aiPage"
+            type="button"
+            onClick={() => setShowHistory(false)}
+            className="flex items-center justify-center w-6 h-6 rounded-md hover:bg-slate-100 transition-colors shrink-0"
+            aria-label="Back to consultation"
+          >
+            <ChevronLeft className="h-4 w-4 text-slate-600" aria-hidden="true" />
+          </button>
+        )}
         <span
           className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-100 shrink-0"
           aria-hidden="true"
         >
           <Stethoscope className="h-3.5 w-3.5 text-slate-600" aria-hidden="true" />
         </span>
-        <h2 className="text-sm font-semibold text-slate-700">Injury &amp; Recovery</h2>
-        <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-medium">
-          AI
-        </span>
+        <h2 className="text-sm font-semibold text-slate-700">
+          {showHistory ? 'Consultation History' : 'Injury & Recovery'}
+        </h2>
+        {!showHistory && (
+          <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-medium">
+            AI
+          </span>
+        )}
+        <button
+          id="injuryHistoryBtn_aiPage"
+          type="button"
+          onClick={showHistory ? () => setShowHistory(false) : openHistory}
+          className="ml-auto flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100 px-2 py-1 rounded-md transition-colors"
+          aria-label={showHistory ? 'Close history' : 'View consultation history'}
+        >
+          <History className="h-3.5 w-3.5" aria-hidden="true" />
+          {!showHistory && 'History'}
+        </button>
       </div>
 
-      <div
-        id="injuryDisclaimer_aiPage"
-        role="note"
-        className="flex items-start gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg"
-      >
-        <Info className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-0.5" aria-hidden="true" />
-        <p className="text-xs text-slate-500">
-          AI guidance only — not a substitute for professional medical advice.
-        </p>
-      </div>
+      {!showHistory && (
+        <div
+          id="injuryDisclaimer_aiPage"
+          role="note"
+          className="flex items-start gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg"
+        >
+          <Info className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-0.5" aria-hidden="true" />
+          <p className="text-xs text-slate-500">
+            AI guidance only — not a substitute for professional medical advice.
+          </p>
+        </div>
+      )}
 
-      <div
-        className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-        role="group"
-        aria-label="Select AI role"
-      >
-        {ROLES.map((role) => {
-          const isSelected = selectedRole === role.id
-          return (
-            <button
-              key={role.id}
-              id={role.cardId}
-              type="button"
-              aria-pressed={isSelected}
-              onClick={() => handleRoleSelect(role.id)}
-              className={`text-left rounded-lg px-3 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[44px] ${
-                isSelected
-                  ? 'border-2 border-violet-400 bg-violet-50'
-                  : 'border border-slate-200 bg-white hover:bg-slate-50'
-              }`}
+      {showHistory && (
+        <div
+          id="injuryHistoryPanel_aiPage"
+          className="space-y-3"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {historyLoading && (
+            <div
+              id="injuryHistoryLoading_aiPage"
+              className="space-y-3 animate-pulse motion-reduce:animate-none"
+              aria-label="Loading consultation history"
             >
-              <div className="flex items-center gap-2 mb-0.5">
-                <role.Icon
-                  className={`h-4 w-4 shrink-0 ${isSelected ? 'text-violet-600' : 'text-slate-400'}`}
-                  aria-hidden="true"
-                />
-                <span
-                  className={`text-sm font-semibold ${isSelected ? 'text-violet-700' : 'text-slate-700'}`}
-                >
-                  {role.label}
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 pl-6">{role.description}</p>
-            </button>
-          )
-        })}
-      </div>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="rounded-lg border border-slate-200 p-3 space-y-2">
+                  <div className="h-3 bg-slate-200 rounded w-1/3" />
+                  <div className="h-3 bg-slate-200 rounded w-full" />
+                  <div className="h-3 bg-slate-200 rounded w-4/5" />
+                </div>
+              ))}
+            </div>
+          )}
 
-      {selectedRole && (
+          {!historyLoading && historyError && (
+            <p id="injuryHistoryError_aiPage" role="alert" className="text-sm text-red-500">
+              {historyError}
+            </p>
+          )}
+
+          {!historyLoading && !historyError && historyItems.length === 0 && (
+            <div
+              id="injuryHistoryEmpty_aiPage"
+              className="flex flex-col items-center justify-center py-8 text-center"
+            >
+              <History className="h-8 w-8 text-slate-300 mb-2" aria-hidden="true" />
+              <p className="text-sm text-slate-400">No consultations yet</p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Your past AI responses will appear here
+              </p>
+            </div>
+          )}
+
+          {!historyLoading && !historyError && historyItems.length > 0 && (
+            <div className="space-y-3">
+              {historyItems.map((item) => {
+                const roleLabel = ROLE_LABELS[item.data_refs?.role] ?? item.data_refs?.role ?? '—'
+                const bodyPart = item.data_refs?.body_part
+                const phase = item.data_refs?.injuryPhase
+                return (
+                  <div
+                    key={item.id}
+                    id={`injuryHistoryItem_aiPage_${item.id}`}
+                    className="rounded-lg border border-slate-200 bg-slate-50 p-3 space-y-2"
+                  >
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs text-slate-400">
+                        {new Date(item.created_at).toLocaleDateString('en-GB', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </span>
+                      <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-medium">
+                        {roleLabel}
+                      </span>
+                      {bodyPart && (
+                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                          {bodyPart}
+                        </span>
+                      )}
+                      {phase && (
+                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full capitalize">
+                          {phase}
+                        </span>
+                      )}
+                    </div>
+                    <div className="prose-sm text-slate-700 text-xs leading-relaxed line-clamp-4">
+                      {renderMarkdown(item.content)}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {!showHistory && (
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+          role="group"
+          aria-label="Select AI role"
+        >
+          {ROLES.map((role) => {
+            const isSelected = selectedRole === role.id
+            return (
+              <button
+                key={role.id}
+                id={role.cardId}
+                type="button"
+                aria-pressed={isSelected}
+                onClick={() => handleRoleSelect(role.id)}
+                className={`text-left rounded-lg px-3 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[44px] ${
+                  isSelected
+                    ? 'border-2 border-violet-400 bg-violet-50'
+                    : 'border border-slate-200 bg-white hover:bg-slate-50'
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-0.5">
+                  <role.Icon
+                    className={`h-4 w-4 shrink-0 ${isSelected ? 'text-violet-600' : 'text-slate-400'}`}
+                    aria-hidden="true"
+                  />
+                  <span
+                    className={`text-sm font-semibold ${isSelected ? 'text-violet-700' : 'text-slate-700'}`}
+                  >
+                    {role.label}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 pl-6">{role.description}</p>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {!showHistory && selectedRole && (
         <form onSubmit={handleSubmit} className="space-y-3" noValidate>
           <div className="space-y-1">
             <label
@@ -417,7 +556,7 @@ export default function InjuryCoachCard() {
         </form>
       )}
 
-      {loading && (
+      {!showHistory && loading && (
         <div
           className="space-y-2 animate-pulse motion-reduce:animate-none"
           aria-label="Loading injury coach response"
@@ -431,13 +570,13 @@ export default function InjuryCoachCard() {
         </div>
       )}
 
-      {!loading && error && (
+      {!showHistory && !loading && error && (
         <div role="alert" aria-live="polite" className="text-sm text-red-500">
           {error}
         </div>
       )}
 
-      {!loading && result && (
+      {!showHistory && !loading && result && (
         <div
           id="injuryOutputCard_aiPage"
           className="rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-3"

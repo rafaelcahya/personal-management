@@ -108,7 +108,6 @@
       "re_enrich_metrics": "/api/running/v1/auth/strava/re-enrich-metrics"
     },
     "running_analytics": {
-      "vo2max_stat": "/api/running/v1/analytics/vo2max-stat",
       "target_effort": "/api/running/v1/analytics/target-effort",
       "personal_bests": "/api/running/v1/analytics/personal-bests"
     },
@@ -138,10 +137,19 @@
       "strava_disconnect": "/api/running/v1/auth/strava/disconnect",
       "push_subscription": "/api/running/v1/user/push-subscription"
     },
+    "trading_event": {
+      "list": "/api/trade/v1/event/list",
+      "create": "/api/trade/v1/event/create",
+      "update": "/api/trade/v1/event/update",
+      "delete": "/api/trade/v1/event/delete",
+      "favorite": "/api/trade/v1/event/favorite",
+      "summary": "/api/trade/v1/event/summary"
+    },
     "running_ai": {
       "symptoms": "/api/running/v1/symptoms",
       "symptoms_by_id": "/api/running/v1/symptoms/:id",
-      "injury_coach": "/api/running/v1/ai/injury-coach"
+      "injury_coach": "/api/running/v1/ai/injury-coach",
+      "injury_coach_history": "/api/running/v1/ai/injury-coach/history"
     }
   },
   "test_ids": {
@@ -332,7 +340,8 @@
       "error": "activitiesError",
       "list": "activitiesList",
       "search": "activitiesSearch_activitiesPage",
-      "search_clear": "activitiesSearchClear_activitiesPage"
+      "search_clear": "activitiesSearchClear_activitiesPage",
+      "pb_rank_chip": "pbRankChip_{distance}_activitiesPage"
     },
     "running_activity_detail": {
       "page": "activityDetailPage",
@@ -342,6 +351,10 @@
       "stream_charts_retry": "streamChartsRetry_activityDetailPage",
       "stream_charts_empty": "streamChartsEmpty_activityDetailPage",
       "stream_chart_pace": "streamChartPace_activityDetailPage",
+      "pace_speed_toggle": "paceSpeedToggle_activityDetailPage",
+      "pace_speed_info": "paceSpeedInfo_activityDetailPage",
+      "pace_tab": "paceTab_activityDetailPage",
+      "speed_tab": "speedTab_activityDetailPage",
       "stream_chart_hr": "streamChartHr_activityDetailPage",
       "stream_chart_elevation": "streamChartElevation_activityDetailPage",
       "stream_chart_cadence": "streamChartCadence_activityDetailPage",
@@ -400,7 +413,11 @@
       "cadence_band_semiathlete": "cadenceBand_semiathlete_activityDetailPage",
       "cadence_band_elite": "cadenceBand_elite_activityDetailPage",
       "route_start_marker": "routeStartMarker_activityDetailPage",
-      "route_end_marker": "routeEndMarker_activityDetailPage"
+      "route_end_marker": "routeEndMarker_activityDetailPage",
+      "pb_rank_chip": "pbRankChip_{distance}_activityDetailPage",
+      "lap_marker": "lapMarker_{n}_activityDetailPage",
+      "pr_effort_start": "prEffortStart_{name}_activityDetailPage",
+      "pr_effort_end": "prEffortEnd_{name}_activityDetailPage"
     },
     "running_dashboard": {
       "page": "dashboardPage",
@@ -466,7 +483,13 @@
       "injury_activity_search": "injuryActivitySearch_aiPage",
       "injury_activity_list": "injuryActivityList_aiPage",
       "injury_activity_selected_pill": "injuryActivitySelectedPill_aiPage",
-      "injury_activity_clear_btn": "injuryActivityClearBtn_aiPage"
+      "injury_activity_clear_btn": "injuryActivityClearBtn_aiPage",
+      "injury_history_btn": "injuryHistoryBtn_aiPage",
+      "injury_history_back_btn": "injuryHistoryBackBtn_aiPage",
+      "injury_history_panel": "injuryHistoryPanel_aiPage",
+      "injury_history_loading": "injuryHistoryLoading_aiPage",
+      "injury_history_empty": "injuryHistoryEmpty_aiPage",
+      "injury_history_error": "injuryHistoryError_aiPage"
     },
     "running_onboarding": {
       "page": "runningOnboardingPage",
@@ -527,6 +550,7 @@
       "add_btn": "addRaceBtn",
       "form_modal": "raceLogFormModal",
       "save_btn": "raceLogSaveBtn",
+      "pb_rank_chip": "pbRankChip_{distance}_raceLogPage",
       "delete_btn": "deleteRaceBtn_raceDetailPage",
       "delete_confirm_btn": "deleteRaceConfirmBtn_raceDetailPage",
       "edit_goal_btn": "editGoalBtn",
@@ -561,7 +585,13 @@
       "cadence_band_recreational": "cadenceBand_recreational_raceDetailPage",
       "cadence_band_semiathlete": "cadenceBand_semiathlete_raceDetailPage",
       "cadence_band_elite": "cadenceBand_elite_raceDetailPage",
-      "cadence_info_tooltip": "cadenceInfoTooltip_raceDetailPage"
+      "cadence_info_tooltip": "cadenceInfoTooltip_raceDetailPage",
+      "pb_rank_chip": "pbRankChip_{distance}_raceDetailPage",
+      "route_start_marker": "routeStartMarker_raceDetailPage",
+      "route_end_marker": "routeEndMarker_raceDetailPage",
+      "lap_marker": "lapMarker_{n}_raceDetailPage",
+      "pr_effort_start": "prEffortStart_{name}_raceDetailPage",
+      "pr_effort_end": "prEffortEnd_{name}_raceDetailPage"
     },
     "running_analytics": {
       "page": "analyticsPage",
@@ -574,12 +604,6 @@
       "vo2max_trend_section": "vo2maxTrendSection",
       "ef_trend_section": "efTrendSection",
       "race_predictor_section": "racePredictorSection",
-      "vo2max_stat_section": "vo2maxStatSection",
-      "current_vo2max": "currentVo2max_analyticsPage",
-      "vo2max_trend_arrow": "vo2maxTrendArrow_analyticsPage",
-      "vo2max_category": "vo2maxCategory_analyticsPage",
-      "vo2max_maintenance_status": "vo2maxMaintenanceStatus_analyticsPage",
-      "vo2max_improvement_signal": "vo2maxImprovementSignal_analyticsPage",
       "ai_card": "analyticsAiCard_{section}_analyticsPage",
       "ai_loading": "analyticsAiLoading_{section}_analyticsPage",
       "ai_empty": "analyticsAiEmpty_{section}_analyticsPage",
@@ -608,8 +632,6 @@
       "set_goal_btn": "setGoalBtn_analyticsPage",
       "set_new_goal_btn": "setNewGoalBtn_analyticsPage",
       "vo2max_sex_missing_hint": "vo2maxSexMissingHint_analyticsPage",
-      "vo2max_sample_size": "vo2maxSampleSize_analyticsPage",
-      "vo2max_empty_count": "vo2maxEmptyCount_analyticsPage",
       "vo2max_trend_data_count": "vo2maxTrendDataCount_analyticsPage",
       "vo2max_trend_empty_count": "vo2maxTrendEmptyCount_analyticsPage",
       "ef_trend_data_count": "efTrendDataCount_analyticsPage",
@@ -704,6 +726,36 @@
       "settings_connected_state": "stravaConnectedState_settings",
       "settings_broken_state": "stravaBrokenState_settings",
       "settings_disconnected_state": "stravaDisconnectedState_settings"
+    },
+    "trading_event": {
+      "add_btn": "addNewEventBtn_eventPage",
+      "form": "addNewEventForm_eventPage",
+      "cancel_btn": "cancelNewEventBtn_eventPage",
+      "submit_btn": "submitNewEventBtn_eventPage",
+      "title_field": "eventTitleField_eventPage",
+      "title_error": "eventTitleField_errorMessage_eventPage",
+      "description_field": "eventDescriptionField_eventPage",
+      "description_error": "eventDescriptionField_errorMessage_eventPage",
+      "type_field": "eventTypeField_eventPage",
+      "impact_field": "impactDirectionField_eventPage",
+      "date_field": "eventDateField_eventPage",
+      "date_picker": "eventDatePicker_eventPage",
+      "link_hyperlink_input": "linkHyperlinkInput_eventPage",
+      "link_url_input": "linkUrlInput_eventPage",
+      "add_link_btn": "addLinkBtn_eventPage",
+      "search_input": "eventSearchInput_eventPage",
+      "pagination": "eventPagination_eventPage",
+      "prev_page_btn": "prevPageBtn_eventPage",
+      "next_page_btn": "nextPageBtn_eventPage",
+      "update_title_field": "updateEventTitle_eventPage",
+      "update_title_error": "updateEventTitle_errorMessage_eventPage",
+      "update_description_field": "updateEventDescription_eventPage",
+      "update_description_error": "updateEventDescription_errorMessage_eventPage",
+      "update_type_field": "updateEventType_eventPage",
+      "update_impact_field": "updateEventImpact_eventPage",
+      "update_date_field": "updateEventDate_eventPage",
+      "update_cancel_btn": "cancelUpdateEventBtn_eventPage",
+      "update_submit_btn": "submitUpdateEventBtn_eventPage"
     },
     "running_settings": {
       "page": "settingsPage",

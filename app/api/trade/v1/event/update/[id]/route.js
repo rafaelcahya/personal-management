@@ -2,6 +2,36 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { updateEvent } from '@/lib/services/event/updateEvent'
 
+const VALID_EVENT_TYPES = [
+  'Earnings',
+  'Central Bank',
+  'Macro',
+  'Corporate Action',
+  'Geopolitical',
+  'Personal',
+  'Other',
+]
+
+function validateLinks(links) {
+  if (!Array.isArray(links) || links.length === 0) {
+    return 'At least 1 reference link is required'
+  }
+  for (const entry of links) {
+    if (!entry.hyperlink || String(entry.hyperlink).trim() === '') {
+      return 'Each link must have a non-empty hyperlink text'
+    }
+    try {
+      const url = new URL(entry.link)
+      if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+        return 'Links must use http or https'
+      }
+    } catch {
+      return 'One or more links contain an invalid URL'
+    }
+  }
+  return null
+}
+
 export async function PUT(req, { params }) {
   try {
     const supabase = await createClient()
@@ -34,36 +64,38 @@ export async function PUT(req, { params }) {
       return NextResponse.json(
         {
           success: false,
-          error: [
-            'event date is required',
-            'impact direction is required',
-            'event description is required',
-          ],
+          error: ['title is required', 'event date is required', 'impact direction is required'],
         },
         { status: 400 }
       )
     }
 
-    const requiredFields = ['event_date', 'impact_direction', 'event_description']
-    const missingFields = requiredFields.filter(
-      (field) => !body[field] || body[field].toString().trim() === ''
-    )
+    const errors = []
 
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: missingFields.map((f) => `${f.replace(/_/g, ' ')} is required`),
-        },
-        { status: 400 }
-      )
+    if (!body.title || String(body.title).trim() === '') errors.push('title is required')
+    if (body.title && String(body.title).length > 100)
+      errors.push('title must not exceed 100 characters')
+    if (body.event_description && String(body.event_description).length > 2000)
+      errors.push('event description must not exceed 2000 characters')
+    if (!body.impact_direction || String(body.impact_direction).trim() === '')
+      errors.push('impact direction is required')
+    if (!body.event_date || String(body.event_date).trim() === '')
+      errors.push('event date is required')
+    if (body.event_type && !VALID_EVENT_TYPES.includes(body.event_type))
+      errors.push('invalid event type')
+
+    const linksError = validateLinks(body.links)
+    if (linksError) errors.push(linksError)
+
+    if (errors.length > 0) {
+      return NextResponse.json({ success: false, error: errors }, { status: 400 })
     }
 
     const updatedEvent = await updateEvent(user.id, id, body)
 
     return NextResponse.json({ success: true, event: updatedEvent }, { status: 200 })
   } catch (err) {
-    console.error('PUT /api/event/v1/event/update error:', err)
+    console.error('PUT /api/trade/v1/event/update error:', err)
     return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
   }
 }
