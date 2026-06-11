@@ -141,7 +141,8 @@
     "running_ai": {
       "symptoms": "/api/running/v1/symptoms",
       "symptoms_by_id": "/api/running/v1/symptoms/:id",
-      "injury_coach": "/api/running/v1/ai/injury-coach"
+      "injury_coach": "/api/running/v1/ai/injury-coach",
+      "injury_coach_history": "/api/running/v1/ai/injury-coach/history"
     }
   },
   "test_ids": {
@@ -466,7 +467,13 @@
       "injury_activity_search": "injuryActivitySearch_aiPage",
       "injury_activity_list": "injuryActivityList_aiPage",
       "injury_activity_selected_pill": "injuryActivitySelectedPill_aiPage",
-      "injury_activity_clear_btn": "injuryActivityClearBtn_aiPage"
+      "injury_activity_clear_btn": "injuryActivityClearBtn_aiPage",
+      "injury_history_btn": "injuryHistoryBtn_aiPage",
+      "injury_history_back_btn": "injuryHistoryBackBtn_aiPage",
+      "injury_history_panel": "injuryHistoryPanel_aiPage",
+      "injury_history_loading": "injuryHistoryLoading_aiPage",
+      "injury_history_empty": "injuryHistoryEmpty_aiPage",
+      "injury_history_error": "injuryHistoryError_aiPage"
     },
     "running_onboarding": {
       "page": "runningOnboardingPage",
