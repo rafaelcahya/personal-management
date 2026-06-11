@@ -18,4 +18,5 @@ export const injuryCoachRequestSchema = z.object({
   injuryPhase: z.enum(['acute', 'subacute', 'recovery']).optional(),
   question: z.string().min(10, 'Question must be at least 10 characters').max(1000),
   pain_level: z.number().int().min(0).max(10).optional(),
+  activity_id: z.string().uuid().optional(),
 })

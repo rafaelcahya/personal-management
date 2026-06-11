@@ -32,14 +32,16 @@ export async function POST(request) {
       )
     }
 
-    const { role, body_part, injuryPhase, question, pain_level } = parsed.data
+    const { role, body_part, injuryPhase, question, pain_level, activity_id } = parsed.data
 
-    const [profile, activeSymptoms, recentActivities, trainingLoad] = await Promise.all([
-      getProfile(supabase, user.id),
-      getActiveSymptomLogs(supabase, user.id),
-      getRecentActivities(supabase, user.id),
-      getTrainingLoad(supabase, user.id),
-    ])
+    const [profile, activeSymptoms, recentActivities, trainingLoad, referenceActivity] =
+      await Promise.all([
+        getProfile(supabase, user.id),
+        getActiveSymptomLogs(supabase, user.id),
+        getRecentActivities(supabase, user.id),
+        getTrainingLoad(supabase, user.id),
+        activity_id ? getReferenceActivity(supabase, user.id, activity_id) : Promise.resolve(null),
+      ])
 
     if (pain_level !== undefined && body_part) {
       const { error: symptomError } = await supabase.from('rt_symptom_logs').insert({
@@ -64,6 +66,7 @@ export async function POST(request) {
       activeSymptoms,
       recentActivities,
       trainingLoad,
+      referenceActivity,
       bodyPart: body_part,
       injuryPhase,
       question,
@@ -154,6 +157,18 @@ async function getRecentActivities(supabase, userId) {
   return data ?? []
 }
 
+async function getReferenceActivity(supabase, userId, activityId) {
+  const { data } = await supabase
+    .from('rt_activities')
+    .select(
+      'id, started_at, distance_m, duration_sec, avg_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, avg_watts, aerobic_decoupling, activity_type'
+    )
+    .eq('id', activityId)
+    .eq('user_id', userId)
+    .maybeSingle()
+  return data
+}
+
 async function getTrainingLoad(supabase, userId) {
   const today = new Date().toISOString().split('T')[0]
   const { data } = await supabase
@@ -172,16 +187,57 @@ function sanitizeUserText(text, maxLength) {
     .slice(0, maxLength)
 }
 
+function fmtPace(secPerKm) {
+  if (!secPerKm) return null
+  const m = Math.floor(secPerKm / 60)
+  const s = String(secPerKm % 60).padStart(2, '0')
+  return `${m}:${s}/km`
+}
+
 function buildInjuryContext({
   profile,
   activeSymptoms,
   recentActivities,
   trainingLoad,
+  referenceActivity,
   bodyPart,
   injuryPhase,
   question,
 }) {
   const lines = []
+
+  if (referenceActivity) {
+    lines.push("=== USER'S REFERENCE RUN FOR THIS QUESTION ===")
+    const date = referenceActivity.started_at
+      ? new Date(referenceActivity.started_at).toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        })
+      : null
+    if (date) lines.push(`Date: ${date}`)
+    if (referenceActivity.activity_type) lines.push(`Type: ${referenceActivity.activity_type}`)
+    if (referenceActivity.distance_m)
+      lines.push(`Distance: ${(referenceActivity.distance_m / 1000).toFixed(2)} km`)
+    if (referenceActivity.duration_sec) {
+      const h = Math.floor(referenceActivity.duration_sec / 3600)
+      const m = Math.floor((referenceActivity.duration_sec % 3600) / 60)
+      const s = referenceActivity.duration_sec % 60
+      lines.push(`Duration: ${h > 0 ? `${h}h ` : ''}${m}m ${s}s`)
+    }
+    if (referenceActivity.avg_pace_sec_per_km)
+      lines.push(`Avg pace: ${fmtPace(referenceActivity.avg_pace_sec_per_km)}`)
+    if (referenceActivity.avg_hr) lines.push(`Avg HR: ${referenceActivity.avg_hr} bpm`)
+    if (referenceActivity.max_hr) lines.push(`Max HR: ${referenceActivity.max_hr} bpm`)
+    if (referenceActivity.avg_cadence)
+      lines.push(`Avg cadence: ${referenceActivity.avg_cadence} spm`)
+    if (referenceActivity.elevation_gain_m)
+      lines.push(`Elevation gain: ${referenceActivity.elevation_gain_m} m`)
+    if (referenceActivity.avg_watts) lines.push(`Avg power: ${referenceActivity.avg_watts} W`)
+    if (referenceActivity.aerobic_decoupling != null)
+      lines.push(`Aerobic decoupling: ${referenceActivity.aerobic_decoupling}%`)
+    lines.push('')
+  }
 
   lines.push('=== ATHLETE PROFILE ===')
   if (profile.display_name) lines.push(`Name: ${profile.display_name}`)
