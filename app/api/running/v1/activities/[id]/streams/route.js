@@ -46,7 +46,7 @@ export async function GET(request, { params }) {
     const { data: rows, error: streamsError } = await supabase
       .from('rt_activity_streams')
       .select(
-        'timestamp, distance_m, heart_rate, cadence, altitude_m, pace_sec_per_km, latitude, longitude'
+        'timestamp, distance_m, heart_rate, cadence, altitude_m, pace_sec_per_km, velocity_m_s, latitude, longitude'
       )
       .eq('activity_id', id)
       .order('timestamp', { ascending: true })
@@ -81,6 +81,7 @@ export async function GET(request, { params }) {
       cadence: r.cadence,
       alt: r.altitude_m,
       pace: r.pace_sec_per_km,
+      velocity: r.velocity_m_s,
       lat: r.latitude,
       lng: r.longitude,
     }))
