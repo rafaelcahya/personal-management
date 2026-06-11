@@ -724,6 +724,8 @@
       "notify_weekly_review_toggle": "notifyWeeklyReviewToggle_settingsPage",
       "notify_friday_prep_toggle": "notifyFridayPrepToggle_settingsPage",
       "notify_anomaly_toggle": "notifyAnomalyToggle_settingsPage",
+      "notify_race_reminder_toggle": "notifyRaceReminderToggle_settingsPage",
+      "notify_toggle_error": "notifyToggleError_settingsPage",
       "strava_disconnect_btn": "stravaDisconnectBtn_settings",
       "danger_zone_delete_btn": "dangerZoneDeleteBtn_settingsPage",
       "danger_zone_dialog": "dangerZoneDialog_settingsPage",
