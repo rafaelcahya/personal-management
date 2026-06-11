@@ -137,6 +137,14 @@
       "strava_disconnect": "/api/running/v1/auth/strava/disconnect",
       "push_subscription": "/api/running/v1/user/push-subscription"
     },
+    "trading_event": {
+      "list": "/api/trade/v1/event/list",
+      "create": "/api/trade/v1/event/create",
+      "update": "/api/trade/v1/event/update",
+      "delete": "/api/trade/v1/event/delete",
+      "favorite": "/api/trade/v1/event/favorite",
+      "summary": "/api/trade/v1/event/summary"
+    },
     "running_ai": {
       "symptoms": "/api/running/v1/symptoms",
       "symptoms_by_id": "/api/running/v1/symptoms/:id",
@@ -718,6 +726,36 @@
       "settings_connected_state": "stravaConnectedState_settings",
       "settings_broken_state": "stravaBrokenState_settings",
       "settings_disconnected_state": "stravaDisconnectedState_settings"
+    },
+    "trading_event": {
+      "add_btn": "addNewEventBtn_eventPage",
+      "form": "addNewEventForm_eventPage",
+      "cancel_btn": "cancelNewEventBtn_eventPage",
+      "submit_btn": "submitNewEventBtn_eventPage",
+      "title_field": "eventTitleField_eventPage",
+      "title_error": "eventTitleField_errorMessage_eventPage",
+      "description_field": "eventDescriptionField_eventPage",
+      "description_error": "eventDescriptionField_errorMessage_eventPage",
+      "type_field": "eventTypeField_eventPage",
+      "impact_field": "impactDirectionField_eventPage",
+      "date_field": "eventDateField_eventPage",
+      "date_picker": "eventDatePicker_eventPage",
+      "link_hyperlink_input": "linkHyperlinkInput_eventPage",
+      "link_url_input": "linkUrlInput_eventPage",
+      "add_link_btn": "addLinkBtn_eventPage",
+      "search_input": "eventSearchInput_eventPage",
+      "pagination": "eventPagination_eventPage",
+      "prev_page_btn": "prevPageBtn_eventPage",
+      "next_page_btn": "nextPageBtn_eventPage",
+      "update_title_field": "updateEventTitle_eventPage",
+      "update_title_error": "updateEventTitle_errorMessage_eventPage",
+      "update_description_field": "updateEventDescription_eventPage",
+      "update_description_error": "updateEventDescription_errorMessage_eventPage",
+      "update_type_field": "updateEventType_eventPage",
+      "update_impact_field": "updateEventImpact_eventPage",
+      "update_date_field": "updateEventDate_eventPage",
+      "update_cancel_btn": "cancelUpdateEventBtn_eventPage",
+      "update_submit_btn": "submitUpdateEventBtn_eventPage"
     },
     "running_settings": {
       "page": "settingsPage",
