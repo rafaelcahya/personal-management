@@ -398,7 +398,9 @@
       "cadence_band_beginner": "cadenceBand_beginner_activityDetailPage",
       "cadence_band_recreational": "cadenceBand_recreational_activityDetailPage",
       "cadence_band_semiathlete": "cadenceBand_semiathlete_activityDetailPage",
-      "cadence_band_elite": "cadenceBand_elite_activityDetailPage"
+      "cadence_band_elite": "cadenceBand_elite_activityDetailPage",
+      "route_start_marker": "routeStartMarker_activityDetailPage",
+      "route_end_marker": "routeEndMarker_activityDetailPage"
     },
     "running_dashboard": {
       "page": "dashboardPage",

@@ -22,6 +22,7 @@ function LeafletMap({ encodedPolyline, height, className = '', interactive = fal
   const mapRef = useRef(null)
   const tileLayerRef = useRef(null)
   const routeLineRef = useRef(null)
+  const animFrameRef = useRef(null)
 
   useEffect(() => {
     if (!containerRef.current || !encodedPolyline) return
@@ -56,15 +57,75 @@ function LeafletMap({ encodedPolyline, height, className = '', interactive = fal
       const config = TILE_CONFIGS[mapStyle] ?? TILE_CONFIGS.map
       const tileLayer = L.default.tileLayer(config.url, config.options).addTo(map)
 
+      // Fit to full bounds before animation so camera stays fixed
+      const tempLine = L.default.polyline(coords)
+      map.fitBounds(tempLine.getBounds(), { padding: [12, 12] })
+
       const routeLine = L.default
-        .polyline(coords, {
+        .polyline([], {
           color: POLYLINE_COLORS[mapStyle] ?? POLYLINE_COLORS.map,
           weight: 4,
           opacity: 0.85,
         })
         .addTo(map)
 
-      map.fitBounds(routeLine.getBounds(), { padding: [12, 12] })
+      const DURATION = 5000
+      const startTime = performance.now()
+
+      function animate(now) {
+        if (!isMounted) return
+        const progress = Math.min((now - startTime) / DURATION, 1)
+        const count = Math.max(Math.floor(progress * coords.length), 1)
+        routeLine.setLatLngs(coords.slice(0, count))
+
+        if (progress < 1) {
+          animFrameRef.current = requestAnimationFrame(animate)
+        } else {
+          routeLine.setLatLngs(coords)
+
+          if (!document.getElementById('route-marker-styles')) {
+            const style = document.createElement('style')
+            style.id = 'route-marker-styles'
+            style.textContent = `
+              @keyframes routePing {
+                0% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; }
+                100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
+              }
+              .route-marker-label {
+                opacity: 0;
+                transition: opacity 0.15s ease;
+                pointer-events: none;
+              }
+              .route-marker-wrapper:hover .route-marker-label {
+                opacity: 1;
+              }
+            `
+            document.head.appendChild(style)
+          }
+
+          const makeIcon = (color, label) =>
+            L.default.divIcon({
+              html: `<div class="route-marker-wrapper" style="position:relative;width:0;height:0;cursor:pointer;">
+                <div style="position:absolute;width:18px;height:18px;border-radius:50%;background:${color};transform:translate(-50%,-50%);animation:routePing 1.6s ease-out infinite;pointer-events:none;"></div>
+                <div style="position:absolute;width:11px;height:11px;border-radius:50%;background:${color};transform:translate(-50%,-50%);"></div>
+                <div class="route-marker-label" style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:#fff;color:#334155;border:1px solid #e2e8f0;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">${label}</div>
+              </div>`,
+              className: '',
+              iconSize: [0, 0],
+              iconAnchor: [0, 0],
+            })
+
+          const startMarker = L.default
+            .marker(coords[0], { icon: makeIcon('#16a34a', 'Start') })
+            .addTo(map)
+          const endMarker = L.default
+            .marker(coords[coords.length - 1], { icon: makeIcon('#dc2626', 'Finish') })
+            .addTo(map)
+          startMarker.getElement()?.setAttribute('id', 'routeStartMarker_activityDetailPage')
+          endMarker.getElement()?.setAttribute('id', 'routeEndMarker_activityDetailPage')
+        }
+      }
+      animFrameRef.current = requestAnimationFrame(animate)
 
       if (isMounted) {
         mapRef.current = map
@@ -75,6 +136,7 @@ function LeafletMap({ encodedPolyline, height, className = '', interactive = fal
 
     return () => {
       isMounted = false
+      cancelAnimationFrame(animFrameRef.current)
       if (mapRef.current) {
         mapRef.current.remove()
         mapRef.current = null
