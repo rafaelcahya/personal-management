@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { upsertRunnerSettings } from '@/lib/services/running/user/upsertRunnerProfile'
 
 const SETTINGS_FIELDS =
-  'user_id, hr_zones_method, threshold_hr, notify_post_activity, notify_weekly_review, notify_friday_prep, notify_anomaly, push_notifications_enabled'
+  'user_id, hr_zones_method, threshold_hr, notify_post_activity, notify_weekly_review, notify_friday_prep, notify_anomaly, notify_race_reminder, push_notifications_enabled'
 
 const DEFAULT_SETTINGS = {
   hr_zones_method: 'max_hr',
@@ -13,6 +13,7 @@ const DEFAULT_SETTINGS = {
   notify_weekly_review: true,
   notify_friday_prep: true,
   notify_anomaly: true,
+  notify_race_reminder: true,
 }
 
 const patchSchema = z.object({
@@ -22,6 +23,7 @@ const patchSchema = z.object({
   notify_weekly_review: z.boolean().optional(),
   notify_friday_prep: z.boolean().optional(),
   notify_anomaly: z.boolean().optional(),
+  notify_race_reminder: z.boolean().optional(),
 })
 
 export async function GET() {

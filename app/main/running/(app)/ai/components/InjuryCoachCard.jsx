@@ -1,9 +1,19 @@
 'use client'
 
-import { useState } from 'react'
-import { Stethoscope, PersonStanding, Microscope, Info, Loader2, AlertTriangle } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
+import {
+  Stethoscope,
+  PersonStanding,
+  Microscope,
+  Info,
+  Loader2,
+  AlertTriangle,
+  X,
+  Search,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { getInjuryCoachInsight } from '@/lib/api/running'
+import { getInjuryCoachInsight, fetchActivities } from '@/lib/api/running'
 import { renderMarkdown } from './utils'
 
 const ROLES = [
@@ -16,7 +26,7 @@ const ROLES = [
     placeholder: 'e.g. My left knee clicks when I climb stairs. Is this normal after a long run?',
   },
   {
-    id: 'physician',
+    id: 'sports_medicine',
     cardId: 'injuryPhysicianCard_aiPage',
     label: 'Sports Medicine Physician',
     description: 'Diagnosis, load management & return-to-sport',
@@ -26,9 +36,27 @@ const ROLES = [
 ]
 
 const PHASES = [
-  { id: 'acute', label: 'Acute', elementId: 'injuryPhaseAcute_aiPage' },
-  { id: 'subacute', label: 'Sub-acute', elementId: 'injuryPhaseSubacute_aiPage' },
-  { id: 'recovery', label: 'Recovery', elementId: 'injuryPhaseRecovery_aiPage' },
+  {
+    id: 'acute',
+    label: 'Acute',
+    elementId: 'injuryPhaseAcute_aiPage',
+    guide:
+      '0–72 hours after injury. Expect sharp pain, swelling, and inflammation. Focus is rest, ice, and protecting the area.',
+  },
+  {
+    id: 'subacute',
+    label: 'Sub-acute',
+    elementId: 'injuryPhaseSubacute_aiPage',
+    guide:
+      '3 days to ~6 weeks. Pain is easing and tissue is healing. Gentle movement and light rehab can begin.',
+  },
+  {
+    id: 'recovery',
+    label: 'Recovery',
+    elementId: 'injuryPhaseRecovery_aiPage',
+    guide:
+      '6+ weeks. Rebuilding strength and mobility. Gradual return to running with progressive load.',
+  },
 ]
 
 const SEVERE_KEYWORDS = ['10/10', "can't walk", 'severe pain']
@@ -36,6 +64,18 @@ const SEVERE_KEYWORDS = ['10/10', "can't walk", 'severe pain']
 function containsSevereKeyword(text) {
   const lower = text.toLowerCase()
   return SEVERE_KEYWORDS.some((kw) => lower.includes(kw.toLowerCase()))
+}
+
+function fmtPace(secPerKm) {
+  if (!secPerKm) return null
+  const m = Math.floor(secPerKm / 60)
+  const s = String(secPerKm % 60).padStart(2, '0')
+  return `${m}:${s}/km`
+}
+
+function fmtDist(meters) {
+  if (!meters) return null
+  return `${(meters / 1000).toFixed(1)} km`
 }
 
 export default function InjuryCoachCard() {
@@ -48,6 +88,32 @@ export default function InjuryCoachCard() {
   const [result, setResult] = useState(null)
   const [escalate, setEscalate] = useState(false)
   const [emergencyBlock, setEmergencyBlock] = useState(false)
+
+  const [selectedActivity, setSelectedActivity] = useState(null)
+  const [activitySearch, setActivitySearch] = useState('')
+  const [activityList, setActivityList] = useState([])
+  const [activityOpen, setActivityOpen] = useState(false)
+  const [activityLoading, setActivityLoading] = useState(false)
+  const pickerRef = useRef(null)
+  const debouncedSearch = useDebounce(activitySearch, 300)
+
+  useEffect(() => {
+    if (!activityOpen) return
+    setActivityLoading(true)
+    fetchActivities({ limit: 20, search: debouncedSearch || null })
+      .then((res) => setActivityList(res.data ?? []))
+      .catch(() => setActivityList([]))
+      .finally(() => setActivityLoading(false))
+  }, [activityOpen, debouncedSearch])
+
+  useEffect(() => {
+    if (!activityOpen) return
+    function handleClickOutside(e) {
+      if (pickerRef.current && !pickerRef.current.contains(e.target)) setActivityOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [activityOpen])
 
   const isQuestionValid = question.trim().length >= 10
 
@@ -71,7 +137,8 @@ export default function InjuryCoachCard() {
         role: selectedRole,
         question: question.trim(),
         ...(bodyPart.trim() && { body_part: bodyPart.trim() }),
-        ...(phase && { injury_phase: phase }),
+        ...(phase && { injuryPhase: phase }),
+        ...(selectedActivity && { activity_id: selectedActivity.id }),
       }
       const response = await getInjuryCoachInsight(payload)
       setResult(response.data)
@@ -200,6 +267,99 @@ export default function InjuryCoachCard() {
                 </button>
               ))}
             </div>
+            {phase && (
+              <p className="text-xs text-slate-500 leading-relaxed">
+                {PHASES.find((p2) => p2.id === phase)?.guide}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-1" ref={pickerRef}>
+            <p className="text-sm font-medium text-slate-600">
+              Activity <span className="text-xs text-slate-400 font-normal">(optional)</span>
+            </p>
+            {selectedActivity ? (
+              <div className="flex items-center gap-2 rounded-md border border-violet-300 bg-violet-50 px-3 py-2">
+                <span
+                  id="injuryActivitySelectedPill_aiPage"
+                  className="text-sm font-medium text-violet-700 flex-1 min-w-0 truncate"
+                >
+                  {new Date(selectedActivity.started_at).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                  })}
+                  {' · '}
+                  {fmtDist(selectedActivity.distance_m) ?? '—'}
+                  {selectedActivity.avg_pace_sec_per_km &&
+                    ` · ${fmtPace(selectedActivity.avg_pace_sec_per_km)}`}
+                </span>
+                <button
+                  id="injuryActivityClearBtn_aiPage"
+                  type="button"
+                  onClick={() => setSelectedActivity(null)}
+                  className="shrink-0 text-slate-400 hover:text-slate-600"
+                  aria-label="Clear selected activity"
+                >
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              </div>
+            ) : (
+              <div className="relative">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+                  <input
+                    id="injuryActivitySearch_aiPage"
+                    type="text"
+                    value={activitySearch}
+                    onChange={(e) => setActivitySearch(e.target.value)}
+                    onFocus={() => setActivityOpen(true)}
+                    placeholder="Search by date or distance..."
+                    className="w-full rounded-md border border-slate-200 pl-8 pr-3 py-2 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  />
+                </div>
+                {activityOpen && (
+                  <div
+                    id="injuryActivityList_aiPage"
+                    className="absolute z-50 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-md max-h-48 overflow-y-auto"
+                  >
+                    {activityLoading ? (
+                      <div className="flex items-center justify-center py-4">
+                        <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                      </div>
+                    ) : activityList.length === 0 ? (
+                      <p className="px-3 py-3 text-xs text-slate-400">No activities found</p>
+                    ) : (
+                      activityList.map((a) => (
+                        <button
+                          key={a.id}
+                          id={`injuryActivityItem_aiPage_${a.id}`}
+                          type="button"
+                          onClick={() => {
+                            setSelectedActivity(a)
+                            setActivityOpen(false)
+                            setActivitySearch('')
+                          }}
+                          className="w-full text-left px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0"
+                        >
+                          {a.name && (
+                            <p className="text-sm font-medium text-slate-700 truncate">{a.name}</p>
+                          )}
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            {new Date(a.started_at).toLocaleDateString('en-GB', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                            })}
+                            {a.distance_m && ` · ${fmtDist(a.distance_m)}`}
+                            {a.avg_pace_sec_per_km && ` · ${fmtPace(a.avg_pace_sec_per_km)}`}
+                          </p>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="space-y-1">
