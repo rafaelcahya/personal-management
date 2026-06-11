@@ -25,10 +25,13 @@ export default function EfTrendChart({ activities }) {
 
   if (basePts.length < 3) {
     return (
-      <EmptyState
-        message="Not enough Efficiency Factor data yet"
-        details="Needs 3+ runs with an Efficiency Factor — record with HR for 20+ min to generate one"
-      />
+      <div className="flex flex-col items-center justify-center h-[180px] gap-1 text-center px-4">
+        <p className="text-sm text-slate-400">Not enough Efficiency Factor data yet</p>
+        <p id="efTrendEmptyCount_analyticsPage" className="text-xs text-slate-300">
+          Need at least 3 runs with EF calculated. Currently have {basePts.length}. Qualifying runs
+          require 20+ min with HR data.
+        </p>
+      </div>
     )
   }
 
@@ -36,8 +39,9 @@ export default function EfTrendChart({ activities }) {
 
   return (
     <div className="outline-none">
-      <p className="text-xs text-slate-400 mb-3">
-        Last {basePts.length} runs · colored dots vs 30-day average
+      <p id="efTrendDataCount_analyticsPage" className="text-xs text-slate-400 mb-3">
+        Showing {basePts.length} data points from last 90 activities · colored dots vs 30-day
+        average
       </p>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={data} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>

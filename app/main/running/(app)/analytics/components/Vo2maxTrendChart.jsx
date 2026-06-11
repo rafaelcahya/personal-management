@@ -25,10 +25,13 @@ export default function Vo2maxTrendChart({ activities }) {
 
   if (pts.length < 3) {
     return (
-      <EmptyState
-        message="Not enough VO₂max data yet"
-        details="Needs 3+ runs with a VO₂max estimate — record with HR for 20+ min to generate one"
-      />
+      <div className="flex flex-col items-center justify-center h-[180px] gap-1 text-center px-4">
+        <p className="text-sm text-slate-400">Not enough VO₂max data yet</p>
+        <p id="vo2maxTrendEmptyCount_analyticsPage" className="text-xs text-slate-300">
+          Need at least 3 runs with VO₂max estimates. Currently have {pts.length}. Qualifying runs
+          require 20+ min with HR data.
+        </p>
+      </div>
     )
   }
 
@@ -36,8 +39,9 @@ export default function Vo2maxTrendChart({ activities }) {
 
   return (
     <div className="outline-none">
-      <p className="text-xs text-slate-400 mb-3">
-        Last {pts.length} runs with HR data · purple line = 30-day rolling average
+      <p id="vo2maxTrendDataCount_analyticsPage" className="text-xs text-slate-400 mb-3">
+        Showing {pts.length} data points from last 90 activities · purple line = 30-day rolling
+        average
       </p>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={data} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
