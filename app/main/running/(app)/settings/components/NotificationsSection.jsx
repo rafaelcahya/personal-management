@@ -32,6 +32,12 @@ const TOGGLES = [
     label: 'Anomaly alerts',
     description: 'Be notified when unusual patterns are detected in your training',
   },
+  {
+    key: 'notify_race_reminder',
+    id: 'notifyRaceReminderToggle_settingsPage',
+    label: 'Race reminders',
+    description: 'Get reminders 14, 7, 3, and 1 day before your upcoming races',
+  },
 ]
 
 function urlBase64ToUint8Array(base64String) {
@@ -49,10 +55,12 @@ export default function NotificationsSection() {
     notify_weekly_review: false,
     notify_friday_prep: false,
     notify_anomaly: false,
+    notify_race_reminder: false,
   })
   const [pushEnabled, setPushEnabled] = useState(false)
   const [pushPending, setPushPending] = useState(false)
   const [pushError, setPushError] = useState(null)
+  const [toggleError, setToggleError] = useState(null)
   const [swSupported, setSwSupported] = useState(false)
 
   useEffect(() => {
@@ -72,6 +80,7 @@ export default function NotificationsSection() {
             notify_weekly_review: data.notify_weekly_review ?? false,
             notify_friday_prep: data.notify_friday_prep ?? false,
             notify_anomaly: data.notify_anomaly ?? false,
+            notify_race_reminder: data.notify_race_reminder ?? false,
           })
           setPushEnabled(data.push_notifications_enabled ?? false)
         }
@@ -147,11 +156,13 @@ export default function NotificationsSection() {
 
   async function handleToggle(key, newValue) {
     const prev = values[key]
+    setToggleError(null)
     setValues((v) => ({ ...v, [key]: newValue }))
     try {
       await updateUserSettings({ [key]: newValue })
-    } catch {
+    } catch (err) {
       setValues((v) => ({ ...v, [key]: prev }))
+      setToggleError(err.message || 'Failed to save notification setting.')
     }
   }
 
@@ -246,6 +257,16 @@ export default function NotificationsSection() {
               ))}
             </CardContent>
           </Card>
+          {toggleError && (
+            <p
+              id="notifyToggleError_settingsPage"
+              className="text-xs text-red-600 mt-1"
+              role="alert"
+              aria-live="polite"
+            >
+              {toggleError}
+            </p>
+          )}
         </div>
       )}
     </section>

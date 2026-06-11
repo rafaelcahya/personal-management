@@ -559,6 +559,8 @@ export const TEST_IDS = {
     notify_weekly_review_toggle: 'notifyWeeklyReviewToggle_settingsPage',
     notify_friday_prep_toggle: 'notifyFridayPrepToggle_settingsPage',
     notify_anomaly_toggle: 'notifyAnomalyToggle_settingsPage',
+    notify_race_reminder_toggle: 'notifyRaceReminderToggle_settingsPage',
+    notify_toggle_error: 'notifyToggleError_settingsPage',
     push_notifications_toggle: 'pushNotificationsToggle_settingsPage',
     push_notifications_error: 'pushNotificationsError_settingsPage',
     strava_disconnect_btn: 'stravaDisconnectBtn_settings',
