@@ -199,6 +199,7 @@ export const TEST_IDS = {
     list: 'activitiesList',
     search: 'activitiesSearch_activitiesPage',
     search_clear: 'activitiesSearchClear_activitiesPage',
+    pb_rank_chip: 'pbRankChip_{distance}_activitiesPage',
   },
 
   running_activity_detail: {
@@ -253,6 +254,7 @@ export const TEST_IDS = {
     rpe_saved_msg: 'rpeSavedMsg_activityDetailPage',
     route_start_marker: 'routeStartMarker_activityDetailPage',
     route_end_marker: 'routeEndMarker_activityDetailPage',
+    pb_rank_chip: 'pbRankChip_{distance}_activityDetailPage',
   },
 
   running_dashboard: {
@@ -346,6 +348,7 @@ export const TEST_IDS = {
     add_btn: 'addRaceBtn',
     form_modal: 'raceLogFormModal',
     save_btn: 'raceLogSaveBtn',
+    pb_rank_chip: 'pbRankChip_{distance}_raceLogPage',
     delete_btn: 'deleteRaceBtn_raceDetailPage',
     delete_confirm_btn: 'deleteRaceConfirmBtn_raceDetailPage',
     edit_goal_btn: 'editGoalBtn',
@@ -369,6 +372,7 @@ export const TEST_IDS = {
     cadence_band_semiathlete: 'cadenceBand_semiathlete_raceDetailPage',
     cadence_band_elite: 'cadenceBand_elite_raceDetailPage',
     cadence_info_tooltip: 'cadenceInfoTooltip_raceDetailPage',
+    pb_rank_chip: 'pbRankChip_{distance}_raceDetailPage',
   },
 
   running_analytics: {
