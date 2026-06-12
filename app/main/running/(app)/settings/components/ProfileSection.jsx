@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { format, parseISO } from 'date-fns'
-import { CalendarIcon, CheckCircle2, AlertCircle } from 'lucide-react'
+import { CalendarIcon, CheckCircle2, AlertCircle, Zap } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,21 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { getUserProfile, updateUserProfile } from '@/lib/api/running'
-
-const schema = z.object({
-  display_name: z.string().min(1).max(100).optional(),
-  birth_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional()
-    .or(z.literal('').transform(() => undefined)),
-  height_cm: z.coerce.number().positive().optional().or(z.literal('')),
-  weight_kg: z.coerce.number().positive().optional().or(z.literal('')),
-  max_hr: z.coerce.number().int().min(60).max(250).optional().or(z.literal('')),
-  resting_hr_baseline: z.coerce.number().int().min(30).max(120).optional().or(z.literal('')),
-  sex: z.enum(['male', 'female', 'none']).optional(),
-})
+import { getUserProfile, updateUserProfile, detectMaxHr } from '@/lib/api/running'
+import { profileSchema } from '@/schemas/runningProfile'
 
 export default function ProfileSection() {
   const [loading, setLoading] = useState(true)
@@ -42,15 +28,20 @@ export default function ProfileSection() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
   const [saveSuccess, setSaveSuccess] = useState(false)
+  const [detecting, setDetecting] = useState(false)
+  const [detectedHr, setDetectedHr] = useState(null)
+  const [detectNoData, setDetectNoData] = useState(false)
+  const [detectError, setDetectError] = useState(false)
 
   const {
     register,
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(profileSchema),
   })
 
   useEffect(() => {
@@ -70,6 +61,26 @@ export default function ProfileSection() {
       cancelled = true
     }
   }, [reset])
+
+  async function handleDetectMaxHr() {
+    setDetecting(true)
+    setDetectedHr(null)
+    setDetectNoData(false)
+    setDetectError(false)
+    try {
+      const result = await detectMaxHr()
+      if (result == null) {
+        setDetectNoData(true)
+      } else {
+        setDetectedHr(result)
+        setValue('max_hr', result, { shouldValidate: true })
+      }
+    } catch {
+      setDetectError(true)
+    } finally {
+      setDetecting(false)
+    }
+  }
 
   async function onSubmit(values) {
     setSaving(true)
@@ -226,15 +237,51 @@ export default function ProfileSection() {
                   <Label htmlFor="maxHrInput_settingsPage" className="text-sm font-medium">
                     Max HR (bpm)
                   </Label>
-                  <Input
-                    id="maxHrInput_settingsPage"
-                    type="number"
-                    {...register('max_hr')}
-                    placeholder="e.g. 190"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                  />
-                  <p className="text-xs text-slate-400">
-                    Your highest recorded heart rate — used for HR zone calculation ❤️
+                  <div className="flex gap-2">
+                    <Input
+                      id="maxHrInput_settingsPage"
+                      type="number"
+                      {...register('max_hr')}
+                      placeholder="e.g. 190"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                    />
+                    <Button
+                      id="detectMaxHrBtn_settingsPage"
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={detecting}
+                      onClick={handleDetectMaxHr}
+                      className="shrink-0 gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
+                    >
+                      <Zap className="size-3.5" aria-hidden="true" />
+                      {detecting ? 'Detecting…' : 'Detect'}
+                    </Button>
+                  </div>
+                  {detectedHr != null && (
+                    <p
+                      id="maxHrDetectedHint_settingsPage"
+                      className="text-xs text-green-700 flex items-center gap-1"
+                    >
+                      <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
+                      Detected: {detectedHr} bpm — from your highest recorded activity
+                    </p>
+                  )}
+                  {detectNoData && (
+                    <p id="maxHrNoDataHint_settingsPage" className="text-xs text-slate-500">
+                      No heart rate data found in your activities
+                    </p>
+                  )}
+                  {detectError && (
+                    <p id="maxHrDetectError_settingsPage" className="text-xs text-red-600">
+                      Could not detect Max HR — please try again
+                    </p>
+                  )}
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Max HR is the highest heart rate your heart can reach during maximum effort.
+                    It&apos;s used to calculate your HR training zones. The most accurate way to
+                    find it is from a hard race or all-out effort — the detected value from your
+                    activities is a good starting point.
                   </p>
                   {errors.max_hr && <p className="text-xs text-red-600">{errors.max_hr.message}</p>}
                 </div>

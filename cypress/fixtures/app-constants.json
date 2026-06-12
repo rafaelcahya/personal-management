@@ -134,6 +134,7 @@
       "profile": "/api/running/v1/user/profile",
       "settings": "/api/running/v1/user/settings",
       "activities": "/api/running/v1/user/activities",
+      "max_hr_detect": "/api/running/v1/user/max-hr-detect",
       "strava_disconnect": "/api/running/v1/auth/strava/disconnect",
       "push_subscription": "/api/running/v1/user/push-subscription"
     },
@@ -798,6 +799,10 @@
       "height_input": "heightInput_settingsPage",
       "weight_input": "weightInput_settingsPage",
       "max_hr_input": "maxHrInput_settingsPage",
+      "detect_max_hr_btn": "detectMaxHrBtn_settingsPage",
+      "max_hr_detected_hint": "maxHrDetectedHint_settingsPage",
+      "max_hr_no_data_hint": "maxHrNoDataHint_settingsPage",
+      "max_hr_detect_error": "maxHrDetectError_settingsPage",
       "resting_hr_input": "restingHrInput_settingsPage",
       "profile_save_btn": "profileSaveBtn_settingsPage",
       "profile_save_success": "profileSaveSuccess_settingsPage",
