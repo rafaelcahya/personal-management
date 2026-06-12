@@ -10,6 +10,7 @@ import { raceReminderNotification } from '@/lib/inngest/functions/raceReminderNo
 import { stravaFetchStreams } from '@/lib/inngest/functions/stravaFetchStreams'
 import { stravaBackfill } from '@/lib/inngest/functions/stravaBackfill'
 import { stravaHandleWebhookEvent } from '@/lib/inngest/functions/stravaHandleWebhookEvent'
+import { stravaGapHeal } from '@/lib/inngest/functions/stravaGapHeal'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -24,5 +25,6 @@ export const { GET, POST, PUT } = serve({
     stravaFetchStreams,
     stravaBackfill,
     stravaHandleWebhookEvent,
+    stravaGapHeal,
   ],
 })
