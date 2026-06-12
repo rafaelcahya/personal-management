@@ -7,8 +7,14 @@ import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { ExternalLink, FilePenLine, Trash2, MoreHorizontal } from 'lucide-react'
+import {
+  ExternalLink,
+  FilePenLine,
+  Trash2,
+  MoreHorizontal,
+  Sparkles,
+  RefreshCw,
+} from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,11 +22,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { fetchEventDetail } from '@/lib/api/event'
+import { fetchEventDetail, fetchEventAnalysis } from '@/lib/api/event'
 import PageHeader from '../../../components/PageHeader'
 import ImpactBadge from '../component/ImpactBadge'
 import UpdateEvent from '../UpdateEvent'
 import DeleteEvent from '../DeleteEvent'
+import EventAnalysisModal from '../component/EventAnalysisModal'
 
 function formatEventDate(dateStr) {
   if (!dateStr) return '—'
@@ -40,6 +47,17 @@ function formatEventDate(dateStr) {
   })
 }
 
+function formatTimestamp(iso) {
+  if (!iso) return ''
+  return new Date(iso).toLocaleString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
 function ActualOutcomeBadge({ value }) {
   if (!value) return null
   return <ImpactBadge value={value} />
@@ -53,6 +71,21 @@ export default function EventDetailClient({ id }) {
   const [notFound, setNotFound] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [analysisModalOpen, setAnalysisModalOpen] = useState(false)
+  const [cachedAnalysis, setCachedAnalysis] = useState(null)
+  const [analysisLoading, setAnalysisLoading] = useState(false)
+
+  const loadAnalysis = async () => {
+    setAnalysisLoading(true)
+    try {
+      const data = await fetchEventAnalysis(id)
+      setCachedAnalysis(data)
+    } catch {
+      // silent — analysis is optional
+    } finally {
+      setAnalysisLoading(false)
+    }
+  }
 
   const load = async () => {
     setLoading(true)
@@ -79,6 +112,10 @@ export default function EventDetailClient({ id }) {
   useEffect(() => {
     load()
   }, [id])
+
+  useEffect(() => {
+    if (event) loadAnalysis()
+  }, [event?.id])
 
   if (loading) {
     return (
@@ -130,6 +167,21 @@ export default function EventDetailClient({ id }) {
 
   const links = Array.isArray(event.links) ? event.links : []
   const tags = Array.isArray(event.tags) ? event.tags : []
+  const singleAnalysis = cachedAnalysis?.single ?? null
+  const multiAnalyses = cachedAnalysis?.multi ?? []
+  const hasAnyAnalysis = Boolean(singleAnalysis) || multiAnalyses.length > 0
+
+  const AnalyzeButton = ({ className = '' }) => (
+    <Button
+      id="analyzeEventBtn_eventDetailPage"
+      size="sm"
+      onClick={() => setAnalysisModalOpen(true)}
+      className={`gap-1.5 bg-violet-600 hover:bg-violet-700 text-white ${className}`}
+    >
+      <Sparkles className="size-3.5" />
+      {singleAnalysis ? 'Refresh Analysis' : 'Analyze with AI'}
+    </Button>
+  )
 
   return (
     <div id="eventDetailPage" className="flex flex-col gap-5">
@@ -247,33 +299,118 @@ export default function EventDetailClient({ id }) {
                 <p className="text-slate-400 italic text-sm">No description provided.</p>
               )}
             </div>
+
+            {/* Mobile: Analyze button below description */}
+            <div className="mt-4 flex md:hidden">
+              <AnalyzeButton />
+            </div>
           </div>
 
-          {/* Right sidebar — reference links only */}
-          {links.length > 0 && (
-            <div className="lg:col-span-4 p-5 flex flex-col gap-2">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                Reference Links
-              </p>
+          {/* Right sidebar */}
+          <div className="lg:col-span-4 p-5 flex flex-col gap-4">
+            {/* Desktop: Analyze button */}
+            <div className="hidden md:flex">
+              <AnalyzeButton className="w-full justify-center" />
+            </div>
+
+            {/* Reference links */}
+            {links.length > 0 && (
               <div className="flex flex-col gap-2">
-                {links.map((link, i) => (
-                  <a
-                    key={i}
-                    id={`eventLink_${i}_eventDetailPage`}
-                    href={link.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 transition-colors group"
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  Reference Links
+                </p>
+                <div className="flex flex-col gap-2">
+                  {links.map((link, i) => (
+                    <a
+                      key={i}
+                      id={`eventLink_${i}_eventDetailPage`}
+                      href={link.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 transition-colors group"
+                    >
+                      <ExternalLink className="size-3.5 shrink-0" />
+                      <span className="truncate group-hover:underline">{link.hyperlink}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* AI Analysis panel */}
+        {!analysisLoading && hasAnyAnalysis && (
+          <div className="border-t border-slate-100 p-5 flex flex-col gap-4">
+            {/* Single analysis */}
+            {singleAnalysis && (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="size-3.5 text-violet-500" /> AI Analysis
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span
+                      id="lastAnalyzedTimestamp_eventDetailPage"
+                      className="text-xs text-slate-400"
+                    >
+                      {formatTimestamp(singleAnalysis.generated_at)}
+                    </span>
+                    <Button
+                      id="refreshAnalysisBtn_eventDetailPage"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setAnalysisModalOpen(true)}
+                      className="h-7 gap-1.5 text-xs"
+                    >
+                      <RefreshCw className="size-3" /> Refresh
+                    </Button>
+                  </div>
+                </div>
+                <div
+                  id="eventAnalysisResult_eventDetailPage"
+                  className="prose prose-sm prose-slate max-w-none"
+                >
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeSanitize]}
+                    components={{
+                      a: ({ node, ...props }) => (
+                        <a {...props} target="_blank" rel="noopener noreferrer" />
+                      ),
+                    }}
                   >
-                    <ExternalLink className="size-3.5 shrink-0" />
-                    <span className="truncate group-hover:underline">{link.hyperlink}</span>
-                  </a>
+                    {singleAnalysis.output_md}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            )}
+
+            {/* Multi-analysis references */}
+            {multiAnalyses.length > 0 && (
+              <div className="flex flex-col gap-1.5">
+                {multiAnalyses.map((m) => (
+                  <p key={m.id} className="text-xs text-slate-500">
+                    Part of a multi-event analysis on {formatTimestamp(m.generated_at)}
+                  </p>
                 ))}
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {analysisModalOpen && (
+        <EventAnalysisModal
+          open={analysisModalOpen}
+          onClose={() => setAnalysisModalOpen(false)}
+          analysisType="single"
+          event={event}
+          onAnalysisComplete={() => {
+            loadAnalysis()
+          }}
+        />
+      )}
 
       {editOpen && (
         <UpdateEvent

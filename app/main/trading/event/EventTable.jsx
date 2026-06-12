@@ -33,7 +33,7 @@ function formatEventDate(dateStr) {
   })
 }
 
-export default function EventTable({ events, onRefresh }) {
+export default function EventTable({ events, onRefresh, selectedIds = new Set(), onToggle }) {
   const router = useRouter()
   const [selectedEvent, setSelectedEvent] = useState(null)
 
@@ -41,7 +41,7 @@ export default function EventTable({ events, onRefresh }) {
     <>
       {/* Mobile card list — below md */}
       <div className="block lg:hidden">
-        <EventCardList events={events} />
+        <EventCardList events={events} selectedIds={selectedIds} onToggle={onToggle} />
       </div>
 
       {/* Desktop table — lg and above */}
@@ -49,7 +49,12 @@ export default function EventTable({ events, onRefresh }) {
         <Table className="w-full">
           <TableHeader className="bg-slate-100 sticky top-0 z-20">
             <TableRow className="border-none">
-              <TableHead className="py-2 text-slate-foreground rounded-l-lg">Event</TableHead>
+              {onToggle && <TableHead className="py-2 w-10 rounded-l-lg" />}
+              <TableHead
+                className={`py-2 text-slate-foreground ${!onToggle ? 'rounded-l-lg' : ''}`}
+              >
+                Event
+              </TableHead>
               <TableHead className="py-2 text-slate-foreground text-center w-[130px]">
                 Impact
               </TableHead>
@@ -61,19 +66,38 @@ export default function EventTable({ events, onRefresh }) {
           <TableBody>
             {events.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-8 text-slate-500">
+                <TableCell colSpan={onToggle ? 4 : 3} className="text-center py-8 text-slate-500">
                   No events found.
                 </TableCell>
               </TableRow>
             ) : (
               events.map((event) => {
                 const linkCount = Array.isArray(event.links) ? event.links.length : 0
+                const isSelected = selectedIds.has(event.id)
                 return (
                   <TableRow
                     key={event.id}
-                    className="hover:bg-slate-50 cursor-pointer"
+                    className={`cursor-pointer ${isSelected ? 'bg-violet-50' : 'hover:bg-slate-50'}`}
                     onClick={() => router.push(`/main/trading/event/${event.id}`)}
                   >
+                    {onToggle && (
+                      <TableCell
+                        className="w-10 pl-3"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onToggle(event.id, event)
+                        }}
+                      >
+                        <input
+                          id={`multiSelectCheckbox_${event.id}_eventPage`}
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => onToggle(event.id, event)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="size-4 rounded accent-violet-600 cursor-pointer"
+                        />
+                      </TableCell>
+                    )}
                     <TableCell className="py-3 whitespace-normal">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">

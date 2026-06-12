@@ -147,6 +147,10 @@
       "detail": "/api/trade/v1/event",
       "tags": "/api/trade/v1/event/tags"
     },
+    "trading_ai": {
+      "event_analysis_get": "/api/trade/v1/ai/event-analysis",
+      "event_analysis_post": "/api/trade/v1/ai/event-analysis"
+    },
     "running_ai": {
       "symptoms": "/api/running/v1/symptoms",
       "symptoms_by_id": "/api/running/v1/symptoms/:id",
@@ -768,7 +772,23 @@
       "detail_delete_btn": "deleteEventBtn_eventDetailPage",
       "detail_loading": "eventDetailLoading_eventDetailPage",
       "detail_error": "eventDetailError_eventDetailPage",
-      "detail_not_found": "eventDetailNotFound_eventDetailPage"
+      "detail_not_found": "eventDetailNotFound_eventDetailPage",
+      "analyze_btn": "analyzeEventBtn_eventDetailPage",
+      "analysis_modal": "eventAnalysisModal",
+      "additional_context_input": "additionalContextInput_eventAnalysisModal",
+      "analyze_confirm_btn": "analyzeConfirmBtn_eventAnalysisModal",
+      "cancel_analysis_btn": "cancelAnalysisBtn_eventAnalysisModal",
+      "analysis_result": "eventAnalysisResult_eventDetailPage",
+      "refresh_analysis_btn": "refreshAnalysisBtn_eventDetailPage",
+      "last_analyzed_timestamp": "lastAnalyzedTimestamp_eventDetailPage",
+      "analysis_error": "analysisError_eventDetailPage",
+      "analysis_retry_btn": "analysisRetryBtn_eventDetailPage",
+      "analyze_together_btn": "analyzeTogetherBtn_eventPage",
+      "multi_select_checkbox": "multiSelectCheckbox_eventPage",
+      "multi_select_action_bar": "multiSelectActionBar_eventPage",
+      "multi_select_count": "multiSelectCount_eventPage",
+      "clear_multi_select_btn": "clearMultiSelectBtn_eventPage",
+      "brief_desc_warning": "briefDescriptionWarning_eventAnalysisModal"
     },
     "running_settings": {
       "page": "settingsPage",
