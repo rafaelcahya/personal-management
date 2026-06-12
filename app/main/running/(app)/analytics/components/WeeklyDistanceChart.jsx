@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts'
-import { RUN_TYPES, getWeekKey, fmtWeekLabel } from './utils'
+import { RUN_TYPES, getWeekKey, fmtWeekLabel, fmtWeekRange } from './utils'
 
 export default function WeeklyDistanceChart({ activities }) {
   const now = new Date()
@@ -36,12 +36,20 @@ export default function WeeklyDistanceChart({ activities }) {
     }
   }
 
-  const data = weeks.map((wk) => ({
-    label: fmtWeekLabel(wk),
-    distance_km: parseFloat(weekMap[wk].distance_km.toFixed(2)),
-    count: weekMap[wk].count,
-    isCurrentWeek: wk === getWeekKey(now.toISOString()),
-  }))
+  const data = weeks.map((wk) => {
+    const weekEndDate = new Date(wk + 'T00:00:00')
+    weekEndDate.setDate(weekEndDate.getDate() + 6)
+    const pad = (n) => String(n).padStart(2, '0')
+    const weekEnd = `${weekEndDate.getFullYear()}-${pad(weekEndDate.getMonth() + 1)}-${pad(weekEndDate.getDate())}`
+    return {
+      label: fmtWeekLabel(wk),
+      weekStart: wk,
+      weekEnd,
+      distance_km: parseFloat(weekMap[wk].distance_km.toFixed(2)),
+      count: weekMap[wk].count,
+      isCurrentWeek: wk === getWeekKey(now.toISOString()),
+    }
+  })
 
   const maxKm = Math.max(...data.map((d) => d.distance_km), 1)
 
@@ -68,12 +76,14 @@ export default function WeeklyDistanceChart({ activities }) {
           />
           <Tooltip
             cursor={{ fill: '#f8fafc' }}
-            content={({ active, payload, label }) => {
+            content={({ active, payload }) => {
               if (!active || !payload?.length) return null
               const d = payload[0]?.payload
               return (
                 <div className="bg-white border border-slate-200 rounded-lg shadow-md px-3 py-2 text-xs">
-                  <p className="font-medium text-slate-600 mb-1">{label}</p>
+                  <p className="font-medium text-slate-600 mb-1">
+                    {fmtWeekRange(d?.weekStart, d?.weekEnd)}
+                  </p>
                   <p className="text-slate-800 font-semibold">{d?.distance_km} km</p>
                   <p className="text-slate-400">
                     {d?.count} run{d?.count !== 1 ? 's' : ''}
@@ -84,7 +94,11 @@ export default function WeeklyDistanceChart({ activities }) {
           />
           <Bar dataKey="distance_km" radius={[3, 3, 0, 0]}>
             {data.map((entry, i) => (
-              <Cell key={i} fill={entry.isCurrentWeek ? '#7c3aed' : '#c4b5fd'} />
+              <Cell
+                key={i}
+                fill={entry.isCurrentWeek ? '#7c3aed' : '#c4b5fd'}
+                aria-label={`${fmtWeekRange(entry.weekStart, entry.weekEnd)}: ${entry.distance_km} km`}
+              />
             ))}
           </Bar>
         </BarChart>
