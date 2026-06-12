@@ -144,7 +144,7 @@ function PaceChart({ data }) {
           </button>
         </div>
       </div>
-      <div className="h-[240px] sm:h-[300px] outline-none" id="streamChartPace_activityDetailPage">
+      <div className="h-[180px] sm:h-[225px] outline-none" id="streamChartPace_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -396,34 +396,23 @@ function HrStreamChart({
   return (
     <div>
       <SubLabel>Heart Rate</SubLabel>
-      <div className="h-[320px] sm:h-[400px] outline-none" id={`streamChartHr_${pagePrefix}`}>
+      <div className="h-[240px] sm:h-[300px] outline-none" id={`streamChartHr_${pagePrefix}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
             syncId="streamCharts"
             margin={{ top: 4, right: 8, left: 4, bottom: 0 }}
           >
+            <defs>
+              <linearGradient id="gradHr" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
             <YAxis width={36} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${v} bpm`} />} />
-            {bandZones.map((z, i) => (
-              <ReferenceArea
-                key={i}
-                y1={z.min}
-                y2={z.max}
-                fill={ZONE_COLORS[i] ?? '#94a3b8'}
-                fillOpacity={ZONE_OPACITIES[i] ?? 0.15}
-                ifOverflow="hidden"
-                label={{
-                  value: ZONE_SHORT_LABELS[i] ?? `Z${i + 1}`,
-                  position: 'insideRight',
-                  fontSize: 8,
-                  fill: ZONE_COLORS[i] ?? '#94a3b8',
-                  opacity: 0.7,
-                }}
-              />
-            ))}
             {showHistoricalLine && (
               <ReferenceLine
                 y={historicalAvgHr}
@@ -477,7 +466,8 @@ function HrStreamChart({
               dataKey="hr"
               stroke="#ef4444"
               strokeWidth={2}
-              fill="none"
+              fill="url(#gradHr)"
+              baseValue="dataMin"
               dot={false}
               activeDot={{ r: 3 }}
               connectNulls={false}
@@ -523,7 +513,7 @@ function ElevationChart({ data }) {
     <div>
       <SubLabel>Elevation</SubLabel>
       <div
-        className="h-[200px] sm:h-[260px] outline-none"
+        className="h-[150px] sm:h-[195px] outline-none"
         id="streamChartElevation_activityDetailPage"
       >
         <ResponsiveContainer width="100%" height="100%">
@@ -559,7 +549,7 @@ function ElevationChart({ data }) {
   )
 }
 
-function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
+function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTimes }) {
   const { stabilityScore, fatigueDrop, fatigueStart } = computeCadenceStats(data)
   const hasFatigue = fatigueDrop != null && fatigueDrop > 5 && fatigueStart != null
 
@@ -567,25 +557,55 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
   const dataMax = cadenceValues.length ? Math.max(...cadenceValues) : 0
   const fatigueEnd = data[data.length - 1]?.dist_km ?? null
 
+  // Use raw-derived band times (passed from parent) for accurate duration;
+  // fall back to thinned data only if raw times are unavailable.
+  const cadenceBandTimes =
+    rawCadenceBandTimes ??
+    (() => {
+      const times = CADENCE_BANDS.map(() => 0)
+      for (const d of data) {
+        const spm = d.cadence_spm
+        if (spm == null || spm <= 0) continue
+        for (let i = 0; i < CADENCE_BANDS.length; i++) {
+          const isLast = i === CADENCE_BANDS.length - 1
+          if (spm >= CADENCE_BANDS[i].min && (isLast || spm < CADENCE_BANDS[i].max)) {
+            times[i] += 10
+            break
+          }
+        }
+      }
+      return times
+    })()
+  const totalCadenceTime = cadenceBandTimes.reduce((s, t) => s + t, 0)
+  const cadenceBandZones =
+    totalCadenceTime > 0
+      ? CADENCE_BANDS.map((band, i) => {
+          const isLast = i === CADENCE_BANDS.length - 1
+          const t = cadenceBandTimes[i]
+          const pct = Math.round((t / totalCadenceTime) * 100)
+          return {
+            name: band.label,
+            label: band.label,
+            color: band.color,
+            min: band.min,
+            max: isLast ? band.max : band.max - 1,
+            time: t,
+            pct,
+            duration: t > 0 ? formatZoneDuration(t) : null,
+          }
+        })
+      : []
+
   return (
     <div>
       <div className="flex items-center gap-2 mb-1">
         <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Cadence</p>
-        {stabilityScore != null && (
-          <span
-            id={`cadenceStabilityScore_${pagePrefix}`}
-            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500"
-            title="Cadence stability score: 100 = perfectly consistent form"
-          >
-            Stability: {stabilityScore}
-          </span>
-        )}
         <UITooltipProvider delayDuration={200}>
           <UITooltip>
             <UITooltipTrigger asChild>
               <button
                 id={`cadenceInfoTrigger_${pagePrefix}`}
-                className="ml-auto text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                className="text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
                 aria-label="Cadence info: about the 180 spm target"
               >
                 <Info className="size-3.5" aria-hidden="true" />
@@ -600,8 +620,21 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
             </UITooltipContent>
           </UITooltip>
         </UITooltipProvider>
+        {stabilityScore != null && (
+          <span
+            id={`cadenceStabilityScore_${pagePrefix}`}
+            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500"
+            title="Cadence stability score: 100 = perfectly consistent form"
+          >
+            Stability: {stabilityScore}
+          </span>
+        )}
       </div>
-      <div className="h-[320px] sm:h-[400px] outline-none" id={`streamChartCadence_${pagePrefix}`}>
+      <p className="text-[10px] text-slate-300 leading-snug mb-1.5">
+        Stability score: how consistent your cadence was throughout the run. 100 = perfectly even.
+        Below 80 = noticeable variation.
+      </p>
+      <div className="h-[240px] sm:h-[300px] outline-none" id={`streamChartCadence_${pagePrefix}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -618,25 +651,6 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
             {XAXIS}
             <YAxis width={36} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${v} spm`} />} />
-
-            {CADENCE_BANDS.map((band, i) => (
-              <ReferenceArea
-                key={i}
-                y1={band.min}
-                y2={band.max}
-                fill={band.color}
-                fillOpacity={band.opacity}
-                ifOverflow="hidden"
-                label={{
-                  value: band.label,
-                  position: 'insideLeft',
-                  fontSize: 8,
-                  fill: band.color,
-                  opacity: 0.6,
-                }}
-                id={`cadenceBand_${band.label.replace(/[^a-z]/gi, '').toLowerCase()}_${pagePrefix}`}
-              />
-            ))}
 
             {hasFatigue && (
               <ReferenceArea
@@ -688,22 +702,14 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
-        {CADENCE_BANDS.map((band) => (
-          <div key={band.label} className="flex items-center gap-1.5">
-            <span
-              className="inline-block w-2.5 h-2.5 rounded-sm shrink-0"
-              style={{ backgroundColor: band.color, opacity: 0.7 }}
-            />
-            <span className="text-[10px] text-slate-400">
-              {band.label}{' '}
-              <span className="tabular-nums text-slate-300">
-                {band.min}–{band.max} spm
-              </span>
-            </span>
-          </div>
-        ))}
-      </div>
+      {cadenceBandZones.length > 0 && (
+        <div className="mt-3" id={`cadenceZonesSection_${pagePrefix}`}>
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+            Time in Cadence Band
+          </p>
+          <ZoneBarChart mergedZones={cadenceBandZones} pagePrefix={`${pagePrefix}_cadence`} />
+        </div>
+      )}
     </div>
   )
 }
@@ -724,6 +730,7 @@ export default function StreamCharts({
   const [meta, setMeta] = useState(null)
   const [thinned, setThinned] = useState([])
   const [rawHrValues, setRawHrValues] = useState([])
+  const [rawCadenceValues, setRawCadenceValues] = useState([])
 
   const load = useCallback(async () => {
     if (!activityId) return
@@ -750,6 +757,7 @@ export default function StreamCharts({
       setMeta(res.meta)
       setThinned(processed)
       setRawHrValues(raw.map((d) => d.hr).filter((v) => v != null))
+      setRawCadenceValues(raw.map((d) => d.cadence).filter((v) => v != null && v > 0))
     } catch (err) {
       setError('Failed to load stream data')
     } finally {
@@ -777,6 +785,21 @@ export default function StreamCharts({
     return times
   }, [rawHrValues, zones, maxHr, userMaxHr])
 
+  const cadenceBandTimesRaw = useMemo(() => {
+    if (!rawCadenceValues.length) return null
+    const times = CADENCE_BANDS.map(() => 0)
+    for (const spm of rawCadenceValues) {
+      for (let i = 0; i < CADENCE_BANDS.length; i++) {
+        const isLast = i === CADENCE_BANDS.length - 1
+        if (spm >= CADENCE_BANDS[i].min && (isLast || spm < CADENCE_BANDS[i].max)) {
+          times[i] += 10
+          break
+        }
+      }
+    }
+    return times
+  }, [rawCadenceValues])
+
   if (loading) {
     return (
       <div
@@ -785,9 +808,9 @@ export default function StreamCharts({
         aria-label="Loading performance charts"
       >
         <div className="h-3 bg-slate-100 rounded w-24" />
+        <div className="h-[180px] sm:h-[225px] bg-slate-100 rounded-lg" />
         <div className="h-[240px] sm:h-[300px] bg-slate-100 rounded-lg" />
-        <div className="h-[320px] sm:h-[400px] bg-slate-100 rounded-lg" />
-        <div className="h-[200px] sm:h-[260px] bg-slate-100 rounded-lg" />
+        <div className="h-[150px] sm:h-[195px] bg-slate-100 rounded-lg" />
       </div>
     )
   }
@@ -861,6 +884,7 @@ export default function StreamCharts({
             data={thinned}
             historicalAvgCadence={historicalAvgCadence ?? null}
             pagePrefix={pagePrefix}
+            rawCadenceBandTimes={cadenceBandTimesRaw}
           />
         )}
       </div>
