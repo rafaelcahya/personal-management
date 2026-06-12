@@ -109,7 +109,8 @@
     },
     "running_analytics": {
       "target_effort": "/api/running/v1/analytics/target-effort",
-      "personal_bests": "/api/running/v1/analytics/personal-bests"
+      "personal_bests": "/api/running/v1/analytics/personal-bests",
+      "calorie_trend": "/api/running/v1/analytics/calorie-trend"
     },
     "running_user_profile": {
       "get": "/api/running/v1/user/profile",
@@ -424,7 +425,8 @@
       "pb_rank_chip": "pbRankChip_{distance}_activityDetailPage",
       "lap_marker": "lapMarker_{n}_activityDetailPage",
       "pr_effort_start": "prEffortStart_{name}_activityDetailPage",
-      "pr_effort_end": "prEffortEnd_{name}_activityDetailPage"
+      "pr_effort_end": "prEffortEnd_{name}_activityDetailPage",
+      "climbing_index_tile": "climbingIndexTile_activityDetailPage"
     },
     "running_dashboard": {
       "page": "dashboardPage",
@@ -598,7 +600,10 @@
       "route_end_marker": "routeEndMarker_raceDetailPage",
       "lap_marker": "lapMarker_{n}_raceDetailPage",
       "pr_effort_start": "prEffortStart_{name}_raceDetailPage",
-      "pr_effort_end": "prEffortEnd_{name}_raceDetailPage"
+      "pr_effort_end": "prEffortEnd_{name}_raceDetailPage",
+      "racing_weight_section": "racingWeightSection_raceDetailPage",
+      "racing_weight_bar": "racingWeightBar_raceDetailPage",
+      "racing_weight_what_if": "racingWeightWhatIf_raceDetailPage"
     },
     "running_analytics": {
       "page": "analyticsPage",
@@ -647,7 +652,8 @@
       "personal_bests_loading": "personalBestsLoading_analyticsPage",
       "personal_bests_error": "personalBestsError_analyticsPage",
       "personal_bests_table": "personalBestsTable_analyticsPage",
-      "personal_bests_row": "personalBestsRow_{distance}_{rank}_analyticsPage"
+      "personal_bests_row": "personalBestsRow_{distance}_{rank}_analyticsPage",
+      "calorie_trend_chart": "calorieTrendChart_analyticsPage"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",
@@ -827,7 +833,9 @@
       "danger_zone_dialog": "dangerZoneDialog_settingsPage",
       "danger_zone_confirm_input": "dangerZoneConfirmInput_settingsPage",
       "danger_zone_confirm_btn": "dangerZoneConfirmBtn_settingsPage",
-      "danger_zone_error": "dangerZoneError_settingsPage"
+      "danger_zone_error": "dangerZoneError_settingsPage",
+      "bmi_chip": "bmiChip_settingsPage",
+      "bmi_missing_prompt": "bmiMissingPrompt_settingsPage"
     }
   },
   "seed": {

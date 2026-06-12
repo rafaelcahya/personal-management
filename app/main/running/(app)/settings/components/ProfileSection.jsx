@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
@@ -33,16 +33,49 @@ export default function ProfileSection() {
   const [detectNoData, setDetectNoData] = useState(false)
   const [detectError, setDetectError] = useState(false)
 
+  const heightRef = useRef(null)
+  const weightRef = useRef(null)
+
   const {
     register,
     handleSubmit,
     reset,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(profileSchema),
   })
+
+  const watchedWeight = watch('weight_kg')
+  const watchedHeight = watch('height_cm')
+
+  const weightNum = parseFloat(watchedWeight)
+  const heightNum = parseFloat(watchedHeight)
+  const hasWeight = !isNaN(weightNum) && weightNum > 0
+  const hasHeight = !isNaN(heightNum) && heightNum > 0
+
+  let bmi = null
+  let bmiCategory = null
+  let bmiColor = null
+
+  if (hasWeight && hasHeight) {
+    bmi = weightNum / Math.pow(heightNum / 100, 2)
+    if (bmi < 18.5) {
+      bmiCategory = 'Underweight'
+      bmiColor = 'amber'
+    } else if (bmi < 25) {
+      bmiCategory = 'Normal'
+      bmiColor = 'violet'
+    } else if (bmi < 30) {
+      bmiCategory = 'Overweight'
+      bmiColor = 'amber'
+    } else {
+      bmiCategory = 'Obese'
+      bmiColor = 'amber'
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -204,6 +237,10 @@ export default function ProfileSection() {
                     id="heightInput_settingsPage"
                     type="number"
                     {...register('height_cm')}
+                    ref={(el) => {
+                      register('height_cm').ref(el)
+                      heightRef.current = el
+                    }}
                     placeholder="e.g. 170"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
@@ -222,6 +259,10 @@ export default function ProfileSection() {
                     type="number"
                     step="0.1"
                     {...register('weight_kg')}
+                    ref={(el) => {
+                      register('weight_kg').ref(el)
+                      weightRef.current = el
+                    }}
                     placeholder="e.g. 65"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
@@ -330,6 +371,113 @@ export default function ProfileSection() {
                     Used for age-graded performance and category comparisons 🧬
                   </p>
                 </div>
+              </div>
+
+              {/* BMI chip — spans full width below the grid */}
+              <div className="flex flex-col gap-1.5">
+                <div
+                  id="bmiChip_settingsPage"
+                  className={`inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full text-sm font-medium ${
+                    bmi != null
+                      ? bmiColor === 'violet'
+                        ? 'bg-violet-50 text-violet-700'
+                        : 'bg-amber-50 text-amber-700'
+                      : 'bg-slate-100 text-slate-500'
+                  }`}
+                  aria-live="polite"
+                >
+                  {bmi != null ? (
+                    <>
+                      <span>BMI {bmi.toFixed(1)}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{bmiCategory}</span>
+                    </>
+                  ) : (
+                    <span>BMI —</span>
+                  )}
+                </div>
+
+                {bmi != null && (
+                  <div className="flex gap-3 text-xs flex-wrap">
+                    {[
+                      { label: 'Underweight', range: '< 18.5' },
+                      { label: 'Normal', range: '18.5 – 24.9' },
+                      { label: 'Overweight', range: '25 – 29.9' },
+                      { label: 'Obese', range: '≥ 30' },
+                    ].map(({ label, range }) => (
+                      <span
+                        key={label}
+                        className={
+                          label === bmiCategory
+                            ? bmiColor === 'violet'
+                              ? 'text-violet-700 font-semibold'
+                              : 'text-amber-700 font-semibold'
+                            : 'text-slate-400'
+                        }
+                      >
+                        {label} <span className="font-normal">{range}</span>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {bmi == null && (
+                  <p
+                    id="bmiMissingPrompt_settingsPage"
+                    className="text-xs text-slate-400"
+                    aria-live="polite"
+                  >
+                    {!hasWeight && !hasHeight ? (
+                      <>
+                        Fill in your{' '}
+                        <button
+                          type="button"
+                          onClick={() => weightRef.current?.focus()}
+                          className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        >
+                          weight
+                        </button>{' '}
+                        and{' '}
+                        <button
+                          type="button"
+                          onClick={() => heightRef.current?.focus()}
+                          className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        >
+                          height
+                        </button>{' '}
+                        to calculate BMI
+                      </>
+                    ) : !hasWeight ? (
+                      <>
+                        Fill in your{' '}
+                        <button
+                          type="button"
+                          onClick={() => weightRef.current?.focus()}
+                          className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        >
+                          weight
+                        </button>{' '}
+                        to calculate BMI
+                      </>
+                    ) : (
+                      <>
+                        Fill in your{' '}
+                        <button
+                          type="button"
+                          onClick={() => heightRef.current?.focus()}
+                          className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        >
+                          height
+                        </button>{' '}
+                        to calculate BMI
+                      </>
+                    )}
+                  </p>
+                )}
+
+                <p className="text-xs text-slate-400 italic">
+                  BMI ignores muscle mass — trends matter more than the value.
+                </p>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-1">
