@@ -69,7 +69,7 @@ export default function EventLinksInput({ value = [], onChange, error }) {
               <button
                 type="button"
                 onClick={() => handleRemove(i)}
-                className="size-5 flex items-center justify-center rounded text-slate-400 hover:text-rose-500 hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all shrink-0"
                 aria-label="Remove link"
               >
                 <Trash2 className="size-3" />
