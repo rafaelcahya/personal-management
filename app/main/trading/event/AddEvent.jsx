@@ -357,7 +357,8 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
                       )}
                     </div>
                     <FormDescription className="text-xs text-slate-400">
-                      Supports markdown formatting. Max 2000 characters.
+                      The more detailed your notes, the more relevant the AI analysis. Supports
+                      markdown.
                     </FormDescription>
                     <FormMessage
                       id="eventDescriptionField_errorMessage_eventPage"

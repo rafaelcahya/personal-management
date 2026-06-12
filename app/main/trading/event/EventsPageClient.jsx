@@ -14,6 +14,9 @@ import {
   AlignLeft,
   CalendarX2,
   SearchX,
+  Sparkles,
+  X,
+  History,
 } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
 import EventTableHeader from './component/EventTableHeader'
@@ -21,6 +24,8 @@ import EventsTable from './EventTable'
 import AddEvent from './AddEvent'
 import EventFilterDropdown from './component/EventFilterDropdown'
 import TimelineView from './component/TimelineView'
+import EventAnalysisModal from './component/EventAnalysisModal'
+import EventAnalysisHistoryModal from './component/EventAnalysisHistoryModal'
 
 const FILTER_STORAGE_KEY = 'event-list-filter'
 
@@ -34,6 +39,9 @@ export default function EventsPageClient({ initialEvents }) {
   const [total, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [view, setView] = useState('list')
+  const [selectedEvents, setSelectedEvents] = useState(new Map())
+  const [analysisModalOpen, setAnalysisModalOpen] = useState(false)
+  const [historyModalOpen, setHistoryModalOpen] = useState(false)
 
   const searchDebounceRef = useRef(null)
 
@@ -102,6 +110,17 @@ export default function EventsPageClient({ initialEvents }) {
   const handleRefresh = useCallback(() => {
     doFetch({ searchVal: search, pageVal: page, filterVal: filter })
   }, [doFetch, search, page, filter])
+
+  const handleToggle = (id, eventObj) => {
+    setSelectedEvents((prev) => {
+      const next = new Map(prev)
+      if (next.has(id)) next.delete(id)
+      else if (eventObj) next.set(id, eventObj)
+      return next
+    })
+  }
+
+  const selectedIds = new Set(selectedEvents.keys())
 
   const isFiltered = search || filter
   const isEmpty = listEvent.length === 0
@@ -181,6 +200,19 @@ export default function EventsPageClient({ initialEvents }) {
             </div>
           </div>
 
+          {/* AI History button */}
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setHistoryModalOpen(true)}
+              className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
+            >
+              <History className="size-3.5" />
+              AI Analysis History
+            </Button>
+          </div>
+
           {/* Content area */}
           {isLoading ? (
             <div className="flex flex-col gap-3">
@@ -228,7 +260,12 @@ export default function EventsPageClient({ initialEvents }) {
               {view === 'timeline' ? (
                 <TimelineView events={listEvent} />
               ) : (
-                <EventsTable events={listEvent} onRefresh={handleRefresh} />
+                <EventsTable
+                  events={listEvent}
+                  onRefresh={handleRefresh}
+                  selectedIds={selectedIds}
+                  onToggle={handleToggle}
+                />
               )}
 
               {totalPages > 1 && (
@@ -268,6 +305,62 @@ export default function EventsPageClient({ initialEvents }) {
           )}
         </div>
       </div>
+
+      {/* Floating multi-select action bar */}
+      {selectedIds.size >= 1 && (
+        <div
+          id="multiSelectActionBar_eventPage"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white border border-slate-200 shadow-lg rounded-full px-4 py-2.5"
+        >
+          <span id="multiSelectCount_eventPage" className="text-sm font-semibold text-slate-700">
+            {selectedIds.size} event{selectedIds.size !== 1 ? 's' : ''} selected
+          </span>
+          <Button
+            id="analyzeTogetherBtn_eventPage"
+            disabled={selectedIds.size < 2 || selectedIds.size > 10}
+            onClick={() => setAnalysisModalOpen(true)}
+            className="bg-violet-600 hover:bg-violet-700 text-white rounded-full h-8 px-4 text-xs font-medium gap-1.5 disabled:opacity-50"
+            title={
+              selectedIds.size < 2
+                ? 'Select at least 2 events'
+                : selectedIds.size > 10
+                  ? 'Max 10 events allowed'
+                  : ''
+            }
+          >
+            <Sparkles className="size-3.5" /> Analyze Together
+          </Button>
+          <button
+            id="clearMultiSelectBtn_eventPage"
+            onClick={() => setSelectedEvents(new Map())}
+            className="rounded-full h-8 w-8 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+      )}
+
+      {historyModalOpen && (
+        <EventAnalysisHistoryModal
+          open={historyModalOpen}
+          onClose={() => setHistoryModalOpen(false)}
+        />
+      )}
+
+      {analysisModalOpen && (
+        <EventAnalysisModal
+          open={analysisModalOpen}
+          onClose={() => {
+            setAnalysisModalOpen(false)
+            setSelectedEvents(new Map())
+          }}
+          analysisType="multi"
+          events={[...selectedEvents.values()]}
+          onAnalysisComplete={() => {
+            setSelectedEvents(new Map())
+          }}
+        />
+      )}
     </div>
   )
 }
