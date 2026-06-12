@@ -925,7 +925,7 @@ export default function ActivityDetailPage() {
                   <BestEffortsTable bestEfforts={bestEfforts} />
                   <LapsTable laps={laps} />
                 </div>
-                <div className="px-4 lg:px-8 flex flex-col gap-5">
+                <div className="w-full lg:w-3/5 mx-auto px-4 lg:px-0 flex flex-col gap-5">
                   <div className="border-t border-slate-100" />
                   <StreamCharts
                     activityId={id}
