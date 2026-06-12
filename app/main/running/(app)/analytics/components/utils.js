@@ -43,6 +43,28 @@ export function fmtWeekLabel(weekKey) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
+export function fmtWeekRange(weekStart, weekEnd) {
+  if (!weekStart || !weekEnd) return '—'
+  const s = new Date(weekStart + 'T00:00:00')
+  const e = new Date(weekEnd + 'T00:00:00')
+  const sYear = s.getFullYear()
+  const eYear = e.getFullYear()
+  const sMonth = s.getMonth()
+  const eMonth = e.getMonth()
+  if (sYear !== eYear) {
+    const fmt = (d) =>
+      d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    return `${fmt(s)} – ${fmt(e)}`
+  }
+  if (sMonth !== eMonth) {
+    const fmtM = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    return `${fmtM(s)} – ${fmtM(e)}, ${eYear}`
+  }
+  const sDay = s.getDate()
+  const eDay = e.getDate()
+  return `${s.toLocaleDateString('en-US', { month: 'short' })} ${sDay}–${eDay}, ${eYear}`
+}
+
 export function fmtPaceTick(sec) {
   if (!sec) return ''
   return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
