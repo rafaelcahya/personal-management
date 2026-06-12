@@ -11,10 +11,10 @@ function isStale(createdAt) {
 
 function getWeekStart() {
   const now = new Date()
-  const day = now.getDay()
+  const day = now.getUTCDay()
   const monday = new Date(now)
-  monday.setDate(now.getDate() - ((day + 6) % 7))
-  monday.setHours(0, 0, 0, 0)
+  monday.setUTCDate(now.getUTCDate() - ((day + 6) % 7))
+  monday.setUTCHours(0, 0, 0, 0)
   return monday.toISOString().split('T')[0]
 }
 

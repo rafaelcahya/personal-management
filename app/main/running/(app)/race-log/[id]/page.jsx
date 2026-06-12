@@ -21,10 +21,12 @@ import {
   fetchActivity,
   fetchSubjectiveHealthByDate,
   fetchActivityStreams,
+  getUserProfile,
 } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import EditRaceModal from '../components/EditRaceModal'
 import ActivitySection from '../components/ActivitySection'
+import RacingWeightSection from '../components/RacingWeightSection'
 
 function PageSkeleton() {
   return (
@@ -70,6 +72,7 @@ export default function RaceDetailPage() {
   const [streams, setStreams] = useState([])
   const [activityLoading, setActivityLoading] = useState(false)
   const [healthLog, setHealthLog] = useState(undefined)
+  const [profile, setProfile] = useState(null)
 
   useEffect(() => {
     if (!id) return
@@ -78,12 +81,19 @@ export default function RaceDetailPage() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetchRaceLogEntry(id)
+        const [res, profileRes] = await Promise.allSettled([
+          fetchRaceLogEntry(id),
+          getUserProfile(),
+        ])
+        if (profileRes.status === 'fulfilled' && !cancelled) {
+          setProfile(profileRes.value)
+        }
+        if (res.status === 'rejected') throw res.reason
         if (!cancelled) {
-          setEntry(res.data)
-          if (res.data?.activity_id) {
+          setEntry(res.value.data)
+          if (res.value.data?.activity_id) {
             setActivityLoading(true)
-            const activityId = res.data.activity_id
+            const activityId = res.value.data.activity_id
             Promise.allSettled([fetchActivity(activityId), fetchActivityStreams(activityId)])
               .then(([actRes, streamsRes]) => {
                 if (!cancelled) {
@@ -198,6 +208,12 @@ export default function RaceDetailPage() {
                   <div key={i} className="h-20 bg-slate-100 rounded-lg" />
                 ))}
               </div>
+            </div>
+          )}
+
+          {profile && (profile.weight_kg || profile.height_cm) && (
+            <div className="w-full lg:w-3/5 mx-auto px-4 lg:px-0 mt-5">
+              <RacingWeightSection entry={entry} profile={profile} />
             </div>
           )}
 

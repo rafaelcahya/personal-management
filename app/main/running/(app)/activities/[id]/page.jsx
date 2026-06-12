@@ -491,6 +491,35 @@ export default function ActivityDetailPage() {
                             })()}
                         </div>
                       )}
+                      {activity.elevation_gain_m > 0 && (
+                        <div id="climbingIndexTile_activityDetailPage">
+                          <StatTile
+                            icon={TrendingUp}
+                            label="Climbing Index"
+                            value={
+                              activity.user_weight_kg != null &&
+                              activity.moving_time_sec != null &&
+                              activity.moving_time_sec > 0
+                                ? (
+                                    (activity.user_weight_kg * 9.81 * activity.elevation_gain_m) /
+                                    activity.moving_time_sec
+                                  ).toFixed(2)
+                                : '—'
+                            }
+                            unit="W/kg"
+                            tooltip={
+                              <>
+                                <p className="font-semibold mb-1">Climbing Index (W/kg)</p>
+                                <p>
+                                  Power-to-weight output against gravity — how hard you worked per
+                                  kg of body weight on this climb. Formula: weight × 9.81 ×
+                                  elevation gain ÷ moving time.
+                                </p>
+                              </>
+                            }
+                          />
+                        </div>
+                      )}
                       {activity.estimated_vo2max != null && (
                         <div id="estimatedVo2max_activityDetailPage">
                           <StatTile
@@ -896,7 +925,7 @@ export default function ActivityDetailPage() {
                   <BestEffortsTable bestEfforts={bestEfforts} />
                   <LapsTable laps={laps} />
                 </div>
-                <div className="px-4 lg:px-8 flex flex-col gap-5">
+                <div className="w-full lg:w-3/5 mx-auto px-4 lg:px-0 flex flex-col gap-5">
                   <div className="border-t border-slate-100" />
                   <StreamCharts
                     activityId={id}

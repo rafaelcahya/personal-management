@@ -153,10 +153,11 @@ export async function GET(_request, { params }) {
 
     const { data: userProfile } = await supabase
       .from('rt_users')
-      .select('max_hr')
+      .select('max_hr, weight_kg')
       .eq('id', user.id)
       .maybeSingle()
     const user_max_hr = userProfile?.max_hr ?? null
+    const user_weight_kg = userProfile?.weight_kg ?? null
 
     const { data: hrRows, error: hrError } = await supabase
       .from('rt_activities')
@@ -215,6 +216,7 @@ export async function GET(_request, { params }) {
           historical_avg_hr,
           historical_avg_cadence,
           user_max_hr,
+          user_weight_kg,
         },
         splits: splits ?? [],
         laps: laps ?? [],

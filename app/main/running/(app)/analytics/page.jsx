@@ -23,6 +23,7 @@ import RacePredictor from './components/RacePredictor'
 import AnalyticsAICard from './components/AnalyticsAICard'
 import Vo2maxTargetEffortSection from './components/Vo2maxTargetEffortSection'
 import PersonalBestsTable from './components/PersonalBestsTable'
+import CalorieTrendChart from './components/CalorieTrendChart'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -220,6 +221,15 @@ export default function AnalyticsPage() {
             icon={Trophy}
           >
             <PersonalBestsTable />
+          </Section>
+
+          <Section
+            id="calorieTrendSection_analyticsPage"
+            title="Calorie Burn Trend"
+            description="Total calories burned per month across the last 6 months, estimated from your runs using your current weight."
+            icon={BarChart2}
+          >
+            <CalorieTrendChart />
           </Section>
         </>
       )}

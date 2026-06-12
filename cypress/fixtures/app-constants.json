@@ -109,7 +109,8 @@
     },
     "running_analytics": {
       "target_effort": "/api/running/v1/analytics/target-effort",
-      "personal_bests": "/api/running/v1/analytics/personal-bests"
+      "personal_bests": "/api/running/v1/analytics/personal-bests",
+      "calorie_trend": "/api/running/v1/analytics/calorie-trend"
     },
     "running_user_profile": {
       "get": "/api/running/v1/user/profile",
@@ -134,6 +135,7 @@
       "profile": "/api/running/v1/user/profile",
       "settings": "/api/running/v1/user/settings",
       "activities": "/api/running/v1/user/activities",
+      "max_hr_detect": "/api/running/v1/user/max-hr-detect",
       "strava_disconnect": "/api/running/v1/auth/strava/disconnect",
       "push_subscription": "/api/running/v1/user/push-subscription"
     },
@@ -143,7 +145,13 @@
       "update": "/api/trade/v1/event/update",
       "delete": "/api/trade/v1/event/delete",
       "favorite": "/api/trade/v1/event/favorite",
-      "summary": "/api/trade/v1/event/summary"
+      "summary": "/api/trade/v1/event/summary",
+      "detail": "/api/trade/v1/event",
+      "tags": "/api/trade/v1/event/tags"
+    },
+    "trading_ai": {
+      "event_analysis_get": "/api/trade/v1/ai/event-analysis",
+      "event_analysis_post": "/api/trade/v1/ai/event-analysis"
     },
     "running_ai": {
       "symptoms": "/api/running/v1/symptoms",
@@ -417,7 +425,8 @@
       "pb_rank_chip": "pbRankChip_{distance}_activityDetailPage",
       "lap_marker": "lapMarker_{n}_activityDetailPage",
       "pr_effort_start": "prEffortStart_{name}_activityDetailPage",
-      "pr_effort_end": "prEffortEnd_{name}_activityDetailPage"
+      "pr_effort_end": "prEffortEnd_{name}_activityDetailPage",
+      "climbing_index_tile": "climbingIndexTile_activityDetailPage"
     },
     "running_dashboard": {
       "page": "dashboardPage",
@@ -591,7 +600,10 @@
       "route_end_marker": "routeEndMarker_raceDetailPage",
       "lap_marker": "lapMarker_{n}_raceDetailPage",
       "pr_effort_start": "prEffortStart_{name}_raceDetailPage",
-      "pr_effort_end": "prEffortEnd_{name}_raceDetailPage"
+      "pr_effort_end": "prEffortEnd_{name}_raceDetailPage",
+      "racing_weight_section": "racingWeightSection_raceDetailPage",
+      "racing_weight_bar": "racingWeightBar_raceDetailPage",
+      "racing_weight_what_if": "racingWeightWhatIf_raceDetailPage"
     },
     "running_analytics": {
       "page": "analyticsPage",
@@ -640,7 +652,8 @@
       "personal_bests_loading": "personalBestsLoading_analyticsPage",
       "personal_bests_error": "personalBestsError_analyticsPage",
       "personal_bests_table": "personalBestsTable_analyticsPage",
-      "personal_bests_row": "personalBestsRow_{distance}_{rank}_analyticsPage"
+      "personal_bests_row": "personalBestsRow_{distance}_{rank}_analyticsPage",
+      "calorie_trend_chart": "calorieTrendChart_analyticsPage"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",
@@ -736,8 +749,9 @@
       "title_error": "eventTitleField_errorMessage_eventPage",
       "description_field": "eventDescriptionField_eventPage",
       "description_error": "eventDescriptionField_errorMessage_eventPage",
-      "type_field": "eventTypeField_eventPage",
       "impact_field": "impactDirectionField_eventPage",
+      "actual_outcome_field": "actualOutcomeField_eventPage",
+      "tags_field": "tagsField_eventPage",
       "date_field": "eventDateField_eventPage",
       "date_picker": "eventDatePicker_eventPage",
       "link_hyperlink_input": "linkHyperlinkInput_eventPage",
@@ -747,15 +761,41 @@
       "pagination": "eventPagination_eventPage",
       "prev_page_btn": "prevPageBtn_eventPage",
       "next_page_btn": "nextPageBtn_eventPage",
+      "list_view_btn": "listViewBtn_eventPage",
+      "timeline_view_btn": "timelineViewBtn_eventPage",
       "update_title_field": "updateEventTitle_eventPage",
       "update_title_error": "updateEventTitle_errorMessage_eventPage",
       "update_description_field": "updateEventDescription_eventPage",
       "update_description_error": "updateEventDescription_errorMessage_eventPage",
-      "update_type_field": "updateEventType_eventPage",
       "update_impact_field": "updateEventImpact_eventPage",
+      "update_actual_outcome_field": "updateActualOutcomeField_eventPage",
+      "update_tags_field": "updateTagsField_eventPage",
       "update_date_field": "updateEventDate_eventPage",
       "update_cancel_btn": "cancelUpdateEventBtn_eventPage",
-      "update_submit_btn": "submitUpdateEventBtn_eventPage"
+      "update_submit_btn": "submitUpdateEventBtn_eventPage",
+      "detail_page": "eventDetailPage",
+      "detail_description_body": "eventDescriptionBody_eventDetailPage",
+      "detail_edit_btn": "editEventBtn_eventDetailPage",
+      "detail_delete_btn": "deleteEventBtn_eventDetailPage",
+      "detail_loading": "eventDetailLoading_eventDetailPage",
+      "detail_error": "eventDetailError_eventDetailPage",
+      "detail_not_found": "eventDetailNotFound_eventDetailPage",
+      "analyze_btn": "analyzeEventBtn_eventDetailPage",
+      "analysis_modal": "eventAnalysisModal",
+      "additional_context_input": "additionalContextInput_eventAnalysisModal",
+      "analyze_confirm_btn": "analyzeConfirmBtn_eventAnalysisModal",
+      "cancel_analysis_btn": "cancelAnalysisBtn_eventAnalysisModal",
+      "analysis_result": "eventAnalysisResult_eventDetailPage",
+      "refresh_analysis_btn": "refreshAnalysisBtn_eventDetailPage",
+      "last_analyzed_timestamp": "lastAnalyzedTimestamp_eventDetailPage",
+      "analysis_error": "analysisError_eventDetailPage",
+      "analysis_retry_btn": "analysisRetryBtn_eventDetailPage",
+      "analyze_together_btn": "analyzeTogetherBtn_eventPage",
+      "multi_select_checkbox": "multiSelectCheckbox_eventPage",
+      "multi_select_action_bar": "multiSelectActionBar_eventPage",
+      "multi_select_count": "multiSelectCount_eventPage",
+      "clear_multi_select_btn": "clearMultiSelectBtn_eventPage",
+      "brief_desc_warning": "briefDescriptionWarning_eventAnalysisModal"
     },
     "running_settings": {
       "page": "settingsPage",
@@ -765,6 +805,10 @@
       "height_input": "heightInput_settingsPage",
       "weight_input": "weightInput_settingsPage",
       "max_hr_input": "maxHrInput_settingsPage",
+      "detect_max_hr_btn": "detectMaxHrBtn_settingsPage",
+      "max_hr_detected_hint": "maxHrDetectedHint_settingsPage",
+      "max_hr_no_data_hint": "maxHrNoDataHint_settingsPage",
+      "max_hr_detect_error": "maxHrDetectError_settingsPage",
       "resting_hr_input": "restingHrInput_settingsPage",
       "profile_save_btn": "profileSaveBtn_settingsPage",
       "profile_save_success": "profileSaveSuccess_settingsPage",
@@ -789,7 +833,9 @@
       "danger_zone_dialog": "dangerZoneDialog_settingsPage",
       "danger_zone_confirm_input": "dangerZoneConfirmInput_settingsPage",
       "danger_zone_confirm_btn": "dangerZoneConfirmBtn_settingsPage",
-      "danger_zone_error": "dangerZoneError_settingsPage"
+      "danger_zone_error": "dangerZoneError_settingsPage",
+      "bmi_chip": "bmiChip_settingsPage",
+      "bmi_missing_prompt": "bmiMissingPrompt_settingsPage"
     }
   },
   "seed": {

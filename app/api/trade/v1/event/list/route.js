@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getEventList } from '@/lib/services/event/getEventList'
 
-const VALID_FILTERS = ['bullish', 'bearish', 'favorite', 'upcoming', 'past']
+const VALID_FILTERS = ['bullish', 'bearish', 'upcoming', 'past']
 const MAX_PAGE = 10000
 
 export async function GET(req) {

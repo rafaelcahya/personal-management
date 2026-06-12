@@ -1,17 +1,31 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { fetchEventList, fetchEventSummary } from '@/lib/api/event'
+import { fetchEventList } from '@/lib/api/event'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
-import EventListSummary from './component/EventListSummary'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  List,
+  AlignLeft,
+  CalendarX2,
+  SearchX,
+  Sparkles,
+  X,
+  History,
+} from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
 import EventTableHeader from './component/EventTableHeader'
 import EventsTable from './EventTable'
 import AddEvent from './AddEvent'
 import EventFilterDropdown from './component/EventFilterDropdown'
+import TimelineView from './component/TimelineView'
+import EventAnalysisModal from './component/EventAnalysisModal'
+import EventAnalysisHistoryModal from './component/EventAnalysisHistoryModal'
 
 const FILTER_STORAGE_KEY = 'event-list-filter'
 
@@ -24,12 +38,10 @@ export default function EventsPageClient({ initialEvents }) {
   const [totalPages, setTotalPages] = useState(1)
   const [total, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
-  const [summary, setSummary] = useState({
-    totalEvents: 0,
-    totalBullish: 0,
-    totalBearish: 0,
-    totalFavorite: 0,
-  })
+  const [view, setView] = useState('list')
+  const [selectedEvents, setSelectedEvents] = useState(new Map())
+  const [analysisModalOpen, setAnalysisModalOpen] = useState(false)
+  const [historyModalOpen, setHistoryModalOpen] = useState(false)
 
   const searchDebounceRef = useRef(null)
 
@@ -52,42 +64,20 @@ export default function EventsPageClient({ initialEvents }) {
     }
   }, [filter])
 
-  const fetchSummary = useCallback(async () => {
+  const doFetch = useCallback(async ({ searchVal, pageVal, filterVal }) => {
     try {
-      const data = await fetchEventSummary()
-      setSummary(
-        data ?? {
-          totalEvents: 0,
-          totalBullish: 0,
-          totalBearish: 0,
-          totalFavorite: 0,
-        }
-      )
+      setIsLoading(true)
+      const result = await fetchEventList({ search: searchVal, page: pageVal, filter: filterVal })
+      setListEvent(result.events || [])
+      setTotalPages(result.totalPages ?? 1)
+      setTotal(result.total ?? 0)
     } catch (err) {
-      console.error('Failed to fetch summary:', err)
+      console.error('Fetch error:', err)
+      toast.error(err.message || 'Failed to fetch events')
+    } finally {
+      setIsLoading(false)
     }
   }, [])
-
-  const doFetch = useCallback(
-    async ({ searchVal, pageVal, filterVal }) => {
-      try {
-        setIsLoading(true)
-        const [result] = await Promise.all([
-          fetchEventList({ search: searchVal, page: pageVal, filter: filterVal }),
-          fetchSummary(),
-        ])
-        setListEvent(result.events || [])
-        setTotalPages(result.totalPages ?? 1)
-        setTotal(result.total ?? 0)
-      } catch (err) {
-        console.error('Fetch error:', err)
-        toast.error(err.message || 'Failed to fetch events')
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    [fetchSummary]
-  )
 
   useEffect(() => {
     doFetch({ searchVal: search, pageVal: page, filterVal: filter })
@@ -108,12 +98,11 @@ export default function EventsPageClient({ initialEvents }) {
     setPage(1)
 
     const filterMessages = {
-      null: 'Showing all events 📅',
-      bullish: 'Showing bullish events 📈',
-      bearish: 'Showing bearish events 📉',
-      favorite: 'Showing favorite events ⭐',
-      upcoming: 'Showing upcoming events 🔜',
-      past: 'Showing past events 📜',
+      null: 'Showing all events',
+      bullish: 'Showing bullish events',
+      bearish: 'Showing bearish events',
+      upcoming: 'Showing upcoming events',
+      past: 'Showing past events',
     }
     toast.success(filterMessages[newFilter] || filterMessages.null)
   }
@@ -121,6 +110,20 @@ export default function EventsPageClient({ initialEvents }) {
   const handleRefresh = useCallback(() => {
     doFetch({ searchVal: search, pageVal: page, filterVal: filter })
   }, [doFetch, search, page, filter])
+
+  const handleToggle = (id, eventObj) => {
+    setSelectedEvents((prev) => {
+      const next = new Map(prev)
+      if (next.has(id)) next.delete(id)
+      else if (eventObj) next.set(id, eventObj)
+      return next
+    })
+  }
+
+  const selectedIds = new Set(selectedEvents.keys())
+
+  const isFiltered = search || filter
+  const isEmpty = listEvent.length === 0
 
   return (
     <div className="flex flex-col h-full gap-5">
@@ -132,25 +135,56 @@ export default function EventsPageClient({ initialEvents }) {
           { label: 'Market Events' },
         ]}
       />
-      <EventListSummary summary={summary} />
 
       <div className="flex-1 min-h-0 relative border border-slate-200/50 shadow-slate-100 rounded-xl overflow-hidden flex flex-col p-5 bg-white">
-        <div className="flex flex-col gap-5 sm:gap-0 h-full overflow-hidden">
+        <div className="flex flex-col gap-5 h-full overflow-hidden">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between mb-3 sm:mb-4 gap-3">
-            <div className="max-w-[500px]">
-              <EventTableHeader />
+          <div className="w-full lg:w-1/2">
+            <EventTableHeader />
+          </div>
+
+          {/* Controls bar */}
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+            {/* View toggle — left */}
+            <div className="flex items-center border border-slate-200 rounded-md overflow-hidden shrink-0 self-start">
+              <button
+                id="listViewBtn_eventPage"
+                type="button"
+                onClick={() => setView('list')}
+                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                  view === 'list'
+                    ? 'bg-violet-600 text-white'
+                    : 'bg-white text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <List className="size-3.5" />
+                List
+              </button>
+              <button
+                id="timelineViewBtn_eventPage"
+                type="button"
+                onClick={() => setView('timeline')}
+                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                  view === 'timeline'
+                    ? 'bg-violet-600 text-white'
+                    : 'bg-white text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <AlignLeft className="size-3.5" />
+                Timeline
+              </button>
             </div>
 
-            <div className="flex items-center justify-between sm:justify-end gap-2 w-full">
-              <div className="relative">
+            {/* Search + Filter + Add — right */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="relative flex-1 min-w-[160px]">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
                 <Input
                   id="eventSearchInput_eventPage"
                   value={searchInput}
                   onChange={handleSearchChange}
                   placeholder="Search events..."
-                  className="pl-8 h-9 w-48 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  className="pl-8 h-9 w-full lg:w-48 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                 />
               </div>
 
@@ -166,41 +200,73 @@ export default function EventsPageClient({ initialEvents }) {
             </div>
           </div>
 
-          {/* Table / empty states */}
+          {/* AI History button */}
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setHistoryModalOpen(true)}
+              className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
+            >
+              <History className="size-3.5" />
+              AI Analysis History
+            </Button>
+          </div>
+
+          {/* Content area */}
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <div className="size-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
-              <p className="text-sm text-slate-600 font-medium">Loading events...</p>
+            <div className="flex flex-col gap-3">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full rounded-lg" />
+              ))}
             </div>
-          ) : listEvent.length === 0 ? (
+          ) : isEmpty ? (
             <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <p className="text-center font-medium text-slate-600 text-lg">
-                {search || filter ? 'No events match' : 'No events yet'}
-              </p>
-              <p className="text-center text-slate-500 text-sm">
-                {search || filter
-                  ? 'Try a different search term or filter'
-                  : 'Start by adding your first market event to track!'}
-              </p>
-              {filter && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleFilterChange(null)}
-                  className="text-violet-600 border-violet-200 hover:bg-violet-50"
-                >
-                  Clear filter
-                </Button>
+              {isFiltered ? (
+                <>
+                  <SearchX className="size-10 text-slate-300" />
+                  <p className="text-center font-medium text-slate-600 text-lg">
+                    No matching events
+                  </p>
+                  <p className="text-center text-slate-500 text-sm">
+                    Try a different search term or filter
+                  </p>
+                  {filter && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleFilterChange(null)}
+                      className="text-violet-600 border-violet-200 hover:bg-violet-50"
+                    >
+                      Clear filter
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <CalendarX2 className="size-10 text-slate-300" />
+                  <p className="text-center font-medium text-slate-600 text-lg">No events yet</p>
+                  <p className="text-center text-slate-500 text-sm">
+                    Start by adding your first market event to track!
+                  </p>
+                  <AddEvent
+                    onAdded={() => doFetch({ searchVal: search, pageVal: 1, filterVal: filter })}
+                  />
+                </>
               )}
             </div>
           ) : (
             <>
-              <EventsTable
-                events={listEvent}
-                allEvents={listEvent}
-                onEventsChange={setListEvent}
-                onRefresh={handleRefresh}
-              />
+              {view === 'timeline' ? (
+                <TimelineView events={listEvent} />
+              ) : (
+                <EventsTable
+                  events={listEvent}
+                  onRefresh={handleRefresh}
+                  selectedIds={selectedIds}
+                  onToggle={handleToggle}
+                />
+              )}
 
               {totalPages > 1 && (
                 <div
@@ -239,6 +305,62 @@ export default function EventsPageClient({ initialEvents }) {
           )}
         </div>
       </div>
+
+      {/* Floating multi-select action bar */}
+      {selectedIds.size >= 1 && (
+        <div
+          id="multiSelectActionBar_eventPage"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white border border-slate-200 shadow-lg rounded-full px-4 py-2.5"
+        >
+          <span id="multiSelectCount_eventPage" className="text-sm font-semibold text-slate-700">
+            {selectedIds.size} event{selectedIds.size !== 1 ? 's' : ''} selected
+          </span>
+          <Button
+            id="analyzeTogetherBtn_eventPage"
+            disabled={selectedIds.size < 2 || selectedIds.size > 10}
+            onClick={() => setAnalysisModalOpen(true)}
+            className="bg-violet-600 hover:bg-violet-700 text-white rounded-full h-8 px-4 text-xs font-medium gap-1.5 disabled:opacity-50"
+            title={
+              selectedIds.size < 2
+                ? 'Select at least 2 events'
+                : selectedIds.size > 10
+                  ? 'Max 10 events allowed'
+                  : ''
+            }
+          >
+            <Sparkles className="size-3.5" /> Analyze Together
+          </Button>
+          <button
+            id="clearMultiSelectBtn_eventPage"
+            onClick={() => setSelectedEvents(new Map())}
+            className="rounded-full h-8 w-8 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+      )}
+
+      {historyModalOpen && (
+        <EventAnalysisHistoryModal
+          open={historyModalOpen}
+          onClose={() => setHistoryModalOpen(false)}
+        />
+      )}
+
+      {analysisModalOpen && (
+        <EventAnalysisModal
+          open={analysisModalOpen}
+          onClose={() => {
+            setAnalysisModalOpen(false)
+            setSelectedEvents(new Map())
+          }}
+          analysisType="multi"
+          events={[...selectedEvents.values()]}
+          onAnalysisComplete={() => {
+            setSelectedEvents(new Map())
+          }}
+        />
+      )}
     </div>
   )
 }

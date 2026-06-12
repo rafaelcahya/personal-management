@@ -59,22 +59,26 @@ export default function RacePredictor({ activities }) {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-2 mb-4">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-2 mb-4">
         <span className="text-xs text-slate-500">Based on your best</span>
-        {availableBrackets.map((b) => (
-          <button
-            key={b.key}
-            onClick={() => setSourceBracket(b.key)}
-            className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
-              activeBracket.key === b.key
-                ? 'text-white border-transparent'
-                : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
-            }`}
-            style={activeBracket.key === b.key ? { background: b.color, borderColor: b.color } : {}}
-          >
-            {b.label}
-          </button>
-        ))}
+        <div className="flex flex-wrap gap-2">
+          {availableBrackets.map((b) => (
+            <button
+              key={b.key}
+              onClick={() => setSourceBracket(b.key)}
+              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                activeBracket.key === b.key
+                  ? 'text-white border-transparent'
+                  : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
+              }`}
+              style={
+                activeBracket.key === b.key ? { background: b.color, borderColor: b.color } : {}
+              }
+            >
+              {b.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="bg-violet-50 rounded-lg px-4 py-2.5 mb-4 text-xs text-violet-700">
