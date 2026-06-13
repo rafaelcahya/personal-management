@@ -1,290 +1,160 @@
-"use client";
+'use client'
 
-import { useState } from "react";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-    FilePenLine,
-    MoreHorizontalIcon,
-    StarIcon,
-    TrendingUp,
-    TrendingDown,
-    Loader2,
-} from "lucide-react";
-import { toast } from "sonner";
-import { favoriteEvent } from "@/lib/api/event";
-import UpdateEvent from "./UpdateEvent";
-import DeleteEvent from "./DeleteEvent";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import UpdateEvent from './UpdateEvent'
+import ImpactBadge from './component/ImpactBadge'
+import EventCardList from './component/EventCardList'
 
-export default function EventTable({
-    events,
-    allEvents,
-    onEventsChange,
-    onRefresh,
-}) {
-    const [selectedEvent, setSelectedEvent] = useState(null);
-    const [loadingFavorite, setLoadingFavorite] = useState(null);
+function formatEventDate(dateStr) {
+  if (!dateStr) return '—'
+  const datePart = String(dateStr).split('T')[0]
+  if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+    const [y, m, d] = datePart.split('-').map(Number)
+    return new Date(y, m - 1, d).toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
+  }
+  return new Date(dateStr).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
 
-    const handleToggleFavorite = async (event) => {
-        const newFavoriteStatus = !event.is_favorite;
-        const previousState = [...allEvents];
-        setLoadingFavorite(event.id);
+export default function EventTable({ events, onRefresh, selectedIds = new Set(), onToggle }) {
+  const router = useRouter()
+  const [selectedEvent, setSelectedEvent] = useState(null)
 
-        onEventsChange((prev) => {
-            const updated = prev.map((e) =>
-                e.id === event.id
-                    ? { ...e, is_favorite: newFavoriteStatus }
-                    : e,
-            );
-            return updated.sort((a, b) => {
-                if (a.is_favorite === b.is_favorite) return 0;
-                return a.is_favorite ? -1 : 1;
-            });
-        });
+  return (
+    <>
+      {/* Mobile card list — below md */}
+      <div className="block lg:hidden">
+        <EventCardList events={events} selectedIds={selectedIds} onToggle={onToggle} />
+      </div>
 
-        try {
-            await favoriteEvent(event.id, newFavoriteStatus);
-            toast.success(
-                newFavoriteStatus
-                    ? "Event added to favorites ⭐"
-                    : "Event removed from favorites",
-            );
-        } catch (error) {
-            console.error("Favorite error:", error);
-            onEventsChange(previousState);
-            toast.error(error.message || "Failed to update favorite status");
-        } finally {
-            setLoadingFavorite(null);
-        }
-    };
-
-    return (
-        <>
-            <Table className="w-full table-auto">
-                <TableHeader className="bg-slate-100 sticky top-0 z-20">
-                    <TableRow className="border-none">
-                        <TableHead className="py-2 text-slate-foreground rounded-l-lg w-[50%]">
-                            Event Description
-                        </TableHead>
-                        <TableHead className="py-2 text-slate-foreground text-center w-[15%]">
-                            Impact
-                        </TableHead>
-                        <TableHead className="py-2 text-slate-foreground text-center w-[20%]">
-                            Event Date
-                        </TableHead>
-                        <TableHead className="py-2 text-slate-foreground text-center rounded-r-lg w-[15%]">
-                            Actions
-                        </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {events.length === 0 ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={4}
-                                className="text-center py-8 text-slate-500"
-                            >
-                                No events found. Add your first market event to
-                                start tracking! 📅
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        events.map((event) => {
-                            const isUpcoming =
-                                new Date(event.event_date) >= new Date();
-                            const isBullish = event.impact_direction === "UP";
-                            const isLongDescription =
-                                event.event_description.length > 120;
-
-                            return (
-                                <TableRow
-                                    key={event.id}
-                                    className="hover:bg-slate-100"
-                                >
-                                    <TableCell className="w-[50%] py-3">
-                                        <TooltipProvider>
-                                            <Tooltip delayDuration={300}>
-                                                <TooltipTrigger asChild>
-                                                    <div className="flex items-start gap-3 cursor-help">
-                                                        {event.is_favorite && (
-                                                            <StarIcon className="size-4 fill-yellow-400 text-yellow-400 flex-shrink-0 mt-0.5" />
-                                                        )}
-                                                        <div className="min-w-0 flex-1">
-                                                            <p className="font-medium text-sm leading-relaxed line-clamp-3 whitespace-normal">
-                                                                {
-                                                                    event.event_description
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </TooltipTrigger>
-                                                {isLongDescription && (
-                                                    <TooltipContent
-                                                        side="bottom"
-                                                        align="start"
-                                                        className="max-w-md p-3"
-                                                    >
-                                                        <p className="text-sm whitespace-pre-wrap">
-                                                            {
-                                                                event.event_description
-                                                            }
-                                                        </p>
-                                                    </TooltipContent>
-                                                )}
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    </TableCell>
-                                    <TableCell className="text-center w-[15%]">
-                                        <div className="flex items-center justify-center">
-                                            <Badge
-                                                variant="outline"
-                                                className={`font-medium ${
-                                                    isBullish
-                                                        ? "bg-green-50 text-green-700 border-green-200"
-                                                        : "bg-red-50 text-red-700 border-red-200"
-                                                }`}
-                                            >
-                                                {isBullish ? (
-                                                    <TrendingUp className="h-3 w-3 mr-1" />
-                                                ) : (
-                                                    <TrendingDown className="h-3 w-3 mr-1" />
-                                                )}
-                                                {isBullish
-                                                    ? "Bullish"
-                                                    : "Bearish"}
-                                            </Badge>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-center text-sm w-[20%]">
-                                        <div>
-                                            <p className="font-medium">
-                                                {new Date(
-                                                    event.event_date,
-                                                ).toLocaleDateString("id-ID", {
-                                                    day: "2-digit",
-                                                    month: "short",
-                                                    year: "numeric",
-                                                })}
-                                            </p>
-                                            <p
-                                                className={`text-xs mt-0.5 font-medium ${
-                                                    isUpcoming
-                                                        ? "text-blue-600"
-                                                        : "text-slate-500"
-                                                }`}
-                                            >
-                                                {isUpcoming
-                                                    ? "Upcoming"
-                                                    : "Past"}
-                                            </p>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-center w-[15%]">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="size-8 mx-auto outline-none hover:bg-slate-200"
-                                                >
-                                                    <MoreHorizontalIcon className="size-4" />
-                                                    <span className="sr-only">
-                                                        Open menu
-                                                    </span>
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem
-                                                    onClick={() =>
-                                                        setSelectedEvent(event)
-                                                    }
-                                                    className="hover:bg-violet-50 focus:bg-violet-50 cursor-pointer font-medium"
-                                                >
-                                                    <FilePenLine className="h-4 w-4 mr-2" />
-                                                    Update Event
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem
-                                                    onClick={() =>
-                                                        handleToggleFavorite(
-                                                            event,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        loadingFavorite ===
-                                                        event.id
-                                                    }
-                                                    className="hover:bg-violet-50 focus:bg-violet-50 cursor-pointer font-medium"
-                                                >
-                                                    {loadingFavorite ===
-                                                    event.id ? (
-                                                        <Loader2 className="size-4 mr-2 animate-spin" />
-                                                    ) : (
-                                                        <StarIcon
-                                                            className={`size-4 mr-2 ${
-                                                                event.is_favorite
-                                                                    ? "fill-yellow-400 text-yellow-400"
-                                                                    : ""
-                                                            }`}
-                                                        />
-                                                    )}
-                                                    {event.is_favorite
-                                                        ? "Remove from Favorites"
-                                                        : "Add to Favorites"}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem
-                                                    onSelect={(e) =>
-                                                        e.preventDefault()
-                                                    }
-                                                    className="p-0"
-                                                >
-                                                    <DeleteEvent
-                                                        event={event}
-                                                        onDeleted={onRefresh}
-                                                    />
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })
+      {/* Desktop table — lg and above */}
+      <div className="hidden lg:block">
+        <Table className="w-full">
+          <TableHeader className="bg-slate-100 sticky top-0 z-20">
+            <TableRow className="border-none">
+              {onToggle && <TableHead className="py-2 w-10 rounded-l-lg" />}
+              <TableHead
+                className={`py-2 text-slate-foreground ${!onToggle ? 'rounded-l-lg' : ''}`}
+              >
+                Event
+              </TableHead>
+              <TableHead className="py-2 text-slate-foreground text-center w-[130px]">
+                Impact
+              </TableHead>
+              <TableHead className="py-2 text-slate-foreground text-center w-[140px]">
+                Date
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {events.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={onToggle ? 4 : 3} className="text-center py-8 text-slate-500">
+                  No events found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              events.map((event) => {
+                const linkCount = Array.isArray(event.links) ? event.links.length : 0
+                const isSelected = selectedIds.has(event.id)
+                return (
+                  <TableRow
+                    key={event.id}
+                    className={`cursor-pointer ${isSelected ? 'bg-violet-50' : 'hover:bg-slate-50'}`}
+                    onClick={() => router.push(`/main/trading/event/${event.id}`)}
+                  >
+                    {onToggle && (
+                      <TableCell
+                        className="w-10 pl-3"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onToggle(event.id, event)
+                        }}
+                      >
+                        <input
+                          id={`multiSelectCheckbox_${event.id}_eventPage`}
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => onToggle(event.id, event)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="size-4 rounded accent-violet-600 cursor-pointer"
+                        />
+                      </TableCell>
                     )}
-                </TableBody>
-            </Table>
+                    <TableCell className="py-3 whitespace-normal">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-semibold text-sm text-slate-800">
+                            {event.title || '—'}
+                          </p>
+                          {linkCount > 0 && (
+                            <Badge
+                              variant="secondary"
+                              className="text-xs font-medium px-1.5 py-0 h-4 shrink-0"
+                            >
+                              {linkCount} link{linkCount > 1 ? 's' : ''}
+                            </Badge>
+                          )}
+                        </div>
+                        {Array.isArray(event.tags) && event.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {event.tags.map((tag) => (
+                              <span
+                                key={tag}
+                                className="bg-violet-100 text-violet-700 text-xs font-medium rounded-md px-2 py-0.5"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
 
-            {selectedEvent && (
-                <UpdateEvent
-                    event={selectedEvent}
-                    onClose={() => setSelectedEvent(null)}
-                    onUpdated={async () => {
-                        await onRefresh();
-                        setSelectedEvent(null);
-                    }}
-                />
+                    <TableCell className="text-center w-[130px]">
+                      <div className="flex items-center justify-center">
+                        <ImpactBadge value={event.impact_direction} />
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="text-center w-[140px]">
+                      <p className="font-medium text-sm">{formatEventDate(event.event_date)}</p>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
             )}
-        </>
-    );
+          </TableBody>
+        </Table>
+      </div>
+
+      {selectedEvent && (
+        <UpdateEvent
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onUpdated={async () => {
+            await onRefresh()
+            setSelectedEvent(null)
+          }}
+        />
+      )}
+    </>
+  )
 }

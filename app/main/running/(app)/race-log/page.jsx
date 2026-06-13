@@ -107,10 +107,10 @@ export default function RaceLogPage() {
       const idx = prev.findIndex((e) => e.id === newOrUpdated.id)
       if (idx >= 0) {
         const next = [...prev]
-        next[idx] = newOrUpdated
+        next[idx] = { top_best_efforts: prev[idx].top_best_efforts ?? [], ...newOrUpdated }
         return next.sort((a, b) => new Date(b.race_date) - new Date(a.race_date))
       }
-      return [newOrUpdated, ...prev]
+      return [{ top_best_efforts: [], ...newOrUpdated }, ...prev]
     })
   }
 
@@ -389,6 +389,26 @@ export default function RaceLogPage() {
                                     <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700 shrink-0">
                                       DNF
                                     </span>
+                                  )}
+                                  {(entry.top_best_efforts ?? []).map((e) =>
+                                    e.pr_rank === 1 ? (
+                                      <span
+                                        key={e.name}
+                                        id={`pbRankChip_${e.name.replace(/\s/g, '')}_raceLogPage`}
+                                        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0"
+                                      >
+                                        <Trophy className="size-3" aria-hidden="true" />
+                                        #1 {e.name}
+                                      </span>
+                                    ) : (
+                                      <span
+                                        key={e.name}
+                                        id={`pbRankChip_${e.name.replace(/\s/g, '')}_raceLogPage`}
+                                        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold leading-none shrink-0"
+                                      >
+                                        #{e.pr_rank} {e.name}
+                                      </span>
+                                    )
                                   )}
                                 </div>
                                 <span className="text-xs text-slate-400">

@@ -6,7 +6,16 @@ import { ChevronLeft, ChevronRight, Maximize2, X } from 'lucide-react'
 
 const RouteMap = dynamic(() => import('./RouteMap'), { ssr: false })
 
-export default function MediaCarousel({ polyline, photos }) {
+export default function MediaCarousel({
+  polyline,
+  photos,
+  laps,
+  bestEfforts,
+  activityStartedAt,
+  totalDistanceM,
+  streams,
+  pagePrefix = 'activityDetailPage',
+}) {
   const [active, setActive] = useState(0)
   const [expandedPhoto, setExpandedPhoto] = useState(null)
 
@@ -15,8 +24,19 @@ export default function MediaCarousel({ polyline, photos }) {
 
   if (!hasMap && !hasPhotos) return null
 
+  const routeMapProps = {
+    laps,
+    bestEfforts,
+    activityStartedAt,
+    totalDistanceM,
+    streams,
+    pagePrefix,
+  }
+
   if (hasMap && !hasPhotos) {
-    return <RouteMap encodedPolyline={polyline} height={420} className="w-full" />
+    return (
+      <RouteMap encodedPolyline={polyline} height={420} className="w-full" {...routeMapProps} />
+    )
   }
 
   const slides = []
@@ -34,10 +54,15 @@ export default function MediaCarousel({ polyline, photos }) {
 
   return (
     <>
-      <div className="relative group/carousel">
+      <div className="relative group/carousel isolate">
         <div className="w-full overflow-hidden" style={{ height: 420 }}>
           {current.type === 'map' ? (
-            <RouteMap encodedPolyline={polyline} height={420} className="w-full" />
+            <RouteMap
+              encodedPolyline={polyline}
+              height={420}
+              className="w-full"
+              {...routeMapProps}
+            />
           ) : (
             <img src={current.url} alt="Activity photo" className="w-full h-full object-cover" />
           )}
@@ -85,7 +110,7 @@ export default function MediaCarousel({ polyline, photos }) {
 
       {expandedPhoto && (
         <div
-          className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4"
           onClick={() => setExpandedPhoto(null)}
         >
           <div

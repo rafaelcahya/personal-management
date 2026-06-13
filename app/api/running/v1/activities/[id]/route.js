@@ -87,12 +87,46 @@ export async function GET(_request, { params }) {
       .order('lap_index', { ascending: true })
     if (lapsError) throw lapsError
 
-    const { data: bestEfforts, error: bestEffortsError } = await supabase
+    const { data: bestEffortsRaw, error: bestEffortsError } = await supabase
       .from('rt_activity_best_efforts')
       .select('id, name, distance_m, elapsed_time_sec, moving_time_sec, pr_rank, started_at')
       .eq('activity_id', id)
       .order('distance_m', { ascending: true })
     if (bestEffortsError) throw bestEffortsError
+
+    const TOP_DISTANCES_DETAIL = ['1 mile', '5K', '10K', '15K', 'Half-Marathon']
+    const relevantEfforts = (bestEffortsRaw ?? []).filter(
+      (e) => e.pr_rank != null && e.pr_rank <= 5 && TOP_DISTANCES_DETAIL.includes(e.name)
+    )
+
+    const supersededSet = new Set()
+    if (relevantEfforts.length > 0) {
+      const names = [...new Set(relevantEfforts.map((e) => e.name))]
+      const ranks = [...new Set(relevantEfforts.map((e) => e.pr_rank))]
+      const { data: candidateRows } = await supabase
+        .from('rt_activity_best_efforts')
+        .select('name, pr_rank, rt_activities!inner(started_at)')
+        .in('name', names)
+        .in('pr_rank', ranks)
+        .not('pr_rank', 'is', null)
+        .lte('pr_rank', 5)
+        .eq('rt_activities.user_id', user.id)
+        .neq('activity_id', id)
+      for (const row of candidateRows ?? []) {
+        if ((row.rt_activities?.started_at ?? '') > activity.started_at) {
+          supersededSet.add(`${row.name}__${row.pr_rank}`)
+        }
+      }
+    }
+
+    const bestEfforts = (bestEffortsRaw ?? []).map((e) => {
+      const isRelevant =
+        e.pr_rank != null && e.pr_rank <= 5 && TOP_DISTANCES_DETAIL.includes(e.name)
+      return {
+        ...e,
+        is_latest_for_rank: !isRelevant || !supersededSet.has(`${e.name}__${e.pr_rank}`),
+      }
+    })
 
     const { data: photos, error: photosError } = await supabase
       .from('rt_activity_photos')
@@ -119,10 +153,11 @@ export async function GET(_request, { params }) {
 
     const { data: userProfile } = await supabase
       .from('rt_users')
-      .select('max_hr')
+      .select('max_hr, weight_kg')
       .eq('id', user.id)
       .maybeSingle()
     const user_max_hr = userProfile?.max_hr ?? null
+    const user_weight_kg = userProfile?.weight_kg ?? null
 
     const { data: hrRows, error: hrError } = await supabase
       .from('rt_activities')
@@ -181,6 +216,7 @@ export async function GET(_request, { params }) {
           historical_avg_hr,
           historical_avg_cadence,
           user_max_hr,
+          user_weight_kg,
         },
         splits: splits ?? [],
         laps: laps ?? [],

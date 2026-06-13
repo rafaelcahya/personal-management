@@ -20,10 +20,13 @@ import {
   deleteRaceLog,
   fetchActivity,
   fetchSubjectiveHealthByDate,
+  fetchActivityStreams,
+  getUserProfile,
 } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import EditRaceModal from '../components/EditRaceModal'
 import ActivitySection from '../components/ActivitySection'
+import RacingWeightSection from '../components/RacingWeightSection'
 
 function PageSkeleton() {
   return (
@@ -66,8 +69,10 @@ export default function RaceDetailPage() {
   const [laps, setLaps] = useState([])
   const [bestEfforts, setBestEfforts] = useState([])
   const [photos, setPhotos] = useState([])
+  const [streams, setStreams] = useState([])
   const [activityLoading, setActivityLoading] = useState(false)
   const [healthLog, setHealthLog] = useState(undefined)
+  const [profile, setProfile] = useState(null)
 
   useEffect(() => {
     if (!id) return
@@ -76,21 +81,34 @@ export default function RaceDetailPage() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetchRaceLogEntry(id)
+        const [res, profileRes] = await Promise.allSettled([
+          fetchRaceLogEntry(id),
+          getUserProfile(),
+        ])
+        if (profileRes.status === 'fulfilled' && !cancelled) {
+          setProfile(profileRes.value)
+        }
+        if (res.status === 'rejected') throw res.reason
         if (!cancelled) {
-          setEntry(res.data)
-          if (res.data?.activity_id) {
+          setEntry(res.value.data)
+          if (res.value.data?.activity_id) {
             setActivityLoading(true)
-            fetchActivity(res.data.activity_id)
-              .then((actRes) => {
+            const activityId = res.value.data.activity_id
+            Promise.allSettled([fetchActivity(activityId), fetchActivityStreams(activityId)])
+              .then(([actRes, streamsRes]) => {
                 if (!cancelled) {
-                  setActivity(actRes.activity)
-                  setSplits(actRes.splits ?? [])
-                  setLaps(actRes.laps ?? [])
-                  setBestEfforts(actRes.best_efforts ?? [])
-                  setPhotos(actRes.photos ?? [])
+                  if (actRes.status === 'fulfilled') {
+                    setActivity(actRes.value.activity)
+                    setSplits(actRes.value.splits ?? [])
+                    setLaps(actRes.value.laps ?? [])
+                    setBestEfforts(actRes.value.best_efforts ?? [])
+                    setPhotos(actRes.value.photos ?? [])
+                  }
+                  if (streamsRes.status === 'fulfilled') {
+                    setStreams(streamsRes.value?.data ?? [])
+                  }
                   setActivityLoading(false)
-                  const activityDate = actRes.activity?.started_at?.slice(0, 10)
+                  const activityDate = actRes.value?.activity?.started_at?.slice(0, 10)
                   if (activityDate) {
                     fetchSubjectiveHealthByDate(activityDate)
                       .then((log) => {
@@ -201,11 +219,25 @@ export default function RaceDetailPage() {
               laps={laps}
               bestEfforts={bestEfforts}
               photos={photos}
+              streams={streams}
               healthLog={healthLog}
               onEditClick={() => setEditOpen(true)}
               entryDistanceM={entry.distance_m ? Number(entry.distance_m) : null}
               entryFinishTimeSec={entry.finish_time_sec}
+              profile={profile}
             />
+          )}
+
+          {!activityLoading && !activity && (
+            <div className="w-full lg:w-3/5 mx-auto px-4 lg:px-0 mt-5">
+              <RacingWeightSection
+                entry={{
+                  distance_m: entry.distance_m ? Number(entry.distance_m) : null,
+                  finish_time_sec: entry.finish_time_sec,
+                }}
+                profile={profile}
+              />
+            </div>
           )}
 
           {/* Delete button */}

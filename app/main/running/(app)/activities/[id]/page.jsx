@@ -35,6 +35,8 @@ import {
   updateActivity,
   fetchRaceLog,
   fetchSubjectiveHealthByDate,
+  fetchActivityStreams,
+  getUserProfile,
 } from '@/lib/api/running'
 import StreamCharts from '../components/StreamCharts'
 import AIInsightCard from '../components/AIInsightCard'
@@ -47,6 +49,7 @@ import PerceivedEffortSection from '../components/PerceivedEffortSection'
 import { getActivityCfg, tempStyle } from '../components/activityConfig'
 import { StatTile, SectionLabel } from '../components/activityShared'
 import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../../dashboard/utils/format'
+import RacingWeightSection from '../../race-log/components/RacingWeightSection'
 import PageHeader from '@/app/main/components/PageHeader'
 
 // ─── skeleton ─────────────────────────────────────────────────────────────────
@@ -80,6 +83,7 @@ export default function ActivityDetailPage() {
   const [laps, setLaps] = useState([])
   const [bestEfforts, setBestEfforts] = useState([])
   const [photos, setPhotos] = useState([])
+  const [streams, setStreams] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -88,6 +92,8 @@ export default function ActivityDetailPage() {
   const [linkedRace, setLinkedRace] = useState(null)
 
   const [healthLog, setHealthLog] = useState(undefined)
+  const [profile, setProfile] = useState(null)
+  const [profileError, setProfileError] = useState(false)
 
   const [notesEditing, setNotesEditing] = useState(false)
   const [notesValue, setNotesValue] = useState('')
@@ -115,10 +121,14 @@ export default function ActivityDetailPage() {
       setLoading(true)
       setError(null)
       try {
-        const [actRes, dashRes, raceLogRes] = await Promise.allSettled([
+        // getDashboard is fetched eagerly for nextRaceGoal (EditGoalModal).
+        // Known: could be lazy-loaded when the modal opens — tracked as WF-2.
+        const [actRes, dashRes, raceLogRes, streamsRes, profileRes] = await Promise.allSettled([
           fetchActivity(id),
           getDashboard(),
           fetchRaceLog(),
+          fetchActivityStreams(id),
+          getUserProfile(),
         ])
 
         const activityDate =
@@ -149,6 +159,14 @@ export default function ActivityDetailPage() {
             const entries = raceLogRes.value?.data ?? raceLogRes.value ?? []
             const matched = entries.find((entry) => entry.activity_id === id)
             setLinkedRace(matched ?? null)
+          }
+          if (streamsRes.status === 'fulfilled') {
+            setStreams(streamsRes.value?.data ?? [])
+          }
+          if (profileRes.status === 'fulfilled') {
+            setProfile(profileRes.value)
+          } else {
+            setProfileError(true)
           }
         }
       } catch (err) {
@@ -224,7 +242,15 @@ export default function ActivityDetailPage() {
               <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden pb-6 pt-0 lg:pt-6">
                 {/* Carousel: 80% of card, centered */}
                 <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden">
-                  <MediaCarousel polyline={activity.summary_polyline} photos={photos} />
+                  <MediaCarousel
+                    polyline={activity.summary_polyline}
+                    photos={photos}
+                    laps={laps}
+                    bestEfforts={bestEfforts}
+                    activityStartedAt={activity.started_at}
+                    totalDistanceM={activity.distance_m}
+                    streams={streams}
+                  />
                 </div>
 
                 {/* Content: 60% of card, centered */}
@@ -251,6 +277,34 @@ export default function ActivityDetailPage() {
                             {activity.achievement_count} achievements
                           </span>
                         )}
+                        {bestEfforts
+                          .filter(
+                            (e) =>
+                              ['1 mile', '5K', '10K', '15K', 'Half-Marathon'].includes(e.name) &&
+                              e.pr_rank != null &&
+                              e.pr_rank <= 5 &&
+                              e.is_latest_for_rank !== false
+                          )
+                          .map((e) =>
+                            e.pr_rank === 1 ? (
+                              <span
+                                key={e.name}
+                                id={`pbRankChip_${e.name.replace(/\s/g, '')}_activityDetailPage`}
+                                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 text-xs font-semibold shrink-0"
+                              >
+                                <Trophy className="size-3" aria-hidden="true" />
+                                #1 {e.name} all-time
+                              </span>
+                            ) : (
+                              <span
+                                key={e.name}
+                                id={`pbRankChip_${e.name.replace(/\s/g, '')}_activityDetailPage`}
+                                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold shrink-0"
+                              >
+                                #{e.pr_rank} {e.name} all-time
+                              </span>
+                            )
+                          )}
                       </div>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <span className="text-sm text-slate-400">
@@ -447,6 +501,35 @@ export default function ActivityDetailPage() {
                                 />
                               )
                             })()}
+                        </div>
+                      )}
+                      {activity.elevation_gain_m > 0 && (
+                        <div id="climbingIndexTile_activityDetailPage">
+                          <StatTile
+                            icon={TrendingUp}
+                            label="Climbing Index"
+                            value={
+                              activity.user_weight_kg != null &&
+                              activity.moving_time_sec != null &&
+                              activity.moving_time_sec > 0
+                                ? (
+                                    (activity.user_weight_kg * 9.81 * activity.elevation_gain_m) /
+                                    activity.moving_time_sec
+                                  ).toFixed(2)
+                                : '—'
+                            }
+                            unit="W/kg"
+                            tooltip={
+                              <>
+                                <p className="font-semibold mb-1">Climbing Index (W/kg)</p>
+                                <p>
+                                  Power-to-weight output against gravity — how hard you worked per
+                                  kg of body weight on this climb. Formula: weight × 9.81 ×
+                                  elevation gain ÷ moving time.
+                                </p>
+                              </>
+                            }
+                          />
                         </div>
                       )}
                       {activity.estimated_vo2max != null && (
@@ -837,6 +920,26 @@ export default function ActivityDetailPage() {
                       )
                     })()}
 
+                  {['Run', 'TrailRun', 'VirtualRun'].includes(activity.activity_type) &&
+                    (profileError ? (
+                      <p className="text-xs text-slate-400 px-1">
+                        Racing weight unavailable — could not load your profile.
+                      </p>
+                    ) : (
+                      <RacingWeightSection
+                        entry={{
+                          distance_m: activity.distance_m,
+                          finish_time_sec:
+                            linkedRace?.finish_time_sec ??
+                            activity.moving_time_sec ??
+                            activity.duration_sec ??
+                            null,
+                        }}
+                        profile={profile}
+                        pageId="activityDetailPage"
+                      />
+                    ))}
+
                   <div className="border-t border-slate-100" />
                   <PerceivedEffortSection
                     activityId={id}
@@ -853,7 +956,8 @@ export default function ActivityDetailPage() {
                   <SplitsSection splits={splits} />
                   <BestEffortsTable bestEfforts={bestEfforts} />
                   <LapsTable laps={laps} />
-
+                </div>
+                <div className="w-full lg:w-3/5 mx-auto px-4 lg:px-0 flex flex-col gap-5">
                   <div className="border-t border-slate-100" />
                   <StreamCharts
                     activityId={id}
@@ -863,6 +967,7 @@ export default function ActivityDetailPage() {
                     maxHr={activity.max_hr ?? null}
                     userMaxHr={activity.user_max_hr ?? null}
                     historicalAvgCadence={activity.historical_avg_cadence ?? null}
+                    maxPaceSecPerKm={activity.max_pace_sec_per_km ?? null}
                   />
                 </div>
               </div>

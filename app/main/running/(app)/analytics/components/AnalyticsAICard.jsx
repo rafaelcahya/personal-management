@@ -5,6 +5,8 @@ import { Sparkles, Loader2, Clock, History, ChevronDown, ChevronUp } from 'lucid
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Accordion, AccordionItem, AccordionContent } from '@/components/ui/accordion'
+import { Accordion as AccordionPrimitive } from 'radix-ui'
 import { fetchAnalyticsInsight, generateAnalyticsInsight } from '@/lib/api/running'
 
 const POLL_INTERVAL_MS = 8000
@@ -272,181 +274,200 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
   return (
     <div
       id={`analyticsAiCard_${sectionId}_analyticsPage`}
-      className="mt-4 border-t border-slate-100 pt-4 space-y-3"
+      className="mt-4 border-t border-slate-100 pt-2"
       aria-live="polite"
       aria-atomic="true"
       aria-busy={isPending || generating}
     >
-      <div className="flex items-center gap-2 justify-between">
-        <div className="flex items-center gap-2">
-          <span className="flex items-center justify-center w-6 h-6 rounded-md bg-violet-100 shrink-0">
-            <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-hidden="true" />
-          </span>
-          <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-            AI Recommendations
-          </span>
-          <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-medium">
-            BETA
-          </span>
-        </div>
-
-        {historyInsights.length > 1 && (
-          <button
-            id={`analyticsAiHistoryBtn_${sectionId}_analyticsPage`}
-            onClick={() => setHistoryOpen(true)}
-            aria-label="View analysis history"
-            className="flex items-center gap-1 text-xs text-slate-400 hover:text-violet-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-          >
-            <History className="h-3.5 w-3.5" aria-hidden="true" />
-            History
-          </button>
-        )}
-      </div>
-
-      {/* Loading skeleton */}
-      {insights === undefined && !loadError && (
-        <div
-          id={`analyticsAiLoading_${sectionId}_analyticsPage`}
-          className="space-y-2 animate-pulse motion-reduce:animate-none"
-          aria-label="Loading AI recommendations"
-        >
-          <div className="h-3 bg-slate-200 rounded w-2/3" aria-hidden="true" />
-          <div className="h-3 bg-slate-200 rounded w-full" aria-hidden="true" />
-          <div className="h-3 bg-slate-200 rounded w-5/6" aria-hidden="true" />
-        </div>
-      )}
-
-      {/* Error state */}
-      {loadError && (
-        <div
-          id={`analyticsAiError_${sectionId}_analyticsPage`}
-          className="flex items-center gap-2"
-          role="alert"
-        >
-          <p className="text-sm text-slate-400">Could not load recommendations.</p>
-          <Button
-            id={`analyticsAiRetryBtn_${sectionId}_analyticsPage`}
-            variant="ghost"
-            size="sm"
-            className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal text-xs"
-            onClick={() => {
-              stopPolling()
-              setInsights(undefined)
-              loadInsights()
-            }}
-          >
-            Try again
-          </Button>
-        </div>
-      )}
-
-      {/* Empty state — no insights yet */}
-      {!loadError && insights !== undefined && !latestInsight && (
-        <div id={`analyticsAiEmpty_${sectionId}_analyticsPage`} className="space-y-2">
-          <p className="text-xs text-slate-400">
-            No recommendations yet. Generate AI insights for this section.
-          </p>
-          {generateError && (
-            <p className="text-xs text-red-400" role="alert">
-              Failed to start analysis. Try again.
-            </p>
-          )}
-          <Button
-            id={`analyticsAiGenerateBtn_${sectionId}_analyticsPage`}
-            size="sm"
-            disabled={generating}
-            onClick={handleGenerate}
-            className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 focus-visible:ring-2 focus-visible:ring-violet-200"
-          >
-            {generating ? (
-              <>
-                <Loader2 className="h-3 w-3 animate-spin mr-1.5" aria-hidden="true" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-3 w-3 mr-1.5" aria-hidden="true" />
-                Generate Insights
-              </>
+      <Accordion type="single" collapsible>
+        <AccordionItem value="item" className="border-0">
+          <AccordionPrimitive.Header className="flex flex-col w-full">
+            <AccordionPrimitive.Trigger className="flex items-center gap-2 py-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded [&[data-state=open]>.accordion-chevron]:rotate-180">
+              <span className="flex items-center justify-center w-6 h-6 rounded-md bg-violet-100 shrink-0">
+                <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-hidden="true" />
+              </span>
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex-1 truncate">
+                AI Recommendations
+              </span>
+              <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-medium shrink-0">
+                BETA
+              </span>
+              <ChevronDown
+                className="accordion-chevron size-4 shrink-0 text-slate-400 transition-transform duration-200"
+                aria-hidden="true"
+              />
+            </AccordionPrimitive.Trigger>
+            {((stale && isValidInsight) || historyInsights.length > 1) && (
+              <div className="flex items-center justify-between pb-1">
+                <div>
+                  {stale && isValidInsight && (
+                    <div
+                      id={`analyticsAiStalenessBadge_${sectionId}_analyticsPage`}
+                      className="inline-flex items-center gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-700 px-2 py-1 rounded-full"
+                      role="status"
+                      aria-label="Recommendations may be outdated — new activity data is available"
+                    >
+                      <Clock className="h-3 w-3" aria-hidden="true" />
+                      Outdated — newer activity data available
+                    </div>
+                  )}
+                </div>
+                {historyInsights.length > 1 && (
+                  <button
+                    id={`analyticsAiHistoryBtn_${sectionId}_analyticsPage`}
+                    onClick={() => setHistoryOpen(true)}
+                    aria-label="View analysis history"
+                    className="flex items-center gap-1 text-xs text-slate-400 hover:text-violet-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
+                  >
+                    <History className="h-3.5 w-3.5" aria-hidden="true" />
+                    History
+                  </button>
+                )}
+              </div>
             )}
-          </Button>
-        </div>
-      )}
+          </AccordionPrimitive.Header>
 
-      {/* Pending / generating */}
-      {!loadError && isPending && (
-        <div id={`analyticsAiPending_${sectionId}_analyticsPage`} className="space-y-2">
-          <div className="h-1 w-full bg-violet-100 rounded-full overflow-hidden" aria-hidden="true">
-            <div className="h-full w-1/2 bg-violet-300 rounded-full animate-pulse motion-reduce:animate-none" />
-          </div>
-          <div
-            className="space-y-2 animate-pulse motion-reduce:animate-none"
-            aria-label="Generating AI recommendations"
-          >
-            <div className="h-3 bg-slate-200 rounded w-1/2" aria-hidden="true" />
-            <div className="h-3 bg-slate-200 rounded w-full" aria-hidden="true" />
-            <div className="h-3 bg-slate-200 rounded w-4/5" aria-hidden="true" />
-          </div>
-          <p className="text-xs text-slate-400 italic">Analyzing your training data...</p>
-        </div>
-      )}
-
-      {/* Content state */}
-      {!loadError && isValidInsight && (
-        <div id={`analyticsAiContent_${sectionId}_analyticsPage`} className="space-y-3">
-          {stale && (
-            <div
-              id={`analyticsAiStalenessBadge_${sectionId}_analyticsPage`}
-              className="inline-flex items-center gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-700 px-2 py-1 rounded-full"
-              role="status"
-              aria-label="Recommendations may be outdated — new activity data is available"
-            >
-              <Clock className="h-3 w-3" aria-hidden="true" />
-              Outdated — newer activity data available
-            </div>
-          )}
-
-          <RoleInsight content={latestInsight.content} />
-
-          <div className="flex items-center justify-between pt-1">
-            {latestInsight.created_at && (
-              <p className="text-xs text-slate-400">
-                {new Date(latestInsight.created_at).toLocaleString('en-US', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </p>
-            )}
-            <Button
-              id={`analyticsAiRefreshBtn_${sectionId}_analyticsPage`}
-              variant="ghost"
-              size="sm"
-              disabled={generating || isPending}
-              onClick={handleGenerate}
-              className="text-violet-600 hover:text-violet-700 px-0 h-auto text-xs font-normal focus-visible:ring-2 focus-visible:ring-violet-200"
-              aria-label="Refresh AI recommendations"
-            >
-              {generating ? (
-                <>
-                  <Loader2 className="h-3 w-3 animate-spin mr-1" aria-hidden="true" />
-                  Refreshing...
-                </>
-              ) : (
-                'Refresh'
+          <AccordionContent className="pb-0">
+            <div className="space-y-3 pt-1">
+              {/* Loading skeleton */}
+              {insights === undefined && !loadError && (
+                <div
+                  id={`analyticsAiLoading_${sectionId}_analyticsPage`}
+                  className="space-y-2 animate-pulse motion-reduce:animate-none"
+                  aria-label="Loading AI recommendations"
+                >
+                  <div className="h-3 bg-slate-200 rounded w-2/3" aria-hidden="true" />
+                  <div className="h-3 bg-slate-200 rounded w-full" aria-hidden="true" />
+                  <div className="h-3 bg-slate-200 rounded w-5/6" aria-hidden="true" />
+                </div>
               )}
-            </Button>
-          </div>
 
-          {generateError && (
-            <p className="text-xs text-red-400" role="alert">
-              Failed to start analysis. Try again.
-            </p>
-          )}
-        </div>
-      )}
+              {/* Error state */}
+              {loadError && (
+                <div
+                  id={`analyticsAiError_${sectionId}_analyticsPage`}
+                  className="flex items-center gap-2"
+                  role="alert"
+                >
+                  <p className="text-sm text-slate-400">Could not load recommendations.</p>
+                  <Button
+                    id={`analyticsAiRetryBtn_${sectionId}_analyticsPage`}
+                    variant="ghost"
+                    size="sm"
+                    className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal text-xs"
+                    onClick={() => {
+                      stopPolling()
+                      setInsights(undefined)
+                      loadInsights()
+                    }}
+                  >
+                    Try again
+                  </Button>
+                </div>
+              )}
+
+              {/* Empty state */}
+              {!loadError && insights !== undefined && !latestInsight && (
+                <div id={`analyticsAiEmpty_${sectionId}_analyticsPage`} className="space-y-2">
+                  <p className="text-xs text-slate-400">
+                    No recommendations yet. Generate AI insights for this section.
+                  </p>
+                  {generateError && (
+                    <p className="text-xs text-red-400" role="alert">
+                      Failed to start analysis. Try again.
+                    </p>
+                  )}
+                  <Button
+                    id={`analyticsAiGenerateBtn_${sectionId}_analyticsPage`}
+                    size="sm"
+                    disabled={generating}
+                    onClick={handleGenerate}
+                    className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 focus-visible:ring-2 focus-visible:ring-violet-200"
+                  >
+                    {generating ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin mr-1.5" aria-hidden="true" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-3 w-3 mr-1.5" aria-hidden="true" />
+                        Generate Insights
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {/* Pending / generating */}
+              {!loadError && isPending && (
+                <div id={`analyticsAiPending_${sectionId}_analyticsPage`} className="space-y-2">
+                  <div
+                    className="h-1 w-full bg-violet-100 rounded-full overflow-hidden"
+                    aria-hidden="true"
+                  >
+                    <div className="h-full w-1/2 bg-violet-300 rounded-full animate-pulse motion-reduce:animate-none" />
+                  </div>
+                  <div
+                    className="space-y-2 animate-pulse motion-reduce:animate-none"
+                    aria-label="Generating AI recommendations"
+                  >
+                    <div className="h-3 bg-slate-200 rounded w-1/2" aria-hidden="true" />
+                    <div className="h-3 bg-slate-200 rounded w-full" aria-hidden="true" />
+                    <div className="h-3 bg-slate-200 rounded w-4/5" aria-hidden="true" />
+                  </div>
+                  <p className="text-xs text-slate-400 italic">Analyzing your training data...</p>
+                </div>
+              )}
+
+              {/* Content state */}
+              {!loadError && isValidInsight && (
+                <div id={`analyticsAiContent_${sectionId}_analyticsPage`} className="space-y-3">
+                  <RoleInsight content={latestInsight.content} />
+
+                  <div className="flex items-center justify-between pt-1">
+                    {latestInsight.created_at && (
+                      <p className="text-xs text-slate-400">
+                        {new Date(latestInsight.created_at).toLocaleString('en-US', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                    )}
+                    <Button
+                      id={`analyticsAiRefreshBtn_${sectionId}_analyticsPage`}
+                      variant="ghost"
+                      size="sm"
+                      disabled={generating || isPending}
+                      onClick={handleGenerate}
+                      className="text-violet-600 hover:text-violet-700 px-0 h-auto text-xs font-normal focus-visible:ring-2 focus-visible:ring-violet-200"
+                      aria-label="Refresh AI recommendations"
+                    >
+                      {generating ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin mr-1" aria-hidden="true" />
+                          Refreshing...
+                        </>
+                      ) : (
+                        'Refresh'
+                      )}
+                    </Button>
+                  </div>
+
+                  {generateError && (
+                    <p className="text-xs text-red-400" role="alert">
+                      Failed to start analysis. Try again.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       {/* History modal */}
       <Sheet open={historyOpen} onOpenChange={setHistoryOpen}>

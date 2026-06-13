@@ -1,9 +1,13 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import {
   AreaChart,
   Area,
+  BarChart,
+  Bar,
+  Cell,
+  LabelList,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -39,7 +43,7 @@ function SubLabel({ children }) {
 function fmtPaceSec(sec) {
   if (!sec || sec <= 0) return ''
   const m = Math.floor(sec / 60)
-  const s = String(sec % 60).padStart(2, '0')
+  const s = String(Math.round(sec % 60)).padStart(2, '0')
   return `${m}:${s}`
 }
 
@@ -80,10 +84,67 @@ const XAXIS = (
 )
 
 function PaceChart({ data }) {
+  const [mode, setMode] = useState('pace')
+  const isSpeed = mode === 'speed'
+
   return (
     <div>
-      <SubLabel>Pace</SubLabel>
-      <div className="h-[180px] sm:h-[210px] outline-none" id="streamChartPace_activityDetailPage">
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-1.5">
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+            {isSpeed ? 'Speed' : 'Pace'}
+          </p>
+          <UITooltipProvider delayDuration={0}>
+            <UITooltip>
+              <UITooltipTrigger asChild>
+                <button
+                  type="button"
+                  id="paceSpeedInfo_activityDetailPage"
+                  className="text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                  aria-label="Pace and speed chart info"
+                >
+                  <Info className="size-3.5" aria-hidden="true" />
+                </button>
+              </UITooltipTrigger>
+              <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+                <p className="font-semibold mb-1">Pace vs Speed</p>
+                <p>
+                  <span className="text-violet-300 font-medium">Pace (min/km)</span> — standard
+                  runner metric. Y-axis is inverted: lower = faster. Best for reading effort in
+                  familiar terms.
+                </p>
+                <p className="mt-1">
+                  <span className="text-violet-300 font-medium">Speed (km/h)</span> — normal Y-axis:
+                  higher = faster. Better for spotting acceleration and deceleration patterns at a
+                  glance.
+                </p>
+              </UITooltipContent>
+            </UITooltip>
+          </UITooltipProvider>
+        </div>
+        <div
+          id="paceSpeedToggle_activityDetailPage"
+          className="flex rounded-lg overflow-hidden border border-slate-200 text-[10px] font-semibold"
+        >
+          <button
+            type="button"
+            id="paceTab_activityDetailPage"
+            onClick={() => setMode('pace')}
+            className={`px-2.5 py-1 transition-colors ${!isSpeed ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+          >
+            Pace
+          </button>
+          <button
+            type="button"
+            id="speedTab_activityDetailPage"
+            onClick={() => setMode('speed')}
+            className={`px-2.5 py-1 transition-colors ${isSpeed ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+          >
+            Speed
+          </button>
+        </div>
+      </div>
+      <div className="h-[180px] sm:h-[225px] outline-none" id="streamChartPace_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -98,15 +159,28 @@ function PaceChart({ data }) {
             </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
-            <YAxis reversed tickFormatter={fmtPaceSec} width={36} {...AXIS_PROPS} />
-            <Tooltip content={<StreamTooltip formatter={(sec) => `${fmtPaceSec(sec)} /km`} />} />
+            <YAxis
+              reversed={!isSpeed}
+              tickFormatter={isSpeed ? (v) => v.toFixed(1) : fmtPaceSec}
+              width={isSpeed ? 42 : 36}
+              {...AXIS_PROPS}
+            />
+            <Tooltip
+              content={
+                <StreamTooltip
+                  formatter={
+                    isSpeed ? (v) => `${v.toFixed(1)} km/h` : (sec) => `${fmtPaceSec(sec)} /km`
+                  }
+                />
+              }
+            />
             <Area
               type="monotone"
-              dataKey="pace"
+              dataKey={isSpeed ? 'speed_kmh' : 'pace'}
               stroke="#8b5cf6"
               strokeWidth={1.5}
               fill="url(#gradPace)"
-              baseValue="dataMax"
+              baseValue={isSpeed ? 'dataMin' : 'dataMax'}
               dot={false}
               activeDot={{ r: 3 }}
               connectNulls={false}
@@ -156,7 +230,7 @@ function computeCadenceStats(data) {
   return { stabilityScore, fatigueDrop, fatigueStart }
 }
 
-const ZONE_COLORS = ['#3b82f6', '#10b981', '#eab308', '#f97316', '#ef4444']
+const ZONE_COLORS = ['#fecdd3', '#fca5a5', '#f87171', '#ef4444', '#b91c1c']
 const ZONE_LABELS = ['Z1 Recovery', 'Z2 Aerobic', 'Z3 Tempo', 'Z4 Threshold', 'Z5 VO₂max']
 const ZONE_SHORT_LABELS = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5']
 const ZONE_OPACITIES = [0.15, 0.15, 0.18, 0.22, 0.25]
@@ -165,7 +239,7 @@ const ZONE_PERCENTS = [
   [0.6, 0.7],
   [0.7, 0.8],
   [0.8, 0.9],
-  [0.9, 1.1],
+  [0.9, 0.95],
 ]
 
 function computeZoneRanges(maxHr) {
@@ -187,11 +261,103 @@ function formatZoneDuration(seconds) {
   return `${s}s`
 }
 
-function HrStreamChart({ data, zones, avgHr, historicalAvgHr, maxHr, userMaxHr, pagePrefix }) {
+function ZoneTick({ x, y, payload, zones }) {
+  const zone = zones?.find((z) => z.name === payload?.value)
+  if (!zone) return null
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text x={-6} textAnchor="end" fontSize={11} fontWeight={600} fill="#475569" dy={-5}>
+        {zone.name}
+      </text>
+      {zone.min != null && zone.max != null && (
+        <text x={-6} textAnchor="end" fontSize={10} fill="#94a3b8" dy={7}>
+          {zone.min}–{zone.max}
+        </text>
+      )}
+    </g>
+  )
+}
+
+function ZoneTooltip({ active, payload }) {
+  if (!active || !payload?.length) return null
+  const z = payload[0]?.payload
+  if (!z) return null
+  return (
+    <div className="bg-white border border-slate-200 rounded-lg shadow-md px-3 py-2 text-xs">
+      <p className="font-semibold text-slate-700">{z.label}</p>
+      {z.min != null && z.max != null && (
+        <p className="text-slate-400 tabular-nums">
+          {z.min}–{z.max} bpm
+        </p>
+      )}
+      <p className="text-slate-600 tabular-nums">{z.pct}%</p>
+      {z.duration && <p className="text-slate-400">{z.duration}</p>}
+    </div>
+  )
+}
+
+function ZoneBarChart({ mergedZones, pagePrefix, height = 180, barCategoryGap = '16%' }) {
+  const tickWithZones = (props) => <ZoneTick {...props} zones={mergedZones} />
+  const chartData = [...mergedZones].reverse().map((z) => ({
+    ...z,
+    pctLabel: z.pct > 0 ? `${z.pct}%${z.duration ? ` · ${z.duration}` : ''}` : '',
+  }))
+  return (
+    <div id={`hrTimeInZoneSection_${pagePrefix}`}>
+      <ResponsiveContainer width="100%" height={height}>
+        <BarChart
+          layout="vertical"
+          data={chartData}
+          margin={{ top: 4, right: 96, bottom: 4, left: 0 }}
+          barCategoryGap={barCategoryGap}
+        >
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+          <XAxis type="number" domain={[0, 100]} hide />
+          <YAxis
+            type="category"
+            dataKey="name"
+            tick={tickWithZones}
+            tickLine={false}
+            axisLine={false}
+            width={76}
+          />
+          <Tooltip cursor={false} content={<ZoneTooltip />} />
+          <Bar dataKey="pct" radius={[0, 3, 3, 0]} minPointSize={2} isAnimationActive={false}>
+            {chartData.map((z, i) => (
+              <Cell key={i} fill={z.color} fillOpacity={z.pct > 0 ? 0.8 : 0.18} />
+            ))}
+            <LabelList
+              dataKey="pctLabel"
+              position="right"
+              style={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
+            />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  )
+}
+
+function HrStreamChart({
+  data,
+  zones,
+  avgHr,
+  historicalAvgHr,
+  maxHr,
+  userMaxHr,
+  hrZoneTimes,
+  pagePrefix,
+}) {
   const stravaZones = zones?.heart_rate?.zones ?? null
   const fallbackMaxHr = userMaxHr ?? maxHr ?? null
   const bandZones = stravaZones ?? computeZoneRanges(fallbackMaxHr) ?? []
-  const timeZones = stravaZones ?? []
+  const stravaHasTime = stravaZones?.some((z) => z.time != null && z.time > 0) ?? false
+  const timeZones =
+    stravaZones && stravaHasTime
+      ? stravaZones
+      : hrZoneTimes
+        ? bandZones.map((bz, i) => ({ ...bz, time: hrZoneTimes[i] ?? 0 }))
+        : []
 
   const zoneBandSource = stravaZones
     ? 'strava'
@@ -208,6 +374,21 @@ function HrStreamChart({ data, zones, avgHr, historicalAvgHr, maxHr, userMaxHr, 
 
   const totalZoneTime = timeZones.reduce((sum, z) => sum + (z.time ?? 0), 0)
 
+  const mergedZones = bandZones.map((bz, i) => {
+    const t = timeZones[i]?.time ?? 0
+    const pct = totalZoneTime > 0 ? Math.round((t / totalZoneTime) * 100) : 0
+    return {
+      name: ZONE_SHORT_LABELS[i] ?? `Z${i + 1}`,
+      label: ZONE_LABELS[i] ?? `Z${i + 1}`,
+      color: ZONE_COLORS[i] ?? '#94a3b8',
+      min: bz.min ?? null,
+      max: bz.max ?? null,
+      time: t,
+      pct,
+      duration: t > 0 ? formatZoneDuration(t) : null,
+    }
+  })
+
   const hrValues = data.map((d) => d.hr).filter((v) => v != null)
   const dataMinHr = hrValues.length ? Math.min(...hrValues) : 0
   const showHistoricalLine = historicalAvgHr != null && historicalAvgHr >= dataMinHr - 15
@@ -215,34 +396,23 @@ function HrStreamChart({ data, zones, avgHr, historicalAvgHr, maxHr, userMaxHr, 
   return (
     <div>
       <SubLabel>Heart Rate</SubLabel>
-      <div className="h-[170px] sm:h-[200px] outline-none" id={`streamChartHr_${pagePrefix}`}>
+      <div className="h-[240px] sm:h-[300px] outline-none" id={`streamChartHr_${pagePrefix}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
             syncId="streamCharts"
             margin={{ top: 4, right: 8, left: 4, bottom: 0 }}
           >
+            <defs>
+              <linearGradient id="gradHr" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
             <YAxis width={36} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${v} bpm`} />} />
-            {bandZones.map((z, i) => (
-              <ReferenceArea
-                key={i}
-                y1={z.min}
-                y2={z.max}
-                fill={ZONE_COLORS[i] ?? '#94a3b8'}
-                fillOpacity={ZONE_OPACITIES[i] ?? 0.15}
-                ifOverflow="hidden"
-                label={{
-                  value: ZONE_SHORT_LABELS[i] ?? `Z${i + 1}`,
-                  position: 'insideRight',
-                  fontSize: 8,
-                  fill: ZONE_COLORS[i] ?? '#94a3b8',
-                  opacity: 0.7,
-                }}
-              />
-            ))}
             {showHistoricalLine && (
               <ReferenceLine
                 y={historicalAvgHr}
@@ -296,7 +466,8 @@ function HrStreamChart({ data, zones, avgHr, historicalAvgHr, maxHr, userMaxHr, 
               dataKey="hr"
               stroke="#ef4444"
               strokeWidth={2}
-              fill="none"
+              fill="url(#gradHr)"
+              baseValue="dataMin"
               dot={false}
               activeDot={{ r: 3 }}
               connectNulls={false}
@@ -306,7 +477,7 @@ function HrStreamChart({ data, zones, avgHr, historicalAvgHr, maxHr, userMaxHr, 
       </div>
       {!showHistoricalLine && historicalAvgHr != null && (
         <p
-          id={`hrHistoricalAvgLine_${pagePrefix}`}
+          id={`hrHistoricalAvgFallback_${pagePrefix}`}
           className="mt-1 text-[10px] text-slate-400 tabular-nums text-right"
         >
           All-time avg: {historicalAvgHr} bpm
@@ -325,36 +496,17 @@ function HrStreamChart({ data, zones, avgHr, historicalAvgHr, maxHr, userMaxHr, 
         </p>
       )}
 
-      {timeZones.length > 0 && totalZoneTime > 0 && (
+      {bandZones.length > 0 && (
         <div className="mt-3" id={`hrZonesSection_${pagePrefix}`}>
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
-            Time in Zone
+            Heart Rate Zone
           </p>
-          <div className="flex flex-col gap-1.5" id={`hrTimeInZoneSection_${pagePrefix}`}>
-            {timeZones.map((zone, i) => {
-              const pct = Math.round(((zone.time ?? 0) / totalZoneTime) * 100)
-              const color = ZONE_COLORS[i] ?? '#94a3b8'
-              const label = ZONE_LABELS[i] ?? `Z${i + 1}`
-              return (
-                <div key={i} className="flex items-center gap-2">
-                  <div className="w-24 shrink-0">
-                    <p className="text-[10px] font-medium text-slate-600">{label}</p>
-                  </div>
-                  <div className="flex-1 h-3.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: `${pct}%`, backgroundColor: color }}
-                    />
-                  </div>
-                  <div className="w-20 shrink-0 text-right">
-                    <span className="text-[10px] text-slate-500 tabular-nums">
-                      {pct}% · {formatZoneDuration(zone.time)}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+          <ZoneBarChart
+            mergedZones={mergedZones}
+            pagePrefix={pagePrefix}
+            height={200}
+            barCategoryGap="10%"
+          />
         </div>
       )}
     </div>
@@ -366,7 +518,7 @@ function ElevationChart({ data }) {
     <div>
       <SubLabel>Elevation</SubLabel>
       <div
-        className="h-[150px] sm:h-[180px] outline-none"
+        className="h-[150px] sm:h-[195px] outline-none"
         id="streamChartElevation_activityDetailPage"
       >
         <ResponsiveContainer width="100%" height="100%">
@@ -402,7 +554,7 @@ function ElevationChart({ data }) {
   )
 }
 
-function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
+function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTimes }) {
   const { stabilityScore, fatigueDrop, fatigueStart } = computeCadenceStats(data)
   const hasFatigue = fatigueDrop != null && fatigueDrop > 5 && fatigueStart != null
 
@@ -410,25 +562,55 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
   const dataMax = cadenceValues.length ? Math.max(...cadenceValues) : 0
   const fatigueEnd = data[data.length - 1]?.dist_km ?? null
 
+  // Use raw-derived band times (passed from parent) for accurate duration;
+  // fall back to thinned data only if raw times are unavailable.
+  const cadenceBandTimes =
+    rawCadenceBandTimes ??
+    (() => {
+      const times = CADENCE_BANDS.map(() => 0)
+      for (const d of data) {
+        const spm = d.cadence_spm
+        if (spm == null || spm <= 0) continue
+        for (let i = 0; i < CADENCE_BANDS.length; i++) {
+          const isLast = i === CADENCE_BANDS.length - 1
+          if (spm >= CADENCE_BANDS[i].min && (isLast || spm < CADENCE_BANDS[i].max)) {
+            times[i] += 10
+            break
+          }
+        }
+      }
+      return times
+    })()
+  const totalCadenceTime = cadenceBandTimes.reduce((s, t) => s + t, 0)
+  const cadenceBandZones =
+    totalCadenceTime > 0
+      ? CADENCE_BANDS.map((band, i) => {
+          const isLast = i === CADENCE_BANDS.length - 1
+          const t = cadenceBandTimes[i]
+          const pct = Math.round((t / totalCadenceTime) * 100)
+          return {
+            name: band.label,
+            label: band.label,
+            color: band.color,
+            min: band.min,
+            max: isLast ? band.max : band.max - 1,
+            time: t,
+            pct,
+            duration: t > 0 ? formatZoneDuration(t) : null,
+          }
+        })
+      : []
+
   return (
     <div>
       <div className="flex items-center gap-2 mb-1">
         <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Cadence</p>
-        {stabilityScore != null && (
-          <span
-            id={`cadenceStabilityScore_${pagePrefix}`}
-            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500"
-            title="Cadence stability score: 100 = perfectly consistent form"
-          >
-            Stability: {stabilityScore}
-          </span>
-        )}
         <UITooltipProvider delayDuration={200}>
           <UITooltip>
             <UITooltipTrigger asChild>
               <button
                 id={`cadenceInfoTrigger_${pagePrefix}`}
-                className="ml-auto text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                className="text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
                 aria-label="Cadence info: about the 180 spm target"
               >
                 <Info className="size-3.5" aria-hidden="true" />
@@ -443,8 +625,21 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
             </UITooltipContent>
           </UITooltip>
         </UITooltipProvider>
+        {stabilityScore != null && (
+          <span
+            id={`cadenceStabilityScore_${pagePrefix}`}
+            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500"
+            title="Cadence stability score: 100 = perfectly consistent form"
+          >
+            Stability: {stabilityScore}
+          </span>
+        )}
       </div>
-      <div className="h-[150px] sm:h-[180px] outline-none" id={`streamChartCadence_${pagePrefix}`}>
+      <p className="text-[10px] text-slate-300 leading-snug mb-1.5">
+        Stability score: how consistent your cadence was throughout the run. 100 = perfectly even.
+        Below 80 = noticeable variation.
+      </p>
+      <div className="h-[240px] sm:h-[300px] outline-none" id={`streamChartCadence_${pagePrefix}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -461,25 +656,6 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
             {XAXIS}
             <YAxis width={36} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${v} spm`} />} />
-
-            {CADENCE_BANDS.map((band, i) => (
-              <ReferenceArea
-                key={i}
-                y1={band.min}
-                y2={band.max}
-                fill={band.color}
-                fillOpacity={band.opacity}
-                ifOverflow="hidden"
-                label={{
-                  value: band.label,
-                  position: 'insideLeft',
-                  fontSize: 8,
-                  fill: band.color,
-                  opacity: 0.6,
-                }}
-                id={`cadenceBand_${band.label.replace(/[^a-z]/gi, '').toLowerCase()}_${pagePrefix}`}
-              />
-            ))}
 
             {hasFatigue && (
               <ReferenceArea
@@ -531,22 +707,14 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix }) {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
-        {CADENCE_BANDS.map((band) => (
-          <div key={band.label} className="flex items-center gap-1.5">
-            <span
-              className="inline-block w-2.5 h-2.5 rounded-sm shrink-0"
-              style={{ backgroundColor: band.color, opacity: 0.7 }}
-            />
-            <span className="text-[10px] text-slate-400">
-              {band.label}{' '}
-              <span className="tabular-nums text-slate-300">
-                {band.min}–{band.max} spm
-              </span>
-            </span>
-          </div>
-        ))}
-      </div>
+      {cadenceBandZones.length > 0 && (
+        <div className="mt-3" id={`cadenceZonesSection_${pagePrefix}`}>
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+            Time in Cadence Band
+          </p>
+          <ZoneBarChart mergedZones={cadenceBandZones} pagePrefix={`${pagePrefix}_cadence`} />
+        </div>
+      )}
     </div>
   )
 }
@@ -559,12 +727,15 @@ export default function StreamCharts({
   maxHr,
   userMaxHr,
   historicalAvgCadence,
+  maxPaceSecPerKm = null,
   pagePrefix = 'activityDetailPage',
 }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [meta, setMeta] = useState(null)
   const [thinned, setThinned] = useState([])
+  const [rawHrValues, setRawHrValues] = useState([])
+  const [rawCadenceValues, setRawCadenceValues] = useState([])
 
   const load = useCallback(async () => {
     if (!activityId) return
@@ -574,25 +745,65 @@ export default function StreamCharts({
       const res = await fetchActivityStreams(activityId, '10s')
       const raw = res.data ?? []
       const step = Math.max(1, Math.ceil(raw.length / 500))
+      const maxSpeedMs = maxPaceSecPerKm > 0 ? 1000 / maxPaceSecPerKm : null
       const processed = raw
         .filter((_, i) => i % step === 0 || i === raw.length - 1)
-        .map((d) => ({
-          ...d,
-          dist_km: d.dist_m != null ? d.dist_m / 1000 : null,
-          cadence_spm: d.cadence,
-        }))
+        .map((d) => {
+          const v = d.velocity
+          const paceValid = v != null && v >= 0.5 && (maxSpeedMs == null || v <= maxSpeedMs * 1.05)
+          return {
+            ...d,
+            dist_km: d.dist_m != null ? d.dist_m / 1000 : null,
+            cadence_spm: d.cadence,
+            pace: paceValid ? d.pace : null,
+            speed_kmh: paceValid ? parseFloat((v * 3.6).toFixed(2)) : null,
+          }
+        })
       setMeta(res.meta)
       setThinned(processed)
+      setRawHrValues(raw.map((d) => d.hr).filter((v) => v != null))
+      setRawCadenceValues(raw.map((d) => d.cadence).filter((v) => v != null && v > 0))
     } catch (err) {
-      setError(err.message || 'Failed to load stream data')
+      setError('Failed to load stream data')
     } finally {
       setLoading(false)
     }
-  }, [activityId])
+  }, [activityId, maxPaceSecPerKm])
 
   useEffect(() => {
     load()
   }, [load])
+
+  const hrZoneTimes = useMemo(() => {
+    if (zones?.heart_rate?.zones || !rawHrValues.length) return null
+    const bz = computeZoneRanges(userMaxHr ?? maxHr ?? null)
+    if (!bz) return null
+    const times = bz.map(() => 0)
+    for (const hr of rawHrValues) {
+      for (let i = 0; i < bz.length; i++) {
+        if (hr >= bz[i].min && hr <= bz[i].max) {
+          times[i] += 10
+          break
+        }
+      }
+    }
+    return times
+  }, [rawHrValues, zones, maxHr, userMaxHr])
+
+  const cadenceBandTimesRaw = useMemo(() => {
+    if (!rawCadenceValues.length) return null
+    const times = CADENCE_BANDS.map(() => 0)
+    for (const spm of rawCadenceValues) {
+      for (let i = 0; i < CADENCE_BANDS.length; i++) {
+        const isLast = i === CADENCE_BANDS.length - 1
+        if (spm >= CADENCE_BANDS[i].min && (isLast || spm < CADENCE_BANDS[i].max)) {
+          times[i] += 10
+          break
+        }
+      }
+    }
+    return times
+  }, [rawCadenceValues])
 
   if (loading) {
     return (
@@ -602,9 +813,9 @@ export default function StreamCharts({
         aria-label="Loading performance charts"
       >
         <div className="h-3 bg-slate-100 rounded w-24" />
-        <div className="h-[180px] sm:h-[210px] bg-slate-100 rounded-lg" />
-        <div className="h-[170px] sm:h-[200px] bg-slate-100 rounded-lg" />
-        <div className="h-[150px] sm:h-[180px] bg-slate-100 rounded-lg" />
+        <div className="h-[180px] sm:h-[225px] bg-slate-100 rounded-lg" />
+        <div className="h-[240px] sm:h-[300px] bg-slate-100 rounded-lg" />
+        <div className="h-[150px] sm:h-[195px] bg-slate-100 rounded-lg" />
       </div>
     )
   }
@@ -630,12 +841,12 @@ export default function StreamCharts({
     )
   }
 
-  const hasPace = thinned.some((d) => d.pace != null && d.pace > 0)
+  const hasPaceOrSpeed = thinned.some((d) => d.pace != null && d.pace > 0)
   const hasHr = meta?.has_hr && thinned.some((d) => d.hr != null)
   const hasAlt = meta?.has_altitude && thinned.some((d) => d.alt != null)
   const hasCadence = thinned.some((d) => d.cadence_spm != null && d.cadence_spm > 0)
 
-  if (!hasPace && !hasHr && !hasAlt && !hasCadence) {
+  if (!hasPaceOrSpeed && !hasHr && !hasAlt && !hasCadence) {
     return (
       <div
         id="streamChartsEmpty_activityDetailPage"
@@ -659,7 +870,7 @@ export default function StreamCharts({
         activity.
       </p>
       <div className="flex flex-col gap-4">
-        {hasPace && <PaceChart data={thinned} />}
+        {hasPaceOrSpeed && <PaceChart data={thinned} />}
         {hasHr && (
           <HrStreamChart
             data={thinned}
@@ -668,6 +879,7 @@ export default function StreamCharts({
             historicalAvgHr={historicalAvgHr}
             maxHr={maxHr}
             userMaxHr={userMaxHr}
+            hrZoneTimes={hrZoneTimes}
             pagePrefix={pagePrefix}
           />
         )}
@@ -677,6 +889,7 @@ export default function StreamCharts({
             data={thinned}
             historicalAvgCadence={historicalAvgCadence ?? null}
             pagePrefix={pagePrefix}
+            rawCadenceBandTimes={cadenceBandTimesRaw}
           />
         )}
       </div>

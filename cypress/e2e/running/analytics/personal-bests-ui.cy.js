@@ -64,12 +64,7 @@ const stubPageDeps = () => {
     },
   }).as('getDashboard')
 
-  // Keep vo2max-stat, target-effort, and AI endpoints quiet
-  cy.intercept('GET', '/api/running/v1/analytics/vo2max-stat', {
-    statusCode: 200,
-    body: { data: { empty: true } },
-  }).as('getVo2maxStat')
-
+  // Keep target-effort and AI endpoints quiet
   cy.intercept('GET', '/api/running/v1/analytics/target-effort', {
     statusCode: 200,
     body: { data: { status: 'no_goal', currentVo2max: null, requiredVo2max: null } },

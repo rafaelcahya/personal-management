@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentVo2maxStat } from '@/lib/services/running/analytics/getCurrentVo2maxStat'
 
 export async function GET() {
   try {
     const supabase = await createClient()
-
     const {
       data: { user },
       error: authError,
@@ -18,11 +16,19 @@ export async function GET() {
       )
     }
 
-    const data = await getCurrentVo2maxStat(supabase, user.id)
+    const { data, error } = await supabase
+      .from('rt_ai_insights')
+      .select('id, created_at, content, data_refs')
+      .eq('user_id', user.id)
+      .eq('insight_type', 'injury_coach')
+      .order('created_at', { ascending: false })
+      .limit(20)
 
-    return NextResponse.json({ data }, { status: 200 })
+    if (error) throw error
+
+    return NextResponse.json({ data: data ?? [], message: 'OK' })
   } catch (err) {
-    console.error('[running/analytics/vo2max-stat GET]', err)
+    console.error('[running/ai/injury-coach/history GET]', err.message)
     return NextResponse.json(
       { error: 'Internal server error', message: 'Something went wrong' },
       { status: 500 }

@@ -18,12 +18,12 @@ import PaceTrendChart from './components/PaceTrendChart'
 import BestPaceChart from './components/BestPaceChart'
 import TrainingLoadChart from './components/TrainingLoadChart'
 import Vo2maxTrendChart from './components/Vo2maxTrendChart'
-import CurrentVo2maxStat from './components/CurrentVo2maxStat'
 import EfTrendChart from './components/EfTrendChart'
 import RacePredictor from './components/RacePredictor'
 import AnalyticsAICard from './components/AnalyticsAICard'
 import Vo2maxTargetEffortSection from './components/Vo2maxTargetEffortSection'
 import PersonalBestsTable from './components/PersonalBestsTable'
+import CalorieTrendChart from './components/CalorieTrendChart'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -176,15 +176,6 @@ export default function AnalyticsPage() {
           </Section>
 
           <Section
-            id="vo2maxStatSection"
-            title="Current VO2max"
-            description="Your latest aerobic capacity estimate with trend, fitness category, and training signals."
-            icon={Activity}
-          >
-            <CurrentVo2maxStat />
-          </Section>
-
-          <Section
             id="vo2maxTrendSection"
             title="VO2max Trend"
             description="Estimated aerobic capacity (mL/kg/min) based on HR and pace. Higher is better — an upward trend means your engine is growing."
@@ -230,6 +221,15 @@ export default function AnalyticsPage() {
             icon={Trophy}
           >
             <PersonalBestsTable />
+          </Section>
+
+          <Section
+            id="calorieTrendSection_analyticsPage"
+            title="Calorie Burn Trend"
+            description="Total calories burned per month across the last 6 months, estimated from your runs using your current weight."
+            icon={BarChart2}
+          >
+            <CalorieTrendChart />
           </Section>
         </>
       )}

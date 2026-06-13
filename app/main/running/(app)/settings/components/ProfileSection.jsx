@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { format, parseISO } from 'date-fns'
-import { CalendarIcon, CheckCircle2, AlertCircle } from 'lucide-react'
+import { CalendarIcon, CheckCircle2, AlertCircle, Zap } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,21 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { getUserProfile, updateUserProfile } from '@/lib/api/running'
-
-const schema = z.object({
-  display_name: z.string().min(1).max(100).optional(),
-  birth_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional()
-    .or(z.literal('').transform(() => undefined)),
-  height_cm: z.coerce.number().positive().optional().or(z.literal('')),
-  weight_kg: z.coerce.number().positive().optional().or(z.literal('')),
-  max_hr: z.coerce.number().int().min(60).max(250).optional().or(z.literal('')),
-  resting_hr_baseline: z.coerce.number().int().min(30).max(120).optional().or(z.literal('')),
-  sex: z.enum(['male', 'female', 'none']).optional(),
-})
+import { getUserProfile, updateUserProfile, detectMaxHr } from '@/lib/api/running'
+import { profileSchema } from '@/schemas/runningProfile'
 
 export default function ProfileSection() {
   const [loading, setLoading] = useState(true)
@@ -42,16 +28,54 @@ export default function ProfileSection() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
   const [saveSuccess, setSaveSuccess] = useState(false)
+  const [detecting, setDetecting] = useState(false)
+  const [detectedHr, setDetectedHr] = useState(null)
+  const [detectNoData, setDetectNoData] = useState(false)
+  const [detectError, setDetectError] = useState(false)
+
+  const heightRef = useRef(null)
+  const weightRef = useRef(null)
 
   const {
     register,
     handleSubmit,
     reset,
     control,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(profileSchema),
   })
+
+  const watchedWeight = watch('weight_kg')
+  const watchedHeight = watch('height_cm')
+
+  const weightNum = parseFloat(watchedWeight)
+  const heightNum = parseFloat(watchedHeight)
+  const hasWeight = !isNaN(weightNum) && weightNum > 0
+  const hasHeight = !isNaN(heightNum) && heightNum > 0
+
+  let bmi = null
+  let bmiCategory = null
+  let bmiColor = null
+
+  if (hasWeight && hasHeight) {
+    bmi = weightNum / Math.pow(heightNum / 100, 2)
+    if (bmi < 18.5) {
+      bmiCategory = 'Underweight'
+      bmiColor = 'amber'
+    } else if (bmi < 25) {
+      bmiCategory = 'Normal'
+      bmiColor = 'violet'
+    } else if (bmi < 30) {
+      bmiCategory = 'Overweight'
+      bmiColor = 'amber'
+    } else {
+      bmiCategory = 'Obese'
+      bmiColor = 'amber'
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -70,6 +94,26 @@ export default function ProfileSection() {
       cancelled = true
     }
   }, [reset])
+
+  async function handleDetectMaxHr() {
+    setDetecting(true)
+    setDetectedHr(null)
+    setDetectNoData(false)
+    setDetectError(false)
+    try {
+      const result = await detectMaxHr()
+      if (result == null) {
+        setDetectNoData(true)
+      } else {
+        setDetectedHr(result)
+        setValue('max_hr', result, { shouldValidate: true })
+      }
+    } catch {
+      setDetectError(true)
+    } finally {
+      setDetecting(false)
+    }
+  }
 
   async function onSubmit(values) {
     setSaving(true)
@@ -193,6 +237,10 @@ export default function ProfileSection() {
                     id="heightInput_settingsPage"
                     type="number"
                     {...register('height_cm')}
+                    ref={(el) => {
+                      register('height_cm').ref(el)
+                      heightRef.current = el
+                    }}
                     placeholder="e.g. 170"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
@@ -211,6 +259,10 @@ export default function ProfileSection() {
                     type="number"
                     step="0.1"
                     {...register('weight_kg')}
+                    ref={(el) => {
+                      register('weight_kg').ref(el)
+                      weightRef.current = el
+                    }}
                     placeholder="e.g. 65"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
@@ -226,15 +278,51 @@ export default function ProfileSection() {
                   <Label htmlFor="maxHrInput_settingsPage" className="text-sm font-medium">
                     Max HR (bpm)
                   </Label>
-                  <Input
-                    id="maxHrInput_settingsPage"
-                    type="number"
-                    {...register('max_hr')}
-                    placeholder="e.g. 190"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                  />
-                  <p className="text-xs text-slate-400">
-                    Your highest recorded heart rate — used for HR zone calculation ❤️
+                  <div className="flex gap-2">
+                    <Input
+                      id="maxHrInput_settingsPage"
+                      type="number"
+                      {...register('max_hr')}
+                      placeholder="e.g. 190"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                    />
+                    <Button
+                      id="detectMaxHrBtn_settingsPage"
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={detecting}
+                      onClick={handleDetectMaxHr}
+                      className="shrink-0 gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
+                    >
+                      <Zap className="size-3.5" aria-hidden="true" />
+                      {detecting ? 'Detecting…' : 'Detect'}
+                    </Button>
+                  </div>
+                  {detectedHr != null && (
+                    <p
+                      id="maxHrDetectedHint_settingsPage"
+                      className="text-xs text-green-700 flex items-center gap-1"
+                    >
+                      <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
+                      Detected: {detectedHr} bpm — from your highest recorded activity
+                    </p>
+                  )}
+                  {detectNoData && (
+                    <p id="maxHrNoDataHint_settingsPage" className="text-xs text-slate-500">
+                      No heart rate data found in your activities
+                    </p>
+                  )}
+                  {detectError && (
+                    <p id="maxHrDetectError_settingsPage" className="text-xs text-red-600">
+                      Could not detect Max HR — please try again
+                    </p>
+                  )}
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Max HR is the highest heart rate your heart can reach during maximum effort.
+                    It&apos;s used to calculate your HR training zones. The most accurate way to
+                    find it is from a hard race or all-out effort — the detected value from your
+                    activities is a good starting point.
                   </p>
                   {errors.max_hr && <p className="text-xs text-red-600">{errors.max_hr.message}</p>}
                 </div>
@@ -283,6 +371,113 @@ export default function ProfileSection() {
                     Used for age-graded performance and category comparisons 🧬
                   </p>
                 </div>
+              </div>
+
+              {/* BMI chip — spans full width below the grid */}
+              <div className="flex flex-col gap-1.5">
+                <div
+                  id="bmiChip_settingsPage"
+                  className={`inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full text-sm font-medium ${
+                    bmi != null
+                      ? bmiColor === 'violet'
+                        ? 'bg-violet-50 text-violet-700'
+                        : 'bg-amber-50 text-amber-700'
+                      : 'bg-slate-100 text-slate-500'
+                  }`}
+                  aria-live="polite"
+                >
+                  {bmi != null ? (
+                    <>
+                      <span>BMI {bmi.toFixed(1)}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{bmiCategory}</span>
+                    </>
+                  ) : (
+                    <span>BMI —</span>
+                  )}
+                </div>
+
+                {bmi != null && (
+                  <div className="flex gap-3 text-xs flex-wrap">
+                    {[
+                      { label: 'Underweight', range: '< 18.5' },
+                      { label: 'Normal', range: '18.5 – 24.9' },
+                      { label: 'Overweight', range: '25 – 29.9' },
+                      { label: 'Obese', range: '≥ 30' },
+                    ].map(({ label, range }) => (
+                      <span
+                        key={label}
+                        className={
+                          label === bmiCategory
+                            ? bmiColor === 'violet'
+                              ? 'text-violet-700 font-semibold'
+                              : 'text-amber-700 font-semibold'
+                            : 'text-slate-400'
+                        }
+                      >
+                        {label} <span className="font-normal">{range}</span>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {bmi == null && (
+                  <p
+                    id="bmiMissingPrompt_settingsPage"
+                    className="text-xs text-slate-400"
+                    aria-live="polite"
+                  >
+                    {!hasWeight && !hasHeight ? (
+                      <>
+                        Fill in your{' '}
+                        <button
+                          type="button"
+                          onClick={() => weightRef.current?.focus()}
+                          className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        >
+                          weight
+                        </button>{' '}
+                        and{' '}
+                        <button
+                          type="button"
+                          onClick={() => heightRef.current?.focus()}
+                          className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        >
+                          height
+                        </button>{' '}
+                        to calculate BMI
+                      </>
+                    ) : !hasWeight ? (
+                      <>
+                        Fill in your{' '}
+                        <button
+                          type="button"
+                          onClick={() => weightRef.current?.focus()}
+                          className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        >
+                          weight
+                        </button>{' '}
+                        to calculate BMI
+                      </>
+                    ) : (
+                      <>
+                        Fill in your{' '}
+                        <button
+                          type="button"
+                          onClick={() => heightRef.current?.focus()}
+                          className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        >
+                          height
+                        </button>{' '}
+                        to calculate BMI
+                      </>
+                    )}
+                  </p>
+                )}
+
+                <p className="text-xs text-slate-400 italic">
+                  BMI ignores muscle mass — trends matter more than the value.
+                </p>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-1">

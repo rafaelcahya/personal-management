@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button'
 import StreamCharts from '../../activities/components/StreamCharts'
 import AIInsightCard from '../../activities/components/AIInsightCard'
 import DistanceBreakdown from './DistanceBreakdown'
+import RacingWeightSection from './RacingWeightSection'
 import { getActivityCfg, tempStyle } from './activityConfig'
 import { StatTile, SectionLabel } from './activityShared'
 import MediaCarousel from './MediaCarousel'
@@ -38,10 +39,12 @@ export default function ActivitySection({
   laps,
   bestEfforts,
   photos,
+  streams,
   healthLog,
   onEditClick,
   entryDistanceM,
   entryFinishTimeSec,
+  profile,
 }) {
   const cfg = getActivityCfg(activity)
   const Icon = cfg.icon
@@ -57,7 +60,15 @@ export default function ActivitySection({
   return (
     <>
       <div className="w-full lg:w-4/5 mx-auto rounded-xl overflow-hidden">
-        <MediaCarousel polyline={activity.summary_polyline} photos={photos} />
+        <MediaCarousel
+          polyline={activity.summary_polyline}
+          photos={photos}
+          laps={laps}
+          bestEfforts={bestEfforts}
+          activityStartedAt={activity.started_at}
+          totalDistanceM={activity.distance_m}
+          streams={streams}
+        />
       </div>
 
       <div className="w-full lg:w-3/5 mx-auto px-4 lg:px-0 flex flex-col gap-5 pt-5">
@@ -99,6 +110,34 @@ export default function ActivitySection({
                   {activity.achievement_count} achievements
                 </span>
               )}
+              {bestEfforts
+                .filter(
+                  (e) =>
+                    ['1 mile', '5K', '10K', '15K', 'Half-Marathon'].includes(e.name) &&
+                    e.pr_rank != null &&
+                    e.pr_rank <= 5 &&
+                    e.is_latest_for_rank !== false
+                )
+                .map((e) =>
+                  e.pr_rank === 1 ? (
+                    <span
+                      key={e.name}
+                      id={`pbRankChip_${e.name.replace(/\s/g, '')}_raceDetailPage`}
+                      className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 text-xs font-semibold"
+                    >
+                      <Trophy className="size-3" aria-hidden="true" />
+                      #1 {e.name} all-time
+                    </span>
+                  ) : (
+                    <span
+                      key={e.name}
+                      id={`pbRankChip_${e.name.replace(/\s/g, '')}_raceDetailPage`}
+                      className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold"
+                    >
+                      #{e.pr_rank} {e.name} all-time
+                    </span>
+                  )
+                )}
             </div>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               <span className="text-sm text-slate-400">{fmtDate(activity.started_at)}</span>
@@ -350,6 +389,11 @@ export default function ActivitySection({
         )}
 
         <HealthContext healthLog={healthLog} />
+
+        <RacingWeightSection
+          entry={{ distance_m: entryDistanceM, finish_time_sec: entryFinishTimeSec }}
+          profile={profile}
+        />
 
         <div className="border-t border-slate-100" />
         <div className="rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-200/60 p-4">
