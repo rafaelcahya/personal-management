@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button'
 import StreamCharts from '../../activities/components/StreamCharts'
 import AIInsightCard from '../../activities/components/AIInsightCard'
 import DistanceBreakdown from './DistanceBreakdown'
+import RacingWeightSection from './RacingWeightSection'
 import { getActivityCfg, tempStyle } from './activityConfig'
 import { StatTile, SectionLabel } from './activityShared'
 import MediaCarousel from './MediaCarousel'
@@ -43,6 +44,7 @@ export default function ActivitySection({
   onEditClick,
   entryDistanceM,
   entryFinishTimeSec,
+  profile,
 }) {
   const cfg = getActivityCfg(activity)
   const Icon = cfg.icon
@@ -387,6 +389,11 @@ export default function ActivitySection({
         )}
 
         <HealthContext healthLog={healthLog} />
+
+        <RacingWeightSection
+          entry={{ distance_m: entryDistanceM, finish_time_sec: entryFinishTimeSec }}
+          profile={profile}
+        />
 
         <div className="border-t border-slate-100" />
         <div className="rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-200/60 p-4">
