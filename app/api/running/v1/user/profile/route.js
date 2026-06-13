@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
+// Full profile fields used by Settings page and PATCH response.
+// RacingWeightSection only needs weight_kg + height_cm — accepted as-is for a single-user app.
 const PROFILE_FIELDS =
   'id, email, display_name, birth_date, height_cm, weight_kg, max_hr, resting_hr_baseline, sex'
 
