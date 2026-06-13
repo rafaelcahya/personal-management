@@ -426,7 +426,10 @@
       "lap_marker": "lapMarker_{n}_activityDetailPage",
       "pr_effort_start": "prEffortStart_{name}_activityDetailPage",
       "pr_effort_end": "prEffortEnd_{name}_activityDetailPage",
-      "climbing_index_tile": "climbingIndexTile_activityDetailPage"
+      "climbing_index_tile": "climbingIndexTile_activityDetailPage",
+      "racing_weight_section": "racingWeightSection_activityDetailPage",
+      "racing_weight_bar": "racingWeightBar_activityDetailPage",
+      "racing_weight_what_if": "racingWeightWhatIf_activityDetailPage"
     },
     "running_dashboard": {
       "page": "dashboardPage",

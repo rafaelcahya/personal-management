@@ -36,6 +36,7 @@ import {
   fetchRaceLog,
   fetchSubjectiveHealthByDate,
   fetchActivityStreams,
+  getUserProfile,
 } from '@/lib/api/running'
 import StreamCharts from '../components/StreamCharts'
 import AIInsightCard from '../components/AIInsightCard'
@@ -48,6 +49,7 @@ import PerceivedEffortSection from '../components/PerceivedEffortSection'
 import { getActivityCfg, tempStyle } from '../components/activityConfig'
 import { StatTile, SectionLabel } from '../components/activityShared'
 import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../../dashboard/utils/format'
+import RacingWeightSection from '../../race-log/components/RacingWeightSection'
 import PageHeader from '@/app/main/components/PageHeader'
 
 // ─── skeleton ─────────────────────────────────────────────────────────────────
@@ -90,6 +92,8 @@ export default function ActivityDetailPage() {
   const [linkedRace, setLinkedRace] = useState(null)
 
   const [healthLog, setHealthLog] = useState(undefined)
+  const [profile, setProfile] = useState(null)
+  const [profileError, setProfileError] = useState(false)
 
   const [notesEditing, setNotesEditing] = useState(false)
   const [notesValue, setNotesValue] = useState('')
@@ -117,11 +121,14 @@ export default function ActivityDetailPage() {
       setLoading(true)
       setError(null)
       try {
-        const [actRes, dashRes, raceLogRes, streamsRes] = await Promise.allSettled([
+        // getDashboard is fetched eagerly for nextRaceGoal (EditGoalModal).
+        // Known: could be lazy-loaded when the modal opens — tracked as WF-2.
+        const [actRes, dashRes, raceLogRes, streamsRes, profileRes] = await Promise.allSettled([
           fetchActivity(id),
           getDashboard(),
           fetchRaceLog(),
           fetchActivityStreams(id),
+          getUserProfile(),
         ])
 
         const activityDate =
@@ -155,6 +162,11 @@ export default function ActivityDetailPage() {
           }
           if (streamsRes.status === 'fulfilled') {
             setStreams(streamsRes.value?.data ?? [])
+          }
+          if (profileRes.status === 'fulfilled') {
+            setProfile(profileRes.value)
+          } else {
+            setProfileError(true)
           }
         }
       } catch (err) {
@@ -907,6 +919,26 @@ export default function ActivityDetailPage() {
                         </div>
                       )
                     })()}
+
+                  {['Run', 'TrailRun', 'VirtualRun'].includes(activity.activity_type) &&
+                    (profileError ? (
+                      <p className="text-xs text-slate-400 px-1">
+                        Racing weight unavailable — could not load your profile.
+                      </p>
+                    ) : (
+                      <RacingWeightSection
+                        entry={{
+                          distance_m: activity.distance_m,
+                          finish_time_sec:
+                            linkedRace?.finish_time_sec ??
+                            activity.moving_time_sec ??
+                            activity.duration_sec ??
+                            null,
+                        }}
+                        profile={profile}
+                        pageId="activityDetailPage"
+                      />
+                    ))}
 
                   <div className="border-t border-slate-100" />
                   <PerceivedEffortSection
