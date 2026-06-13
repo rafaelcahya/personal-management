@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
@@ -114,6 +114,11 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [selected, setSelected] = useState(null)
+  const scrollRef = useRef(null)
+
+  useEffect(() => {
+    if (selected && scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [selected])
 
   useEffect(() => {
     if (!open) return
@@ -141,7 +146,7 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto pr-1">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto pr-1">
           {loading && (
             <div className="flex flex-col gap-2">
               {[...Array(3)].map((_, i) => (
