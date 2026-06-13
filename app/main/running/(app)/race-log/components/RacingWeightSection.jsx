@@ -50,7 +50,7 @@ export default function RacingWeightSection({ entry, profile }) {
   const isInOptimalRange = weight_kg >= optimalMinKg && weight_kg <= optimalMaxKg
   const weightDelta = weight_kg - optimalMidKg
 
-  const finishTimeSec = entry?.finish_time_sec ?? entry?.goal_time_sec ?? null
+  const finishTimeSec = entry?.finish_time_sec ?? null
   const finishTimeMin = finishTimeSec ? finishTimeSec / 60 : null
   const improvementMin =
     finishTimeMin && Math.abs(weightDelta) > 0.5
