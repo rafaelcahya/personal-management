@@ -70,7 +70,12 @@ const RUNNING_ITEMS = [
   { name: 'Race Log', href: '/main/running/race-log', icon: Trophy },
   { name: 'Analytics', href: '/main/running/analytics', icon: BarChart2 },
   { name: 'AI Coach', href: '/main/running/ai', icon: BrainCircuit },
-  { name: 'Pace Calc', href: '/main/running/pace-calculator', icon: Timer },
+  {
+    id: 'paceCalcNav_sidebar',
+    name: 'Pace Calc',
+    href: '/main/running/pace-calculator',
+    icon: Timer,
+  },
   { name: 'Settings', href: '/main/running/settings', icon: Settings },
 ]
 

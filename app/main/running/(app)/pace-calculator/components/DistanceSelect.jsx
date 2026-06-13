@@ -60,6 +60,7 @@ export default function DistanceSelect({
             id={customId}
             type="text"
             inputMode="decimal"
+            maxLength={10}
             value={customValue}
             onChange={handleCustomChange}
             placeholder={unit === 'mi' ? 'e.g. 3.1' : 'e.g. 5.0'}

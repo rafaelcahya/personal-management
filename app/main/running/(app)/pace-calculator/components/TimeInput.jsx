@@ -8,7 +8,6 @@ export default function TimeInput({ hours, minutes, seconds, onChange, idPrefix 
     let n = parseInt(value, 10)
     if (isNaN(n) || n < 0) n = 0
     if (field === 'seconds' && n >= 60) n = 59
-    if (field === 'minutes' && n >= 60) n = 59
     if (field === 'hours' && n > 99) n = 99
     onChange(field, String(n))
   }

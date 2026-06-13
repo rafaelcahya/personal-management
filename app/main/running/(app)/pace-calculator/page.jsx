@@ -50,26 +50,36 @@ function buildSplits(distM, paceSecPerKm, unit) {
   const unitDistM = unit === 'mi' ? MI_TO_KM * 1000 : 1000
   const paceSecPerUnit = unit === 'mi' ? paceSecPerKm * MI_TO_KM : paceSecPerKm
   const totalUnits = distM / unitDistM
+
+  // Distance shorter than one unit — single row for the full distance
+  if (totalUnits < 1) {
+    const totalSec = totalUnits * paceSecPerUnit
+    return [{ label: totalUnits.toFixed(2), splitSec: totalSec, cumSec: totalSec }]
+  }
+
   const MAX_ROWS = 50
   const interval = Math.ceil(totalUnits / MAX_ROWS)
   const splits = []
   let cumSec = 0
   for (let i = interval; i <= totalUnits + 0.0001; i += interval) {
     const actual = Math.min(i, totalUnits)
-    const splitSec = (actual - (i - interval < 0 ? 0 : i - interval)) * paceSecPerUnit
+    const prevUnit = i - interval
+    const splitSec = (actual - prevUnit) * paceSecPerUnit
     cumSec += splitSec
+    const isLast = actual >= totalUnits - 0.0001
     splits.push({
-      label: actual >= totalUnits - 0.0001 ? `${totalUnits.toFixed(2)}` : `${Math.round(actual)}`,
+      label: isLast && actual % 1 !== 0 ? actual.toFixed(2) : `${Math.round(actual)}`,
       splitSec,
       cumSec,
     })
-    if (actual >= totalUnits - 0.0001) break
+    if (isLast) break
   }
   return splits
 }
 
 export default function PaceCalculatorPage() {
   const [unit, setUnit] = useState('km')
+  const [unitReady, setUnitReady] = useState(false)
 
   // Pace mode
   const [paceDistPreset, setPaceDistPreset] = useState('5K')
@@ -93,6 +103,7 @@ export default function PaceCalculatorPage() {
   useEffect(() => {
     const saved = localStorage.getItem('paceCalculatorUnit')
     if (saved === 'km' || saved === 'mi') setUnit(saved)
+    setUnitReady(true)
   }, [])
 
   function handleUnitChange(val) {
@@ -166,8 +177,6 @@ export default function PaceCalculatorPage() {
     () => buildSplits(activeDistM, activePaceSecPerKm, unit),
     [activeDistM, activePaceSecPerKm, unit]
   )
-
-  const paceSecPerMiActive = activePaceSecPerKm ? activePaceSecPerKm * MI_TO_KM : null
 
   function handleTimeChange(mode, field, val) {
     if (mode === 'pace') {
@@ -266,7 +275,7 @@ export default function PaceCalculatorPage() {
                   minutes={paceM}
                   seconds={paceS}
                   onChange={(field, val) => handleTimeChange('pace', field, val)}
-                  idPrefix="time"
+                  idPrefix="time_paceCalculator"
                 />
               </div>
 
@@ -415,7 +424,7 @@ export default function PaceCalculatorPage() {
                   minutes={projM}
                   seconds={projS}
                   onChange={(field, val) => handleTimeChange('proj', field, val)}
-                  idPrefix="projTime"
+                  idPrefix="projTime_paceCalculator"
                 />
               )}
 
@@ -457,7 +466,10 @@ export default function PaceCalculatorPage() {
                     <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
                       Avg Pace
                     </span>
-                    <span className="text-base font-semibold text-slate-700">
+                    <span
+                      id="projAvgPace_paceCalculator"
+                      className="text-base font-semibold text-slate-700"
+                    >
                       {unit === 'mi'
                         ? `${formatPaceSec(projCalc.paceSecPerKm * MI_TO_KM)} /mi`
                         : `${formatPaceSec(projCalc.paceSecPerKm)} /km`}
@@ -470,8 +482,8 @@ export default function PaceCalculatorPage() {
         </TabsContent>
       </Tabs>
 
-      {/* Splits + Race Projections */}
-      {activePaceSecPerKm && activeDistM && (
+      {/* Splits + Race Projections — suppressed until localStorage unit is resolved */}
+      {unitReady && activePaceSecPerKm && activeDistM && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card className="border border-slate-200/70 py-0">
             <CardContent className="px-4 py-4">

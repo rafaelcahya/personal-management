@@ -13,7 +13,7 @@ export default function RaceProjectionTable({ refTimeSec, refDistM, unit }) {
 
   const rows = RACE_DISTANCES.map((d) => {
     const projSec = riegelProject(refTimeSec, refDistM, d.m)
-    const paceSecPerKm = projSec / (d.m / 1000)
+    const paceSecPerKm = projSec != null ? projSec / (d.m / 1000) : null
     const paceDisplay =
       unit === 'mi'
         ? `${formatPaceSec(paceSecPerKm * MI_TO_KM)} /mi`
