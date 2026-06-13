@@ -1,5 +1,31 @@
 # Regression Testing Report
 
+**Date:** 2026-06-13
+**App Version:** 1.19
+**Scope:** Satellite Map Fix — issue #206 (1 spec file: satellite-map-fix.cy.js — 13 tests)
+**Tester:** QA Agent
+
+## Summary (2026-06-13 Focused Run — Satellite Map Fix)
+
+| Total Tests | Passed | Failed | Pending | Active Pass Rate |
+| ----------- | ------ | ------ | ------- | ---------------- |
+| 13          | 13     | 0      | 0       | **100%**         |
+
+### Satellite Map Fix — Spec Files
+
+| #  | Spec File                                                              | Tests | Passed | Failed | Pending | Status   |
+| -- | ---------------------------------------------------------------------- | ----- | ------ | ------ | ------- | -------- |
+| 1  | running/activities/satellite-map-fix.cy.js                             | 13    | 13     | 0      | 0       | ✅ PASS  |
+| —  | **Total**                                                              | **13** | **13** | **0** | **0** | **100%** |
+
+**Scope notes:**
+- `satellite-map-fix.cy.js` (13 tests, NEW — issue #206): 4 describe blocks covering the ESRI ArcGIS tile provider regression after fix #204 switched satellite tiles from Stadia Maps to ESRI World Imagery in `RouteMap.jsx`. Suite A — Tile URL regression (3 tests): satellite toggle visible when polyline present; clicking Satellite does NOT trigger any requests to `stadiamaps.com`; default Map style does NOT trigger ESRI tile requests on initial load. Suite B — Toggle state and polyline color change (4 tests): default Map button `aria-pressed=true`; switching to Satellite flips aria-pressed correctly; switching back to Map restores Map as active; Leaflet map canvas exists after satellite switch (existence check only — Leaflet container is clipped by `overflow:hidden` parents, so visibility assertion would fail even when map renders correctly). Suite C — Expanded modal satellite view (3 tests): opening modal after satellite switch shows modal with satellite toggle active inside dialog; modal map canvas renders inside dialog `[aria-label="Route map"]` exists; Escape key closes modal after satellite switch. Suite D — No GPS polyline fallback (3 tests): toggle absent when `summary_polyline=null`; expand button absent; `[aria-label="Route map"]` absent (MediaCarousel returns null when both polyline and photos are absent — RouteMap is never mounted).
+- Two fixes applied during run: (1) Suite B map canvas assertion changed from `.should('be.visible')` to `.should('exist')` — Leaflet container sits inside `overflow:hidden` parent divs, causing Cypress visibility check to fail even when map renders correctly. (2) Suite D "No GPS data" text assertion replaced with `[aria-label="Route map"] should not exist` — `MediaCarousel` short-circuits to `return null` when polyline=null and photos=empty, so RouteMap is never mounted and the "No GPS data" fallback never renders.
+
+---
+
+## Previous Run — 2026-06-10 Focused Run — Cadence Chart Enhancements
+
 **Date:** 2026-06-10
 **App Version:** 1.7
 **Scope:** Cadence Chart Enhancements — issue #166 (1 spec file: cadence-chart-enhancements-ui.cy.js 16 tests)
