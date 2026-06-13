@@ -240,11 +240,12 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
           )}
 
           <div id={`splitsBarChart_${pagePrefix}`} className="w-full">
-            <ResponsiveContainer width="100%" height={Math.max(120, splits.length * 32)}>
+            <ResponsiveContainer width="100%" height={Math.max(160, splits.length * 44)}>
               <BarChart
                 layout="vertical"
                 data={chartData}
                 margin={{ top: 0, right: 56, bottom: 0, left: 16 }}
+                barCategoryGap="16%"
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
                 <XAxis
@@ -272,7 +273,7 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                   content={<CustomTooltip metric={metric} />}
                   cursor={{ fill: '#f8fafc' }}
                 />
-                <Bar dataKey="value" radius={[0, 3, 3, 0]} maxBarSize={18}>
+                <Bar dataKey="value" radius={[0, 3, 3, 0]} maxBarSize={32}>
                   {chartData.map((entry, index) => {
                     const partial = isPartialMap[entry.name]
                     return (
