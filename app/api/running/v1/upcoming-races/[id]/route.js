@@ -27,7 +27,10 @@ export async function GET(_request, { params }) {
     return NextResponse.json({ data: race }, { status: 200 })
   } catch (err) {
     console.error('[running/upcoming-races/:id GET]', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Internal server error', message: 'Something went wrong' },
+      { status: 500 }
+    )
   }
 }
 
@@ -69,6 +72,13 @@ export async function PATCH(request, { params }) {
     if (result?.error === 'activity_not_found') {
       return NextResponse.json(
         { error: 'activity_not_found', message: 'Linked activity not found' },
+        { status: 422 }
+      )
+    }
+
+    if (result?.error === 'activity_date_unavailable') {
+      return NextResponse.json(
+        { error: 'activity_date_unavailable', message: 'Activity date is unavailable' },
         { status: 422 }
       )
     }
