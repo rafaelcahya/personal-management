@@ -382,7 +382,7 @@ export default function RouteMap({
   return (
     <>
       <div className={`${className}`}>
-        <div className="relative rounded-t-lg overflow-hidden" style={{ height }}>
+        <div className="relative rounded-t-lg overflow-hidden isolate" style={{ height }}>
           <LeafletMap
             encodedPolyline={encodedPolyline}
             height={height}
@@ -410,7 +410,7 @@ export default function RouteMap({
 
       {expanded && (
         <div
-          className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[200] bg-black/80 flex items-center justify-center p-4"
           onClick={() => setExpanded(false)}
         >
           <div

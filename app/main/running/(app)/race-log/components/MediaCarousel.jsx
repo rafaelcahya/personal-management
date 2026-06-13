@@ -53,7 +53,7 @@ export default function MediaCarousel({
 
   return (
     <>
-      <div className="relative group/carousel">
+      <div className="relative group/carousel isolate">
         <div className="w-full overflow-hidden" style={{ height: 420 }}>
           {current.type === 'map' ? (
             <RouteMap
