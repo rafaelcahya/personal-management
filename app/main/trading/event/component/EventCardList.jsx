@@ -45,23 +45,21 @@ export default function EventCardList({ events, selectedIds = new Set(), onToggl
                 : 'border-slate-200 hover:bg-slate-50 cursor-pointer'
             }`}
           >
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <div
-                className="flex-1 flex items-start gap-2"
+            <div className="flex flex-col gap-1 mb-2">
+              <p
+                className="font-semibold text-sm text-slate-800 leading-snug cursor-pointer"
                 onClick={() => {
                   if (onToggle) router.push(`/main/trading/event/${event.id}`)
                 }}
               >
-                <p className="font-semibold text-sm text-slate-800 leading-snug flex-1">
-                  {event.title || '—'}
-                  {linkCount > 0 && (
-                    <span className="ml-2 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
-                      {linkCount} link{linkCount > 1 ? 's' : ''}
-                    </span>
-                  )}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
+                {event.title || '—'}
+                {linkCount > 0 && (
+                  <span className="ml-2 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                    {linkCount} link{linkCount > 1 ? 's' : ''}
+                  </span>
+                )}
+              </p>
+              <div className="flex items-center gap-2">
                 <ImpactBadge value={event.impact_direction} />
                 {onToggle && (
                   <input
