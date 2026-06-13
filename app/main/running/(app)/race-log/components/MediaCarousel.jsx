@@ -109,7 +109,7 @@ export default function MediaCarousel({
 
       {expandedPhoto && (
         <div
-          className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4"
           onClick={() => setExpandedPhoto(null)}
         >
           <div
