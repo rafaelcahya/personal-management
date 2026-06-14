@@ -10,6 +10,13 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts'
+import { Info } from 'lucide-react'
+import {
+  Tooltip as UITooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '@/components/ui/tooltip'
 import { ACWR_COLORS } from './utils'
 import EmptyState from './EmptyState'
 
@@ -22,13 +29,68 @@ const STATUS_LABELS = {
   resting: 'Rest Week',
 }
 
+const TRAINING_STATUS_CONFIG = {
+  productive: {
+    label: 'Productive',
+    badge: 'bg-green-100 text-green-700',
+    tip: 'Your training is working — VO2max is trending upward at a healthy load level.',
+  },
+  maintaining: {
+    label: 'Maintaining',
+    badge: 'bg-blue-100 text-blue-700',
+    tip: "You're sustaining current fitness. Add a quality session to stimulate improvement.",
+  },
+  peaking: {
+    label: 'Peaking',
+    badge: 'bg-violet-100 text-violet-700',
+    tip: 'Load is tapering while VO2max is rising — a successful taper before a race.',
+  },
+  overreaching: {
+    label: 'Overreaching',
+    badge: 'bg-red-100 text-red-700',
+    tip: 'Training load is too high relative to baseline. Reduce volume for at least one week.',
+  },
+  unproductive: {
+    label: 'Unproductive',
+    badge: 'bg-amber-100 text-amber-700',
+    tip: 'Training consistently but VO2max is declining. Review training quality and recovery.',
+  },
+  detraining: {
+    label: 'Detraining',
+    badge: 'bg-slate-100 text-slate-500',
+    tip: 'Training load is low and VO2max is not rising. Gradually increase volume to rebuild.',
+  },
+}
+
+function StatusInfoTip({ content }) {
+  return (
+    <TooltipProvider delayDuration={200}>
+      <UITooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+            aria-label="More information"
+          >
+            <Info className="size-3" aria-hidden="true" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-56 text-xs leading-relaxed">
+          {content}
+        </TooltipContent>
+      </UITooltip>
+    </TooltipProvider>
+  )
+}
+
 export default function TrainingLoadChart({ trainingLoad }) {
   if (!trainingLoad || trainingLoad.status === 'no_data') {
     return <EmptyState message="Not enough training history to show load trends (need 28+ days)" />
   }
 
-  const { acwr, acute_load_7d, chronic_load_28d, status } = trainingLoad
+  const { acwr, acute_load_7d, chronic_load_28d, status, training_status } = trainingLoad
   const statusColor = ACWR_COLORS[status] ?? '#94a3b8'
+  const trainingStatusMeta = training_status ? TRAINING_STATUS_CONFIG[training_status] : null
 
   const barData = [
     { label: 'Acute (7d)', value: parseFloat(acute_load_7d?.toFixed(1) ?? 0), fill: '#8b5cf6' },
@@ -46,14 +108,26 @@ export default function TrainingLoadChart({ trainingLoad }) {
           <div className="text-3xl font-bold tabular-nums" style={{ color: statusColor }}>
             {acwr != null ? acwr.toFixed(2) : '—'}
           </div>
-          <div>
+          <div className="flex flex-col gap-1">
             <p className="text-xs text-slate-400">ACWR</p>
-            <span
-              className="inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-0.5"
-              style={{ background: statusColor + '22', color: statusColor }}
-            >
-              {STATUS_LABELS[status] ?? status}
-            </span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span
+                className="inline-block text-xs font-medium px-2 py-0.5 rounded-full"
+                style={{ background: statusColor + '22', color: statusColor }}
+              >
+                {STATUS_LABELS[status] ?? status}
+              </span>
+              {trainingStatusMeta && (
+                <div className="flex items-center gap-1">
+                  <span
+                    className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${trainingStatusMeta.badge}`}
+                  >
+                    {trainingStatusMeta.label}
+                  </span>
+                  <StatusInfoTip content={trainingStatusMeta.tip} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="sm:ml-4 text-xs text-slate-400 max-w-xs">
