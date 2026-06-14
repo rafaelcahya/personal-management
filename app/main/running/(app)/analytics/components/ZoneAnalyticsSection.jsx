@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Heart, Gauge, Activity, Package } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import { fetchZoneAnalytics, fetchGearAnalytics } from '@/lib/api/running'
+import { fetchZoneAnalytics, fetchGearAnalytics, fetchActivityTypes } from '@/lib/api/running'
 import ZoneFilterBar from './ZoneFilterBar'
 import HrZoneBreakdown from './HrZoneBreakdown'
 import PaceZoneBreakdown from './PaceZoneBreakdown'
@@ -24,12 +24,26 @@ function SubSection({ icon: Icon, title, id, children }) {
 
 export default function ZoneAnalyticsSection() {
   const [range, setRange] = useState('3m')
-  const [activityType, setActivityType] = useState('All')
+  const [activityType, setActivityType] = useState('Run')
+  const [activityTypes, setActivityTypes] = useState([])
+  const [startDate, setStartDate] = useState(null)
+  const [endDate, setEndDate] = useState(null)
   const [zoneData, setZoneData] = useState(null)
   const [gearData, setGearData] = useState(null)
   const [zoneError, setZoneError] = useState(null)
   const [gearError, setGearError] = useState(null)
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchActivityTypes()
+      .then((types) => setActivityTypes(types))
+      .catch(() =>
+        setActivityTypes(['Run', 'TrailRun', 'VirtualRun', 'Walk', 'Hike', 'Ride', 'Swim'])
+      )
+  }, [])
+
+  const hasCustomDates = !!(startDate && endDate)
+  const effectiveRange = hasCustomDates ? 'custom' : range
 
   useEffect(() => {
     let alive = true
@@ -40,8 +54,8 @@ export default function ZoneAnalyticsSection() {
       setGearError(null)
 
       const [zonesRes, gearRes] = await Promise.allSettled([
-        fetchZoneAnalytics(range, activityType),
-        fetchGearAnalytics(range, activityType),
+        fetchZoneAnalytics(effectiveRange, activityType, startDate, endDate),
+        fetchGearAnalytics(effectiveRange, activityType, startDate, endDate),
       ])
 
       if (!alive) return
@@ -67,7 +81,7 @@ export default function ZoneAnalyticsSection() {
     return () => {
       alive = false
     }
-  }, [range, activityType])
+  }, [effectiveRange, activityType, startDate, endDate])
 
   return (
     <section
@@ -88,9 +102,22 @@ export default function ZoneAnalyticsSection() {
       <ZoneFilterBar
         range={range}
         activityType={activityType}
+        activityTypes={activityTypes}
+        startDate={startDate}
+        endDate={endDate}
         onRangeChange={setRange}
         onTypeChange={setActivityType}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
       />
+
+      {!loading && zoneData != null && (
+        <p id="zoneActivityCount_analyticsPage" className="text-xs text-slate-400">
+          {zoneData.activity_count === 0
+            ? 'No activities in this range'
+            : `${zoneData.activity_count} ${zoneData.activity_count === 1 ? 'activity' : 'activities'} in this range`}
+        </p>
+      )}
 
       {loading && (
         <div

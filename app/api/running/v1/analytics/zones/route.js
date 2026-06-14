@@ -22,6 +22,8 @@ export async function GET(request) {
     const parsed = analyticsQuerySchema.safeParse({
       range: searchParams.get('range') ?? undefined,
       activity_type: searchParams.get('activity_type') ?? undefined,
+      start_date: searchParams.get('start_date') ?? undefined,
+      end_date: searchParams.get('end_date') ?? undefined,
     })
 
     if (!parsed.success) {
@@ -34,8 +36,15 @@ export async function GET(request) {
       )
     }
 
-    const { range, activity_type } = parsed.data
-    const data = await getZoneAnalytics(supabase, user.id, range, activity_type)
+    const { range, activity_type, start_date, end_date } = parsed.data
+    const data = await getZoneAnalytics(
+      supabase,
+      user.id,
+      range,
+      activity_type,
+      start_date,
+      end_date
+    )
 
     return NextResponse.json({ data, message: 'ok' }, { status: 200 })
   } catch (err) {
