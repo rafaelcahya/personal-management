@@ -111,7 +111,9 @@
     "running_analytics": {
       "target_effort": "/api/running/v1/analytics/target-effort",
       "personal_bests": "/api/running/v1/analytics/personal-bests",
-      "calorie_trend": "/api/running/v1/analytics/calorie-trend"
+      "calorie_trend": "/api/running/v1/analytics/calorie-trend",
+      "zones": "/api/running/v1/analytics/zones",
+      "gear": "/api/running/v1/analytics/gear"
     },
     "running_user_profile": {
       "get": "/api/running/v1/user/profile",
@@ -658,7 +660,22 @@
       "personal_bests_error": "personalBestsError_analyticsPage",
       "personal_bests_table": "personalBestsTable_analyticsPage",
       "personal_bests_row": "personalBestsRow_{distance}_{rank}_analyticsPage",
-      "calorie_trend_chart": "calorieTrendChart_analyticsPage"
+      "calorie_trend_chart": "calorieTrendChart_analyticsPage",
+      "zone_analytics_section": "zoneAnalyticsSection_analyticsPage",
+      "zone_analytics_loading": "zoneAnalyticsLoading_analyticsPage",
+      "zone_filter_bar": "zoneFilterBar_analyticsPage",
+      "zone_range_select": "zoneRangeSelect_analyticsPage",
+      "zone_type_select": "zoneTypeSelect_analyticsPage",
+      "hr_zone_subsection": "hrZoneSubSection_analyticsPage",
+      "hr_zone_breakdown": "hrZoneBreakdown_analyticsPage",
+      "pace_zone_subsection": "paceZoneSubSection_analyticsPage",
+      "pace_zone_breakdown": "paceZoneBreakdown_analyticsPage",
+      "pace_zone_no_threshold": "paceZoneNoThreshold_analyticsPage",
+      "cadence_zone_subsection": "cadenceZoneSubSection_analyticsPage",
+      "cadence_zone_breakdown": "cadenceZoneBreakdown_analyticsPage",
+      "gear_usage_subsection": "gearUsageSubSection_analyticsPage",
+      "gear_usage_breakdown": "gearUsageBreakdown_analyticsPage",
+      "gear_retired_toggle": "gearRetiredToggle_analyticsPage"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",
