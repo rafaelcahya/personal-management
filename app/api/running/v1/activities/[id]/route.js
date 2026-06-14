@@ -151,13 +151,23 @@ export async function GET(_request, { params }) {
       efficiency_factor_30d_avg = parseFloat((sum / efRows.length).toFixed(4))
     }
 
-    const { data: userProfile } = await supabase
-      .from('rt_users')
-      .select('max_hr, weight_kg')
-      .eq('id', user.id)
-      .maybeSingle()
+    const [{ data: userProfile }, { data: userSettings }] = await Promise.all([
+      supabase
+        .from('rt_users')
+        .select('max_hr, weight_kg, resting_hr_baseline')
+        .eq('id', user.id)
+        .maybeSingle(),
+      supabase
+        .from('rt_user_settings')
+        .select('hr_zones_method, threshold_hr')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+    ])
     const user_max_hr = userProfile?.max_hr ?? null
     const user_weight_kg = userProfile?.weight_kg ?? null
+    const user_resting_hr = userProfile?.resting_hr_baseline ?? null
+    const hr_zones_method = userSettings?.hr_zones_method ?? 'max_hr'
+    const threshold_hr = userSettings?.threshold_hr ?? null
 
     const { data: hrRows, error: hrError } = await supabase
       .from('rt_activities')
@@ -217,6 +227,9 @@ export async function GET(_request, { params }) {
           historical_avg_cadence,
           user_max_hr,
           user_weight_kg,
+          user_resting_hr,
+          hr_zones_method,
+          threshold_hr,
         },
         splits: splits ?? [],
         laps: laps ?? [],
