@@ -154,7 +154,7 @@ export async function GET(_request, { params }) {
     const [{ data: userProfile }, { data: userSettings }] = await Promise.all([
       supabase
         .from('rt_users')
-        .select('max_hr, weight_kg, resting_hr_baseline')
+        .select('max_hr, weight_kg, resting_hr_baseline, threshold_hr, threshold_pace_sec')
         .eq('id', user.id)
         .maybeSingle(),
       supabase
@@ -166,8 +166,9 @@ export async function GET(_request, { params }) {
     const user_max_hr = userProfile?.max_hr ?? null
     const user_weight_kg = userProfile?.weight_kg ?? null
     const user_resting_hr = userProfile?.resting_hr_baseline ?? null
+    const threshold_hr = userProfile?.threshold_hr ?? null
+    const threshold_pace_sec = userProfile?.threshold_pace_sec ?? null
     const hr_zones_method = userSettings?.hr_zones_method ?? 'max_hr'
-    const threshold_hr = userSettings?.threshold_hr ?? null
 
     const { data: hrRows, error: hrError } = await supabase
       .from('rt_activities')
@@ -228,8 +229,9 @@ export async function GET(_request, { params }) {
           user_max_hr,
           user_weight_kg,
           user_resting_hr,
-          hr_zones_method,
           threshold_hr,
+          threshold_pace_sec,
+          hr_zones_method,
         },
         splits: splits ?? [],
         laps: laps ?? [],

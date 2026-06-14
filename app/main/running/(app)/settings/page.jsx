@@ -2,6 +2,7 @@
 
 import ProfileSection from './components/ProfileSection'
 import HrZonesSection from './components/HrZonesSection'
+import PaceZonesSection from './components/PaceZonesSection'
 import NotificationsSection from './components/NotificationsSection'
 import StravaConnectionSection from './components/StravaConnectionSection'
 import StravaIntegrationSection from './components/StravaIntegrationSection'
@@ -17,6 +18,7 @@ export default function RunningSettingsPage() {
 
       <ProfileSection />
       <HrZonesSection />
+      <PaceZonesSection />
       <NotificationsSection />
       <StravaConnectionSection />
       <StravaIntegrationSection />

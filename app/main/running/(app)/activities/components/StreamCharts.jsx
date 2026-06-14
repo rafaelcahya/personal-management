@@ -83,9 +83,30 @@ const XAXIS = (
   />
 )
 
-function PaceChart({ data }) {
+// Pace zone boundaries as multipliers of threshold pace.
+// Slower pace = larger sec/km value. Z1 is slowest, Z5 is fastest.
+const PACE_ZONE_DEFS = [
+  { name: 'Z1', label: 'Active Recovery', loMult: 1.29, hiMult: null, color: '#bfdbfe' },
+  { name: 'Z2', label: 'Endurance', loMult: 1.14, hiMult: 1.29, color: '#93c5fd' },
+  { name: 'Z3', label: 'Tempo', loMult: 1.06, hiMult: 1.14, color: '#60a5fa' },
+  { name: 'Z4', label: 'Threshold', loMult: 0.99, hiMult: 1.06, color: '#818cf8' },
+  { name: 'Z5', label: 'VO₂max', loMult: null, hiMult: 0.99, color: '#7c3aed' },
+]
+
+function computePaceZones(thresholdPaceSec) {
+  if (!thresholdPaceSec || thresholdPaceSec <= 0) return null
+  return PACE_ZONE_DEFS.map((z) => ({
+    ...z,
+    // y1 = faster boundary (lower sec/km), y2 = slower boundary (higher sec/km)
+    y1: z.hiMult != null ? Math.round(z.hiMult * thresholdPaceSec) : 9999,
+    y2: z.loMult != null ? Math.round(z.loMult * thresholdPaceSec) : 0,
+  }))
+}
+
+function PaceChart({ data, thresholdPaceSec = null }) {
   const [mode, setMode] = useState('pace')
   const isSpeed = mode === 'speed'
+  const paceZones = !isSpeed ? computePaceZones(thresholdPaceSec) : null
 
   return (
     <div>
@@ -174,6 +195,16 @@ function PaceChart({ data }) {
                 />
               }
             />
+            {paceZones?.map((z) => (
+              <ReferenceArea
+                key={z.name}
+                y1={z.y1}
+                y2={z.y2}
+                fill={z.color}
+                fillOpacity={0.12}
+                strokeOpacity={0}
+              />
+            ))}
             <Area
               type="monotone"
               dataKey={isSpeed ? 'speed_kmh' : 'pace'}
@@ -188,6 +219,19 @@ function PaceChart({ data }) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      {!isSpeed && !thresholdPaceSec && (
+        <p
+          id="paceZoneNoThreshold_activityDetailPage"
+          className="mt-1 text-[10px] text-slate-300 tabular-nums"
+        >
+          Set threshold pace in Settings → Pace Zones to see pace zone bands
+        </p>
+      )}
+      {!isSpeed && paceZones && (
+        <p className="mt-1 text-[10px] text-slate-300 tabular-nums">
+          Pace zones · Threshold {fmtPaceSec(thresholdPaceSec)} /km
+        </p>
+      )}
     </div>
   )
 }
@@ -792,6 +836,7 @@ export default function StreamCharts({
   restingHr = null,
   hrZonesMethod = 'max_hr',
   thresholdHr = null,
+  thresholdPaceSec = null,
   historicalAvgCadence,
   maxPaceSecPerKm = null,
   pagePrefix = 'activityDetailPage',
@@ -941,7 +986,7 @@ export default function StreamCharts({
         activity.
       </p>
       <div className="flex flex-col gap-4">
-        {hasPaceOrSpeed && <PaceChart data={thinned} />}
+        {hasPaceOrSpeed && <PaceChart data={thinned} thresholdPaceSec={thresholdPaceSec} />}
         {hasHr && (
           <HrStreamChart
             data={thinned}

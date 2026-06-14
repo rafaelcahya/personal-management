@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 // Full profile fields used by Settings page and PATCH response.
 // RacingWeightSection only needs weight_kg + height_cm — accepted as-is for a single-user app.
 const PROFILE_FIELDS =
-  'id, email, display_name, birth_date, height_cm, weight_kg, max_hr, resting_hr_baseline, sex'
+  'id, email, display_name, birth_date, height_cm, weight_kg, max_hr, resting_hr_baseline, sex, threshold_pace_sec'
 
 const patchSchema = z.object({
   display_name: z.string().min(1).max(100).optional(),
@@ -18,6 +18,7 @@ const patchSchema = z.object({
   max_hr: z.number().int().min(60).max(250).optional(),
   resting_hr_baseline: z.number().int().min(30).max(120).optional(),
   sex: z.enum(['male', 'female']).nullable().optional(),
+  threshold_pace_sec: z.number().int().min(120).max(900).nullable().optional(),
 })
 
 export async function GET() {
