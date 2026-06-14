@@ -47,7 +47,8 @@ function hhmmssTotalSec(hh, mm, ss) {
   const m = parseInt(mm || '0', 10)
   const s = parseInt(ss || '0', 10)
   if (isNaN(h) || isNaN(m) || isNaN(s)) return null
-  return h * 3600 + m * 60 + s
+  const total = h * 3600 + m * 60 + s
+  return total > 0 ? total : null
 }
 
 export default function PaceZonesSection() {
@@ -121,11 +122,11 @@ export default function PaceZonesSection() {
   }
 
   async function handleSave() {
-    const paceSec = mmssToSec(paceMmss)
     if (!paceMmss) {
       await saveThresholdPace(null)
       return
     }
+    const paceSec = mmssToSec(paceMmss)
     if (!paceSec || paceSec < 120 || paceSec > 900) {
       setSaveError('Threshold pace must be between 2:00 and 15:00 /km')
       return

@@ -54,6 +54,8 @@ export async function GET() {
 
     const activityIds = activities.map((a) => a.id)
 
+    const STREAM_SAMPLE_LIMIT = 5000
+
     // Query stream rows within threshold HR band
     const { data: rows, error: streamErr } = await supabase
       .from('rt_activity_streams')
@@ -63,6 +65,7 @@ export async function GET() {
       .lte('heartrate', hrHigh)
       .gte('velocity_m_s', 1.5)
       .lte('velocity_m_s', 7.0)
+      .limit(STREAM_SAMPLE_LIMIT)
 
     if (streamErr) throw streamErr
     if (!rows || rows.length < 30) {

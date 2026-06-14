@@ -159,7 +159,7 @@ export async function GET(_request, { params }) {
         .maybeSingle(),
       supabase
         .from('rt_user_settings')
-        .select('hr_zones_method, threshold_hr')
+        .select('hr_zones_method')
         .eq('user_id', user.id)
         .maybeSingle(),
     ])
