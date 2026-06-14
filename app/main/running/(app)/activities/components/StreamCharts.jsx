@@ -230,7 +230,7 @@ function computeCadenceStats(data) {
   return { stabilityScore, fatigueDrop, fatigueStart }
 }
 
-const ZONE_COLORS = ['#3b82f6', '#10b981', '#eab308', '#f97316', '#ef4444']
+const ZONE_COLORS = ['#fecdd3', '#fca5a5', '#f87171', '#ef4444', '#b91c1c']
 const ZONE_LABELS = ['Z1 Recovery', 'Z2 Aerobic', 'Z3 Tempo', 'Z4 Threshold', 'Z5 VO₂max']
 const ZONE_SHORT_LABELS = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5']
 const ZONE_OPACITIES = [0.15, 0.15, 0.18, 0.22, 0.25]
@@ -239,7 +239,7 @@ const ZONE_PERCENTS = [
   [0.6, 0.7],
   [0.7, 0.8],
   [0.8, 0.9],
-  [0.9, 1.1],
+  [0.9, 0.95],
 ]
 
 function computeZoneRanges(maxHr) {
@@ -296,7 +296,7 @@ function ZoneTooltip({ active, payload }) {
   )
 }
 
-function ZoneBarChart({ mergedZones, pagePrefix }) {
+function ZoneBarChart({ mergedZones, pagePrefix, height = 180, barCategoryGap = '16%' }) {
   const tickWithZones = (props) => <ZoneTick {...props} zones={mergedZones} />
   const chartData = [...mergedZones].reverse().map((z) => ({
     ...z,
@@ -304,12 +304,12 @@ function ZoneBarChart({ mergedZones, pagePrefix }) {
   }))
   return (
     <div id={`hrTimeInZoneSection_${pagePrefix}`}>
-      <ResponsiveContainer width="100%" height={180}>
+      <ResponsiveContainer width="100%" height={height}>
         <BarChart
           layout="vertical"
           data={chartData}
           margin={{ top: 4, right: 96, bottom: 4, left: 0 }}
-          barCategoryGap="16%"
+          barCategoryGap={barCategoryGap}
         >
           <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
           <XAxis type="number" domain={[0, 100]} hide />
@@ -499,9 +499,14 @@ function HrStreamChart({
       {bandZones.length > 0 && (
         <div className="mt-3" id={`hrZonesSection_${pagePrefix}`}>
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
-            Time in Zone
+            Heart Rate Zone
           </p>
-          <ZoneBarChart mergedZones={mergedZones} pagePrefix={pagePrefix} />
+          <ZoneBarChart
+            mergedZones={mergedZones}
+            pagePrefix={pagePrefix}
+            height={200}
+            barCategoryGap="10%"
+          />
         </div>
       )}
     </div>

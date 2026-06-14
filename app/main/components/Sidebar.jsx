@@ -24,6 +24,7 @@ import {
   BarChart2,
   BrainCircuit,
   Trophy,
+  Timer,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -69,6 +70,12 @@ const RUNNING_ITEMS = [
   { name: 'Race Log', href: '/main/running/race-log', icon: Trophy },
   { name: 'Analytics', href: '/main/running/analytics', icon: BarChart2 },
   { name: 'AI Coach', href: '/main/running/ai', icon: BrainCircuit },
+  {
+    id: 'paceCalcNav_sidebar',
+    name: 'Pace Calc',
+    href: '/main/running/pace-calculator',
+    icon: Timer,
+  },
   { name: 'Settings', href: '/main/running/settings', icon: Settings },
 ]
 
@@ -238,6 +245,10 @@ function UserSection({ collapsed, user, mobile = false }) {
   )
 }
 
+const EDGE_THRESHOLD = 30
+const SWIPE_MIN_X = 60
+const SWIPE_MAX_Y = 80
+
 export default function Sidebar({ user }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -246,6 +257,54 @@ export default function Sidebar({ user }) {
     const saved = localStorage.getItem('sidebar-collapsed')
     if (saved !== null) setCollapsed(saved === 'true')
   }, [])
+
+  useEffect(() => {
+    let startX = 0
+    let startY = 0
+    let eligible = false
+    let tracking = false
+
+    function onTouchStart(e) {
+      if (window.innerWidth >= 768) return
+      startX = e.touches[0].clientX
+      startY = e.touches[0].clientY
+      tracking = false
+      eligible = !mobileOpen ? startX < EDGE_THRESHOLD : true
+    }
+
+    function onTouchMove(e) {
+      if (window.innerWidth >= 768 || !eligible) return
+      const deltaX = e.touches[0].clientX - startX
+      const deltaY = e.touches[0].clientY - startY
+      if (!tracking) {
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
+          tracking = true
+        } else if (Math.abs(deltaY) > 8) {
+          eligible = false
+          return
+        }
+      }
+      if (tracking) e.preventDefault()
+    }
+
+    function onTouchEnd(e) {
+      if (window.innerWidth >= 768 || !eligible) return
+      const deltaX = e.changedTouches[0].clientX - startX
+      const deltaY = e.changedTouches[0].clientY - startY
+      if (Math.abs(deltaY) >= SWIPE_MAX_Y) return
+      if (!mobileOpen && deltaX > SWIPE_MIN_X) setMobileOpen(true)
+      else if (mobileOpen && deltaX < -SWIPE_MIN_X) setMobileOpen(false)
+    }
+
+    document.addEventListener('touchstart', onTouchStart, { passive: true })
+    document.addEventListener('touchmove', onTouchMove, { passive: false })
+    document.addEventListener('touchend', onTouchEnd, { passive: true })
+    return () => {
+      document.removeEventListener('touchstart', onTouchStart)
+      document.removeEventListener('touchmove', onTouchMove)
+      document.removeEventListener('touchend', onTouchEnd)
+    }
+  }, [mobileOpen])
 
   const toggleCollapse = () => {
     setCollapsed((prev) => {

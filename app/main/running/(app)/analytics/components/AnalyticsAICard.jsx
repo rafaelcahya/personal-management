@@ -281,46 +281,49 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
     >
       <Accordion type="single" collapsible>
         <AccordionItem value="item" className="border-0">
-          <AccordionPrimitive.Header className="flex items-center w-full gap-2">
-            <AccordionPrimitive.Trigger className="flex flex-1 items-start gap-2 py-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded [&[data-state=open]>.accordion-chevron]:rotate-180">
-              <div className="flex items-center gap-2 flex-1 min-w-0 flex-wrap">
-                <span className="flex items-center justify-center w-6 h-6 rounded-md bg-violet-100 shrink-0">
-                  <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-hidden="true" />
-                </span>
-                <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                  AI Recommendations
-                </span>
-                <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-medium">
-                  BETA
-                </span>
-                {stale && isValidInsight && (
-                  <div
-                    id={`analyticsAiStalenessBadge_${sectionId}_analyticsPage`}
-                    className="inline-flex items-center gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-700 px-2 py-1 rounded-full"
-                    role="status"
-                    aria-label="Recommendations may be outdated — new activity data is available"
-                  >
-                    <Clock className="h-3 w-3" aria-hidden="true" />
-                    Outdated — newer activity data available
-                  </div>
-                )}
-              </div>
+          <AccordionPrimitive.Header className="flex flex-col w-full">
+            <AccordionPrimitive.Trigger className="flex items-center gap-2 py-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded [&[data-state=open]>.accordion-chevron]:rotate-180">
+              <span className="flex items-center justify-center w-6 h-6 rounded-md bg-violet-100 shrink-0">
+                <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-hidden="true" />
+              </span>
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex-1 truncate">
+                AI Recommendations
+              </span>
+              <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-medium shrink-0">
+                BETA
+              </span>
               <ChevronDown
-                className="accordion-chevron size-4 shrink-0 mt-1 text-slate-400 transition-transform duration-200"
+                className="accordion-chevron size-4 shrink-0 text-slate-400 transition-transform duration-200"
                 aria-hidden="true"
               />
             </AccordionPrimitive.Trigger>
-            {/* History button — sibling to trigger, not nested inside it */}
-            {historyInsights.length > 1 && (
-              <button
-                id={`analyticsAiHistoryBtn_${sectionId}_analyticsPage`}
-                onClick={() => setHistoryOpen(true)}
-                aria-label="View analysis history"
-                className="flex items-center gap-1 py-2 text-xs text-slate-400 hover:text-violet-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
-              >
-                <History className="h-3.5 w-3.5" aria-hidden="true" />
-                History
-              </button>
+            {((stale && isValidInsight) || historyInsights.length > 1) && (
+              <div className="flex items-center justify-between pb-1">
+                <div>
+                  {stale && isValidInsight && (
+                    <div
+                      id={`analyticsAiStalenessBadge_${sectionId}_analyticsPage`}
+                      className="inline-flex items-center gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-700 px-2 py-1 rounded-full"
+                      role="status"
+                      aria-label="Recommendations may be outdated — new activity data is available"
+                    >
+                      <Clock className="h-3 w-3" aria-hidden="true" />
+                      Outdated — newer activity data available
+                    </div>
+                  )}
+                </div>
+                {historyInsights.length > 1 && (
+                  <button
+                    id={`analyticsAiHistoryBtn_${sectionId}_analyticsPage`}
+                    onClick={() => setHistoryOpen(true)}
+                    aria-label="View analysis history"
+                    className="flex items-center gap-1 text-xs text-slate-400 hover:text-violet-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
+                  >
+                    <History className="h-3.5 w-3.5" aria-hidden="true" />
+                    History
+                  </button>
+                )}
+              </div>
             )}
           </AccordionPrimitive.Header>
 

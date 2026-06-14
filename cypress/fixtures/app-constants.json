@@ -14,6 +14,7 @@
     "running_analytics": "/main/running/analytics",
     "running_ai_coach": "/main/running/ai",
     "running_settings": "/main/running/settings",
+    "running_pace_calculator": "/main/running/pace-calculator",
     "trading": "/main/trading",
     "trading_dashboard": "/main/trading/dashboard",
     "trading_trade": "/main/trading/trade",
@@ -172,7 +173,8 @@
       "collapse_btn": "sidebarCollapseBtn_sidebar",
       "inventory_dashboard_nav": "inventoryDashboardNav_sidebar",
       "trading_dashboard_nav": "tradingDashboardNav_sidebar",
-      "running_dashboard_nav": "runningDashboardNav_sidebar"
+      "running_dashboard_nav": "runningDashboardNav_sidebar",
+      "pace_calc_nav": "paceCalcNav_sidebar"
     },
     "shared": {
       "submit_btn": "submit-btn",
@@ -426,7 +428,10 @@
       "lap_marker": "lapMarker_{n}_activityDetailPage",
       "pr_effort_start": "prEffortStart_{name}_activityDetailPage",
       "pr_effort_end": "prEffortEnd_{name}_activityDetailPage",
-      "climbing_index_tile": "climbingIndexTile_activityDetailPage"
+      "climbing_index_tile": "climbingIndexTile_activityDetailPage",
+      "racing_weight_section": "racingWeightSection_activityDetailPage",
+      "racing_weight_bar": "racingWeightBar_activityDetailPage",
+      "racing_weight_what_if": "racingWeightWhatIf_activityDetailPage"
     },
     "running_dashboard": {
       "page": "dashboardPage",
@@ -836,6 +841,37 @@
       "danger_zone_error": "dangerZoneError_settingsPage",
       "bmi_chip": "bmiChip_settingsPage",
       "bmi_missing_prompt": "bmiMissingPrompt_settingsPage"
+    },
+    "running_pace_calculator": {
+      "unit_toggle": "unitToggle_paceCalculator",
+      "unit_km": "unitKm_paceCalculator",
+      "unit_mi": "unitMi_paceCalculator",
+      "tab_pace": "tabPace_paceCalculator",
+      "tab_projection": "tabProjection_paceCalculator",
+      "distance_preset": "distancePreset_paceCalculator",
+      "custom_distance": "customDistance_paceCalculator",
+      "time_hours": "time_paceCalculatorHours",
+      "time_minutes": "time_paceCalculatorMinutes",
+      "time_seconds": "time_paceCalculatorSeconds",
+      "pace_km": "paceKm_paceCalculator",
+      "pace_mi": "paceMi_paceCalculator",
+      "speed_kmh": "speedKmh_paceCalculator",
+      "speed_mph": "speedMph_paceCalculator",
+      "proj_pace_minutes": "projPaceMinutes_paceCalculator",
+      "proj_pace_seconds": "projPaceSeconds_paceCalculator",
+      "proj_sub_mode": "projSubMode_paceCalculator",
+      "proj_mode_distance": "projModeDistance_paceCalculator",
+      "proj_mode_time": "projModeTime_paceCalculator",
+      "proj_distance_preset": "projDistancePreset_paceCalculator",
+      "proj_custom_distance": "projCustomDistance_paceCalculator",
+      "proj_time_hours": "projTime_paceCalculatorHours",
+      "proj_time_minutes": "projTime_paceCalculatorMinutes",
+      "proj_time_seconds": "projTime_paceCalculatorSeconds",
+      "proj_result_time": "projResultTime_paceCalculator",
+      "proj_result_distance": "projResultDistance_paceCalculator",
+      "proj_avg_pace": "projAvgPace_paceCalculator",
+      "splits_table": "splitsTable_paceCalculator",
+      "race_projection_table": "raceProjectionTable_paceCalculator"
     }
   },
   "seed": {

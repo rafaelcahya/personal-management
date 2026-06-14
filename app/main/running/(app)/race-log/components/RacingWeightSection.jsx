@@ -13,6 +13,7 @@ function getRaceCategory(distanceM) {
   if (km < 8) return '5K'
   if (km < 15) return '10K'
   if (km < 30) return 'HM'
+  // Anything ≥ 30 km uses FM ranges — deliberate ceiling, includes ultras.
   return 'FM'
 }
 
@@ -20,7 +21,7 @@ function bmiToKg(bmi, heightM) {
   return bmi * heightM * heightM
 }
 
-export default function RacingWeightSection({ entry, profile }) {
+export default function RacingWeightSection({ entry, profile, pageId = 'raceDetailPage' }) {
   const { weight_kg, height_cm } = profile ?? {}
 
   if (!weight_kg || !height_cm) return null
@@ -50,18 +51,18 @@ export default function RacingWeightSection({ entry, profile }) {
   const isInOptimalRange = weight_kg >= optimalMinKg && weight_kg <= optimalMaxKg
   const weightDelta = weight_kg - optimalMidKg
 
-  const finishTimeSec = entry?.finish_time_sec ?? entry?.goal_time_sec ?? null
+  const finishTimeSec = entry?.finish_time_sec ?? null
   const finishTimeMin = finishTimeSec ? finishTimeSec / 60 : null
   const improvementMin =
     finishTimeMin && Math.abs(weightDelta) > 0.5
-      ? Math.abs(finishTimeMin * (Math.abs(weightDelta) / weight_kg))
+      ? Math.min(Math.abs(finishTimeMin * (Math.abs(weightDelta) / weight_kg)), 15)
       : null
 
   const CATEGORY_LABEL = { '5K': '5K', '10K': '10K', HM: 'Half Marathon', FM: 'Marathon' }
 
   return (
     <div
-      id="racingWeightSection_raceDetailPage"
+      id={`racingWeightSection_${pageId}`}
       className="flex flex-col gap-3 px-3 py-3 bg-slate-50 rounded-lg"
     >
       <div className="flex items-center justify-between">
@@ -82,7 +83,7 @@ export default function RacingWeightSection({ entry, profile }) {
       </div>
 
       {/* Range bar */}
-      <div id="racingWeightBar_raceDetailPage" className="flex flex-col gap-1">
+      <div id={`racingWeightBar_${pageId}`} className="flex flex-col gap-1">
         <div className="relative h-4 rounded-full bg-slate-200 overflow-hidden">
           {/* Optimal band */}
           <div
@@ -118,7 +119,7 @@ export default function RacingWeightSection({ entry, profile }) {
 
       {improvementMin != null && (
         <p
-          id="racingWeightWhatIf_raceDetailPage"
+          id={`racingWeightWhatIf_${pageId}`}
           className="text-xs text-slate-400 italic border-t border-slate-200 pt-2"
         >
           Estimate: reaching optimal weight could improve your {CATEGORY_LABEL[category]} time by ~

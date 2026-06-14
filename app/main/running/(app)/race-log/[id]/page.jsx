@@ -211,12 +211,6 @@ export default function RaceDetailPage() {
             </div>
           )}
 
-          {profile && (profile.weight_kg || profile.height_cm) && (
-            <div className="w-full lg:w-3/5 mx-auto px-4 lg:px-0 mt-5">
-              <RacingWeightSection entry={entry} profile={profile} />
-            </div>
-          )}
-
           {!activityLoading && activity && (
             <ActivitySection
               activity={activity}
@@ -230,7 +224,20 @@ export default function RaceDetailPage() {
               onEditClick={() => setEditOpen(true)}
               entryDistanceM={entry.distance_m ? Number(entry.distance_m) : null}
               entryFinishTimeSec={entry.finish_time_sec}
+              profile={profile}
             />
+          )}
+
+          {!activityLoading && !activity && (
+            <div className="w-full lg:w-3/5 mx-auto px-4 lg:px-0 mt-5">
+              <RacingWeightSection
+                entry={{
+                  distance_m: entry.distance_m ? Number(entry.distance_m) : null,
+                  finish_time_sec: entry.finish_time_sec,
+                }}
+                profile={profile}
+              />
+            </div>
           )}
 
           {/* Delete button */}
