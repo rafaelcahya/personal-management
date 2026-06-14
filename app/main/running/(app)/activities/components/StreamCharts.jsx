@@ -83,9 +83,48 @@ const XAXIS = (
   />
 )
 
-function PaceChart({ data }) {
+// Pace zone boundaries as multipliers of threshold pace.
+// Slower pace = larger sec/km value. Z1 is slowest, Z5 is fastest.
+const PACE_ZONE_DEFS = [
+  { name: 'Z1', label: 'Recovery', loMult: 1.29, hiMult: null, color: '#bfdbfe' },
+  { name: 'Z2', label: 'Endurance', loMult: 1.14, hiMult: 1.29, color: '#93c5fd' },
+  { name: 'Z3', label: 'Tempo', loMult: 1.06, hiMult: 1.14, color: '#60a5fa' },
+  { name: 'Z4', label: 'Threshold', loMult: 0.99, hiMult: 1.06, color: '#818cf8' },
+  { name: 'Z5', label: 'VO₂max', loMult: null, hiMult: 0.99, color: '#7c3aed' },
+]
+
+function computePaceZones(thresholdPaceSec) {
+  if (!thresholdPaceSec || thresholdPaceSec <= 0) return null
+  return PACE_ZONE_DEFS.map((z) => ({
+    ...z,
+    // y1 = faster boundary (lower sec/km), y2 = slower boundary (higher sec/km)
+    y1: z.hiMult != null ? Math.round(z.hiMult * thresholdPaceSec) : 9999,
+    y2: z.loMult != null ? Math.round(z.loMult * thresholdPaceSec) : 0,
+  }))
+}
+
+function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
   const [mode, setMode] = useState('pace')
   const isSpeed = mode === 'speed'
+
+  const mergedPaceZones = useMemo(() => {
+    if (isSpeed || !thresholdPaceSec || !paceZoneTimes) return null
+    const zones = computePaceZones(thresholdPaceSec)
+    if (!zones) return null
+    const total = paceZoneTimes.reduce((s, t) => s + t, 0)
+    return zones.map((z, i) => {
+      const t = paceZoneTimes[i] ?? 0
+      const pct = total > 0 ? Math.round((t / total) * 100) : 0
+      return {
+        name: z.name,
+        label: z.label,
+        color: z.color,
+        time: t,
+        pct,
+        duration: t > 0 ? formatZoneDuration(t) : null,
+      }
+    })
+  }, [isSpeed, thresholdPaceSec, paceZoneTimes])
 
   return (
     <div>
@@ -188,6 +227,18 @@ function PaceChart({ data }) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      {!isSpeed && mergedPaceZones && (
+        <div className="mt-3">
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+            Pace Zone
+          </p>
+          <ZoneBarChart
+            mergedZones={mergedPaceZones}
+            pagePrefix="pace_activityDetailPage"
+            yAxisWidth={64}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -312,14 +363,28 @@ function formatZoneDuration(seconds) {
 function ZoneTick({ x, y, payload, zones }) {
   const zone = zones?.find((z) => z.name === payload?.value)
   if (!zone) return null
+  const hasRange = zone.min != null && zone.max != null
+  const hasLabel = !hasRange && zone.label != null
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={-6} textAnchor="end" fontSize={11} fontWeight={600} fill="#475569" dy={-5}>
+      <text
+        x={-6}
+        textAnchor="end"
+        fontSize={11}
+        fontWeight={600}
+        fill="#475569"
+        dy={hasRange || hasLabel ? -5 : 4}
+      >
         {zone.name}
       </text>
-      {zone.min != null && zone.max != null && (
+      {hasRange && (
         <text x={-6} textAnchor="end" fontSize={10} fill="#94a3b8" dy={7}>
           {zone.min}–{zone.max}
+        </text>
+      )}
+      {hasLabel && (
+        <text x={-6} textAnchor="end" fontSize={10} fill="#94a3b8" dy={7}>
+          {zone.label}
         </text>
       )}
     </g>
@@ -344,7 +409,13 @@ function ZoneTooltip({ active, payload }) {
   )
 }
 
-function ZoneBarChart({ mergedZones, pagePrefix, height = 180, barCategoryGap = '16%' }) {
+function ZoneBarChart({
+  mergedZones,
+  pagePrefix,
+  height = 180,
+  barCategoryGap = '16%',
+  yAxisWidth = 76,
+}) {
   const tickWithZones = (props) => <ZoneTick {...props} zones={mergedZones} />
   const chartData = [...mergedZones].reverse().map((z) => ({
     ...z,
@@ -367,7 +438,7 @@ function ZoneBarChart({ mergedZones, pagePrefix, height = 180, barCategoryGap = 
             tick={tickWithZones}
             tickLine={false}
             axisLine={false}
-            width={76}
+            width={yAxisWidth}
           />
           <Tooltip cursor={false} content={<ZoneTooltip />} />
           <Bar dataKey="pct" radius={[0, 3, 3, 0]} minPointSize={2} isAnimationActive={false}>
@@ -482,7 +553,7 @@ function HrStreamChart({
             </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
-            <YAxis width={36} {...AXIS_PROPS} />
+            <YAxis width={24} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${v} bpm`} />} />
             {showHistoricalLine && (
               <ReferenceLine
@@ -598,7 +669,7 @@ function ElevationChart({ data }) {
             </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
-            <YAxis width={36} {...AXIS_PROPS} />
+            <YAxis width={24} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${Math.round(v)} m`} />} />
             <Area
               type="monotone"
@@ -717,7 +788,7 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
             </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
-            <YAxis width={36} {...AXIS_PROPS} />
+            <YAxis width={24} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${v} spm`} />} />
 
             {hasFatigue && (
@@ -792,6 +863,7 @@ export default function StreamCharts({
   restingHr = null,
   hrZonesMethod = 'max_hr',
   thresholdHr = null,
+  thresholdPaceSec = null,
   historicalAvgCadence,
   maxPaceSecPerKm = null,
   pagePrefix = 'activityDetailPage',
@@ -802,6 +874,7 @@ export default function StreamCharts({
   const [thinned, setThinned] = useState([])
   const [rawHrValues, setRawHrValues] = useState([])
   const [rawCadenceValues, setRawCadenceValues] = useState([])
+  const [rawPaceValues, setRawPaceValues] = useState([])
 
   const load = useCallback(async () => {
     if (!activityId) return
@@ -829,6 +902,7 @@ export default function StreamCharts({
       setThinned(processed)
       setRawHrValues(raw.map((d) => d.hr).filter((v) => v != null))
       setRawCadenceValues(raw.map((d) => d.cadence).filter((v) => v != null && v > 0))
+      setRawPaceValues(raw.map((d) => d.pace).filter((v) => v != null && v > 0))
     } catch (err) {
       setError('Failed to load stream data')
     } finally {
@@ -860,6 +934,23 @@ export default function StreamCharts({
     }
     return times
   }, [rawHrValues, zones, maxHr, userMaxHr, hrZonesMethod, restingHr, thresholdHr])
+
+  const paceZoneTimes = useMemo(() => {
+    if (!thresholdPaceSec || !rawPaceValues.length) return null
+    const zones = computePaceZones(thresholdPaceSec)
+    if (!zones) return null
+    const times = zones.map(() => 0)
+    for (const pace of rawPaceValues) {
+      for (let i = 0; i < zones.length; i++) {
+        // y1 = upper (slower) boundary, y2 = lower (faster) boundary
+        if (pace >= zones[i].y2 && pace <= zones[i].y1) {
+          times[i] += 10
+          break
+        }
+      }
+    }
+    return times
+  }, [rawPaceValues, thresholdPaceSec])
 
   const cadenceBandTimesRaw = useMemo(() => {
     if (!rawCadenceValues.length) return null
@@ -941,7 +1032,13 @@ export default function StreamCharts({
         activity.
       </p>
       <div className="flex flex-col gap-4">
-        {hasPaceOrSpeed && <PaceChart data={thinned} />}
+        {hasPaceOrSpeed && (
+          <PaceChart
+            data={thinned}
+            thresholdPaceSec={thresholdPaceSec}
+            paceZoneTimes={paceZoneTimes}
+          />
+        )}
         {hasHr && (
           <HrStreamChart
             data={thinned}
