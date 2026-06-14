@@ -34,14 +34,15 @@ export async function GET() {
     const hrHigh = Math.round(thresholdHr * 1.06)
     const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
 
-    // Fetch recent run activity IDs
+    // Fetch recent run activities with details
     const { data: activities, error: actErr } = await supabase
       .from('rt_activities')
-      .select('id')
+      .select('id, name, started_at, distance_m')
       .eq('user_id', user.id)
       .in('activity_type', ['Run', 'TrailRun', 'VirtualRun'])
       .gte('started_at', since)
       .not('avg_hr', 'is', null)
+      .order('started_at', { ascending: false })
       .limit(30)
 
     if (actErr) throw actErr
@@ -61,8 +62,8 @@ export async function GET() {
       .from('rt_activity_streams')
       .select('velocity_m_s')
       .in('activity_id', activityIds)
-      .gte('heartrate', hrLow)
-      .lte('heartrate', hrHigh)
+      .gte('heart_rate', hrLow)
+      .lte('heart_rate', hrHigh)
       .gte('velocity_m_s', 1.5)
       .lte('velocity_m_s', 7.0)
       .limit(STREAM_SAMPLE_LIMIT)
@@ -82,7 +83,18 @@ export async function GET() {
     const thresholdPaceSec = Math.round(1000 / avgVelocity)
 
     return NextResponse.json(
-      { data: { threshold_pace_sec: thresholdPaceSec, sample_count: rows.length } },
+      {
+        data: {
+          threshold_pace_sec: thresholdPaceSec,
+          sample_count: rows.length,
+          activities: activities.map((a) => ({
+            id: a.id,
+            name: a.name,
+            started_at: a.started_at,
+            distance_m: a.distance_m,
+          })),
+        },
+      },
       { status: 200 }
     )
   } catch (err) {
