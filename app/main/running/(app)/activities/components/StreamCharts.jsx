@@ -233,22 +233,70 @@ function computeCadenceStats(data) {
 const ZONE_COLORS = ['#fecdd3', '#fca5a5', '#f87171', '#ef4444', '#b91c1c']
 const ZONE_LABELS = ['Z1 Recovery', 'Z2 Aerobic', 'Z3 Tempo', 'Z4 Threshold', 'Z5 VO₂max']
 const ZONE_SHORT_LABELS = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5']
-const ZONE_OPACITIES = [0.15, 0.15, 0.18, 0.22, 0.25]
-const ZONE_PERCENTS = [
+
+const MAXHR_PERCENTS = [
   [0, 0.6],
   [0.6, 0.7],
   [0.7, 0.8],
   [0.8, 0.9],
   [0.9, 0.95],
 ]
+// Karvonen: Z1 floor is 50% HRR (more physiologically accurate than 0%)
+const KARVONEN_PERCENTS = [
+  [0.5, 0.6],
+  [0.6, 0.7],
+  [0.7, 0.8],
+  [0.8, 0.9],
+  [0.9, 1.0],
+]
+// Coggan 5-zone anchored to lactate threshold HR
+const THRESHOLD_PERCENTS = [
+  [0, 0.68],
+  [0.68, 0.83],
+  [0.83, 0.94],
+  [0.94, 1.05],
+  [1.05, Infinity],
+]
 
 function computeZoneRanges(maxHr) {
   if (!maxHr || maxHr <= 0) return null
-  return ZONE_PERCENTS.map(([lo, hi]) => ({
+  return MAXHR_PERCENTS.map(([lo, hi]) => ({
     min: Math.round(lo * maxHr),
     max: Math.round(hi * maxHr),
     time: 0,
   }))
+}
+
+function computeKarvonenZones(maxHr, restingHr) {
+  if (!maxHr || !restingHr || maxHr <= restingHr) return null
+  const hrr = maxHr - restingHr
+  return KARVONEN_PERCENTS.map(([lo, hi]) => ({
+    min: Math.round(restingHr + lo * hrr),
+    max: Math.round(restingHr + hi * hrr),
+    time: 0,
+  }))
+}
+
+function computeThresholdZones(thresholdHr) {
+  if (!thresholdHr || thresholdHr <= 0) return null
+  return THRESHOLD_PERCENTS.map(([lo, hi]) => ({
+    min: Math.round(lo * thresholdHr),
+    max: hi === Infinity ? 9999 : Math.round(hi * thresholdHr),
+    time: 0,
+  }))
+}
+
+function resolveZoneBoundaries(method, maxHr, restingHr, thresholdHr) {
+  if (method === 'karvonen' && restingHr) {
+    const zones = computeKarvonenZones(maxHr, restingHr)
+    if (zones) return { zones, usedMethod: 'karvonen', fallback: false }
+    // maxHr absent — fall through to max_hr with fallback flag
+  }
+  if (method === 'threshold' && thresholdHr) {
+    const zones = computeThresholdZones(thresholdHr)
+    if (zones) return { zones, usedMethod: 'threshold', fallback: false }
+  }
+  return { zones: computeZoneRanges(maxHr), usedMethod: 'max_hr', fallback: method !== 'max_hr' }
 }
 
 function formatZoneDuration(seconds) {
@@ -346,11 +394,24 @@ function HrStreamChart({
   maxHr,
   userMaxHr,
   hrZoneTimes,
+  hrZonesMethod = 'max_hr',
+  restingHr = null,
+  thresholdHr = null,
   pagePrefix,
 }) {
   const stravaZones = zones?.heart_rate?.zones ?? null
   const fallbackMaxHr = userMaxHr ?? maxHr ?? null
-  const bandZones = stravaZones ?? computeZoneRanges(fallbackMaxHr) ?? []
+
+  // Strava zones always take priority; otherwise dispatch to the user's chosen method
+  const {
+    zones: computedBandZones,
+    usedMethod,
+    fallback: usedFallback,
+  } = stravaZones
+    ? { zones: null, usedMethod: null, fallback: false }
+    : resolveZoneBoundaries(hrZonesMethod, fallbackMaxHr, restingHr, thresholdHr)
+
+  const bandZones = stravaZones ?? computedBandZones ?? []
   const stravaHasTime = stravaZones?.some((z) => z.time != null && z.time > 0) ?? false
   const timeZones =
     stravaZones && stravaHasTime
@@ -359,13 +420,23 @@ function HrStreamChart({
         ? bandZones.map((bz, i) => ({ ...bz, time: hrZoneTimes[i] ?? 0 }))
         : []
 
-  const zoneBandSource = stravaZones
-    ? 'strava'
-    : userMaxHr
-      ? { type: 'profile', hr: userMaxHr }
-      : maxHr
-        ? { type: 'activity', hr: maxHr }
-        : null
+  function getZoneSourceLabel() {
+    if (stravaZones) return 'Zone bands from Strava'
+    if (!fallbackMaxHr && !thresholdHr) return null
+    const hrSource = userMaxHr ? 'profile' : 'this run'
+    if (usedFallback) {
+      if (!fallbackMaxHr) return null
+      const missing = hrZonesMethod === 'karvonen' ? 'resting HR not set' : 'threshold HR not set'
+      const methodLabel = hrZonesMethod === 'karvonen' ? 'Karvonen' : 'Lactate Threshold'
+      return `${methodLabel} selected but ${missing} — using Max HR ${fallbackMaxHr} bpm (${hrSource})`
+    }
+    if (usedMethod === 'karvonen')
+      return `Karvonen · Max HR ${fallbackMaxHr} bpm · Resting ${restingHr} bpm`
+    if (usedMethod === 'threshold') return `Lactate Threshold · Threshold HR ${thresholdHr} bpm`
+    return `Zones estimated · Max HR ${fallbackMaxHr} bpm (${hrSource})`
+  }
+
+  const zoneSourceLabel = getZoneSourceLabel()
 
   const peakPoint = data.reduce(
     (best, d) => (d.hr != null && (best === null || d.hr > best.hr) ? d : best),
@@ -484,16 +555,8 @@ function HrStreamChart({
         </p>
       )}
 
-      {bandZones.length > 0 && (
-        <p className="mt-1 text-[10px] text-slate-300 tabular-nums">
-          {zoneBandSource === 'strava'
-            ? 'Zone bands from Strava'
-            : zoneBandSource?.type === 'profile'
-              ? `Zones estimated · Max HR ${zoneBandSource.hr} bpm (profile)`
-              : zoneBandSource?.type === 'activity'
-                ? `Zones estimated · Max HR ${zoneBandSource.hr} bpm (this run)`
-                : null}
-        </p>
+      {bandZones.length > 0 && zoneSourceLabel && (
+        <p className="mt-1 text-[10px] text-slate-300 tabular-nums">{zoneSourceLabel}</p>
       )}
 
       {bandZones.length > 0 && (
@@ -726,6 +789,9 @@ export default function StreamCharts({
   historicalAvgHr,
   maxHr,
   userMaxHr,
+  restingHr = null,
+  hrZonesMethod = 'max_hr',
+  thresholdHr = null,
   historicalAvgCadence,
   maxPaceSecPerKm = null,
   pagePrefix = 'activityDetailPage',
@@ -776,7 +842,12 @@ export default function StreamCharts({
 
   const hrZoneTimes = useMemo(() => {
     if (zones?.heart_rate?.zones || !rawHrValues.length) return null
-    const bz = computeZoneRanges(userMaxHr ?? maxHr ?? null)
+    const { zones: bz } = resolveZoneBoundaries(
+      hrZonesMethod,
+      userMaxHr ?? maxHr ?? null,
+      restingHr,
+      thresholdHr
+    )
     if (!bz) return null
     const times = bz.map(() => 0)
     for (const hr of rawHrValues) {
@@ -788,7 +859,7 @@ export default function StreamCharts({
       }
     }
     return times
-  }, [rawHrValues, zones, maxHr, userMaxHr])
+  }, [rawHrValues, zones, maxHr, userMaxHr, hrZonesMethod, restingHr, thresholdHr])
 
   const cadenceBandTimesRaw = useMemo(() => {
     if (!rawCadenceValues.length) return null
@@ -880,6 +951,9 @@ export default function StreamCharts({
             maxHr={maxHr}
             userMaxHr={userMaxHr}
             hrZoneTimes={hrZoneTimes}
+            hrZonesMethod={hrZonesMethod}
+            restingHr={restingHr}
+            thresholdHr={thresholdHr}
             pagePrefix={pagePrefix}
           />
         )}
