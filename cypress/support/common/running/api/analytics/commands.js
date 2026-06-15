@@ -4,6 +4,7 @@ const TARGET_EFFORT = constants.endpoints.running_analytics.target_effort
 const PERSONAL_BESTS = constants.endpoints.running_analytics.personal_bests
 const CALORIE_TREND = constants.endpoints.running_analytics.calorie_trend
 const FITNESS_AGE = constants.endpoints.running_analytics.fitness_age
+const ENDURANCE_SCORE = constants.endpoints.running_analytics.endurance_score
 
 Cypress.Commands.add('getTargetEffort', (qs = {}) => {
   return cy.apiRequestWithSession('GET', TARGET_EFFORT, { qs })
@@ -35,4 +36,12 @@ Cypress.Commands.add('getFitnessAgeTrend', () => {
 
 Cypress.Commands.add('getFitnessAgeTrendNoAuth', () => {
   return cy.apiRequestNoAuth('GET', FITNESS_AGE)
+})
+
+Cypress.Commands.add('getEnduranceScore', () => {
+  return cy.apiRequestWithSession('GET', ENDURANCE_SCORE)
+})
+
+Cypress.Commands.add('getEnduranceScoreNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', ENDURANCE_SCORE)
 })

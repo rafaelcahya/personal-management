@@ -26,6 +26,7 @@ import PersonalBestsTable from './components/PersonalBestsTable'
 import CalorieTrendChart from './components/CalorieTrendChart'
 import ZoneAnalyticsSection from './components/ZoneAnalyticsSection'
 import FitnessAgeTrendChart from './components/FitnessAgeTrendChart'
+import EnduranceScoreTrendChart from './components/EnduranceScoreTrendChart'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -241,6 +242,15 @@ export default function AnalyticsPage() {
             icon={Activity}
           >
             <FitnessAgeTrendChart />
+          </Section>
+
+          <Section
+            id="enduranceScoreTrendSection_analyticsPage"
+            title="Endurance Score Trend"
+            description="Weekly composite score (0–100) combining VO₂max fitness, 28-day training load, and your longest run in the last 8 weeks. Higher is better."
+            icon={Activity}
+          >
+            <EnduranceScoreTrendChart />
           </Section>
 
           <ZoneAnalyticsSection />

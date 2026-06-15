@@ -1,7 +1,7 @@
 # QA Coverage Report
 
 **Last Updated:** 2026-06-15
-**Branch:** feat/issue-290-ef-colored-chip (updated with zone analytics + HR zones tests)
+**Branch:** feat/issue-301-endurance-score
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,031  | 37%  |
+| API       | 1,045  | 37%  |
 | UI        | 1,755  | 63%  |
-| **Total** | **2,786** | 100% |
+| **Total** | **2,800** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 339 | 703   | 1,042 |
+| Running Tracker      | 357 | 703   | 1,060 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,027** | **1,755** | **2,782** |
+| **Total**            | **1,045** | **1,755** | **2,800** |
 
 ---
 
@@ -183,11 +183,11 @@
 | Feature              | API | UI | Total |
 | -------------------- | --- | -- | ----- |
 | AI Coach             | 0   | 20 | 20    |
-| Dashboard            | 34  | 28 | 62    |
+| Dashboard            | 39  | 28 | 67    |
 | Dashboard Extended   | 0   | 14 | 14    |
 | Gear                 | 6   | 18 | 24    |
 | Performance Trends   | 5   | 0  | 5     |
-| **Subtotal**         | **45** | **80** | **125** |
+| **Subtotal**         | **50** | **80** | **130** |
 
 #### AI Coach
 
@@ -203,13 +203,14 @@
 | ---------------------- | --- | -- | ----- |
 | Analytics AI           | 15  | 20 | 35    |
 | Analytics              | 0   | 9  | 9     |
+| Endurance Score        | 9   | 0  | 9     |
 | Fitness Age            | 10  | 0  | 10    |
 | Gear Analytics         | 10  | 0  | 10    |
 | Personal Bests         | 7   | 19 | 26    |
 | Qualifying Run Count   | 0   | 8  | 8     |
 | VO2Max Target Effort   | 4   | 31 | 35    |
 | Zone Analytics         | 24  | 0  | 24    |
-| **Subtotal**           | **70** | **87** | **157** |
+| **Subtotal**           | **79** | **87** | **166** |
 
 #### Injury AI
 
@@ -273,7 +274,7 @@
 | Push Subscription   | 4   | 0  | 4     |
 | **Subtotal**        | **4** | **0** | **4** |
 
-**Running Total — API: 343 | UI: 703 | Total: 1,046**
+**Running Total — API: 357 | UI: 703 | Total: 1,060**
 
 ---
 
@@ -302,7 +303,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 343 | 703   | 1,046 |
+| Running Tracker      | 357 | 703   | 1,060 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,031** | **1,755** | **2,786** |
+| **Total**            | **1,045** | **1,755** | **2,800** |
