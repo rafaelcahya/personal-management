@@ -265,14 +265,51 @@ export default function ActivitySection({
                 unit="m"
               />
             )}
-            {activity.efficiency_factor != null && (
-              <StatTile
-                icon={BarChart2}
-                label="Efficiency"
-                value={Number(activity.efficiency_factor).toFixed(4)}
-                unit="m/s/bpm"
-              />
-            )}
+            {activity.efficiency_factor != null &&
+              (() => {
+                const ef = Number(activity.efficiency_factor)
+                const avg =
+                  activity.efficiency_factor_30d_avg != null
+                    ? Number(activity.efficiency_factor_30d_avg)
+                    : null
+                const valueClassName =
+                  avg != null
+                    ? ef > avg
+                      ? 'text-green-600'
+                      : ef < avg
+                        ? 'text-red-500'
+                        : 'text-slate-800'
+                    : 'text-slate-800'
+                const pct = avg != null ? Math.abs(((ef - avg) / avg) * 100).toFixed(1) : null
+                return (
+                  <StatTile
+                    icon={BarChart2}
+                    label="Efficiency"
+                    value={ef.toFixed(4)}
+                    unit="m/s/bpm"
+                    valueClassName={valueClassName}
+                    footer={
+                      avg != null ? (
+                        <span
+                          className={`inline-flex w-fit text-[10px] font-medium px-1.5 py-0.5 rounded-full mt-0.5 ${
+                            ef > avg
+                              ? 'bg-green-50 text-green-600'
+                              : ef < avg
+                                ? 'bg-red-50 text-red-500'
+                                : 'bg-slate-100 text-slate-500'
+                          }`}
+                        >
+                          {ef > avg
+                            ? `Above 30d avg (+${pct}%)`
+                            : ef < avg
+                              ? `Below 30d avg (−${pct}%)`
+                              : 'At 30d avg'}
+                        </span>
+                      ) : null
+                    }
+                  />
+                )
+              })()}
             {activity.estimated_vo2max != null && (
               <StatTile
                 icon={Wind}
