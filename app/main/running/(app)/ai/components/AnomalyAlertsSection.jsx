@@ -53,10 +53,11 @@ function groupInsightsByMonth(insights) {
     const d = new Date(insight.created_at)
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
     const label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-    if (!groups[key]) groups[key] = { label, items: [] }
+    if (!groups[key]) groups[key] = { key, label, items: [] }
     groups[key].items.push(insight)
   }
-  return Object.values(groups).sort((a, b) => (a.label < b.label ? 1 : -1))
+  // Sort by YYYY-MM key to avoid locale-sensitive month-name comparison
+  return Object.values(groups).sort((a, b) => (a.key < b.key ? 1 : -1))
 }
 
 function AnomalyHistoryItem({ insight }) {
@@ -203,37 +204,51 @@ function AnomalyCard({ insight, onAcknowledged, dimmed = false }) {
 }
 
 export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
-  const [anomalies, setAnomalies] = useState(initialAnomalies ?? [])
+  const [anomalies, setAnomalies] = useState(
+    Array.isArray(initialAnomalies) ? initialAnomalies : []
+  )
   const [historySheetOpen, setHistorySheetOpen] = useState(false)
   const [history, setHistory] = useState(null)
   const [historyLoading, setHistoryLoading] = useState(false)
+  const [historyError, setHistoryError] = useState(false)
   const [page, setPage] = useState(1)
 
   const handleAcknowledged = useCallback((id) => {
     setAnomalies((prev) => prev.filter((a) => a.id !== id))
   }, [])
 
-  useEffect(() => {
-    async function loadHistory() {
-      setHistoryLoading(true)
-      try {
-        const data = await fetchAcknowledgedAnomalyInsights()
-        setHistory(data ?? [])
-      } catch {
-        setHistory([])
-      } finally {
-        setHistoryLoading(false)
-      }
+  const loadHistory = useCallback(async () => {
+    setHistoryLoading(true)
+    setHistoryError(false)
+    try {
+      const data = await fetchAcknowledgedAnomalyInsights()
+      setHistory(data ?? [])
+    } catch {
+      setHistoryError(true)
+      setHistory(null)
+    } finally {
+      setHistoryLoading(false)
     }
-    loadHistory()
   }, [])
 
-  const totalPages = history ? Math.ceil(history.length / PAGE_SIZE) : 0
+  useEffect(() => {
+    loadHistory()
+  }, [loadHistory])
+
+  // Reset to page 1 whenever history data changes
+  useEffect(() => {
+    setPage(1)
+  }, [history])
+
+  const safeHistory = history ?? []
+
+  const totalPages = useMemo(() => Math.ceil(safeHistory.length / PAGE_SIZE), [safeHistory])
+
   const pagedItems = useMemo(() => {
-    if (!history) return []
     const start = (page - 1) * PAGE_SIZE
-    return history.slice(start, start + PAGE_SIZE)
-  }, [history, page])
+    return safeHistory.slice(start, start + PAGE_SIZE)
+  }, [safeHistory, page])
+
   const pagedGroups = useMemo(() => groupInsightsByMonth(pagedItems), [pagedItems])
 
   return (
@@ -271,7 +286,14 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
         </div>
       )}
 
-      {history !== null && history.length > 0 && (
+      {/* Placeholder during prefetch avoids layout shift when button appears */}
+      {historyLoading && (
+        <span className="mt-3 flex items-center gap-1 text-xs text-slate-300 pointer-events-none select-none">
+          <History className="h-3.5 w-3.5" aria-hidden="true" />
+          History
+        </span>
+      )}
+      {!historyLoading && !historyError && history !== null && history.length > 0 && (
         <button
           id="anomalyHistoryBtn_aiCoachPage"
           onClick={() => setHistorySheetOpen(true)}
@@ -288,24 +310,38 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
           id="anomalyHistoryModal_aiCoachPage"
           side="right"
           className="w-full md:w-[480px] p-0"
-          aria-label="Anomaly history"
         >
           <SheetHeader className="px-6 py-4 border-b border-slate-100">
             <SheetTitle className="text-base font-semibold text-slate-800">
               Anomaly History
             </SheetTitle>
           </SheetHeader>
+          {/* 80px accounts for SheetHeader height */}
           <ScrollArea className="h-[calc(100vh-80px)]">
             <div className="px-6 py-4 space-y-6">
               {historyLoading && (
                 <p className="text-sm text-slate-400 text-center py-8">Loading history...</p>
               )}
-              {!historyLoading && history?.length === 0 && (
+              {!historyLoading && historyError && (
+                <div className="text-center py-8 space-y-2">
+                  <p className="text-sm text-slate-400">Could not load history.</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-amber-600 hover:text-amber-700 px-0 h-auto font-normal text-xs"
+                    onClick={loadHistory}
+                  >
+                    Try again
+                  </Button>
+                </div>
+              )}
+              {!historyLoading && !historyError && safeHistory.length === 0 && (
                 <p className="text-sm text-slate-400 text-center py-8">
                   No acknowledged alerts yet.
                 </p>
               )}
               {!historyLoading &&
+                !historyError &&
                 pagedGroups.map((group) => (
                   <div key={group.label}>
                     <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
@@ -326,6 +362,7 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
                     size="sm"
                     disabled={page === 1}
                     onClick={() => setPage((p) => p - 1)}
+                    aria-label="Previous page of anomaly history"
                     className="text-xs h-8"
                   >
                     Prev
@@ -338,6 +375,7 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
                     size="sm"
                     disabled={page === totalPages}
                     onClick={() => setPage((p) => p + 1)}
+                    aria-label="Next page of anomaly history"
                     className="text-xs h-8"
                   >
                     Next
