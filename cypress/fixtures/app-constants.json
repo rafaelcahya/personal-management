@@ -114,7 +114,8 @@
       "calorie_trend": "/api/running/v1/analytics/calorie-trend",
       "zones": "/api/running/v1/analytics/zones",
       "gear": "/api/running/v1/analytics/gear",
-      "fitness_age": "/api/running/v1/analytics/fitness-age"
+      "fitness_age": "/api/running/v1/analytics/fitness-age",
+      "endurance_score": "/api/running/v1/analytics/endurance-score"
     },
     "running_user_profile": {
       "get": "/api/running/v1/user/profile",
@@ -465,7 +466,8 @@
       "sync_status_bar": "syncStatusBar",
       "sync_btn": "syncBtn_dashboard",
       "sync_result_msg": "syncResultMsg",
-      "fitness_age_tile": "fitnessAgeTile_dashboardPage"
+      "fitness_age_tile": "fitnessAgeTile_dashboardPage",
+      "endurance_score_tile": "enduranceScoreTile_dashboardPage"
     },
     "running_ai_coach": {
       "page": "aiCoachPage",
@@ -674,6 +676,11 @@
       "fitness_age_trend_empty": "fitnessAgeTrendEmpty_analyticsPage",
       "fitness_age_trend_sex_missing": "fitnessAgeTrendSexMissing_analyticsPage",
       "fitness_age_trend_error": "fitnessAgeTrendError_analyticsPage",
+      "endurance_score_trend_section": "enduranceScoreTrendSection_analyticsPage",
+      "endurance_score_trend_loading": "enduranceScoreTrendLoading_analyticsPage",
+      "endurance_score_trend_data_count": "enduranceScoreTrendDataCount_analyticsPage",
+      "endurance_score_trend_empty": "enduranceScoreTrendEmpty_analyticsPage",
+      "endurance_score_trend_error": "enduranceScoreTrendError_analyticsPage",
       "zone_analytics_section": "zoneAnalyticsSection_analyticsPage",
       "zone_analytics_loading": "zoneAnalyticsLoading_analyticsPage",
       "zone_filter_bar": "zoneFilterBar_analyticsPage",
