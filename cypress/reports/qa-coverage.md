@@ -1,7 +1,7 @@
 # QA Coverage Report
 
 **Last Updated:** 2026-06-15
-**Branch:** release/v1.12
+**Branch:** feat/issue-290-ef-colored-chip (updated with zone analytics + HR zones tests)
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 962    | 35%  |
-| UI        | 1,755  | 65%  |
-| **Total** | **2,717** | 100% |
+| API       | 1,031  | 37%  |
+| UI        | 1,755  | 63%  |
+| **Total** | **2,786** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 274 | 703   | 977   |
+| Running Tracker      | 339 | 703   | 1,042 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **962** | **1,755** | **2,717** |
+| **Total**            | **1,027** | **1,755** | **2,782** |
 
 ---
 
@@ -159,9 +159,9 @@
 
 | Feature                  | API | UI | Total |
 | ------------------------ | --- | -- | ----- |
-| Activity List            | 8   | 21 | 29    |
+| Activity List            | 28  | 21 | 49    |
 | Activity Page Title      | 0   | 10 | 10    |
-| Activity Detail          | 25  | 41 | 66    |
+| Activity Detail          | 18  | 41 | 59    |
 | AI Insight               | 8   | 0  | 8     |
 | AI Coach Improvements    | 0   | 23 | 23    |
 | Cadence Chart            | 0   | 16 | 16    |
@@ -169,14 +169,14 @@
 | HR Chart                 | 0   | 18 | 18    |
 | HR Zones AI Insight      | 0   | 24 | 24    |
 | HR Zones                 | 6   | 0  | 6     |
-| Lazy Compute Metrics     | 7   | 0  | 7     |
+| Lazy Compute Metrics     | 3   | 0  | 3     |
 | Map Style Toggle         | 0   | 14 | 14    |
 | Racing Weight Profile    | 12  | 0  | 12    |
 | RPE Section              | 0   | 12 | 12    |
 | Satellite Map            | 0   | 13 | 13    |
 | Splits Bar Chart         | 0   | 24 | 24    |
 | Stream Charts            | 7   | 14 | 21    |
-| **Subtotal**             | **73** | **249** | **322** |
+| **Subtotal**             | **82** | **249** | **331** |
 
 #### Dashboard
 
@@ -204,10 +204,12 @@
 | Analytics AI           | 15  | 20 | 35    |
 | Analytics              | 0   | 9  | 9     |
 | Fitness Age            | 10  | 0  | 10    |
+| Gear Analytics         | 10  | 0  | 10    |
 | Personal Bests         | 7   | 19 | 26    |
 | Qualifying Run Count   | 0   | 8  | 8     |
 | VO2Max Target Effort   | 4   | 31 | 35    |
-| **Subtotal**           | **36** | **87** | **123** |
+| Zone Analytics         | 24  | 0  | 24    |
+| **Subtotal**           | **70** | **87** | **157** |
 
 #### Injury AI
 
@@ -243,10 +245,12 @@
 
 #### Settings
 
-| Feature      | API | UI | Total |
-| ------------ | --- | -- | ----- |
-| Settings     | 11  | 21 | 32    |
-| **Subtotal** | **11** | **21** | **32** |
+| Feature                  | API | UI | Total |
+| ------------------------ | --- | -- | ----- |
+| HR Zones                 | 20  | 0  | 20    |
+| Settings                 | 11  | 21 | 32    |
+| Threshold Pace Detect    | 6   | 0  | 6     |
+| **Subtotal**             | **37** | **21** | **58** |
 
 #### Strava
 
@@ -269,7 +273,7 @@
 | Push Subscription   | 4   | 0  | 4     |
 | **Subtotal**        | **4** | **0** | **4** |
 
-**Running Total — API: 274 | UI: 703 | Total: 977**
+**Running Total — API: 343 | UI: 703 | Total: 1,046**
 
 ---
 
@@ -298,7 +302,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 274 | 703   | 977   |
+| Running Tracker      | 343 | 703   | 1,046 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **962** | **1,755** | **2,717** |
+| **Total**            | **1,031** | **1,755** | **2,786** |
