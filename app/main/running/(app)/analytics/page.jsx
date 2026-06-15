@@ -24,6 +24,8 @@ import AnalyticsAICard from './components/AnalyticsAICard'
 import Vo2maxTargetEffortSection from './components/Vo2maxTargetEffortSection'
 import PersonalBestsTable from './components/PersonalBestsTable'
 import CalorieTrendChart from './components/CalorieTrendChart'
+import ZoneAnalyticsSection from './components/ZoneAnalyticsSection'
+import FitnessAgeTrendChart from './components/FitnessAgeTrendChart'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -231,6 +233,17 @@ export default function AnalyticsPage() {
           >
             <CalorieTrendChart />
           </Section>
+
+          <Section
+            id="fitnessAgeTrendSection_analyticsPage"
+            title="Fitness Age Trend"
+            description="Your cardiovascular Fitness Age per week, based on VO₂max vs. NTNU population norms (Nes et al. 2011). Lower than your chronological age means above-average fitness."
+            icon={Activity}
+          >
+            <FitnessAgeTrendChart />
+          </Section>
+
+          <ZoneAnalyticsSection />
         </>
       )}
     </div>

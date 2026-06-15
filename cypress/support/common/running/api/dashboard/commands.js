@@ -3,8 +3,8 @@ import constants from '../../../../../fixtures/app-constants.json'
 const DASHBOARD = constants.endpoints.running_dashboard.dashboard
 const PERFORMANCE_TRENDS = '/api/running/v1/performance-trends'
 
-Cypress.Commands.add('getDashboard', () => {
-  return cy.apiRequestWithSession('GET', DASHBOARD)
+Cypress.Commands.add('getDashboard', (qs = {}) => {
+  return cy.apiRequestWithSession('GET', DASHBOARD, { qs })
 })
 
 Cypress.Commands.add('getDashboardNoAuth', () => {

@@ -1,9 +1,13 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { AlertTriangle, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
+import { AlertTriangle, CheckCircle2, ChevronDown, ChevronUp, History } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { acknowledgeInsight, fetchAcknowledgedAnomalyInsights } from '@/lib/api/running'
+
+const PAGE_SIZE = 5
 
 function parseInline(text) {
   if (typeof text !== 'string') return text
@@ -41,6 +45,63 @@ const ANOMALY_LABELS = {
 
 function anomalyLabel(type) {
   return ANOMALY_LABELS[type] ?? type?.replace(/_/g, ' ') ?? 'Anomaly'
+}
+
+function groupInsightsByMonth(insights) {
+  const groups = {}
+  for (const insight of insights) {
+    const d = new Date(insight.created_at)
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+    const label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    if (!groups[key]) groups[key] = { key, label, items: [] }
+    groups[key].items.push(insight)
+  }
+  // Sort by YYYY-MM key to avoid locale-sensitive month-name comparison
+  return Object.values(groups).sort((a, b) => (a.key < b.key ? 1 : -1))
+}
+
+function AnomalyHistoryItem({ insight }) {
+  const [expanded, setExpanded] = useState(false)
+  const anomalyType = insight.data_refs?.anomaly_type ?? null
+
+  return (
+    <div className="border border-slate-200 rounded-lg overflow-hidden">
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-200"
+        aria-expanded={expanded}
+      >
+        <div className="flex flex-col gap-0.5 min-w-0">
+          <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide truncate">
+            {anomalyLabel(anomalyType)}
+          </p>
+          <p className="text-xs text-slate-400">
+            {new Date(insight.created_at).toLocaleString('en-US', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </p>
+        </div>
+        {expanded ? (
+          <ChevronUp className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />
+        ) : (
+          <ChevronDown className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />
+        )}
+      </button>
+      {expanded && (
+        <div className="px-4 pb-4 pt-1 border-t border-slate-100">
+          <p className="text-sm text-slate-700 leading-relaxed">
+            {parseInline(
+              insight.content ?? insight.title ?? 'Anomaly detected in your training data.'
+            )}
+          </p>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function AnomalyCard({ insight, onAcknowledged, dimmed = false }) {
@@ -143,32 +204,52 @@ function AnomalyCard({ insight, onAcknowledged, dimmed = false }) {
 }
 
 export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
-  const [anomalies, setAnomalies] = useState(initialAnomalies ?? [])
-  const [historyOpen, setHistoryOpen] = useState(false)
+  const [anomalies, setAnomalies] = useState(
+    Array.isArray(initialAnomalies) ? initialAnomalies : []
+  )
+  const [historySheetOpen, setHistorySheetOpen] = useState(false)
   const [history, setHistory] = useState(null)
   const [historyLoading, setHistoryLoading] = useState(false)
+  const [historyError, setHistoryError] = useState(false)
+  const [page, setPage] = useState(1)
 
   const handleAcknowledged = useCallback((id) => {
     setAnomalies((prev) => prev.filter((a) => a.id !== id))
   }, [])
 
-  const toggleHistory = useCallback(async () => {
-    if (historyOpen) {
-      setHistoryOpen(false)
-      return
-    }
-    setHistoryOpen(true)
-    if (history !== null) return
+  const loadHistory = useCallback(async () => {
     setHistoryLoading(true)
+    setHistoryError(false)
     try {
       const data = await fetchAcknowledgedAnomalyInsights()
-      setHistory(data)
+      setHistory(data ?? [])
     } catch {
-      setHistory([])
+      setHistoryError(true)
+      setHistory(null)
     } finally {
       setHistoryLoading(false)
     }
-  }, [historyOpen, history])
+  }, [])
+
+  useEffect(() => {
+    loadHistory()
+  }, [loadHistory])
+
+  // Reset to page 1 whenever history data changes
+  useEffect(() => {
+    setPage(1)
+  }, [history])
+
+  const safeHistory = history ?? []
+
+  const totalPages = useMemo(() => Math.ceil(safeHistory.length / PAGE_SIZE), [safeHistory])
+
+  const pagedItems = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE
+    return safeHistory.slice(start, start + PAGE_SIZE)
+  }, [safeHistory, page])
+
+  const pagedGroups = useMemo(() => groupInsightsByMonth(pagedItems), [pagedItems])
 
   return (
     <section
@@ -205,34 +286,106 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
         </div>
       )}
 
-      <button
-        id="anomalyHistoryToggle_aiCoachPage"
-        onClick={toggleHistory}
-        className="mt-3 flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-        aria-expanded={historyOpen}
-      >
-        {historyOpen ? (
-          <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
-        ) : (
-          <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
-        )}
-        {historyOpen ? 'Hide history' : 'Show history'}
-      </button>
-
-      {historyOpen && (
-        <div className="mt-3 flex flex-col gap-3">
-          {historyLoading && (
-            <p className="text-xs text-slate-400 text-center py-2">Loading history...</p>
-          )}
-          {!historyLoading && history?.length === 0 && (
-            <p className="text-xs text-slate-400 text-center py-2">No acknowledged alerts yet.</p>
-          )}
-          {!historyLoading &&
-            history?.map((insight) => (
-              <AnomalyCard key={insight.id} insight={insight} onAcknowledged={() => {}} dimmed />
-            ))}
-        </div>
+      {/* Placeholder during prefetch avoids layout shift when button appears */}
+      {historyLoading && (
+        <span className="mt-3 flex items-center gap-1 text-xs text-slate-300 pointer-events-none select-none">
+          <History className="h-3.5 w-3.5" aria-hidden="true" />
+          History
+        </span>
       )}
+      {!historyLoading && !historyError && history !== null && history.length > 0 && (
+        <button
+          id="anomalyHistoryBtn_aiCoachPage"
+          onClick={() => setHistorySheetOpen(true)}
+          aria-label="View acknowledged anomaly alert history"
+          className="mt-3 flex items-center gap-1 text-xs text-slate-400 hover:text-amber-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+        >
+          <History className="h-3.5 w-3.5" aria-hidden="true" />
+          History
+        </button>
+      )}
+
+      <Sheet open={historySheetOpen} onOpenChange={setHistorySheetOpen}>
+        <SheetContent
+          id="anomalyHistoryModal_aiCoachPage"
+          side="right"
+          className="w-full md:w-[480px] p-0"
+        >
+          <SheetHeader className="px-6 py-4 border-b border-slate-100">
+            <SheetTitle className="text-base font-semibold text-slate-800">
+              Anomaly History
+            </SheetTitle>
+          </SheetHeader>
+          {/* 80px accounts for SheetHeader height */}
+          <ScrollArea className="h-[calc(100vh-80px)]">
+            <div className="px-6 py-4 space-y-6">
+              {historyLoading && (
+                <p className="text-sm text-slate-400 text-center py-8">Loading history...</p>
+              )}
+              {!historyLoading && historyError && (
+                <div className="text-center py-8 space-y-2">
+                  <p className="text-sm text-slate-400">Could not load history.</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-amber-600 hover:text-amber-700 px-0 h-auto font-normal text-xs"
+                    onClick={loadHistory}
+                  >
+                    Try again
+                  </Button>
+                </div>
+              )}
+              {!historyLoading && !historyError && safeHistory.length === 0 && (
+                <p className="text-sm text-slate-400 text-center py-8">
+                  No acknowledged alerts yet.
+                </p>
+              )}
+              {!historyLoading &&
+                !historyError &&
+                pagedGroups.map((group) => (
+                  <div key={group.label}>
+                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
+                      {group.label}
+                    </p>
+                    <div className="space-y-3">
+                      {group.items.map((item) => (
+                        <AnomalyHistoryItem key={item.id} insight={item} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    aria-label="Previous page of anomaly history"
+                    className="text-xs h-8"
+                  >
+                    Prev
+                  </Button>
+                  <p className="text-xs text-slate-400">
+                    Page {page} of {totalPages}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    aria-label="Next page of anomaly history"
+                    className="text-xs h-8"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
     </section>
   )
 }

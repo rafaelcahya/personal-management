@@ -83,9 +83,48 @@ const XAXIS = (
   />
 )
 
-function PaceChart({ data }) {
+// Pace zone boundaries as multipliers of threshold pace.
+// Slower pace = larger sec/km value. Z1 is slowest, Z5 is fastest.
+const PACE_ZONE_DEFS = [
+  { name: 'Z1', label: 'Recovery', loMult: 1.29, hiMult: null, color: '#bfdbfe' },
+  { name: 'Z2', label: 'Endurance', loMult: 1.14, hiMult: 1.29, color: '#93c5fd' },
+  { name: 'Z3', label: 'Tempo', loMult: 1.06, hiMult: 1.14, color: '#60a5fa' },
+  { name: 'Z4', label: 'Threshold', loMult: 0.99, hiMult: 1.06, color: '#818cf8' },
+  { name: 'Z5', label: 'VO₂max', loMult: null, hiMult: 0.99, color: '#7c3aed' },
+]
+
+function computePaceZones(thresholdPaceSec) {
+  if (!thresholdPaceSec || thresholdPaceSec <= 0) return null
+  return PACE_ZONE_DEFS.map((z) => ({
+    ...z,
+    // y1 = faster boundary (lower sec/km), y2 = slower boundary (higher sec/km)
+    y1: z.hiMult != null ? Math.round(z.hiMult * thresholdPaceSec) : 9999,
+    y2: z.loMult != null ? Math.round(z.loMult * thresholdPaceSec) : 0,
+  }))
+}
+
+function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
   const [mode, setMode] = useState('pace')
   const isSpeed = mode === 'speed'
+
+  const mergedPaceZones = useMemo(() => {
+    if (isSpeed || !thresholdPaceSec || !paceZoneTimes) return null
+    const zones = computePaceZones(thresholdPaceSec)
+    if (!zones) return null
+    const total = paceZoneTimes.reduce((s, t) => s + t, 0)
+    return zones.map((z, i) => {
+      const t = paceZoneTimes[i] ?? 0
+      const pct = total > 0 ? Math.round((t / total) * 100) : 0
+      return {
+        name: z.name,
+        label: z.label,
+        color: z.color,
+        time: t,
+        pct,
+        duration: t > 0 ? formatZoneDuration(t) : null,
+      }
+    })
+  }, [isSpeed, thresholdPaceSec, paceZoneTimes])
 
   return (
     <div>
@@ -188,6 +227,18 @@ function PaceChart({ data }) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      {!isSpeed && mergedPaceZones && (
+        <div className="mt-3">
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+            Pace Zone
+          </p>
+          <ZoneBarChart
+            mergedZones={mergedPaceZones}
+            pagePrefix="pace_activityDetailPage"
+            yAxisWidth={64}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -233,22 +284,70 @@ function computeCadenceStats(data) {
 const ZONE_COLORS = ['#fecdd3', '#fca5a5', '#f87171', '#ef4444', '#b91c1c']
 const ZONE_LABELS = ['Z1 Recovery', 'Z2 Aerobic', 'Z3 Tempo', 'Z4 Threshold', 'Z5 VO₂max']
 const ZONE_SHORT_LABELS = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5']
-const ZONE_OPACITIES = [0.15, 0.15, 0.18, 0.22, 0.25]
-const ZONE_PERCENTS = [
+
+const MAXHR_PERCENTS = [
   [0, 0.6],
   [0.6, 0.7],
   [0.7, 0.8],
   [0.8, 0.9],
   [0.9, 0.95],
 ]
+// Karvonen: Z1 floor is 50% HRR (more physiologically accurate than 0%)
+const KARVONEN_PERCENTS = [
+  [0.5, 0.6],
+  [0.6, 0.7],
+  [0.7, 0.8],
+  [0.8, 0.9],
+  [0.9, 1.0],
+]
+// Coggan 5-zone anchored to lactate threshold HR
+const THRESHOLD_PERCENTS = [
+  [0, 0.68],
+  [0.68, 0.83],
+  [0.83, 0.94],
+  [0.94, 1.05],
+  [1.05, Infinity],
+]
 
 function computeZoneRanges(maxHr) {
   if (!maxHr || maxHr <= 0) return null
-  return ZONE_PERCENTS.map(([lo, hi]) => ({
+  return MAXHR_PERCENTS.map(([lo, hi]) => ({
     min: Math.round(lo * maxHr),
     max: Math.round(hi * maxHr),
     time: 0,
   }))
+}
+
+function computeKarvonenZones(maxHr, restingHr) {
+  if (!maxHr || !restingHr || maxHr <= restingHr) return null
+  const hrr = maxHr - restingHr
+  return KARVONEN_PERCENTS.map(([lo, hi]) => ({
+    min: Math.round(restingHr + lo * hrr),
+    max: Math.round(restingHr + hi * hrr),
+    time: 0,
+  }))
+}
+
+function computeThresholdZones(thresholdHr) {
+  if (!thresholdHr || thresholdHr <= 0) return null
+  return THRESHOLD_PERCENTS.map(([lo, hi]) => ({
+    min: Math.round(lo * thresholdHr),
+    max: hi === Infinity ? 9999 : Math.round(hi * thresholdHr),
+    time: 0,
+  }))
+}
+
+function resolveZoneBoundaries(method, maxHr, restingHr, thresholdHr) {
+  if (method === 'karvonen' && restingHr) {
+    const zones = computeKarvonenZones(maxHr, restingHr)
+    if (zones) return { zones, usedMethod: 'karvonen', fallback: false }
+    // maxHr absent — fall through to max_hr with fallback flag
+  }
+  if (method === 'threshold' && thresholdHr) {
+    const zones = computeThresholdZones(thresholdHr)
+    if (zones) return { zones, usedMethod: 'threshold', fallback: false }
+  }
+  return { zones: computeZoneRanges(maxHr), usedMethod: 'max_hr', fallback: method !== 'max_hr' }
 }
 
 function formatZoneDuration(seconds) {
@@ -264,14 +363,28 @@ function formatZoneDuration(seconds) {
 function ZoneTick({ x, y, payload, zones }) {
   const zone = zones?.find((z) => z.name === payload?.value)
   if (!zone) return null
+  const hasRange = zone.min != null && zone.max != null
+  const hasLabel = !hasRange && zone.label != null
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={-6} textAnchor="end" fontSize={11} fontWeight={600} fill="#475569" dy={-5}>
+      <text
+        x={-6}
+        textAnchor="end"
+        fontSize={11}
+        fontWeight={600}
+        fill="#475569"
+        dy={hasRange || hasLabel ? -5 : 4}
+      >
         {zone.name}
       </text>
-      {zone.min != null && zone.max != null && (
+      {hasRange && (
         <text x={-6} textAnchor="end" fontSize={10} fill="#94a3b8" dy={7}>
           {zone.min}–{zone.max}
+        </text>
+      )}
+      {hasLabel && (
+        <text x={-6} textAnchor="end" fontSize={10} fill="#94a3b8" dy={7}>
+          {zone.label}
         </text>
       )}
     </g>
@@ -296,7 +409,13 @@ function ZoneTooltip({ active, payload }) {
   )
 }
 
-function ZoneBarChart({ mergedZones, pagePrefix, height = 180, barCategoryGap = '16%' }) {
+function ZoneBarChart({
+  mergedZones,
+  pagePrefix,
+  height = 180,
+  barCategoryGap = '16%',
+  yAxisWidth = 76,
+}) {
   const tickWithZones = (props) => <ZoneTick {...props} zones={mergedZones} />
   const chartData = [...mergedZones].reverse().map((z) => ({
     ...z,
@@ -319,7 +438,7 @@ function ZoneBarChart({ mergedZones, pagePrefix, height = 180, barCategoryGap = 
             tick={tickWithZones}
             tickLine={false}
             axisLine={false}
-            width={76}
+            width={yAxisWidth}
           />
           <Tooltip cursor={false} content={<ZoneTooltip />} />
           <Bar dataKey="pct" radius={[0, 3, 3, 0]} minPointSize={2} isAnimationActive={false}>
@@ -346,11 +465,24 @@ function HrStreamChart({
   maxHr,
   userMaxHr,
   hrZoneTimes,
+  hrZonesMethod = 'max_hr',
+  restingHr = null,
+  thresholdHr = null,
   pagePrefix,
 }) {
   const stravaZones = zones?.heart_rate?.zones ?? null
   const fallbackMaxHr = userMaxHr ?? maxHr ?? null
-  const bandZones = stravaZones ?? computeZoneRanges(fallbackMaxHr) ?? []
+
+  // Strava zones always take priority; otherwise dispatch to the user's chosen method
+  const {
+    zones: computedBandZones,
+    usedMethod,
+    fallback: usedFallback,
+  } = stravaZones
+    ? { zones: null, usedMethod: null, fallback: false }
+    : resolveZoneBoundaries(hrZonesMethod, fallbackMaxHr, restingHr, thresholdHr)
+
+  const bandZones = stravaZones ?? computedBandZones ?? []
   const stravaHasTime = stravaZones?.some((z) => z.time != null && z.time > 0) ?? false
   const timeZones =
     stravaZones && stravaHasTime
@@ -359,13 +491,23 @@ function HrStreamChart({
         ? bandZones.map((bz, i) => ({ ...bz, time: hrZoneTimes[i] ?? 0 }))
         : []
 
-  const zoneBandSource = stravaZones
-    ? 'strava'
-    : userMaxHr
-      ? { type: 'profile', hr: userMaxHr }
-      : maxHr
-        ? { type: 'activity', hr: maxHr }
-        : null
+  function getZoneSourceLabel() {
+    if (stravaZones) return 'Zone bands from Strava'
+    if (!fallbackMaxHr && !thresholdHr) return null
+    const hrSource = userMaxHr ? 'profile' : 'this run'
+    if (usedFallback) {
+      if (!fallbackMaxHr) return null
+      const missing = hrZonesMethod === 'karvonen' ? 'resting HR not set' : 'threshold HR not set'
+      const methodLabel = hrZonesMethod === 'karvonen' ? 'Karvonen' : 'Lactate Threshold'
+      return `${methodLabel} selected but ${missing} — using Max HR ${fallbackMaxHr} bpm (${hrSource})`
+    }
+    if (usedMethod === 'karvonen')
+      return `Karvonen · Max HR ${fallbackMaxHr} bpm · Resting ${restingHr} bpm`
+    if (usedMethod === 'threshold') return `Lactate Threshold · Threshold HR ${thresholdHr} bpm`
+    return `Zones estimated · Max HR ${fallbackMaxHr} bpm (${hrSource})`
+  }
+
+  const zoneSourceLabel = getZoneSourceLabel()
 
   const peakPoint = data.reduce(
     (best, d) => (d.hr != null && (best === null || d.hr > best.hr) ? d : best),
@@ -411,7 +553,7 @@ function HrStreamChart({
             </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
-            <YAxis width={36} {...AXIS_PROPS} />
+            <YAxis width={24} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${v} bpm`} />} />
             {showHistoricalLine && (
               <ReferenceLine
@@ -484,16 +626,8 @@ function HrStreamChart({
         </p>
       )}
 
-      {bandZones.length > 0 && (
-        <p className="mt-1 text-[10px] text-slate-300 tabular-nums">
-          {zoneBandSource === 'strava'
-            ? 'Zone bands from Strava'
-            : zoneBandSource?.type === 'profile'
-              ? `Zones estimated · Max HR ${zoneBandSource.hr} bpm (profile)`
-              : zoneBandSource?.type === 'activity'
-                ? `Zones estimated · Max HR ${zoneBandSource.hr} bpm (this run)`
-                : null}
-        </p>
+      {bandZones.length > 0 && zoneSourceLabel && (
+        <p className="mt-1 text-[10px] text-slate-300 tabular-nums">{zoneSourceLabel}</p>
       )}
 
       {bandZones.length > 0 && (
@@ -535,7 +669,7 @@ function ElevationChart({ data }) {
             </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
-            <YAxis width={36} {...AXIS_PROPS} />
+            <YAxis width={24} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${Math.round(v)} m`} />} />
             <Area
               type="monotone"
@@ -654,7 +788,7 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
             </defs>
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
-            <YAxis width={36} {...AXIS_PROPS} />
+            <YAxis width={24} {...AXIS_PROPS} />
             <Tooltip content={<StreamTooltip formatter={(v) => `${v} spm`} />} />
 
             {hasFatigue && (
@@ -726,6 +860,10 @@ export default function StreamCharts({
   historicalAvgHr,
   maxHr,
   userMaxHr,
+  restingHr = null,
+  hrZonesMethod = 'max_hr',
+  thresholdHr = null,
+  thresholdPaceSec = null,
   historicalAvgCadence,
   maxPaceSecPerKm = null,
   pagePrefix = 'activityDetailPage',
@@ -736,6 +874,7 @@ export default function StreamCharts({
   const [thinned, setThinned] = useState([])
   const [rawHrValues, setRawHrValues] = useState([])
   const [rawCadenceValues, setRawCadenceValues] = useState([])
+  const [rawPaceValues, setRawPaceValues] = useState([])
 
   const load = useCallback(async () => {
     if (!activityId) return
@@ -763,6 +902,7 @@ export default function StreamCharts({
       setThinned(processed)
       setRawHrValues(raw.map((d) => d.hr).filter((v) => v != null))
       setRawCadenceValues(raw.map((d) => d.cadence).filter((v) => v != null && v > 0))
+      setRawPaceValues(raw.map((d) => d.pace).filter((v) => v != null && v > 0))
     } catch (err) {
       setError('Failed to load stream data')
     } finally {
@@ -776,7 +916,12 @@ export default function StreamCharts({
 
   const hrZoneTimes = useMemo(() => {
     if (zones?.heart_rate?.zones || !rawHrValues.length) return null
-    const bz = computeZoneRanges(userMaxHr ?? maxHr ?? null)
+    const { zones: bz } = resolveZoneBoundaries(
+      hrZonesMethod,
+      userMaxHr ?? maxHr ?? null,
+      restingHr,
+      thresholdHr
+    )
     if (!bz) return null
     const times = bz.map(() => 0)
     for (const hr of rawHrValues) {
@@ -788,7 +933,24 @@ export default function StreamCharts({
       }
     }
     return times
-  }, [rawHrValues, zones, maxHr, userMaxHr])
+  }, [rawHrValues, zones, maxHr, userMaxHr, hrZonesMethod, restingHr, thresholdHr])
+
+  const paceZoneTimes = useMemo(() => {
+    if (!thresholdPaceSec || !rawPaceValues.length) return null
+    const zones = computePaceZones(thresholdPaceSec)
+    if (!zones) return null
+    const times = zones.map(() => 0)
+    for (const pace of rawPaceValues) {
+      for (let i = 0; i < zones.length; i++) {
+        // y1 = upper (slower) boundary, y2 = lower (faster) boundary
+        if (pace >= zones[i].y2 && pace <= zones[i].y1) {
+          times[i] += 10
+          break
+        }
+      }
+    }
+    return times
+  }, [rawPaceValues, thresholdPaceSec])
 
   const cadenceBandTimesRaw = useMemo(() => {
     if (!rawCadenceValues.length) return null
@@ -870,7 +1032,13 @@ export default function StreamCharts({
         activity.
       </p>
       <div className="flex flex-col gap-4">
-        {hasPaceOrSpeed && <PaceChart data={thinned} />}
+        {hasPaceOrSpeed && (
+          <PaceChart
+            data={thinned}
+            thresholdPaceSec={thresholdPaceSec}
+            paceZoneTimes={paceZoneTimes}
+          />
+        )}
         {hasHr && (
           <HrStreamChart
             data={thinned}
@@ -880,6 +1048,9 @@ export default function StreamCharts({
             maxHr={maxHr}
             userMaxHr={userMaxHr}
             hrZoneTimes={hrZoneTimes}
+            hrZonesMethod={hrZonesMethod}
+            restingHr={restingHr}
+            thresholdHr={thresholdHr}
             pagePrefix={pagePrefix}
           />
         )}

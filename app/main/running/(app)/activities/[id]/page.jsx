@@ -17,13 +17,11 @@ import {
   Calendar,
   NotebookText,
   CloudSun,
-  Smartphone,
+  Navigation,
   ChevronLeft,
   Thermometer,
   Gauge,
   TrendingUp,
-  TrendingDown,
-  Minus,
   BarChart2,
 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -390,21 +388,42 @@ export default function ActivityDetailPage() {
                         />
                       )}
                       {cadenceSpm != null && (
-                        <StatTile icon={Activity} label="Cadence" value={cadenceSpm} unit="spm" />
-                      )}
-                      {activity.elevation_gain_m != null && activity.elevation_gain_m > 0 && (
                         <StatTile
-                          icon={TrendingUp}
-                          label="Elevation"
-                          value={`↑ ${Math.round(activity.elevation_gain_m)}`}
-                          unit="m"
+                          id="cadenceTile_activityDetailPage"
+                          icon={Activity}
+                          label="Cadence"
+                          value={cadenceSpm}
+                          unit="spm"
                           sub={
-                            activity.elevation_loss_m > 0
-                              ? `↓ ${Math.round(activity.elevation_loss_m)} m`
+                            activity.max_cadence != null
+                              ? `Max ${activity.max_cadence} spm`
                               : undefined
                           }
                         />
                       )}
+                      {(() => {
+                        const hasGain =
+                          activity.elevation_gain_m != null && activity.elevation_gain_m > 0
+                        const hasLoss =
+                          activity.elevation_loss_m != null && activity.elevation_loss_m > 0
+                        const hasRange = activity.elev_high_m != null || activity.elev_low_m != null
+                        if (!hasGain && !hasLoss && !hasRange) return null
+                        const parts = []
+                        if (hasGain) parts.push(`↑ ${Math.round(activity.elevation_gain_m)}m`)
+                        if (hasLoss) parts.push(`↓ ${Math.round(activity.elevation_loss_m)}m`)
+                        const gainLossStr = parts.length > 0 ? parts.join('  ') : null
+                        const rangeStr = hasRange
+                          ? `${Math.round(activity.elev_low_m ?? 0)} – ${Math.round(activity.elev_high_m ?? 0)} m`
+                          : null
+                        return (
+                          <StatTile
+                            icon={TrendingUp}
+                            label="Elevation"
+                            value={gainLossStr ?? rangeStr}
+                            sub={gainLossStr && rangeStr ? rangeStr : undefined}
+                          />
+                        )
+                      })()}
                       {activity.calories != null && (
                         <StatTile
                           icon={Flame}
@@ -436,73 +455,72 @@ export default function ActivityDetailPage() {
                           unit="W"
                         />
                       )}
-                      {(activity.elev_high_m != null || activity.elev_low_m != null) && (
-                        <StatTile
-                          icon={TrendingUp}
-                          label="Elevation Range"
-                          value={`↑${Math.round(activity.elev_high_m ?? 0)} ↓${Math.round(activity.elev_low_m ?? 0)}`}
-                          unit="m"
-                        />
-                      )}
-                      {activity.efficiency_factor != null && (
-                        <div id="efficiencyFactor_activityDetailPage" className="relative">
-                          <StatTile
-                            icon={BarChart2}
-                            label="Efficiency"
-                            value={Number(activity.efficiency_factor).toFixed(4)}
-                            unit="m/s/bpm"
-                            tooltip={
-                              <>
-                                <p className="font-semibold mb-1">What is Efficiency Factor?</p>
-                                <p>
-                                  Speed per heartbeat — a measure of running economy. Higher = more
-                                  efficient at the same effort.
-                                </p>
-                                <p className="mt-1.5 text-slate-300">
-                                  Typical:{' '}
-                                  <span className="text-amber-400 font-medium">0.012–0.016</span>{' '}
-                                  average ·{' '}
-                                  <span className="text-green-400 font-medium">&gt; 0.018</span>{' '}
-                                  efficient
-                                </p>
-                              </>
-                            }
-                          />
-                          {activity.efficiency_factor_30d_avg != null &&
-                            (() => {
-                              const ef = Number(activity.efficiency_factor)
-                              const avg = Number(activity.efficiency_factor_30d_avg)
-                              if (ef > avg) {
-                                return (
-                                  <TrendingUp
-                                    id="efTrendArrow"
-                                    className="size-3.5 text-green-500 absolute top-3 right-3"
-                                    title={`Above your 30-day average (${avg.toFixed(4)})`}
-                                    aria-hidden="true"
-                                  />
-                                )
-                              }
-                              if (ef < avg) {
-                                return (
-                                  <TrendingDown
-                                    id="efTrendArrow"
-                                    className="size-3.5 text-red-400 absolute top-3 right-3"
-                                    title={`Below your 30-day average (${avg.toFixed(4)})`}
-                                    aria-hidden="true"
-                                  />
-                                )
-                              }
-                              return (
-                                <Minus
-                                  id="efTrendArrow"
-                                  className="size-3.5 text-slate-400 absolute top-3 right-3"
-                                  title="Equal to your 30-day average"
-                                  aria-hidden="true"
-                                />
-                              )
-                            })()}
-                        </div>
-                      )}
+                      {activity.efficiency_factor != null &&
+                        (() => {
+                          const ef = Number(activity.efficiency_factor)
+                          const avg =
+                            activity.efficiency_factor_30d_avg != null
+                              ? Number(activity.efficiency_factor_30d_avg)
+                              : null
+                          const valueClassName =
+                            avg != null
+                              ? ef > avg
+                                ? 'text-green-600'
+                                : ef < avg
+                                  ? 'text-red-500'
+                                  : 'text-slate-800'
+                              : 'text-slate-800'
+                          const pct =
+                            avg != null ? Math.abs(((ef - avg) / avg) * 100).toFixed(1) : null
+                          return (
+                            <div id="efficiencyFactor_activityDetailPage">
+                              <StatTile
+                                icon={BarChart2}
+                                label="Efficiency"
+                                value={ef.toFixed(4)}
+                                unit="m/s/bpm"
+                                valueClassName={valueClassName}
+                                tooltip={
+                                  <>
+                                    <p className="font-semibold mb-1">What is Efficiency Factor?</p>
+                                    <p>
+                                      Speed per heartbeat — a measure of running economy. Higher =
+                                      more efficient at the same effort.
+                                    </p>
+                                    <p className="mt-1.5 text-slate-300">
+                                      Typical:{' '}
+                                      <span className="text-amber-400 font-medium">
+                                        0.012–0.016
+                                      </span>{' '}
+                                      average ·{' '}
+                                      <span className="text-green-400 font-medium">&gt; 0.018</span>{' '}
+                                      efficient
+                                    </p>
+                                  </>
+                                }
+                                footer={
+                                  avg != null ? (
+                                    <span
+                                      className={`inline-flex w-fit text-[10px] font-medium px-1.5 py-0.5 rounded-full mt-0.5 ${
+                                        ef > avg
+                                          ? 'bg-green-50 text-green-600'
+                                          : ef < avg
+                                            ? 'bg-red-50 text-red-500'
+                                            : 'bg-slate-100 text-slate-500'
+                                      }`}
+                                    >
+                                      {ef > avg
+                                        ? `Above 30d avg (+${pct}%)`
+                                        : ef < avg
+                                          ? `Below 30d avg (−${pct}%)`
+                                          : 'At 30d avg'}
+                                    </span>
+                                  ) : null
+                                }
+                              />
+                            </div>
+                          )
+                        })()}
                       {activity.elevation_gain_m > 0 && (
                         <div id="climbingIndexTile_activityDetailPage">
                           <StatTile
@@ -696,7 +714,7 @@ export default function ActivityDetailPage() {
                   {/* Device */}
                   {activity.device_name && (
                     <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 rounded-lg">
-                      <Smartphone className="size-4 text-slate-400 shrink-0" aria-hidden="true" />
+                      <Navigation className="size-4 text-slate-400 shrink-0" aria-hidden="true" />
                       <span className="text-sm text-slate-600">{activity.device_name}</span>
                     </div>
                   )}
@@ -966,6 +984,10 @@ export default function ActivityDetailPage() {
                     historicalAvgHr={activity.historical_avg_hr ?? null}
                     maxHr={activity.max_hr ?? null}
                     userMaxHr={activity.user_max_hr ?? null}
+                    restingHr={activity.user_resting_hr ?? null}
+                    hrZonesMethod={activity.hr_zones_method ?? 'max_hr'}
+                    thresholdHr={activity.threshold_hr ?? null}
+                    thresholdPaceSec={activity.threshold_pace_sec ?? null}
                     historicalAvgCadence={activity.historical_avg_cadence ?? null}
                     maxPaceSecPerKm={activity.max_pace_sec_per_km ?? null}
                   />

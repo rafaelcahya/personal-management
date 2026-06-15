@@ -106,6 +106,91 @@ const ACWR_STATUS = {
   },
 }
 
+const TRAINING_STATUS = {
+  productive: {
+    label: 'Productive',
+    badge: 'bg-green-100 text-green-700',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">Productive</p>
+        <p>Your training is working — VO2max is trending upward at a healthy load level.</p>
+        <p className="mt-1.5 text-slate-300">Keep the current structure. Fitness is building.</p>
+      </>
+    ),
+  },
+  maintaining: {
+    label: 'Maintaining',
+    badge: 'bg-blue-100 text-blue-700',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">Maintaining</p>
+        <p>
+          You&apos;re sustaining your current fitness level without significant gains or losses.
+        </p>
+        <p className="mt-1.5 text-slate-300">
+          Add a quality session or increase volume slightly to stimulate improvement.
+        </p>
+      </>
+    ),
+  },
+  peaking: {
+    label: 'Peaking',
+    badge: 'bg-violet-100 text-violet-700',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">Peaking</p>
+        <p>Load is tapering while VO2max is rising — a sign of a successful taper before a race.</p>
+        <p className="mt-1.5 text-slate-300">Stay fresh. Your fitness is at its highest point.</p>
+      </>
+    ),
+  },
+  overreaching: {
+    label: 'Overreaching',
+    badge: 'bg-red-100 text-red-700',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">Overreaching</p>
+        <p>
+          Training load is too high relative to your baseline. Risk of injury and burnout is
+          elevated.
+        </p>
+        <p className="mt-1.5 text-slate-300">
+          Reduce volume or intensity for at least one week before adding load again.
+        </p>
+      </>
+    ),
+  },
+  unproductive: {
+    label: 'Unproductive',
+    badge: 'bg-amber-100 text-amber-700',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">Unproductive</p>
+        <p>
+          You&apos;re training consistently but VO2max is declining — effort is not converting to
+          fitness.
+        </p>
+        <p className="mt-1.5 text-slate-300">
+          Review training quality. Consider more structured workouts or additional recovery.
+        </p>
+      </>
+    ),
+  },
+  detraining: {
+    label: 'Detraining',
+    badge: 'bg-slate-100 text-slate-500',
+    tip: (
+      <>
+        <p className="font-semibold mb-1">Detraining</p>
+        <p>Training load is low and VO2max is not rising — fitness may be slowly declining.</p>
+        <p className="mt-1.5 text-slate-300">
+          Gradually increase volume to rebuild your aerobic base.
+        </p>
+      </>
+    ),
+  },
+}
+
 const TIPS = {
   acwr: (
     <>
@@ -273,6 +358,7 @@ export default function TrainingLoad({ data, weeklyStats }) {
     prev_week_load,
     ramp_pct,
     effort_split,
+    training_status,
   } = data
 
   const current = weeklyStats?.current ?? {}
@@ -301,7 +387,7 @@ export default function TrainingLoad({ data, weeklyStats }) {
                 {acwr ?? '—'}
               </span>
             </div>
-            <div className="flex items-center gap-1.5 pt-0.5">
+            <div className="flex items-center gap-2 pt-0.5 flex-wrap">
               <div className="flex items-center gap-1.5">
                 <span
                   className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${statusMeta.badge}`}
@@ -310,6 +396,16 @@ export default function TrainingLoad({ data, weeklyStats }) {
                 </span>
                 <InfoTip content={statusMeta.tip} />
               </div>
+              {training_status && TRAINING_STATUS[training_status] && (
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${TRAINING_STATUS[training_status].badge}`}
+                  >
+                    {TRAINING_STATUS[training_status].label}
+                  </span>
+                  <InfoTip content={TRAINING_STATUS[training_status].tip} />
+                </div>
+              )}
               <RampIndicator ramp_pct={ramp_pct} />
             </div>
           </div>

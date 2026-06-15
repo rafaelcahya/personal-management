@@ -31,6 +31,7 @@ import ShoeRotation from './components/ShoeRotation'
 import YtdStats from './components/YtdStats'
 import NextRace from './components/NextRace'
 import PageHeader from '@/app/main/components/PageHeader'
+import FitnessAgeTile from './components/FitnessAgeTile'
 
 const ACTIVITY_CONFIG = {
   Run: { icon: Footprints, color: 'text-violet-600', bg: 'bg-violet-50', label: 'Run' },
@@ -279,6 +280,9 @@ export default function RunningDashboardPage() {
             />
           )}
           <YtdStats ytd_stats={dashboardData.training_load?.ytd_stats} />
+          {dashboardData.fitness_age != null && (
+            <FitnessAgeTile fitnessAge={dashboardData.fitness_age} />
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <NextRace upcoming_races={upcomingRaces} />
             <ShoeRotation />

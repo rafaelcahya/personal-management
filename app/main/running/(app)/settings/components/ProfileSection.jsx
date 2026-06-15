@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
-import { CalendarIcon, CheckCircle2, AlertCircle, Zap } from 'lucide-react'
+import { CalendarIcon, CheckCircle2, AlertCircle } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { getUserProfile, updateUserProfile, detectMaxHr } from '@/lib/api/running'
+import { getUserProfile, updateUserProfile } from '@/lib/api/running'
 import { profileSchema } from '@/schemas/runningProfile'
 
 export default function ProfileSection() {
@@ -28,10 +28,6 @@ export default function ProfileSection() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
   const [saveSuccess, setSaveSuccess] = useState(false)
-  const [detecting, setDetecting] = useState(false)
-  const [detectedHr, setDetectedHr] = useState(null)
-  const [detectNoData, setDetectNoData] = useState(false)
-  const [detectError, setDetectError] = useState(false)
 
   const heightRef = useRef(null)
   const weightRef = useRef(null)
@@ -41,7 +37,6 @@ export default function ProfileSection() {
     handleSubmit,
     reset,
     control,
-    setValue,
     watch,
     formState: { errors },
   } = useForm({
@@ -94,26 +89,6 @@ export default function ProfileSection() {
       cancelled = true
     }
   }, [reset])
-
-  async function handleDetectMaxHr() {
-    setDetecting(true)
-    setDetectedHr(null)
-    setDetectNoData(false)
-    setDetectError(false)
-    try {
-      const result = await detectMaxHr()
-      if (result == null) {
-        setDetectNoData(true)
-      } else {
-        setDetectedHr(result)
-        setValue('max_hr', result, { shouldValidate: true })
-      }
-    } catch {
-      setDetectError(true)
-    } finally {
-      setDetecting(false)
-    }
-  }
 
   async function onSubmit(values) {
     setSaving(true)
@@ -271,78 +246,6 @@ export default function ProfileSection() {
                   </p>
                   {errors.weight_kg && (
                     <p className="text-xs text-red-600">{errors.weight_kg.message}</p>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="maxHrInput_settingsPage" className="text-sm font-medium">
-                    Max HR (bpm)
-                  </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="maxHrInput_settingsPage"
-                      type="number"
-                      {...register('max_hr')}
-                      placeholder="e.g. 190"
-                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    />
-                    <Button
-                      id="detectMaxHrBtn_settingsPage"
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={detecting}
-                      onClick={handleDetectMaxHr}
-                      className="shrink-0 gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
-                    >
-                      <Zap className="size-3.5" aria-hidden="true" />
-                      {detecting ? 'Detecting…' : 'Detect'}
-                    </Button>
-                  </div>
-                  {detectedHr != null && (
-                    <p
-                      id="maxHrDetectedHint_settingsPage"
-                      className="text-xs text-green-700 flex items-center gap-1"
-                    >
-                      <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
-                      Detected: {detectedHr} bpm — from your highest recorded activity
-                    </p>
-                  )}
-                  {detectNoData && (
-                    <p id="maxHrNoDataHint_settingsPage" className="text-xs text-slate-500">
-                      No heart rate data found in your activities
-                    </p>
-                  )}
-                  {detectError && (
-                    <p id="maxHrDetectError_settingsPage" className="text-xs text-red-600">
-                      Could not detect Max HR — please try again
-                    </p>
-                  )}
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Max HR is the highest heart rate your heart can reach during maximum effort.
-                    It&apos;s used to calculate your HR training zones. The most accurate way to
-                    find it is from a hard race or all-out effort — the detected value from your
-                    activities is a good starting point.
-                  </p>
-                  {errors.max_hr && <p className="text-xs text-red-600">{errors.max_hr.message}</p>}
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="restingHrInput_settingsPage" className="text-sm font-medium">
-                    Resting HR (bpm)
-                  </Label>
-                  <Input
-                    id="restingHrInput_settingsPage"
-                    type="number"
-                    {...register('resting_hr_baseline')}
-                    placeholder="e.g. 55"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                  />
-                  <p className="text-xs text-slate-400">
-                    Your heart rate first thing in the morning — used for Karvonen HR zones 😴
-                  </p>
-                  {errors.resting_hr_baseline && (
-                    <p className="text-xs text-red-600">{errors.resting_hr_baseline.message}</p>
                   )}
                 </div>
 

@@ -32,6 +32,7 @@ import "./common/inventory/product_stock/db-commands";
 import "./common/inventory/product_stock_history/api-commands";
 import "./common/inventory/product_stock_history/db-commands";
 import "./common/running/api/activities/commands";
+import "./common/running/db/activities/commands";
 import "./common/running/api/dashboard/commands";
 import "./common/running/api/gear/commands";
 import "./common/running/api/race-log/commands";

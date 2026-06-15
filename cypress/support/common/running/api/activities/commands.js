@@ -34,3 +34,27 @@ Cypress.Commands.add('getActivityStreams', (id, qs = {}) => {
 Cypress.Commands.add('getActivityStreamsNoAuth', (id, qs = {}) => {
   return cy.apiRequestNoAuth('GET', `${STREAMS_BASE}/${id}/streams`, { qs })
 })
+
+Cypress.Commands.add('postActivity', (body = {}) => {
+  return cy.apiRequestWithSession('POST', BASE, { body })
+})
+
+Cypress.Commands.add('postActivityNoAuth', (body = {}) => {
+  return cy.apiRequestNoAuth('POST', BASE, { body })
+})
+
+Cypress.Commands.add('deleteActivity', (id) => {
+  return cy.apiRequestWithSession('DELETE', `${BASE}/${id}`)
+})
+
+Cypress.Commands.add('deleteActivityNoAuth', (id) => {
+  return cy.apiRequestNoAuth('DELETE', `${BASE}/${id}`)
+})
+
+Cypress.Commands.add('getActivityTypes', () => {
+  return cy.apiRequestWithSession('GET', `${BASE}/types`)
+})
+
+Cypress.Commands.add('getActivityTypesNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', `${BASE}/types`)
+})
