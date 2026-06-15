@@ -390,19 +390,29 @@ export default function ActivityDetailPage() {
                       {cadenceSpm != null && (
                         <StatTile icon={Activity} label="Cadence" value={cadenceSpm} unit="spm" />
                       )}
-                      {activity.elevation_gain_m != null && activity.elevation_gain_m > 0 && (
-                        <StatTile
-                          icon={TrendingUp}
-                          label="Elevation"
-                          value={`↑ ${Math.round(activity.elevation_gain_m)}`}
-                          unit="m"
-                          sub={
-                            activity.elevation_loss_m > 0
-                              ? `↓ ${Math.round(activity.elevation_loss_m)} m`
-                              : undefined
-                          }
-                        />
-                      )}
+                      {(() => {
+                        const hasGain =
+                          activity.elevation_gain_m != null && activity.elevation_gain_m > 0
+                        const hasLoss =
+                          activity.elevation_loss_m != null && activity.elevation_loss_m > 0
+                        const hasRange = activity.elev_high_m != null || activity.elev_low_m != null
+                        if (!hasGain && !hasLoss && !hasRange) return null
+                        const parts = []
+                        if (hasGain) parts.push(`↑ ${Math.round(activity.elevation_gain_m)}m`)
+                        if (hasLoss) parts.push(`↓ ${Math.round(activity.elevation_loss_m)}m`)
+                        const gainLossStr = parts.length > 0 ? parts.join('  ') : null
+                        const rangeStr = hasRange
+                          ? `${Math.round(activity.elev_low_m ?? 0)} – ${Math.round(activity.elev_high_m ?? 0)} m`
+                          : null
+                        return (
+                          <StatTile
+                            icon={TrendingUp}
+                            label="Elevation"
+                            value={gainLossStr ?? rangeStr}
+                            sub={gainLossStr && rangeStr ? rangeStr : undefined}
+                          />
+                        )
+                      })()}
                       {activity.calories != null && (
                         <StatTile
                           icon={Flame}
@@ -432,14 +442,6 @@ export default function ActivityDetailPage() {
                           label="Max Power"
                           value={activity.max_watts}
                           unit="W"
-                        />
-                      )}
-                      {(activity.elev_high_m != null || activity.elev_low_m != null) && (
-                        <StatTile
-                          icon={TrendingUp}
-                          label="Elevation Range"
-                          value={`↑${Math.round(activity.elev_high_m ?? 0)} ↓${Math.round(activity.elev_low_m ?? 0)}`}
-                          unit="m"
                         />
                       )}
                       {activity.efficiency_factor != null &&
