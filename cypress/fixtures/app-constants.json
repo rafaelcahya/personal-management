@@ -470,6 +470,8 @@
       "error": "aiCoachError",
       "training_load_tiles": "trainingLoadTiles_aiCoachPage",
       "anomaly_alerts_section": "anomalyAlertsSection_aiCoachPage",
+      "anomaly_history_btn": "anomalyHistoryBtn_aiCoachPage",
+      "anomaly_history_modal": "anomalyHistoryModal_aiCoachPage",
       "daily_insight_card": "dailyInsightCard_aiCoachPage",
       "daily_insight_generate_btn": "dailyInsightGenerateBtn_aiCoachPage",
       "daily_insight_generate_from_stale_btn": "dailyInsightGenerateFromStaleBtn_aiCoachPage",
