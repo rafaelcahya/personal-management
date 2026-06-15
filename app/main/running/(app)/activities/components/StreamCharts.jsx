@@ -60,10 +60,77 @@ function StreamTooltip({ active, payload, label, formatter }) {
   )
 }
 
+const PACE_CAP_SEC = 720
+const SPEED_FLOOR_KMH = 5
+const CADENCE_FLOOR_SPM = 100
+
 const AXIS_PROPS = {
   tick: { fontSize: 10, fill: '#94a3b8' },
   tickLine: false,
   axisLine: false,
+}
+
+function PaceTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null
+  const raw = payload[0]?.payload
+  const pace = raw?.pace
+  const distKm = Number(label)
+  return (
+    <div className="bg-white border border-slate-200 rounded-lg shadow-md px-3 py-2 text-xs">
+      <p className="text-slate-400 mb-1">
+        {Number.isFinite(distKm) ? `${distKm.toFixed(2)} km` : ''}
+      </p>
+      <p className="font-medium text-slate-700">
+        {typeof pace === 'number'
+          ? pace > PACE_CAP_SEC
+            ? `> ${fmtPaceSec(PACE_CAP_SEC)} /km`
+            : `${fmtPaceSec(pace)} /km`
+          : '—'}
+      </p>
+    </div>
+  )
+}
+
+function SpeedTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null
+  const raw = payload[0]?.payload
+  const speed = raw?.speed_kmh
+  const distKm = Number(label)
+  return (
+    <div className="bg-white border border-slate-200 rounded-lg shadow-md px-3 py-2 text-xs">
+      <p className="text-slate-400 mb-1">
+        {Number.isFinite(distKm) ? `${distKm.toFixed(2)} km` : ''}
+      </p>
+      <p className="font-medium text-slate-700">
+        {typeof speed === 'number'
+          ? speed < SPEED_FLOOR_KMH
+            ? `< ${SPEED_FLOOR_KMH.toFixed(1)} km/h`
+            : `${speed.toFixed(1)} km/h`
+          : '—'}
+      </p>
+    </div>
+  )
+}
+
+function CadenceTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null
+  const raw = payload[0]?.payload
+  const cadence = raw?.cadence_spm
+  const distKm = Number(label)
+  return (
+    <div className="bg-white border border-slate-200 rounded-lg shadow-md px-3 py-2 text-xs">
+      <p className="text-slate-400 mb-1">
+        {Number.isFinite(distKm) ? `${distKm.toFixed(2)} km` : ''}
+      </p>
+      <p className="font-medium text-slate-700">
+        {typeof cadence === 'number'
+          ? cadence < CADENCE_FLOOR_SPM
+            ? `< ${CADENCE_FLOOR_SPM} spm`
+            : `${Math.round(cadence)} spm`
+          : '—'}
+      </p>
+    </div>
+  )
 }
 
 const GRID_PROPS = {
@@ -204,18 +271,10 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
               width={isSpeed ? 42 : 36}
               {...AXIS_PROPS}
             />
-            <Tooltip
-              content={
-                <StreamTooltip
-                  formatter={
-                    isSpeed ? (v) => `${v.toFixed(1)} km/h` : (sec) => `${fmtPaceSec(sec)} /km`
-                  }
-                />
-              }
-            />
+            <Tooltip content={isSpeed ? <SpeedTooltip /> : <PaceTooltip />} />
             <Area
               type="monotone"
-              dataKey={isSpeed ? 'speed_kmh' : 'pace'}
+              dataKey={isSpeed ? 'speed_display' : 'pace_display'}
               stroke="#8b5cf6"
               strokeWidth={1.5}
               fill="url(#gradPace)"
@@ -789,7 +848,7 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
             <CartesianGrid {...GRID_PROPS} />
             {XAXIS}
             <YAxis width={24} {...AXIS_PROPS} />
-            <Tooltip content={<StreamTooltip formatter={(v) => `${v} spm`} />} />
+            <Tooltip content={<CadenceTooltip />} />
 
             {hasFatigue && (
               <ReferenceArea
@@ -828,7 +887,7 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
 
             <Area
               type="monotone"
-              dataKey="cadence_spm"
+              dataKey="cadence_display"
               stroke="#10b981"
               strokeWidth={1.5}
               fill="url(#gradCadence)"
@@ -890,12 +949,20 @@ export default function StreamCharts({
         .map((d) => {
           const v = d.velocity
           const paceValid = v != null && v >= 0.5 && (maxSpeedMs == null || v <= maxSpeedMs * 1.05)
+          const speedKmh = paceValid ? parseFloat((v * 3.6).toFixed(2)) : null
           return {
             ...d,
             dist_km: d.dist_m != null ? d.dist_m / 1000 : null,
             cadence_spm: d.cadence,
             pace: paceValid ? d.pace : null,
-            speed_kmh: paceValid ? parseFloat((v * 3.6).toFixed(2)) : null,
+            speed_kmh: speedKmh,
+            // _display fields cap/floor the chart axis only — originals above are used by zone/band calcs
+            pace_display: paceValid && d.pace != null ? Math.min(d.pace, PACE_CAP_SEC) : null,
+            speed_display: speedKmh != null ? Math.max(speedKmh, SPEED_FLOOR_KMH) : null,
+            // > 0 guard intentionally broader than computeCadenceStats (>= 130): floor prevents scale
+            // collapse for borderline values; stats threshold is for variance-sensitive calculations only
+            cadence_display:
+              d.cadence != null && d.cadence > 0 ? Math.max(d.cadence, CADENCE_FLOOR_SPM) : null,
           }
         })
       setMeta(res.meta)
