@@ -388,7 +388,18 @@ export default function ActivityDetailPage() {
                         />
                       )}
                       {cadenceSpm != null && (
-                        <StatTile icon={Activity} label="Cadence" value={cadenceSpm} unit="spm" />
+                        <StatTile
+                          id="cadenceTile_activityDetailPage"
+                          icon={Activity}
+                          label="Cadence"
+                          value={cadenceSpm}
+                          unit="spm"
+                          sub={
+                            activity.max_cadence != null
+                              ? `Max ${activity.max_cadence} spm`
+                              : undefined
+                          }
+                        />
                       )}
                       {(() => {
                         const hasGain =
