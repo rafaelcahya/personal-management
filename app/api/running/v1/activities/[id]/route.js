@@ -151,7 +151,11 @@ export async function GET(_request, { params }) {
       efficiency_factor_30d_avg = parseFloat((sum / efRows.length).toFixed(4))
     }
 
-    const [{ data: userProfile }, { data: userSettings }] = await Promise.all([
+    const [
+      { data: userProfile },
+      { data: userSettings },
+      { data: maxCadenceRow, error: maxCadenceError },
+    ] = await Promise.all([
       supabase
         .from('rt_users')
         .select('max_hr, weight_kg, resting_hr_baseline, threshold_hr, threshold_pace_sec')
@@ -162,7 +166,19 @@ export async function GET(_request, { params }) {
         .select('hr_zones_method')
         .eq('user_id', user.id)
         .maybeSingle(),
+      supabase
+        .from('rt_activity_streams')
+        .select('cadence')
+        .eq('activity_id', id)
+        .not('cadence', 'is', null)
+        .order('cadence', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ])
+
+    if (maxCadenceError) throw maxCadenceError
+
+    const max_cadence = maxCadenceRow?.cadence ?? null
     const user_max_hr = userProfile?.max_hr ?? null
     const user_weight_kg = userProfile?.weight_kg ?? null
     const user_resting_hr = userProfile?.resting_hr_baseline ?? null
@@ -226,6 +242,7 @@ export async function GET(_request, { params }) {
           efficiency_factor_30d_avg,
           historical_avg_hr,
           historical_avg_cadence,
+          max_cadence,
           user_max_hr,
           user_weight_kg,
           user_resting_hr,

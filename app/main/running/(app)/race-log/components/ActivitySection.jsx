@@ -211,7 +211,14 @@ export default function ActivitySection({
               />
             )}
             {cadenceSpm != null && (
-              <StatTile icon={Activity} label="Cadence" value={cadenceSpm} unit="spm" />
+              <StatTile
+                id="cadenceTile_raceDetailPage"
+                icon={Activity}
+                label="Cadence"
+                value={cadenceSpm}
+                unit="spm"
+                sub={activity.max_cadence != null ? `Max ${activity.max_cadence} spm` : undefined}
+              />
             )}
             {(() => {
               const hasGain = activity.elevation_gain_m != null && activity.elevation_gain_m > 0
