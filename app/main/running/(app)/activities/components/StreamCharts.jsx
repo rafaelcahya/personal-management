@@ -281,7 +281,7 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
               baseValue={isSpeed ? 'dataMin' : 'dataMax'}
               dot={false}
               activeDot={{ r: 3 }}
-              connectNulls={false}
+              connectNulls={true}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -894,7 +894,7 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
               baseValue="dataMin"
               dot={false}
               activeDot={{ r: 3 }}
-              connectNulls={false}
+              connectNulls={true}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -959,10 +959,8 @@ export default function StreamCharts({
             // _display fields cap/floor the chart axis only — originals above are used by zone/band calcs
             pace_display: paceValid && d.pace != null ? Math.min(d.pace, PACE_CAP_SEC) : null,
             speed_display: speedKmh != null ? Math.max(speedKmh, SPEED_FLOOR_KMH) : null,
-            // > 0 guard intentionally broader than computeCadenceStats (>= 130): floor prevents scale
-            // collapse for borderline values; stats threshold is for variance-sensitive calculations only
-            cadence_display:
-              d.cadence != null && d.cadence > 0 ? Math.max(d.cadence, CADENCE_FLOOR_SPM) : null,
+            // below CADENCE_FLOOR_SPM = sensor dropout → null so connectNulls=false creates a gap
+            cadence_display: d.cadence != null && d.cadence >= CADENCE_FLOOR_SPM ? d.cadence : null,
           }
         })
       setMeta(res.meta)
