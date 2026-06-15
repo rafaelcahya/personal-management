@@ -22,8 +22,6 @@ import {
   Thermometer,
   Gauge,
   TrendingUp,
-  TrendingDown,
-  Minus,
   BarChart2,
 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -444,65 +442,72 @@ export default function ActivityDetailPage() {
                           unit="m"
                         />
                       )}
-                      {activity.efficiency_factor != null && (
-                        <div id="efficiencyFactor_activityDetailPage" className="relative">
-                          <StatTile
-                            icon={BarChart2}
-                            label="Efficiency"
-                            value={Number(activity.efficiency_factor).toFixed(4)}
-                            unit="m/s/bpm"
-                            tooltip={
-                              <>
-                                <p className="font-semibold mb-1">What is Efficiency Factor?</p>
-                                <p>
-                                  Speed per heartbeat — a measure of running economy. Higher = more
-                                  efficient at the same effort.
-                                </p>
-                                <p className="mt-1.5 text-slate-300">
-                                  Typical:{' '}
-                                  <span className="text-amber-400 font-medium">0.012–0.016</span>{' '}
-                                  average ·{' '}
-                                  <span className="text-green-400 font-medium">&gt; 0.018</span>{' '}
-                                  efficient
-                                </p>
-                              </>
-                            }
-                          />
-                          {activity.efficiency_factor_30d_avg != null &&
-                            (() => {
-                              const ef = Number(activity.efficiency_factor)
-                              const avg = Number(activity.efficiency_factor_30d_avg)
-                              if (ef > avg) {
-                                return (
-                                  <TrendingUp
-                                    id="efTrendArrow"
-                                    className="size-3.5 text-green-500 absolute top-3 right-3"
-                                    title={`Above your 30-day average (${avg.toFixed(4)})`}
-                                    aria-hidden="true"
-                                  />
-                                )
-                              }
-                              if (ef < avg) {
-                                return (
-                                  <TrendingDown
-                                    id="efTrendArrow"
-                                    className="size-3.5 text-red-400 absolute top-3 right-3"
-                                    title={`Below your 30-day average (${avg.toFixed(4)})`}
-                                    aria-hidden="true"
-                                  />
-                                )
-                              }
-                              return (
-                                <Minus
-                                  id="efTrendArrow"
-                                  className="size-3.5 text-slate-400 absolute top-3 right-3"
-                                  title="Equal to your 30-day average"
-                                  aria-hidden="true"
-                                />
-                              )
-                            })()}
-                        </div>
-                      )}
+                      {activity.efficiency_factor != null &&
+                        (() => {
+                          const ef = Number(activity.efficiency_factor)
+                          const avg =
+                            activity.efficiency_factor_30d_avg != null
+                              ? Number(activity.efficiency_factor_30d_avg)
+                              : null
+                          const valueClassName =
+                            avg != null
+                              ? ef > avg
+                                ? 'text-green-600'
+                                : ef < avg
+                                  ? 'text-red-500'
+                                  : 'text-slate-800'
+                              : 'text-slate-800'
+                          const pct =
+                            avg != null ? Math.abs(((ef - avg) / avg) * 100).toFixed(1) : null
+                          return (
+                            <div id="efficiencyFactor_activityDetailPage">
+                              <StatTile
+                                icon={BarChart2}
+                                label="Efficiency"
+                                value={ef.toFixed(4)}
+                                unit="m/s/bpm"
+                                valueClassName={valueClassName}
+                                tooltip={
+                                  <>
+                                    <p className="font-semibold mb-1">What is Efficiency Factor?</p>
+                                    <p>
+                                      Speed per heartbeat — a measure of running economy. Higher =
+                                      more efficient at the same effort.
+                                    </p>
+                                    <p className="mt-1.5 text-slate-300">
+                                      Typical:{' '}
+                                      <span className="text-amber-400 font-medium">
+                                        0.012–0.016
+                                      </span>{' '}
+                                      average ·{' '}
+                                      <span className="text-green-400 font-medium">&gt; 0.018</span>{' '}
+                                      efficient
+                                    </p>
+                                  </>
+                                }
+                                footer={
+                                  avg != null ? (
+                                    <span
+                                      className={`inline-flex w-fit text-[10px] font-medium px-1.5 py-0.5 rounded-full mt-0.5 ${
+                                        ef > avg
+                                          ? 'bg-green-50 text-green-600'
+                                          : ef < avg
+                                            ? 'bg-red-50 text-red-500'
+                                            : 'bg-slate-100 text-slate-500'
+                                      }`}
+                                    >
+                                      {ef > avg
+                                        ? `Above 30d avg (+${pct}%)`
+                                        : ef < avg
+                                          ? `Below 30d avg (−${pct}%)`
+                                          : 'At 30d avg'}
+                                    </span>
+                                  ) : null
+                                }
+                              />
+                            </div>
+                          )
+                        })()}
                       {activity.elevation_gain_m > 0 && (
                         <div id="climbingIndexTile_activityDetailPage">
                           <StatTile

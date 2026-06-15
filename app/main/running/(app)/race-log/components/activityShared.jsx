@@ -1,4 +1,4 @@
-export function StatTile({ icon: Icon, label, value, unit, sub }) {
+export function StatTile({ icon: Icon, label, value, unit, sub, valueClassName, footer }) {
   if (value == null) return null
   return (
     <div className="flex flex-col gap-0.5 p-3 bg-slate-50 rounded-lg">
@@ -9,10 +9,13 @@ export function StatTile({ icon: Icon, label, value, unit, sub }) {
         </span>
       </div>
       <div className="flex items-baseline gap-1">
-        <span className="text-lg font-bold text-slate-800 leading-tight">{value}</span>
+        <span className={`text-lg font-bold leading-tight ${valueClassName ?? 'text-slate-800'}`}>
+          {value}
+        </span>
         {unit && <span className="text-xs text-slate-400">{unit}</span>}
       </div>
       {sub && <span className="text-[10px] text-slate-400">{sub}</span>}
+      {footer}
     </div>
   )
 }
