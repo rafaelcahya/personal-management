@@ -11,7 +11,7 @@ import {
   Activity,
   Wind,
   Flame,
-  Smartphone,
+  Navigation,
   Thermometer,
   TrendingUp,
   BarChart2,
@@ -367,7 +367,7 @@ export default function ActivitySection({
         {/* Device */}
         {activity.device_name && (
           <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 rounded-lg">
-            <Smartphone className="size-4 text-slate-400 shrink-0" aria-hidden="true" />
+            <Navigation className="size-4 text-slate-400 shrink-0" aria-hidden="true" />
             <span className="text-sm text-slate-600">{activity.device_name}</span>
           </div>
         )}
