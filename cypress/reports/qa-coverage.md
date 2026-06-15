@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-14
-**Branch:** feat/improve-qa-workflow
+**Last Updated:** 2026-06-15
+**Branch:** release/v1.12
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 926    | 35%  |
+| API       | 962    | 35%  |
 | UI        | 1,755  | 65%  |
-| **Total** | **2,681** | 100% |
+| **Total** | **2,717** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 238 | 703   | 941   |
+| Running Tracker      | 274 | 703   | 977   |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **926** | **1,755** | **2,681** |
+| **Total**            | **962** | **1,755** | **2,717** |
 
 ---
 
@@ -183,11 +183,11 @@
 | Feature              | API | UI | Total |
 | -------------------- | --- | -- | ----- |
 | AI Coach             | 0   | 20 | 20    |
-| Dashboard            | 8   | 28 | 36    |
+| Dashboard            | 34  | 28 | 62    |
 | Dashboard Extended   | 0   | 14 | 14    |
 | Gear                 | 6   | 18 | 24    |
 | Performance Trends   | 5   | 0  | 5     |
-| **Subtotal**         | **19** | **80** | **99** |
+| **Subtotal**         | **45** | **80** | **125** |
 
 #### AI Coach
 
@@ -203,10 +203,11 @@
 | ---------------------- | --- | -- | ----- |
 | Analytics AI           | 15  | 20 | 35    |
 | Analytics              | 0   | 9  | 9     |
+| Fitness Age            | 10  | 0  | 10    |
 | Personal Bests         | 7   | 19 | 26    |
 | Qualifying Run Count   | 0   | 8  | 8     |
 | VO2Max Target Effort   | 4   | 31 | 35    |
-| **Subtotal**           | **26** | **87** | **113** |
+| **Subtotal**           | **36** | **87** | **123** |
 
 #### Injury AI
 
@@ -268,7 +269,7 @@
 | Push Subscription   | 4   | 0  | 4     |
 | **Subtotal**        | **4** | **0** | **4** |
 
-**Running Total — API: 238 | UI: 703 | Total: 941**
+**Running Total — API: 274 | UI: 703 | Total: 977**
 
 ---
 
@@ -297,7 +298,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 238 | 703   | 941   |
+| Running Tracker      | 274 | 703   | 977   |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **926** | **1,755** | **2,681** |
+| **Total**            | **962** | **1,755** | **2,717** |
