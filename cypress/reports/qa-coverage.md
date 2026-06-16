@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-15
-**Branch:** feat/issue-301-endurance-score
+**Last Updated:** 2026-06-16
+**Branch:** feat/issue-305-tsb-pmc
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,045  | 37%  |
+| API       | 1,048  | 37%  |
 | UI        | 1,755  | 63%  |
-| **Total** | **2,800** | 100% |
+| **Total** | **2,803** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 357 | 703   | 1,060 |
+| Running Tracker      | 360 | 703   | 1,063 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,045** | **1,755** | **2,800** |
+| **Total**            | **1,048** | **1,755** | **2,803** |
 
 ---
 
@@ -183,11 +183,11 @@
 | Feature              | API | UI | Total |
 | -------------------- | --- | -- | ----- |
 | AI Coach             | 0   | 20 | 20    |
-| Dashboard            | 39  | 28 | 67    |
+| Dashboard            | 42  | 28 | 70    |
 | Dashboard Extended   | 0   | 14 | 14    |
 | Gear                 | 6   | 18 | 24    |
 | Performance Trends   | 5   | 0  | 5     |
-| **Subtotal**         | **50** | **80** | **130** |
+| **Subtotal**         | **53** | **80** | **133** |
 
 #### AI Coach
 
@@ -274,7 +274,7 @@
 | Push Subscription   | 4   | 0  | 4     |
 | **Subtotal**        | **4** | **0** | **4** |
 
-**Running Total — API: 357 | UI: 703 | Total: 1,060**
+**Running Total — API: 360 | UI: 703 | Total: 1,063**
 
 ---
 
@@ -303,7 +303,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 357 | 703   | 1,060 |
+| Running Tracker      | 360 | 703   | 1,063 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,045** | **1,755** | **2,800** |
+| **Total**            | **1,048** | **1,755** | **2,803** |

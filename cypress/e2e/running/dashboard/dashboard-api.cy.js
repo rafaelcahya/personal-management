@@ -112,6 +112,7 @@ describe('Running Dashboard API — GET /dashboard — training_load', () => {
         'acwr',
         'acute_load_7d',
         'chronic_load_28d',
+        'tsb',
         'status',
         'current_week_load',
         'prev_week_load',
@@ -188,6 +189,33 @@ describe('Running Dashboard API — GET /dashboard — training_load', () => {
     cy.getDashboard().then((res) => {
       const { ytd_stats } = res.body.data.training_load
       expect(ytd_stats === null || typeof ytd_stats === 'object').to.be.true
+    })
+  })
+
+  it('tsb is null or a number', () => {
+    cy.getDashboard().then((res) => {
+      const { tsb } = res.body.data.training_load
+      expect(tsb === null || typeof tsb === 'number').to.be.true
+    })
+  })
+
+  it('tsb is null only when status is no_data, otherwise a number', () => {
+    cy.getDashboard().then((res) => {
+      const { tsb, status } = res.body.data.training_load
+      if (status === 'no_data') {
+        expect(tsb).to.be.null
+      } else {
+        expect(typeof tsb).to.eq('number')
+      }
+    })
+  })
+
+  it('tsb is rounded to at most 1 decimal place', () => {
+    cy.getDashboard().then((res) => {
+      const { tsb } = res.body.data.training_load
+      if (tsb !== null) {
+        expect(Math.round(tsb * 10) / 10).to.eq(tsb)
+      }
     })
   })
 })

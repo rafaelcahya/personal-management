@@ -17,6 +17,7 @@ import WeeklyDistanceChart from './components/WeeklyDistanceChart'
 import PaceTrendChart from './components/PaceTrendChart'
 import BestPaceChart from './components/BestPaceChart'
 import TrainingLoadChart from './components/TrainingLoadChart'
+import PerformanceManagementChart from './components/PerformanceManagementChart'
 import Vo2maxTrendChart from './components/Vo2maxTrendChart'
 import EfTrendChart from './components/EfTrendChart'
 import RacePredictor from './components/RacePredictor'
@@ -176,6 +177,15 @@ export default function AnalyticsPage() {
           >
             <TrainingLoadChart trainingLoad={trainingLoad} />
             <AnalyticsAICard section="training_load" isPageStale={isPageStale} />
+          </Section>
+
+          <Section
+            id="pmcSection_analyticsPage"
+            title="Performance Management (Fitness / Fatigue / Form)"
+            description="Fitness (28-day load) and Fatigue (7-day load) over time, with Form (the gap between them) showing how fresh or fatigued you are. Most useful with 60+ days of history, especially for race tapering decisions."
+            icon={Activity}
+          >
+            <PerformanceManagementChart />
           </Section>
 
           <Section
