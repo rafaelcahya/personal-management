@@ -4,6 +4,14 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { patchActivitySchema } from '@/schemas/runningManualEntry'
 import { computeAndSaveDerivedMetrics } from '@/lib/services/running/metrics'
 
+function computeGapSecPerKm(paceSecPerKm, elevationGainM, distanceM) {
+  if (!paceSecPerKm || !distanceM) return null
+  const gradePct = elevationGainM ? (elevationGainM / distanceM) * 100 : 0
+  const clampedGradePct = Math.min(20, Math.max(-20, gradePct))
+  const gapFactor = 1 + clampedGradePct * 0.033
+  return Math.round(paceSecPerKm / gapFactor)
+}
+
 export async function GET(_request, { params }) {
   try {
     const supabase = await createClient()
@@ -77,6 +85,11 @@ export async function GET(_request, { params }) {
       .order('split_number', { ascending: true })
 
     if (splitsError) throw splitsError
+
+    const splitsWithGap = (splits ?? []).map((s) => ({
+      ...s,
+      gap_sec_per_km: computeGapSecPerKm(s.pace_sec_per_km, s.elevation_gain_m, s.distance_m),
+    }))
 
     const { data: laps, error: lapsError } = await supabase
       .from('rt_activity_laps')
@@ -250,7 +263,7 @@ export async function GET(_request, { params }) {
           threshold_pace_sec,
           hr_zones_method,
         },
-        splits: splits ?? [],
+        splits: splitsWithGap,
         laps: laps ?? [],
         best_efforts: bestEfforts ?? [],
         photos: photos ?? [],
