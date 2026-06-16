@@ -191,6 +191,18 @@ const TRAINING_STATUS = {
   },
 }
 
+const TSB_TIERS = [
+  { min: 10, label: 'Very Fresh', color: 'text-green-600' },
+  { min: 1, label: 'Fresh', color: 'text-green-600' },
+  { min: -5, label: 'Neutral', color: 'text-amber-600' },
+  { min: -20, label: 'Fatigued', color: 'text-red-600' },
+  { min: -Infinity, label: 'Very Fatigued', color: 'text-red-600' },
+]
+
+function getTsbTier(tsb) {
+  return TSB_TIERS.find((tier) => tsb >= tier.min) ?? TSB_TIERS[TSB_TIERS.length - 1]
+}
+
 const TIPS = {
   acwr: (
     <>
@@ -240,6 +252,20 @@ const TIPS = {
       </p>
       <p className="mt-1.5 text-slate-300">
         A high chronic load means your body is conditioned to handle more work.
+      </p>
+    </>
+  ),
+  tsb: (
+    <>
+      <p className="font-semibold mb-1">Form</p>
+      <p>
+        Chronic load minus acute load — how fresh or fatigued you are right now. Same concept as
+        TrainingPeaks&apos; &quot;Form&quot; or Garmin&apos;s Training Effect Balance.
+      </p>
+      <p className="mt-1.5 text-slate-300">
+        <span className="text-green-400 font-medium">&gt; 0</span> Fresh ·{' '}
+        <span className="text-amber-400 font-medium">-5 to 0</span> Neutral ·{' '}
+        <span className="text-red-400 font-medium">&lt; -5</span> Fatigued
       </p>
     </>
   ),
@@ -313,14 +339,16 @@ function RampIndicator({ ramp_pct }) {
   )
 }
 
-function StatCell({ label, value, sub, tip }) {
+function StatCell({ label, value, sub, tip, valueClassName }) {
   return (
     <div className="flex flex-col gap-0.5">
       <div className="flex items-center gap-1">
         <span className="text-xs text-slate-400">{label}</span>
         {tip && <InfoTip content={tip} />}
       </div>
-      <span className="text-sm font-semibold text-slate-800 tabular-nums">{value ?? '—'}</span>
+      <span className={`text-sm font-semibold tabular-nums ${valueClassName ?? 'text-slate-800'}`}>
+        {value ?? '—'}
+      </span>
       {sub && <span className="text-xs text-slate-400">{sub}</span>}
     </div>
   )
@@ -353,6 +381,7 @@ export default function TrainingLoad({ data, weeklyStats }) {
     acwr,
     acute_load_7d,
     chronic_load_28d,
+    tsb,
     status,
     current_week_load,
     prev_week_load,
@@ -363,6 +392,7 @@ export default function TrainingLoad({ data, weeklyStats }) {
 
   const current = weeklyStats?.current ?? {}
   const statusMeta = ACWR_STATUS[status] ?? ACWR_STATUS.no_data
+  const tsbTier = tsb != null ? getTsbTier(tsb) : null
 
   return (
     <section id="trainingLoadCard" aria-label="Training load">
@@ -413,7 +443,7 @@ export default function TrainingLoad({ data, weeklyStats }) {
           <div className="border-t border-slate-100" />
 
           {/* Stats grid — load metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <StatCell
               label="This week"
               value={current_week_load ?? '—'}
@@ -431,6 +461,13 @@ export default function TrainingLoad({ data, weeklyStats }) {
               value={chronic_load_28d ?? '—'}
               sub="chronic load"
               tip={TIPS.chronicLoad}
+            />
+            <StatCell
+              label="Form"
+              value={tsb != null ? `${tsb > 0 ? '+' : ''}${tsb}` : '—'}
+              sub={tsbTier?.label ?? null}
+              tip={TIPS.tsb}
+              valueClassName={tsbTier?.color}
             />
           </div>
 
