@@ -1,7 +1,7 @@
 # QA Coverage Report
 
 **Last Updated:** 2026-06-16
-**Branch:** feat/issue-305-tsb-pmc
+**Branch:** test/issue-351-activity-detail-coverage
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,048  | 37%  |
-| UI        | 1,755  | 63%  |
-| **Total** | **2,803** | 100% |
+| API       | 1,063  | 38%  |
+| UI        | 1,755  | 62%  |
+| **Total** | **2,818** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 360 | 703   | 1,063 |
+| Running Tracker      | 375 | 703   | 1,078 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,048** | **1,755** | **2,803** |
+| **Total**            | **1,063** | **1,755** | **2,818** |
 
 ---
 
@@ -161,7 +161,7 @@
 | ------------------------ | --- | -- | ----- |
 | Activity List            | 28  | 21 | 49    |
 | Activity Page Title      | 0   | 10 | 10    |
-| Activity Detail          | 18  | 41 | 59    |
+| Activity Detail          | 23  | 41 | 64    |
 | AI Insight               | 8   | 0  | 8     |
 | AI Coach Improvements    | 0   | 23 | 23    |
 | Cadence Chart            | 0   | 16 | 16    |
@@ -176,7 +176,7 @@
 | Satellite Map            | 0   | 13 | 13    |
 | Splits Bar Chart         | 0   | 24 | 24    |
 | Stream Charts            | 7   | 14 | 21    |
-| **Subtotal**             | **82** | **249** | **331** |
+| **Subtotal**             | **87** | **249** | **336** |
 
 #### Dashboard
 
@@ -225,10 +225,10 @@
 
 | Feature                      | API | UI | Total |
 | ---------------------------- | --- | -- | ----- |
-| Race Log                     | 21  | 51 | 72    |
+| Race Log                     | 31  | 51 | 82    |
 | Upcoming Races               | 18  | 38 | 56    |
 | Upcoming Races Target Time   | 0   | 19 | 19    |
-| **Subtotal**                 | **39** | **108** | **147** |
+| **Subtotal**                 | **49** | **108** | **157** |
 
 #### Manual Entry
 
@@ -274,7 +274,7 @@
 | Push Subscription   | 4   | 0  | 4     |
 | **Subtotal**        | **4** | **0** | **4** |
 
-**Running Total — API: 360 | UI: 703 | Total: 1,063**
+**Running Total — API: 375 | UI: 703 | Total: 1,078**
 
 ---
 
@@ -303,7 +303,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 360 | 703   | 1,063 |
+| Running Tracker      | 375 | 703   | 1,078 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,048** | **1,755** | **2,803** |
+| **Total**            | **1,063** | **1,755** | **2,818** |
