@@ -23,8 +23,6 @@ import WeeklyStats from './components/WeeklyStats'
 import TrainingLoad from './components/TrainingLoad'
 import ActivitySection from './components/ActivitySection'
 import PerformanceTrends from './components/PerformanceTrends'
-import AiCoachPlaceholder from './components/AiCoachPlaceholder'
-import HealthCheckin from './components/HealthCheckin'
 import DashboardSkeleton from './components/DashboardSkeleton'
 import DashboardError from './components/DashboardError'
 import ShoeRotation from './components/ShoeRotation'
@@ -297,8 +295,6 @@ export default function RunningDashboardPage() {
             activityType={activeType}
           />
           <PerformanceTrends activityType={activeType} />
-          <AiCoachPlaceholder />
-          {dashboardData.health_today && <HealthCheckin data={dashboardData.health_today} />}
         </div>
       )}
     </div>
