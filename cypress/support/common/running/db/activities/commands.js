@@ -15,3 +15,9 @@ Cypress.Commands.add('getActivityCountFromDb', () => {
     return cy.task('getActivityCountFromDb', { userId })
   })
 })
+
+Cypress.Commands.add('getActivityIdWithSplitsFromDb', () => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('getActivityIdWithSplitsFromDb', { userId })
+  })
+})
