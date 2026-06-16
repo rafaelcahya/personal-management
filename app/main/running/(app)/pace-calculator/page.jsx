@@ -30,6 +30,9 @@ function parseDistanceM(preset, customValue, unit) {
   return null
 }
 
+const STEP_LENGTH_M = 0.9
+const MAX_STEPS = 200000
+
 function parseTimeSec(h, m, s) {
   const hh = parseInt(h, 10) || 0
   const mm = parseInt(m, 10) || 0
@@ -98,6 +101,9 @@ export default function PaceCalculatorPage() {
   const [projM, setProjM] = useState('')
   const [projS, setProjS] = useState('')
 
+  // Steps mode
+  const [stepsCount, setStepsCount] = useState('')
+
   const [activeTab, setActiveTab] = useState('pace')
 
   useEffect(() => {
@@ -153,6 +159,20 @@ export default function PaceCalculatorPage() {
     projS,
     unit,
   ])
+
+  // Steps mode calculations
+  const stepsCalc = useMemo(() => {
+    if (stepsCount === '') return { distanceM: null, invalid: false }
+    const steps = parseInt(stepsCount, 10)
+    const invalid =
+      !Number.isInteger(steps) ||
+      steps <= 0 ||
+      steps > MAX_STEPS ||
+      String(steps) !== stepsCount.trim()
+    if (invalid) return { distanceM: null, invalid: true }
+    const distanceM = steps * STEP_LENGTH_M
+    return { distanceM, invalid: false }
+  }, [stepsCount])
 
   // Splits + race projections based on active tab
   const { activePaceSecPerKm, activeDistM, activeTimeSec } = useMemo(() => {
@@ -250,6 +270,9 @@ export default function PaceCalculatorPage() {
           </TabsTrigger>
           <TabsTrigger id="tabProjection_paceCalculator" value="projection" className="flex-1">
             Projection Mode
+          </TabsTrigger>
+          <TabsTrigger id="tabSteps_paceCalculator" value="steps" className="flex-1">
+            Steps → Distance
           </TabsTrigger>
         </TabsList>
 
@@ -477,6 +500,95 @@ export default function PaceCalculatorPage() {
                   </div>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Steps Mode */}
+        <TabsContent value="steps" className="mt-4">
+          <Card className="border border-slate-200/70 py-0">
+            <CardContent className="px-4 py-4 flex flex-col gap-4">
+              <p className="text-xs text-slate-500">
+                Enter your step count to estimate the distance covered.
+              </p>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="stepsCount_paceCalculator" className="text-sm font-medium">
+                  Steps
+                </Label>
+                <Input
+                  id="stepsCount_paceCalculator"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={MAX_STEPS}
+                  step={1}
+                  maxLength={6}
+                  value={stepsCount}
+                  onChange={(e) => setStepsCount(e.target.value)}
+                  placeholder="e.g. 6500"
+                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                />
+              </div>
+
+              {stepsCalc.invalid && (
+                <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-lg">
+                  <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
+                  Steps must be a positive whole number.
+                </div>
+              )}
+
+              {stepsCalc.distanceM != null && (
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div
+                    className={`flex flex-col gap-0.5 rounded-lg px-3 py-2.5 ${
+                      unit === 'km' ? 'bg-violet-50' : 'bg-slate-50'
+                    }`}
+                  >
+                    <span
+                      className={`text-[10px] font-semibold uppercase tracking-wide ${
+                        unit === 'km' ? 'text-violet-400' : 'text-slate-400'
+                      }`}
+                    >
+                      Distance
+                    </span>
+                    <span
+                      id="stepsDistanceKm_paceCalculator"
+                      className={`text-base font-semibold ${
+                        unit === 'km' ? 'text-violet-700' : 'text-slate-700'
+                      }`}
+                    >
+                      {formatDistance(stepsCalc.distanceM, 'km')}
+                    </span>
+                  </div>
+                  <div
+                    className={`flex flex-col gap-0.5 rounded-lg px-3 py-2.5 ${
+                      unit === 'mi' ? 'bg-violet-50' : 'bg-slate-50'
+                    }`}
+                  >
+                    <span
+                      className={`text-[10px] font-semibold uppercase tracking-wide ${
+                        unit === 'mi' ? 'text-violet-400' : 'text-slate-400'
+                      }`}
+                    >
+                      Distance
+                    </span>
+                    <span
+                      id="stepsDistanceMi_paceCalculator"
+                      className={`text-base font-semibold ${
+                        unit === 'mi' ? 'text-violet-700' : 'text-slate-700'
+                      }`}
+                    >
+                      {formatDistance(stepsCalc.distanceM, 'mi')}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <p className="text-xs text-slate-400">
+                Rough estimate based on an average running step length of {STEP_LENGTH_M * 100} cm.
+                Actual step length varies with your pace and height.
+              </p>
             </CardContent>
           </Card>
         </TabsContent>

@@ -143,11 +143,15 @@ describe('Activities API — GET types (unauthenticated)', () => {
 
 describe('Activity Detail API — GET (authenticated)', () => {
   let activityId
+  let activityIdWithSplits
 
   before(() => {
     cy.setupApiAuthCookies()
     getFirstActivityId().then((id) => {
       activityId = id
+    })
+    cy.getActivityIdWithSplitsFromDb().then((id) => {
+      activityIdWithSplits = id
     })
   })
 
@@ -162,11 +166,12 @@ describe('Activity Detail API — GET (authenticated)', () => {
     })
   })
 
-  it('response has top-level keys: activity, splits, laps, best_efforts, photos', function () {
+  it('response has top-level keys: activity, splits, burn_bar, laps, best_efforts, photos', function () {
     if (!activityId) this.skip()
     cy.getActivityDetail(activityId).then((res) => {
       expect(res.body).to.have.property('activity')
       expect(res.body).to.have.property('splits')
+      expect(res.body).to.have.property('burn_bar')
       expect(res.body).to.have.property('laps')
       expect(res.body).to.have.property('best_efforts')
       expect(res.body).to.have.property('photos')
@@ -221,6 +226,75 @@ describe('Activity Detail API — GET (authenticated)', () => {
       expect(act).to.have.property('aerobic_decoupling')
       expect(act).to.have.property('efficiency_factor')
       expect(act).to.have.property('estimated_vo2max')
+    })
+  })
+
+  it('each split item has a gap_sec_per_km field (number or null)', function () {
+    if (!activityIdWithSplits) this.skip()
+    cy.getActivityDetail(activityIdWithSplits).then((res) => {
+      res.body.splits.forEach((split) => {
+        expect(split).to.have.property('gap_sec_per_km')
+        expect(split.gap_sec_per_km === null || typeof split.gap_sec_per_km === 'number').to.be.true
+      })
+    })
+  })
+
+  it('gap_sec_per_km is null when a split has no pace or distance', function () {
+    if (!activityIdWithSplits) this.skip()
+    cy.getActivityDetail(activityIdWithSplits).then((res) => {
+      res.body.splits.forEach((split) => {
+        if (!split.pace_sec_per_km || !split.distance_m) {
+          expect(split.gap_sec_per_km).to.be.null
+        }
+      })
+    })
+  })
+
+  it('burn_bar is null or an array', function () {
+    if (!activityIdWithSplits) this.skip()
+    cy.getActivityDetail(activityIdWithSplits).then((res) => {
+      const { burn_bar } = res.body
+      expect(burn_bar === null || Array.isArray(burn_bar)).to.be.true
+    })
+  })
+
+  it('when burn_bar is an array, each item has the expected shape', function () {
+    if (!activityIdWithSplits) this.skip()
+    cy.getActivityDetail(activityIdWithSplits).then((res) => {
+      const { burn_bar } = res.body
+      if (!Array.isArray(burn_bar)) return
+      burn_bar.forEach((item) => {
+        expect(item).to.have.all.keys(
+          'split_number',
+          'pace_sec_per_km',
+          'avg_hr',
+          'historical_avg_pace',
+          'historical_avg_hr',
+          'pace_diff_sec',
+          'hr_diff_bpm'
+        )
+        expect(item.split_number).to.be.a('number')
+        ;[
+          'pace_sec_per_km',
+          'avg_hr',
+          'historical_avg_pace',
+          'historical_avg_hr',
+          'pace_diff_sec',
+          'hr_diff_bpm',
+        ].forEach((key) => {
+          expect(item[key] === null || typeof item[key] === 'number', `${key} is number or null`).to
+            .be.true
+        })
+      })
+    })
+  })
+
+  it('burn_bar array length matches splits array length when present', function () {
+    if (!activityIdWithSplits) this.skip()
+    cy.getActivityDetail(activityIdWithSplits).then((res) => {
+      const { burn_bar, splits } = res.body
+      if (!Array.isArray(burn_bar)) return
+      expect(burn_bar.length).to.eq(splits.length)
     })
   })
 })

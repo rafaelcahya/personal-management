@@ -23,8 +23,6 @@ import WeeklyStats from './components/WeeklyStats'
 import TrainingLoad from './components/TrainingLoad'
 import ActivitySection from './components/ActivitySection'
 import PerformanceTrends from './components/PerformanceTrends'
-import AiCoachPlaceholder from './components/AiCoachPlaceholder'
-import HealthCheckin from './components/HealthCheckin'
 import DashboardSkeleton from './components/DashboardSkeleton'
 import DashboardError from './components/DashboardError'
 import ShoeRotation from './components/ShoeRotation'
@@ -32,6 +30,7 @@ import YtdStats from './components/YtdStats'
 import NextRace from './components/NextRace'
 import PageHeader from '@/app/main/components/PageHeader'
 import FitnessAgeTile from './components/FitnessAgeTile'
+import EnduranceScoreTile from './components/EnduranceScoreTile'
 
 const ACTIVITY_CONFIG = {
   Run: { icon: Footprints, color: 'text-violet-600', bg: 'bg-violet-50', label: 'Run' },
@@ -283,6 +282,9 @@ export default function RunningDashboardPage() {
           {dashboardData.fitness_age != null && (
             <FitnessAgeTile fitnessAge={dashboardData.fitness_age} />
           )}
+          {dashboardData.endurance_score !== undefined && (
+            <EnduranceScoreTile enduranceScore={dashboardData.endurance_score} />
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <NextRace upcoming_races={upcomingRaces} />
             <ShoeRotation />
@@ -293,8 +295,6 @@ export default function RunningDashboardPage() {
             activityType={activeType}
           />
           <PerformanceTrends activityType={activeType} />
-          <AiCoachPlaceholder />
-          {dashboardData.health_today && <HealthCheckin data={dashboardData.health_today} />}
         </div>
       )}
     </div>

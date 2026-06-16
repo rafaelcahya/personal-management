@@ -50,7 +50,7 @@ async function handleAnalyticsSummary(user) {
   inngest
     .send({
       name: 'ai/generate-analytics-summary',
-      data: { userId: user.id, triggeredByActivityId: null },
+      data: { userId: user.id },
     })
     .catch((err) => {
       console.error('[ai/insights/generate] Failed to queue analytics summary:', err.message)

@@ -32,3 +32,16 @@ export async function getActivityCountFromDb(supabase, userId) {
   if (error) throw new Error(`DB query failed: ${error.message}`)
   return count
 }
+
+// Picks any activity that already has rows in rt_activity_splits, so split-dependent
+// tests (GAP, Burn Bar) don't depend on the most recent activity happening to have splits.
+export async function getActivityIdWithSplitsFromDb(supabase, userId) {
+  const { data, error } = await supabase
+    .from('rt_activity_splits')
+    .select('activity_id, rt_activities!inner(user_id)')
+    .eq('rt_activities.user_id', userId)
+    .limit(1)
+    .maybeSingle()
+  if (error) throw new Error(`DB query failed: ${error.message}`)
+  return data?.activity_id ?? null
+}

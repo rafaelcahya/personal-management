@@ -114,7 +114,8 @@
       "calorie_trend": "/api/running/v1/analytics/calorie-trend",
       "zones": "/api/running/v1/analytics/zones",
       "gear": "/api/running/v1/analytics/gear",
-      "fitness_age": "/api/running/v1/analytics/fitness-age"
+      "fitness_age": "/api/running/v1/analytics/fitness-age",
+      "endurance_score": "/api/running/v1/analytics/endurance-score"
     },
     "running_user_profile": {
       "get": "/api/running/v1/user/profile",
@@ -434,6 +435,15 @@
       "pr_effort_end": "prEffortEnd_{name}_activityDetailPage",
       "cadence_tile": "cadenceTile_activityDetailPage",
       "climbing_index_tile": "climbingIndexTile_activityDetailPage",
+      "hill_score_tile": "hillScoreTile_activityDetailPage",
+      "power_tile": "powerTile_activityDetailPage",
+      "max_power_tile": "maxPowerTile_activityDetailPage",
+      "weighted_power_tile": "weightedPowerTile_activityDetailPage",
+      "power_to_weight_tile": "powerToWeightTile_activityDetailPage",
+      "burn_bar_section": "burnBarSection_activityDetailPage",
+      "burn_bar_empty": "burnBarEmpty_activityDetailPage",
+      "burn_bar_pace_btn": "burnBarPaceBtn_activityDetailPage",
+      "burn_bar_hr_btn": "burnBarHrBtn_activityDetailPage",
       "racing_weight_section": "racingWeightSection_activityDetailPage",
       "racing_weight_bar": "racingWeightBar_activityDetailPage",
       "racing_weight_what_if": "racingWeightWhatIf_activityDetailPage"
@@ -465,7 +475,8 @@
       "sync_status_bar": "syncStatusBar",
       "sync_btn": "syncBtn_dashboard",
       "sync_result_msg": "syncResultMsg",
-      "fitness_age_tile": "fitnessAgeTile_dashboardPage"
+      "fitness_age_tile": "fitnessAgeTile_dashboardPage",
+      "endurance_score_tile": "enduranceScoreTile_dashboardPage"
     },
     "running_ai_coach": {
       "page": "aiCoachPage",
@@ -609,6 +620,15 @@
       "cadence_band_elite": "cadenceBand_elite_raceDetailPage",
       "cadence_info_tooltip": "cadenceInfoTooltip_raceDetailPage",
       "cadence_tile": "cadenceTile_raceDetailPage",
+      "hill_score_tile": "hillScoreTile_raceDetailPage",
+      "power_tile": "powerTile_raceDetailPage",
+      "max_power_tile": "maxPowerTile_raceDetailPage",
+      "weighted_power_tile": "weightedPowerTile_raceDetailPage",
+      "power_to_weight_tile": "powerToWeightTile_raceDetailPage",
+      "burn_bar_section": "burnBarSection_raceDetailPage",
+      "burn_bar_empty": "burnBarEmpty_raceDetailPage",
+      "burn_bar_pace_btn": "burnBarPaceBtn_raceDetailPage",
+      "burn_bar_hr_btn": "burnBarHrBtn_raceDetailPage",
       "pb_rank_chip": "pbRankChip_{distance}_raceDetailPage",
       "route_start_marker": "routeStartMarker_raceDetailPage",
       "route_end_marker": "routeEndMarker_raceDetailPage",
@@ -628,6 +648,11 @@
       "best_pace_section": "bestPaceSection",
       "training_load_section": "trainingLoadSection",
       "vo2max_trend_section": "vo2maxTrendSection",
+      "running_power_section": "runningPowerSection_analyticsPage",
+      "power_guide": "powerGuide_analyticsPage",
+      "power_range_30_btn": "powerRange30Btn_analyticsPage",
+      "power_range_60_btn": "powerRange60Btn_analyticsPage",
+      "power_range_90_btn": "powerRange90Btn_analyticsPage",
       "ef_trend_section": "efTrendSection",
       "race_predictor_section": "racePredictorSection",
       "ai_card": "analyticsAiCard_{section}_analyticsPage",
@@ -674,6 +699,11 @@
       "fitness_age_trend_empty": "fitnessAgeTrendEmpty_analyticsPage",
       "fitness_age_trend_sex_missing": "fitnessAgeTrendSexMissing_analyticsPage",
       "fitness_age_trend_error": "fitnessAgeTrendError_analyticsPage",
+      "endurance_score_trend_section": "enduranceScoreTrendSection_analyticsPage",
+      "endurance_score_trend_loading": "enduranceScoreTrendLoading_analyticsPage",
+      "endurance_score_trend_data_count": "enduranceScoreTrendDataCount_analyticsPage",
+      "endurance_score_trend_empty": "enduranceScoreTrendEmpty_analyticsPage",
+      "endurance_score_trend_error": "enduranceScoreTrendError_analyticsPage",
       "zone_analytics_section": "zoneAnalyticsSection_analyticsPage",
       "zone_analytics_loading": "zoneAnalyticsLoading_analyticsPage",
       "zone_filter_bar": "zoneFilterBar_analyticsPage",
@@ -891,6 +921,7 @@
       "unit_mi": "unitMi_paceCalculator",
       "tab_pace": "tabPace_paceCalculator",
       "tab_projection": "tabProjection_paceCalculator",
+      "tab_steps": "tabSteps_paceCalculator",
       "distance_preset": "distancePreset_paceCalculator",
       "custom_distance": "customDistance_paceCalculator",
       "time_hours": "time_paceCalculatorHours",
@@ -914,7 +945,10 @@
       "proj_result_distance": "projResultDistance_paceCalculator",
       "proj_avg_pace": "projAvgPace_paceCalculator",
       "splits_table": "splitsTable_paceCalculator",
-      "race_projection_table": "raceProjectionTable_paceCalculator"
+      "race_projection_table": "raceProjectionTable_paceCalculator",
+      "steps_count": "stepsCount_paceCalculator",
+      "steps_distance_km": "stepsDistanceKm_paceCalculator",
+      "steps_distance_mi": "stepsDistanceMi_paceCalculator"
     }
   },
   "seed": {

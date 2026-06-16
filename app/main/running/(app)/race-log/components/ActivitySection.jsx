@@ -17,6 +17,7 @@ import {
   BarChart2,
   CloudSun,
   Pencil,
+  Mountain,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import StreamCharts from '../../activities/components/StreamCharts'
@@ -25,9 +26,11 @@ import DistanceBreakdown from './DistanceBreakdown'
 import RacingWeightSection from './RacingWeightSection'
 import { getActivityCfg, tempStyle } from './activityConfig'
 import { StatTile, SectionLabel } from './activityShared'
+import { computeHillScore, getHillTier } from '@/lib/services/running/utils/hillScore'
 import MediaCarousel from './MediaCarousel'
 import HealthContext from './HealthContext'
 import SplitsSection from '../../activities/components/SplitsSection'
+import BurnBarChart from '../../activities/components/BurnBarChart'
 import BestEffortsTable from './BestEffortsTable'
 import LapsTable from './LapsTable'
 import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../../dashboard/utils/format'
@@ -36,6 +39,7 @@ export default function ActivitySection({
   activity,
   activityId,
   splits,
+  burnBar,
   laps,
   bestEfforts,
   photos,
@@ -49,10 +53,6 @@ export default function ActivitySection({
   const cfg = getActivityCfg(activity)
   const Icon = cfg.icon
   const cadenceSpm = activity.avg_cadence != null ? activity.avg_cadence * 2 : null
-  const wattsVal = activity.device_watts
-    ? (activity.weighted_avg_watts ?? activity.avg_watts)
-    : null
-  const normWatts = activity.device_watts ? activity.weighted_avg_watts : null
   const gear = activity.gear
   const gearDistKm = gear?.distance_m != null ? Math.round(gear.distance_m / 1000) : null
   const elapsedDiffSec = (activity.duration_sec ?? 0) - (activity.moving_time_sec ?? 0)
@@ -241,6 +241,19 @@ export default function ActivitySection({
                 />
               )
             })()}
+            {activity.elevation_gain_m > 0 && (
+              <StatTile
+                id="hillScoreTile_raceDetailPage"
+                icon={Mountain}
+                label="Hill Score"
+                value={computeHillScore(activity.elevation_gain_m, activity.distance_m)}
+                unit="m/km"
+                sub={
+                  getHillTier(computeHillScore(activity.elevation_gain_m, activity.distance_m))
+                    .label
+                }
+              />
+            )}
             {activity.calories != null && (
               <StatTile
                 icon={Flame}
@@ -272,6 +285,48 @@ export default function ActivitySection({
                 unit="kJ"
               />
             )}
+            {activity.device_watts === true && activity.avg_watts != null ? (
+              <StatTile
+                id="powerTile_raceDetailPage"
+                icon={Zap}
+                label="Power"
+                value={activity.avg_watts}
+                unit="W"
+                sub={activity.max_watts != null ? `Max ${activity.max_watts} W` : undefined}
+              />
+            ) : (
+              activity.device_watts === true &&
+              activity.max_watts != null && (
+                <StatTile
+                  id="maxPowerTile_raceDetailPage"
+                  icon={Zap}
+                  label="Max Power"
+                  value={activity.max_watts}
+                  unit="W"
+                />
+              )
+            )}
+            {activity.device_watts === true && activity.weighted_avg_watts != null && (
+              <StatTile
+                id="weightedPowerTile_raceDetailPage"
+                icon={Zap}
+                label="Weighted Power"
+                value={activity.weighted_avg_watts}
+                unit="W"
+                sub="Normalized effort"
+              />
+            )}
+            {activity.device_watts === true &&
+              activity.avg_watts != null &&
+              activity.user_weight_kg != null && (
+                <StatTile
+                  id="powerToWeightTile_raceDetailPage"
+                  icon={Zap}
+                  label="Power/Weight"
+                  value={(activity.avg_watts / activity.user_weight_kg).toFixed(2)}
+                  unit="W/kg"
+                />
+              )}
             {activity.efficiency_factor != null &&
               (() => {
                 const ef = Number(activity.efficiency_factor)
@@ -328,21 +383,10 @@ export default function ActivitySection({
           </div>
         </div>
 
-        {/* Power + environment + aerobic decoupling pills */}
-        {(wattsVal != null ||
-          activity.avg_temp_c != null ||
-          activity.aerobic_decoupling != null) && (
+        {/* Environment + aerobic decoupling pills */}
+        {(activity.avg_temp_c != null || activity.aerobic_decoupling != null) && (
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-center gap-2">
-              {wattsVal != null && (
-                <div className="flex items-center gap-1.5 px-3 py-2 bg-violet-50 rounded-lg text-sm text-violet-700 font-medium">
-                  <Zap className="size-4 text-violet-500" aria-hidden="true" />
-                  <span>{wattsVal} W</span>
-                  {normWatts != null && normWatts !== wattsVal && (
-                    <span className="text-xs text-violet-400">({normWatts} norm)</span>
-                  )}
-                </div>
-              )}
               {activity.avg_temp_c != null &&
                 (() => {
                   const ts = tempStyle(activity.avg_temp_c)
@@ -445,6 +489,7 @@ export default function ActivitySection({
         </div>
 
         <SplitsSection splits={splits} pagePrefix="raceDetailPage" />
+        {splits.length > 0 && <BurnBarChart burnBar={burnBar} pagePrefix="raceDetailPage" />}
         <BestEffortsTable bestEfforts={bestEfforts} />
         <LapsTable laps={laps} />
 

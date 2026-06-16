@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { BarChart2, TrendingUp, Zap, Activity, Trophy } from 'lucide-react'
+import { BarChart2, TrendingUp, Zap, Activity, Trophy, Mountain } from 'lucide-react'
 import {
   fetchActivities,
   fetchPerformanceTrends,
@@ -16,8 +16,12 @@ import SummaryStats from './components/SummaryStats'
 import WeeklyDistanceChart from './components/WeeklyDistanceChart'
 import PaceTrendChart from './components/PaceTrendChart'
 import BestPaceChart from './components/BestPaceChart'
+import WeeklyElevationChart from './components/WeeklyElevationChart'
+import TerrainDistributionChart from './components/TerrainDistributionChart'
 import TrainingLoadChart from './components/TrainingLoadChart'
+import PerformanceManagementChart from './components/PerformanceManagementChart'
 import Vo2maxTrendChart from './components/Vo2maxTrendChart'
+import RunningPowerChart from './components/RunningPowerChart'
 import EfTrendChart from './components/EfTrendChart'
 import RacePredictor from './components/RacePredictor'
 import AnalyticsAICard from './components/AnalyticsAICard'
@@ -26,6 +30,7 @@ import PersonalBestsTable from './components/PersonalBestsTable'
 import CalorieTrendChart from './components/CalorieTrendChart'
 import ZoneAnalyticsSection from './components/ZoneAnalyticsSection'
 import FitnessAgeTrendChart from './components/FitnessAgeTrendChart'
+import EnduranceScoreTrendChart from './components/EnduranceScoreTrendChart'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -168,6 +173,28 @@ export default function AnalyticsPage() {
           </Section>
 
           <Section
+            id="elevationTerrainSection_analyticsPage"
+            title="Elevation & Terrain"
+            description="Weekly elevation gain and the terrain mix of your runs — Flat, Rolling, Hilly, or Mountainous, based on elevation gain per kilometer."
+            icon={Mountain}
+          >
+            <div className="flex flex-col gap-6">
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                  Weekly Elevation Trend
+                </p>
+                <WeeklyElevationChart activities={activities} />
+              </div>
+              <div className="border-t border-slate-100 pt-5">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                  Terrain Distribution
+                </p>
+                <TerrainDistributionChart activities={activities} />
+              </div>
+            </div>
+          </Section>
+
+          <Section
             id="trainingLoadSection"
             title="Training Load (ACWR)"
             description="Acute:Chronic Workload Ratio compares your last 7 days of effort against your 28-day baseline. Stay between 0.8–1.3 to minimize injury risk."
@@ -178,6 +205,15 @@ export default function AnalyticsPage() {
           </Section>
 
           <Section
+            id="pmcSection_analyticsPage"
+            title="Performance Management (Fitness / Fatigue / Form)"
+            description="Fitness (28-day load) and Fatigue (7-day load) over time, with Form (the gap between them) showing how fresh or fatigued you are. Most useful with 60+ days of history, especially for race tapering decisions."
+            icon={Activity}
+          >
+            <PerformanceManagementChart />
+          </Section>
+
+          <Section
             id="vo2maxTrendSection"
             title="VO2max Trend"
             description="Estimated aerobic capacity (mL/kg/min) based on HR and pace. Higher is better — an upward trend means your engine is growing."
@@ -185,6 +221,15 @@ export default function AnalyticsPage() {
           >
             <Vo2maxTrendChart activities={activities} />
             <AnalyticsAICard section="vo2max_trend" isPageStale={isPageStale} />
+          </Section>
+
+          <Section
+            id="runningPowerSection_analyticsPage"
+            title="Running Power"
+            description="Average power per run, with a 30-activity rolling average and weighted power (smooths out spikes from hills and surges) overlaid. Requires a device with running power support."
+            icon={Zap}
+          >
+            <RunningPowerChart activities={activities} />
           </Section>
 
           <Section
@@ -241,6 +286,15 @@ export default function AnalyticsPage() {
             icon={Activity}
           >
             <FitnessAgeTrendChart />
+          </Section>
+
+          <Section
+            id="enduranceScoreTrendSection_analyticsPage"
+            title="Endurance Score Trend"
+            description="Weekly composite score (0–100) combining VO₂max fitness, 28-day training load, and your longest run in the last 8 weeks. Higher is better."
+            icon={Activity}
+          >
+            <EnduranceScoreTrendChart />
           </Section>
 
           <ZoneAnalyticsSection />

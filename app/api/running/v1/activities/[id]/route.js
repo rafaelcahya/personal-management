@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { patchActivitySchema } from '@/schemas/runningManualEntry'
 import { computeAndSaveDerivedMetrics } from '@/lib/services/running/metrics'
+import { computeGapSecPerKm } from '@/lib/services/running/activities/getGapPace'
+import { computeBurnBar } from '@/lib/services/running/activities/getBurnBar'
 
 export async function GET(_request, { params }) {
   try {
@@ -78,21 +80,39 @@ export async function GET(_request, { params }) {
 
     if (splitsError) throw splitsError
 
-    const { data: laps, error: lapsError } = await supabase
-      .from('rt_activity_laps')
-      .select(
-        'id, lap_index, name, distance_m, elapsed_time_sec, moving_time_sec, avg_speed_ms, max_speed_ms, avg_cadence, avg_watts, total_elevation_gain_m, pace_zone, started_at'
-      )
-      .eq('activity_id', id)
-      .order('lap_index', { ascending: true })
+    const splitsWithGap = (splits ?? []).map((s) => ({
+      ...s,
+      gap_sec_per_km: computeGapSecPerKm(s.pace_sec_per_km, s.elevation_gain_m, s.distance_m),
+    }))
+
+    const [burn_bar, lapsResult, bestEffortsResult, photosResult] = await Promise.all([
+      computeBurnBar(supabase, activity, splitsWithGap, user.id),
+      supabase
+        .from('rt_activity_laps')
+        .select(
+          'id, lap_index, name, distance_m, elapsed_time_sec, moving_time_sec, avg_speed_ms, max_speed_ms, avg_cadence, avg_watts, total_elevation_gain_m, pace_zone, started_at'
+        )
+        .eq('activity_id', id)
+        .order('lap_index', { ascending: true }),
+      supabase
+        .from('rt_activity_best_efforts')
+        .select('id, name, distance_m, elapsed_time_sec, moving_time_sec, pr_rank, started_at')
+        .eq('activity_id', id)
+        .order('distance_m', { ascending: true }),
+      supabase
+        .from('rt_activity_photos')
+        .select('id, unique_id, url_600, url_100, media_type')
+        .eq('activity_id', id),
+    ])
+
+    const { data: laps, error: lapsError } = lapsResult
     if (lapsError) throw lapsError
 
-    const { data: bestEffortsRaw, error: bestEffortsError } = await supabase
-      .from('rt_activity_best_efforts')
-      .select('id, name, distance_m, elapsed_time_sec, moving_time_sec, pr_rank, started_at')
-      .eq('activity_id', id)
-      .order('distance_m', { ascending: true })
+    const { data: bestEffortsRaw, error: bestEffortsError } = bestEffortsResult
     if (bestEffortsError) throw bestEffortsError
+
+    const { data: photos, error: photosError } = photosResult
+    if (photosError) throw photosError
 
     const TOP_DISTANCES_DETAIL = ['1 mile', '5K', '10K', '15K', 'Half-Marathon']
     const relevantEfforts = (bestEffortsRaw ?? []).filter(
@@ -127,12 +147,6 @@ export async function GET(_request, { params }) {
         is_latest_for_rank: !isRelevant || !supersededSet.has(`${e.name}__${e.pr_rank}`),
       }
     })
-
-    const { data: photos, error: photosError } = await supabase
-      .from('rt_activity_photos')
-      .select('id, unique_id, url_600, url_100, media_type')
-      .eq('activity_id', id)
-    if (photosError) throw photosError
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
     const { data: efRows, error: efError } = await supabase
@@ -250,7 +264,8 @@ export async function GET(_request, { params }) {
           threshold_pace_sec,
           hr_zones_method,
         },
-        splits: splits ?? [],
+        splits: splitsWithGap,
+        burn_bar,
         laps: laps ?? [],
         best_efforts: bestEfforts ?? [],
         photos: photos ?? [],
