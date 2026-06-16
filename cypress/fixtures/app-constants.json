@@ -898,6 +898,7 @@
       "unit_mi": "unitMi_paceCalculator",
       "tab_pace": "tabPace_paceCalculator",
       "tab_projection": "tabProjection_paceCalculator",
+      "tab_steps": "tabSteps_paceCalculator",
       "distance_preset": "distancePreset_paceCalculator",
       "custom_distance": "customDistance_paceCalculator",
       "time_hours": "time_paceCalculatorHours",
@@ -921,7 +922,10 @@
       "proj_result_distance": "projResultDistance_paceCalculator",
       "proj_avg_pace": "projAvgPace_paceCalculator",
       "splits_table": "splitsTable_paceCalculator",
-      "race_projection_table": "raceProjectionTable_paceCalculator"
+      "race_projection_table": "raceProjectionTable_paceCalculator",
+      "steps_count": "stepsCount_paceCalculator",
+      "steps_distance_km": "stepsDistanceKm_paceCalculator",
+      "steps_distance_mi": "stepsDistanceMi_paceCalculator"
     }
   },
   "seed": {
