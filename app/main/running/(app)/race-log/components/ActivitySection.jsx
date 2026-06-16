@@ -243,6 +243,7 @@ export default function ActivitySection({
             })()}
             {activity.elevation_gain_m > 0 && (
               <StatTile
+                id="hillScoreTile_raceDetailPage"
                 icon={Mountain}
                 label="Hill Score"
                 value={computeHillScore(activity.elevation_gain_m, activity.distance_m)}

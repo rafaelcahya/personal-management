@@ -2,6 +2,7 @@ import {
   getActivityListFromDb,
   getSingleActivityFromDb,
   getActivityCountFromDb,
+  getActivityIdWithSplitsFromDb,
 } from '../../support/db/running/activities/activitiesDb.js'
 
 export const activitiesTasks = (supabaseAdmin) => ({
@@ -13,5 +14,8 @@ export const activitiesTasks = (supabaseAdmin) => ({
   },
   async getActivityCountFromDb({ userId }) {
     return getActivityCountFromDb(supabaseAdmin, userId)
+  },
+  async getActivityIdWithSplitsFromDb({ userId }) {
+    return getActivityIdWithSplitsFromDb(supabaseAdmin, userId)
   },
 })
