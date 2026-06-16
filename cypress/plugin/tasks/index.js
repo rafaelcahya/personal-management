@@ -8,7 +8,6 @@ import { productTasks } from './productTasks.js'
 import { productQuantityTasks } from './productQuantityTasks.js'
 import { dbTasks } from './dbTasks.js'
 import { activitiesTasks } from './activitiesTasks.js'
-import { raceLogTasks } from './raceLogTasks.js'
 
 export const registerTasks = (on, supabaseAdmin) => {
   on('task', {
@@ -22,6 +21,5 @@ export const registerTasks = (on, supabaseAdmin) => {
     ...productQuantityTasks(supabaseAdmin),
     ...dbTasks(supabaseAdmin),
     ...activitiesTasks(supabaseAdmin),
-    ...raceLogTasks(supabaseAdmin),
   })
 }
