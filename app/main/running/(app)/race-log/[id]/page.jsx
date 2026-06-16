@@ -66,6 +66,7 @@ export default function RaceDetailPage() {
 
   const [activity, setActivity] = useState(null)
   const [splits, setSplits] = useState([])
+  const [burnBar, setBurnBar] = useState(null)
   const [laps, setLaps] = useState([])
   const [bestEfforts, setBestEfforts] = useState([])
   const [photos, setPhotos] = useState([])
@@ -100,6 +101,7 @@ export default function RaceDetailPage() {
                   if (actRes.status === 'fulfilled') {
                     setActivity(actRes.value.activity)
                     setSplits(actRes.value.splits ?? [])
+                    setBurnBar(actRes.value.burn_bar ?? null)
                     setLaps(actRes.value.laps ?? [])
                     setBestEfforts(actRes.value.best_efforts ?? [])
                     setPhotos(actRes.value.photos ?? [])
@@ -216,6 +218,7 @@ export default function RaceDetailPage() {
               activity={activity}
               activityId={entry.activity_id}
               splits={splits}
+              burnBar={burnBar}
               laps={laps}
               bestEfforts={bestEfforts}
               photos={photos}
