@@ -17,6 +17,7 @@ import {
   BarChart2,
   CloudSun,
   Pencil,
+  Mountain,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import StreamCharts from '../../activities/components/StreamCharts'
@@ -25,6 +26,7 @@ import DistanceBreakdown from './DistanceBreakdown'
 import RacingWeightSection from './RacingWeightSection'
 import { getActivityCfg, tempStyle } from './activityConfig'
 import { StatTile, SectionLabel } from './activityShared'
+import { computeHillScore, getHillTier } from '@/lib/services/running/utils/hillScore'
 import MediaCarousel from './MediaCarousel'
 import HealthContext from './HealthContext'
 import SplitsSection from '../../activities/components/SplitsSection'
@@ -241,6 +243,18 @@ export default function ActivitySection({
                 />
               )
             })()}
+            {activity.elevation_gain_m > 0 && (
+              <StatTile
+                icon={Mountain}
+                label="Hill Score"
+                value={computeHillScore(activity.elevation_gain_m, activity.distance_m)}
+                unit="m/km"
+                sub={
+                  getHillTier(computeHillScore(activity.elevation_gain_m, activity.distance_m))
+                    .label
+                }
+              />
+            )}
             {activity.calories != null && (
               <StatTile
                 icon={Flame}

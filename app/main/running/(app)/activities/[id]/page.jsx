@@ -23,6 +23,7 @@ import {
   Gauge,
   TrendingUp,
   BarChart2,
+  Mountain,
 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
@@ -45,6 +46,7 @@ import LapsTable from '../components/LapsTable'
 import BestEffortsTable from '../components/BestEffortsTable'
 import PerceivedEffortSection from '../components/PerceivedEffortSection'
 import { getActivityCfg, tempStyle } from '../components/activityConfig'
+import { computeHillScore, getHillTier } from '@/lib/services/running/utils/hillScore'
 import { StatTile, SectionLabel } from '../components/activityShared'
 import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../../dashboard/utils/format'
 import RacingWeightSection from '../../race-log/components/RacingWeightSection'
@@ -521,6 +523,37 @@ export default function ActivityDetailPage() {
                             </div>
                           )
                         })()}
+                      {activity.elevation_gain_m > 0 && (
+                        <div id="hillScoreTile_activityDetailPage">
+                          <StatTile
+                            icon={Mountain}
+                            label="Hill Score"
+                            value={computeHillScore(activity.elevation_gain_m, activity.distance_m)}
+                            unit="m/km"
+                            sub={
+                              getHillTier(
+                                computeHillScore(activity.elevation_gain_m, activity.distance_m)
+                              ).label
+                            }
+                            tooltip={
+                              <>
+                                <p className="font-semibold mb-1">Hill Score</p>
+                                <p>
+                                  Elevation gain per kilometer — how hilly this run was. Formula:
+                                  elevation gain ÷ distance (km).
+                                </p>
+                                <p className="mt-1.5 text-slate-300">
+                                  <span className="text-slate-400 font-medium">&lt; 5</span> Flat ·{' '}
+                                  <span className="text-blue-400 font-medium">5–15</span> Rolling ·{' '}
+                                  <span className="text-green-400 font-medium">15–30</span> Hilly ·{' '}
+                                  <span className="text-violet-400 font-medium">&gt; 30</span>{' '}
+                                  Mountainous
+                                </p>
+                              </>
+                            }
+                          />
+                        </div>
+                      )}
                       {activity.elevation_gain_m > 0 && (
                         <div id="climbingIndexTile_activityDetailPage">
                           <StatTile
