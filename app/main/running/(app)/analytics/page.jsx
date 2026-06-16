@@ -21,6 +21,7 @@ import TerrainDistributionChart from './components/TerrainDistributionChart'
 import TrainingLoadChart from './components/TrainingLoadChart'
 import PerformanceManagementChart from './components/PerformanceManagementChart'
 import Vo2maxTrendChart from './components/Vo2maxTrendChart'
+import RunningPowerChart from './components/RunningPowerChart'
 import EfTrendChart from './components/EfTrendChart'
 import RacePredictor from './components/RacePredictor'
 import AnalyticsAICard from './components/AnalyticsAICard'
@@ -220,6 +221,15 @@ export default function AnalyticsPage() {
           >
             <Vo2maxTrendChart activities={activities} />
             <AnalyticsAICard section="vo2max_trend" isPageStale={isPageStale} />
+          </Section>
+
+          <Section
+            id="runningPowerSection_analyticsPage"
+            title="Running Power"
+            description="Average power per run, with a 30-activity rolling average and weighted power (smooths out spikes from hills and surges) overlaid. Requires a device with running power support."
+            icon={Zap}
+          >
+            <RunningPowerChart activities={activities} />
           </Section>
 
           <Section
