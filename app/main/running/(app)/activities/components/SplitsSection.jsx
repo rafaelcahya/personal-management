@@ -27,13 +27,6 @@ import { SectionLabel } from './activityShared'
 
 const METRICS = ['Pace', 'Time', 'HR', 'GAP', 'EF']
 
-function computeGap(paceSec, elevationGainM, distanceM) {
-  if (!paceSec || !distanceM) return null
-  const gradePct = (elevationGainM / distanceM) * 100
-  const adj = gradePct >= 0 ? gradePct * 2.5 : Math.max(-10, gradePct) * 1.5
-  return Math.round(paceSec / (1 + adj / 100))
-}
-
 function computeEf(paceSec, avgHr) {
   if (!paceSec || !avgHr) return null
   return Math.round((1000 / paceSec / avgHr) * 1000) / 1000
@@ -67,8 +60,7 @@ function metricValue(split, metric) {
   if (metric === 'Pace') return split.pace_sec_per_km
   if (metric === 'Time') return split.duration_sec
   if (metric === 'HR') return split.avg_hr
-  if (metric === 'GAP')
-    return computeGap(split.pace_sec_per_km, split.elevation_gain_m ?? 0, split.distance_m)
+  if (metric === 'GAP') return split.gap_sec_per_km
   if (metric === 'EF') return computeEf(split.pace_sec_per_km, split.avg_hr)
   return null
 }
@@ -354,6 +346,20 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                     <span className="font-mono tabular-nums text-sm text-slate-700">
                       {s.pace_sec_per_km ? `${fmtPace(s.pace_sec_per_km)}/km` : '—'}
                     </span>
+                    {s.elevation_gain_m > 0 && s.gap_sec_per_km != null && (
+                      <div className="text-[10px] text-slate-400 mt-0.5">
+                        GAP {fmtPace(s.gap_sec_per_km)}/km{' '}
+                        {(() => {
+                          const diff = s.pace_sec_per_km - s.gap_sec_per_km
+                          return (
+                            <span className={diff > 15 ? 'text-red-500' : 'text-emerald-500'}>
+                              {diff >= 0 ? '+' : ''}
+                              {diff}s
+                            </span>
+                          )
+                        })()}
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
                     <span className="font-mono tabular-nums text-sm text-slate-700">
