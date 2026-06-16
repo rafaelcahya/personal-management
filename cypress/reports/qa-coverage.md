@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,053  | 37%  |
-| UI        | 1,755  | 63%  |
-| **Total** | **2,808** | 100% |
+| API       | 1,063  | 38%  |
+| UI        | 1,755  | 62%  |
+| **Total** | **2,818** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 365 | 703   | 1,068 |
+| Running Tracker      | 375 | 703   | 1,078 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,053** | **1,755** | **2,808** |
+| **Total**            | **1,063** | **1,755** | **2,818** |
 
 ---
 
@@ -225,10 +225,10 @@
 
 | Feature                      | API | UI | Total |
 | ---------------------------- | --- | -- | ----- |
-| Race Log                     | 21  | 51 | 72    |
+| Race Log                     | 31  | 51 | 82    |
 | Upcoming Races               | 18  | 38 | 56    |
 | Upcoming Races Target Time   | 0   | 19 | 19    |
-| **Subtotal**                 | **39** | **108** | **147** |
+| **Subtotal**                 | **49** | **108** | **157** |
 
 #### Manual Entry
 
@@ -274,7 +274,7 @@
 | Push Subscription   | 4   | 0  | 4     |
 | **Subtotal**        | **4** | **0** | **4** |
 
-**Running Total — API: 365 | UI: 703 | Total: 1,068**
+**Running Total — API: 375 | UI: 703 | Total: 1,078**
 
 ---
 
@@ -303,7 +303,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 365 | 703   | 1,068 |
+| Running Tracker      | 375 | 703   | 1,078 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,053** | **1,755** | **2,808** |
+| **Total**            | **1,063** | **1,755** | **2,818** |
