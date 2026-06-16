@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { BarChart2, TrendingUp, Zap, Activity, Trophy } from 'lucide-react'
+import { BarChart2, TrendingUp, Zap, Activity, Trophy, Mountain } from 'lucide-react'
 import {
   fetchActivities,
   fetchPerformanceTrends,
@@ -16,6 +16,8 @@ import SummaryStats from './components/SummaryStats'
 import WeeklyDistanceChart from './components/WeeklyDistanceChart'
 import PaceTrendChart from './components/PaceTrendChart'
 import BestPaceChart from './components/BestPaceChart'
+import WeeklyElevationChart from './components/WeeklyElevationChart'
+import TerrainDistributionChart from './components/TerrainDistributionChart'
 import TrainingLoadChart from './components/TrainingLoadChart'
 import PerformanceManagementChart from './components/PerformanceManagementChart'
 import Vo2maxTrendChart from './components/Vo2maxTrendChart'
@@ -167,6 +169,28 @@ export default function AnalyticsPage() {
             icon={Zap}
           >
             <BestPaceChart activities={activities} />
+          </Section>
+
+          <Section
+            id="elevationTerrainSection_analyticsPage"
+            title="Elevation & Terrain"
+            description="Weekly elevation gain and the terrain mix of your runs — Flat, Rolling, Hilly, or Mountainous, based on elevation gain per kilometer."
+            icon={Mountain}
+          >
+            <div className="flex flex-col gap-6">
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                  Weekly Elevation Trend
+                </p>
+                <WeeklyElevationChart activities={activities} />
+              </div>
+              <div className="border-t border-slate-100 pt-5">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                  Terrain Distribution
+                </p>
+                <TerrainDistributionChart activities={activities} />
+              </div>
+            </div>
           </Section>
 
           <Section
