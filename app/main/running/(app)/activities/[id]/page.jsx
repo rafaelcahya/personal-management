@@ -42,6 +42,7 @@ import AIInsightCard from '../components/AIInsightCard'
 import MediaCarousel from '../components/MediaCarousel'
 import EditGoalModal from '../components/EditGoalModal'
 import SplitsSection from '../components/SplitsSection'
+import BurnBarChart from '../components/BurnBarChart'
 import LapsTable from '../components/LapsTable'
 import BestEffortsTable from '../components/BestEffortsTable'
 import PerceivedEffortSection from '../components/PerceivedEffortSection'
@@ -80,6 +81,7 @@ export default function ActivityDetailPage() {
   const router = useRouter()
   const [activity, setActivity] = useState(null)
   const [splits, setSplits] = useState([])
+  const [burnBar, setBurnBar] = useState(null)
   const [laps, setLaps] = useState([])
   const [bestEfforts, setBestEfforts] = useState([])
   const [photos, setPhotos] = useState([])
@@ -146,6 +148,7 @@ export default function ActivityDetailPage() {
           if (actRes.status === 'fulfilled') {
             setActivity(actRes.value.activity)
             setSplits(actRes.value.splits ?? [])
+            setBurnBar(actRes.value.burn_bar ?? null)
             setLaps(actRes.value.laps ?? [])
             setBestEfforts(actRes.value.best_efforts ?? [])
             setPhotos(actRes.value.photos ?? [])
@@ -1037,6 +1040,7 @@ export default function ActivityDetailPage() {
                   </div>
 
                   <SplitsSection splits={splits} />
+                  {splits.length > 0 && <BurnBarChart burnBar={burnBar} />}
                   <BestEffortsTable bestEfforts={bestEfforts} />
                   <LapsTable laps={laps} />
                 </div>

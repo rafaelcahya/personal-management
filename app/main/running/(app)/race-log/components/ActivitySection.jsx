@@ -30,6 +30,7 @@ import { computeHillScore, getHillTier } from '@/lib/services/running/utils/hill
 import MediaCarousel from './MediaCarousel'
 import HealthContext from './HealthContext'
 import SplitsSection from '../../activities/components/SplitsSection'
+import BurnBarChart from '../../activities/components/BurnBarChart'
 import BestEffortsTable from './BestEffortsTable'
 import LapsTable from './LapsTable'
 import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../../dashboard/utils/format'
@@ -38,6 +39,7 @@ export default function ActivitySection({
   activity,
   activityId,
   splits,
+  burnBar,
   laps,
   bestEfforts,
   photos,
@@ -486,6 +488,7 @@ export default function ActivitySection({
         </div>
 
         <SplitsSection splits={splits} pagePrefix="raceDetailPage" />
+        {splits.length > 0 && <BurnBarChart burnBar={burnBar} pagePrefix="raceDetailPage" />}
         <BestEffortsTable bestEfforts={bestEfforts} />
         <LapsTable laps={laps} />
 
