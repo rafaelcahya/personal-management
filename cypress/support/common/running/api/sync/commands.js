@@ -2,6 +2,7 @@ import constants from '../../../../../fixtures/app-constants.json'
 
 const SYNC_STRAVA = constants.endpoints.running_sync.sync_strava
 const SYNC_STATUS = constants.endpoints.running_sync.sync_status
+const STRAVA_CALLBACK = constants.endpoints.running_sync.strava_callback
 const STRAVA_STATUS = constants.endpoints.running_sync.strava_status
 
 Cypress.Commands.add('postSyncStrava', (body = {}) => {
@@ -18,6 +19,10 @@ Cypress.Commands.add('getSyncStatus', () => {
 
 Cypress.Commands.add('getSyncStatusNoAuth', () => {
   return cy.apiRequestNoAuth('GET', SYNC_STATUS)
+})
+
+Cypress.Commands.add('getStravaCallback', (qs = {}) => {
+  return cy.apiRequestWithSession('GET', STRAVA_CALLBACK, { qs, followRedirect: false })
 })
 
 Cypress.Commands.add('getStravaStatus', () => {
