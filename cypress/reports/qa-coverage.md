@@ -1,6 +1,6 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-06-18
 **Branch:** feat/issue-361-ai-coach-api-tests
 
 ---
@@ -250,9 +250,9 @@
 | Feature                  | API | UI | Total |
 | ------------------------ | --- | -- | ----- |
 | HR Zones                 | 20  | 0  | 20    |
-| Settings                 | 11  | 21 | 32    |
+| Settings                 | 15  | 21 | 36    |
 | Threshold Pace Detect    | 6   | 0  | 6     |
-| **Subtotal**             | **37** | **21** | **58** |
+| **Subtotal**             | **41** | **21** | **62** |
 
 #### Strava
 
@@ -267,13 +267,6 @@
 | ------------ | --- | -- | ----- |
 | Sync         | 8   | 0  | 8     |
 | **Subtotal** | **8** | **0** | **8** |
-
-#### Push Notification
-
-| Feature             | API | UI | Total |
-| ------------------- | --- | -- | ----- |
-| Push Subscription   | 4   | 0  | 4     |
-| **Subtotal**        | **4** | **0** | **4** |
 
 **Running Total — API: 379 | UI: 703 | Total: 1,082**
 

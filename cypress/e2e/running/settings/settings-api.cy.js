@@ -1,14 +1,11 @@
-// API spec: GET + PATCH /api/running/v1/user/settings
-// Issue: #199 — race reminder push notifications (#171)
-// Covers: auth guard, response shape, notify_race_reminder field, PATCH validation
+// API spec — Settings menu.
+//   GET  /api/running/v1/user/settings           (#199, #171)
+//   PATCH /api/running/v1/user/settings          (#199, #171)
+//   POST /api/running/v1/user/push-subscription  (#135)
 
 import constants from '../../../fixtures/app-constants.json'
 
 const SETTINGS_EP = constants.endpoints.running_user.settings
-
-// ---------------------------------------------------------------------------
-// A. Auth guard — unauthenticated → 401
-// ---------------------------------------------------------------------------
 
 describe('User Settings API — auth guard', () => {
   beforeEach(() => {
@@ -39,10 +36,6 @@ describe('User Settings API — auth guard', () => {
     })
   })
 })
-
-// ---------------------------------------------------------------------------
-// B. GET — response shape
-// ---------------------------------------------------------------------------
 
 describe('User Settings API — GET response shape (authenticated)', () => {
   beforeEach(() => {
@@ -100,10 +93,6 @@ describe('User Settings API — GET response shape (authenticated)', () => {
     })
   })
 })
-
-// ---------------------------------------------------------------------------
-// C. PATCH — notify_race_reminder field
-// ---------------------------------------------------------------------------
 
 describe('User Settings API — PATCH notify_race_reminder (authenticated)', () => {
   beforeEach(() => {
@@ -169,6 +158,67 @@ describe('User Settings API — PATCH notify_race_reminder (authenticated)', () 
     }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('message', 'Settings updated')
+    })
+  })
+})
+
+describe('Push Subscription API — POST (authenticated)', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('valid subscription object → 200 with push_notifications_enabled: true', () => {
+    cy.postPushSubscription({
+      subscription: {
+        endpoint: 'https://fcm.googleapis.com/fcm/send/test-endpoint',
+        keys: {
+          p256dh: 'fake-p256dh-key-for-testing',
+          auth: 'fake-auth-key',
+        },
+      },
+    }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('data')
+      expect(res.body.data).to.have.property('push_notifications_enabled', true)
+    })
+  })
+
+  it('{ subscription: null } → 200 with push_notifications_enabled: false', () => {
+    cy.postPushSubscription({ subscription: null }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('data')
+      expect(res.body.data).to.have.property('push_notifications_enabled', false)
+    })
+  })
+
+  it('subscription without keys → 400 validation error', () => {
+    // keys.p256dh and keys.auth are required — endpoint alone is not a valid subscription
+    cy.postPushSubscription({
+      subscription: {
+        endpoint: 'https://test.push/endpoint',
+      },
+    }).then((res) => {
+      expect(res.status).to.eq(400)
+      expect(res.body).to.have.property('error')
+    })
+  })
+})
+
+describe('Push Subscription API — POST (unauthenticated)', () => {
+  beforeEach(() => {
+    cy.clearAllCookies()
+    cy.clearAllLocalStorage()
+  })
+
+  it('returns 401 when no session cookie present', () => {
+    cy.postPushSubscriptionNoAuth({
+      subscription: {
+        endpoint: 'https://fcm.googleapis.com/fcm/send/test-endpoint',
+        keys: { p256dh: 'fake-p256dh', auth: 'fake-auth' },
+      },
+    }).then((res) => {
+      expect(res.status).to.eq(401)
+      expect(res.body).to.have.property('error')
     })
   })
 })
