@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import { version } from '@/package.json'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
 
 const INVENTORY_ITEMS = [
@@ -252,6 +253,8 @@ const SWIPE_MAX_Y = 80
 export default function Sidebar({ user }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const pathname = usePathname()
+  const isTrading = pathname.startsWith('/main/trading')
 
   useEffect(() => {
     const saved = localStorage.getItem('sidebar-collapsed')
@@ -342,6 +345,13 @@ export default function Sidebar({ user }) {
 
         <SidebarNav collapsed={collapsed} />
         <UserSection collapsed={collapsed} user={user} />
+        {!isTrading && !collapsed && (
+          <div className="px-4 pb-3">
+            <p id="appVersion_sidebar" className="text-[10px] text-slate-400">
+              v{version}
+            </p>
+          </div>
+        )}
 
         {/* Collapse toggle */}
         <button
@@ -399,6 +409,13 @@ export default function Sidebar({ user }) {
             </div>
             <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
             <UserSection collapsed={false} user={user} mobile={true} />
+            {!isTrading && (
+              <div className="px-4 pb-3">
+                <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400">
+                  v{version}
+                </p>
+              </div>
+            )}
           </aside>
         </>
       )}
