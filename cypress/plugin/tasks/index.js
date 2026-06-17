@@ -1,4 +1,5 @@
 import { authTasks } from './authTasks.js'
+import { aiInsightsTasks } from './running/AiInsightsTasks.js'
 import { tradeTasks } from './tradeTasks.js'
 import { feeTasks } from './feeTasks.js'
 import { eventTasks } from './eventTasks.js'
@@ -23,5 +24,6 @@ export const registerTasks = (on, supabaseAdmin) => {
     ...dbTasks(supabaseAdmin),
     ...activitiesTasks(supabaseAdmin),
     ...raceLogTasks(supabaseAdmin),
+    ...aiInsightsTasks(supabaseAdmin),
   })
 }
