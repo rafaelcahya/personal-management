@@ -344,14 +344,14 @@ export default function Sidebar({ user }) {
         </div>
 
         <SidebarNav collapsed={collapsed} />
-        <UserSection collapsed={collapsed} user={user} />
         {!isTrading && !collapsed && (
-          <div className="px-4 pb-3">
+          <div className="px-4 pb-1">
             <p id="appVersion_sidebar" className="text-[10px] text-slate-400">
               v{version}
             </p>
           </div>
         )}
+        <UserSection collapsed={collapsed} user={user} />
 
         {/* Collapse toggle */}
         <button
@@ -408,14 +408,14 @@ export default function Sidebar({ user }) {
               </button>
             </div>
             <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
-            <UserSection collapsed={false} user={user} mobile={true} />
             {!isTrading && (
-              <div className="px-4 pb-3">
+              <div className="px-4 pb-1">
                 <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400">
                   v{version}
                 </p>
               </div>
             )}
+            <UserSection collapsed={false} user={user} mobile={true} />
           </aside>
         </>
       )}
