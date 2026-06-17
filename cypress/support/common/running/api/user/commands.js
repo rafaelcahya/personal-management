@@ -45,6 +45,10 @@ Cypress.Commands.add('postPushSubscription', (body) => {
   return cy.apiRequestWithSession('POST', PUSH_SUBSCRIPTION, { body })
 })
 
+Cypress.Commands.add('postPushSubscriptionNoAuth', (body) => {
+  return cy.apiRequestNoAuth('POST', PUSH_SUBSCRIPTION, { body })
+})
+
 Cypress.Commands.add('deletePushSubscription', (body) => {
   return cy.apiRequestWithSession('DELETE', PUSH_SUBSCRIPTION, { body })
 })
