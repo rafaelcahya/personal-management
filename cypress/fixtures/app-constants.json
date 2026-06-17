@@ -113,6 +113,7 @@
       "personal_bests": "/api/running/v1/analytics/personal-bests",
       "calorie_trend": "/api/running/v1/analytics/calorie-trend",
       "zones": "/api/running/v1/analytics/zones",
+      "zones_reference": "/api/running/v1/analytics/zones/reference",
       "gear": "/api/running/v1/analytics/gear",
       "fitness_age": "/api/running/v1/analytics/fitness-age",
       "endurance_score": "/api/running/v1/analytics/endurance-score"
@@ -248,7 +249,9 @@
       "user_menu_signout_mobile": "userMenuSignOut_mobile",
       "user_menu_trigger": "userMenuTrigger_landingPage",
       "user_menu_email": "userMenuEmail_landingPage",
-      "user_menu_signout": "logoutBtn"
+      "user_menu_signout": "logoutBtn",
+      "app_version": "appVersion_sidebar",
+      "app_version_mobile": "appVersion_mobileDrawer"
     },
     "product_list": {
       "controls_bar": "controlsBar_productListPage",
@@ -718,7 +721,9 @@
       "cadence_zone_breakdown": "cadenceZoneBreakdown_analyticsPage",
       "gear_usage_subsection": "gearUsageSubSection_analyticsPage",
       "gear_usage_breakdown": "gearUsageBreakdown_analyticsPage",
-      "gear_retired_toggle": "gearRetiredToggle_analyticsPage"
+      "gear_retired_toggle": "gearRetiredToggle_analyticsPage",
+      "training_zones_reference": "trainingZonesReference_analyticsPage",
+      "zone_reference_no_config": "zoneReferenceNoConfig_analyticsPage"
     },
     "product_brand": {
       "controls_bar": "controlsBar_productBrandPage",

@@ -3,12 +3,18 @@
 import { useState, useEffect } from 'react'
 import { Heart, Gauge, Activity, Package } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import { fetchZoneAnalytics, fetchGearAnalytics, fetchActivityTypes } from '@/lib/api/running'
+import {
+  fetchZoneAnalytics,
+  fetchGearAnalytics,
+  fetchActivityTypes,
+  fetchZoneReference,
+} from '@/lib/api/running'
 import ZoneFilterBar from './ZoneFilterBar'
 import HrZoneBreakdown from './HrZoneBreakdown'
 import PaceZoneBreakdown from './PaceZoneBreakdown'
 import CadenceZoneBreakdown from './CadenceZoneBreakdown'
 import GearUsageBreakdown from './GearUsageBreakdown'
+import TrainingZonesReference from './TrainingZonesReference'
 
 function SubSection({ icon: Icon, title, id, children }) {
   return (
@@ -33,6 +39,9 @@ export default function ZoneAnalyticsSection() {
   const [zoneError, setZoneError] = useState(null)
   const [gearError, setGearError] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [refData, setRefData] = useState(null)
+  const [refLoading, setRefLoading] = useState(true)
+  const [refError, setRefError] = useState(null)
 
   useEffect(() => {
     fetchActivityTypes()
@@ -40,6 +49,19 @@ export default function ZoneAnalyticsSection() {
       .catch(() =>
         setActivityTypes(['Run', 'TrailRun', 'VirtualRun', 'Walk', 'Hike', 'Ride', 'Swim'])
       )
+  }, [])
+
+  function loadRefData() {
+    setRefLoading(true)
+    setRefError(null)
+    fetchZoneReference()
+      .then((data) => setRefData(data))
+      .catch(() => setRefError('Failed to load zone reference'))
+      .finally(() => setRefLoading(false))
+  }
+
+  useEffect(() => {
+    loadRefData()
   }, [])
 
   const hasCustomDates = !!(startDate && endDate)
@@ -175,6 +197,15 @@ export default function ZoneAnalyticsSection() {
           </Card>
         </div>
       )}
+
+      <div className="grid grid-cols-1 gap-4">
+        <TrainingZonesReference
+          data={refData}
+          loading={refLoading}
+          error={refError}
+          onRetry={loadRefData}
+        />
+      </div>
     </section>
   )
 }
