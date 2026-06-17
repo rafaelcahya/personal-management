@@ -24,6 +24,7 @@ export async function GET(request) {
       activity_type: searchParams.get('activity_type') ?? undefined,
       start_date: searchParams.get('start_date') ?? undefined,
       end_date: searchParams.get('end_date') ?? undefined,
+      tz_offset: searchParams.get('tz_offset') ?? undefined,
     })
 
     if (!parsed.success) {
@@ -36,14 +37,16 @@ export async function GET(request) {
       )
     }
 
-    const { range, activity_type, start_date, end_date } = parsed.data
+    const { range, activity_type, start_date, end_date, tz_offset } = parsed.data
+    const tzOffsetMs = (tz_offset ?? 0) * 60 * 1000
     const data = await getZoneAnalytics(
       supabase,
       user.id,
       range,
       activity_type,
       start_date,
-      end_date
+      end_date,
+      tzOffsetMs
     )
 
     return NextResponse.json({ data, message: 'ok' }, { status: 200 })

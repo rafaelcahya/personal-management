@@ -53,9 +53,10 @@ export default function ZoneAnalyticsSection() {
       setZoneError(null)
       setGearError(null)
 
+      const tzOffset = new Date().getTimezoneOffset()
       const [zonesRes, gearRes] = await Promise.allSettled([
-        fetchZoneAnalytics(effectiveRange, activityType, startDate, endDate),
-        fetchGearAnalytics(effectiveRange, activityType, startDate, endDate),
+        fetchZoneAnalytics(effectiveRange, activityType, startDate, endDate, tzOffset),
+        fetchGearAnalytics(effectiveRange, activityType, startDate, endDate, tzOffset),
       ])
 
       if (!alive) return
