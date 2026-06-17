@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,068  | 38%  |
+| API       | 1,067  | 38%  |
 | UI        | 1,755  | 62%  |
-| **Total** | **2,823** | 100% |
+| **Total** | **2,822** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 380 | 703   | 1,083 |
+| Running Tracker      | 379 | 703   | 1,082 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,068** | **1,755** | **2,823** |
+| **Total**            | **1,067** | **1,755** | **2,822** |
 
 ---
 
@@ -242,8 +242,8 @@
 
 | Feature      | API | UI | Total |
 | ------------ | --- | -- | ----- |
-| Onboarding   | 13  | 38 | 51    |
-| **Subtotal** | **13** | **38** | **51** |
+| Onboarding   | 12  | 38 | 50    |
+| **Subtotal** | **12** | **38** | **50** |
 
 #### Settings
 
@@ -275,7 +275,7 @@
 | Push Subscription   | 4   | 0  | 4     |
 | **Subtotal**        | **4** | **0** | **4** |
 
-**Running Total — API: 380 | UI: 703 | Total: 1,083**
+**Running Total — API: 379 | UI: 703 | Total: 1,082**
 
 ---
 
@@ -304,7 +304,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 401 | 703   | 1,104 |
+| Running Tracker      | 379 | 703   | 1,082 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,089** | **1,755** | **2,844** |
+| **Total**            | **1,067** | **1,755** | **2,822** |
