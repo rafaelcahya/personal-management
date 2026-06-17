@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { SearchX } from 'lucide-react'
+import { SearchX, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -36,44 +36,17 @@ function formatDate(dateString) {
   })
 }
 
-function applySort(records, sortOption) {
-  const sorted = [...records]
-  switch (sortOption) {
-    case 'date_asc':
-      return sorted.sort((a, b) => new Date(a.start_usage_date) - new Date(b.start_usage_date))
-    case 'name_asc':
-      return sorted.sort((a, b) =>
-        (a.product || '').localeCompare(b.product || '', undefined, { sensitivity: 'base' })
-      )
-    case 'name_desc':
-      return sorted.sort((a, b) =>
-        (b.product || '').localeCompare(a.product || '', undefined, { sensitivity: 'base' })
-      )
-    case 'date_desc':
-    default:
-      return sorted.sort((a, b) => new Date(b.start_usage_date) - new Date(a.start_usage_date))
-  }
-}
-
 export default function ProductHistoryTable({
-  productHistories = [],
-  filterStatus,
-  searchQuery = '',
-  sortOption = 'date_desc',
+  histories = [],
+  page,
+  totalPages,
+  total,
+  onPrev,
+  onNext,
   onClearFilters,
+  hasActiveFilters,
 }) {
-  const hasActiveFilters = filterStatus || searchQuery
-
-  const filtered = productHistories.filter((history) => {
-    const matchesStatus = !filterStatus || history.status === filterStatus
-    const matchesSearch =
-      !searchQuery || (history.product || '').toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesStatus && matchesSearch
-  })
-
-  const sorted = applySort(filtered, sortOption)
-
-  if (sorted.length === 0) {
+  if (histories.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <SearchX className="h-10 w-10 text-slate-400" aria-hidden="true" />
@@ -119,9 +92,11 @@ export default function ProductHistoryTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sorted.map((history, index) => (
+          {histories.map((history, index) => (
             <TableRow key={history.id} className="hover:bg-slate-100">
-              <TableCell className="text-center text-sm font-mono w-[40px]">{index + 1}</TableCell>
+              <TableCell className="text-center text-sm font-mono w-[40px]">
+                {(page - 1) * 15 + index + 1}
+              </TableCell>
               <TableCell className="w-[250px]">
                 <div className="min-w-0">
                   <p className="text-xs text-slate-400 truncate leading-tight">
@@ -170,6 +145,32 @@ export default function ProductHistoryTable({
           ))}
         </TableBody>
       </Table>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">
+          <button
+            onClick={onPrev}
+            disabled={page <= 1}
+            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+            aria-label="Previous page"
+          >
+            <ChevronLeft className="size-4" aria-hidden="true" />
+            Prev
+          </button>
+          <span className="text-xs text-slate-400 text-center" aria-live="polite">
+            Page {page} of {totalPages} · {total} records
+          </span>
+          <button
+            onClick={onNext}
+            disabled={page >= totalPages}
+            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+            aria-label="Next page"
+          >
+            Next
+            <ChevronRight className="size-4" aria-hidden="true" />
+          </button>
+        </div>
+      )}
     </div>
   )
 }
