@@ -1,14 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { PackageOpen, Search, X } from 'lucide-react'
+import { PackageOpen, Search, X, AlertCircle, RefreshCw } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import ProductHistoryTable from './ProductHistoryTable'
 import InventoryTableSkeleton from '@/app/main/components/InventoryTableSkeleton'
 import ProductHistoryTableHeader from './component/ProductHistoryTableHeader'
 import ProductHistoryFilterDropdown from './component/ProductHistoryFilterDropdown'
 import PageHeader from '../../components/PageHeader'
 import { fetchProductHistory } from '@/lib/api/productHistory'
+
+const LIMIT = 15
 
 function HistorySearchInput({ searchQuery, setSearchQuery }) {
   return (
@@ -55,23 +58,59 @@ const HISTORY_SKELETON_ROW = [
   'h-4 w-28 rounded',
 ]
 
-export default function ProductHistoryPageClient({ initialHistory }) {
-  const [history, setHistory] = useState(initialHistory ?? null)
-  const [loading, setLoading] = useState(initialHistory == null)
-  const [filterStatus, setFilterStatus] = useState(null)
+export default function ProductHistoryPageClient() {
+  const [data, setData] = useState([])
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const [filterStatus, setFilterStatus] = useState('')
   const [sortOption, setSortOption] = useState('date_desc')
   const [searchQuery, setSearchQuery] = useState('')
 
+  // Reset to page 1 whenever filters change
   useEffect(() => {
-    if (initialHistory == null) {
-      fetchProductHistory()
-        .then((data) => setHistory(data || []))
-        .catch(() => setHistory([]))
-        .finally(() => setLoading(false))
-    }
-  }, [])
+    setPage(1)
+  }, [searchQuery, filterStatus, sortOption])
 
-  const historyList = history ?? []
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    fetchProductHistory({
+      page,
+      limit: LIMIT,
+      search: searchQuery || undefined,
+      status: filterStatus || undefined,
+      sort: sortOption,
+    })
+      .then((result) => {
+        if (cancelled) return
+        setData(result.data ?? [])
+        setTotal(result.total ?? 0)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setError(err.message || 'Failed to load product history')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [page, searchQuery, filterStatus, sortOption])
+
+  const totalPages = Math.ceil(total / LIMIT)
+  const hasActiveFilters = !!(filterStatus || searchQuery)
+
+  function handleClearFilters() {
+    setSearchQuery('')
+    setFilterStatus('')
+  }
 
   return (
     <div className="flex flex-col gap-3 sm:gap-5">
@@ -87,7 +126,7 @@ export default function ProductHistoryPageClient({ initialHistory }) {
       <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white flex flex-col">
         {/* Title */}
         <div className="px-3 sm:px-5 pt-3 sm:pt-5">
-          <ProductHistoryTableHeader histories={historyList} />
+          <ProductHistoryTableHeader total={total} />
         </div>
 
         {/* Controls bar */}
@@ -103,7 +142,6 @@ export default function ProductHistoryPageClient({ initialHistory }) {
                 onFilterChange={setFilterStatus}
                 sortOption={sortOption}
                 onSortChange={setSortOption}
-                productHistories={historyList}
               />
             </div>
           </div>
@@ -117,7 +155,29 @@ export default function ProductHistoryPageClient({ initialHistory }) {
               headerCols={HISTORY_SKELETON_HEADER}
               rowCols={HISTORY_SKELETON_ROW}
             />
-          ) : historyList.length === 0 ? (
+          ) : error ? (
+            <div
+              id="errorState_productHistoryPage"
+              className="flex flex-col items-center justify-center gap-3 py-12 text-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <AlertCircle className="h-10 w-10 text-red-400" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-slate-600">Failed to load history</p>
+                <p className="text-xs text-slate-400">{error}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => p)}
+                className="gap-1.5"
+              >
+                <RefreshCw className="size-3.5" aria-hidden="true" />
+                Retry
+              </Button>
+            </div>
+          ) : !hasActiveFilters && data.length === 0 ? (
             <div
               id="emptyState_productHistoryPage"
               className="flex flex-col items-center justify-center gap-3 py-12 text-center"
@@ -132,14 +192,14 @@ export default function ProductHistoryPageClient({ initialHistory }) {
             </div>
           ) : (
             <ProductHistoryTable
-              productHistories={historyList}
-              filterStatus={filterStatus}
-              searchQuery={searchQuery}
-              sortOption={sortOption}
-              onClearFilters={() => {
-                setSearchQuery('')
-                setFilterStatus(null)
-              }}
+              histories={data}
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              onPrev={() => setPage((p) => p - 1)}
+              onNext={() => setPage((p) => p + 1)}
+              onClearFilters={handleClearFilters}
+              hasActiveFilters={hasActiveFilters}
             />
           )}
         </div>
