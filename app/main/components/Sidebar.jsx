@@ -28,7 +28,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { version } from '@/package.json'
+import packageJson from '@/package.json'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
 
 const INVENTORY_ITEMS = [
@@ -347,7 +347,7 @@ export default function Sidebar({ user }) {
         {!isTrading && !collapsed && (
           <div className="px-4 pb-1">
             <p id="appVersion_sidebar" className="text-[10px] text-slate-400">
-              v{version}
+              v{packageJson.version}
             </p>
           </div>
         )}
@@ -411,7 +411,7 @@ export default function Sidebar({ user }) {
             {!isTrading && (
               <div className="px-4 pb-1">
                 <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400">
-                  v{version}
+                  v{packageJson.version}
                 </p>
               </div>
             )}
