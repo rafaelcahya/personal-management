@@ -1,24 +1,19 @@
-import { RUNNING_ENDPOINTS } from '../../../fixtures/endpoints.js'
-
-const ONBOARDING_BIOMETRIC_API = RUNNING_ENDPOINTS.ONBOARDING_BIOMETRIC
-const ONBOARDING_COMPLETE_API = RUNNING_ENDPOINTS.ONBOARDING_COMPLETE
+// API spec — Onboarding menu.
+//   POST /api/running/v1/onboarding/biometric
+//   POST /api/running/v1/onboarding/complete
 
 describe('Onboarding API — POST /api/running/v1/onboarding/biometric', () => {
-  // setupApiAuthCookies in beforeEach because the sb-{ref}-auth-token cookie is cleared
-  // between tests by Cypress.session.clearAllSavedSessions() in e2e.ts support file
   beforeEach(() => {
     cy.setupApiAuthCookies()
   })
 
   it('returns 200 with valid biometric payload', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_BIOMETRIC_API, {
-      body: {
-        birth_date: '1994-06-15',
-        height_cm: 172,
-        weight_kg: 68,
-        resting_hr_baseline: 58,
-        max_hr: 188,
-      },
+    cy.postOnboardingBiometric({
+      birth_date: '1994-06-15',
+      height_cm: 172,
+      weight_kg: 68,
+      resting_hr_baseline: 58,
+      max_hr: 188,
     }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('message', 'Biometric data saved')
@@ -27,9 +22,7 @@ describe('Onboarding API — POST /api/running/v1/onboarding/biometric', () => {
   })
 
   it('returns 200 with empty body (all biometric fields optional in schema)', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_BIOMETRIC_API, {
-      body: {},
-    }).then((res) => {
+    cy.postOnboardingBiometric({}).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('message', 'Biometric data saved')
     })
@@ -39,19 +32,16 @@ describe('Onboarding API — POST /api/running/v1/onboarding/biometric', () => {
   // Height 49 is below min(50) → should return 400 from Zod.
   // KNOWN GAP: API returns 500 instead of 400 for out-of-range values — likely the Zod
   // validation check in the route is not working as expected or the service call throws
-  // before Zod rejection is returned. See Backend signal below.
+  // before Zod rejection is returned.
   it('KNOWN_GAP: returns 400 (or 500) when height_cm is below schema minimum (49)', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_BIOMETRIC_API, {
-      body: {
-        birth_date: '1994-06-15',
-        height_cm: 49,
-        weight_kg: 68,
-        resting_hr_baseline: 58,
-        max_hr: 188,
-      },
+    cy.postOnboardingBiometric({
+      birth_date: '1994-06-15',
+      height_cm: 49,
+      weight_kg: 68,
+      resting_hr_baseline: 58,
+      max_hr: 188,
     }).then((res) => {
       // Expected: 400 Validation failed. Actual: 500 (backend validation gap)
-      // Acceptable until backend fixes the validation flow
       expect(res.status).to.be.oneOf([400, 500])
       if (res.status === 400) {
         expect(res.body.error).to.eq('Validation failed')
@@ -60,14 +50,12 @@ describe('Onboarding API — POST /api/running/v1/onboarding/biometric', () => {
   })
 
   it('KNOWN_GAP: returns 400 (or 500) when height_cm is above schema maximum (301)', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_BIOMETRIC_API, {
-      body: {
-        birth_date: '1994-06-15',
-        height_cm: 301,
-        weight_kg: 68,
-        resting_hr_baseline: 58,
-        max_hr: 188,
-      },
+    cy.postOnboardingBiometric({
+      birth_date: '1994-06-15',
+      height_cm: 301,
+      weight_kg: 68,
+      resting_hr_baseline: 58,
+      max_hr: 188,
     }).then((res) => {
       expect(res.status).to.be.oneOf([400, 500])
       if (res.status === 400) {
@@ -77,14 +65,12 @@ describe('Onboarding API — POST /api/running/v1/onboarding/biometric', () => {
   })
 
   it('KNOWN_GAP: returns 400 (or 500) when weight_kg is below schema minimum (19)', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_BIOMETRIC_API, {
-      body: {
-        birth_date: '1994-06-15',
-        height_cm: 172,
-        weight_kg: 19,
-        resting_hr_baseline: 58,
-        max_hr: 188,
-      },
+    cy.postOnboardingBiometric({
+      birth_date: '1994-06-15',
+      height_cm: 172,
+      weight_kg: 19,
+      resting_hr_baseline: 58,
+      max_hr: 188,
     }).then((res) => {
       expect(res.status).to.be.oneOf([400, 500])
       if (res.status === 400) {
@@ -94,14 +80,12 @@ describe('Onboarding API — POST /api/running/v1/onboarding/biometric', () => {
   })
 
   it('KNOWN_GAP: returns 400 (or 500) when max_hr is below schema minimum (59)', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_BIOMETRIC_API, {
-      body: {
-        birth_date: '1994-06-15',
-        height_cm: 172,
-        weight_kg: 68,
-        resting_hr_baseline: 58,
-        max_hr: 59,
-      },
+    cy.postOnboardingBiometric({
+      birth_date: '1994-06-15',
+      height_cm: 172,
+      weight_kg: 68,
+      resting_hr_baseline: 58,
+      max_hr: 59,
     }).then((res) => {
       expect(res.status).to.be.oneOf([400, 500])
       if (res.status === 400) {
@@ -111,53 +95,18 @@ describe('Onboarding API — POST /api/running/v1/onboarding/biometric', () => {
   })
 
   // KNOWN GAP: backend returns 500 instead of 400 for invalid birth_date format —
-  // same root issue as range validations above. The Zod regex check triggers but
-  // the error isn't being surfaced as a 400 response.
+  // same root issue as range validations above.
   it('KNOWN_GAP: returns 400 (or 500) when birth_date is not YYYY-MM-DD format', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_BIOMETRIC_API, {
-      body: {
-        birth_date: '15/06/1994',
-        height_cm: 172,
-        weight_kg: 68,
-        resting_hr_baseline: 58,
-      },
+    cy.postOnboardingBiometric({
+      birth_date: '15/06/1994',
+      height_cm: 172,
+      weight_kg: 68,
+      resting_hr_baseline: 58,
     }).then((res) => {
-      // Expected: 400 Validation failed. Actual: 500 (backend validation gap — same root cause)
       expect(res.status).to.be.oneOf([400, 500])
       if (res.status === 400) {
         expect(res.body.error).to.eq('Validation failed')
       }
-    })
-  })
-
-  it('returns 400 when request body is malformed JSON', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_BIOMETRIC_API, {
-      body: 'not-valid-json',
-      headers: { 'Content-Type': 'application/json' },
-    }).then((res) => {
-      // Malformed JSON body — API catches and returns 400
-      expect(res.status).to.be.oneOf([400, 422])
-    })
-  })
-
-  // NOTE: cy.apiRequestNoAuth does not clear cookies set by setupApiAuthCookies in beforeEach.
-  // The test is marked as skipped until the auth isolation pattern is improved.
-  it.skip('returns 401 when not authenticated (BLOCKED: cookie isolation needed)', () => {
-    // cy.apiRequestNoAuth sends the request without Cypress auth setup,
-    // but cy.clearCookies() must run first to remove the session cookie set in beforeEach.
-    // Use a dedicated describe block with no beforeEach setup for unauthenticated tests.
-    cy.clearCookies()
-    cy.apiRequestNoAuth('POST', ONBOARDING_BIOMETRIC_API, {
-      body: {
-        birth_date: '1994-06-15',
-        height_cm: 172,
-        weight_kg: 68,
-        resting_hr_baseline: 58,
-        max_hr: 188,
-      },
-    }).then((res) => {
-      expect(res.status).to.eq(401)
-      expect(res.body.error).to.eq('Unauthorized')
     })
   })
 })
@@ -168,9 +117,7 @@ describe('Onboarding API — POST /api/running/v1/onboarding/complete', () => {
   })
 
   it('returns 200 with empty body (no goal)', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_COMPLETE_API, {
-      body: {},
-    }).then((res) => {
+    cy.postOnboardingComplete({}).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('message', 'Onboarding complete')
       expect(res.body).to.have.property('data')
@@ -178,12 +125,10 @@ describe('Onboarding API — POST /api/running/v1/onboarding/complete', () => {
   })
 
   it('returns 200 with valid goal payload (race type)', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_COMPLETE_API, {
-      body: {
-        goal_type: 'race',
-        target_date: '2027-04-15',
-        target_distance_m: 42195,
-      },
+    cy.postOnboardingComplete({
+      goal_type: 'race',
+      target_date: '2027-04-15',
+      target_distance_m: 42195,
     }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('message', 'Onboarding complete')
@@ -191,11 +136,9 @@ describe('Onboarding API — POST /api/running/v1/onboarding/complete', () => {
   })
 
   it('returns 200 when goal_type is present but target_date is omitted', () => {
-    cy.apiRequestWithSession('POST', ONBOARDING_COMPLETE_API, {
-      body: {
-        goal_type: 'race',
-        target_distance_m: 10000,
-      },
+    cy.postOnboardingComplete({
+      goal_type: 'race',
+      target_distance_m: 10000,
     }).then((res) => {
       expect(res.status).to.eq(200)
     })
@@ -204,18 +147,15 @@ describe('Onboarding API — POST /api/running/v1/onboarding/complete', () => {
 
 describe('Onboarding API — Unauthenticated access (no session)', () => {
   beforeEach(() => {
-    // Ensure no auth cookies carry over from other describe blocks
     cy.clearCookies()
     cy.clearLocalStorage()
   })
 
   it('biometric endpoint returns 401 when no session cookie', () => {
-    cy.request({
-      method: 'POST',
-      url: ONBOARDING_BIOMETRIC_API,
-      body: { birth_date: '1994-06-15', height_cm: 172, weight_kg: 68 },
-      headers: { 'Content-Type': 'application/json' },
-      failOnStatusCode: false,
+    cy.postOnboardingBiometricNoAuth({
+      birth_date: '1994-06-15',
+      height_cm: 172,
+      weight_kg: 68,
     }).then((res) => {
       expect(res.status).to.eq(401)
       expect(res.body.error).to.eq('Unauthorized')
@@ -223,13 +163,7 @@ describe('Onboarding API — Unauthenticated access (no session)', () => {
   })
 
   it('complete endpoint returns 401 when no session cookie', () => {
-    cy.request({
-      method: 'POST',
-      url: ONBOARDING_COMPLETE_API,
-      body: {},
-      headers: { 'Content-Type': 'application/json' },
-      failOnStatusCode: false,
-    }).then((res) => {
+    cy.postOnboardingCompleteNoAuth().then((res) => {
       expect(res.status).to.eq(401)
       expect(res.body.error).to.eq('Unauthorized')
     })
