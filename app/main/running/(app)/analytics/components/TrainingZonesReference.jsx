@@ -52,9 +52,14 @@ export default function TrainingZonesReference({ data, loading, error, onRetry }
       className="border border-slate-200/70 shadow-sm py-0 col-span-full"
     >
       <CardContent className="px-5 py-5">
-        <div className="flex items-center gap-2 mb-4">
-          <MapPin className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-          <h3 className="text-sm font-semibold text-slate-700">Training Zones Reference</h3>
+        <div className="flex flex-col gap-1 mb-4">
+          <div className="flex items-center gap-2">
+            <MapPin className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+            <h3 className="text-sm font-semibold text-slate-700">Training Zones Reference</h3>
+          </div>
+          <p className="text-xs text-slate-400">
+            Your target HR and pace ranges per zone, derived from your profile settings.
+          </p>
         </div>
 
         {loading && (
@@ -92,14 +97,22 @@ export default function TrainingZonesReference({ data, loading, error, onRetry }
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-xs text-slate-400 border-b border-slate-100">
-                      <th className="text-left pb-2 font-medium w-24">Zone</th>
+                      <th className="text-left pb-2 font-medium uppercase tracking-wide w-24">
+                        Zone
+                      </th>
                       {data.hr_configured && (
-                        <th className="text-left pb-2 font-medium">HR Range</th>
+                        <th className="text-left pb-2 font-medium uppercase tracking-wide">
+                          HR Range
+                        </th>
                       )}
                       {data.pace_configured && (
-                        <th className="text-left pb-2 font-medium">Pace Range</th>
+                        <th className="text-left pb-2 font-medium uppercase tracking-wide">
+                          Pace Range
+                        </th>
                       )}
-                      <th className="text-left pb-2 font-medium hidden sm:table-cell">Guidance</th>
+                      <th className="text-left pb-2 font-medium uppercase tracking-wide hidden sm:table-cell">
+                        Guidance
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
