@@ -2,21 +2,24 @@
 
 > Part of PRD_Personal_Management. Shared standards: [PRD_Shared.md](./PRD_Shared.md)
 
+**Version:** 1.1
+**Last Updated:** 2026-06-17
+
 ---
 
 ### 3.1 Inventory Management Module
 
-**Tujuan:** Melacak stok produk rumah tangga, penggunaan, dan riwayat konsumsi.
+**Purpose:** Track household product stock, usage, and consumption history.
 
 ---
 
 #### 3.1.0 Inventory Dashboard (`/main/inventory`)
 
-**Deskripsi:** Halaman utama modul Inventory yang memberikan gambaran menyeluruh kondisi stok dan analitik konsumsi produk. Dashboard terdiri dari 6 summary cards dan 11 section analitik yang dirancang untuk membantu user membuat keputusan restock yang tepat waktu dan berbasis data.
+**Description:** The main page of the Inventory module. It gives a full overview of stock conditions and product consumption analytics. The dashboard has 6 summary cards and 11 analytics sections designed to help the user make timely, data-driven restock decisions.
 
 **Route:** `/main/inventory`
 **Entry Point:** `app/main/inventory/page.jsx`
-**Komponen Utama:** `app/main/inventory/InventoryDashboard.jsx`
+**Main Component:** `app/main/inventory/InventoryDashboard.jsx`
 
 **User Stories:**
 
@@ -44,484 +47,484 @@
 
 ##### Summary Cards (6 Cards)
 
-**Deskripsi:** 6 card ringkasan yang memberikan overview cepat kondisi inventory saat ini. Setiap card dapat diklik untuk navigasi ke Product List dengan filter yang relevan.
+**Description:** 6 summary cards giving a quick overview of the current inventory state. Each card is clickable and navigates to the Product List with a relevant filter applied.
 
-| Card           | Kalkulasi                                              | Sumber Data    | Filter ke Product List |
-| -------------- | ------------------------------------------------------ | -------------- | ---------------------- |
-| Total Products | Jumlah semua produk (active + inactive, tidak deleted) | `product_list` | Semua produk           |
-| Active         | Produk dengan `product_status = 'active'`              | `product_list` | Filter: active         |
-| Low Stock      | Produk dengan `quantity ≤ 2` (dari `lowStockAlerts`)   | Dashboard API  | Filter: low-stock      |
-| Total Stock    | SUM(`quantity`) semua produk                           | `product_list` | Semua produk           |
-| In Use         | SUM(`usage_quantity`) semua produk                     | `product_list` | Semua produk           |
-| Favorites      | Produk dengan `is_favorite = true`                     | `product_list` | Filter: favorites      |
+| Card           | Calculation                                            | Data Source    | Filter Applied to Product List |
+| -------------- | ------------------------------------------------------ | -------------- | ------------------------------ |
+| Total Products | Count of all products (active + inactive, not deleted) | `product_list` | All products                   |
+| Active         | Products where `product_status = 'active'`             | `product_list` | Filter: active                 |
+| Low Stock      | Products where `quantity ≤ 2` (from `lowStockAlerts`)  | Dashboard API  | Filter: low-stock              |
+| Total Stock    | SUM(`quantity`) across all products                    | `product_list` | All products                   |
+| In Use         | SUM(`usage_quantity`) across all products              | `product_list` | All products                   |
+| Favorites      | Products where `is_favorite = true`                    | `product_list` | Filter: favorites              |
 
-**Catatan:**
+**Notes:**
 
-- Card **Active** menampilkan sub-label `"of X products"` (X = totalProducts) untuk konteks cepat
-- Card **Low Stock** menggantikan card "Inactive" — nilainya = `lowStockAlerts.length` (produk dengan `quantity ≤ 2`)
-- Klik card menyimpan filter ke `localStorage` (`statusFilter` key) lalu navigasi ke `/main/inventory/product-list`
+- The **Active** card shows a sub-label `"of X products"` (X = totalProducts) for quick context
+- The **Low Stock** card replaces the old "Inactive" card — its value is `lowStockAlerts.length` (products where `quantity ≤ 2`)
+- Clicking a card saves the filter to `localStorage` (`statusFilter` key) then navigates to `/main/inventory/product-list`
 
-**Layout:** Responsive — 2 kolom (mobile) → 3 kolom (tablet) → 6 kolom (desktop)
+**Layout:** Responsive — 2 columns (mobile) → 3 columns (tablet) → 6 columns (desktop)
 
 **Accessibility:**
 
-- Setiap card di-wrap dalam native `<button>` (keyboard accessible: Enter/Space)
-- Icon menggunakan `aria-hidden="true"` (dekoratif)
+- Each card is wrapped in a native `<button>` (keyboard accessible: Enter/Space)
+- Icons use `aria-hidden="true"` (decorative)
 - Focus ring: `focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-2`
-- Nilai angka menggunakan `tabular-nums` untuk rendering stabil
+- Numbers use `tabular-nums` for stable rendering
 
 **Acceptance Criteria:**
 
 ```
-GIVEN saya membuka halaman /main/inventory
-WHEN data berhasil dimuat
-THEN 6 summary cards ditampilkan dengan angka yang sesuai kondisi inventory saat ini
+GIVEN the user opens /main/inventory
+WHEN data loads successfully
+THEN 6 summary cards are shown with numbers that reflect the current inventory state
 
-GIVEN data sedang dimuat
-WHEN API belum merespons
-THEN card menampilkan skeleton/pulse loading state
+GIVEN data is still loading
+WHEN the API hasn't responded yet
+THEN each card shows a skeleton/pulse loading state
 
-GIVEN saya klik card "Active"
-WHEN navigasi terjadi
-THEN localStorage["statusFilter"] = "active" dan diarahkan ke /main/inventory/product-list
+GIVEN the user clicks the "Active" card
+WHEN navigation happens
+THEN localStorage["statusFilter"] = "active" and the user is taken to /main/inventory/product-list
 
-GIVEN saya klik card "Low Stock"
-WHEN navigasi terjadi
-THEN localStorage["statusFilter"] = "low-stock" dan diarahkan ke /main/inventory/product-list
+GIVEN the user clicks the "Low Stock" card
+WHEN navigation happens
+THEN localStorage["statusFilter"] = "low-stock" and the user is taken to /main/inventory/product-list
 
-GIVEN saya navigasi ke summary card dengan keyboard (Tab)
-WHEN saya tekan Enter atau Space pada card
-THEN navigasi terjadi sama seperti klik mouse
+GIVEN the user navigates to a summary card via keyboard (Tab)
+WHEN the user presses Enter or Space on the card
+THEN navigation happens the same as a mouse click
 ```
 
 **API:** `GET /api/inventory/v1/product/summary` (Total Products, Active, Total Stock, In Use, Favorites)
-`GET /api/inventory/v1/dashboard` → `lowStockAlerts` (untuk Low Stock count)
+`GET /api/inventory/v1/dashboard` → `lowStockAlerts` (for Low Stock count)
 
 ---
 
 ##### Section 0: Spend This Month vs Last Month
 
-**Deskripsi:** Chart perbandingan total pengeluaran bulan ini vs bulan lalu, lengkap dengan delta (naik/turun). Memberikan gambaran cepat apakah user lebih banyak atau lebih sedikit berbelanja dibanding bulan sebelumnya.
+**Description:** A comparison chart showing total spend this month vs last month, including a delta (up/down). Gives the user a quick read on whether they're spending more or less than the previous month.
 
-**Kalkulasi:**
+**Calculation:**
 
-- `thisMonth.total` = SUM(`price`) dari `product_quantity` di bulan berjalan (format YYYY-MM)
-- `lastMonth.total` = SUM(`price`) dari `product_quantity` di bulan sebelumnya
+- `thisMonth.total` = SUM(`price`) from `product_quantity` in the current month (format YYYY-MM)
+- `lastMonth.total` = SUM(`price`) from `product_quantity` in the previous month
 - `delta` = `thisMonth.total - lastMonth.total`
-- `deltaPercent` = `(delta / lastMonth.total) * 100` — null jika `lastMonth.total = 0`
+- `deltaPercent` = `(delta / lastMonth.total) * 100` — null if `lastMonth.total = 0`
 
-**Tampilan:**
+**Display:**
 
-- Dua angka besar: This Month (hitam) dan Last Month (abu)
-- Delta badge: merah jika naik (▲), hijau jika turun (▼), dengan persentase
-- Bar chart: 2 bar (last month abu/ungu muda, this month ungu tua)
+- Two large numbers: This Month (black) and Last Month (gray)
+- Delta badge: red if up (▲), green if down (▼), with percentage
+- Bar chart: 2 bars (last month in light purple/gray, this month in dark purple)
 
 **Behavior:**
 
-- Empty state jika tidak ada data sama sekali: "No purchase data yet 📋"
+- Empty state when there's no data at all: "No purchase data yet 📋"
 
 **Acceptance Criteria:**
 
 ```
-GIVEN ada data pembelian di bulan ini dan bulan lalu
-WHEN section dimuat
-THEN kedua angka ditampilkan bersama delta badge dan bar chart
+GIVEN there is purchase data for both this month and last month
+WHEN the section loads
+THEN both numbers are shown along with the delta badge and bar chart
 
-GIVEN total bulan ini lebih besar dari bulan lalu
-WHEN section dimuat
-THEN delta badge berwarna merah dengan arrow ▲ dan persentase kenaikan
+GIVEN this month's total is greater than last month's
+WHEN the section loads
+THEN the delta badge is red with arrow ▲ and the percentage increase
 
-GIVEN total bulan ini lebih kecil dari bulan lalu
-WHEN section dimuat
-THEN delta badge berwarna hijau dengan arrow ▼ dan persentase penurunan
+GIVEN this month's total is less than last month's
+WHEN the section loads
+THEN the delta badge is green with arrow ▼ and the percentage decrease
 
-GIVEN tidak ada data pembelian sama sekali
-WHEN section dimuat
-THEN tampilkan empty state "No purchase data yet 📋"
+GIVEN there is no purchase data at all
+WHEN the section loads
+THEN show empty state "No purchase data yet 📋"
 ```
 
 ---
 
 ##### Section 1: Cost Per Use
 
-**Deskripsi:** Menampilkan biaya per unit pemakaian setiap produk untuk membantu user mengevaluasi nilai ekonomis setiap produk dan membuat keputusan pembelian yang lebih rasional.
+**Description:** Shows the cost per unit of usage for each product, helping the user evaluate the economic value of every product and make more rational purchasing decisions.
 
-**Kalkulasi:**
+**Calculation:**
 
-- `total_spent` = SUM(`price`) dari `product_quantity` per produk
-- `total_units` = `quantity` saat ini + jumlah unit yang pernah dipakai (dari `product_history.depleted_quantity`)
+- `total_spent` = SUM(`price`) from `product_quantity` per product
+- `total_units` = current `quantity` + total units ever used (from `product_history.depleted_quantity`)
 - `cost_per_use` = `total_spent` / `total_units`
 
-**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Total Spent, Total Units, Cost/Use, Status
+**Display:** Table with columns: No, Product (brand + name + type badge), Total Spent, Total Units, Cost/Use, Status
 
 **Behavior:**
 
-- Default: menampilkan top 5 produk dengan cost per use tertinggi
-- View All: modal `max-w-6xl`, menampilkan semua produk sorted by `cost_per_use DESC`
+- Default: top 5 products with the highest cost per use
+- View All: modal `max-w-6xl`, shows all products sorted by `cost_per_use DESC`
 - Empty state: "No products yet."
 
 **Acceptance Criteria:**
 
 ```
-GIVEN ada produk dengan data pembelian (product_quantity)
-WHEN section Cost Per Use dimuat
-THEN ditampilkan maksimal 5 produk dengan cost per use tertinggi, diurutkan descending
+GIVEN there are products with purchase data (product_quantity)
+WHEN the Cost Per Use section loads
+THEN up to 5 products are shown sorted by cost per use descending
 
-GIVEN user klik "View All"
-WHEN modal dibuka
-THEN semua produk ditampilkan sorted by cost per use DESC
+GIVEN the user clicks "View All"
+WHEN the modal opens
+THEN all products are shown sorted by cost per use DESC
 
-GIVEN tidak ada produk yang memiliki data pembelian
-WHEN section dimuat
-THEN tampilkan empty state "No products yet."
+GIVEN no products have purchase data
+WHEN the section loads
+THEN show empty state "No products yet."
 ```
 
 ---
 
 ##### Section 2: Low Stock Alert
 
-**Deskripsi:** Peringatan dini untuk produk yang hampir habis agar user dapat melakukan restock sebelum kehabisan.
+**Description:** An early warning for products that are nearly out of stock so the user can restock before running out.
 
-**Trigger:** Produk dengan `quantity ≤ 2` (semua status, termasuk inactive)
+**Trigger:** Products where `quantity ≤ 2` (all statuses, including inactive)
 
-**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Status, Stock
+**Display:** Table with columns: No, Product (brand + name + type badge), Status, Stock
 
 **Stock Badge:**
-| Kondisi | Badge |
-|---------|-------|
-| `quantity === 0` | Badge merah "Out of Stock" |
-| `quantity ≤ 2` | Badge orange "Low: X left" |
+| Condition | Badge |
+|-----------|-------|
+| `quantity === 0` | Red badge "Out of Stock" |
+| `quantity ≤ 2` | Orange badge "Low: X left" |
 
 **Behavior:**
 
-- Default: top 5 produk sorted by `quantity ASC` (paling kritis di atas)
+- Default: top 5 products sorted by `quantity ASC` (most critical at the top)
 - View All: modal `max-w-2xl`
 - Empty state: "All good! Stock levels are healthy 🎉"
 
 **Acceptance Criteria:**
 
 ```
-GIVEN ada produk dengan quantity ≤ 2
-WHEN section Low Stock Alert dimuat
-THEN produk tersebut ditampilkan dengan badge yang sesuai (merah jika 0, orange jika ≤ 2)
+GIVEN there are products with quantity ≤ 2
+WHEN the Low Stock Alert section loads
+THEN those products are shown with the correct badge (red if 0, orange if ≤ 2)
 
-GIVEN ada produk dengan quantity = 0
-WHEN section dimuat
-THEN produk tersebut muncul paling atas dengan badge "Out of Stock" berwarna merah
+GIVEN a product has quantity = 0
+WHEN the section loads
+THEN that product appears at the top with the red "Out of Stock" badge
 
-GIVEN semua produk memiliki quantity > 2
-WHEN section dimuat
-THEN tampilkan empty state "All good! Stock levels are healthy 🎉"
+GIVEN all products have quantity > 2
+WHEN the section loads
+THEN show empty state "All good! Stock levels are healthy 🎉"
 ```
 
 ---
 
 ##### Section 3: Most Restocked Products
 
-**Deskripsi:** Menampilkan produk yang paling sering di-restock oleh user, membantu mengidentifikasi produk yang paling banyak dikonsumsi dan perlu stok ekstra.
+**Description:** Shows which products the user restocks most often, helping identify the most-consumed products that need extra stock planning.
 
-**Data:** Count records per produk dari `product_quantity` + tanggal restock terakhir
+**Data:** Count of records per product from `product_quantity` + date of last restock
 
-**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Last Restock, Restocks (count badge)
+**Display:** Table with columns: No, Product (brand + name + type badge), Last Restock, Restocks (count badge)
 
 **Behavior:**
 
-- Default: top 5 produk sorted by `restock_count DESC`
+- Default: top 5 products sorted by `restock_count DESC`
 - View All: modal `max-w-2xl`
 - Empty state: "No restock history yet 📦"
 
 **Acceptance Criteria:**
 
 ```
-GIVEN ada produk dengan multiple purchase records di product_quantity
-WHEN section Most Restocked dimuat
-THEN produk ditampilkan sorted by restock_count DESC
+GIVEN there are products with multiple purchase records in product_quantity
+WHEN the Most Restocked section loads
+THEN products are shown sorted by restock_count DESC
 
-GIVEN user klik "View All"
-WHEN modal dibuka
-THEN semua produk ditampilkan sorted by restock_count DESC
+GIVEN the user clicks "View All"
+WHEN the modal opens
+THEN all products are shown sorted by restock_count DESC
 
-GIVEN tidak ada data pembelian sama sekali
-WHEN section dimuat
-THEN tampilkan empty state "No restock history yet 📦"
+GIVEN there is no purchase data at all
+WHEN the section loads
+THEN show empty state "No restock history yet 📦"
 ```
 
 ---
 
 ##### Section 4: Monthly Spend by Type
 
-**Deskripsi:** Membantu user memahami pola pengeluaran per produk per bulan untuk perencanaan budget yang lebih baik.
+**Description:** Helps the user understand their spending patterns per product per month for better budget planning.
 
-**Data:** Join `product_quantity` (purchase records) dengan `product_list` (untuk `product`, `brand`, `type`)
+**Data:** Join `product_quantity` (purchase records) with `product_list` (for `product`, `brand`, `type`)
 
-**Periode:** 6 bulan terakhir
+**Period:** Last 6 months
 
-**Granularitas:** Per produk (bukan per kategori) — setiap baris mewakili 1 produk per bulan
+**Granularity:** Per product (not per category) — each row represents 1 product per month
 
-**Tampilan:**
+**Display:**
 
-- Header: judul section + "This Month" total di pojok kanan (total spend bulan berjalan)
-- Grouped list by month — tiap bulan punya header, diikuti baris per produk:
-  - Brand (abu-abu kecil di atas)
-  - Nama produk (bold) + type badge di sampingnya
-  - Total spent (kanan)
+- Header: section title + "This Month" total in the top-right corner (total spend for the current month)
+- Grouped list by month — each month has a header, followed by rows per product:
+  - Brand (small gray text above)
+  - Product name (bold) + type badge next to it
+  - Total spent (right-aligned)
 
 **Behavior:**
 
-- Header menampilkan total spend bulan ini (format Rupiah) di pojok kanan jika ada data
-- Default: menampilkan 5 data entries pertama
-- View All: modal `max-w-md`, menampilkan semua data 6 bulan
-- Sort: Month DESC, `total_spent DESC` dalam satu bulan
+- Header shows this month's total spend (Rupiah format) in the top right if data exists
+- Default: shows first 5 data entries
+- View All: modal `max-w-md`, shows all data for 6 months
+- Sort: month DESC, `total_spent DESC` within a month
 - Empty state: "No purchase data yet 📋"
-- Format angka: Rupiah (Rp X.XXX.XXX)
+- Number format: Rupiah (Rp X.XXX.XXX)
 
 **Acceptance Criteria:**
 
 ```
-GIVEN ada data pembelian dalam 6 bulan terakhir
-WHEN section Monthly Spend by Type dimuat
-THEN data ditampilkan grouped per bulan, per produk, diurutkan dari bulan terbaru
+GIVEN there is purchase data in the last 6 months
+WHEN the Monthly Spend by Type section loads
+THEN data is shown grouped by month, per product, sorted from most recent month
 
-GIVEN ada data pembelian di bulan ini
-WHEN section dimuat
-THEN total spend bulan ini ditampilkan di pojok kanan header section
+GIVEN there is purchase data for the current month
+WHEN the section loads
+THEN this month's total spend is shown in the top-right corner of the section header
 
-GIVEN user klik "View All"
-WHEN modal dibuka
-THEN semua data 6 bulan ditampilkan per produk, sorted by month DESC lalu total_spent DESC
+GIVEN the user clicks "View All"
+WHEN the modal opens
+THEN all 6 months of data are shown per product, sorted by month DESC then total_spent DESC
 
-GIVEN tidak ada data pembelian
-WHEN section dimuat
-THEN tampilkan empty state "No purchase data yet 📋"
+GIVEN there is no purchase data
+WHEN the section loads
+THEN show empty state "No purchase data yet 📋"
 ```
 
 ---
 
 ##### Section 5: Avg Usage Duration
 
-**Deskripsi:** Menampilkan rata-rata durasi satu sesi pemakaian per produk untuk membantu user mengestimasi kapan perlu restock.
+**Description:** Shows the average duration of a single usage session per product, helping the user estimate when they'll need to restock.
 
-**Kalkulasi:**
+**Calculation:**
 
-- Jika produk punya ≥ 2 history records: rata-rata gap antar consecutive `start_usage_date`
-- Jika hanya 1 history record: `(NOW - start_usage_date)` dalam hari
+- If a product has ≥ 2 history records: average gap between consecutive `start_usage_date` values
+- If it has only 1 history record: `(NOW - start_usage_date)` in days
 
-**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Avg Duration
+**Display:** Table with columns: No, Product (brand + name + type badge), Avg Duration
 
 **Duration Badge:**
-| Kondisi | Badge |
-|---------|-------|
-| `< 30 hari` | Badge merah (cepat habis) |
-| `30–59 hari` | Badge kuning |
-| `≥ 60 hari` | Badge hijau (tahan lama) |
+| Condition | Badge |
+|-----------|-------|
+| `< 30 days` | Red badge (consumed quickly) |
+| `30–59 days` | Yellow badge |
+| `≥ 60 days` | Green badge (long-lasting) |
 | Format | `X days` |
 
 **Behavior:**
 
-- Default: top 5 produk sorted by `avg_days DESC`
+- Default: top 5 products sorted by `avg_days DESC`
 - View All: modal `max-w-2xl`, subtitle "Sorted by longest average duration"
 - Empty state: "Not enough usage data yet 📊"
 
 **Acceptance Criteria:**
 
 ```
-GIVEN ada produk dengan ≥ 2 product_history records
-WHEN section Avg Usage Duration dimuat
-THEN avg duration dihitung dari rata-rata gap antar consecutive start_usage_date
+GIVEN a product has ≥ 2 product_history records
+WHEN the Avg Usage Duration section loads
+THEN avg duration is calculated from the average gap between consecutive start_usage_date values
 
-GIVEN ada produk dengan hanya 1 product_history record
-WHEN section dimuat
-THEN avg duration dihitung sebagai (NOW - start_usage_date) dalam hari
+GIVEN a product has only 1 product_history record
+WHEN the section loads
+THEN avg duration is calculated as (NOW - start_usage_date) in days
 
-GIVEN produk memiliki avg duration < 30 hari
-WHEN section dimuat
-THEN badge berwarna merah (menandakan produk cepat habis)
+GIVEN a product has avg duration < 30 days
+WHEN the section loads
+THEN the badge is red (indicating the product is consumed quickly)
 
-GIVEN tidak ada produk yang memiliki data usage history
-WHEN section dimuat
-THEN tampilkan empty state "Not enough usage data yet 📊"
+GIVEN no products have usage history data
+WHEN the section loads
+THEN show empty state "Not enough usage data yet 📊"
 ```
 
 ---
 
 ##### Section 6: Avg Cost/Use Over Time (CostPerUseHistory)
 
-**Deskripsi:** Chart yang menampilkan tren cumulative cost per use per produk seiring waktu. Setiap data point mewakili satu event pembelian. Membantu user melihat apakah cost per use mereka naik atau turun dengan setiap restock.
+**Description:** A chart showing the cumulative cost per use trend for a product over time. Each data point represents one purchase event. Helps the user see whether their cost per use is going up or down with each restock.
 
-**Kalkulasi per data point:**
+**Calculation per data point:**
 
-- `cumulative_spent` = total pengeluaran kumulatif untuk produk hingga tanggal pembelian tersebut
-- `total_units` = `current_quantity` + semua `product_history.quantity` (unit yang pernah dipakai)
+- `cumulative_spent` = total cumulative spend for the product up to that purchase date
+- `total_units` = `current_quantity` + all `product_history.quantity` (units ever consumed)
 - `cost_per_use` = `cumulative_spent` / `total_units`
-- `delta` = `cost_per_use[i]` - `cost_per_use[i-1]` (perubahan dari pembelian sebelumnya)
+- `delta` = `cost_per_use[i]` - `cost_per_use[i-1]` (change from the previous purchase)
 - `delta_percent` = `delta / cost_per_use[i-1] * 100`
 
-**Tampilan:**
+**Display:**
 
-- Header: judul + product selector dropdown (kanan atas)
-- Line chart: x-axis = tanggal pembelian, y-axis = cost per use (format k untuk ribuan)
-- Hover tooltip: tanggal, harga beli di pembelian itu, cumulative cost/use, delta dari pembelian sebelumnya (▲/▼ + Rp + %)
+- Header: title + product selector dropdown (top right)
+- Line chart: x-axis = purchase date, y-axis = cost per use (formatted with k for thousands)
+- Hover tooltip: date, purchase price for that event, cumulative cost/use, delta from previous purchase (▲/▼ + Rp + %)
 
 **Behavior:**
 
-- Default: produk pertama dalam daftar (sorted by most purchase points)
-- Product selector: semua produk yang memiliki ≥1 pembelian
-- Jika produk hanya punya 1 pembelian: tampilkan pesan "Not enough purchases to show a trend yet."
-- Empty state (tidak ada produk sama sekali): "No purchase history yet 📊"
+- Default: first product in the list (sorted by most purchase points)
+- Product selector: all products that have ≥ 1 purchase
+- If a product has only 1 purchase: show message "Not enough purchases to show a trend yet."
+- Empty state (no products at all): "No purchase history yet 📊"
 
 **Acceptance Criteria:**
 
 ```
-GIVEN ada produk dengan ≥ 2 purchase records
-WHEN section Avg Cost/Use Over Time dimuat
-THEN line chart ditampilkan dengan data points per purchase event
+GIVEN a product has ≥ 2 purchase records
+WHEN the Avg Cost/Use Over Time section loads
+THEN a line chart is shown with data points per purchase event
 
-GIVEN user hover chart pada salah satu data point
-WHEN tooltip muncul
-THEN tooltip menampilkan: tanggal, harga beli, cumulative cost/use, dan delta vs pembelian sebelumnya (▲/▼)
+GIVEN the user hovers over a data point on the chart
+WHEN the tooltip appears
+THEN the tooltip shows: date, purchase price, cumulative cost/use, and delta vs previous purchase (▲/▼)
 
-GIVEN user memilih produk lain via selector
-WHEN selector di-change
-THEN chart di-update untuk menampilkan data produk yang dipilih
+GIVEN the user selects a different product via the selector
+WHEN the selector changes
+THEN the chart updates to show data for the selected product
 
-GIVEN produk hanya memiliki 1 purchase record
-WHEN produk dipilih
-THEN tampilkan pesan "Not enough purchases to show a trend yet."
+GIVEN a product has only 1 purchase record
+WHEN that product is selected
+THEN show the message "Not enough purchases to show a trend yet."
 
-GIVEN tidak ada produk dengan data pembelian
-WHEN section dimuat
-THEN tampilkan empty state "No purchase history yet 📊"
+GIVEN no products have purchase data
+WHEN the section loads
+THEN show empty state "No purchase history yet 📊"
 ```
 
 ---
 
 ##### Section 7: Restock Prediction
 
-**Deskripsi:** Prediksi kapan setiap produk akan habis berdasarkan rata-rata durasi pemakaian dan stok saat ini. Membantu user merencanakan restock sebelum kehabisan.
+**Description:** Predicts when each product will run out based on the average usage duration and current stock. Helps the user plan restocks before running out.
 
-**Kalkulasi:**
+**Calculation:**
 
-- `days_until_empty` = `avg_days × quantity` (dibulatkan ke integer)
-- `predicted_date` = `today + days_until_empty` dalam hari
-- Produk dengan `quantity = 0`: `days_until_empty = 0`, `predicted_date = null`
-- Produk aktif tanpa usage history di-skip (tidak dapat diprediksi)
+- `days_until_empty` = `avg_days × quantity` (rounded to integer)
+- `predicted_date` = `today + days_until_empty` in days
+- Products with `quantity = 0`: `days_until_empty = 0`, `predicted_date = null`
+- Active products without usage history are skipped (cannot be predicted)
 
-**Filter:** Hanya produk dengan `product_status = 'active'`
+**Filter:** Only products with `product_status = 'active'`
 
-**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Qty, Est. Empty, Status badge
+**Display:** Table with columns: No, Product (brand + name + type badge), Qty, Est. Empty, Status badge
 
 **Urgency Badge:**
-| Kondisi | Badge |
-|---------|-------|
-| `quantity = 0` | Badge merah "Out of Stock" |
-| `days_until_empty ≤ 7` | Badge merah "Critical" |
-| `days_until_empty ≤ 14` | Badge orange "Soon" |
-| `days_until_empty ≤ 30` | Badge kuning "This Month" |
-| `days_until_empty > 30` | Badge hijau "6+ Months" |
+| Condition | Badge |
+|-----------|-------|
+| `quantity = 0` | Red badge "Out of Stock" |
+| `days_until_empty ≤ 7` | Red badge "Critical" |
+| `days_until_empty ≤ 14` | Orange badge "Soon" |
+| `days_until_empty ≤ 30` | Yellow badge "This Month" |
+| `days_until_empty > 30` | Green badge "6+ Months" |
 
 **Behavior:**
 
-- Default: top 5, sorted by `days_until_empty DESC` (paling lama habis di atas)
+- Default: top 5, sorted by `days_until_empty DESC` (longest until empty at the top)
 - View All: modal `max-w-2xl`, subtitle "Sorted by most urgent first"
 - Empty state: "Not enough usage data to predict 🔍"
 
 **Acceptance Criteria:**
 
 ```
-GIVEN ada produk aktif dengan usage history dan quantity > 0
-WHEN section Restock Prediction dimuat
-THEN predicted_date dihitung sebagai today + (avg_days × quantity)
+GIVEN there are active products with usage history and quantity > 0
+WHEN the Restock Prediction section loads
+THEN predicted_date is calculated as today + (avg_days × quantity)
 
-GIVEN produk memiliki quantity = 0
-WHEN section dimuat
-THEN produk ditampilkan dengan badge "Out of Stock" dan tanpa predicted_date
+GIVEN a product has quantity = 0
+WHEN the section loads
+THEN the product is shown with the "Out of Stock" badge and no predicted_date
 
-GIVEN produk aktif tidak memiliki usage history
-WHEN section dimuat
-THEN produk tersebut tidak ditampilkan (tidak dapat diprediksi)
+GIVEN an active product has no usage history
+WHEN the section loads
+THEN that product is not shown (cannot be predicted)
 ```
 
 ---
 
 ##### Section 8: Monthly Budget Tracker
 
-**Deskripsi:** Memungkinkan user menetapkan budget bulanan per kategori produk (`type`) dan memantau realisasi pengeluaran bulan berjalan terhadap budget tersebut.
+**Description:** Lets the user set a monthly budget per product category (`type`) and track actual spend for the current month against that budget.
 
 **Data:**
 
-- Actual spend: aggregate `total_spent` bulan ini dari `monthlySpendByType` per `type`
-- Budget settings: tabel `inventory_budget` (user-defined, persisted ke Supabase)
+- Actual spend: aggregate `total_spent` for this month from `monthlySpendByType` per `type`
+- Budget settings: `inventory_budget` table (user-defined, persisted to Supabase)
 
-**Tampilan:** List per type dengan:
+**Display:** List per type with:
 
-- Type name + persentase badge (%) di kiri
-- Actual spend / budget amount (klik untuk edit inline) di kanan
-- Progress bar dengan color coding
+- Type name + percentage badge (%) on the left
+- Actual spend / budget amount (click to edit inline) on the right
+- Progress bar with color coding
 
 **Progress Bar Color:**
-| Kondisi | Warna |
-|---------|-------|
+| Condition | Color |
+|-----------|-------|
 | `< 75%` | Violet |
-| `75–99%` | Kuning |
-| `≥ 100%` | Merah (over budget) |
+| `75–99%` | Yellow |
+| `≥ 100%` | Red (over budget) |
 
 **Inline Edit Budget:**
 
-- Klik amount budget → input number muncul
-- Enter atau klik "Save" untuk simpan
-- Escape untuk cancel
-- Validasi: angka ≥ 0
+- Click budget amount → a number input appears
+- Press Enter or click "Save" to save
+- Press Escape to cancel
+- Validation: number ≥ 0
 
 **Behavior:**
 
-- Menampilkan semua type yang memiliki spend bulan ini ATAU budget yang sudah di-set
-- Type belum punya budget menampilkan tombol "Set budget" sebagai placeholder
-- Budget di-fetch terpisah dari `/api/inventory/v1/budget` (bukan dari dashboard API)
-- Skeleton loading saat dashboard data atau budget data belum siap
+- Shows all types that have spend this month OR a budget already set
+- Types without a budget show a "Set budget" placeholder button
+- Budget is fetched separately from `/api/inventory/v1/budget` (not from the dashboard API)
+- Skeleton loading while dashboard or budget data is still loading
 - Empty state: "No spend data this month 📋"
 
 **API:**
 
-- `GET /api/inventory/v1/budget` → list semua budget user
+- `GET /api/inventory/v1/budget` → list of all budget settings per user
 - `POST /api/inventory/v1/budget` → upsert budget (body: `{ type, monthly_budget }`)
 
 **Acceptance Criteria:**
 
 ```
-GIVEN ada spend bulan ini untuk type "Skincare"
-WHEN section Monthly Budget Tracker dimuat
-THEN type "Skincare" ditampilkan dengan actual spend dan progress bar
+GIVEN there is spend this month for the type "Skincare"
+WHEN the Monthly Budget Tracker section loads
+THEN "Skincare" is shown with actual spend and a progress bar
 
-GIVEN user belum set budget untuk suatu type
-WHEN type tersebut ditampilkan
-THEN tombol "Set budget" muncul sebagai placeholder budget
+GIVEN the user has not set a budget for a type
+WHEN that type is shown
+THEN a "Set budget" placeholder button appears instead of a budget amount
 
-GIVEN user klik budget amount dan mengisi nilai baru
-WHEN user tekan Enter atau klik Save
-THEN budget tersimpan ke Supabase dan progress bar diupdate
+GIVEN the user clicks the budget amount and enters a new value
+WHEN the user presses Enter or clicks Save
+THEN the budget is saved to Supabase and the progress bar updates
 
 GIVEN actual spend ≥ budget
-WHEN section dimuat
-THEN progress bar berwarna merah dan badge % menampilkan ≥ 100%
+WHEN the section loads
+THEN the progress bar is red and the percentage badge shows ≥ 100%
 ```
 
 ---
 
 ##### Section 9: Spending Heatmap
 
-**Deskripsi:** Visualisasi aktivitas pembelian harian selama 12 bulan terakhir dalam format calendar heatmap (GitHub-style). Membantu user mengidentifikasi pola belanja dan tren musiman.
+**Description:** A daily purchase activity visualization for the last 12 months in a calendar heatmap format (GitHub-style). Helps the user identify spending patterns and seasonal trends.
 
-**Data:** Aggregate `SUM(price)` per hari dari `product_quantity`, periode 12 bulan terakhir
+**Data:** Aggregate `SUM(price)` per day from `product_quantity`, over the last 12 months
 
-**Tampilan:**
+**Display:**
 
-- Grid 52 minggu × 7 hari (Sunday–Saturday), dirender dari kiri ke kanan
-- Label bulan di atas grid
-- Label hari (Mon, Wed, Fri) di kiri grid
-- Legend di bawah kiri: "Less → More" dengan 5 kotak warna
+- Grid of 52 weeks × 7 days (Sunday–Saturday), rendered left to right
+- Month labels above the grid
+- Day labels (Mon, Wed, Fri) on the left of the grid
+- Legend at the bottom left: "Less → More" with 5 color boxes
 
-**Color Levels (5 level):**
-| Level | Range | Warna Tailwind |
+**Color Levels (5 levels):**
+| Level | Range | Tailwind Color |
 |-------|-------|----------------|
 | 0 | No spend | `bg-slate-100` |
 | 1 | > 0 – < 50k | `bg-violet-200` |
@@ -529,54 +532,54 @@ THEN progress bar berwarna merah dan badge % menampilkan ≥ 100%
 | 3 | 200k – 500k | `bg-violet-600` |
 | 4 | > 500k | `bg-violet-800` |
 
-**Hover Tooltip:** Tanggal (dd MMM yyyy) + amount (format Rupiah atau "No spend")
+**Hover Tooltip:** Date (dd MMM yyyy) + amount (Rupiah format or "No spend")
 
 **Behavior:**
 
-- Hari di masa depan: tidak dirender (kosong)
-- Implementasi custom tanpa library tambahan (murni React + Tailwind + date-fns)
+- Future days are not rendered (left empty)
+- Custom implementation — no additional library (pure React + Tailwind + date-fns)
 - Loading state: skeleton `h-24` full width
-- Posisi di dashboard: setelah SpendComparison
+- Position in dashboard: after SpendComparison
 
 **Acceptance Criteria:**
 
 ```
-GIVEN ada data pembelian pada tanggal tertentu
-WHEN user hover cell tersebut di heatmap
-THEN tooltip menampilkan tanggal dan total spend hari itu
+GIVEN there is purchase data on a specific date
+WHEN the user hovers over that cell in the heatmap
+THEN the tooltip shows the date and total spend for that day
 
-GIVEN tidak ada pembelian pada suatu hari
-WHEN user hover cell tersebut
-THEN tooltip menampilkan "No spend" dan cell berwarna bg-slate-100
+GIVEN there is no purchase on a specific day
+WHEN the user hovers over that cell
+THEN the tooltip shows "No spend" and the cell is bg-slate-100
 
-GIVEN total spend harian > 500k
-WHEN cell dirender
-THEN cell berwarna bg-violet-800 (level 4, tertinggi)
+GIVEN daily total spend > 500k
+WHEN the cell renders
+THEN the cell is bg-violet-800 (level 4, highest)
 ```
 
 ---
 
 ##### Section 10: Product Lifecycle Score
 
-**Deskripsi:** Composite score 0–100 per produk yang menggabungkan efisiensi biaya (cost per use) dan daya tahan (avg usage duration). Membantu user mengidentifikasi produk "hero" di inventory.
+**Description:** A composite score from 0–100 per product that combines cost efficiency (cost per use) and durability (avg usage duration). Helps the user identify the "hero" products in their inventory.
 
-**Kalkulasi:**
+**Calculation:**
 
-- Hanya produk yang memiliki **keduanya**: `cost_per_use ≠ null` dan `avg_days ≠ null`
-- `cost_score` = normalisasi min-max inverted: `(1 - (cost_per_use - min) / (max - min)) × 100` — lebih rendah cost = skor lebih tinggi
-- `duration_score` = normalisasi min-max: `((avg_days - min) / (max - min)) × 100` — lebih lama = skor lebih tinggi
-- Edge case: jika semua produk sama nilainya, score = 100
+- Only products that have **both**: `cost_per_use ≠ null` and `avg_days ≠ null`
+- `cost_score` = inverted min-max normalization: `(1 - (cost_per_use - min) / (max - min)) × 100` — lower cost = higher score
+- `duration_score` = min-max normalization: `((avg_days - min) / (max - min)) × 100` — longer = higher score
+- Edge case: if all products have the same value, score = 100
 - `lifecycle_score` = `round(cost_score × 0.5 + duration_score × 0.5)`
 
 **Tier Badge:**
-| Score | Tier | Warna |
+| Score | Tier | Color |
 |-------|------|-------|
 | ≥ 80 | S | Violet |
-| 60–79 | A | Hijau |
-| 40–59 | B | Kuning |
+| 60–79 | A | Green |
+| 40–59 | B | Yellow |
 | < 40 | C | Slate |
 
-**Tampilan:** Tabel dengan kolom: No, Product (brand + nama + type badge), Cost/Use, Avg Duration, Tier, Score (progress bar + angka)
+**Display:** Table with columns: No, Product (brand + name + type badge), Cost/Use, Avg Duration, Tier, Score (progress bar + number)
 
 **Behavior:**
 
@@ -587,33 +590,33 @@ THEN cell berwarna bg-violet-800 (level 4, tertinggi)
 **Acceptance Criteria:**
 
 ```
-GIVEN ada ≥ 2 produk dengan cost_per_use dan avg_days
-WHEN section Product Lifecycle Score dimuat
-THEN setiap produk mendapat score 0–100 berdasarkan normalisasi relatif dalam dataset
+GIVEN there are ≥ 2 products with both cost_per_use and avg_days
+WHEN the Product Lifecycle Score section loads
+THEN each product gets a score from 0–100 based on relative normalization within the dataset
 
-GIVEN produk memiliki score tertinggi dalam dataset
-WHEN section dimuat
-THEN produk tersebut mendapat score mendekati 100
+GIVEN a product has the highest score in the dataset
+WHEN the section loads
+THEN that product gets a score close to 100
 
-GIVEN produk tidak memiliki cost_per_use atau avg_days
-WHEN section dimuat
-THEN produk tersebut tidak ditampilkan
+GIVEN a product has no cost_per_use or no avg_days
+WHEN the section loads
+THEN that product is not shown
 
-GIVEN hanya ada 1 produk eligible
-WHEN section dimuat
-THEN produk tersebut mendapat score 100
+GIVEN only 1 eligible product exists
+WHEN the section loads
+THEN that product gets a score of 100
 ```
 
 ---
 
 ##### Layout & UX
 
-**Struktur Layout (urutan section):**
+**Section order:**
 
-1. Summary Cards — 2 kolom mobile → 3 kolom tablet → 6 kolom desktop
+1. Summary Cards — 2 columns mobile → 3 columns tablet → 6 columns desktop
 2. Spend This Month vs Last Month — full width
 3. Spending Heatmap — full width
-4. Low Stock Alert + Most Restocked — 2-column grid (`md:grid-cols-2`), 1 kolom di mobile
+4. Low Stock Alert + Most Restocked — 2-column grid (`md:grid-cols-2`), 1 column on mobile
 5. Restock Prediction — full width
 6. Monthly Budget Tracker — full width
 7. Monthly Spend by Type — full width
@@ -622,44 +625,44 @@ THEN produk tersebut mendapat score 100
 10. Avg Usage Duration — full width
 11. Product Lifecycle Score — full width
 
-**Loading State:** Skeleton rows / pulse animation di semua section selama data dimuat
+**Loading State:** Skeleton rows / pulse animation on all sections while data is loading
 
-**Scrollable:** Layout menggunakan `overflow-y-auto` agar dashboard dapat di-scroll
+**Scrollable:** Layout uses `overflow-y-auto` so the dashboard can be scrolled
 
 **Acceptance Criteria:**
 
 ```
-GIVEN saya membuka dashboard di perangkat mobile
-WHEN halaman dirender
-THEN summary cards tampil 2 kolom, Low Stock Alert dan Most Restocked tampil 1 kolom (full width)
+GIVEN the user opens the dashboard on a mobile device
+WHEN the page renders
+THEN summary cards show in 2 columns, Low Stock Alert and Most Restocked show in 1 column (full width)
 
-GIVEN saya membuka dashboard di desktop
-WHEN halaman dirender
-THEN summary cards tampil 6 kolom, Low Stock Alert dan Most Restocked tampil 2-column grid
+GIVEN the user opens the dashboard on desktop
+WHEN the page renders
+THEN summary cards show in 6 columns, Low Stock Alert and Most Restocked show in a 2-column grid
 
-GIVEN API sedang memuat data
-WHEN halaman dirender
-THEN semua section menampilkan skeleton loading state
+GIVEN the API is still loading data
+WHEN the page renders
+THEN all sections show a skeleton loading state
 ```
 
 ---
 
-##### Validasi
+##### Validations
 
-- Dashboard hanya memuat data produk yang belum di-soft delete (`deleted_at IS NULL`)
-- Summary counts dan analytics dihitung server-side untuk konsistensi data
-- Kalkulasi `cost_per_use` hanya dilakukan jika `total_units > 0` (hindari division by zero)
-- Kalkulasi `cost_per_use_history` hanya dilakukan jika `total_units > 0` (hindari division by zero)
+- Dashboard only loads products that have not been soft-deleted (`deleted_at IS NULL`)
+- Summary counts and analytics are calculated server-side for data consistency
+- `cost_per_use` is only calculated when `total_units > 0` (avoid division by zero)
+- `cost_per_use_history` is only calculated when `total_units > 0` (avoid division by zero)
 
 ---
 
 ##### Error States
 
-| Kondisi                 | Tampilan                             |
-| ----------------------- | ------------------------------------ |
-| API gagal (5xx)         | Pesan error generik di level section |
-| Data kosong per section | Empty state spesifik per section     |
-| Loading                 | Skeleton animation                   |
+| Condition              | Display                                |
+| ---------------------- | -------------------------------------- |
+| API failure (5xx)      | Generic error message at section level |
+| Empty data per section | Section-specific empty state           |
+| Loading                | Skeleton animation                     |
 
 ---
 
@@ -668,68 +671,68 @@ THEN semua section menampilkan skeleton loading state
 `GET /api/inventory/v1/dashboard`
 
 - Auth: Required
-- Deskripsi: Mengembalikan semua data yang dibutuhkan dashboard — summary cards + 11 section analitik
+- Description: Returns all data needed by the dashboard — summary cards + 11 analytics sections
 - Response: `{ success: true, data: { summary, top5, all, lowStockAlerts, monthlySpendByType, avgUsageDuration, mostRestocked, spendComparison, costPerUseHistory, restockPrediction, spendingHeatmap, lifecycleScore } }`
 
 `GET /api/inventory/v1/product/summary`
 
 - Auth: Required
-- Deskripsi: Mengembalikan summary counts (total, active, inactive, totalStock, inUse, favorites)
+- Description: Returns summary counts (total, active, inactive, totalStock, inUse, favorites)
 - Response: `{ data: { total, active, inactive, totalStock, inUse, favorites } }`
 
 `GET /api/inventory/v1/budget`
 
 - Auth: Required
-- Deskripsi: Mengembalikan semua budget setting user per type
+- Description: Returns all budget settings for the user per type
 - Response: `{ data: [{ type, monthly_budget }] }`
 
 `POST /api/inventory/v1/budget`
 
 - Auth: Required
 - Body: `{ type: string, monthly_budget: number }`
-- Deskripsi: Upsert budget untuk satu type (insert atau update jika sudah ada)
+- Description: Upsert a budget for one type (insert or update if it already exists)
 - Response: `{ success: true }`
 
 `GET /api/inventory/v1/product/restock-predictions` _(implemented — v1.11)_
 
 - Auth: Required
-- Deskripsi: Mengembalikan prediksi `days_until_empty` per produk aktif berdasarkan rata-rata interval pemakaian (avg_days × quantity). Produk tanpa usage history di-skip.
+- Description: Returns `days_until_empty` predictions per active product based on average usage interval (avg_days × quantity). Products without usage history are skipped.
 - Response: `{ data: [{ product_list_id, days_until_empty, ... }], message: "OK" }`
-- Digunakan oleh: `ProductsPage` untuk menampilkan `~Xd left` hint di tabel
+- Used by: `ProductsPage` to display the `~Xd left` hint in the table
 
 `GET /api/inventory/v1/product/[id]/last-price` _(implemented — v1.11)_
 
 - Auth: Required
 - Param: `id` — integer, product_list_id
-- Deskripsi: Mengembalikan harga dan tanggal pembelian terakhir untuk produk tertentu
+- Description: Returns the price and date of the last purchase for a specific product
 - Response: `{ success: true, data: { last_purchase_price, last_purchase_date } }`
-- Error: 400 jika ID tidak valid; 404 jika produk tidak ditemukan
-- Digunakan oleh: `AddStockForm` (hint di bawah field Price)
+- Error: 400 if ID is invalid; 404 if product not found
+- Used by: `AddStockForm` (hint below the Price field)
 
 `GET /api/inventory/v1/product/stock/history/[id]`
 
 - Auth: Required
 - Param: `id` — product_list_id
-- Deskripsi: Mengembalikan semua riwayat pembelian/restock untuk produk tertentu, diurutkan terbaru di atas
+- Description: Returns all purchase/restock history for a specific product, sorted most recent first
 - Response: array of `{ id, purchase_date, quantity_added, price, note }`
-- Digunakan oleh: `AddStockForm` (Recent Purchases section) dan `ProductDetailPage` (Purchase History table)
+- Used by: `AddStockForm` (Recent Purchases section) and `ProductDetailPage` (Purchase History table)
 
 ---
 
-##### Database Tables yang Digunakan
+##### Database Tables Used
 
-| Tabel              | Kolom yang Relevan                                                                                                                     | Kegunaan                                                                                          |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `product_list`     | `id`, `user_id`, `product`, `brand`, `type`, `quantity`, `usage_quantity`, `product_status`, `is_favorite`, `usage_date`, `deleted_at` | Data produk utama                                                                                 |
-| `product_quantity` | `product_list_id`, `price`, `purchase_date`                                                                                            | Riwayat pembelian/restock untuk kalkulasi total spent, monthly spend, heatmap, restock prediction |
-| `product_history`  | `product_list_id`, `depleted_quantity`, `start_usage_date`                                                                             | Riwayat aktivasi pemakaian untuk kalkulasi avg duration dan lifecycle score                       |
-| `inventory_budget` | `id`, `user_id`, `type`, `monthly_budget`, `created_at`, `updated_at`                                                                  | Budget bulanan per kategori produk (user-defined, RLS enabled, UNIQUE per user+type)              |
+| Table              | Relevant Columns                                                                                                                       | Purpose                                                                                               |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `product_list`     | `id`, `user_id`, `product`, `brand`, `type`, `quantity`, `usage_quantity`, `product_status`, `is_favorite`, `usage_date`, `deleted_at` | Main product data                                                                                     |
+| `product_quantity` | `product_list_id`, `price`, `purchase_date`                                                                                            | Purchase/restock history for calculating total spent, monthly spend, heatmap, and restock predictions |
+| `product_history`  | `product_list_id`, `depleted_quantity`, `start_usage_date`                                                                             | Usage session history for calculating avg duration and lifecycle score                                |
+| `inventory_budget` | `id`, `user_id`, `type`, `monthly_budget`, `created_at`, `updated_at`                                                                  | Monthly budget per product category (user-defined, RLS enabled, UNIQUE per user+type)                 |
 
 ---
 
 #### 3.1.1 Product List (`/main/inventory/product-list`)
 
-**Deskripsi:** Halaman utama manajemen produk. Menampilkan semua produk dalam tabel dengan kemampuan search, filter, dan aksi per produk.
+**Description:** The main product management page. Displays all products in a table with search, filter, and per-product actions.
 
 **Route:** `/main/inventory/product-list`
 **Entry Point:** `app/main/inventory/product-list/page.jsx`
@@ -752,363 +755,363 @@ THEN semua section menampilkan skeleton loading state
 
 ---
 
-**Fitur & Acceptance Criteria:**
+**Features & Acceptance Criteria:**
 
-**A. Tabel Produk**
+**A. Product Table**
 
-Kolom yang ditampilkan:
+Columns shown:
 
-| Kolom          | Data                | Alignment | Note                                                                                        |
-| -------------- | ------------------- | --------- | ------------------------------------------------------------------------------------------- |
-| Product        | brand + tipe + nama | Left      | Star icon favorit di kiri — space selalu direservasi (visibility:hidden jika tidak favorit) |
-| Quantity       | `quantity`          | Right     | Font monospace                                                                              |
-| In Use         | `usage_quantity`    | Right     | Font monospace — jumlah unit yang sedang dipakai                                            |
-| Usage Date     | `usage_date`        | Center    | Format: DD MMM YYYY, "-" jika belum pernah dipakai                                          |
-| Product Status | `product_status`    | Center    | Badge: active (hijau) / inactive (merah)                                                    |
-| Actions        | —                   | Center    | Dropdown 3-titik                                                                            |
+| Column         | Data                | Alignment | Note                                                                                           |
+| -------------- | ------------------- | --------- | ---------------------------------------------------------------------------------------------- |
+| Product        | brand + type + name | Left      | Favorite star icon on the left — space is always reserved (visibility:hidden if not favorited) |
+| Quantity       | `quantity`          | Right     | Monospace font                                                                                 |
+| In Use         | `usage_quantity`    | Right     | Monospace font — number of units currently in use                                              |
+| Usage Date     | `usage_date`        | Center    | Format: DD MMM YYYY, "-" if never used                                                         |
+| Product Status | `product_status`    | Center    | Badge: active (green) / inactive (red)                                                         |
+| Actions        | —                   | Center    | 3-dot dropdown                                                                                 |
 
 ```
-GIVEN produk ada di database
-WHEN halaman dimuat
-THEN semua produk ditampilkan dalam tabel, favorit di urutan atas
+GIVEN products exist in the database
+WHEN the page loads
+THEN all products are shown in the table, with favorites at the top
 ```
 
 **B. Search Bar**
 
 ```
-GIVEN user berada di halaman Product List
-WHEN user mengetik di search bar
-THEN tabel difilter berdasarkan brand ATAU nama produk (AND dengan filter aktif)
-AND filter dilakukan setelah 300ms debounce
-AND tombol clear (×) muncul saat ada teks
+GIVEN the user is on the Product List page
+WHEN the user types in the search bar
+THEN the table filters by brand OR product name (AND with any active filter)
+AND filtering happens after a 300ms debounce
+AND a clear (×) button appears when there is text
 
-GIVEN search bar berisi teks
-WHEN user klik tombol clear (×)
-THEN search direset dan semua produk ditampilkan (filter tetap aktif)
+GIVEN the search bar has text
+WHEN the user clicks the clear (×) button
+THEN the search resets and all products are shown (filter remains active)
 ```
 
 **C. Filter Dropdown**
 
-Filter options (by status/stock level — terpisah dari text search):
+Filter options (by status/stock level — separate from text search):
 
-| Filter       | Kondisi                                           | Group     |
+| Filter       | Condition                                         | Group     |
 | ------------ | ------------------------------------------------- | --------- |
-| All Products | semua produk                                      | General   |
+| All Products | all products                                      | General   |
 | Active       | `product_status = 'active'`                       | Status    |
 | Inactive     | `product_status = 'inactive'`                     | Status    |
 | Favorite     | `is_favorite = true`                              | Status    |
 | Low Stock    | `quantity < LOW_STOCK_THRESHOLD AND quantity > 0` | Inventory |
 | Out of Stock | `quantity = 0`                                    | Inventory |
 | Never Used   | `usage_date IS NULL`                              | Usage     |
-| [Type name]  | `product.type === type` (dinamis)                 | Category  |
+| [Type name]  | `product.type === type` (dynamic)                 | Category  |
 
-**Category filter (dinamis):** Dropdown menampilkan section "Category" berisi semua nilai `product.type` unik yang ada di daftar produk saat ini. Filter value menggunakan prefix `"type:"` — contoh: `"type:Skincare"`. Setiap item category menampilkan jumlah produk per type.
+**Category filter (dynamic):** The dropdown shows a "Category" section listing all unique `product.type` values in the current product list. Filter values use the prefix `"type:"` — e.g. `"type:Skincare"`. Each category item shows the count of products per type.
 
-**Filter counts:** Setiap item dropdown menampilkan jumlah produk yang cocok. Status group menggunakan data dari `summary` API; Inventory dan Usage group dihitung client-side dari `products` array.
+**Filter counts:** Each dropdown item shows how many products match. The Status group uses data from the `summary` API; Inventory and Usage groups are calculated client-side from the `products` array.
 
 ```
-GIVEN filter aktif + search aktif
-WHEN hasil kombinasi keduanya = 0 produk
-THEN tampilkan empty state: icon 📦 + "No products match your filters"
-AND tampilkan label filter aktif dan/atau teks pencarian
-AND tombol "Clear filters & search" untuk reset keduanya sekaligus
+GIVEN an active filter + active search together produce 0 products
+WHEN the combined result is zero
+THEN show empty state: icon 📦 + "No products match your filters"
+AND show the active filter label and/or search text
+AND show a "Clear filters & search" button to reset both at once
 
-GIVEN ada produk dengan type "Skincare" di daftar
-WHEN user membuka filter dropdown
-THEN section "Category" muncul dengan item "Skincare" dan jumlah produk
+GIVEN there are products with type "Skincare" in the list
+WHEN the user opens the filter dropdown
+THEN a "Category" section appears with "Skincare" and the product count
 
-GIVEN user klik filter "Skincare" di section Category
-WHEN filter diterapkan
-THEN hanya produk dengan type = "Skincare" yang ditampilkan
-AND filter value tersimpan sebagai "type:Skincare"
+GIVEN the user clicks the "Skincare" filter in the Category section
+WHEN the filter is applied
+THEN only products with type = "Skincare" are shown
+AND the filter value is stored as "type:Skincare"
 ```
 
 **Controls Bar (Search + Filter + Add Button) — Sticky Behavior**
 
-Controls bar menggunakan `sticky top-0 z-10 bg-white` sehingga tetap terlihat saat user men-scroll daftar produk. Halaman di-scroll secara natural di dalam `main` (scroll container global) — tidak ada inner scroll container terpisah.
+The controls bar uses `sticky top-0 z-10 bg-white` so it stays visible when the user scrolls through the product list. The page scrolls naturally inside `main` (the global scroll container) — there is no separate inner scroll container.
 
 ```
-GIVEN halaman Product List memiliki banyak produk (daftar lebih panjang dari viewport)
-WHEN user men-scroll ke bawah
-THEN controls bar (search, filter dropdown, tombol "+ Add Product") tetap terlihat di bagian atas halaman
-AND tabel produk scroll di bawahnya
+GIVEN the Product List has many products (list longer than the viewport)
+WHEN the user scrolls down
+THEN the controls bar (search, filter dropdown, "+ Add Product" button) stays visible at the top of the page
+AND the product table scrolls below it
 ```
 
-**D. Tambah Produk**
+**D. Add Product**
 
 ```
-GIVEN user klik "+ Add Product"
-WHEN form dibuka (Dialog)
-THEN field: Brand (Select wajib), Tipe (Select wajib), Nama Produk (Input wajib), Quantity Awal (Number, default 0)
+GIVEN the user clicks "+ Add Product"
+WHEN the form opens (Dialog)
+THEN fields shown: Brand (Select, required), Type (Select, required), Product Name (Input, required), Initial Quantity (Number, default 0)
 
-GIVEN semua field valid
-WHEN user submit
-THEN produk baru tersimpan dan muncul di tabel
-AND toast sukses ditampilkan
+GIVEN all fields are valid
+WHEN the user submits
+THEN the new product is saved and appears in the table
+AND a success toast is shown
 ```
 
-**E. Edit Produk**
+**E. Edit Product**
 
 ```
-GIVEN user klik "Edit Product" di action dropdown
-WHEN Dialog terbuka
-THEN field pre-filled: Brand (Select), Product Name (Select), Type (Input), Status (Select active/inactive)
-AND setiap field memiliki guide message di bawahnya
+GIVEN the user clicks "Edit Product" in the action dropdown
+WHEN the Dialog opens
+THEN fields are pre-filled: Brand (Select), Product Name (Select), Type (Input), Status (Select active/inactive)
+AND each field has a guide message below it
 
-GIVEN perubahan valid
-WHEN user klik "Save Changes"
-THEN produk terupdate di tabel
-AND toast sukses ditampilkan
-AND Dialog tertutup
+GIVEN the changes are valid
+WHEN the user clicks "Save Changes"
+THEN the product is updated in the table
+AND a success toast is shown
+AND the Dialog closes
 ```
 
-UI: Gunakan `<Dialog>` — konsisten dengan seluruh action lain (Add Stock, Record Usage, Delete, Add Product).
+UI: Use `<Dialog>` — consistent with all other actions (Add Stock, Record Usage, Delete, Add Product).
 
-**F. Tambah Stok**
+**F. Add Stock**
 
 ```
-GIVEN user klik "Add Stock" di action dropdown
-WHEN Dialog terbuka
-THEN tampilkan: Quantity to Add, Price (Rp), Purchase Date, Note (opsional)
-AND di bawah field Price ditampilkan hint last purchase price (lihat F.1)
-AND di atas form fields ditampilkan section Recent Purchases (lihat F.2)
+GIVEN the user clicks "Add Stock" in the action dropdown
+WHEN the Dialog opens
+THEN show: Quantity to Add, Price (Rp), Purchase Date, Note (optional)
+AND below the Price field show the last purchase price hint (see F.1)
+AND above the form fields show the Recent Purchases section (see F.2)
 
-GIVEN quantity_added ≥ 1 dan price ≥ 0
-WHEN user submit
-THEN stok bertambah dan riwayat tersimpan
+GIVEN quantity_added ≥ 1 and price ≥ 0
+WHEN the user submits
+THEN stock increases and the history record is saved
 ```
 
 **F.1 Last Purchase Price Hint (implemented — v1.11)**
 
-Saat Add Stock dialog dibuka, sistem melakukan `GET /api/inventory/v1/product/[id]/last-price` dan menampilkan hasilnya di bawah field Price.
+When the Add Stock dialog opens, the system calls `GET /api/inventory/v1/product/[id]/last-price` and shows the result below the Price field.
 
-| Kondisi        | Tampilan                                     |
-| -------------- | -------------------------------------------- |
-| Loading        | "Loading last price..."                      |
-| Ada data       | "Last purchase price: Rp X.XXX — d MMM yyyy" |
-| Tidak ada data | "No previous purchase data available"        |
+| Condition  | Display                                      |
+| ---------- | -------------------------------------------- |
+| Loading    | "Loading last price..."                      |
+| Data found | "Last purchase price: Rp X.XXX — d MMM yyyy" |
+| No data    | "No previous purchase data available"        |
 
 ```
-GIVEN user membuka Add Stock dialog untuk produk yang pernah dibeli
-WHEN API last-price merespons
-THEN hint "Last purchase price: Rp X — d MMM yyyy" ditampilkan di bawah field Price
+GIVEN the user opens the Add Stock dialog for a product that has been bought before
+WHEN the last-price API responds
+THEN the hint "Last purchase price: Rp X — d MMM yyyy" is shown below the Price field
 
-GIVEN user membuka Add Stock dialog untuk produk yang belum pernah dibeli
-WHEN API last-price merespons dengan data kosong
-THEN teks "No previous purchase data available" ditampilkan
+GIVEN the user opens the Add Stock dialog for a product that has never been bought
+WHEN the last-price API responds with no data
+THEN the text "No previous purchase data available" is shown
 ```
 
 **F.2 Recent Purchases Section (implemented — v1.11)**
 
-Saat Add Stock dialog dibuka, sistem melakukan `GET /api/inventory/v1/product/stock/history/[id]` dan menampilkan 3 pembelian terakhir di atas form fields (sebelum Quantity to Add).
+When the Add Stock dialog opens, the system calls `GET /api/inventory/v1/product/stock/history/[id]` and shows the 3 most recent purchases above the form fields (before Quantity to Add).
 
-Tampilan setiap baris: tanggal (font mono), qty, harga (Rp, format id-ID, font mono).
-Section hanya ditampilkan jika ada data pembelian (tidak ditampilkan jika history kosong).
+Each row shows: date (mono font), qty, price (Rp, id-ID format, mono font).
+This section is only shown if there is purchase history (hidden if history is empty).
 
 ```
-GIVEN user membuka Add Stock dialog dan ada riwayat pembelian sebelumnya
-WHEN API stock-history merespons
-THEN section "Recent Purchases" ditampilkan di atas form dengan maksimal 3 entri terbaru
+GIVEN the user opens the Add Stock dialog and there is previous purchase history
+WHEN the stock-history API responds
+THEN the "Recent Purchases" section is shown above the form with up to 3 most recent entries
 
-GIVEN user membuka Add Stock dialog dan belum ada riwayat pembelian
-WHEN API stock-history merespons dengan data kosong
-THEN section "Recent Purchases" tidak ditampilkan
+GIVEN the user opens the Add Stock dialog and there is no purchase history
+WHEN the stock-history API responds with empty data
+THEN the "Recent Purchases" section is not shown
 ```
 
-**API untuk Add Stock:**
+**API for Add Stock:**
 
 - `GET /api/inventory/v1/product/[id]/last-price` — Response: `{ success: true, data: { last_purchase_price, last_purchase_date } }`
 - `GET /api/inventory/v1/product/stock/history/[id]` — Response: array of `{ purchase_date, quantity_added, price }`
 
-**G. Record Usage** _(sebelumnya disebut "Update Usage" — nama diubah untuk kejelasan)_
+**G. Record Usage** _(previously called "Update Usage" — renamed for clarity)_
 
 ```
-GIVEN user klik "Record Usage" di action dropdown
-WHEN dialog terbuka
-THEN user dapat mencatat kapan mulai memakai produk dan quantity yang dipakai
+GIVEN the user clicks "Record Usage" in the action dropdown
+WHEN the dialog opens
+THEN the user can record when they started using the product and the quantity being used
 
-GIVEN usage dicatat
-WHEN berhasil tersimpan
-THEN kolom "Usage Date" dan "In Use" di tabel terupdate
+GIVEN usage is recorded
+WHEN it saves successfully
+THEN the "Usage Date" and "In Use" columns in the table update
 ```
 
-**G.1 Note Display di Usage Log (implemented — v1.11)**
+**G.1 Note Display in Usage Log (implemented — v1.11)**
 
-Di halaman detail produk (Usage History), saat user meng-expand sebuah log row, jika `item.note` ada maka ditampilkan di atas `UsageCompletionForm` dalam card bertampilan: label "Note" (text-xs, text-slate-500) dan isi note (text-sm, text-slate-700).
-
-```
-GIVEN usage log item memiliki field note yang terisi
-WHEN user meng-expand row tersebut
-THEN card "Note" ditampilkan di atas form completion berisi isi note
-
-GIVEN usage log item tidak memiliki note
-WHEN user meng-expand row tersebut
-THEN card "Note" tidak ditampilkan (kondisional rendering)
-```
-
-**H. Favorit**
+On the product detail page (Usage History), when the user expands a log row, if `item.note` is present it is shown above the `UsageCompletionForm` in a card styled as: label "Note" (text-xs, text-slate-500) and note content (text-sm, text-slate-700).
 
 ```
-GIVEN user klik "Add to Favorites" di action dropdown
-WHEN berhasil
-THEN produk pindah ke urutan teratas tabel
-AND icon bintang muncul di kolom Product
-AND menu berubah menjadi "Remove from Favorites"
+GIVEN a usage log item has a note field with content
+WHEN the user expands that row
+THEN a "Note" card is shown above the completion form with the note content
+
+GIVEN a usage log item has no note
+WHEN the user expands that row
+THEN the "Note" card is not shown (conditional rendering)
 ```
 
-**I. Hapus Produk**
+**H. Favorites**
 
 ```
-GIVEN user klik "Delete Product" di action dropdown
-WHEN dialog konfirmasi muncul
-THEN user harus konfirmasi sebelum dihapus (destructive action)
+GIVEN the user clicks "Add to Favorites" in the action dropdown
+WHEN the action succeeds
+THEN the product moves to the top of the table
+AND the star icon appears in the Product column
+AND the menu item changes to "Remove from Favorites"
+```
 
-GIVEN user konfirmasi
-WHEN berhasil dihapus
-THEN produk hilang dari tabel dan toast sukses ditampilkan
+**I. Delete Product**
+
+```
+GIVEN the user clicks "Delete Product" in the action dropdown
+WHEN a confirmation dialog appears
+THEN the user must confirm before the product is deleted (destructive action)
+
+GIVEN the user confirms
+WHEN deletion succeeds
+THEN the product disappears from the table and a success toast is shown
 ```
 
 ---
 
-**Validasi:**
+**Validations:**
 
-- Brand wajib dipilih
-- Tipe produk wajib dipilih
-- Nama produk wajib diisi
-- Quantity tidak boleh negatif
-- Quantity to Add minimal 1
-- Price minimal 0
-- Pengurangan stok tidak boleh melebihi stok tersedia
+- Brand is required
+- Product type is required
+- Product name is required
+- Quantity cannot be negative
+- Quantity to Add must be at least 1
+- Price must be at least 0
+- Stock reduction cannot exceed available stock
 
 ---
 
 **Stock Status & Error States:**
 
-| Kondisi                                           | Tampilan                                       |
-| ------------------------------------------------- | ---------------------------------------------- |
-| `quantity = 0`                                    | Badge merah "Out of Stock" di kolom Quantity   |
-| `quantity < LOW_STOCK_THRESHOLD AND quantity > 0` | Badge kuning "Low Stock" di kolom Quantity     |
-| `quantity ≥ LOW_STOCK_THRESHOLD`                  | Angka normal (font monospace)                  |
-| `product_status = 'inactive'`                     | Badge merah "inactive" di kolom Product Status |
+| Condition                                         | Display                                           |
+| ------------------------------------------------- | ------------------------------------------------- |
+| `quantity = 0`                                    | Red badge "Out of Stock" in the Quantity column   |
+| `quantity < LOW_STOCK_THRESHOLD AND quantity > 0` | Yellow badge "Low Stock" in the Quantity column   |
+| `quantity ≥ LOW_STOCK_THRESHOLD`                  | Plain number (monospace font)                     |
+| `product_status = 'inactive'`                     | Red badge "inactive" in the Product Status column |
 
-**`LOW_STOCK_THRESHOLD` constant (implemented — v1.11):** Nilai default = `5`. Konstanta ini didefinisikan di 3 file:
+**`LOW_STOCK_THRESHOLD` constant (implemented — v1.11):** Default value = `5`. This constant is defined in 3 files:
 
-- `ProductFilterDropdown.jsx` — untuk menghitung jumlah produk low stock di dropdown
-- `ProductsTable.jsx` — untuk `QuantityBadge` dan restock hint display
-- `ProductsPage.jsx` — untuk logika filter "low-stock"
+- `ProductFilterDropdown.jsx` — to calculate the low stock product count in the dropdown
+- `ProductsTable.jsx` — for `QuantityBadge` and restock hint display
+- `ProductsPage.jsx` — for the "low-stock" filter logic
 
-Untuk mengubah threshold, update nilai di ketiga file tersebut. Tidak ada magic number `5` tersebar di luar konstanta ini.
+To change the threshold, update the value in all three files. There are no magic number `5` values scattered outside these constants.
 
 ---
 
 **Empty States:**
 
-| Kondisi                      | Tampilan                                                                                                |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Belum ada produk sama sekali | Teks "No products yet. Start by adding a new product 🚀"                                                |
-| Search/filter aktif, hasil 0 | Icon 📦 + "No products match your filters" + info filter/search aktif + tombol "Clear filters & search" |
+| Condition                       | Display                                                                                                  |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| No products yet                 | Text "No products yet. Start by adding a new product 🚀"                                                 |
+| Search/filter active, 0 results | Icon 📦 + "No products match your filters" + active filter/search info + "Clear filters & search" button |
 
 ---
 
 **J. Column Sorting (implemented — v1.11)**
 
-Header kolom di desktop table dapat diklik untuk sort ascending/descending. Sorting dilakukan client-side pada array `products` yang sudah difilter.
+Column headers on the desktop table are clickable to sort ascending/descending. Sorting is done client-side on the already-filtered `products` array.
 
-| Kolom      | Sort Key                                | Tipe Sort                   |
-| ---------- | --------------------------------------- | --------------------------- |
-| Product    | `brand + product` (gabungan, lowercase) | String                      |
-| Quantity   | `quantity`                              | Numerik                     |
-| In Use     | `usage_quantity`                        | Numerik                     |
-| Usage Date | `usage_date` (timestamp)                | Date — null selalu di bawah |
+| Column     | Sort Key                                | Sort Type                        |
+| ---------- | --------------------------------------- | -------------------------------- |
+| Product    | `brand + product` (combined, lowercase) | String                           |
+| Quantity   | `quantity`                              | Numeric                          |
+| In Use     | `usage_quantity`                        | Numeric                          |
+| Usage Date | `usage_date` (timestamp)                | Date — null always at the bottom |
 
-Kolom "Product Status" dan "Actions" tidak sortable.
+Product Status and Actions columns are not sortable.
 
-UI: Header sortable menampilkan icon `ArrowUpDown` (inactive) → `ArrowUp` (asc) → `ArrowDown` (desc). Klik kedua kali pada kolom yang sama membalik arah sort.
-
-```
-GIVEN user klik header kolom "Quantity"
-WHEN sort diterapkan
-THEN produk diurutkan ascending by quantity
-AND icon header berubah ke ArrowUp
-
-GIVEN user klik header "Quantity" sekali lagi
-WHEN sort dibalik
-THEN produk diurutkan descending by quantity
-AND icon header berubah ke ArrowDown
-
-GIVEN produk memiliki usage_date = null
-WHEN sort by usage_date (ascending atau descending)
-THEN produk tanpa usage_date selalu muncul paling bawah
-```
-
-**K. Restock Prediction Hint di Tabel (implemented — v1.11)**
-
-Di bawah `QuantityBadge` pada kolom Quantity (desktop) dan di stats row (mobile), ditampilkan prediksi waktu habis per produk aktif jika data tersedia.
-
-Format: `~Xd left` (font mono)
-
-| Kondisi                             | Tampilan                             |
-| ----------------------------------- | ------------------------------------ |
-| `days_until_empty ≤ 7`              | Text orange (`text-orange-500`)      |
-| `days_until_empty > 7`              | Text muted (`text-muted-foreground`) |
-| `quantity = 0`                      | Tidak ditampilkan                    |
-| Tidak ada prediksi untuk produk ini | Tidak ditampilkan                    |
-
-Data diambil via `GET /api/inventory/v1/product/restock-predictions` saat halaman pertama dimuat, disimpan sebagai map `{ [product_list_id]: { days_until_empty } }` di state `ProductsPage`.
+UI: Sortable headers show an `ArrowUpDown` icon (inactive) → `ArrowUp` (asc) → `ArrowDown` (desc). Clicking the same column again reverses the sort direction.
 
 ```
-GIVEN produk aktif memiliki data prediksi restock
-WHEN halaman Product List dimuat
-THEN "~Xd left" ditampilkan di bawah QuantityBadge di kolom Quantity
+GIVEN the user clicks the "Quantity" column header
+WHEN the sort is applied
+THEN products are sorted ascending by quantity
+AND the header icon changes to ArrowUp
 
-GIVEN days_until_empty produk = 5 (≤ 7)
-WHEN tabel dirender
-THEN teks "~5d left" ditampilkan dalam warna orange
+GIVEN the user clicks the "Quantity" header again
+WHEN the sort is reversed
+THEN products are sorted descending by quantity
+AND the header icon changes to ArrowDown
 
-GIVEN produk memiliki quantity = 0
-WHEN tabel dirender
-THEN prediksi hint tidak ditampilkan untuk produk tersebut
+GIVEN a product has usage_date = null
+WHEN sorting by usage_date (ascending or descending)
+THEN products without a usage_date always appear at the bottom
 ```
 
-**L. Summary Cards — Clickable untuk Filter (implemented — v1.11)**
+**K. Restock Prediction Hint in Table (implemented — v1.11)**
 
-Cards di `ProductListSummary` yang memiliki `filterValue` dapat diklik untuk langsung menerapkan filter pada tabel. Cards tanpa filterValue (Total Stock, In Use) tidak clickable.
+Below the `QuantityBadge` in the Quantity column (desktop) and in the stats row (mobile), a time-until-empty prediction is shown per active product when data is available.
+
+Format: `~Xd left` (mono font)
+
+| Condition                                | Display                              |
+| ---------------------------------------- | ------------------------------------ |
+| `days_until_empty ≤ 7`                   | Orange text (`text-orange-500`)      |
+| `days_until_empty > 7`                   | Muted text (`text-muted-foreground`) |
+| `quantity = 0`                           | Not shown                            |
+| No prediction available for this product | Not shown                            |
+
+Data is fetched via `GET /api/inventory/v1/product/restock-predictions` on first page load, stored as a map `{ [product_list_id]: { days_until_empty } }` in `ProductsPage` state.
+
+```
+GIVEN an active product has restock prediction data
+WHEN the Product List page loads
+THEN "~Xd left" is shown below the QuantityBadge in the Quantity column
+
+GIVEN days_until_empty = 5 (≤ 7) for a product
+WHEN the table renders
+THEN the text "~5d left" is shown in orange
+
+GIVEN a product has quantity = 0
+WHEN the table renders
+THEN the prediction hint is not shown for that product
+```
+
+**L. Summary Cards — Clickable to Filter (implemented — v1.11)**
+
+Cards in `ProductListSummary` that have a `filterValue` are clickable to directly apply a filter to the table. Cards without a filterValue (Total Stock, In Use) are not clickable.
 
 | Card           | Filter Value | Clickable |
 | -------------- | ------------ | --------- |
-| Total Products | `null` (all) | Ya        |
-| Active         | `"active"`   | Ya        |
-| Inactive       | `"inactive"` | Ya        |
-| Total Stock    | —            | Tidak     |
-| In Use         | —            | Tidak     |
-| Favorites      | `"favorite"` | Ya        |
+| Total Products | `null` (all) | Yes       |
+| Active         | `"active"`   | Yes       |
+| Inactive       | `"inactive"` | Yes       |
+| Total Stock    | —            | No        |
+| In Use         | —            | No        |
+| Favorites      | `"favorite"` | Yes       |
 
-UI: Card clickable mendapatkan `cursor-pointer` dan `hover:shadow-md transition-shadow`. Pada mobile (collapsible view) perilaku yang sama diterapkan.
+UI: Clickable cards get `cursor-pointer` and `hover:shadow-md transition-shadow`. Same behavior applies on the mobile collapsible view.
 
 ```
-GIVEN user klik card "Active" di ProductListSummary
-WHEN filter diterapkan
-THEN tabel difilter untuk menampilkan hanya produk dengan status active
-AND toast "Showing active products" muncul
+GIVEN the user clicks the "Active" card in ProductListSummary
+WHEN the filter is applied
+THEN the table filters to show only active products
+AND a toast "Showing active products" appears
 
-GIVEN user klik card "Favorites"
-WHEN filter diterapkan
-THEN tabel difilter untuk menampilkan hanya produk favorit
+GIVEN the user clicks the "Favorites" card
+WHEN the filter is applied
+THEN the table filters to show only favorite products
 
-GIVEN user klik card "Total Stock"
-WHEN tidak ada filterValue
-THEN tidak ada aksi (card tidak clickable)
+GIVEN the user clicks the "Total Stock" card
+WHEN there is no filterValue
+THEN no action is taken (card is not clickable)
 ```
 
-**Action Dropdown per Produk (urutan):**
+**Action Dropdown per Product (order):**
 
-1. Edit Product _(baru)_
+1. Edit Product _(new)_
 2. Add Stock
-3. Record Usage _(sebelumnya: Update Usage)_
+3. Record Usage _(previously: Update Usage)_
 4. — separator —
 5. Add to Favorites / Remove from Favorites
 6. — separator —
-7. Delete Product _(hanya muncul jika belum dihapus)_
+7. Delete Product _(only shown if not yet deleted)_
 
 ---
 
@@ -1261,6 +1264,20 @@ THEN the brand disappears from the list and a success toast is shown
 - What it does: Returns all brands for the user, each with a `product_count` (number of active products using that brand)
 - Implementation: `Promise.all` — fetch `product_brand` + `product_list` (active only) in parallel, then merge the results
 - Response: `{ data: [{ id, brand, brand_status, product_count, ... }] }`
+
+`GET /api/inventory/v1/product-brand/[id]`
+
+- Auth: Required
+- Param: `id` — integer, brand ID
+- What it does: Returns a single brand record by ID
+- Response: `{ success: true, data: { id, brand, brand_status, product_count, ... } }`
+- Error: 404 if brand not found or does not belong to the user
+
+`GET /api/inventory/v1/product-brand/summary`
+
+- Auth: Required
+- What it does: Returns aggregate stats — total brand count, count per status
+- Response: `{ success: true, data: { total: number, active: number, inactive: number } }`
 
 `POST /api/inventory/v1/product-brand`
 
@@ -1968,7 +1985,9 @@ THEN a visible focus ring is shown
 
 #### 3.1.4 Product History (`/main/inventory/product-history`)
 
-**Description:** A read-only log of all product usage sessions. Each record represents one usage session from the `product_usage_log` table — when a product was started, finished, or paused. Users can browse the full list, search by product name, filter by status, and sort by date or product name. No record can be added, edited, or deleted from this page.
+**Description:** A read-only log of all product usage sessions. Each record represents one usage session from the `product_history` table — when a product was started, finished, or paused. Users can browse the full list, search by product name, filter by status, and sort by date or product name. No record can be added, edited, or deleted from this page.
+
+**Note:** Records in this table are created internally from the Product List page when a user triggers "Record Usage". The Product History page itself has no add/edit/delete UI — it is strictly a read-only view.
 
 **Route:** `/main/inventory/product-history`
 **Entry Point:** `app/main/inventory/product-history/page.jsx`
@@ -2076,7 +2095,7 @@ THEN a skeleton (id="loadingSkeleton_productHistoryPage") with 7 columns is show
 | Rule            | Detail                                                              |
 | --------------- | ------------------------------------------------------------------- |
 | Read-only       | No add, edit, or delete action on this page                         |
-| Data source     | Records from `product_usage_log` only — this page writes nothing    |
+| Data source     | Records from `product_history` only — this page writes nothing      |
 | Search scope    | Product name only — brand and type are displayed but not searchable |
 | Sort default    | Most recent first (start_usage_date DESC) on initial load           |
 | Filter + search | AND logic                                                           |
@@ -2084,7 +2103,7 @@ THEN a skeleton (id="loadingSkeleton_productHistoryPage") with 7 columns is show
 
 ---
 
-**API Endpoint**
+**API Endpoints**
 
 `GET /api/inventory/v1/product-history/list`
 
@@ -2113,6 +2132,22 @@ Response (HTTP 200):
 | ---- | ----------------------- |
 | 401  | User not authenticated  |
 | 500  | Unexpected server error |
+
+`PATCH /api/inventory/v1/product-history/update/[id]`
+
+- Auth: Required
+- Param: `id` — UUID, history record ID
+- Description: Internal endpoint called by the Product List "Record Usage" flow to update a usage session (e.g. mark as completed, set end date). This endpoint is NOT exposed in the Product History UI — the page remains read-only. Only the Product List page triggers this via the Record Usage action.
+- Body: `{ status?: string, end_usage_date?: string, depleted_quantity?: number }`
+- Response: `{ success: true, data: {...} }`
+
+`GET /api/inventory/v1/product-history/[id]`
+
+- Auth: Required
+- Param: `id` — UUID, history record ID
+- Description: Returns a single product history entry by ID. Used by the Product Detail page to display individual usage session data.
+- Response: `{ success: true, data: { id, product_id, product_name, brand_name, product_type, status, quantity, start_usage_date, end_usage_date, note } }`
+- Error: 404 if not found or does not belong to the user
 
 ---
 
@@ -2152,28 +2187,70 @@ All new IDs must also be registered in `cypress/fixtures/app-constants.json` und
 
 #### 3.1.5 Inventory AI Chat
 
-**Deskripsi:** Chat interface dengan Claude untuk perintah natural language.
+**Description:** A chat interface powered by Claude that lets the user ask natural language questions about their inventory data. Context is built from the user's current product list, stock levels, and usage history. Conversation history is not persisted — each request is stateless.
 
-**Kemampuan AI:**
-
-- Cari produk berdasarkan nama
-- Log penggunaan produk ("pakai 2 sabun mandi")
-- Tambah stok produk ("tambah 5 susu")
-- Buat brand baru
-- Buat tipe produk baru
-- Tanya stok saat ini
-
+**Route:** Embedded in the Inventory module (no dedicated route)
 **API:** `POST /api/chat`
+
+---
+
+**User Story:**
+
+> As a user, I want to ask questions about my inventory in natural language so I can quickly get insights without navigating multiple pages.
+
+---
+
+**Core Features:**
+
+- Send a text message and receive a text response from Claude
+- Input field clears automatically after the message is sent
+- Loading indicator is shown while the API is processing the request
+- Error message is shown if the API call fails
+
+---
+
+**Acceptance Criteria:**
+
+```
+GIVEN the user types a message and submits it
+WHEN the API call is in progress
+THEN a loading indicator is shown and the input is disabled
+
+GIVEN the API responds successfully
+WHEN the response arrives
+THEN the reply is displayed and the input field is cleared
+
+GIVEN the API call fails (network error or 5xx)
+WHEN the error occurs
+THEN an error message is shown to the user (e.g. "Something went wrong. Please try again.")
+AND the input remains available so the user can retry
+
+GIVEN the user submits an empty message
+WHEN the form validates
+THEN the message is not sent
+```
+
+---
+
+**API:**
+
+`POST /api/chat`
+
+- Auth: Required
+- Body: `{ message: string }`
+- Description: Sends the user's message to Claude with inventory context (product list, stock levels, usage history) and returns a reply. Each request is independent — no session or conversation history is stored.
+- Response: `{ reply: string }`
+- Error: 400 if message is empty; 500 on unexpected error
 
 ---
 
 #### 3.1.6 Product Detail Page (`/main/inventory/product-list/[id]`) — implemented v1.11
 
-**Deskripsi:** Halaman detail individual produk yang menampilkan statistik ringkas, riwayat pembelian, dan riwayat penggunaan dalam satu tampilan. Dapat diakses dari route `/main/inventory/product-list/[id]`.
+**Description:** The individual product detail page showing summary stats, purchase history, and usage history in a single view. Accessible from the route `/main/inventory/product-list/[id]`.
 
 **Route:** `/main/inventory/product-list/[id]`
 **Entry Point:** `app/main/inventory/product-list/[id]/page.jsx`
-**Komponen Utama:** `app/main/inventory/product-list/[id]/ProductDetailPage.jsx`
+**Main Component:** `app/main/inventory/product-list/[id]/ProductDetailPage.jsx`
 
 **User Stories:**
 
@@ -2181,65 +2258,73 @@ All new IDs must also be registered in `cypress/fixtures/app-constants.json` und
 
 > As a user, I want to see summary stats (current stock, total added, total spent, usage sessions) for a product in one place, so that I can evaluate its consumption at a glance.
 
-**Struktur Halaman:**
+**Page Structure:**
 
 1. Back link — "Back to Product List" → `/main/inventory/product-list`
-2. PageHeader — `title`: nama produk, `description`: brand · type, `breadcrumbs`: Inventory > Product List > [nama produk]
-3. Status badge (active/inactive) — di samping PageHeader (float right on sm+)
+2. PageHeader — `title`: product name, `description`: brand · type, `breadcrumbs`: Inventory > Product List > [product name]
+3. Status badge (active/inactive) — next to the PageHeader (float right on sm+)
 4. 4 stat cards (2-col mobile, 4-col desktop):
-   - **Current Stock** — `product.quantity`, sub-label "Out of stock" / "Low stock" jika berlaku
-   - **Total Added** — SUM(`quantity_added`) dari stock history, sub-label "all time"
-   - **Total Spent** — SUM(`price`) dari stock history, format `Rp X.XXX`
-   - **Usage Sessions** — COUNT records dari usage history
+   - **Current Stock** — `product.quantity`, sub-label "Out of stock" / "Low stock" if applicable
+   - **Total Added** — SUM(`quantity_added`) from stock history, sub-label "all time"
+   - **Total Spent** — SUM(`price`) from stock history, formatted as `Rp X.XXX`
+   - **Usage Sessions** — COUNT of records from usage history
 5. 2-column content grid (1-col mobile, 2-col desktop):
-   - **Purchase History** — tabel kolom: Date, Qty Added, Price, Note; sorted most recent first; empty state: icon + "No purchase history yet"
-   - **Usage History** — reuse `ProductUsageLog` component
+   - **Purchase History** — table columns: Date, Qty Added, Price, Note; sorted most recent first; empty state: icon + "No purchase history yet"
+   - **Usage History** — reuses the `ProductUsageLog` component
 
-**Data Fetching:** 3 parallel API calls via `Promise.all` saat komponen mount:
+**Data Fetching:** 3 parallel API calls via `Promise.all` on component mount:
 
 - `GET /api/inventory/v1/product/[id]` → product data
 - `GET /api/inventory/v1/product/stock/history/[id]` → purchase history
 - Usage history API → usage log
 
-**Loading State:** Full skeleton dengan back link tetap terlihat — skeleton untuk header, 4 stat cards, dan 2 content sections.
+**Loading State:** Full skeleton with back link still visible — skeleton for header, 4 stat cards, and 2 content sections.
 
-**Error State:** Tampilan centered dengan icon `Package`, pesan error, dan tombol "Try again" (retry button memanggil ulang `loadData`).
+**Error State:** Centered display with `Package` icon, error message, and a "Try again" button (retry button re-calls `loadData`).
 
 **Acceptance Criteria:**
 
 ```
-GIVEN user navigasi ke /main/inventory/product-list/[id]
-WHEN halaman dimuat
-THEN 4 stat cards menampilkan data akurat berdasarkan stock history dan usage history produk
+GIVEN the user navigates to /main/inventory/product-list/[id]
+WHEN the page loads
+THEN 4 stat cards show accurate data based on the product's stock history and usage history
 
-GIVEN data sedang dimuat
-WHEN API belum merespons
-THEN skeleton ditampilkan untuk semua section
-AND back link tetap visible
+GIVEN data is still loading
+WHEN the API hasn't responded yet
+THEN a skeleton is shown for all sections
+AND the back link remains visible
 
-GIVEN API gagal (network error atau 5xx)
-WHEN error terjadi
-THEN pesan error ditampilkan dengan tombol "Try again"
-AND klik "Try again" me-retry semua 3 API calls
+GIVEN the API fails (network error or 5xx)
+WHEN the error occurs
+THEN an error message is shown with a "Try again" button
+AND clicking "Try again" retries all 3 API calls
 
-GIVEN produk memiliki status "active"
-WHEN halaman dimuat
-THEN badge "active" berwarna emerald ditampilkan di samping PageHeader
+GIVEN a product has status "active"
+WHEN the page loads
+THEN an emerald "active" badge is shown next to the PageHeader
 
-GIVEN produk tidak memiliki riwayat pembelian
-WHEN section Purchase History dirender
-THEN empty state ditampilkan dengan icon dan teks "No purchase history yet"
+GIVEN a product has no purchase history
+WHEN the Purchase History section renders
+THEN the empty state is shown with an icon and "No purchase history yet"
 ```
 
-**Validasi:**
+**Validations:**
 
-- `productId` divalidasi sebagai integer positif sebelum diteruskan ke API
-- Halaman diproteksi via `requireAuth()` di server component wrapper
+- `productId` is validated as a positive integer before being passed to the API
+- The page is protected via `requireAuth()` in the server component wrapper
 
 **API Endpoints:**
 
 - `GET /api/inventory/v1/product/[id]` — product detail
 - `GET /api/inventory/v1/product/stock/history/[id]` — purchase history
-- `GET /api/inventory/v1/product/restock-predictions` — digunakan di halaman Product List (bukan di halaman detail)
+- `GET /api/inventory/v1/product-history/[id]` — single usage history entry by ID; used by this page to display individual usage session data
+- `GET /api/inventory/v1/product/restock-predictions` — used on the Product List page (not on the detail page)
 
 ---
+
+## Version History
+
+| Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.1     | 2026-06-17 | Full translation from Indonesian to English (sections 3.1.0, 3.1.1, and all mixed-language content). Fixed `product_usage_log` → `product_history` table name throughout. Added missing endpoints: `GET /product-brand/[id]`, `GET /product-brand/summary`. Added and clarified `PATCH /product-history/update/[id]` and `GET /product-history/[id]` with usage context notes. Expanded section 3.1.5 (Inventory AI Chat) from stub to full spec. |
+| 1.0     | (initial)  | Original PRD — partial Indonesian, stub sections                                                                                                                                                                                                                                                                                                                                                                                                  |
