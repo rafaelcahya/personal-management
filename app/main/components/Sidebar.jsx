@@ -72,7 +72,7 @@ const RUNNING_ITEMS = [
   { name: 'AI Coach', href: '/main/running/ai', icon: BrainCircuit },
   {
     id: 'paceCalcNav_sidebar',
-    name: 'Pace Calc',
+    name: 'Run Calc',
     href: '/main/running/pace-calculator',
     icon: Timer,
   },

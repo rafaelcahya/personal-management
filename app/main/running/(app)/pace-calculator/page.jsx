@@ -221,7 +221,7 @@ export default function PaceCalculatorPage() {
           <Timer className="size-5 text-violet-600" aria-hidden="true" />
         </div>
         <div>
-          <h1 className="text-lg font-semibold text-slate-800">Pace Calculator</h1>
+          <h1 className="text-lg font-semibold text-slate-800">Running Calculator</h1>
           <p className="text-sm text-slate-500">
             Calculate pace, project race times, and view splits
           </p>
@@ -283,7 +283,7 @@ export default function PaceCalculatorPage() {
               <p className="text-xs text-slate-500">
                 Enter a distance and total time to find your average pace.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-4">
                 <DistanceSelect
                   preset={paceDistPreset}
                   customValue={paceCustomDist}
