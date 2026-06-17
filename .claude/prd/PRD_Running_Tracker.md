@@ -2,8 +2,8 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 3.0
-**Last Updated:** 2026-06-06
+**Version:** 3.2
+**Last Updated:** 2026-06-17
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6) · Strava API
 
@@ -25,104 +25,104 @@
 
 ## 1. Overview
 
-Running Tracker adalah aplikasi web personal untuk monitoring performa lari. Bukan aplikasi sosial, bukan pengganti Strava — ini **personal analytics layer** di atas data Strava yang sudah ada, dilengkapi AI Coach berbasis Claude yang punya akses ke seluruh history workout kamu.
+Running Tracker is a personal web app for monitoring running performance. It is not a social app and not a Strava replacement — it is a **personal analytics layer** on top of existing Strava data, paired with an AI Coach powered by Claude that has access to your full workout history.
 
-**Dua hal yang tidak bisa kamu dapat di Strava/Garmin Connect:**
+**Two things you cannot get from Strava or Garmin Connect:**
 
-- AI Coach yang benar-benar tahu context history kamu dan bisa reason berdasarkan data spesifik
-- Analytics cross-metric yang custom sesuai kebutuhan kamu (bukan generik)
+- An AI Coach that genuinely understands your training history and can reason from your specific data
+- Custom cross-metric analytics tailored to your needs (not generic summaries)
 
-**Hubungan dengan Personal Management:**
+**Relationship with Personal Management:**
 
-- Aplikasi terpisah (repo sendiri), tapi pakai **Supabase project yang sama** untuk auth
-- User login sekali via Google OAuth di Supabase → session berlaku di kedua app
-- Tidak ada perubahan di codebase Personal Management
+- Separate application (own repo), but uses the **same Supabase project** for auth
+- User logs in once via Google OAuth in Supabase → session is valid in both apps
+- No changes required in the Personal Management codebase
 
 ---
 
 ## 2. Users & Access
 
-| Role               | Akses                      |
-| ------------------ | -------------------------- |
-| Authenticated User | Full access ke semua fitur |
-| Unauthenticated    | Redirect ke login          |
+| Role               | Access                      |
+| ------------------ | --------------------------- |
+| Authenticated User | Full access to all features |
+| Unauthenticated    | Redirect to login           |
 
-- Auth via Supabase (Google OAuth only) — shared dengan Personal Management
-- Strava OAuth terpisah, hanya untuk data sync (bukan identity)
-- Single user app — tidak ada multi-user, tidak ada fitur sosial
+- Auth via Supabase (Google OAuth only) — shared with Personal Management
+- Strava OAuth is separate, used only for data sync (not identity)
+- Single-user app — no multi-user, no social features
 
 ---
 
-## 3. Integration dengan Personal Management
+## 3. Integration with Personal Management
 
 ### 3.1 Auth sharing
 
-Running Tracker dan Personal Management pakai Supabase project yang **sama**. Artinya:
+Running Tracker and Personal Management use the **same** Supabase project. This means:
 
 ```
 User login via Google OAuth
         ↓
 Supabase (shared project) issue session
         ↓
-Session cookie valid di Personal Management DAN Running Tracker
+Session cookie valid in both Personal Management AND Running Tracker
 ```
 
-**Yang dibutuhkan di Running Tracker:**
+**Required in Running Tracker:**
 
-- `NEXT_PUBLIC_SUPABASE_URL` — sama dengan Personal Management
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — sama dengan Personal Management
-- Supabase `@supabase/ssr` package untuk session management
+- `NEXT_PUBLIC_SUPABASE_URL` — same as Personal Management
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — same as Personal Management
+- Supabase `@supabase/ssr` package for session management
 
-**Yang TIDAK perlu dilakukan:**
+**What does NOT need to be done:**
 
-- Tidak perlu modifikasi kode Personal Management
-- Tidak perlu endpoint baru di Personal Management
-- Tidak perlu sync user data antar dua sistem
+- No modifications to the Personal Management codebase
+- No new endpoints in Personal Management
+- No user data sync between the two systems
 
 ### 3.2 User ID
 
-User ID di Supabase adalah UUID. Semua tabel di Running Tracker DB pakai `user_id UUID` sebagai foreign key yang merujuk ke `auth.users.id` di Supabase.
+The user ID in Supabase is a UUID. All tables in the Running Tracker DB use `user_id UUID` as a foreign key referencing `auth.users.id` in Supabase.
 
 ---
 
 ## 4. Onboarding Flow
 
-User baru yang pertama kali login perlu melewati setup singkat sebelum bisa pakai app. Tanpa ini, AI Coach tidak punya data biometric dan tidak bisa berikan rekomendasi yang akurat.
+New users who log in for the first time need to go through a short setup before they can use the app. Without this, the AI Coach has no biometric data and cannot give accurate recommendations.
 
 ```
 Login via Google OAuth (Supabase)
         ↓
-Middleware cek: apakah user sudah ada di tabel users?
-        ↓ tidak
-Create row baru di users + user_settings (dengan default values)
+Middleware checks: does the user already exist in the users table?
+        ↓ no
+Create new row in users + user_settings (with default values)
         ↓
-Redirect ke /onboarding
+Redirect to /onboarding
         ↓
-Step 1 — Biometric setup (wajib)
-  - Max heart rate (bisa input manual atau pakai formula 220 - umur)
+Step 1 — Biometric setup (required)
+  - Max heart rate (manual input or formula 220 - age)
   - Resting heart rate baseline
   - Height + current weight
-  - Birth date (untuk kalkulasi age-based max HR)
+  - Birth date (for age-based max HR calculation)
         ↓
-Step 2 — Connect Strava (wajib untuk data otomatis, bisa skip untuk manual-only)
-  - Tombol "Connect Strava" → trigger OAuth flow
-  - Atau "Skip for now, I'll add manually"
+Step 2 — Connect Strava (required for automatic data, can skip for manual-only)
+  - "Connect Strava" button → triggers OAuth flow
+  - Or "Skip for now, I'll add manually"
         ↓
-Step 3 — Set first goal (opsional, bisa skip)
+Step 3 — Set first goal (optional, can skip)
   - Upcoming race? Target distance + date
-  - Atau "No race planned yet"
+  - Or "No race planned yet"
         ↓
-Redirect ke /dashboard
-  - Kalau Strava connected → tampilkan progress backfill
-  - Kalau skip Strava → tampilkan empty state dengan CTA manual entry
+Redirect to /dashboard
+  - If Strava connected → show backfill progress
+  - If Strava skipped → show empty state with manual entry CTA
 ```
 
-**Kapan onboarding dianggap selesai:**
+**When onboarding is considered complete:**
 
-- Biometric step selesai → flag `onboarding_complete = true` di `users` table
-- Strava dan goal bersifat opsional, tidak block akses ke dashboard
+- Biometric step done → flag `onboarding_complete = true` in `users` table
+- Strava and goal are optional and do not block access to the dashboard
 
-Tambah kolom di schema:
+Add column to schema:
 
 ```sql
 ALTER TABLE users ADD COLUMN onboarding_complete BOOLEAN DEFAULT FALSE;
@@ -132,9 +132,9 @@ ALTER TABLE users ADD COLUMN onboarding_complete BOOLEAN DEFAULT FALSE;
 
 ## 5. Strava OAuth Flow
 
-### 5.1 Gambaran umum
+### 5.1 Overview
 
-Strava OAuth dipakai **hanya untuk sync data workout**, bukan untuk identity. User sudah punya akun via Google/Supabase — Strava adalah integrasi data source.
+Strava OAuth is used **only for syncing workout data**, not for identity. The user already has an account via Google/Supabase — Strava is a data source integration.
 
 ```
 [Connect Strava Button]
@@ -146,27 +146,27 @@ Redirect ke https://www.strava.com/oauth/authorize
   &approval_prompt=auto
   &scope=read,activity:read_all,profile:read_all
         ↓
-User approve di Strava
+User approves on Strava
         ↓
-Strava redirect ke /api/auth/strava/callback?code=...
+Strava redirects to /api/auth/strava/callback?code=...
         ↓
-Server exchange code:
+Server exchanges code:
   POST https://www.strava.com/oauth/token
   body: { client_id, client_secret, code, grant_type: 'authorization_code' }
         ↓
 Response: { access_token, refresh_token, expires_at, athlete }
         ↓
-Encrypt tokens → simpan di tabel strava_credentials
+Encrypt tokens → save to strava_credentials table
         ↓
-Trigger background job: initial backfill semua aktivitas
+Trigger background job: initial backfill of all activities
 ```
 
 ### 5.2 Token refresh
 
-Token Strava expire tiap **6 jam**. Sebelum setiap call ke Strava API:
+Strava tokens expire every **6 hours**. Before every call to the Strava API:
 
 ```javascript
-// Cek apakah token akan expire dalam 5 menit ke depan
+// Check if the token will expire within the next 5 minutes
 if (Date.now() / 1000 > credentials.expires_at - 300) {
   const res = await fetch('https://www.strava.com/oauth/token', {
     method: 'POST',
@@ -178,7 +178,7 @@ if (Date.now() / 1000 > credentials.expires_at - 300) {
     }),
   })
   const { access_token, refresh_token, expires_at } = await res.json()
-  // Update encrypted values di DB
+  // Update encrypted values in DB
 }
 ```
 
@@ -193,7 +193,7 @@ The `needs_reconnect` flag is the single source of truth for broken-connection s
 
 ### 5.3 Webhook subscription
 
-Real-time sync via Strava webhook — lebih efisien dari polling:
+Real-time sync via Strava webhook — more efficient than polling:
 
 ```
 POST https://www.strava.com/api/v3/push_subscriptions
@@ -205,7 +205,7 @@ POST https://www.strava.com/api/v3/push_subscriptions
   }
 ```
 
-Strava akan kirim GET ke callback URL dulu untuk verifikasi (lihat Section 8.6 untuk detail implementasi), lalu POST setiap ada event:
+Strava sends a GET to the callback URL first for verification (see section 8.6 for implementation details), then sends a POST for every event:
 
 ```json
 {
@@ -222,92 +222,92 @@ Strava akan kirim GET ke callback URL dulu untuk verifikasi (lihat Section 8.6 u
 ```
 1. Fetch GET https://www.strava.com/api/v3/athlete/activities
      ?per_page=200&page=1
-2. Loop semua page sampai response kosong
-3. Per aktivitas → insert ke tabel activities
-4. Queue background job per aktivitas: fetch streams (HR, GPS, pace, cadence)
-5. Throttle ke ~80 req/15min untuk aman dari rate limit (100/15min hard limit)
-6. Setelah selesai → subscribe webhook + set last_sync_at
+2. Loop all pages until response is empty
+3. Per activity → insert into activities table
+4. Queue background job per activity: fetch streams (HR, GPS, pace, cadence)
+5. Throttle to ~80 req/15min to stay safe from rate limits (100/15min hard limit)
+6. After completion → subscribe webhook + set last_sync_at
 ```
 
 ### 5.5 Rate limiting
 
-| Limit        | Value                       | Strategi                                     |
-| ------------ | --------------------------- | -------------------------------------------- |
-| Per 15 menit | 100 request                 | Throttle ke 80, queue sisanya                |
-| Per hari     | 1000 request                | Monitor via Redis counter                    |
-| Backfill     | Bisa ratusan                | Inngest step functions + exponential backoff |
-| Webhook      | Tidak terbatas untuk terima | Proses async, tidak block response           |
+| Limit           | Value           | Strategy                                     |
+| --------------- | --------------- | -------------------------------------------- |
+| Per 15 minutes  | 100 requests    | Throttle to 80, queue the rest               |
+| Per day         | 1000 requests   | Monitor via Redis counter                    |
+| Backfill        | Can be hundreds | Inngest step functions + exponential backoff |
+| Webhook receive | Unlimited       | Process async, do not block response         |
 
-### 5.6 Data Flow: Strava ke Dashboard
+### 5.6 Data Flow: Strava to Dashboard
 
-Ini gambaran end-to-end bagaimana data lari dari Strava sampai ke dashboard — mulai dari event masuk sampai insight muncul di layar.
+End-to-end overview of how running data from Strava reaches the dashboard — from event arrival to insight appearing on screen.
 
 ```
-Strava (event baru)
+Strava (new event)
         ↓
 POST /api/sync/webhook
-  └─ Terima event JSON dari Strava (aspect_type, object_id, owner_id)
-  └─ Langsung return 200 OK
-  └─ Kirim event ke Inngest: strava/handle-webhook-event
+  └─ Receive JSON event from Strava (aspect_type, object_id, owner_id)
+  └─ Immediately return 200 OK
+  └─ Send event to Inngest: strava/handle-webhook-event
         ↓
 Inngest: strava/handle-webhook-event
-  └─ create  → fetch detail aktivitas dari Strava API
-  └─ update  → re-fetch dan update row di tabel activities
-  └─ delete  → hapus row dari tabel activities
+  └─ create  → fetch activity detail from Strava API
+  └─ update  → re-fetch and update row in activities table
+  └─ delete  → remove row from activities table
         ↓
 Inngest: strava/fetch-streams
-  └─ Fetch time-series HR/GPS/pace dari Strava API
-  └─ Downsample ke 10s resolution (default)
-  └─ Insert ke tabel activity_streams
+  └─ Fetch time-series HR/GPS/pace from Strava API
+  └─ Downsample to 10s resolution (default)
+  └─ Insert into activity_streams table
   └─ Trigger: ai/anomaly-detector
         ↓
 Inngest: ai/anomaly-detector
-  └─ Ambil aktivitas terbaru + baseline 30 hari aktivitas sejenis
-  └─ Rules-based check: ACWR spike, HR drift, pace drop, konsistensi
-  └─ Kalau ada anomali → insert ke ai_insights (insight_type = 'anomaly')
+  └─ Fetch latest activity + 30-day baseline for same activity type
+  └─ Rules-based check: ACWR spike, HR drift, pace drop, consistency
+  └─ If anomaly → insert into ai_insights (insight_type = 'anomaly')
   └─ Trigger: ai/generate-post-activity-insight
         ↓
 Inngest: ai/generate-post-activity-insight
-  └─ Build context: aktivitas + splits + baseline + health log + goals + profil
-  └─ Call Claude API (Sonnet 4.6, temp 0.3, max 700 token)
-  └─ Validasi output (panjang + section headers)
-  └─ Insert ke ai_insights (insight_type = 'post_activity')
-  └─ Trigger push notification kalau notify_post_activity = true
+  └─ Build context: activity + splits + baseline + health log + goals + profile
+  └─ Call Claude API (Sonnet 4.6, temp 0.3, max 700 tokens)
+  └─ Validate output (length + section headers)
+  └─ Insert into ai_insights (insight_type = 'post_activity')
+  └─ Trigger push notification if notify_post_activity = true
         ↓
-Dashboard (user buka app)
+Dashboard (user opens app)
   └─ GET /api/activities        → recent activities list
   └─ GET /api/analytics/summary → weekly stats + training load
   └─ GET /api/ai/insights       → AI insight cards (post-activity + anomaly)
-  └─ Render semua data di UI
+  └─ Render all data in UI
 ```
 
-**Titik-titik yang bisa gagal dan cara recovernya:**
+**Failure points and recovery:**
 
-| Titik                      | Failure mode                         | Recovery                                      |
-| -------------------------- | ------------------------------------ | --------------------------------------------- |
-| Webhook tidak terima event | Strava missed delivery               | Polling fallback setiap 1 jam via Vercel Cron |
-| Strava API timeout         | fetch-streams gagal                  | Inngest auto-retry dengan exponential backoff |
-| Claude API timeout/error   | insight tidak ter-generate           | Inngest retry 1x setelah 5 menit, lalu skip   |
-| Output AI invalid          | konten terlalu pendek / format salah | Retry 1x, kalau tetap gagal: is_valid=false   |
+| Point                    | Failure mode                      | Recovery                                      |
+| ------------------------ | --------------------------------- | --------------------------------------------- |
+| Webhook not received     | Strava missed delivery            | Polling fallback every 1 hour via Vercel Cron |
+| Strava API timeout       | fetch-streams fails               | Inngest auto-retry with exponential backoff   |
+| Claude API timeout/error | insight not generated             | Inngest retry 1x after 5 minutes, then skip   |
+| Invalid AI output        | content too short or wrong format | Retry 1x; if still fails: is_valid=false      |
 
-**Latency tipikal (estimasi):**
+**Typical latency (estimates):**
 
-- Webhook masuk → data tersimpan di DB: **~3–5 detik**
-- Data tersimpan → insight tersedia di dashboard: **~15–30 detik** (tergantung antrian Inngest + Claude latency)
-- Total dari selesai lari (Garmin/Strava sync) → insight di dashboard: **~2–5 menit** (tergantung kecepatan device sync ke Strava)
+- Webhook received → data saved in DB: **~3–5 seconds**
+- Data saved → insight available on dashboard: **~15–30 seconds** (depends on Inngest queue + Claude latency)
+- Total from run end (Garmin/Strava sync) → insight on dashboard: **~2–5 minutes** (depends on device sync speed to Strava)
 
 ### 5.7 Disconnect Strava
 
 ```
 1. Revoke token: DELETE https://www.strava.com/oauth/deauthorize
-2. Unsubscribe webhook dari Strava
-3. Hapus row di strava_credentials
-4. Data historis di tabel activities TETAP ADA (default retain)
-5. Sync berhenti — tidak ada aktivitas baru yang masuk
-6. Dashboard tetap bisa dipakai dengan data yang sudah ada
+2. Unsubscribe webhook from Strava
+3. Delete row in strava_credentials
+4. Historical data in activities table REMAINS (default retain)
+5. Sync stops — no new activities will be ingested
+6. Dashboard continues to work with existing data
 ```
 
-User yang ingin hapus data historis juga bisa melakukannya secara manual via halaman Settings → Danger Zone → "Delete all activity data".
+Users who want to delete their historical data can do so manually via Settings → Danger Zone → "Delete all activity data".
 
 ### 5.8 Connection Health & Broken State
 
@@ -401,6 +401,26 @@ The banner shows on **all Running Tracker pages** when `needs_reconnect = true`.
 | Dismissible | No — stays until reconnect succeeds                                             |
 | Test IDs    | `stravaDisconnectBanner`, `stravaReconnectBtn`                                  |
 
+### 5.9 Re-enrich Endpoints (Admin / Maintenance)
+
+These endpoints are not user-facing. They are used to backfill or recalculate derived data for existing activities after schema or algorithm changes.
+
+```
+POST /api/running/v1/auth/strava/re-enrich
+```
+
+Queues `strava/fetch-streams` Inngest events for every Strava activity belonging to the authenticated user. Used to backfill stream data (HR, GPS, pace) for activities that were synced before streams were captured. Requires Strava to be connected (`rt_strava_credentials` row must exist). Response: `{ queued: N }` where N is the number of events sent.
+
+```
+POST /api/running/v1/auth/strava/re-enrich-metrics
+```
+
+Recomputes derived metrics (Efficiency Factor, Aerobic Decoupling, Estimated VO2max) for up to 200 activities that are missing at least one metric and meet gate conditions (`moving_time_sec > 20 min` AND `avg_hr NOT NULL`). Runs synchronously (no Inngest). Response: `{ success: true, data: { processed: N, updated: M } }`.
+
+Both endpoints require session auth (401 if not authenticated).
+
+---
+
 #### Settings — Strava Connection Section
 
 The Settings page must have a "Strava Connection" section that handles both states:
@@ -428,17 +448,17 @@ The Settings page must have a "Strava Connection" section that handles both stat
 
 ## 6. Tech Stack
 
-| Layer           | Teknologi                 | Catatan                                                             |
+| Layer           | Technology                | Notes                                                               |
 | --------------- | ------------------------- | ------------------------------------------------------------------- |
-| Framework       | Next.js 15 App Router     | JavaScript/JSX — match dengan Personal Management                   |
-| UI              | Tailwind CSS + shadcn/ui  | Match dengan Personal Management untuk konsistensi visual           |
-| Charts          | Recharts (Phase 1)        | Visx untuk correlation view di Phase 2                              |
-| Map             | Leaflet + OpenStreetMap   | Render rute aktivitas                                               |
-| Database        | PostgreSQL 16             | Regular PG dengan indexing yang proper — no TimescaleDB             |
-| ORM             | Drizzle ORM               | Lightweight, cocok dengan Next.js API routes                        |
-| Auth            | Supabase SSR              | Shared project dengan Personal Management                           |
+| Framework       | Next.js 15 App Router     | JavaScript/JSX — matches Personal Management                        |
+| UI              | Tailwind CSS + shadcn/ui  | Matches Personal Management for visual consistency                  |
+| Charts          | Recharts (Phase 1)        | Visx for correlation view in Phase 2                                |
+| Map             | Leaflet + OpenStreetMap   | Renders activity routes                                             |
+| Database        | PostgreSQL 16             | Standard PG with proper indexing — no TimescaleDB                   |
+| ORM             | Drizzle ORM               | Lightweight, well-suited to Next.js API routes                      |
+| Auth            | Supabase SSR              | Shared project with Personal Management                             |
 | Data sync       | Strava API                | OAuth + webhook + polling fallback                                  |
-| AI              | Claude API (Sonnet 4.6)   | Running coach, tool use, streaming SSE — Sonnet untuk semua query   |
+| AI              | Claude API (Sonnet 4.6)   | Running coach, tool use, streaming SSE — Sonnet for all queries     |
 | Background jobs | Inngest                   | Serverless-native job queue — backfill, sync, AI insight generation |
 | Cache           | Redis (Upstash)           | Rate limit counter, AI context cache                                |
 | File storage    | Cloudflare R2             | GPX/FIT file upload + backup                                        |
@@ -449,37 +469,37 @@ The Settings page must have a "Strava Connection" section that handles both stat
 
 ## 6.1 UI Design Standards
 
-Aturan ini berlaku untuk semua komponen di Running Tracker. Frontend dan UI/UX Agent wajib mengikuti ini sebagai source of truth.
+These rules apply to all components in Running Tracker. Frontend and UI/UX agents must follow this as the source of truth.
 
 ### Input Focus Ring
 
-Semua elemen `<Input>` (shadcn) dan `<textarea>` **harus** menggunakan violet focus ring, bukan default gray dari CSS variable `--ring`:
+All `<Input>` elements (shadcn) and `<textarea>` elements **must** use the violet focus ring, not the default gray from the CSS variable `--ring`:
 
 ```
 focus-visible:ring-violet-200 focus-visible:border-violet-600
 ```
 
-Untuk `<textarea>` native (bukan shadcn):
+For native `<textarea>` (not shadcn):
 
 ```
 focus:outline-none focus:ring-2 focus:ring-violet-500
 ```
 
-**Alasan:** `--ring` default di globals.css adalah dark gray (`0 0% 3.9%`), tidak konsisten dengan brand color violet yang dipakai di seluruh UI running tracker.
+**Reason:** The default `--ring` in globals.css is dark gray (`0 0% 3.9%`), which is inconsistent with the violet brand color used across the running tracker UI.
 
 ### Brand Color
 
-Primary accent: `violet-600` (`#7c3aed`) — digunakan untuk CTA button, active state, focus ring, highlight.
+Primary accent: `violet-600` (`#7c3aed`) — used for CTA buttons, active states, focus rings, and highlights.
 
 ---
 
-## 7. Fitur & Scope per Phase
+## 7. Features & Scope per Phase
 
-### 6.1 Phase 1 — MVP (target 6–7 minggu)
+### 6.1 Phase 1 — MVP (target 6–7 weeks)
 
-**Module yang wajib ada:**
+**Required modules:**
 
-| Module          | Deskripsi                                                       |
+| Module          | Description                                                     |
 | --------------- | --------------------------------------------------------------- |
 | Auth & setup    | Supabase shared auth + Strava connect flow                      |
 | Strava sync     | OAuth, webhook, backfill, polling fallback, rate limit handling |
@@ -489,25 +509,25 @@ Primary accent: `violet-600` (`#7c3aed`) — digunakan untuk CTA button, active 
 | Activity detail | Chart pace, HR, elevation, splits table, map, HR zones          |
 | Activity list   | Filter by date/type, search                                     |
 | Analytics       | Trend charts, training load (ACWR), race predictor, PR tracking |
-| AI Coach        | Chat + 5 mode + 8 tools + insight generation                    |
+| AI Coach        | Chat + 5 modes + 8 tools + insight generation                   |
 
-**Tidak masuk Phase 1:**
+**Not in Phase 1:**
 
 - Garmin integration
 - HRV/sleep auto-sync
-- Correlation view (butuh data lebih dari 1 bulan)
-- Readiness score composite
+- Correlation view (requires more than 1 month of data)
+- Composite readiness score
 
-### 6.2 Phase 2 — Health integration (4–6 minggu setelah MVP)
+### 6.2 Phase 2 — Health integration (4–6 weeks after MVP)
 
-| Module             | Deskripsi                                                       |
-| ------------------ | --------------------------------------------------------------- |
-| Garmin integration | Official API (kalau approved) atau unofficial library           |
-| Health metrics     | Sleep stages, HRV, RHR, steps, body battery, stress, SpO2       |
-| Health dashboard   | Daily health card + mini trends                                 |
-| Correlation view   | 2-metric overlay interactive (3-month rolling)                  |
-| Readiness score    | Composite score harian (sleep + HRV + training load)            |
-| AI Coach advanced  | Cross-metric reasoning, anomaly detection, readiness-based plan |
+| Module             | Description                                                         |
+| ------------------ | ------------------------------------------------------------------- |
+| Garmin integration | Official API (if approved) or unofficial library                    |
+| Health metrics     | Sleep stages, HRV, RHR, steps, body battery, stress, SpO2           |
+| Health dashboard   | Daily health card + mini trends                                     |
+| Correlation view   | 2-metric interactive overlay (3-month rolling)                      |
+| Readiness score    | Daily composite score (sleep + HRV + training load)                 |
+| AI Coach advanced  | Cross-metric reasoning, anomaly detection, readiness-based planning |
 
 ### 6.3 Phase 3 — Future (TBD)
 
@@ -526,9 +546,9 @@ Primary accent: `violet-600` (`#7c3aed`) — digunakan untuk CTA button, active 
 
 ```sql
 -- ==================== USERS ====================
--- Sync dari Supabase auth.users, tambah biometric
+-- Synced from Supabase auth.users, adds biometric fields
 CREATE TABLE users (
-  id UUID PRIMARY KEY,               -- sama dengan Supabase auth.users.id
+  id UUID PRIMARY KEY,               -- same as Supabase auth.users.id
   email TEXT UNIQUE NOT NULL,
   display_name TEXT,
   birth_date DATE,
@@ -537,6 +557,8 @@ CREATE TABLE users (
   max_hr INT,
   resting_hr_baseline INT,
   vo2_max_baseline NUMERIC(4,1),
+  sex TEXT,                        -- 'male' | 'female' | null (used for fitness age calculation)
+  threshold_pace_sec INT,          -- threshold pace in sec/km (Daniels-style, for pace zones)
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -579,8 +601,20 @@ CREATE TABLE activities (
   notes TEXT,
   weather_summary JSONB,
   raw_data JSONB,                    -- backup raw Strava response
+  -- Derived metrics (computed at ingest time — see section 11.4)
+  efficiency_factor NUMERIC(6,4),
+  aerobic_decoupling NUMERIC(5,2),
+  estimated_vo2max NUMERIC(5,2),
+  has_heartrate BOOLEAN DEFAULT FALSE,
+  device_watts BOOLEAN DEFAULT FALSE,
+  avg_watts NUMERIC(7,2),
+  weighted_avg_watts NUMERIC(7,2),
+  pr_count INT DEFAULT 0,
+  relative_effort INT,
+  gear_id TEXT,
+  enriched_at TIMESTAMPTZ,           -- set after streams + derived metrics are computed
   created_at TIMESTAMPTZ DEFAULT NOW()
-  -- dedup via aplikasi, bukan DB constraint — lihat Section 8.3 Deduplication
+  -- dedup via application, not DB constraint — see section 8.3 Deduplication
 );
 
 CREATE INDEX idx_activities_user_date ON activities(user_id, started_at DESC);
@@ -645,11 +679,11 @@ CREATE INDEX idx_weight_user_date ON weight_logs(user_id, measured_at DESC);
 CREATE TABLE daily_training_metrics (
   user_id UUID REFERENCES users(id),
   date DATE NOT NULL,
-  training_load NUMERIC(6,2),       -- TSS atau TRIMP harian
+  training_load NUMERIC(6,2),       -- daily TSS or TRIMP
   acute_load_7d NUMERIC(6,2),
   chronic_load_28d NUMERIC(6,2),
   acwr NUMERIC(4,2),
-  readiness_score INT,              -- nullable, diisi Phase 2
+  readiness_score INT,              -- nullable, populated in Phase 2
   PRIMARY KEY (user_id, date)
 );
 
@@ -690,7 +724,7 @@ CREATE INDEX idx_ai_insights_user_unread ON ai_insights(user_id, acknowledged, c
 CREATE TABLE user_settings (
   user_id UUID REFERENCES users(id) PRIMARY KEY,
   hr_zones_method TEXT DEFAULT 'max_hr',   -- 'max_hr', 'karvonen', 'threshold'
-  threshold_hr INT,                        -- diisi kalau method = 'threshold'
+  threshold_hr INT,                        -- set when method = 'threshold'
   push_notifications_enabled BOOLEAN DEFAULT FALSE,
   push_subscription JSONB,                 -- Web Push subscription object
   notify_post_activity BOOLEAN DEFAULT TRUE,
@@ -714,7 +748,7 @@ CREATE TABLE goals (
 );
 ```
 
-### 7.2 Phase 2 tables (disiapkan, dibuat saat Phase 2 dimulai)
+### 7.2 Phase 2 tables (prepared, created when Phase 2 begins)
 
 ```sql
 -- Garmin credentials (method TBD)
@@ -724,7 +758,7 @@ CREATE TABLE garmin_credentials (
   last_sync_at TIMESTAMPTZ
 );
 
--- Aggregate health harian dari Garmin
+-- Daily health aggregate from Garmin
 CREATE TABLE daily_health (
   user_id UUID REFERENCES users(id),
   date DATE NOT NULL,
@@ -775,63 +809,69 @@ CREATE INDEX idx_hrv_user_time ON hrv_records(user_id, timestamp);
 ### 8.1 Auth
 
 ```
-POST  /api/auth/login                  ← trigger Supabase Google OAuth
-GET   /api/auth/me                     ← return user session info (id, email, name, avatar)
-POST  /api/auth/strava/connect         ← redirect ke Strava authorize URL
-GET   /api/auth/strava/callback        ← terima code, exchange token, trigger backfill
-POST  /api/auth/strava/disconnect      ← revoke Strava token, retain data historis
-POST  /api/auth/logout                 ← clear Supabase session
+POST  /api/auth/login                        ← trigger Supabase Google OAuth
+GET   /api/auth/me                           ← return user session info (id, email, name, avatar)
+POST  /api/running/v1/auth/strava/connect    ← redirect to Strava authorize URL
+GET   /api/running/v1/auth/strava/callback   ← receive code, exchange token, trigger backfill
+POST  /api/running/v1/auth/strava/disconnect ← revoke Strava token, retain historical data
+POST  /api/auth/logout                       ← clear Supabase session
 ```
 
 ### 8.2 User Profile & Settings
 
 ```
-GET    /api/user/profile               ← baca biometric (max_hr, height, weight, dll)
-PATCH  /api/user/profile               ← update biometric + display name
-GET    /api/user/settings              ← baca preferences (HR zones method, notif, dll)
-PATCH  /api/user/settings              ← update preferences
-GET    /api/user/strava-status         ← cek apakah Strava sudah connected + last_sync_at
-                                      ← response shape: { connected: boolean, athlete_id, last_sync_at, needs_reconnect: boolean }
-DELETE /api/user/activities            ← hapus semua activity data (Danger Zone)
+GET    /api/running/v1/user/profile        ← read biometric (max_hr, height, weight, sex, threshold_pace_sec, etc.)
+PATCH  /api/running/v1/user/profile        ← update biometric + display name
+GET    /api/running/v1/user/hr-zones       ← read HR zones settings (max_hr, resting_hr, threshold_hr, method)
+PATCH  /api/running/v1/user/hr-zones       ← update HR zones settings
+GET    /api/running/v1/user/settings       ← read preferences (notification toggles, push_subscription, etc.)
+PATCH  /api/running/v1/user/settings       ← update preferences (incl. pace zone threshold)
+GET    /api/running/v1/user/strava-status  ← check if Strava is connected + last_sync_at
+                                           ← response: { connected: boolean, athlete_id, last_sync_at, needs_reconnect: boolean }
+DELETE /api/running/v1/user/activities     ← delete all activity data (Danger Zone)
+GET    /api/running/v1/user/max-hr-detect  ← detect max HR from highest recorded activity HR
+GET    /api/running/v1/user/threshold-pace-detect ← auto-detect threshold pace from stream data (see section 21b)
+POST   /api/running/v1/user/push-subscription     ← save Web Push subscription object
+DELETE /api/running/v1/user/push-subscription     ← remove subscription (user disabled notifications)
 ```
 
 ### 8.3 Activities
 
 ```
 GET    /api/activities                 ← list, filter: ?from=&to=&type=&page=
-GET    /api/activities/:id             ← detail lengkap
+GET    /api/activities/:id             ← full detail
 GET    /api/activities/:id/streams     ← time-series HR/GPS/pace/cadence
                                        ← ?resolution=raw|1s|5s|10s|30s (default: 10s)
 POST   /api/activities                 ← manual entry
-POST   /api/activities/upload          ← GPX atau FIT file upload
+POST   /api/activities/upload          ← GPX or FIT file upload
 PATCH  /api/activities/:id             ← edit notes, type, RPE
 DELETE /api/activities/:id
 ```
 
 ### 8.3.1 Deduplication strategy
 
-Ada tiga skenario duplikat yang mungkin terjadi:
+Three duplicate scenarios can occur:
 
-**Skenario A — Strava sync aktivitas yang sama dua kali**
-Bisa terjadi kalau polling dan webhook sama-sama aktif, atau backfill overlap dengan sync normal.
+**Scenario A — Strava syncs the same activity twice**
+Can happen when polling and webhook are both active, or when backfill overlaps with normal sync.
 
-Solusi: cek berdasarkan `external_id` (Strava activity ID) sebelum insert.
+Solution: check by `external_id` (Strava activity ID) before insert.
 
 ```javascript
-// Sebelum insert aktivitas dari Strava
+// Before inserting an activity from Strava
 const existing = await db
   .select()
   .from(activities)
   .where(and(eq(activities.source, 'strava'), eq(activities.external_id, stravaActivityId)))
   .limit(1)
 
-if (existing.length > 0) return // skip, sudah ada
+if (existing.length > 0) return // skip, already exists
 ```
 
-**Skenario B — User manual entry aktivitas yang sama sudah ada di Strava**
-Contoh: user input manual lari treadmill, lalu sadar sudah sync dari Strava.
+**Scenario B — User manual entry for an activity already synced from Strava**
+Example: user manually enters a treadmill run, then realises it already synced from Strava.
 
-Solusi: cek fuzzy match saat manual entry — `started_at` dalam toleransi ±5 menit DAN `distance_m` dalam toleransi ±200m.
+Solution: fuzzy match on manual entry — `started_at` within ±5 minutes AND `distance_m` within ±200m.
 
 ```javascript
 async function findPotentialDuplicate(userId, startedAt, distanceM) {
@@ -853,53 +893,53 @@ async function findPotentialDuplicate(userId, startedAt, distanceM) {
 }
 ```
 
-Kalau match ditemukan → tampilkan warning ke user: _"Sepertinya aktivitas ini sudah ada dari Strava. Tetap simpan?"_. User yang memutuskan, bukan sistem.
+If a match is found → show a warning to the user: "This activity looks like it already exists from Strava. Save anyway?" The user decides, not the system.
 
-**Skenario C — GPX/FIT upload aktivitas yang sudah ada di Strava**
-User upload file GPX dari Garmin untuk aktivitas yang sudah auto-sync via Strava.
+**Scenario C — GPX/FIT upload for an activity already synced from Strava**
+User uploads a GPX file from Garmin for an activity that was already auto-synced via Strava.
 
-Solusi: sama dengan Skenario B — fuzzy match `started_at` ±5 menit dan `distance_m` ±200m. Tambah cek `source != 'manual'` supaya tidak block upload yang memang intended.
+Solution: same as Scenario B — fuzzy match `started_at` ±5 minutes and `distance_m` ±200m. Also check `source != 'manual'` to avoid blocking intentional uploads.
 
-**Summary toleransi dedup:**
+**Deduplication tolerance summary:**
 
-| Field         | Toleransi   | Alasan                                                        |
-| ------------- | ----------- | ------------------------------------------------------------- |
-| `started_at`  | ±5 menit    | GPS start dan manual start bisa beda beberapa menit           |
-| `distance_m`  | ±200m       | Strava dan Garmin sering beda kecil di kalkulasi GPS distance |
-| `external_id` | exact match | Strava ID unik — tidak ada toleransi                          |
+| Field         | Tolerance   | Reason                                                              |
+| ------------- | ----------- | ------------------------------------------------------------------- |
+| `started_at`  | ±5 minutes  | GPS start and manual start can differ by a few minutes              |
+| `distance_m`  | ±200m       | Strava and Garmin often differ slightly in GPS distance calculation |
+| `external_id` | exact match | Strava ID is unique — no tolerance                                  |
 
 ### 8.4 Health (Phase 1 — manual input)
 
 ```
-GET    /api/health/subjective          ← list log, filter: ?from=&to=
-POST   /api/health/subjective          ← post daily log (sleep, energy, mood, dll)
-PATCH  /api/health/subjective/:id      ← edit log yang sudah ada
-DELETE /api/health/subjective/:id      ← hapus log satu hari
+GET    /api/health/subjective          ← list logs, filter: ?from=&to=
+POST   /api/health/subjective          ← post daily log (sleep, energy, mood, etc.)
+PATCH  /api/health/subjective/:id      ← edit an existing log
+DELETE /api/health/subjective/:id      ← delete a single day log
 
 GET    /api/health/weight              ← list weight entries
-POST   /api/health/weight              ← tambah weight entry
-PATCH  /api/health/weight/:id          ← koreksi entry yang salah input
-DELETE /api/health/weight/:id          ← hapus entry
+POST   /api/health/weight              ← add weight entry
+PATCH  /api/health/weight/:id          ← correct a wrong entry
+DELETE /api/health/weight/:id          ← delete entry
 ```
 
 ### 8.5 Streams downsampling strategy
 
-Strava menyimpan stream data dengan resolusi 1 data point per detik. Lari 1 jam = **3.600 rows**, lari 3 jam = **10.800 rows**. Mengirim semua ini ke browser untuk render chart adalah pemborosan — chart dengan 3.600 titik dan 300 titik terlihat sama secara visual.
+Strava stores stream data at 1 data point per second resolution. A 1-hour run = **3,600 rows**, a 3-hour run = **10,800 rows**. Sending all of this to the browser for chart rendering is wasteful — a chart with 3,600 points and one with 300 points look identical visually.
 
-**Pendekatan:** server-side downsampling berdasarkan parameter `resolution`:
+**Approach:** server-side downsampling based on the `resolution` parameter:
 
-| Resolution | Interval | Titik untuk lari 1 jam | Cocok untuk                        |
-| ---------- | -------- | ---------------------- | ---------------------------------- |
-| `raw`      | 1 detik  | ~3.600                 | Export / analysis berat            |
-| `1s`       | 1 detik  | ~3.600                 | Sama dengan raw                    |
-| `5s`       | 5 detik  | ~720                   | Detail view dengan zoom            |
-| `10s`      | 10 detik | ~360                   | **Default** — activity detail page |
-| `30s`      | 30 detik | ~120                   | Overview / thumbnail               |
+| Resolution | Interval   | Points for 1-hour run | Best for                           |
+| ---------- | ---------- | --------------------- | ---------------------------------- |
+| `raw`      | 1 second   | ~3,600                | Export / heavy analysis            |
+| `1s`       | 1 second   | ~3,600                | Same as raw                        |
+| `5s`       | 5 seconds  | ~720                  | Detail view with zoom              |
+| `10s`      | 10 seconds | ~360                  | **Default** — activity detail page |
+| `30s`      | 30 seconds | ~120                  | Overview / thumbnail               |
 
-**Implementasi di server:**
+**Server implementation:**
 
 ```javascript
-// Ambil data dari DB, lalu sample setiap N detik
+// Fetch data from DB, then sample every N seconds
 function downsample(streams, intervalSeconds) {
   if (intervalSeconds <= 1) return streams
 
@@ -917,28 +957,28 @@ function downsample(streams, intervalSeconds) {
 }
 ```
 
-**Aturan:**
+**Rules:**
 
-- Default response selalu `10s` — tidak perlu client kirim parameter kalau tidak perlu detail
-- `raw` hanya boleh dipakai untuk export, bukan untuk chart rendering
-- Response selalu include `meta.total_points` dan `meta.resolution` supaya client tahu sedang pakai resolusi apa
+- Default response is always `10s` — client does not need to send the parameter unless detail is required
+- `raw` is only allowed for exports, not for chart rendering
+- Response always includes `meta.total_points` and `meta.resolution` so the client knows which resolution is in use
 
 ### 8.6 Sync
 
 ```
 POST   /api/sync/strava                ← manual trigger sync (polling)
-GET    /api/sync/status                ← cek status sync + last_sync_at
-GET    /api/sync/webhook               ← Strava challenge verification (lihat detail di bawah)
-POST   /api/sync/webhook               ← Strava kirim event create/update/delete
-POST   /api/sync/webhook/subscribe     ← register webhook ke Strava
+GET    /api/sync/status                ← check sync status + last_sync_at
+GET    /api/sync/webhook               ← Strava challenge verification (see detail below)
+POST   /api/sync/webhook               ← Strava sends create/update/delete event
+POST   /api/sync/webhook/subscribe     ← register webhook with Strava
 DELETE /api/sync/webhook/subscribe     ← unsubscribe webhook
 ```
 
 #### Webhook verification flow (GET /api/sync/webhook)
 
-Saat pertama kali register webhook ke Strava, Strava langsung kirim GET request ke callback URL untuk memverifikasi bahwa endpoint kita valid dan milik kita. Kalau kita tidak balas dengan benar, pendaftaran webhook gagal.
+When first registering a webhook with Strava, Strava immediately sends a GET request to the callback URL to verify that the endpoint is valid and belongs to us. If we do not respond correctly, webhook registration fails.
 
-**Request dari Strava:**
+**Request from Strava:**
 
 ```
 GET /api/sync/webhook
@@ -947,7 +987,7 @@ GET /api/sync/webhook
   &hub.verify_token=WEBHOOK_VERIFY_SECRET
 ```
 
-**Yang harus dilakukan endpoint:**
+**What the endpoint must do:**
 
 ```javascript
 // app/api/sync/webhook/route.js
@@ -958,7 +998,7 @@ export async function GET(request) {
   const challenge = searchParams.get('hub.challenge')
   const token = searchParams.get('hub.verify_token')
 
-  // Verifikasi bahwa request ini memang dari Strava dengan token yang kita set
+  // Verify the request is genuinely from Strava using our configured verify token
   if (mode === 'subscribe' && token === process.env.WEBHOOK_VERIFY_SECRET) {
     return Response.json({ 'hub.challenge': challenge })
   }
@@ -967,7 +1007,7 @@ export async function GET(request) {
 }
 ```
 
-**Yang harus dilakukan endpoint saat POST (event masuk):**
+**What the endpoint must do when POST event arrives:**
 
 ```javascript
 export async function POST(request) {
@@ -985,28 +1025,49 @@ export async function POST(request) {
 }
 ```
 
-**Penting:** Endpoint POST webhook harus langsung return `200 OK` dan lempar ke Inngest. Kalau response > 2 detik, Strava anggap gagal dan akan retry. Jangan proses sync di dalam handler ini.
+**Important:** The POST webhook endpoint must immediately return `200 OK` and hand off to Inngest. If the response takes > 2 seconds, Strava considers it failed and will retry. Do not process the sync inside this handler.
 
 ### 8.7 Analytics
 
 ```
-GET   /api/analytics/summary           ← ?period=week|month|year
-GET   /api/analytics/trends            ← ?metric=pace|distance|hr&period=12w
-GET   /api/analytics/training-load     ← ACWR, acute 7d, chronic 28d
-GET   /api/analytics/race-predictor    ← prediksi semua distance dari PR terbaru
-GET   /api/analytics/prs               ← best time per distance (1K/5K/10K/half/full)
-GET   /api/analytics/vo2               ← estimasi VO2 max dari HR + pace
+GET   /api/analytics/summary                        ← ?period=week|month|year
+GET   /api/analytics/trends                         ← ?metric=pace|distance|hr&period=12w
+GET   /api/analytics/training-load                  ← ACWR, acute 7d, chronic 28d
+GET   /api/analytics/race-predictor                 ← predict all distances from latest PR
+GET   /api/analytics/prs                            ← best time per distance (1K/5K/10K/half/full)
+GET   /api/analytics/vo2                            ← estimate VO2 max from HR + pace
+GET   /api/running/v1/analytics/fitness-age         ← weekly fitness age trend (see section 11.2)
+GET   /api/running/v1/analytics/endurance-score     ← weekly endurance score trend (see section 11.2)
+GET   /api/running/v1/analytics/pmc                 ← performance management chart data (see section 11.2)
+                                                    ← ?days=30|60|90 (default: 90)
+GET   /api/running/v1/analytics/calorie-trend       ← monthly calorie burn trend (see section 11.2)
+GET   /api/running/v1/analytics/zones               ← zone breakdown for HR, pace, cadence
+                                                    ← ?range=&activity_type=&start_date=&end_date=
+GET   /api/running/v1/analytics/gear                ← gear usage breakdown
+                                                    ← ?range=&activity_type=&start_date=&end_date=
+GET   /api/running/v1/calendar                      ← activity calendar data for a month
+                                                    ← ?month=YYYY-MM&type= (see section 11.1)
 ```
 
 ### 8.8 AI Insight Engine
 
 ```
-GET   /api/ai/insights                 ← list semua insights, filter: ?type=&acknowledged=
-GET   /api/ai/insights/:id             ← detail satu insight
-PATCH /api/ai/insights/:id/ack         ← tandai insight sudah dibaca
-POST  /api/ai/insights/generate        ← trigger on-demand analysis (body: { activity_id, type })
+GET   /api/running/v1/ai/insights                  ← list all insights, filter: ?type=&acknowledged=
+GET   /api/running/v1/ai/insights/:id              ← detail of one insight
+PATCH /api/running/v1/ai/insights/:id/ack          ← mark insight as read
+POST  /api/running/v1/ai/insights/generate         ← trigger on-demand analysis (body: { activity_id, focus })
+POST  /api/running/v1/ai/insights/daily            ← manually trigger daily insight generation
+                                                   ← body: { force?: boolean }; rate-limited to 1/hour unless force=true
+                                                   ← queues Inngest event ai/generate-daily-insight
+POST  /api/running/v1/ai/insights/followup         ← follow-up question on an existing insight
+                                                   ← body: { question: string, insightId: string }
+                                                   ← calls Claude (Sonnet 4.6, temp 0.3, max 200 tokens)
+                                                   ← returns { content: string }; not saved to DB
+POST  /api/running/v1/ai/injury-coach              ← submit injury/pain question (see section 10.11)
+GET   /api/running/v1/ai/injury-coach/history      ← last 20 injury coach responses for the user
+                                                   ← returns { data: [{ id, created_at, content, data_refs }] }
 
--- Ditunda ke Phase 2 (Chat Coach):
+-- Deferred to Phase 2 (Chat Coach):
 -- POST  /api/ai/chat
 -- GET   /api/ai/conversations
 -- GET   /api/ai/conversations/:id
@@ -1017,88 +1078,88 @@ POST  /api/ai/insights/generate        ← trigger on-demand analysis (body: { a
 
 ## 10. AI Insight Engine
 
-> Detail implementasi lengkap ada di `running/05_AI_Coach_Implementation_Spec.md`. Section ini adalah ringkasan untuk konteks PRD.
+> Full implementation detail is in `running/05_AI_Coach_Implementation_Spec.md`. This section is a summary for PRD context.
 
-### 10.1 Pendekatan
+### 10.1 Approach
 
-AI tidak berjalan sebagai chat — AI berjalan **otomatis di background** setiap ada aktivitas baru atau sesuai jadwal. Hasilnya berupa kartu insight terstruktur yang langsung muncul di dashboard dan halaman detail aktivitas.
+The AI does not run as a chat interface — it runs **automatically in the background** whenever a new activity arrives or on a schedule. The output is structured insight cards that appear directly on the dashboard and activity detail page.
 
-Kamu tidak perlu tanya apa-apa. AI yang notice, AI yang analisis, AI yang kasih tahu.
+You do not need to ask anything. The AI notices, analyses, and tells you.
 
-> **Chat Coach** ditunda ke Phase 2 — setelah Insight Engine sudah berjalan dan ada cukup data untuk validasi kualitas insight.
+> **Chat Coach** is deferred to Phase 2 — after the Insight Engine is running and enough data is available to validate insight quality.
 
 ---
 
-### 10.2 Lima jenis insight
+### 10.2 Five insight types
 
 #### 10.2.1 Post-activity insight
 
-**Trigger:** setelah setiap aktivitas selesai di-sync dari Strava (streams sudah masuk DB)
-**Tampil di:** halaman detail aktivitas + dashboard (kartu terbaru)
-**Notifikasi:** ✅ Ya — judul + 1 kalimat pertama ringkasan
+**Trigger:** after each activity finishes syncing from Strava (streams are in DB)
+**Shown in:** activity detail page + dashboard (most recent card)
+**Notification:** Yes — title + first sentence of summary
 
-Input: detail aktivitas, splits per km, baseline 4 minggu, training load, health log hari itu, goals, profil.
+Input: activity detail, per-km splits, 4-week baseline, training load, that day's health log, goals, profile.
 
 Output format (markdown):
 
 ```
-## Ringkasan
-## Highlight
-## Yang Perlu Diperhatikan  ← hanya kalau ada
-## Rekomendasi Sesi Berikutnya
+## Summary
+## Highlights
+## Things to Watch  ← only when applicable
+## Next Session Recommendation
 ```
 
-Contoh output:
+Example output:
 
-> "Easy run 10km kamu hari ini solid — pace 5:55/km konsisten di semua splits dengan variasi hanya ±8 detik/km. HR rata-rata 138 bpm, turun 4 bpm dibanding easy run minggu lalu di pace yang sama, tanda adaptasi aerobik yang baik."
+> "Your 10km easy run today was solid — pace 5:55/km was consistent across all splits with only ±8s/km variance. Average HR 138 bpm, down 4 bpm vs last week's easy run at the same pace — a sign of good aerobic adaptation."
 
 #### 10.2.2 Weekly review
 
-**Trigger:** Vercel Cron setiap Minggu 19:00
-**Tampil di:** dashboard (kartu mingguan)
-**Notifikasi:** ✅ Ya
+**Trigger:** Vercel Cron every Sunday 19:00
+**Shown in:** dashboard (weekly card)
+**Notification:** Yes
 
-Input: semua aktivitas minggu ini, training load, health log minggu ini, ringkasan 4 minggu sebelumnya, goals.
+Input: all this week's activities, training load, this week's health log, 4-week prior summary, goals.
 
-Output format (markdown, maks 300 kata):
+Output format (markdown, max 300 words):
 
 ```
-## Ringkasan Minggu Ini
-## Balance Training
-## Vs Minggu Lalu
-## Fokus Minggu Depan
+## This Week's Summary
+## Training Balance
+## vs Last Week
+## Focus for Next Week
 ```
 
 #### 10.2.3 Anomaly alert
 
-**Trigger:** setelah setiap post-activity insight selesai (programmatic check, no Claude)
-**Tampil di:** dashboard (kartu warning)
-**Notifikasi:** ✅ Ya — hanya severity ≥ `attention`
+**Trigger:** after each post-activity insight completes (programmatic check, no Claude)
+**Shown in:** dashboard (warning card)
+**Notification:** Yes — only for severity >= `attention`
 
-Empat kondisi yang dicek secara rules-based:
+Four conditions checked via rules-based logic:
 
 - ACWR > 1.5 → severity `warning`
 - HR avg > baseline × 1.10 di pace yang sama → severity `attention`
 - Pace > baseline × 1.08 untuk tipe yang sama → severity `attention`
-- Tidak ada aktivitas > 10 hari padahal biasanya ≥ 3x/minggu → severity `info`
+- No activities for > 10 days when the user normally runs ≥ 3×/week → severity `info`
 
-Claude dipanggil **hanya untuk menulis deskripsi personal** setelah anomali terdeteksi.
+Claude is called **only to write a personalised description** after an anomaly is detected.
 
 #### 10.2.4 Daily insight
 
-**Trigger:** Vercel Cron daily 06:00
-**Tampil di:** dashboard (kartu harian)
-**Notifikasi:** ❌ Tidak — hanya muncul di dashboard
+**Trigger:** Vercel Cron daily 06:00; also triggerable via `POST /api/running/v1/ai/insights/daily`
+**Shown in:** dashboard (daily card); also on the AI Coach page via `DailyInsightCard`
+**Notification:** No — shown on dashboard only
 
-Fokus ditentukan otomatis: race dekat → taper/readiness, ACWR tinggi → recovery, gap panjang → motivational, default → general training tip.
+Focus is determined automatically: race approaching → taper/readiness, high ACWR → recovery, long gap → motivational, default → general training tip.
 
-Skip kalau user punya < 3 aktivitas tersimpan.
+Skipped if the user has fewer than 3 stored activities.
 
 #### 10.2.5 On-demand activity analysis
 
-**Trigger:** user klik tombol "Analyze" di halaman detail aktivitas
-**Tampil di:** halaman detail aktivitas, di bawah charts
-**Notifikasi:** ❌ Tidak
+**Trigger:** user clicks the "Analyze" button on the activity detail page
+**Shown on:** activity detail page, below the charts
+**Notification:** No
 
 ```
 POST /api/ai/insights/generate
@@ -1109,15 +1170,15 @@ body: { activity_id: "uuid", type: "post_activity" }
 
 #### 10.2.6 Analytics Section Recommendations (`analytics_summary`)
 
-Setiap kali ada activity baru, AI akan otomatis analyze data di halaman Analytics dan kasih rekomendasi per section. Trigger-nya event-driven — nggak ada activity baru = nggak ada analisis.
+Every time a new activity arrives, the AI automatically analyses data on the Analytics page and provides a recommendation per section. The trigger is event-driven — no new activity = no analysis.
 
-**Trigger:** Inngest event chaining dari post-activity flow. Setelah `generatePostActivityInsight` selesai, fire event `ai/generate-analytics-summary` dengan `triggered_by_activity_id`.
+**Trigger:** Inngest event chaining from post-activity flow. After `generatePostActivityInsight` completes, fires event `ai/generate-analytics-summary` with `triggered_by_activity_id`.
 
-**Staleness check:** Saat halaman Analytics load, API cek apakah `max(rt_activities.started_at)` lebih baru dari `max(rt_ai_insights.created_at WHERE insight_type = 'analytics_summary')`. Kalau iya → queue job. Kalau nggak → tampilkan insight terakhir langsung.
+**Staleness check:** When the Analytics page loads, the API checks whether `max(rt_activities.started_at)` is newer than `max(rt_ai_insights.created_at WHERE insight_type = 'analytics_summary')`. If yes → queue job. If no → show the last insight immediately.
 
-**Claude call design:** 1 call untuk semua section. Claude return JSON dengan key per section: `weekly_distance`, `pace_trend`, `training_load`, `vo2max_trend`, `ef_trend`, `race_predictor`. Tiap key punya `{ headline, body_markdown }`.
+**Claude call design:** 1 call for all sections. Claude returns JSON with a key per section: `weekly_distance`, `pace_trend`, `training_load`, `vo2max_trend`, `ef_trend`, `race_predictor`. Each key has `{ headline, body_markdown }`.
 
-**Section coverage (6 section, skip SummaryStats dan CurrentVO2max):**
+**Section coverage (6 sections, skipping SummaryStats and CurrentVO2max):**
 
 - Weekly Distance
 - Pace Trend
@@ -1128,13 +1189,13 @@ Setiap kali ada activity baru, AI akan otomatis analyze data di halaman Analytic
 
 **Output language:** English.
 
-**Storage:** Simpan 1 row per section di `rt_ai_insights` dengan `insight_type = 'analytics_summary'` dan `data_refs: { section: 'weekly_distance', triggered_by_activity_id: '...' }`.
+**Storage:** Save 1 row per section in `rt_ai_insights` with `insight_type = 'analytics_summary'` and `data_refs: { section: 'weekly_distance', triggered_by_activity_id: '...' }`.
 
 ---
 
 ### 10.3 Context injection
 
-AI tidak punya akses langsung ke DB. Semua data disiapkan sebelum call ke Claude API dalam format **plain text terstruktur** (bukan JSON mentah).
+The AI does not have direct DB access. All data is prepared before the Claude API call in **structured plain text** format (not raw JSON).
 
 ```javascript
 async function buildInsightContext(activityId) {
@@ -1161,10 +1222,10 @@ async function buildInsightContext(activityId) {
 }
 ```
 
-**Token budget:** ~950 input token per call (jauh lebih efisien dari estimasi awal).
-**Hard limit:** 6.000 token. Kalau mendekati limit, baseline activities dipangkas: 5 → 3 → 1.
+**Token budget:** ~950 input tokens per call (much more efficient than initial estimates).
+**Hard limit:** 6,000 tokens. If approaching the limit, baseline activities are trimmed: 5 → 3 → 1.
 
-Tidak pakai tool use untuk Insight Engine — semua data sudah tersedia saat call dibuat. Tool use disimpan untuk Chat Coach Phase 2.
+Tool use is not used for the Insight Engine — all data is available when the call is made. Tool use is reserved for Chat Coach in Phase 2.
 
 ---
 
@@ -1175,8 +1236,8 @@ Tidak pakai tool use untuk Insight Engine — semua data sudah tersedia saat cal
 | Model             | `claude-sonnet-4-6`                                                    |
 | Temperature       | `0.3`                                                                  |
 | Max tokens output | Post-activity/on-demand: 700 · Weekly: 500 · Anomaly: 250 · Daily: 400 |
-| Streaming         | Tidak — output disimpan lengkap ke DB                                  |
-| Timeout           | 30 detik                                                               |
+| Streaming         | No — output is saved in full to DB                                     |
+| Timeout           | 30 seconds                                                             |
 
 ---
 
@@ -1200,16 +1261,16 @@ Tidak pakai tool use untuk Insight Engine — semua data sudah tersedia saat cal
 
 **Insight types:**
 
-| Type                | Description                                                                                      |
-| ------------------- | ------------------------------------------------------------------------------------------------ |
-| `post_activity`     | Analisis otomatis setelah setiap aktivitas selesai di-sync dari Strava                           |
-| `weekly_review`     | Review mingguan via Vercel Cron setiap Minggu 19:00                                              |
-| `anomaly`           | Alert anomali setelah post-activity insight selesai (rules-based check + Claude narration)       |
-| `daily`             | Insight harian via Vercel Cron 06:00 (readiness / recovery / motivational)                       |
-| `on_demand`         | Analisis manual yang di-trigger user dari halaman detail aktivitas                               |
-| `analytics_summary` | Rekomendasi per section di halaman Analytics, di-trigger otomatis setelah activity baru disimpan |
+| Type                | Description                                                                                     |
+| ------------------- | ----------------------------------------------------------------------------------------------- |
+| `post_activity`     | Automatic analysis after each activity finishes syncing from Strava                             |
+| `weekly_review`     | Weekly review via cron every Sunday 19:00                                                       |
+| `anomaly`           | Anomaly alert after post-activity insight completes (rules-based check + Claude narration)      |
+| `daily`             | Daily insight via cron at 06:00 (readiness / recovery / motivational)                           |
+| `on_demand`         | Manual analysis triggered by the user from the activity detail page                             |
+| `analytics_summary` | Per-section recommendations on the Analytics page, auto-triggered after a new activity is saved |
 
-Schema tambahan dari PRD awal:
+Additional schema from the original PRD:
 
 ```sql
 ALTER TABLE ai_insights
@@ -1224,47 +1285,47 @@ ALTER TABLE ai_insights
 
 ### 10.6 Guardrails
 
-- Output dalam **Bahasa Indonesia**
-- Selalu referensikan data nyata — tidak boleh generik
-- Tidak boleh diagnosis medis
-- Keluhan fisik serius → sarankan ke dokter/physio
-- User dengan < 3 aktivitas → prompt disesuaikan, jangan sebut baseline yang tidak ada
-- Output validation: cek panjang minimum + section headers. Kalau invalid → retry 1x → kalau tetap gagal → `is_valid=false`, tidak tampil di UI
+- Output language: **English**
+- Always reference real data — no generic advice
+- No medical diagnoses
+- Serious physical complaints → recommend seeing a doctor or physio
+- Users with < 3 activities → prompt adjusted, do not reference a baseline that does not exist
+- Output validation: check minimum length + section headers. If invalid → retry 1x → if still fails → `is_valid=false`, not shown in UI
 
 ---
 
 ### 10.7 Error handling
 
-| Skenario                        | Handling                                              |
-| ------------------------------- | ----------------------------------------------------- |
-| Claude timeout (>30s)           | Inngest retry 1x setelah 5 menit                      |
-| Claude rate limit               | Backoff: 1 menit → 5 menit → 15 menit → drop          |
-| Output terlalu pendek / invalid | Retry 1x → kalau tetap → `is_valid=false`             |
-| Claude API down                 | Skip insight, jangan block sync flow, log ke Sentry   |
-| Max retry terlampaui            | `status='failed'`, `content=null`, tidak tampil di UI |
+| Scenario                   | Handling                                            |
+| -------------------------- | --------------------------------------------------- |
+| Claude timeout (>30s)      | Inngest retry 1x after 5 minutes                    |
+| Claude rate limit          | Backoff: 1 min → 5 min → 15 min → drop              |
+| Output too short / invalid | Retry 1x → if still invalid → `is_valid=false`      |
+| Claude API down            | Skip insight, do not block sync flow, log to Sentry |
+| Max retries exceeded       | `status='failed'`, `content=null`, not shown in UI  |
 
 ---
 
 ### 10.8 Cost estimate (revised)
 
-| Job                   | Frekuensi/bulan | Input token     | Output token | Biaya/bulan      |
-| --------------------- | --------------- | --------------- | ------------ | ---------------- |
-| Post-activity insight | ~20x            | ~950            | ~500         | ~$0.18           |
-| Weekly review         | 4x              | ~2.000          | ~500         | ~$0.07           |
-| Anomaly description   | ~8x             | ~600            | ~200         | ~$0.03           |
-| Daily insight         | ~22x            | ~700            | ~400         | ~$0.09           |
-| On-demand             | ~10x            | ~950            | ~500         | ~$0.09           |
-| Friday prep           | 4x              | 0 (rules-based) | 0            | $0               |
-| Analytics summary     | ~16x            | ~2.000          | ~600         | ~$0.55           |
-| **Total**             |                 |                 |              | **~$1.01/bulan** |
+| Job                   | Freq/month | Input tokens    | Output tokens | Cost/month       |
+| --------------------- | ---------- | --------------- | ------------- | ---------------- |
+| Post-activity insight | ~20x       | ~950            | ~500          | ~$0.18           |
+| Weekly review         | 4x         | ~2,000          | ~500          | ~$0.07           |
+| Anomaly description   | ~8x        | ~600            | ~200          | ~$0.03           |
+| Daily insight         | ~22x       | ~700            | ~400          | ~$0.09           |
+| On-demand             | ~10x       | ~950            | ~500          | ~$0.09           |
+| Friday prep           | 4x         | 0 (rules-based) | 0             | $0               |
+| Analytics summary     | ~16x       | ~2,000          | ~600          | ~$0.55           |
+| **Total**             |            |                 |               | **~$1.01/month** |
 
 ---
 
 ### 10.9 AI Coach Card — UI Design
 
-Kartu AI Coach muncul di halaman detail aktivitas, setelah pre-activity context section dan sebelum splits/laps/stream charts. Tampilannya satu kartu putih (`bg-white rounded-lg p-4`) dengan header tetap dan konten yang berubah sesuai state. Card dibungkus container dengan gradient `from-violet-50 to-purple-50` dan border `border-violet-200/60`.
+The AI Coach card appears on the activity detail page, after the pre-activity context section and before splits/laps/stream charts. It is a single white card (`bg-white rounded-lg p-4`) with a persistent header and content that changes per state. The card is wrapped in a container with gradient `from-violet-50 to-purple-50` and border `border-violet-200/60`.
 
-**Header (selalu tampil):**
+**Header (always visible):**
 
 ```
 ✦ AI Coach  [BETA]
@@ -1278,19 +1339,19 @@ Kartu AI Coach muncul di halaman detail aktivitas, setelah pre-activity context 
 
 **State 1 — Loading** (`data-testid="aiInsightLoading"`)
 
-Saat fetch awal insight dari DB. Tampil 3 skeleton bar (animate-pulse) dengan lebar berbeda (3/4, full, 5/6).
+While fetching the initial insight from DB. Shows 3 skeleton bars (animate-pulse) with different widths (3/4, full, 5/6).
 
 ---
 
 **State 2 — Load Error** (`data-testid="aiInsightError"`)
 
-Kalau fetch gagal. Tampil teks "Failed to load analysis" + tombol "Try again" (`data-testid="aiInsightRetry"`). Klik retry → `setInsight(undefined)` + re-fetch.
+If the fetch fails. Shows "Failed to load analysis" text + "Try again" button (`data-testid="aiInsightRetry"`). Clicking retry → `setInsight(undefined)` + re-fetch.
 
 ---
 
 **State 3 — Empty / No Insight** (`data-testid="aiInsightEmpty"`)
 
-Kalau DB tidak punya insight untuk aktivitas ini. Tampil teks "Choose analysis focus:" + 4 focus buttons.
+If the DB has no insight for this activity. Shows "Choose analysis focus:" text + 4 focus buttons.
 
 **Focus buttons (primary variant — bg-purple-100):**
 
@@ -1301,39 +1362,39 @@ Kalau DB tidak punya insight untuk aktivitas ini. Tampil teks "Choose analysis f
 | Race Tips          | Trophy     | `next_race`     |
 | Next Training      | Footprints | `next_training` |
 
-Klik → `POST /api/running/v1/ai/insights/generate` dengan `{ activity_id, focus }` → set state ke `pending`.
+Click → `POST /api/running/v1/ai/insights/generate` with `{ activity_id, focus }` → set state to `pending`.
 
-Kalau generate gagal → teks error merah "Failed to start analysis. Try again." muncul di atas buttons.
+If generation fails → red error text "Failed to start analysis. Try again." appears above the buttons.
 
 ---
 
 **State 4 — Pending / Generating** (`data-testid="aiInsightPending"`)
 
-Insight ada di DB dengan `status='pending'`. Tampil:
+Insight exists in DB with `status='pending'`. Shows:
 
-- Spinner `Loader2` (purple-400) + teks "Analyzing..."
-- Teks kecil "Usually < 30 seconds"
-- Tombol "Refresh" manual (`data-testid="aiInsightRetry"`)
+- Spinner `Loader2` (purple-400) + text "Analyzing..."
+- Small text "Usually < 30 seconds"
+- Manual "Refresh" button (`data-testid="aiInsightRetry"`)
 
-Auto-poll setiap 8 detik. Kalau status berubah dari `pending` → stop polling → update state.
+Auto-polls every 8 seconds. When status changes from `pending` → stop polling → update state.
 
 ---
 
 **State 5 — Valid Insight** (`data-testid="aiInsightContent"`)
 
-Kondisi: `status='completed' AND is_valid=true AND content != null`.
+Condition: `status='completed' AND is_valid=true AND content != null`.
 
-Layout dari atas ke bawah:
+Layout top to bottom:
 
-1. **Focus label** — pill kecil (bg-purple-100, text-purple-600, rounded-full) yang menunjukkan focus yang dipakai, e.g., "Performance & Pace"
-2. **Konten markdown** — render via `renderMarkdown()`:
+1. **Focus label** — small pill (bg-purple-100, text-purple-600, rounded-full) showing the focus used, e.g., "Performance & Pace"
+2. **Markdown content** — rendered via `renderMarkdown()`:
    - `## Header` → `<p>` semibold slate-700
-   - `- List item` → `<ul>` dengan `<li>` text-sm slate-600
-   - Paragraf biasa → `<p>` text-sm slate-600
+   - `- List item` → `<ul>` with `<li>` text-sm slate-600
+   - Plain paragraph → `<p>` text-sm slate-600
    - `**bold**` inline → `<strong>` semibold slate-700
-3. **Timestamp** — format `dd MMM yyyy, HH:mm` (locale id-ID), text-xs slate-400
-4. **Divider** + label "Re-analyze with different focus" → 4 focus buttons (sama dengan State 3)
-5. **Label "Ask more"** → 3 follow-up buttons (slate-100 variant):
+3. **Timestamp** — format `dd MMM yyyy, HH:mm`, text-xs slate-400
+4. **Divider** + label "Re-analyze with different focus" → 4 focus buttons (same as State 3)
+5. **"Ask more" label** → 3 follow-up buttons (slate-100 variant) that submit via `POST /api/running/v1/ai/insights/followup`:
 
 | Button           | Icon      | Focus key          |
 | ---------------- | --------- | ------------------ |
@@ -1345,16 +1406,16 @@ Layout dari atas ke bawah:
 
 **State 6 — Completed but Invalid**
 
-`status='completed'` tapi `is_valid=false` atau `content` kosong. Tampil sama seperti State 3 (empty) — user bisa generate ulang.
+`status='completed'` but `is_valid=false` or `content` is empty. Rendered the same as State 3 (empty) — user can regenerate.
 
 ---
 
 **Polling logic:**
 
-- Poll hanya aktif saat `status='pending'`
-- Interval: 8 detik
-- Stop polling otomatis saat status berubah
-- Cleanup interval di `useEffect` unmount
+- Polling is only active when `status='pending'`
+- Interval: 8 seconds
+- Stops automatically when status changes
+- Cleans up interval in `useEffect` unmount
 
 ---
 
@@ -1601,71 +1662,209 @@ Registered in `cypress/fixtures/app-constants.json` under `test_ids.injury_coach
 
 ---
 
-## 11. Dashboard & Statistik
+## 11. Dashboard & Statistics
 
-### 11.1 Dashboard utama (Phase 1)
+### 11.1 Main Dashboard
 
 **Header stats (weekly):**
 
-- Total distance, total time, activity count, avg pace minggu ini
-- Comparison vs minggu lalu (delta %)
+- Total distance, total time, activity count, avg pace this week
+- Comparison vs last week (delta %)
 
 **Training load card:**
 
-- ACWR gauge — hijau (0.8–1.3), kuning (1.3–1.5), merah (>1.5)
+- ACWR gauge — green (0.8–1.3), yellow (1.3–1.5), red (>1.5)
 - Acute load 7d vs chronic load 28d bar comparison
 - Status label: "Build phase" / "Optimal" / "Caution" / "Danger zone"
 
 **Activity mini-calendar:**
 
-- Calendar view bulan ini, highlight hari ada lari
-- Warna per activity type (easy = hijau, tempo = kuning, interval = merah)
+- Monthly calendar view highlighting days with runs
+- Color per activity type (easy = green, tempo = yellow, interval = red)
+- Data source: `GET /api/running/v1/calendar?month=YYYY-MM&type=`
+- Response: `{ data: [{ id, date, activity_type, name, distance_m, relative_effort }] }` — all activities for the requested month, ordered `started_at ASC`
+- Supports optional `type` filter; defaults to all types
+
+**Year-to-Date Stats card (`YtdStats.jsx`):**
+
+- Component: `dashboard/components/YtdStats.jsx`
+- Test ID: `id="ytdStatsCard"`
+- Displays year-to-date cumulative totals: total runs (count), total distance (km), total moving time (h m), total elevation gain (m)
+- Also shows achievement count when `achievement_count > 0` (amber Star icon)
+- Returns `null` when `ytd_stats` is not provided or `distance_m === 0`
+- Data comes from the dashboard API response as `ytd_stats: { count, distance_m, moving_time_sec, elevation_gain_m, achievement_count }`
+
+**Endurance Score tile (dashboard):**
+
+- Brief tile on the dashboard that shows the latest endurance score
+- Cross-reference: full trend chart is in the Analytics page (section 11.2)
+- Score is derived from the most recent data point returned by `GET /api/running/v1/analytics/endurance-score`
 
 **Recent activities list:**
 
-- 5 aktivitas terakhir dengan quick stats
-- Thumbnail mini-map kalau ada GPS data
+- 5 most recent activities with quick stats
+- Thumbnail mini-map when GPS data is available
 
 **AI insight card:**
 
-- 1 insight harian dari AI Coach
+- 1 daily insight from AI Coach
 - Quick prompts: "Analyze last run", "Plan this week", "How am I doing?", "Should I rest?"
 
 **Manual health quick log:**
 
-- Shortcut input mood, sleep, energy untuk hari ini
-- Status indicator apakah sudah log hari ini atau belum
+- Shortcut input for mood, sleep, energy for today
+- Status indicator showing whether today's log has been submitted
 
 ### 11.2 Analytics page
 
-**Tier 1 — Paling valuable:**
+**Tier 1 — Most valuable:**
 
-| Chart                             | Data                                             | Insight                      |
-| --------------------------------- | ------------------------------------------------ | ---------------------------- |
-| Weekly distance trend (12 minggu) | `activities.distance_m`                          | Konsistensi vs gap training  |
-| Pace per workout type trend       | `avg_pace_sec_per_km` grouped by `activity_type` | Fitness progression per zone |
-| HR zone distribution              | `activity_streams.heart_rate`                    | Apakah training balance      |
-| Training load history             | `acwr` + `acute/chronic`                         | Injury risk over time        |
-| PR progression timeline           | Computed per distance                            | Improvement trajectory       |
-| Race predictor                    | Riegel formula dari PR terbaru                   | Target race planning         |
+| Chart                          | Data                                             | Insight                      |
+| ------------------------------ | ------------------------------------------------ | ---------------------------- |
+| Weekly distance trend (12 wks) | `activities.distance_m`                          | Consistency vs training gaps |
+| Pace per workout type trend    | `avg_pace_sec_per_km` grouped by `activity_type` | Fitness progression per zone |
+| HR zone distribution           | `activity_streams.heart_rate`                    | Whether training is balanced |
+| Training load history          | `acwr` + `acute/chronic`                         | Injury risk over time        |
+| PR progression timeline        | Computed per distance                            | Improvement trajectory       |
+| Race predictor                 | Riegel formula from latest PR                    | Target race planning         |
 
 **Tier 2 — Deeper insights:**
 
 | Chart                       | Data                              | Insight                               |
 | --------------------------- | --------------------------------- | ------------------------------------- |
-| Pace vs HR scatter          | Per aktivitas, same type          | Running economy improvement           |
-| Cardiac drift per run       | HR awal vs akhir per split        | Fatigue indicator                     |
+| Pace vs HR scatter          | Per activity, same type           | Running economy improvement           |
+| Cardiac drift per run       | First vs last split HR            | Fatigue indicator                     |
 | Cadence trend               | `avg_cadence` over time           | Form development (target 170–180 spm) |
 | Long run pacing consistency | `splits.pace_sec_per_km` variance | Positive vs negative split pattern    |
-| VO2 max trend               | Estimated dari HR + pace          | Fitness level over time               |
+| VO2max trend                | Estimated from HR + pace          | Fitness level over time               |
 
-**Tier 3 — Dengan manual health data:**
+**Tier 3 — With manual health data:**
 
 | Chart                          | Data                                    | Insight                         |
 | ------------------------------ | --------------------------------------- | ------------------------------- |
 | Sleep quality vs next-day pace | `subjective_health_logs` + `activities` | Recovery impact on performance  |
 | Energy level vs training load  | `morning_energy` + `acwr`               | Overreaching early warning      |
 | Activity consistency heatmap   | `activities.started_at`                 | GitHub-style, visual motivation |
+
+---
+
+#### 11.2b Additional Analytics Charts (implemented, no PRD entry previously)
+
+The following charts exist in `app/main/running/(app)/analytics/components/` and are served from the analytics page. They use computed data from activities or dedicated endpoints.
+
+---
+
+**Fitness Age Trend (`FitnessAgeTrendChart.jsx`)**
+
+Endpoint: `GET /api/running/v1/analytics/fitness-age`
+
+Computes weekly fitness age for the last 12 weeks. For each week, takes the 8 most recent qualifying run activities (`Run`, `TrailRun`, `VirtualRun`) with heart rate data and estimates VO2max, then maps that VO2max to a fitness age using NTNU norms. Requires `sex` and `birth_date` in the user profile; returns `{ sex_missing: true }` when either is missing.
+
+Response: `{ data: { weekly: [{ week: string, fitness_age: number, avg_vo2max: number }], chronological_age: number|null, sex_missing: boolean } }`
+
+Acceptance criteria:
+
+- Given `sex` is not set in the profile, when the chart renders, show a prompt to fill in sex in Settings rather than empty chart
+- Given fewer than 4 qualifying activities in a given week, that week's data point is excluded (minimum sample = 4)
+- Given sufficient data, the chart shows both the fitness age line and a reference line for chronological age
+
+---
+
+**Endurance Score Trend (`EnduranceScoreTrendChart.jsx`)**
+
+Endpoint: `GET /api/running/v1/analytics/endurance-score`
+
+Weekly composite score (0–100) computed from recent activities. Higher score = better endurance base. The score aggregates pace, distance, and training load indicators into a single number for trend comparison.
+
+Response: `{ data: [{ week: string, score: number }] }`
+
+Acceptance criteria:
+
+- Given fewer than 3 activities in the history, show an empty state rather than a misleading flat line
+- Given valid data, the chart renders a line trend with weekly data points
+- The most recent score is surfaced on the dashboard as the Endurance Score tile
+
+---
+
+**Performance Management Chart / PMC (`PerformanceManagementChart.jsx`)**
+
+Endpoint: `GET /api/running/v1/analytics/pmc?days=30|60|90` (default: 90)
+
+Shows three daily series over the selected window:
+
+- **Fitness (CTL)** — chronic training load (42-day exponential moving average of daily TSS)
+- **Fatigue (ATL)** — acute training load (7-day exponential moving average of daily TSS)
+- **Form (TSB)** — Training Stress Balance = Fitness − Fatigue; positive = fresh, negative = fatigued
+
+Response: `{ data: [{ date: string, ctl: number, atl: number, tsb: number }] }`
+
+Acceptance criteria:
+
+- Given `days=30`, the chart shows 30 days of PMC data
+- Given `days` not in `[30, 60, 90]`, defaults to 90
+- TSB is displayed with a reference line at 0; values above 0 are coloured differently from values below 0
+- Given fewer than 7 activities, all three lines still render (values may be near zero)
+
+---
+
+**Calorie Burn Trend (`CalorieTrendChart.jsx`)**
+
+Endpoint: `GET /api/running/v1/analytics/calorie-trend`
+
+Monthly calorie burn aggregated from `rt_activities.calories`. Response also includes `weight_kg` from the user's profile for context (calorie estimation quality depends on body weight).
+
+Response: `{ data: [{ month: string, calories: number }], weight_kg: number|null, message: string }`
+
+Acceptance criteria:
+
+- Given no activities with calorie data, show an empty state with a note that calorie data comes from Strava/device
+- Given valid data, the chart shows a bar chart with monthly totals
+- `weight_kg` shown as context note below the chart when available
+
+---
+
+**Weekly Elevation Trend (`WeeklyElevationChart.jsx`)**
+
+Data source: computed client-side from activities prop (no dedicated endpoint). Aggregates `elevation_gain_m` per calendar week for the last 12 weeks, using only run-type activities (`Run`, `TrailRun`, `VirtualRun`). Renders as a bar chart with each bar coloured by the count of runs that week.
+
+Acceptance criteria:
+
+- Given activities with no elevation data (all `elevation_gain_m = null`), show empty state
+- Given valid data, shows 12 weeks of weekly elevation totals as a bar chart
+
+---
+
+**Terrain Distribution (`TerrainDistributionChart.jsx`)**
+
+Data source: computed client-side from activities prop (no dedicated endpoint). A donut chart showing distribution of runs across hill-score tiers: Flat, Rolling, Hilly, Mountainous. Hill score is computed from `elevation_gain_m / distance_m` using thresholds in `lib/services/running/utils/hillScore.js`.
+
+Acceptance criteria:
+
+- Given fewer than 1 run, show empty state
+- Given valid runs, the donut chart renders 4 segments with the count and percentage per tier
+- Segments use the tier colors defined in `HILL_TIERS`
+
+---
+
+**Running Power (`RunningPowerChart.jsx`)**
+
+Data source: computed client-side from activities prop. Only shows activities where `device_watts = true` and `avg_watts` is not null (requires a compatible device, e.g. Garmin running power pod). Renders avg watts per run as dots, plus a 30-activity rolling average line. Supports a 30/60/90-day range selector.
+
+Acceptance criteria:
+
+- Given no activities with `device_watts = true`, show empty state with note that power data requires a compatible device
+- Given valid data, renders scatter dots (avg_watts) + rolling average line
+
+---
+
+**Best Pace by Distance (`BestPaceChart.jsx`)**
+
+Data source: computed client-side from activities prop. For each distance bracket (defined in `DISTANCE_BRACKETS` in `utils.js`), finds the activity with the lowest `avg_pace_sec_per_km` and displays it as a bar. Distance brackets group activities into meaningful race distances (e.g. 1–3K, 3–7K, 7–15K, 15–25K, 25K+).
+
+Acceptance criteria:
+
+- Given no qualifying run activities, show empty state
+- Given valid data, renders a horizontal bar chart with the best pace per bracket, labelled with the pace value and activity date
 
 ### 11.2a Zone Analytics — DONE
 
@@ -1757,9 +1956,9 @@ Then (non-blocking, after activity date known): `fetchSubjectiveHealthByDate(act
 
 ### 11.4 Derived Metrics
 
-Tiga metric dihitung **saat ingest time** (Strava webhook / manual sync) dan disimpan di `rt_activities`. Tidak dihitung saat render. Kalau gate conditions tidak terpenuhi, kolom di-set NULL.
+Three metrics are computed **at ingest time** (Strava webhook / manual sync) and stored in `rt_activities`. They are not recomputed at render time. If gate conditions are not met, the column is set to NULL.
 
-**Gate conditions (semua metric):** duration > 20 menit AND HR data tersedia (avg_hr not null)
+**Gate conditions (all metrics):** duration > 20 minutes AND HR data available (avg_hr not null)
 
 #### Aerobic Decoupling (Pa:Hr)
 
@@ -1812,7 +2011,7 @@ These use data already synced from Strava — just need UI surfacing:
 
 ### 11.5 AI Recommendation Cards
 
-Ada 6 AI card di halaman Analytics, masing-masing di bawah chartnya. Plus 1 tombol "Riwayat Analisis" di header halaman yang buka modal berisi history semua analisis.
+There are 6 AI cards on the Analytics page, each placed below its corresponding chart. Plus 1 "Analysis History" button in the page header that opens a modal with the full analysis history.
 
 **6 AI card slots:**
 
@@ -1825,17 +2024,211 @@ Ada 6 AI card di halaman Analytics, masing-masing di bawah chartnya. Plus 1 tomb
 
 **UI states per card:**
 
-- **Loading:** skeleton violet saat pertama load
-- **Pending:** polling setiap 8 detik, max 2 menit. Copy: "Membaca tren…" → "Menganalisis pola…" → "Menulis rekomendasi…"
-- **Completed:** tampilkan headline + body_markdown. Tanggal generate di pojok kanan.
-- **Error:** "Analisis tidak tersedia" (muted), ada link retry
-- **Empty:** "Belum ada analisis. Activity berikutnya akan otomatis di-analisis."
-- **Stale badge:** kalau `insight.created_at` lebih lama dari activity terbaru → tampilkan badge "Sebelum lari terakhir"
+- **Loading:** violet skeleton on initial load
+- **Pending:** polling every 8 seconds, max 2 minutes. Copy rotates: "Reading trends…" → "Analysing patterns…" → "Writing recommendations…"
+- **Completed:** show headline + body_markdown. Generation date in the top right.
+- **Error:** "Analysis unavailable" (muted), with a retry link
+- **Empty:** "No analysis yet. Your next activity will be analysed automatically."
+- **Stale badge:** if `insight.created_at` is older than the latest activity → show "Before last run" badge
 
-**History modal:** shadcn Dialog/Sheet, list semua `rt_ai_insights` dengan `insight_type = 'analytics_summary'`, sorted newest first, grouped by bulan. Tiap entry: tanggal, section coverage, expand untuk lihat full content.
+**History modal:** shadcn Dialog/Sheet, lists all `rt_ai_insights` with `insight_type = 'analytics_summary'`, sorted newest first, grouped by month. Each entry: date, section coverage, expandable to see full content.
 
-**Phase 1 (awal):** Weekly Distance, Pace Trend, Training Load + staleness check logic
+**Phase 1 (initial):** Weekly Distance, Pace Trend, Training Load + staleness check logic
 **Phase 2:** VO2max Trend, EF Trend, Race Predictor + history modal
+
+---
+
+### 11.6 Pace Calculator page
+
+**Route:** `/main/running/pace-calculator`
+**Component:** `app/main/running/(app)/pace-calculator/page.jsx`
+
+> As a runner, I want to calculate my target pace, project a finish time for a given distance, and see per-km splits, so that I can plan my race strategy without leaving the app.
+
+The Pace Calculator is a fully client-side tool — no API calls are made. All calculations use in-browser JavaScript. The unit preference (km / mi) is persisted to `localStorage` under the key `paceCalculatorUnit`.
+
+**Three calculator modes (tabbed layout):**
+
+| Tab              | Test ID                        | Purpose                                                               |
+| ---------------- | ------------------------------ | --------------------------------------------------------------------- |
+| Pace Mode        | `tabPace_paceCalculator`       | Given distance + total time → compute avg pace, speed in km/h and mph |
+| Projection Mode  | `tabProjection_paceCalculator` | Given pace → find finish time for a distance OR distance for a time   |
+| Steps → Distance | `tabSteps_paceCalculator`      | Given step count → estimate distance (assumes 0.9m avg step length)   |
+
+**Pace Mode inputs:**
+
+- Distance selector (`DistanceSelect.jsx`) — preset dropdown (5K, 10K, 21.1K, 42.2K, Custom) + custom numeric input when "Custom" is selected. Test IDs: `distancePreset_paceCalculator`, `customDistance_paceCalculator`
+- Time input (`TimeInput.jsx`) — HH:MM:SS fields. Test IDs: `time_paceCalculator_{hours,minutes,seconds}`
+- Results: pace /km (`paceKm_paceCalculator`), pace /mi (`paceMi_paceCalculator`), speed km/h (`speedKmh_paceCalculator`), speed mph (`speedMph_paceCalculator`)
+
+**Projection Mode inputs:**
+
+- Pace input (MM:SS per km or mi) — `projPaceMinutes_paceCalculator`, `projPaceSeconds_paceCalculator`
+- Sub-mode toggle (`projSubMode_paceCalculator`): "I have a distance → find time" (`projModeDistance_paceCalculator`) or "I have a time → find distance" (`projModeTime_paceCalculator`)
+- Distance selector: `projDistancePreset_paceCalculator`, `projCustomDistance_paceCalculator`
+- Time input: `projTime_paceCalculator_{hours,minutes,seconds}`
+- Results: estimated time (`projResultTime_paceCalculator`) or estimated distance (`projResultDistance_paceCalculator`), avg pace (`projAvgPace_paceCalculator`)
+
+**Steps Mode input:**
+
+- Step count input (`stepsCount_paceCalculator`) — positive integer, max 200,000
+- Results: distance in km (`stepsDistanceKm_paceCalculator`), distance in mi (`stepsDistanceMi_paceCalculator`)
+
+**Below the tabs (when valid pace + distance are computed):**
+
+- `SplitsTable.jsx` — per-km or per-mi splits up to a max of 50 rows (grouped when distance is large); shows split number, split time, cumulative time
+- `RaceProjectionTable.jsx` — Riegel-formula projections for common race distances based on the current pace/time pair
+
+**Validation and warnings:**
+
+- Pace outside 2:00–20:00 /km (120–1,200 s/km) → amber warning banner "Pace seems unusual — please check your inputs"
+- Steps input that is not a positive integer → amber warning "Steps must be a positive whole number"
+- Steps > 200,000 → treated as invalid
+
+**Unit toggle (`unitToggle_paceCalculator`):** km / mi radio buttons. Switching unit recalculates all displayed values immediately. Selected unit is saved to `localStorage`.
+
+**Acceptance criteria:**
+
+```
+GIVEN user selects 10K distance and enters time 50:00
+WHEN Pace Mode calculates
+THEN pace displays 5:00 /km and 8:03 /mi
+
+GIVEN user enters pace 5:00 /km and selects 21.1K distance in Projection Mode
+WHEN result is computed
+THEN estimated time displays 1:45:33
+
+GIVEN user enters 10000 steps in Steps Mode
+THEN distance displays 9.00 km and 5.59 mi
+
+GIVEN calculated pace is below 2:00 /km
+WHEN result renders
+THEN amber warning appears: "Pace seems unusual — please check your inputs"
+
+GIVEN valid pace + distance are in Pace Mode or Projection Mode
+WHEN the split table renders
+THEN rows show correct split time and cumulative time per km (or mi)
+
+GIVEN user switches unit from km to mi
+WHEN all result tiles update
+THEN pace displays in /mi and speed in mph; unit preference is saved to localStorage
+```
+
+---
+
+### 11.7 Running Settings page
+
+**Route:** `/main/running/settings`
+**Component:** `app/main/running/(app)/settings/page.jsx`
+
+> As a runner, I want to manage my profile, HR zones, pace zones, notifications, and Strava connection in one place so that the app calculates zones and sends alerts accurately.
+
+The Settings page is divided into six sections, each as its own `<section>` component. Sections load independently — a failure in one section does not blank the others.
+
+---
+
+#### 11.7.1 Profile (`ProfileSection.jsx`)
+
+API: `GET /api/running/v1/user/profile`, `PATCH /api/running/v1/user/profile`
+
+Fields:
+
+- Display Name (`displayNameInput_settingsPage`) — text, max 100 chars
+- Date of Birth (`birthDateInput_settingsPage`) — calendar popover, used for age-graded performance and fitness age chart
+- Height in cm (`heightInput_settingsPage`) — positive number
+- Weight in kg (`weightInput_settingsPage`) — positive number, step 0.1
+- Sex (`sexSelect_settingsPage`) — Male / Female / Prefer not to say (maps to `null`)
+
+**BMI chip (`bmiChip_settingsPage`):** computed live from weight + height. Shows category (Underweight / Normal / Overweight / Obese) with colour (violet for Normal, amber for others). When either weight or height is missing, a contextual prompt (`bmiMissingPrompt_settingsPage`) shows a link to the missing field.
+
+**Save behaviour:** `PATCH /api/running/v1/user/profile` with changed fields only. Success toast: `profileSaveSuccess_settingsPage`. Error inline: `profileSaveError_settingsPage`. Save button: `profileSaveBtn_settingsPage`. Loading skeleton: `profileLoading_settingsPage`.
+
+Validations (Zod, `schemas/runningProfile.js`): `display_name` min 1 / max 100, `birth_date` ISO date format, `height_cm` positive, `weight_kg` positive, `sex` must be `'male'` | `'female'` | null.
+
+---
+
+#### 11.7.2 HR Zones (`HrZonesSection.jsx`)
+
+API: `GET /api/running/v1/user/hr-zones`, `PATCH /api/running/v1/user/hr-zones`
+
+Fields:
+
+- Max HR (`maxHrInput_settingsPage`) — integer 60–250. "Detect" button (`detectMaxHrBtn_settingsPage`) calls `GET /api/running/v1/user/max-hr-detect` to find the highest recorded HR across all activities. On success: `maxHrDetectedHint_settingsPage`. On no data: `maxHrNoDataHint_settingsPage`. On error: `maxHrDetectError_settingsPage`.
+- Resting HR (`restingHrInput_settingsPage`) — integer 30–120. Required for Karvonen method.
+- Threshold HR (`thresholdHrInput_settingsPage`) — integer 100–220. Required for Lactate Threshold method. Info tooltip explains LTHR. "85% of Max HR" auto-fill button (`thresholdHrAutoFillBtn_settingsPage`) — disabled until Max HR is set; shows `thresholdHrNoMaxHr_settingsPage` when unavailable.
+- Calculation Method (`hrZonesMethodSelect_settingsPage`) — dropdown: Max HR (default), Karvonen (Heart Rate Reserve), Lactate Threshold. Zone boundaries documented in section 21a.
+
+Save: `hrZonesSaveBtn_settingsPage`. Success: `hrZonesSaveSuccess_settingsPage`. Error: `hrZonesSaveError_settingsPage`. Loading: `hrZonesLoading_settingsPage`.
+
+---
+
+#### 11.7.3 Pace Zones (`PaceZonesSection.jsx`)
+
+API: `GET /api/running/v1/user/settings`, `PATCH /api/running/v1/user/settings`; auto-detect: `GET /api/running/v1/user/threshold-pace-detect`
+
+Two modes for setting the threshold pace:
+
+- **Manual** (`paceZonesMode_manual_settingsPage`): type MM:SS directly (`thresholdPaceInput_settingsPage`). Validates 2:00–15:00 /km.
+- **From Activity** (`paceZonesMode_activity_settingsPage`): "Detect Threshold Pace" button (`detectThresholdPaceBtn_settingsPage`) calls the auto-detect endpoint (see section 21b for algorithm). Requires Threshold HR to be set first.
+
+Zone boundaries displayed as a reference table in the section (see section 21b). Zone Analytics on the Analytics page uses these zones for the Pace Zone breakdown card.
+
+---
+
+#### 11.7.4 Notifications (`NotificationsSection.jsx`)
+
+API: `GET /api/running/v1/user/settings`, `PATCH /api/running/v1/user/settings`, `POST/DELETE /api/running/v1/user/push-subscription`
+
+**Master push toggle (`pushNotificationsToggle_settingsPage`):**
+
+- When enabled: requests `Notification.requestPermission()` → registers service worker → subscribes via `PushManager.subscribe` with VAPID key → POSTs subscription object to `/api/running/v1/user/push-subscription`
+- When disabled: unsubscribes from `PushManager` → sends `null` to push-subscription endpoint
+- Shows `pushNotificationsError_settingsPage` on failure. Disabled if `serviceWorker` or `PushManager` not supported.
+- Beta disclaimer banner shown above the card.
+
+**Per-notification toggles (optimistic save — each toggle immediately calls PATCH):**
+
+| Toggle                               | Test ID                                 | `user_settings` column |
+| ------------------------------------ | --------------------------------------- | ---------------------- |
+| Post-activity insight                | `notifyPostActivityToggle_settingsPage` | `notify_post_activity` |
+| Weekly review                        | `notifyWeeklyReviewToggle_settingsPage` | `notify_weekly_review` |
+| Friday race prep                     | `notifyFridayPrepToggle_settingsPage`   | `notify_friday_prep`   |
+| Anomaly alerts                       | `notifyAnomalyToggle_settingsPage`      | `notify_anomaly`       |
+| Race reminders (14/7/3/1 day before) | `notifyRaceReminderToggle_settingsPage` | `notify_race_reminder` |
+
+Toggle save error (optimistic rollback): `notifyToggleError_settingsPage`. Loading skeleton: `notificationsLoading_settingsPage`.
+
+---
+
+#### 11.7.5 Strava Connection (`StravaConnectionSection.jsx`)
+
+This section implements the full connection state machine described in section 5.8.
+
+Section root ID: `stravaConnectionSection_settings`. Loading: `stravaConnectionLoading_settings`.
+
+**States:**
+
+| State                             | Container ID                       | Actions                                                                          |
+| --------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------- |
+| Not connected                     | `stravaDisconnectedState_settings` | "Connect Strava" button → Strava OAuth flow                                      |
+| Connected (healthy)               | `stravaConnectedState_settings`    | Shows athlete ID + last sync time. "Disconnect" (`stravaDisconnectBtn_settings`) |
+| Broken (`needs_reconnect = true`) | `stravaBrokenState_settings`       | Warning message + "Reconnect" button (`stravaReconnectBtn_settings`)             |
+
+Data source: `GET /api/running/v1/user/strava-status` → `{ connected, athlete_id, last_sync_at, needs_reconnect }`.
+
+---
+
+#### 11.7.6 Danger Zone (`DangerZoneSection.jsx`)
+
+API: `DELETE /api/running/v1/user/activities`
+
+A red-bordered section (`bg-red-50 border border-red-200`) with a single destructive action: "Delete All" (`dangerZoneDeleteBtn_settingsPage`).
+
+Clicking opens a confirmation dialog (`dangerZoneDialog_settingsPage`) that requires typing `DELETE` verbatim into a text input (`dangerZoneConfirmInput_settingsPage`) before the confirm button (`dangerZoneConfirmBtn_settingsPage`) becomes enabled.
+
+On success: dialog closes, success message shown. On error: `dangerZoneError_settingsPage` shown inside dialog; dialog stays open. The confirm button is disabled while deleting.
+
+This action permanently deletes all activity data for the user. It cannot be undone. Historical data retained after Strava disconnect (see section 5.7) is also deleted by this action.
 
 ---
 
@@ -1843,9 +2236,9 @@ Ada 6 AI card di halaman Analytics, masing-masing di bawah chartnya. Plus 1 tomb
 
 ### 12.1 Overview
 
-Gear Management adalah fitur untuk melacak kondisi sepatu lari berdasarkan total jarak yang sudah dipakai. Data sepatu di-sync otomatis dari Strava — setiap sepatu yang terekam di aktivitas Strava akan muncul di sini.
+Gear Management tracks the condition of running shoes based on total distance covered. Shoe data syncs automatically from Strava — every shoe recorded in a Strava activity appears here.
 
-Tujuannya sederhana: kamu tahu kapan sepatu harus pensiun sebelum performanya drop atau risiko cedera naik.
+The goal is simple: know when a shoe needs to be retired before its performance drops or injury risk increases.
 
 ### 12.2 User Stories
 
@@ -1857,16 +2250,16 @@ Tujuannya sederhana: kamu tahu kapan sepatu harus pensiun sebelum performanya dr
 
 ### 12.3 Data Source
 
-Sepatu di-sync dari dua tempat:
+Shoes sync from two places:
 
-1. **Strava activity sync** — setiap aktivitas dari Strava yang punya `gear_id` akan upsert gear ke tabel `rt_gear`
-2. **Athlete sync** — saat user connect Strava, endpoint `/api/v3/athlete` di-call untuk langsung fetch semua sepatu yang terdaftar di profil athlete, bukan hanya yang muncul di aktivitas
+1. **Strava activity sync** — every Strava activity with a `gear_id` upserts the gear into `rt_gear`
+2. **Athlete sync** — when the user connects Strava, `/api/v3/athlete` is called to immediately fetch all shoes registered on the athlete profile, not just those that appear in activities
 
-Field yang di-sync dari Strava: `name`, `brand_name`, `model_name`, `distance_m`, `retired`, `notification_distance_m`.
+Fields synced from Strava: `name`, `brand_name`, `model_name`, `distance_m`, `retired`, `notification_distance_m`.
 
-`notification_distance_m` adalah batas pensiun yang di-set user di Strava (bukan di app ini). Strava returns this value in km via `notification_distance` — backend converts it to meters on save (`Math.round(notification_distance * 1000)`).
+`notification_distance_m` is the retirement threshold set by the user in Strava (not in this app). Strava returns this value in km via `notification_distance` — the backend converts it to meters on save (`Math.round(notification_distance * 1000)`).
 
-Field yang **tidak pernah** di-overwrite oleh sync Strava: `category`, `retirement_km` — ini sepenuhnya user-managed.
+Fields that are **never overwritten** by Strava sync: `category`, `retirement_km` — these are entirely user-managed.
 
 ### 12.4 Database
 
@@ -1877,11 +2270,11 @@ CREATE TABLE rt_gear (
   name TEXT,
   brand_name TEXT,
   model_name TEXT,
-  distance_m INTEGER DEFAULT 0,    -- total jarak dalam meter, di-update tiap sync
+  distance_m INTEGER DEFAULT 0,    -- total distance in meters, updated on each sync
   retired BOOLEAN DEFAULT FALSE,
   notification_distance_m INTEGER DEFAULT NULL, -- Strava-managed shoe alert threshold, stored in meters (Strava returns km → converted on save)
   category TEXT DEFAULT NULL,       -- user-managed: daily/tempo/race/trail/recovery/cross-training
-  retirement_km INTEGER DEFAULT NULL, -- user-managed threshold dalam km
+  retirement_km INTEGER DEFAULT NULL, -- user-managed retirement threshold in km
   last_fetched_at TIMESTAMPTZ
 );
 ```
@@ -1889,45 +2282,45 @@ CREATE TABLE rt_gear (
 ### 12.5 API Endpoints
 
 ```
-GET   /api/running/v1/gear        ← list semua gear user
-PATCH /api/running/v1/gear        ← update category dan/atau retirement_km satu gear
+GET   /api/running/v1/gear        ← list all gear for the user
+PATCH /api/running/v1/gear        ← update category and/or retirement_km for one gear item
 ```
 
 **GET /api/running/v1/gear**
 
-- Auth required (401 kalau tidak ada session)
+- Auth required (401 if no session)
 - No query params
 - Response: `{ data: [{ id, name, brand_name, model_name, distance_m, retired, notification_distance_m, category, retirement_km, last_fetched_at }], message }`
-- Urutan: retired asc (active dulu), lalu name asc
+- Order: retired ASC (active first), then name ASC
 
 **PATCH /api/running/v1/gear**
 
 - Auth required
 - Body: `{ id: string (required), category?: string|null, retirement_km?: integer|null }`
-- Validasi via Zod schema di `schemas/runningGear.js`
-- Strava sync fields (`name`, `distance_m`, `retired`) tidak bisa diubah via endpoint ini
+- Validated via Zod schema in `schemas/runningGear.js`
+- Strava sync fields (`name`, `distance_m`, `retired`) cannot be changed via this endpoint
 - Response: `{ data: <updated gear row>, message }`
-- Error 400 kalau `id` tidak ada atau field tidak valid
-- Error 404 kalau gear tidak ditemukan atau milik user lain
+- Error 400 if `id` is missing or field is invalid
+- Error 404 if gear is not found or belongs to another user
 
 ### 12.6 UI — Shoe Rotation Component
 
-Shoe Rotation muncul di halaman Dashboard, setelah section Performance Trends.
+Shoe Rotation appears on the Dashboard page, after the Performance Trends section.
 
-**States yang harus ada:**
+**Required states:**
 
-| State           | Tampilan                                                                |
-| --------------- | ----------------------------------------------------------------------- |
-| Loading         | Skeleton 3 rows (ikon + nama + bar)                                     |
-| Error           | AlertTriangle icon + pesan error + tombol "Try again"                   |
-| Empty (no gear) | Footprints icon + teks "No shoes synced yet" + instruksi connect Strava |
-| Has data        | List active + list retired (kalau ada)                                  |
+| State           | Display                                                                      |
+| --------------- | ---------------------------------------------------------------------------- |
+| Loading         | Skeleton 3 rows (icon + name + bar)                                          |
+| Error           | AlertTriangle icon + error message + "Try again" button                      |
+| Empty (no gear) | Footprints icon + "No shoes synced yet" text + instruction to connect Strava |
+| Has data        | List of active shoes + list of retired shoes (if any)                        |
 
-**Layout per gear card:**
+**Per gear card layout:**
 
-- Header: ikon Footprints + nama sepatu + brand/model (baris kedua, abu) + category badge (kalau ada) + tombol edit (pensil, hanya untuk active)
-- Body: total km besar-besar + two-tab limit toggle (see below) + mileage progress bar (ungu → amber >= 70% → merah >= 90%) + alert "Nearing limit" kalau >= 90% active-tab limit
-- Retired shoes: seluruh card opacity 60%, badge "Retired", tidak ada tombol edit, tidak ada tab toggle
+- Header: Footprints icon + shoe name + brand/model (second line, grey) + category badge (if set) + edit button (pencil, active shoes only)
+- Body: total km in large text + two-tab limit toggle (see below) + mileage progress bar (violet → amber at >= 70% → red at >= 90%) + "Nearing limit" alert when >= 90% of active-tab limit
+- Retired shoes: full card at 60% opacity, "Retired" badge, no edit button, no tab toggle
 
 **Two-tab limit toggle (Strava / Manual):**
 
@@ -1945,13 +2338,13 @@ Switching tabs immediately updates both the progress bar and the "Nearing limit"
 
 If neither limit is set, no tab toggle is shown and no progress bar is rendered.
 
-**Inline edit form (muncul di dalam card, bukan modal):**
+**Inline edit form (appears inside the card, not a modal):**
 
-- Toggle kategori: pill buttons (daily / tempo / race / trail / recovery / cross-training / none)
-- Input "Retire at (km)": number input, min 0, max 100000
-- Tombol Save + Cancel
-- Optimistic update: gearList di-update secara lokal setelah save berhasil — tidak perlu refetch
-- Kalau save gagal: tampilkan error message di bawah form, jangan tutup form
+- Category toggle: pill buttons (daily / tempo / race / trail / recovery / cross-training / none)
+- "Retire at (km)" input: number input, min 0, max 100,000
+- Save + Cancel buttons
+- Optimistic update: gearList is updated locally after a successful save — no refetch required
+- If save fails: show error message below the form; do not close the form
 
 **Category options:** `daily`, `tempo`, `race`, `trail`, `recovery`, `cross-training`
 
@@ -2034,28 +2427,28 @@ THEN no edit icon is shown (retired shoes are read-only)
 
 ### 12.8 Validations & Error States
 
-| Scenario                                                         | Handling                                                               |
-| ---------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `retirement_km` bukan integer atau < 0                           | 400 dari API, form shows error message                                 |
-| `retirement_km` > 100000                                         | 400 dari API, form shows error message                                 |
-| `category` bukan salah satu dari CATEGORY_OPTIONS dan bukan null | 400 dari API                                                           |
-| `id` tidak ada di body PATCH                                     | 400 Validation failed                                                  |
-| Gear tidak ditemukan atau milik user lain                        | 404 Not found                                                          |
-| Sync otomatis override `category` atau `retirement_km`           | Tidak boleh — sync hanya update Strava fields                          |
-| PATCH body includes `notification_distance_m`                    | Ignored — this field is Strava-managed, never writable by user via API |
+| Scenario                                                     | Handling                                                               |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| `retirement_km` is not an integer or < 0                     | 400 from API, form shows error message                                 |
+| `retirement_km` > 100,000                                    | 400 from API, form shows error message                                 |
+| `category` is not one of CATEGORY_OPTIONS and not null       | 400 from API                                                           |
+| `id` missing from PATCH body                                 | 400 Validation failed                                                  |
+| Gear not found or belongs to another user                    | 404 Not found                                                          |
+| Strava sync tries to overwrite `category` or `retirement_km` | Not allowed — sync only updates Strava-managed fields                  |
+| PATCH body includes `notification_distance_m`                | Ignored — this field is Strava-managed, never writable by user via API |
 
 ### 12.9 Test IDs
 
-Terdaftar di `cypress/fixtures/app-constants.json` under `test_ids.running_gear.*`:
+Registered in `cypress/fixtures/app-constants.json` under `test_ids.running_gear.*`:
 
-| ID                    | Element                       |
-| --------------------- | ----------------------------- |
-| `gearPage`            | Section root element          |
-| `gearLoadingSkeleton` | Skeleton wrapper saat loading |
-| `gearError`           | Error container               |
-| `gearList`            | `<ul>` active shoes           |
-| `gearCard`            | Setiap `<li>` gear card       |
-| `gearSaveBtn`         | Save button di edit form      |
+| ID                    | Element                        |
+| --------------------- | ------------------------------ |
+| `gearPage`            | Section root element           |
+| `gearLoadingSkeleton` | Skeleton wrapper while loading |
+| `gearError`           | Error container                |
+| `gearList`            | `<ul>` active shoes            |
+| `gearCard`            | Each `<li>` gear card          |
+| `gearSaveBtn`         | Save button in edit form       |
 
 ---
 
@@ -2063,12 +2456,12 @@ Terdaftar di `cypress/fixtures/app-constants.json` under `test_ids.running_gear.
 
 ### 13.1 Overview
 
-Race Log adalah fitur untuk mencatat dan melacak semua race yang pernah kamu ikuti. Berbeda dari Goals (yang forward-looking), Race Log adalah catatan historis — setiap race yang sudah selesai bisa dicatat dengan hasil aktual (finish time, pace, posisi, dll).
+Race Log is a feature for recording and tracking every race you have entered. Unlike Goals (which are forward-looking), the Race Log is a historical record — every completed race can be logged with actual results (finish time, pace, position, etc.).
 
-Dua hal yang bisa kamu kelola di sini:
+Two things you can manage here:
 
-1. **Race history** — semua race yang sudah selesai, lengkap dengan hasil dan catatan
-2. **Upcoming race goal** — goal race berikutnya yang juga bisa di-edit langsung dari halaman Activity (bukan harus lewat onboarding ulang)
+1. **Race history** — all completed races, with results and notes
+2. **Upcoming race goal** — your next target race, which can also be edited directly from the Activity page (no need to redo onboarding)
 
 ### 13.2 User Stories
 
@@ -2122,34 +2515,34 @@ CREATE TABLE rt_race_log (
 CREATE INDEX idx_race_log_user_date ON rt_race_log(user_id, race_date DESC);
 ```
 
-- `did_not_finish = true` → `finish_time_sec` dan `avg_pace_sec_per_km` boleh null
-- `activity_id` — opsional link ke aktivitas Strava. Kalau ada, activity detail page bisa tampilkan "Raced: [title]" label
-- `avg_pace_sec_per_km` dihitung otomatis di server saat insert/update — tidak perlu dikirim dari client
+- `did_not_finish = true` → `finish_time_sec` and `avg_pace_sec_per_km` may be null
+- `activity_id` — optional link to a Strava activity. When set, the activity detail page shows a "Raced: [title]" label
+- `avg_pace_sec_per_km` is computed server-side on insert/update — client does not need to send it
 
 ### 13.4 API Endpoints
 
 ```
-GET    /api/running/v1/race-log              ← list semua race entries, urut race_date DESC
-POST   /api/running/v1/race-log              ← tambah race entry baru
-GET    /api/running/v1/race-log/:id          ← fetch single race entry (untuk detail page)
+GET    /api/running/v1/race-log              ← list all race entries, ordered race_date DESC
+POST   /api/running/v1/race-log              ← create a new race entry
+GET    /api/running/v1/race-log/:id          ← fetch a single race entry (for detail page)
 PATCH  /api/running/v1/race-log/:id          ← edit race entry
-DELETE /api/running/v1/race-log/:id          ← hapus race entry
+DELETE /api/running/v1/race-log/:id          ← delete race entry
 
 PATCH  /api/running/v1/goals/:id             ← update upcoming race goal (title, description, target fields)
 ```
 
 **GET /api/running/v1/race-log**
 
-- Auth required (401 kalau tidak ada session)
-- No query params untuk MVP
+- Auth required (401 if no session)
+- No query params for MVP
 - Response: `{ data: [{ id, title, race_date, distance_m, finish_time_sec, avg_pace_sec_per_km, avg_hr, elevation_gain_m, position_place, position_male, did_not_finish, activity_id, notes, created_at }], message }`
 
 **POST /api/running/v1/race-log**
 
 - Auth required
 - Body: `{ title, race_date, distance_m, finish_time_sec?, avg_hr?, elevation_gain_m?, position_place?, position_male?, did_not_finish?, activity_id?, notes? }`
-- Validasi via Zod schema di `schemas/raceLog.js`
-- Server computes `avg_pace_sec_per_km = Math.round(finish_time_sec / (distance_m / 1000))` — hanya kalau `finish_time_sec` ada dan `did_not_finish = false`
+- Validated via Zod schema in `schemas/raceLog.js`
+- Server computes `avg_pace_sec_per_km = Math.round(finish_time_sec / (distance_m / 1000))` — only when `finish_time_sec` exists and `did_not_finish = false`
 - Response: `{ data: <new race log row>, message }`
 
 **GET /api/running/v1/race-log/:id**
@@ -2161,36 +2554,36 @@ PATCH  /api/running/v1/goals/:id             ← update upcoming race goal (titl
 **PATCH /api/running/v1/race-log/:id**
 
 - Auth required
-- Body: semua field opsional kecuali setidaknya satu field harus ada
-- Ownership check: hanya bisa edit entry milik user sendiri (404 kalau bukan milik user)
-- `avg_pace_sec_per_km` recomputed kalau `finish_time_sec` atau `distance_m` berubah
+- Body: all fields optional, but at least one must be present
+- Ownership check: only the entry's owner can edit it (404 if not)
+- `avg_pace_sec_per_km` is recomputed when `finish_time_sec` or `distance_m` changes
 - Response: `{ data: <updated row>, message }`
 
 **DELETE /api/running/v1/race-log/:id**
 
 - Auth required
-- Ownership check: 404 kalau bukan milik user
+- Ownership check: 404 if not the owner
 - Response: `{ message: "Deleted" }`
 
 **PATCH /api/running/v1/goals/:id**
 
 - Auth required
-- Body: `{ title?, description?, target_date?, target_distance_m?, target_time_sec? }` — semua opsional, minimal satu
-- Ownership check: 404 kalau bukan milik user
+- Body: `{ title?, description?, target_date?, target_distance_m?, target_time_sec? }` — all optional, at least one required
+- Ownership check: 404 if not the owner
 - Response: `{ data: <updated goal row>, message }`
 
 ### 13.5 UI — Race Log Page
 
-Race Log punya halaman sendiri di `/running/race-log`.
+Race Log has its own page at `/running/race-log`.
 
-**States yang harus ada:**
+**Required states:**
 
-| State    | Tampilan                                                                   |
+| State    | Display                                                                    |
 | -------- | -------------------------------------------------------------------------- |
 | Loading  | Skeleton rows inside table (5 rows, animate-pulse)                         |
-| Error    | AlertTriangle icon + pesan error + tombol "Try again"                      |
-| Empty    | Medal icon + teks "No races logged yet" + CTA button "Log your first race" |
-| Has data | Table of race entries, urut race_date DESC                                 |
+| Error    | AlertTriangle icon + error message + "Try again" button                    |
+| Empty    | Medal icon + "No races logged yet" text + "Log your first race" CTA button |
+| Has data | Table of race entries, ordered race_date DESC                              |
 
 **Table layout (implemented as shadcn `<Table>`):**
 
@@ -2210,11 +2603,11 @@ Columns: Race (title + distance label + DNF badge) | Date | Dist | Time | Pace |
 
 - Title (required) — text input
 - Race date (required) — date picker (calendar popover)
-- Distance (required) — dropdown preset (5K / 10K / 21.1K / 42.2K / Custom) + custom number input kalau Custom
-- Did not finish — checkbox. Kalau dicentang: hide finish time field
+- Distance (required) — dropdown preset (5K / 10K / 21.1K / 42.2K / Custom) + custom number input when Custom is selected
+- Did not finish — checkbox. When checked: hide finish time field
 - Finish time — time input (HH:MM:SS), required unless DNF is checked
 - Avg HR — number input, optional
-- Elevation gain — number input (meter), optional
+- Elevation gain — number input (metres), optional
 - Position (place) — number input, optional — maps to `position_place`
 - Position (male) — number input, optional — maps to `position_male`
 - Notes — textarea, optional
@@ -2254,21 +2647,21 @@ Each race entry has its own detail page at `/running/race-log/[id]`.
 - Loading state: skeleton matching the detail page structure
 - Error state: AlertTriangle + error message + "Try again" link (page reload)
 
-### 13.6 UI — Edit Upcoming Race Goal (dari Activity page)
+### 13.6 UI — Edit Upcoming Race Goal (from Activity page)
 
-Di halaman Activity, tambahkan section atau button "Edit race goal" yang membuka modal edit goal.
+On the Activity page, add a section or button "Edit race goal" that opens an edit goal modal.
 
-Modal berisi:
+Modal fields:
 
-- Race title (text input) — pre-fill dari `rt_goals.title` kalau ada
-- Target distance — dropdown preset sama dengan Race Log
+- Race title (text input) — pre-filled from `rt_goals.title` when available
+- Target distance — same preset dropdown as Race Log
 - Target date — date picker
-- Description / notes (textarea) — opsional
+- Description / notes (textarea) — optional
 - Save + Cancel buttons
 
-Setelah save, NextRace card di dashboard langsung reflect perubahan (dengan re-fetch atau optimistic update).
+After saving, the NextRace card on the dashboard reflects the update immediately (via re-fetch or optimistic update).
 
-**Lokasi di Activity page:** di bawah activity list, dalam card tersendiri bertitel "Your Next Race" atau terintegrasi di sidebar kalau layout memungkinkan.
+**Location on Activity page:** below the activity list, in a separate card titled "Your Next Race", or integrated into the sidebar if the layout allows.
 
 ### 13.7 Acceptance Criteria
 
@@ -2402,76 +2795,76 @@ Registered in `cypress/fixtures/app-constants.json` under `test_ids.race_log.*`:
 
 ### 13.10 Upcoming Races
 
-User bisa tambahkan race yang belum dijalani ke dalam Race Log page sebagai planning list. Setelah race selesai, user link activity Strava untuk melengkapi data, lalu race pindah ke completed list.
+Users can add races they have not yet run to the Race Log page as a planning list. After the race is completed, the user links a Strava activity to fill in the results, and the race moves to the completed list.
 
 #### Lifecycle
 
 ```
-User tambah upcoming race (title, date, distance, location, notes)
+User adds upcoming race (title, date, distance, location, notes)
         ↓
-Race muncul di section "Upcoming" di atas race history table
-Info guide amber ditampilkan, manual result fields disabled
+Race appears in "Upcoming" section above the race history table
+Amber info guide shown, manual result fields disabled
         ↓
-User selesai berlari → buka Race Log → klik "Link activity"
-User search dan pilih Strava activity yang sesuai
+User finishes the race → opens Race Log → clicks "Link activity"
+User searches and picks the matching Strava activity
         ↓
 PATCH /api/running/v1/upcoming-races/:id { linked_activity_id }
-Backend copy distance + date dari activity
-Manual result fields jadi enabled
+Backend copies distance + date from the activity
+Manual result fields become enabled
         ↓
-User isi data tambahan (posisi lomba, dll) → klik "Save as completed"
-Race pindah dari upcoming section ke race history table
+User fills in additional data (finishing position, etc.) → clicks "Save as completed"
+Race moves from upcoming section to race history table
 ```
 
 #### Database
 
-Tabel baru `rt_upcoming_races`:
+New table `rt_upcoming_races`:
 
-| Column               | Type        | Notes                                     |
-| -------------------- | ----------- | ----------------------------------------- |
-| `id`                 | uuid        | primary key                               |
-| `user_id`            | uuid        | FK ke auth.users, RLS enforced            |
-| `title`              | text        | nama race, required                       |
-| `race_date`          | date        | harus >= today saat create                |
-| `distance_m`         | numeric     | required, > 0                             |
-| `location`           | text        | opsional, untuk Google Calendar link      |
-| `notes`              | text        | opsional                                  |
-| `linked_activity_id` | uuid        | nullable FK ke rt_activities.id           |
-| `finish_position`    | integer     | nullable, hanya bisa diisi setelah linked |
-| `created_at`         | timestamptz | auto                                      |
+| Column               | Type        | Notes                                           |
+| -------------------- | ----------- | ----------------------------------------------- |
+| `id`                 | uuid        | primary key                                     |
+| `user_id`            | uuid        | FK to auth.users, RLS enforced                  |
+| `title`              | text        | race name, required                             |
+| `race_date`          | date        | must be >= today on create                      |
+| `distance_m`         | numeric     | required, > 0                                   |
+| `location`           | text        | optional, used for Google Calendar link         |
+| `notes`              | text        | optional                                        |
+| `linked_activity_id` | uuid        | nullable FK to rt_activities.id                 |
+| `finish_position`    | integer     | nullable, can only be set after activity linked |
+| `created_at`         | timestamptz | auto                                            |
 
-RLS: `auth.uid() = user_id` — user hanya bisa akses data sendiri.
+RLS: `auth.uid() = user_id` — users can only access their own data.
 
 #### API Endpoints
 
-| Method   | Path                                 | Description                                                                                      |
-| -------- | ------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `GET`    | `/api/running/v1/upcoming-races`     | List semua upcoming races, ordered `race_date ASC`                                               |
-| `POST`   | `/api/running/v1/upcoming-races`     | Create upcoming race baru                                                                        |
-| `GET`    | `/api/running/v1/upcoming-races/:id` | Detail satu upcoming race                                                                        |
-| `PATCH`  | `/api/running/v1/upcoming-races/:id` | Update. Jika `linked_activity_id` di-set, backend copy `distance_m` + `started_at` dari activity |
-| `DELETE` | `/api/running/v1/upcoming-races/:id` | Hapus upcoming race                                                                              |
+| Method   | Path                                 | Description                                                                                          |
+| -------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `GET`    | `/api/running/v1/upcoming-races`     | List all upcoming races, ordered `race_date ASC`                                                     |
+| `POST`   | `/api/running/v1/upcoming-races`     | Create a new upcoming race                                                                           |
+| `GET`    | `/api/running/v1/upcoming-races/:id` | Fetch a single upcoming race                                                                         |
+| `PATCH`  | `/api/running/v1/upcoming-races/:id` | Update. If `linked_activity_id` is set, backend copies `distance_m` + `started_at` from the activity |
+| `DELETE` | `/api/running/v1/upcoming-races/:id` | Delete an upcoming race                                                                              |
 
 #### UI — Race Log Page
 
-**Layout:** Upcoming Races section tampil di atas completed race history table.
+**Layout:** Upcoming Races section appears above the completed race history table.
 
-**Upcoming race card** (card pattern, bukan table row — responsive grid 1/2/3 kolom):
+**Upcoming race card** (card pattern, not a table row — responsive grid 1/2/3 columns):
 
 - Title, date, distance, location
-- Countdown badge: merah ≤7 hari, amber ≤30 hari, slate otherwise (reuse logic dari NextRace.jsx)
-- **Amber info guide** — `bg-amber-50 border border-amber-200`, icon `Info` warna `text-amber-500`, teks `text-xs text-amber-800`, `role="note"`:
-  > _"Race ini belum dijalankan. Setelah race selesai, link activity Strava untuk melengkapi data."_
-  > Hilang dari DOM setelah activity di-link.
-- **Disabled result fields** — tampil sebagai metric chips (Finish time, Position, Avg HR, Elevation) dengan nilai `—` dalam `text-slate-300 font-mono` di atas `bg-slate-50 border border-slate-100`. Tooltip: _"Link a Strava activity to fill in results."_ Setelah linked, chip diganti dengan real input fields.
-- Tombol **"Link activity"** (primary, kiri bawah) — buka `ActivityPickerDialog` (reuse dari "Add from activity" flow)
-- Tombol **"Add to Google Calendar"** (outline, kanan bawah) — generate Google Calendar URL, buka di tab baru
+- Countdown badge: red when ≤7 days, amber when ≤30 days, slate otherwise (reuses logic from NextRace.jsx)
+- **Amber info guide** — `bg-amber-50 border border-amber-200`, `Info` icon in `text-amber-500`, text in `text-xs text-amber-800`, `role="note"`:
+  > _"This race has not been run yet. Once the race is done, link a Strava activity to complete the results."_
+  > Removed from DOM after an activity is linked.
+- **Disabled result fields** — shown as metric chips (Finish time, Position, Avg HR, Elevation) with `—` values in `text-slate-300 font-mono` on `bg-slate-50 border border-slate-100`. Tooltip: _"Link a Strava activity to fill in results."_ After linking, chips are replaced with enabled input fields.
+- **"Link activity"** button (primary, bottom left) — opens `ActivityPickerDialog` (reused from "Add from activity" flow)
+- **"Add to Google Calendar"** button (outline, bottom right) — generates a Google Calendar URL and opens it in a new tab
 
-**Setelah activity di-link:**
+**After an activity is linked:**
 
-- Amber info guide hilang dari DOM
-- Metric chips diganti dengan input fields yang enabled
-- Tombol **"Save as completed"** muncul — klik → card fade-out 300ms → race muncul di race history table
+- Amber info guide is removed from the DOM
+- Metric chips are replaced with enabled input fields
+- **"Save as completed"** button appears — clicking it fades the card out over 300ms and moves the race to the race history table
 
 **Google Calendar URL:**
 
@@ -2483,71 +2876,71 @@ https://calendar.google.com/calendar/render?action=TEMPLATE
   &location={encodeURIComponent(location)}
 ```
 
-Format all-day untuk menghindari timezone bugs. Pure frontend, tidak ada backend atau API key.
+All-day format is used to avoid timezone bugs. Pure frontend — no backend call or API key needed.
 
-**Add upcoming race modal** — fields: title (required), race_date (required, harus future), distance (preset Select), location (opsional), notes (opsional). Zod + react-hook-form, same pattern seperti existing modals.
+**Add upcoming race modal** — fields: title (required), race_date (required, must be a future date), distance (preset Select), location (optional), notes (optional). Zod + react-hook-form, same pattern as existing modals.
 
-**Empty state** — dashed border container (`border-dashed border-slate-200 rounded-xl bg-slate-50`) dengan icon Flag, teks penjelasan, dan tombol "Add a race".
+**Empty state** — dashed border container (`border-dashed border-slate-200 rounded-xl bg-slate-50`) with a Flag icon, explanatory text, and an "Add a race" button.
 
 #### Acceptance Criteria
 
 ```
-GIVEN user klik "Add upcoming race"
-WHEN form diisi dengan title, date (future), distance
-THEN upcoming race tersimpan dan muncul di upcoming section
+GIVEN user clicks "Add upcoming race"
+WHEN form is filled with title, date (future), distance
+THEN upcoming race is saved and appears in the upcoming section
 
-GIVEN upcoming race belum di-link ke activity
-WHEN user lihat card
-THEN amber info guide ditampilkan
-AND result fields tampil sebagai disabled metric chips
+GIVEN upcoming race has not been linked to an activity
+WHEN user views the card
+THEN amber info guide is shown
+AND result fields are displayed as disabled metric chips
 
-GIVEN user klik "Link activity"
-WHEN user pilih activity dari picker
-THEN PATCH dipanggil dengan linked_activity_id
-AND amber info guide hilang dari DOM
-AND metric chips diganti dengan enabled input fields
+GIVEN user clicks "Link activity"
+WHEN user selects an activity from the picker
+THEN PATCH is called with linked_activity_id
+AND amber info guide is removed from the DOM
+AND metric chips are replaced with enabled input fields
 
-GIVEN manual fields sudah enabled
-WHEN user isi data dan klik "Save as completed"
-THEN card fade-out 300ms
-AND race muncul di race history table
+GIVEN manual fields are now enabled
+WHEN user fills in data and clicks "Save as completed"
+THEN card fades out over 300ms
+AND race appears in the race history table
 
-GIVEN user klik "Add to Google Calendar"
-WHEN link di-generate
-THEN tab baru terbuka dengan Google Calendar pre-filled
+GIVEN user clicks "Add to Google Calendar"
+WHEN the link is generated
+THEN a new tab opens with Google Calendar pre-filled
 
-GIVEN race_date sudah lewat tapi belum di-link
-WHEN user lihat card
-THEN amber info guide tetap tampil (tidak auto-expire)
+GIVEN race_date has passed but no activity has been linked
+WHEN user views the card
+THEN amber info guide remains visible (does not auto-expire)
 ```
 
 #### Validations
 
-| Field             | Rule                                              |
-| ----------------- | ------------------------------------------------- |
-| `title`           | Required, max 200 chars                           |
-| `race_date`       | Required, harus >= today saat create              |
-| `distance_m`      | Required, > 0                                     |
-| `location`        | Optional, max 300 chars                           |
-| `finish_position` | Optional, integer > 0, hanya valid setelah linked |
+| Field             | Rule                                                       |
+| ----------------- | ---------------------------------------------------------- |
+| `title`           | Required, max 200 chars                                    |
+| `race_date`       | Required, must be >= today on create                       |
+| `distance_m`      | Required, > 0                                              |
+| `location`        | Optional, max 300 chars                                    |
+| `finish_position` | Optional, integer > 0, only valid after activity is linked |
 
 #### Test IDs
 
-Registered di `cypress/fixtures/app-constants.json` under `test_ids.upcoming_races.*`:
+Registered in `cypress/fixtures/app-constants.json` under `test_ids.upcoming_races.*`:
 
-| ID                                         | Element                            |
-| ------------------------------------------ | ---------------------------------- |
-| `upcomingRacesSection_raceLogPage`         | Section container di race-log page |
-| `addUpcomingRaceBtn_raceLogPage`           | "Add upcoming race" button         |
-| `upcomingRaceCard_raceLogPage`             | Individual race card               |
-| `upcomingRaceInfoGuide_raceLogPage`        | Amber info guide callout           |
-| `linkActivityBtn_raceLogPage`              | "Link activity" button per card    |
-| `addToCalendarBtn_raceLogPage`             | "Add to Google Calendar" button    |
-| `upcomingRaceFormModal_raceLogPage`        | Add/edit modal root                |
-| `upcomingRaceSaveBtn_raceLogPage`          | Save button di modal               |
-| `saveAsCompletedBtn_raceLogPage`           | "Save as completed" button         |
-| `deleteUpcomingRaceBtn_raceLogPage`        | Delete button per card             |
-| `deleteUpcomingRaceConfirmBtn_raceLogPage` | Confirm button di delete dialog    |
+| ID                                         | Element                                |
+| ------------------------------------------ | -------------------------------------- |
+| `upcomingRacesSection_raceLogPage`         | Section container on the race-log page |
+| `addUpcomingRaceBtn_raceLogPage`           | "Add upcoming race" button             |
+| `upcomingRaceCard_raceLogPage`             | Individual race card                   |
+| `upcomingRaceInfoGuide_raceLogPage`        | Amber info guide callout               |
+| `linkActivityBtn_raceLogPage`              | "Link activity" button per card        |
+| `addToCalendarBtn_raceLogPage`             | "Add to Google Calendar" button        |
+| `upcomingRaceFormModal_raceLogPage`        | Add/edit modal root                    |
+| `upcomingRaceSaveBtn_raceLogPage`          | Save button in modal                   |
+| `saveAsCompletedBtn_raceLogPage`           | "Save as completed" button             |
+| `deleteUpcomingRaceBtn_raceLogPage`        | Delete button per card                 |
+| `deleteUpcomingRaceConfirmBtn_raceLogPage` | Confirm button in delete dialog        |
 
 ---
 
@@ -2557,11 +2950,11 @@ Registered di `cypress/fixtures/app-constants.json` under `test_ids.upcoming_rac
 
 ```
 rTSS = (duration_sec × NGS × IF) / (threshold_pace × 3600) × 100
-NGS  = avg pace (simplifikasi)
+NGS  = avg pace (simplified)
 IF   = avg_pace / threshold_pace
 ```
 
-### TRIMP (alternatif berbasis HR)
+### TRIMP (HR-based alternative)
 
 ```
 TRIMP = duration_min × HRr × 0.64 × e^(1.92 × HRr)
@@ -2574,104 +2967,128 @@ HRr   = (avg_hr - resting_hr) / (max_hr - resting_hr)
 ACWR = avg_load_last_7d / avg_load_last_28d
 Optimal: 0.8 – 1.3
 Warning: 1.3 – 1.5
-Danger:  > 1.5 (injury risk naik signifikan)
+Danger:  > 1.5 (injury risk increases significantly)
 ```
 
 ### Race predictor (Riegel formula)
 
 ```
 T2 = T1 × (D2 / D1)^1.06
-Contoh: PR 5K 22:45 → Half marathon ≈ 1:47:xx
+Example: 5K PR 22:45 → Half marathon ≈ 1:47:xx
 ```
 
-### VO2 max estimation
+### VO2max estimation
 
 ```
-Dari PR dan distance pakai VDOT lookup table (Jack Daniels methodology)
-Atau dari HR + pace pakai Firstbeat approximation
+From PR and distance: use VDOT lookup table (Jack Daniels methodology)
+From HR + pace: use Firstbeat approximation
 ```
 
 ---
 
 ## 15. Background Workers
 
-Semua background jobs dijalankan via **Inngest** — serverless-native, tidak butuh persistent server.
+All background jobs run via **Inngest** — serverless-native, no persistent server required.
 
-Ada dua jenis job:
+Two types of jobs:
 
-- **Event-driven** — dipanggil oleh trigger (misal: user connect Strava, webhook masuk)
-- **Scheduled (Vercel Cron)** — dipanggil otomatis berdasarkan jadwal, cocok untuk job yang cepat (< 60 detik)
+- **Event-driven** — triggered by an action (e.g., user connects Strava, webhook arrives)
+- **Scheduled (cron)** — run automatically on a schedule, suitable for fast jobs (< 60 seconds)
 
 ```
 INNGEST FUNCTIONS (event-driven + long-running):
 
-strava/backfill                (trigger: user connect Strava)
-  └─ Step 1: fetch semua halaman /athlete/activities (paginated)
-  └─ Step 2: per aktivitas → fan-out ke strava/fetch-streams
-  └─ Inngest handles retry otomatis kalau gagal
+strava/backfill                (trigger: user connects Strava)
+  └─ Step 1: fetch all pages of /athlete/activities (paginated)
+  └─ Step 2: per activity → fan-out to strava/fetch-streams
+  └─ Inngest handles retries automatically on failure
 
-strava/fetch-streams           (trigger: setiap aktivitas dari backfill atau webhook)
-  └─ Fetch time-series HR/GPS/pace dari Strava API
-  └─ Insert ke activity_streams
-  └─ Trigger anomaly-detector setelah selesai
+strava/fetch-streams           (trigger: each activity from backfill or webhook)
+  └─ Fetch time-series HR/GPS/pace from Strava API
+  └─ Insert into activity_streams
+  └─ Trigger anomaly-detector on completion
 
 strava/handle-webhook-event    (trigger: POST /api/sync/webhook)
-  └─ create → fetch detail aktivitas baru + streams
-  └─ update → re-fetch dan update data
-  └─ delete → soft delete atau hapus dari DB
+  └─ create → fetch new activity detail + streams
+  └─ update → re-fetch and update data
+  └─ delete → soft delete or remove from DB
 
-ai/anomaly-detector            (trigger: setelah strava/fetch-streams selesai)
-  └─ Ambil aktivitas terbaru + baseline 30 hari aktivitas sejenis
-  └─ Cek metrik berikut:
+ai/anomaly-detector            (trigger: after strava/fetch-streams completes)
+  └─ Fetch latest activity + 30-day baseline for same activity type
+  └─ Check these metrics:
 
   ACWR spike
-    kondisi  : acwr > 1.5
-    severity : warning
-    contoh   : "Training load minggu ini 1.8x lebih tinggi dari rata-rata 4 minggu terakhir"
+    condition : acwr > 1.5
+    severity  : warning
+    example   : "Training load this week is 1.8x higher than your 4-week average"
 
-  HR drift tidak normal
-    kondisi  : avg_hr aktivitas terbaru > (baseline avg_hr × 1.10) pada pace yang sama (±10%)
-    severity : attention
-    contoh   : "HR rata-rata 162 bpm di easy run hari ini, 12% lebih tinggi dari biasanya di pace yang sama"
+  Abnormal HR drift
+    condition : avg_hr of latest activity > (baseline avg_hr × 1.10) at same pace (±10%)
+    severity  : attention
+    example   : "Average HR 162 bpm on today's easy run — 12% higher than usual at this pace"
 
-  Pace drop signifikan
-    kondisi  : avg_pace > (baseline avg_pace × 1.08) untuk activity_type yang sama
-    severity : attention
-    contoh   : "Pace tempo run hari ini 8% lebih lambat dari rata-rata 4 minggu terakhir"
+  Significant pace drop
+    condition : avg_pace > (baseline avg_pace × 1.08) for the same activity type
+    severity  : attention
+    example   : "Today's tempo run pace is 8% slower than your 4-week average"
 
-  Konsistensi terganggu
-    kondisi  : tidak ada aktivitas dalam 10 hari (padahal sebelumnya rata-rata ≥ 3x/minggu)
-    severity : info
-    contoh   : "Kamu belum lari 10 hari — ingatkan goal race kamu masih X minggu lagi"
+  Consistency disruption
+    condition : no activity for 10 days (previously averaging ≥ 3 runs/week)
+    severity  : info
+    example   : "You haven't run in 10 days — your goal race is X weeks away"
 
-  └─ Kalau ada anomali → insert ke ai_insights dengan insight_type = 'anomaly'
-  └─ Kalau tidak ada → tidak insert, tidak ada notifikasi
+  └─ If anomaly found → insert into ai_insights with insight_type = 'anomaly'
+  └─ If no anomaly → no insert, no notification
 
-ai/generate-daily-insight      (trigger: Vercel Cron daily 06:00)
-  └─ AI generate 1 insight card untuk hari ini
+ai/generate-daily-insight      (trigger: cron daily 06:00)
+  └─ AI generates 1 insight card for today
 
-ai/weekly-review               (trigger: Vercel Cron Sunday 19:00)
-  └─ AI generate comprehensive week summary
+ai/weekly-review               (trigger: cron Sunday 19:00)
+  └─ AI generates a comprehensive week summary
 
-VERCEL CRON (scheduled, < 60 detik):
+SCHEDULED CRON FUNCTIONS:
+
+stravaGapHeal                  (cron: 0 2 * * * — daily at 02:00)
+  └─ Find activities with enriched_at IS NULL older than 1 hour
+  └─ Only targets users with an active Strava connection (needs_reconnect = false)
+  └─ Cap: 50 activities per user per run (GAP_CAP_PER_USER)
+  └─ Sends strava/fetch-streams Inngest event for each qualifying activity
+
+raceReminderNotification       (cron: 0 8 * * * — daily at 08:00)
+  └─ Find upcoming races at 14 / 7 / 3 / 1 days away
+  └─ Check if notification already sent for that threshold (notifications_sent JSONB column)
+  └─ Send push notification with race-specific message
+  └─ Mark threshold as sent in rt_upcoming_races.notifications_sent
+  └─ Respects notify_race_reminder + push_notifications_enabled settings
+  └─ Clears expired push subscriptions automatically
+
+fridayPrepNotification         (cron: 0 8 * * 5 — every Friday at 08:00)
+  └─ Determine current week range (Monday to now)
+  └─ Skip if friday_prep insight already exists for this week_start (deduplication)
+  └─ Build weekly context via buildFridayPrepContext (recent activities, training load, etc.)
+  └─ Call Claude Sonnet 4.6 via generateInsight (max_tokens 1500, insight_type 'friday_prep')
+  └─ Save insight to rt_ai_insights with data_refs: { week_start, mode }
+  └─ Send push notification: "Weekend Training Plan Ready"
+  └─ Respects notify_friday_prep + push_notifications_enabled settings
+  └─ Clears expired push subscriptions automatically
 
 compute-daily-metrics          (daily 03:00)
-  └─ Hitung TSS, ACWR, training load aggregation dari aktivitas kemarin
+  └─ Compute TSS, ACWR, training load aggregation from yesterday's activities
 
-strava-sync-poll               (setiap 1 jam)
-  └─ Fallback kalau webhook Strava missed — check aktivitas baru sejak last_sync_at
-  └─ Kalau ada yang baru → trigger strava/fetch-streams via Inngest
+strava-sync-poll               (every 1 hour)
+  └─ Fallback when Strava webhook is missed — check for new activities since last_sync_at
+  └─ If new activities found → trigger strava/fetch-streams via Inngest
 ```
 
 ### Inngest setup
 
-Inngest butuh satu endpoint di app untuk menerima function invocations:
+Inngest requires one endpoint in the app to receive function invocations:
 
 ```
-POST  /api/inngest    ← Inngest server kirim job ke sini untuk dieksekusi
+POST  /api/inngest    ← Inngest server sends jobs here for execution
 ```
 
-Semua Inngest functions didaftarkan di endpoint ini. Inngest free tier: 50.000 event/bulan — cukup untuk personal app.
+All Inngest functions are registered at this endpoint. Inngest free tier: 50,000 events/month — sufficient for a personal app.
 
 ---
 
@@ -2679,34 +3096,34 @@ Semua Inngest functions didaftarkan di endpoint ini. Inngest free tier: 50.000 e
 
 ### 15.1 Setup overview
 
-Push notification di PWA bekerja lewat tiga komponen:
+Push notifications in a PWA work via three components:
 
 ```
 Browser (Service Worker)  ←→  Push Service (browser vendor)  ←→  App Server
 ```
 
-- **VAPID keys** — sepasang public/private key yang membuktikan notifikasi benar-benar dari server kita
-- **Service Worker** — script yang jalan di background di browser, terima push event bahkan saat app tidak dibuka
-- **Push subscription** — object dari browser berisi endpoint unik per device, disimpan di DB
+- **VAPID keys** — a public/private key pair that proves notifications genuinely come from our server
+- **Service Worker** — a script running in the browser background that receives push events even when the app is not open
+- **Push subscription** — an object from the browser containing a unique endpoint per device, stored in the DB
 
 ### 15.2 Setup flow
 
 ```
-1. User buka app → browser minta izin notifikasi
-2. User klik "Allow"
-3. Browser daftarkan service worker → dapat PushSubscription object
+1. User opens app → browser requests notification permission
+2. User clicks "Allow"
+3. Browser registers service worker → receives a PushSubscription object:
    {
      endpoint: "https://fcm.googleapis.com/...",
      keys: { p256dh: "...", auth: "..." }
    }
-4. App kirim subscription ke server:
-   POST /api/user/push-subscription
+4. App sends subscription to server:
+   POST /api/running/v1/user/push-subscription
    body: { subscription }
-5. Server simpan di user_settings.push_subscription
-6. Sekarang server bisa kirim notifikasi ke device ini kapan saja
+5. Server saves to rt_user_settings.push_subscription
+6. Server can now push notifications to this device at any time
 ```
 
-### 15.3 Server-side: kirim notifikasi
+### 15.3 Server-side: sending notifications
 
 ```javascript
 import webpush from 'web-push'
@@ -2725,41 +3142,42 @@ async function sendPushNotification(userId, payload) {
   await webpush.sendNotification(settings.push_subscription, JSON.stringify(payload))
 }
 
-// Contoh payload
+// Example payload
 const payload = {
-  title: 'Weekly Review siap',
-  body: 'Minggu ini: 42km, ACWR 1.1 — performa terbaik bulan ini.',
+  title: 'Weekly Review Ready',
+  body: 'This week: 42km, ACWR 1.1 — best performance this month.',
   icon: '/icon-192.png',
   url: '/analytics',
 }
 ```
 
-### 15.4 Trigger notifikasi
+### 15.4 Notification triggers
 
-| Event                         | Trigger                                     | Kondisi kirim                                    | Setting  |
-| ----------------------------- | ------------------------------------------- | ------------------------------------------------ | -------- |
-| Post-activity insight selesai | Inngest `ai/generate-post-activity-insight` | `notify_post_activity = true`                    | Settings |
-| Weekly review selesai         | Vercel Cron Minggu 19:00                    | `notify_weekly_review = true`                    | Settings |
-| Anomali terdeteksi            | Inngest `ai/check-anomaly`                  | `notify_anomaly = true` + severity ≥ `attention` | Settings |
-| Friday prep                   | Vercel Cron Jumat 15:00                     | `notify_friday_prep = true`                      | Settings |
+| Event                          | Trigger                                     | Send condition                                   | Setting  |
+| ------------------------------ | ------------------------------------------- | ------------------------------------------------ | -------- |
+| Post-activity insight complete | Inngest `ai/generate-post-activity-insight` | `notify_post_activity = true`                    | Settings |
+| Weekly review complete         | Cron Sunday 19:00                           | `notify_weekly_review = true`                    | Settings |
+| Anomaly detected               | Inngest `ai/check-anomaly`                  | `notify_anomaly = true` + severity ≥ `attention` | Settings |
+| Friday prep                    | Inngest cron Friday 08:00                   | `notify_friday_prep = true`                      | Settings |
+| Race reminder                  | Inngest cron daily 08:00                    | `notify_race_reminder = true`                    | Settings |
 
-**Friday prep** adalah notifikasi gabungan: training load minggu ini + status health log + rekomendasi sesi weekend. Dibuat secara rules-based, tidak call Claude.
+**Friday prep** is a combined notification: training load for the current week + recommended weekend sessions. Generated by Claude Sonnet 4.6 (see `fridayPrepNotification` in section 15).
 
-Semua setting default `true`. User bisa matikan satu per satu di halaman Settings.
+All settings default to `true`. Users can disable them individually on the Settings page.
 
-### 15.5 Environment variables yang dibutuhkan
-
-```
-VAPID_PUBLIC_KEY=    ← generate sekali pakai: npx web-push generate-vapid-keys
-VAPID_PRIVATE_KEY=   ← simpan di .env, jangan commit
-VAPID_EMAIL=         ← email kontak untuk push service
-```
-
-### 15.6 Endpoint tambahan
+### 15.5 Required environment variables
 
 ```
-POST   /api/user/push-subscription    ← simpan subscription object dari browser
-DELETE /api/user/push-subscription    ← hapus subscription (user matikan notif)
+VAPID_PUBLIC_KEY=    ← generate once: npx web-push generate-vapid-keys
+VAPID_PRIVATE_KEY=   ← store in .env, never commit
+VAPID_EMAIL=         ← contact email for the push service
+```
+
+### 15.6 Additional endpoints
+
+```
+POST   /api/running/v1/user/push-subscription    ← save subscription object from browser
+DELETE /api/running/v1/user/push-subscription    ← remove subscription (user disables notifications)
 ```
 
 ### 15.7 Service worker (public/sw.js)
@@ -2786,21 +3204,21 @@ self.addEventListener('notificationclick', (event) => {
 
 ## 17. Encryption Strategy
 
-### 16.1 Apa yang dienkripsi
+### 16.1 What is encrypted
 
-| Data                                  | Lokasi       | Alasan                                                        |
+| Data                                  | Location     | Reason                                                        |
 | ------------------------------------- | ------------ | ------------------------------------------------------------- |
-| `strava_credentials.access_token`     | DB           | Token aktif — kalau bocor, attacker bisa baca semua aktivitas |
-| `strava_credentials.refresh_token`    | DB           | Lebih kritis — berlaku lama, bisa generate access token baru  |
-| `garmin_credentials.credentials_data` | DB (Phase 2) | Credential Garmin, tergantung metode integrasi                |
+| `strava_credentials.access_token`     | DB           | Active token — if leaked, an attacker can read all activities |
+| `strava_credentials.refresh_token`    | DB           | More critical — long-lived, can generate new access tokens    |
+| `garmin_credentials.credentials_data` | DB (Phase 2) | Garmin credentials, depends on integration method             |
 
-### 16.2 Algoritma
+### 16.2 Algorithm
 
-**AES-256-GCM** — pilihan yang tepat karena:
+**AES-256-GCM** — chosen because:
 
-- 256-bit key — kuat
-- GCM mode — authenticated encryption, sekaligus deteksi tampering
-- Built-in di Node.js `crypto` module — tidak butuh library tambahan
+- 256-bit key — strong
+- GCM mode — authenticated encryption, also detects tampering
+- Built into Node.js `crypto` module — no extra library needed
 
 ### 16.3 Implementasi
 
@@ -2811,13 +3229,13 @@ const ALGORITHM = 'aes-256-gcm'
 const KEY = Buffer.from(process.env.ENCRYPTION_KEY, 'hex') // 32 bytes = 64 hex chars
 
 export function encrypt(plaintext) {
-  const iv = randomBytes(12) // 96-bit IV untuk GCM
+  const iv = randomBytes(12) // 96-bit IV for GCM
   const cipher = createCipheriv(ALGORITHM, KEY, iv)
 
   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()])
   const authTag = cipher.getAuthTag() // 16-byte auth tag
 
-  // Simpan sebagai: iv(12) + authTag(16) + ciphertext — semua dalam hex
+  // Stored as: iv(12) + authTag(16) + ciphertext — all in hex
   return iv.toString('hex') + authTag.toString('hex') + encrypted.toString('hex')
 }
 
@@ -2833,29 +3251,29 @@ export function decrypt(ciphertext) {
 }
 ```
 
-IV (Initialization Vector) di-generate baru tiap kali enkripsi — tidak pernah reuse. IV tidak perlu dirahasiakan, cukup disimpan bersama ciphertext.
+The IV (Initialization Vector) is freshly generated on every encryption call — never reused. The IV does not need to be secret; it is stored alongside the ciphertext.
 
 ### 16.4 Key management
 
 ```
-ENCRYPTION_KEY=   ← 64 karakter hex (= 32 bytes)
+ENCRYPTION_KEY=   ← 64 hex characters (= 32 bytes)
                   ← generate: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-                  ← simpan di .env.local dan Vercel environment variables
-                  ← JANGAN commit ke git
+                  ← store in .env.local and Vercel environment variables
+                  ← NEVER commit to git
 ```
 
-Key rotation: kalau `ENCRYPTION_KEY` perlu diganti, perlu migration — decrypt semua token dengan key lama, encrypt ulang dengan key baru. Proses ini harus atomic dan dilakukan saat maintenance window.
+Key rotation: if `ENCRYPTION_KEY` needs to change, a migration is required — decrypt all tokens with the old key and re-encrypt with the new key. This process must be atomic and run during a maintenance window.
 
-### 16.5 Di mana encrypt/decrypt dipanggil
+### 16.5 Where encrypt/decrypt is called
 
-| Operasi                  | Kapan                                                                |
-| ------------------------ | -------------------------------------------------------------------- |
-| `encrypt(access_token)`  | Saat simpan ke DB — setelah OAuth callback dan setelah token refresh |
-| `decrypt(access_token)`  | Sesaat sebelum call ke Strava API                                    |
-| `encrypt(refresh_token)` | Sama seperti access_token                                            |
-| `decrypt(refresh_token)` | Saat proses token refresh                                            |
+| Operation                | When                                                         |
+| ------------------------ | ------------------------------------------------------------ |
+| `encrypt(access_token)`  | On save to DB — after OAuth callback and after token refresh |
+| `decrypt(access_token)`  | Immediately before making a call to the Strava API           |
+| `encrypt(refresh_token)` | Same as access_token                                         |
+| `decrypt(refresh_token)` | During the token refresh process                             |
 
-Tidak pernah log token dalam bentuk plaintext — bahkan di error logs sekalipun.
+Tokens are never logged in plaintext — not even in error logs.
 
 ---
 
@@ -2863,27 +3281,27 @@ Tidak pernah log token dalam bentuk plaintext — bahkan di error logs sekalipun
 
 ### Performance
 
-- Dashboard load < 2 detik
-- Activity detail render < 1 detik
-- AI streaming: first token < 2 detik
+- Dashboard load < 2 seconds
+- Activity detail render < 1 second
+- AI streaming: first token < 2 seconds
 - Strava sync: background, non-blocking
 
 ### Security
 
-- Strava tokens encrypted AES-256-GCM at rest (lihat Section 15 untuk detail implementasi)
+- Strava tokens encrypted AES-256-GCM at rest (see section 17 for implementation details)
 - HTTPS only, HSTS enabled
-- Semua API key di environment variables, tidak di code
+- All API keys in environment variables, never in code
 - Session via Supabase SSR (httpOnly cookie)
-- Strava token refresh + rotation di setiap call
-- Tidak kirim personal data ke AI sebagai training data
+- Strava token refresh + rotation on every call
+- Personal data is not sent to AI as training data
 
 ### Reliability
 
-- Graceful degradation kalau Strava API down (cache data terakhir)
-- Retry dengan exponential backoff untuk semua external calls
-- Polling fallback kalau webhook gagal
+- Graceful degradation when Strava API is down (serve last cached data)
+- Retry with exponential backoff for all external calls
+- Polling fallback when webhook is missed
 - Daily encrypted DB backup
-- Manual entry selalu bisa dilakukan terlepas dari Strava status
+- Manual entry always works regardless of Strava connection status
 
 ---
 
@@ -2891,86 +3309,86 @@ Tidak pernah log token dalam bentuk plaintext — bahkan di error logs sekalipun
 
 ### Phase 1 — MVP
 
-| #   | Phase                       | Scope                                                                                                                 | Estimasi      |
-| --- | --------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------- |
-| 1   | **Setup**                   | Scaffold Next.js, Supabase auth (shared), Drizzle + DB schema, Vercel deploy, Inngest setup, env vars                 | 1 minggu      |
-| 2   | **Onboarding**              | Onboarding wizard (biometric + Strava connect + goal), `/api/user/profile`, `/api/user/settings`, middleware redirect | 0.5 minggu    |
-| 3   | **Strava ingestion**        | OAuth flow, webhook (GET verify + POST handler), backfill via Inngest, polling fallback, rate limit, token encryption | 1.5 minggu    |
-| 4   | **Upload & manual entry**   | GPX/FIT parser, dedup logic, manual workout form, daily health log                                                    | 1 minggu      |
-| 5   | **Dashboard & activity UI** | Dashboard, activity list, activity detail + map + charts, streams downsampling                                        | 1.5 minggu    |
-| 6   | **Analytics**               | Trend charts, training load (ACWR), race predictor, PR tracking, VO2 max estimation                                   | 1 minggu      |
-| 7   | **AI Insight Engine**       | Post-activity insight, weekly review, anomaly detector, on-demand analysis                                            | 1 minggu      |
-| 8   | **PWA + push notification** | Service worker, VAPID setup, push subscription flow, 3 notification triggers                                          | 0.5 minggu    |
-|     | **— MVP shipped —**         |                                                                                                                       | **~7 minggu** |
+| #   | Phase                       | Scope                                                                                                                 | Estimate     |
+| --- | --------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------ |
+| 1   | **Setup**                   | Scaffold Next.js, Supabase auth (shared), Drizzle + DB schema, Vercel deploy, Inngest setup, env vars                 | 1 week       |
+| 2   | **Onboarding**              | Onboarding wizard (biometric + Strava connect + goal), `/api/user/profile`, `/api/user/settings`, middleware redirect | 0.5 weeks    |
+| 3   | **Strava ingestion**        | OAuth flow, webhook (GET verify + POST handler), backfill via Inngest, polling fallback, rate limit, token encryption | 1.5 weeks    |
+| 4   | **Upload & manual entry**   | GPX/FIT parser, dedup logic, manual workout form, daily health log                                                    | 1 week       |
+| 5   | **Dashboard & activity UI** | Dashboard, activity list, activity detail + map + charts, streams downsampling                                        | 1.5 weeks    |
+| 6   | **Analytics**               | Trend charts, training load (ACWR), race predictor, PR tracking, VO2max estimation                                    | 1 week       |
+| 7   | **AI Insight Engine**       | Post-activity insight, weekly review, anomaly detector, on-demand analysis                                            | 1 week       |
+| 8   | **PWA + push notification** | Service worker, VAPID setup, push subscription flow, notification triggers                                            | 0.5 weeks    |
+|     | **— MVP shipped —**         |                                                                                                                       | **~7 weeks** |
 
 ### Phase 2 — Health integration
 
-| #   | Phase                  | Scope                                                                      | Estimasi               |
-| --- | ---------------------- | -------------------------------------------------------------------------- | ---------------------- |
-| 9   | **Garmin integration** | Strategi TBD (official API / unofficial), credentials, sync job            | 2 minggu               |
-| 10  | **Health UI**          | Health tabs, daily health card, mini trends per metrik                     | 1.5 minggu             |
-| 11  | **Advanced analytics** | Correlation view (2-metric overlay), readiness score composite             | 1.5 minggu             |
-| 12  | **AI Coach advanced**  | Cross-metric reasoning, anomaly detection berbasis HRV/RHR, readiness mode | 1.5 minggu             |
-| 13  | **Chat Coach**         | Live chat interface, conversation history, tool use, streaming SSE         | 1.5 minggu             |
-|     | **— Full platform —**  |                                                                            | **~15.5 minggu total** |
+| #   | Phase                  | Scope                                                                   | Estimate              |
+| --- | ---------------------- | ----------------------------------------------------------------------- | --------------------- |
+| 9   | **Garmin integration** | Strategy TBD (official API / unofficial), credentials, sync job         | 2 weeks               |
+| 10  | **Health UI**          | Health tabs, daily health card, mini trends per metric                  | 1.5 weeks             |
+| 11  | **Advanced analytics** | Correlation view (2-metric overlay), readiness score composite          | 1.5 weeks             |
+| 12  | **AI Coach advanced**  | Cross-metric reasoning, HRV/RHR-based anomaly detection, readiness mode | 1.5 weeks             |
+| 13  | **Chat Coach**         | Live chat interface, conversation history, tool use, streaming SSE      | 1.5 weeks             |
+|     | **— Full platform —**  |                                                                         | **~15.5 weeks total** |
 
-### Catatan urutan
+### Sequencing notes
 
-- Phase 1 #2 (Onboarding) **harus selesai sebelum** #3 (Strava ingestion) — karena backfill butuh user yang sudah punya row di DB
-- Phase 1 #3 (Strava ingestion) **harus selesai sebelum** #5 (Dashboard) — tidak ada data = tidak bisa test UI
-- Phase 1 #8 (PWA) bisa dikerjakan paralel dengan #7 (AI Coach) kalau mau lebih cepat
-- Phase 2 boleh dimulai setelah MVP sudah stabil minimal 4 minggu real usage
+- Phase 1 #2 (Onboarding) **must complete before** #3 (Strava ingestion) — backfill requires the user to have a row in the DB first
+- Phase 1 #3 (Strava ingestion) **must complete before** #5 (Dashboard) — no data means no UI to test
+- Phase 1 #8 (PWA) can run in parallel with #7 (AI Coach) to move faster
+- Phase 2 can start after MVP has been stable for at least 4 weeks of real usage
 
 ---
 
 ## 20. Risks
 
-| Risk                                        | Kemungkinan | Dampak | Mitigasi                                                                     |
-| ------------------------------------------- | ----------- | ------ | ---------------------------------------------------------------------------- |
-| Strava rate limit hit saat backfill         | Medium      | Low    | Throttle 80/15min, queue dengan Inngest/QStash                               |
-| Webhook missed events                       | Medium      | Low    | Polling fallback setiap 1 jam                                                |
-| Inngest free tier limit terlampaui          | Low         | Low    | 50k event/bulan cukup untuk personal app. Monitor usage di Inngest dashboard |
-| Garmin Phase 2 lebih kompleks dari estimasi | Medium      | Medium | Schema sudah disiapkan, bisa fallback ke unofficial library                  |
-| AI cost membengkak                          | Medium      | Medium | Monitor token usage, cache context                                           |
-| Data loss                                   | Low         | High   | Daily encrypted backup                                                       |
-| Strava policy berubah                       | Low         | Medium | Simpan raw data di `activities.raw_data`, bisa re-process                    |
+| Risk                                       | Likelihood | Impact | Mitigation                                                                      |
+| ------------------------------------------ | ---------- | ------ | ------------------------------------------------------------------------------- |
+| Strava rate limit hit during backfill      | Medium     | Low    | Throttle to 80 req/15 min, queue via Inngest                                    |
+| Webhook missed events                      | Medium     | Low    | Polling fallback every 1 hour                                                   |
+| Inngest free tier limit exceeded           | Low        | Low    | 50k events/month is sufficient for a personal app. Monitor in Inngest dashboard |
+| Garmin Phase 2 more complex than estimated | Medium     | Medium | Schema already prepared, can fall back to unofficial library                    |
+| AI cost overrun                            | Medium     | Medium | Monitor token usage, cache context                                              |
+| Data loss                                  | Low        | High   | Daily encrypted backup                                                          |
+| Strava policy change                       | Low        | Medium | Raw data stored in `activities.raw_data`, can be re-processed                   |
 
 ---
 
-## 21. Architectural Decisions (sudah final)
+## 21. Architectural Decisions (final)
 
-| #   | Pertanyaan           | Keputusan                               | Implikasi                                                                                                               |
-| --- | -------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| 1   | Deployment           | **Vercel**                              | Serverless — API routes di Vercel Functions. Long-running jobs via Inngest. Scheduled jobs via Vercel Cron              |
-| 2   | Database time-series | **Regular PostgreSQL** (no TimescaleDB) | Pakai proper index di kolom `timestamp` + `activity_id`. Cukup untuk volume personal app                                |
-| 3   | AI model             | **Sonnet 4.6 untuk semua query**        | Tidak perlu routing logic. Estimasi biaya tetap ~$6.3/bulan                                                             |
-| 4   | HR zones methodology | **Semua tiga metode**                   | User bisa pilih metodologi di settings. Default: % max HR (paling simpel). Karvonen dan threshold tersedia sebagai opsi |
-| 5   | Garmin Phase 2       | **Wait** sampai Phase 1 stable          | Tidak perlu apply Garmin API sekarang. Fokus ke Strava dulu                                                             |
-| 6   | Notification         | **Push notification (PWA)**             | Perlu service worker + Web Push API. Untuk alert: weekly review ready, anomali training, reminder log harian            |
-| 7   | Strava disconnect    | **Default retain data historis**        | Saat user disconnect Strava, workout data tetap ada di DB. User bisa pilih hapus manual kalau mau                       |
+| #   | Question             | Decision                                | Implications                                                                                                              |
+| --- | -------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Deployment           | **Vercel**                              | Serverless — API routes run as Vercel Functions. Long-running jobs via Inngest. Scheduled jobs via Inngest cron           |
+| 2   | Database time-series | **Regular PostgreSQL** (no TimescaleDB) | Uses proper indexes on `timestamp` + `activity_id` columns. Sufficient for personal app data volumes                      |
+| 3   | AI model             | **Claude Sonnet 4.6 for all queries**   | No routing logic needed. Estimated cost ~$6.3/month                                                                       |
+| 4   | HR zones methodology | **All three methods**                   | User can pick the methodology in Settings. Default: % of Max HR (simplest). Karvonen and Lactate Threshold also available |
+| 5   | Garmin Phase 2       | **Wait** until Phase 1 is stable        | No need to apply for Garmin API now. Focus on Strava first                                                                |
+| 6   | Notification         | **Push notification (PWA)**             | Requires service worker + Web Push API. Used for: weekly review ready, training anomalies, race reminders, Friday prep    |
+| 7   | Strava disconnect    | **Default: retain historical data**     | When the user disconnects Strava, workout data stays in the DB. User can manually delete all data from the Danger Zone    |
 
-### Catatan: Inngest + Vercel Cron
+### Note: Inngest + Vercel Cron
 
-Vercel serverless tidak support long-running background workers secara native. Solusinya:
+Vercel serverless does not natively support long-running background workers. The solution:
 
-- **Inngest** untuk semua job yang event-driven dan bisa berjalan lama (Strava backfill, stream fetching, anomaly detection, weekly review AI)
-- **Vercel Cron** untuk scheduled jobs yang cepat (< 60 detik): compute daily metrics, polling fallback setiap 1 jam
+- **Inngest** for all event-driven jobs that may run long (Strava backfill, stream fetching, anomaly detection, weekly review AI)
+- **Inngest cron** for scheduled jobs: compute daily metrics, polling fallback every 1 hour
 
-Inngest bekerja dengan cara mengirim job invocation ke endpoint `/api/inngest` di app — Vercel function yang menjalankannya, tapi Inngest yang mengatur retry, fan-out, dan step execution.
+Inngest works by sending job invocations to the `/api/inngest` endpoint in the app — the Vercel function executes the work, while Inngest manages retries, fan-out, and step execution.
 
 ---
 
 ### 21a. HR Zones Detail — DONE
 
-Ketiga metodologi tersedia, user pilih di Settings → HR Zones (`rt_user_settings.hr_zones_method`, default `max_hr`). Implemented in `lib/services/running/analytics/getZoneAnalytics.js`.
+All three methodologies are available; the user selects one in Settings → HR Zones (`rt_user_settings.hr_zones_method`, default `max_hr`). Implemented in `lib/services/running/analytics/getZoneAnalytics.js`.
 
-| Metodologi                  | Formula                                 | Kapan dipakai                                             | Profile field wajib             |
-| --------------------------- | --------------------------------------- | --------------------------------------------------------- | ------------------------------- |
-| **% Max HR** (default)      | Zone = HR / max_hr × 100                | Default. Paling simpel, tidak butuh RHR                   | `max_hr`                        |
-| **HR Reserve (Karvonen)**   | HRR = (HR - RHR) / (max_HR - RHR) × 100 | Lebih akurat untuk endurance. Butuh RHR input             | `max_hr`, `resting_hr_baseline` |
-| **Threshold-based (Friel)** | Zone relative ke lactate threshold HR   | Paling akurat. Butuh threshold HR dari test atau estimate | `threshold_hr`                  |
+| Methodology                 | Formula                                 | When to use                                            | Required profile field          |
+| --------------------------- | --------------------------------------- | ------------------------------------------------------ | ------------------------------- |
+| **% Max HR** (default)      | Zone = HR / max_hr × 100                | Default. Simplest — no resting HR needed               | `max_hr`                        |
+| **HR Reserve (Karvonen)**   | HRR = (HR - RHR) / (max_HR - RHR) × 100 | More accurate for endurance. Requires resting HR input | `max_hr`, `resting_hr_baseline` |
+| **Threshold-based (Friel)** | Zone relative to lactate threshold HR   | Most accurate. Requires threshold HR from a test       | `threshold_hr`                  |
 
-Zone boundaries yang benar-benar diimplementasikan (% dari anchor masing-masing metodologi):
+Implemented zone boundaries (% of each methodology's anchor value):
 
 | Zone | Nama      | % (Max HR) | % (Karvonen)  | % (Threshold HR) |
 | ---- | --------- | ---------- | ------------- | ---------------- |
@@ -2980,43 +3398,43 @@ Zone boundaries yang benar-benar diimplementasikan (% dari anchor masing-masing 
 | Z4   | Threshold | 80–90%     | 75–90%        | 94–106%          |
 | Z5   | VO2 max   | > 90%      | > 90%         | > 106%           |
 
-Karvonen Z1 punya floor keras di 50% HRR (bukan open-ended `< 50%`) — apa pun di bawah resting + 50% HRR tetap masuk Z1. Z4 di metode Threshold sengaja lebih lebar (94–106%) — ini band standar Friel di sekitar lactate threshold, bukan typo.
+Karvonen Z1 has a hard floor at 50% HRR (not open-ended `< 50%`) — anything below resting + 50% HRR still falls into Z1. Z4 in the Threshold method is intentionally wider (94–106%) — this is the standard Friel band around lactate threshold, not a typo.
 
 ---
 
 ### 21b. Pace Zones Detail — DONE
 
-Satu metodologi — Daniels-style %-of-threshold-pace, anchor ke `rt_users.threshold_pace_sec` (detik per km). Implemented in `lib/services/running/analytics/getZoneAnalytics.js` (`computePaceBoundaries`).
+Single methodology — Daniels-style % of threshold pace, anchored to `rt_users.threshold_pace_sec` (seconds per km). Implemented in `lib/services/running/analytics/getZoneAnalytics.js` (`computePaceBoundaries`).
 
-| Zone | Nama      | Range (× threshold pace) |
+| Zone | Name      | Range (× threshold pace) |
 | ---- | --------- | ------------------------ |
-| Z1   | Easy      | ≥ 1.29×T (lebih lambat)  |
+| Z1   | Easy      | ≥ 1.29×T (slower)        |
 | Z2   | Aerobic   | 1.14×T – 1.29×T          |
 | Z3   | Tempo     | 1.06×T – 1.14×T          |
 | Z4   | Threshold | 0.97×T – 1.06×T          |
-| Z5   | VO2max    | < 0.97×T (lebih cepat)   |
+| Z5   | VO2max    | < 0.97×T (faster)        |
 
-**Input threshold pace — Settings → Pace Zones** (`settings/components/PaceZonesSection.jsx`), dua mode:
+**Threshold pace input — Settings → Pace Zones** (`settings/components/PaceZonesSection.jsx`), two modes:
 
-| Mode          | Test ID                               | Behaviour                                                                                        |
-| ------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Manual        | `paceZonesMode_manual_settingsPage`   | User ketik pace `mm:ss` langsung (`thresholdPaceInput_settingsPage`). Validasi 2:00–15:00 /km.   |
-| From Activity | `paceZonesMode_activity_settingsPage` | `detectThresholdPaceBtn_settingsPage` memanggil `GET /api/running/v1/user/threshold-pace-detect` |
+| Mode          | Test ID                               | Behaviour                                                                                          |
+| ------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Manual        | `paceZonesMode_manual_settingsPage`   | User types pace directly as `mm:ss` (`thresholdPaceInput_settingsPage`). Validates 2:00–15:00 /km. |
+| From Activity | `paceZonesMode_activity_settingsPage` | `detectThresholdPaceBtn_settingsPage` calls `GET /api/running/v1/user/threshold-pace-detect`       |
 
-**Algoritma deteksi** (`threshold-pace-detect/route.js`): butuh `threshold_hr` sudah diisi dulu. Ambil aktivitas run (`Run` / `TrailRun` / `VirtualRun`) 90 hari terakhir yang punya `avg_hr`, lalu sample stream rows di mana `heart_rate` berada dalam ±6% dari `threshold_hr` dan `velocity_m_s` antara 1.5–7.0 m/s. Rata-rata velocity dari sample tersebut → `threshold_pace_sec`. Butuh minimal 30 sample point, kalau kurang return 404 "Insufficient data". Simpan (manual atau hasil deteksi) ke `rt_users.threshold_pace_sec` lewat `updateUserProfile`.
+**Detection algorithm** (`threshold-pace-detect/route.js`): requires `threshold_hr` to already be set. Fetches run activities (`Run` / `TrailRun` / `VirtualRun`) from the last 90 days that have `avg_hr`, then samples stream rows where `heart_rate` is within ±6% of `threshold_hr` and `velocity_m_s` is between 1.5–7.0 m/s. The average velocity of those samples becomes `threshold_pace_sec`. Requires at least 30 sample points — returns 404 "Insufficient data" if fewer. Saves the result (manual or detected) to `rt_users.threshold_pace_sec` via `updateUserProfile`.
 
 ---
 
 ### 21c. Cadence Bands Detail — DONE
 
-Dipakai di dua tempat dengan sumber data berbeda — penting untuk tidak disamakan:
+Used in two places with different data sources — important not to conflate:
 
-| Tempat                | Field                                | Unit                                                                                                            |
-| --------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| Zone Analytics card   | `rt_activity_streams.cadence`        | Full spm — sudah dikali 2 saat ingest dari Strava (`stravaFetchStreams.js`, Strava mengirim cadence single-leg) |
-| Activity detail chart | `cadence_spm` (computed di komponen) | Sama-sama full spm, dihitung dari raw stream cadence                                                            |
+| Location              | Field                                 | Unit                                                                                                        |
+| --------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Zone Analytics card   | `rt_activity_streams.cadence`         | Full spm — already doubled at ingest from Strava (`stravaFetchStreams.js`; Strava sends single-leg cadence) |
+| Activity detail chart | `cadence_spm` (computed in component) | Also full spm, computed from raw stream cadence                                                             |
 
-Band boundaries (sama di kedua tempat, sumber: `StreamCharts.jsx`):
+Band boundaries (same in both places, source: `StreamCharts.jsx`):
 
 | Band         | Range (spm) |
 | ------------ | ----------- |
@@ -3025,11 +3443,78 @@ Band boundaries (sama di kedua tempat, sumber: `StreamCharts.jsx`):
 | Semi-athlete | 175–185     |
 | Elite        | ≥ 185       |
 
-180 spm sering disebut "target ideal" — ini berasal dari observasi Jack Daniels terhadap pelari elit Olimpiade di race pace, bukan hasil studi terkontrol. Cadence optimal sifatnya individual (tergantung panjang kaki dan kecepatan); di bawah 170 spm dikaitkan dengan ground reaction force lebih tinggi dan risiko cedera.
+180 spm is often cited as the "ideal target" — this comes from Jack Daniels' observation of elite Olympic runners at race pace, not from a controlled study. Optimal cadence is individual (depends on leg length and speed); below 170 spm is associated with higher ground reaction force and increased injury risk.
 
 ---
 
-_End of document. Version 3.1 — 2026-06-16 — Synced Zone Analytics with actual implementation (no GitHub issue, doc-only sync). Added section 11.2a Zone Analytics: route, filter bar (date range + activity type), 4-card layout (HR Zones, Pace Zones, Cadence Bands, Gear Usage), API endpoints, 100-activity / 250k-row caps. Rewrote section 21a HR Zones Detail: added the previously-undocumented Threshold-based (Friel) percentage column and the Karvonen Z1 floor behavior. Added new section 21b Pace Zones Detail: Daniels-style threshold-pace zone table, manual vs from-activity input modes, and the threshold-pace auto-detect algorithm (90-day window, ±6% HR band, min 30 samples). Added new section 21c Cadence Bands Detail: spm band boundaries and the single-leg-to-spm doubling done at Strava stream ingest._
+---
+
+## 22. Racing Weight
+
+**Priority:** P2 — nice to have. Informational only; no coaching/prescription.
+
+**Location:** `app/main/running/(app)/race-log/components/RacingWeightSection.jsx`, rendered on the Race Log detail page for each completed race entry.
+
+### 22.1 Overview
+
+The Racing Weight section shows the user's current weight relative to an evidence-based optimal BMI range for their race distance category. It is purely informational — no recommendations to lose or gain weight.
+
+Requires `weight_kg` and `height_cm` to be set in the user's profile (section 11.7.1). Returns null (renders nothing) if either field is missing.
+
+### 22.2 Race Distance Categories and Optimal BMI Ranges
+
+| Category | Distance range | Optimal BMI |
+| -------- | -------------- | ----------- |
+| 5K       | < 7 km         | 19–23       |
+| 10K      | 7–15 km        | 19–22       |
+| Half     | 15–30 km       | 19–21       |
+| Full     | ≥ 30 km        | 18.5–21     |
+
+Category is derived from the linked race's `distance_m`. If no completed race is linked or no race distance is available, the section does not render.
+
+### 22.3 UI
+
+**Progress bar (`racingWeightBar_{pageId}`):**
+
+- Horizontal bar spanning the full BMI range visible on screen (e.g. 15–30).
+- Optimal band highlighted in violet.
+- Current weight dot positioned on the bar based on computed BMI.
+- Current BMI and current weight shown as text alongside the dot.
+
+**What-if estimate (`racingWeightWhatIf_{pageId}`):**
+
+- Shown only when the user's current BMI is outside the optimal range.
+- Estimates the time improvement (or loss) using a simplified linear model based on weight delta to the nearest optimal BMI boundary.
+- Framing is neutral — "estimated race time at optimal weight" not "you should lose X kg".
+
+**Section root:** `racingWeightSection_{pageId}` where `{pageId}` is the race log entry ID.
+
+### 22.4 Acceptance Criteria
+
+```
+GIVEN user has weight_kg and height_cm set in profile
+AND race entry has a known distance_m
+WHEN Race Log detail page loads
+THEN RacingWeightSection renders with the correct BMI category for the race distance
+
+GIVEN user's BMI is within the optimal range for the race distance category
+WHEN section renders
+THEN current weight dot is shown inside the violet optimal band
+AND no what-if estimate is shown
+
+GIVEN user's BMI is outside the optimal range
+WHEN section renders
+THEN what-if estimate is shown below the progress bar
+AND framing is neutral (no direct weight loss/gain prescription)
+
+GIVEN user's profile has no weight_kg or no height_cm
+WHEN Race Log detail page loads
+THEN RacingWeightSection does not render (returns null)
+```
+
+---
+
+_End of document. Version 3.2 — 2026-06-17 — Comprehensive PRD overhaul. (A) Translated all remaining Indonesian text to English throughout the file — sections 11.1, 11.2, 12.1–12.9, 13.1–13.10, 14–21 and all inline DB/code comments. (B) Added 8 missing analytics chart specs to new section 11.2b: Fitness Age Trend, Endurance Score Trend, PMC, Calorie Burn Trend, Weekly Elevation Trend, Terrain Distribution, Running Power, Best Pace by Distance. (C) Added YtdStats component spec and Endurance Score tile to section 11.1. (D) Added section 11.6 Pace Calculator page spec: 3-tab UI (Pace / Projection / Steps), Riegel race projection table, splits table, unit toggle with localStorage persistence, test IDs. (E) Added section 11.7 Running Settings page spec with 6 subsections: 11.7.1 Profile, 11.7.2 HR Zones, 11.7.3 Pace Zones, 11.7.4 Notifications, 11.7.5 Strava Connection, 11.7.6 Danger Zone. (F) Expanded section 8.8 AI endpoints: added POST /api/running/v1/ai/insights/followup, POST /api/running/v1/ai/insights/daily, GET /api/running/v1/ai/injury-coach/history. (G) Added section 22 Racing Weight: BMI-based optimal ranges per race category, progress bar + what-if UI spec, acceptance criteria. (H) Added GET /api/running/v1/calendar to section 8.7 (Analytics API). (I) Added POST /api/running/v1/auth/strava/re-enrich and POST /api/running/v1/auth/strava/re-enrich-metrics to section 5.9 (Re-enrich endpoints). (J) Added stravaGapHeal, raceReminderNotification, fridayPrepNotification to section 15 (Background Workers) with full cron schedule and step-by-step logic. (K) Fixed API path: DELETE /api/user/activities → DELETE /api/running/v1/user/activities in section 11.7.6._
 
 _Previous: Version 3.0 — 2026-06-06 — GitHub Issue #160. Added section 10.11 Injury & Sports Medicine AI Coach: two new AI roles (Sports Physiotherapist `focus:physio` + Sports Medicine Physician `focus:sports_medicine`), new DB table `rt_symptom_logs` (auto-archive after 30 days inactivity), `InjuryCoachCard.jsx` component spec (placed between DailyInsightCard and FridayPrepCard on Dashboard), context form with body part / injury phase pills / question textarea, persistent disclaimer strip, client-side pain 10/10 block (no LLM call), `[ESCALATE]` token detection, ACWR > 1.4 + recent symptom trigger, `POST /api/running/v1/ai/injury-coach` endpoint spec, acceptance criteria, validations, error states, and 16 test IDs._
 
