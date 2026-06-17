@@ -1667,6 +1667,41 @@ Registered in `cypress/fixtures/app-constants.json` under `test_ids.injury_coach
 | Energy level vs training load  | `morning_energy` + `acwr`               | Overreaching early warning      |
 | Activity consistency heatmap   | `activities.started_at`                 | GitHub-style, visual motivation |
 
+### 11.2a Zone Analytics — DONE
+
+**Location:** within `/main/running/analytics`, below the Tier 1/2/3 charts.
+**Root testid:** `id="zoneAnalyticsSection_analyticsPage"`
+**Component:** `analytics/components/ZoneAnalyticsSection.jsx`
+
+**Filter bar** (`id="zoneFilterBar_analyticsPage"`, shared across all 4 cards below):
+
+| Filter        | Test ID                         | Options                                                                                                                                                        |
+| ------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Start date    | `zoneStartDate_analyticsPage`   | date picker; selecting both start + end switches range to `custom` and disables the range dropdown                                                             |
+| End date      | `zoneEndDate_analyticsPage`     | date picker                                                                                                                                                    |
+| Range         | `zoneRangeSelect_analyticsPage` | `today` / `4w` / `3m` (default) / `6m` / `1y` / `all`                                                                                                          |
+| Activity type | `zoneTypeSelect_analyticsPage`  | `All` (default) + dynamic list from `GET /api/running/v1/activities/types`; falls back to `Run, TrailRun, VirtualRun, Walk, Hike, Ride, Swim` on fetch failure |
+
+**Data fetch:** two independent calls via `Promise.allSettled` on filter change — a gear-fetch failure doesn't blank the zone cards and vice versa:
+
+- `GET /api/running/v1/analytics/zones?range&activity_type&start_date&end_date` → `{ hr, pace, cadence, activity_count }` (service: `getZoneAnalytics.js`)
+- `GET /api/running/v1/analytics/gear?range&activity_type&start_date&end_date` → `{ gear: [...] }` (service: `getGearUsage.js`)
+
+Both capped at the **100 most recently started matching activities**; stream rows are batch-fetched 20 activities at a time, up to 50,000 rows per batch (250,000 rows max scanned). Matching activity count shown above the cards: `id="zoneActivityCount_analyticsPage"`.
+
+**4 cards, 2×2 grid on desktop:**
+
+| Card          | Test ID                                                                      | Icon     | Source field                                                                                                                                                                                             | Empty / gated states                                                                                                                                 |
+| ------------- | ---------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| HR Zones      | `hrZoneSubSection_analyticsPage` → `hrZoneBreakdown_analyticsPage`           | Heart    | `heart_rate` stream rows, bucketed per active `hr_zones_method` (see 21a)                                                                                                                                | "Max HR not configured" when the active method's required profile field is missing; "No HR data in this range" when no rows                          |
+| Pace Zones    | `paceZoneSubSection_analyticsPage` → `paceZoneBreakdown_analyticsPage`       | Gauge    | `pace_sec_per_km` stream rows, bucketed against `threshold_pace_sec` (see 21b)                                                                                                                           | "Threshold pace not set" (`paceZoneNoThreshold_analyticsPage`) when no threshold pace configured; "No pace data in this range" when no GPS pace rows |
+| Cadence Bands | `cadenceZoneSubSection_analyticsPage` → `cadenceZoneBreakdown_analyticsPage` | Activity | `cadence` stream rows (already full spm — doubled from Strava's single-leg value at ingest in `stravaFetchStreams.js`); bands: Beginner <165, Recreational 165–175, Semi-athlete 175–185, Elite ≥185 spm | "No cadence data in this range"                                                                                                                      |
+| Gear Usage    | `gearUsageSubSection_analyticsPage`                                          | Package  | `rt_activities.gear_id` joined to `rt_gear` (name, brand, model, category, retired)                                                                                                                      | empty table when no gear-linked activities in range                                                                                                  |
+
+Each HR/Pace/Cadence row shows time (`Xh Ym`), distance, and % of total time within that filter. Per-bucket distance is approximated as `Σ velocity_m_s × 1s` across every second-resolution stream row landing in that bucket (accurate at the 1Hz Strava stream sampling rate used elsewhere in this app).
+
+---
+
 ### 11.3 Activity detail page
 
 **Route:** `/main/running/activities/[id]`
@@ -2925,29 +2960,78 @@ Inngest bekerja dengan cara mengirim job invocation ke endpoint `/api/inngest` d
 
 ---
 
-### HR Zones Detail
+### 21a. HR Zones Detail — DONE
 
-Ketiga metodologi tersedia, user pilih di settings:
+Ketiga metodologi tersedia, user pilih di Settings → HR Zones (`rt_user_settings.hr_zones_method`, default `max_hr`). Implemented in `lib/services/running/analytics/getZoneAnalytics.js`.
 
-| Metodologi                | Formula                                 | Kapan dipakai                                             |
-| ------------------------- | --------------------------------------- | --------------------------------------------------------- |
-| **% Max HR**              | Zone = HR / max_hr × 100                | Default. Paling simpel, tidak butuh RHR                   |
-| **HR Reserve (Karvonen)** | HRR = (HR - RHR) / (max_HR - RHR) × 100 | Lebih akurat untuk endurance. Butuh RHR input             |
-| **Threshold-based**       | Zone relative ke lactate threshold HR   | Paling akurat. Butuh threshold HR dari test atau estimate |
+| Metodologi                  | Formula                                 | Kapan dipakai                                             | Profile field wajib             |
+| --------------------------- | --------------------------------------- | --------------------------------------------------------- | ------------------------------- |
+| **% Max HR** (default)      | Zone = HR / max_hr × 100                | Default. Paling simpel, tidak butuh RHR                   | `max_hr`                        |
+| **HR Reserve (Karvonen)**   | HRR = (HR - RHR) / (max_HR - RHR) × 100 | Lebih akurat untuk endurance. Butuh RHR input             | `max_hr`, `resting_hr_baseline` |
+| **Threshold-based (Friel)** | Zone relative ke lactate threshold HR   | Paling akurat. Butuh threshold HR dari test atau estimate | `threshold_hr`                  |
 
-Zone boundaries (% dari masing-masing metodologi):
+Zone boundaries yang benar-benar diimplementasikan (% dari anchor masing-masing metodologi):
 
-| Zone | Nama         | % (Max HR) | % (Karvonen) |
-| ---- | ------------ | ---------- | ------------ |
-| Z1   | Recovery     | < 60%      | < 50%        |
-| Z2   | Aerobic base | 60–70%     | 50–65%       |
-| Z3   | Tempo        | 70–80%     | 65–75%       |
-| Z4   | Threshold    | 80–90%     | 75–90%       |
-| Z5   | VO2 max      | > 90%      | > 90%        |
+| Zone | Nama      | % (Max HR) | % (Karvonen)  | % (Threshold HR) |
+| ---- | --------- | ---------- | ------------- | ---------------- |
+| Z1   | Recovery  | < 60%      | < 50% (floor) | < 81%            |
+| Z2   | Aerobic   | 60–70%     | 50–65%        | 81–89%           |
+| Z3   | Tempo     | 70–80%     | 65–75%        | 89–94%           |
+| Z4   | Threshold | 80–90%     | 75–90%        | 94–106%          |
+| Z5   | VO2 max   | > 90%      | > 90%         | > 106%           |
+
+Karvonen Z1 punya floor keras di 50% HRR (bukan open-ended `< 50%`) — apa pun di bawah resting + 50% HRR tetap masuk Z1. Z4 di metode Threshold sengaja lebih lebar (94–106%) — ini band standar Friel di sekitar lactate threshold, bukan typo.
 
 ---
 
-_End of document. Version 3.0 — 2026-06-06 — GitHub Issue #160. Added section 10.11 Injury & Sports Medicine AI Coach: two new AI roles (Sports Physiotherapist `focus:physio` + Sports Medicine Physician `focus:sports_medicine`), new DB table `rt_symptom_logs` (auto-archive after 30 days inactivity), `InjuryCoachCard.jsx` component spec (placed between DailyInsightCard and FridayPrepCard on Dashboard), context form with body part / injury phase pills / question textarea, persistent disclaimer strip, client-side pain 10/10 block (no LLM call), `[ESCALATE]` token detection, ACWR > 1.4 + recent symptom trigger, `POST /api/running/v1/ai/injury-coach` endpoint spec, acceptance criteria, validations, error states, and 16 test IDs._
+### 21b. Pace Zones Detail — DONE
+
+Satu metodologi — Daniels-style %-of-threshold-pace, anchor ke `rt_users.threshold_pace_sec` (detik per km). Implemented in `lib/services/running/analytics/getZoneAnalytics.js` (`computePaceBoundaries`).
+
+| Zone | Nama      | Range (× threshold pace) |
+| ---- | --------- | ------------------------ |
+| Z1   | Easy      | ≥ 1.29×T (lebih lambat)  |
+| Z2   | Aerobic   | 1.14×T – 1.29×T          |
+| Z3   | Tempo     | 1.06×T – 1.14×T          |
+| Z4   | Threshold | 0.97×T – 1.06×T          |
+| Z5   | VO2max    | < 0.97×T (lebih cepat)   |
+
+**Input threshold pace — Settings → Pace Zones** (`settings/components/PaceZonesSection.jsx`), dua mode:
+
+| Mode          | Test ID                               | Behaviour                                                                                        |
+| ------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Manual        | `paceZonesMode_manual_settingsPage`   | User ketik pace `mm:ss` langsung (`thresholdPaceInput_settingsPage`). Validasi 2:00–15:00 /km.   |
+| From Activity | `paceZonesMode_activity_settingsPage` | `detectThresholdPaceBtn_settingsPage` memanggil `GET /api/running/v1/user/threshold-pace-detect` |
+
+**Algoritma deteksi** (`threshold-pace-detect/route.js`): butuh `threshold_hr` sudah diisi dulu. Ambil aktivitas run (`Run` / `TrailRun` / `VirtualRun`) 90 hari terakhir yang punya `avg_hr`, lalu sample stream rows di mana `heart_rate` berada dalam ±6% dari `threshold_hr` dan `velocity_m_s` antara 1.5–7.0 m/s. Rata-rata velocity dari sample tersebut → `threshold_pace_sec`. Butuh minimal 30 sample point, kalau kurang return 404 "Insufficient data". Simpan (manual atau hasil deteksi) ke `rt_users.threshold_pace_sec` lewat `updateUserProfile`.
+
+---
+
+### 21c. Cadence Bands Detail — DONE
+
+Dipakai di dua tempat dengan sumber data berbeda — penting untuk tidak disamakan:
+
+| Tempat                | Field                                | Unit                                                                                                            |
+| --------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| Zone Analytics card   | `rt_activity_streams.cadence`        | Full spm — sudah dikali 2 saat ingest dari Strava (`stravaFetchStreams.js`, Strava mengirim cadence single-leg) |
+| Activity detail chart | `cadence_spm` (computed di komponen) | Sama-sama full spm, dihitung dari raw stream cadence                                                            |
+
+Band boundaries (sama di kedua tempat, sumber: `StreamCharts.jsx`):
+
+| Band         | Range (spm) |
+| ------------ | ----------- |
+| Beginner     | < 165       |
+| Recreational | 165–175     |
+| Semi-athlete | 175–185     |
+| Elite        | ≥ 185       |
+
+180 spm sering disebut "target ideal" — ini berasal dari observasi Jack Daniels terhadap pelari elit Olimpiade di race pace, bukan hasil studi terkontrol. Cadence optimal sifatnya individual (tergantung panjang kaki dan kecepatan); di bawah 170 spm dikaitkan dengan ground reaction force lebih tinggi dan risiko cedera.
+
+---
+
+_End of document. Version 3.1 — 2026-06-16 — Synced Zone Analytics with actual implementation (no GitHub issue, doc-only sync). Added section 11.2a Zone Analytics: route, filter bar (date range + activity type), 4-card layout (HR Zones, Pace Zones, Cadence Bands, Gear Usage), API endpoints, 100-activity / 250k-row caps. Rewrote section 21a HR Zones Detail: added the previously-undocumented Threshold-based (Friel) percentage column and the Karvonen Z1 floor behavior. Added new section 21b Pace Zones Detail: Daniels-style threshold-pace zone table, manual vs from-activity input modes, and the threshold-pace auto-detect algorithm (90-day window, ±6% HR band, min 30 samples). Added new section 21c Cadence Bands Detail: spm band boundaries and the single-leg-to-spm doubling done at Strava stream ingest._
+
+_Previous: Version 3.0 — 2026-06-06 — GitHub Issue #160. Added section 10.11 Injury & Sports Medicine AI Coach: two new AI roles (Sports Physiotherapist `focus:physio` + Sports Medicine Physician `focus:sports_medicine`), new DB table `rt_symptom_logs` (auto-archive after 30 days inactivity), `InjuryCoachCard.jsx` component spec (placed between DailyInsightCard and FridayPrepCard on Dashboard), context form with body part / injury phase pills / question textarea, persistent disclaimer strip, client-side pain 10/10 block (no LLM call), `[ESCALATE]` token detection, ACWR > 1.4 + recent symptom trigger, `POST /api/running/v1/ai/injury-coach` endpoint spec, acceptance criteria, validations, error states, and 16 test IDs._
 
 _Previous: Version 2.9 — 2026-06-02 — GitHub Issue #93. Added §5.8 Connection Health & Broken State: needs_reconnect flag lifecycle, Inngest exit behavior on flag=true, persistent amber banner spec (test IDs: stravaDisconnectBanner / stravaReconnectBtn), Settings reconnect path, and error state classification (401 permanent vs 5xx transient). Updated §5.2 Token Refresh failure branch: 401 → set needs_reconnect=TRUE + abort Inngest job (no retry) + log Sentry; 5xx/network → existing exponential backoff unchanged. Updated strava_credentials schema: added needs_reconnect BOOLEAN NOT NULL DEFAULT FALSE with migration ALTER TABLE statement. Updated GET /api/user/strava-status response shape to include needs_reconnect: boolean._
 
