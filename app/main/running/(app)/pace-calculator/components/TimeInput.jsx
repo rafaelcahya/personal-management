@@ -7,7 +7,6 @@ export default function TimeInput({ hours, minutes, seconds, onChange, idPrefix 
   function handleBlur(field, value) {
     let n = parseInt(value, 10)
     if (isNaN(n) || n < 0) n = 0
-    if (field === 'seconds' && n >= 60) n = 59
     if (field === 'hours' && n > 99) n = 99
     onChange(field, String(n))
   }
@@ -64,6 +63,11 @@ export default function TimeInput({ hours, minutes, seconds, onChange, idPrefix 
           <span className="text-[10px] text-slate-400">SS</span>
         </div>
       </div>
+      {parseInt(seconds, 10) >= 60 && (
+        <p className="text-xs text-amber-600">
+          {`${seconds}s → +${Math.floor(parseInt(seconds, 10) / 60)}m ${parseInt(seconds, 10) % 60}s will be added to minutes`}
+        </p>
+      )}
     </div>
   )
 }
