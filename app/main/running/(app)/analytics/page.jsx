@@ -178,18 +178,23 @@ export default function AnalyticsPage() {
             description="Weekly elevation gain and the terrain mix of your runs — Flat, Rolling, Hilly, or Mountainous, based on elevation gain per kilometer."
             icon={Mountain}
           >
-            <div className="flex flex-col gap-6">
-              <div>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+              <div className="lg:col-span-2">
+                <div className="flex items-baseline gap-2 mb-2">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Terrain Distribution
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    {activities.filter((a) => RUN_TYPES.has(a.activity_type)).length} runs
+                  </p>
+                </div>
+                <TerrainDistributionChart activities={activities} />
+              </div>
+              <div className="lg:col-span-3">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
                   Weekly Elevation Trend
                 </p>
                 <WeeklyElevationChart activities={activities} />
-              </div>
-              <div className="border-t border-slate-100 pt-5">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-                  Terrain Distribution
-                </p>
-                <TerrainDistributionChart activities={activities} />
               </div>
             </div>
           </Section>
