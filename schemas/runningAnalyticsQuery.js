@@ -23,6 +23,7 @@ export const analyticsQuerySchema = z
     activity_type: z.enum(ALLOWED_ACTIVITY_TYPES).default('All'),
     start_date: isoDate,
     end_date: isoDate,
+    tz_offset: z.coerce.number().int().gte(-840).lte(840).optional(),
   })
   .refine((d) => d.range !== 'custom' || (!!d.start_date && !!d.end_date), {
     message: 'start_date and end_date are required when range is custom',
