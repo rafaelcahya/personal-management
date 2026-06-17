@@ -1,7 +1,10 @@
 // API spec — Settings menu.
-//   GET  /api/running/v1/user/settings           (#199, #171)
-//   PATCH /api/running/v1/user/settings          (#199, #171)
-//   POST /api/running/v1/user/push-subscription  (#135)
+//   GET   /api/running/v1/user/settings           (#199, #171)
+//   PATCH /api/running/v1/user/settings           (#199, #171)
+//   POST  /api/running/v1/user/push-subscription  (#135)
+//   POST  /api/running/v1/sync/strava             (#392)
+//   GET   /api/running/v1/sync/status             (#392)
+//   GET   /api/running/v1/auth/strava/callback    (#392)
 
 import constants from '../../../fixtures/app-constants.json'
 
@@ -217,6 +220,73 @@ describe('Push Subscription API — POST (unauthenticated)', () => {
         keys: { p256dh: 'fake-p256dh', auth: 'fake-auth' },
       },
     }).then((res) => {
+      expect(res.status).to.eq(401)
+      expect(res.body).to.have.property('error')
+    })
+  })
+})
+
+describe('Sync API — GET /api/running/v1/sync/status (authenticated)', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('returns 200 with connected=false and last_sync_at=null when Strava not connected', () => {
+    cy.getSyncStatus().then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('connected', false)
+      expect(res.body).to.have.property('last_sync_at', null)
+    })
+  })
+
+  it('response body has connected as boolean and last_sync_at as string or null', () => {
+    cy.getSyncStatus().then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.connected).to.be.a('boolean')
+      const lastSync = res.body.last_sync_at
+      expect(lastSync === null || typeof lastSync === 'string').to.be.true
+    })
+  })
+})
+
+describe('Sync API — GET /api/running/v1/auth/strava/callback (OAuth redirect)', () => {
+  // Middleware bypasses this route (public OAuth callback) — auth only needed for token exchange
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('redirects to settings error URL when code param is missing', () => {
+    cy.getStravaCallback().then((res) => {
+      expect(res.status).to.be.oneOf([302, 307])
+      expect(res.headers.location).to.include('settings')
+      expect(res.headers.location).to.include('error=strava_auth')
+    })
+  })
+
+  it('redirects to settings error URL when code is invalid', () => {
+    cy.getStravaCallback({ code: 'invalid_code_12345' }).then((res) => {
+      expect(res.status).to.be.oneOf([302, 307])
+      expect(res.headers.location).to.include('settings')
+      expect(res.headers.location).to.include('error=strava_auth')
+    })
+  })
+})
+
+describe('Sync API — Unauthenticated access (no session)', () => {
+  beforeEach(() => {
+    cy.clearAllCookies()
+    cy.clearAllLocalStorage()
+  })
+
+  it('POST /sync/strava returns 401 with error field when no session cookie', () => {
+    cy.postSyncStravaNoAuth().then((res) => {
+      expect(res.status).to.eq(401)
+      expect(res.body).to.have.property('error')
+    })
+  })
+
+  it('GET /sync/status returns 401 with error field when no session cookie', () => {
+    cy.getSyncStatusNoAuth().then((res) => {
       expect(res.status).to.eq(401)
       expect(res.body).to.have.property('error')
     })

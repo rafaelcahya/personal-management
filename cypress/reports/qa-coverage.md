@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,067  | 38%  |
+| API       | 1,065  | 38%  |
 | UI        | 1,755  | 62%  |
-| **Total** | **2,822** | 100% |
+| **Total** | **2,820** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 379 | 703   | 1,082 |
+| Running Tracker      | 377 | 703   | 1,080 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,067** | **1,755** | **2,822** |
+| **Total**            | **1,065** | **1,755** | **2,820** |
 
 ---
 
@@ -250,9 +250,9 @@
 | Feature                  | API | UI | Total |
 | ------------------------ | --- | -- | ----- |
 | HR Zones                 | 20  | 0  | 20    |
-| Settings                 | 15  | 21 | 36    |
+| Settings                 | 21  | 21 | 42    |
 | Threshold Pace Detect    | 6   | 0  | 6     |
-| **Subtotal**             | **41** | **21** | **62** |
+| **Subtotal**             | **47** | **21** | **68** |
 
 #### Strava
 
@@ -261,14 +261,7 @@
 | Strava Connection   | 6   | 8  | 14    |
 | **Subtotal**        | **6** | **8** | **14** |
 
-#### Sync
-
-| Feature      | API | UI | Total |
-| ------------ | --- | -- | ----- |
-| Sync         | 8   | 0  | 8     |
-| **Subtotal** | **8** | **0** | **8** |
-
-**Running Total — API: 379 | UI: 703 | Total: 1,082**
+**Running Total — API: 377 | UI: 703 | Total: 1,080**
 
 ---
 
@@ -297,7 +290,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 379 | 703   | 1,082 |
+| Running Tracker      | 377 | 703   | 1,080 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,067** | **1,755** | **2,822** |
+| **Total**            | **1,065** | **1,755** | **2,820** |
