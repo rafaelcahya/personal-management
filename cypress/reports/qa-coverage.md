@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-16
-**Branch:** test/issue-351-activity-detail-coverage
+**Last Updated:** 2026-06-17
+**Branch:** feat/issue-361-ai-coach-api-tests
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,063  | 38%  |
-| UI        | 1,755  | 62%  |
-| **Total** | **2,818** | 100% |
+| API       | 1,089  | 39%  |
+| UI        | 1,755  | 61%  |
+| **Total** | **2,844** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 375 | 703   | 1,078 |
+| Running Tracker      | 401 | 703   | 1,104 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,063** | **1,755** | **2,818** |
+| **Total**            | **1,089** | **1,755** | **2,844** |
 
 ---
 
@@ -191,11 +191,12 @@
 
 #### AI Coach
 
-| Feature           | API | UI | Total |
-| ----------------- | --- | -- | ----- |
-| AI Coach Page     | 0   | 56 | 56    |
-| Friday Prep Card  | 0   | 44 | 44    |
-| **Subtotal**      | **0** | **100** | **100** |
+| Feature              | API | UI | Total |
+| -------------------- | --- | -- | ----- |
+| AI Coach Page        | 0   | 56 | 56    |
+| Friday Prep Card     | 0   | 44 | 44    |
+| AI Coach API         | 44  | 0  | 44    |
+| **Subtotal**         | **44** | **100** | **144** |
 
 #### Analytics
 
@@ -216,10 +217,10 @@
 
 | Feature          | API | UI | Total |
 | ---------------- | --- | -- | ----- |
-| Friday Prep      | 6   | 0  | 6     |
-| Injury Coach     | 6   | 12 | 18    |
-| Symptom Log      | 6   | 0  | 6     |
-| **Subtotal**     | **18** | **12** | **30** |
+| Friday Prep      | 0   | 0  | 0     |
+| Injury Coach     | 0   | 12 | 12    |
+| Symptom Log      | 0   | 0  | 0     |
+| **Subtotal**     | **0** | **12** | **12** |
 
 #### Race Log
 
@@ -274,7 +275,7 @@
 | Push Subscription   | 4   | 0  | 4     |
 | **Subtotal**        | **4** | **0** | **4** |
 
-**Running Total — API: 375 | UI: 703 | Total: 1,078**
+**Running Total — API: 401 | UI: 703 | Total: 1,104**
 
 ---
 
@@ -303,7 +304,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 375 | 703   | 1,078 |
+| Running Tracker      | 401 | 703   | 1,104 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,063** | **1,755** | **2,818** |
+| **Total**            | **1,089** | **1,755** | **2,844** |
