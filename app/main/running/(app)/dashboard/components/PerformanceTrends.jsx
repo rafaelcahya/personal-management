@@ -13,6 +13,8 @@ import {
   ReferenceLine,
 } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import { TrendingUp } from 'lucide-react'
 import { fetchPerformanceTrends } from '@/lib/api/running'
 
 // ─── distance bracket classification ─────────────────────────────────────────
@@ -688,23 +690,30 @@ export default function PerformanceTrends({ activityType }) {
 
   return (
     <section id="performanceTrendsCard" aria-label="Performance trends">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Performance Trends
-      </h2>
-      <Card className="border border-slate-200/70 shadow-sm py-4">
-        <CardContent className="px-5 flex flex-col gap-8">
-          <p className="text-xs text-slate-400 -mb-4">
-            Last {data.length} runs · Running activities only
-          </p>
+      <Card className="border border-slate-200/70 shadow-sm py-0">
+        <CardContent className="px-5 py-5 flex flex-col gap-8">
+          <div className="flex flex-col gap-1 -mb-4">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-slate-700">Performance Trends</h3>
+            </div>
+            <p className="text-xs text-slate-400">
+              {loading || error
+                ? 'Heart rate, pace, effort, and power across recent runs.'
+                : `Last ${data.length} runs · Running activities only`}
+            </p>
+          </div>
 
           {loading && (
-            <div className="flex items-center justify-center h-[220px] text-sm text-slate-400">
-              Loading...
+            <div className="flex flex-col gap-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full rounded-lg" />
+              ))}
             </div>
           )}
           {!loading && error && (
-            <div className="flex items-center justify-center h-[220px] text-sm text-red-400">
-              {error}
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-red-600">{error}</p>
             </div>
           )}
           {!loading && !error && (

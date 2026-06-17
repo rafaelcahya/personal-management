@@ -1,7 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Footprints, Bike, Waves, Activity } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  Footprints,
+  Bike,
+  Waves,
+  Activity,
+  CalendarDays,
+} from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { fetchCalendarActivities } from '@/lib/api/running'
@@ -155,12 +163,18 @@ export default function ActivityCalendar({ activities, activityType }) {
 
   return (
     <section id="activityCalendarCard" aria-label="Activity calendar">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Activity Calendar
-      </h2>
-      <Card className="border border-slate-200/70 shadow-sm">
-        <CardContent className="px-4 py-4">
-          {/* Header row */}
+      <Card className="border border-slate-200/70 shadow-sm py-0">
+        <CardContent className="px-5 py-5">
+          <div className="flex flex-col gap-1 mb-4">
+            <div className="flex items-center gap-2">
+              <CalendarDays className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-slate-700">Activity Calendar</h3>
+            </div>
+            <p className="text-xs text-slate-400">
+              Monthly view of your logged activities by sport type.
+            </p>
+          </div>
+          {/* Month navigation */}
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-semibold text-slate-700">{monthLabel}</p>
             <div className="flex items-center gap-1">

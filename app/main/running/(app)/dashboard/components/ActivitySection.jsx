@@ -599,11 +599,17 @@ export default function ActivitySection({ calendarActivities, recentActivities, 
 
   return (
     <section id="activitySection" aria-label="Activity">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Activity
-      </h2>
-      <Card className="border border-slate-200/70 shadow-sm py-4">
-        <CardContent className="px-5">
+      <Card className="border border-slate-200/70 shadow-sm py-0">
+        <CardContent className="px-5 py-5">
+          <div className="flex flex-col gap-1 mb-4">
+            <div className="flex items-center gap-2">
+              <Activity className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-slate-700">Activity</h3>
+            </div>
+            <p className="text-xs text-slate-400">
+              Monthly calendar and your most recent activities.
+            </p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x md:divide-slate-100">
             <CalendarColumn
               initialActivities={calendarActivities}

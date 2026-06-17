@@ -147,10 +147,16 @@ export default function NextRace({ upcoming_races }) {
   if (races.length === 0) {
     return (
       <section id="nextRaceCard" aria-label="Next race" className="flex flex-col h-full">
-        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-          Next Race
-        </h2>
         <Card className="border border-slate-200/70 shadow-sm py-0 flex-1">
+          <CardContent className="px-5 py-5">
+            <div className="flex flex-col gap-1 mb-4">
+              <div className="flex items-center gap-2">
+                <Flag className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+                <h3 className="text-sm font-semibold text-slate-700">Next Race</h3>
+              </div>
+              <p className="text-xs text-slate-400">Your upcoming race goals and target times.</p>
+            </div>
+          </CardContent>
           <CardContent
             id="nextRaceEmptyState"
             className="px-5 py-8 flex flex-col items-center gap-3 text-center"
@@ -173,11 +179,17 @@ export default function NextRace({ upcoming_races }) {
 
   return (
     <section id="nextRaceCard" aria-label="Next race" className="flex flex-col h-full">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Next Race
-      </h2>
       <Card className="border border-slate-200/70 shadow-sm py-0 flex-1">
-        <CardContent id="nextRaceList" className="px-5 py-4 flex flex-col gap-3">
+        <CardContent className="px-5 pt-5">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <Flag className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-slate-700">Next Race</h3>
+            </div>
+            <p className="text-xs text-slate-400">Your upcoming race goals and target times.</p>
+          </div>
+        </CardContent>
+        <CardContent id="nextRaceList" className="px-5 pt-0 pb-5 flex flex-col gap-3">
           {races.map((race, index) => (
             <RaceCard key={race.id ?? index} race={race} isFirst={index === 0} />
           ))}

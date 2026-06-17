@@ -396,11 +396,17 @@ export default function TrainingLoad({ data, weeklyStats }) {
 
   return (
     <section id="trainingLoadCard" aria-label="Training load">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Training Load
-      </h2>
       <Card className="border border-slate-200/70 shadow-sm py-0">
-        <CardContent className="px-5 py-4 flex flex-col gap-3">
+        <CardContent className="px-5 py-5 flex flex-col gap-3">
+          <div className="flex flex-col gap-1 mb-1">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-slate-700">Training Load</h3>
+            </div>
+            <p className="text-xs text-slate-400">
+              ACWR, acute vs chronic load, and weekly training metrics.
+            </p>
+          </div>
           {/* Hero row — ACWR + status + ramp */}
           <div className="flex flex-col-reverse sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="flex flex-col gap-1">

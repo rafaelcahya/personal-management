@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { BrainCircuit } from 'lucide-react'
 import Link from 'next/link'
+import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { fetchInsights } from '@/lib/api/running'
 
 function firstParagraph(content) {
@@ -49,70 +51,80 @@ export default function AiCoachPlaceholder() {
 
   return (
     <section id="aiCoachCard" aria-label="AI Coach">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        AI Coach
-      </h2>
-      <div className="rounded-xl border border-violet-200/60 bg-gradient-to-br from-violet-50 to-purple-50 p-5">
-        {status === 'loading' && (
-          <div
-            id="aiCoachLoading_dashboardPage"
-            className="flex flex-col gap-2 animate-pulse"
-            aria-label="Loading AI insights"
-          >
-            <div className="h-3 bg-violet-100 rounded w-3/4" />
-            <div className="h-3 bg-violet-100 rounded w-1/2" />
-          </div>
-        )}
-
-        {status === 'empty' && (
-          <div id="aiCoachEmpty_dashboardPage" className="flex items-start gap-3">
-            <div className="rounded-full bg-violet-100 p-2 shrink-0">
-              <BrainCircuit className="size-5 text-violet-600" aria-hidden="true" />
+      <Card className="border border-violet-200/60 shadow-sm py-0 bg-gradient-to-br from-violet-50 to-purple-50">
+        <CardContent className="px-5 py-5">
+          <div className="flex flex-col gap-1 mb-4">
+            <div className="flex items-center gap-2">
+              <BrainCircuit className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-slate-700">AI Coach</h3>
             </div>
-            <p className="text-sm text-slate-500">Complete a run to get AI analysis.</p>
+            <p className="text-xs text-slate-400">
+              Personalized training insights generated after each activity.
+            </p>
           </div>
-        )}
 
-        {status === 'error' && (
-          <div id="aiCoachError_dashboardPage" className="flex items-center justify-between gap-3">
-            <p className="text-sm text-slate-500">Unable to load insights.</p>
-            <button
-              id="aiCoachRetryBtn_dashboardPage"
-              onClick={load}
-              className="text-xs text-violet-600 hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+          {status === 'loading' && (
+            <div
+              id="aiCoachLoading_dashboardPage"
+              className="flex flex-col gap-3"
+              aria-label="Loading AI insights"
             >
-              Try again
-            </button>
-          </div>
-        )}
+              <Skeleton className="h-10 w-full rounded-lg" />
+              <Skeleton className="h-10 w-full rounded-lg" />
+            </div>
+          )}
 
-        {status === 'content' && insights.length > 0 && (
-          <div
-            id="aiCoachContent_dashboardPage"
-            className="flex flex-col divide-y divide-violet-100"
-          >
-            {insights.map((insight) => (
-              <div key={insight.id} className="flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0">
-                <p className="text-sm font-semibold text-slate-700 line-clamp-1">{insight.title}</p>
-                <p className="text-xs text-slate-500 line-clamp-2">
-                  {firstParagraph(insight.content)}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-400">{relativeTime(insight.created_at)}</span>
-                  {insight.data_refs?.activity_id && (
-                    <Link
-                      href={`/main/running/activities/${insight.data_refs.activity_id}`}
-                      className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-                    >
-                      View activity →
-                    </Link>
-                  )}
+          {status === 'empty' && (
+            <div id="aiCoachEmpty_dashboardPage" className="flex items-start gap-3">
+              <p className="text-sm text-slate-500">Complete a run to get AI analysis.</p>
+            </div>
+          )}
+
+          {status === 'error' && (
+            <div id="aiCoachError_dashboardPage" className="flex items-center gap-3">
+              <p className="text-sm text-red-600">Unable to load insights.</p>
+              <button
+                id="aiCoachRetryBtn_dashboardPage"
+                onClick={load}
+                className="text-xs text-violet-600 hover:underline shrink-0"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {status === 'content' && insights.length > 0 && (
+            <div
+              id="aiCoachContent_dashboardPage"
+              className="flex flex-col divide-y divide-violet-100"
+            >
+              {insights.map((insight) => (
+                <div key={insight.id} className="flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0">
+                  <p className="text-sm font-semibold text-slate-700 line-clamp-1">
+                    {insight.title}
+                  </p>
+                  <p className="text-xs text-slate-500 line-clamp-2">
+                    {firstParagraph(insight.content)}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-400">
+                      {relativeTime(insight.created_at)}
+                    </span>
+                    {insight.data_refs?.activity_id && (
+                      <Link
+                        href={`/main/running/activities/${insight.data_refs.activity_id}`}
+                        className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                      >
+                        View activity →
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </section>
   )
 }
