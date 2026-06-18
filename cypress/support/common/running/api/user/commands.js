@@ -33,6 +33,10 @@ Cypress.Commands.add('patchUserSettings', (body) => {
   return cy.apiRequestWithSession('PATCH', SETTINGS, { body })
 })
 
+Cypress.Commands.add('patchUserSettingsNoAuth', (body) => {
+  return cy.apiRequestNoAuth('PATCH', SETTINGS, { body })
+})
+
 Cypress.Commands.add('postMaxHrDetect', (body) => {
   return cy.apiRequestWithSession('POST', MAX_HR_DETECT, { body })
 })

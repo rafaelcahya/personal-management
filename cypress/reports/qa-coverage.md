@@ -1,6 +1,6 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-18
+**Last Updated:** 2026-06-18 (issue #395)
 **Branch:** release/v1.14
 
 ---
@@ -10,8 +10,8 @@
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
 | API       | 1,065  | 38%  |
-| UI        | 1,755  | 62%  |
-| **Total** | **2,820** | 100% |
+| UI        | 1,747  | 62%  |
+| **Total** | **2,812** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 377 | 703   | 1,080 |
+| Running Tracker      | 377 | 695   | 1,072 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,065** | **1,755** | **2,820** |
+| **Total**            | **1,065** | **1,747** | **2,812** |
 
 ---
 
@@ -249,18 +249,11 @@
 | Feature                  | API | UI | Total |
 | ------------------------ | --- | -- | ----- |
 | HR Zones                 | 20  | 0  | 20    |
-| Settings                 | 21  | 21 | 42    |
+| Settings                 | 27  | 21 | 48    |
 | Threshold Pace Detect    | 6   | 0  | 6     |
-| **Subtotal**             | **47** | **21** | **68** |
+| **Subtotal**             | **53** | **21** | **74** |
 
-#### Strava
-
-| Feature             | API | UI | Total |
-| ------------------- | --- | -- | ----- |
-| Strava Connection   | 6   | 8  | 14    |
-| **Subtotal**        | **6** | **8** | **14** |
-
-**Running Total — API: 377 | UI: 703 | Total: 1,080**
+**Running Total — API: 377 | UI: 695 | Total: 1,072**
 
 ---
 
@@ -289,7 +282,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 377 | 703   | 1,080 |
+| Running Tracker      | 377 | 695   | 1,072 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,065** | **1,755** | **2,820** |
+| **Total**            | **1,065** | **1,747** | **2,812** |

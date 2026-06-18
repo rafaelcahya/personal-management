@@ -73,7 +73,8 @@
       "sync_strava": "/api/running/v1/sync/strava",
       "sync_status": "/api/running/v1/sync/status",
       "strava_callback": "/api/running/v1/auth/strava/callback",
-      "strava_status": "/api/running/v1/user/strava-status"
+      "strava_status": "/api/running/v1/user/strava-status",
+      "sync_webhook": "/api/running/v1/sync/webhook"
     },
     "running_manual": {
       "activities": "/api/running/v1/activities",
