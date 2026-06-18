@@ -392,16 +392,17 @@ export default function PaceCalculatorPage() {
                       max={59}
                       value={projPaceSec}
                       onChange={(e) => setProjPaceSec(e.target.value)}
-                      onBlur={(e) => {
-                        const n = parseInt(e.target.value, 10)
-                        if (!isNaN(n) && n >= 60) setProjPaceSec('59')
-                      }}
                       placeholder="00"
                       className={inputClass}
                     />
                     <span className="text-[10px] text-slate-400">SS</span>
                   </div>
                 </div>
+                {parseInt(projPaceSec, 10) >= 60 && (
+                  <p className="text-xs text-amber-600">
+                    {`${projPaceSec}s → +${Math.floor(parseInt(projPaceSec, 10) / 60)}m ${parseInt(projPaceSec, 10) % 60}s will be added to minutes`}
+                  </p>
+                )}
               </div>
 
               {/* Sub-mode toggle */}

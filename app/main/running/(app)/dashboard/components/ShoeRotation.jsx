@@ -369,6 +369,15 @@ export default function ShoeRotation() {
   const activeGear = gearList.filter((g) => !g.retired)
   const retiredGear = gearList.filter((g) => g.retired)
 
+  function retryLoad() {
+    setError(null)
+    setLoading(true)
+    fetchGear()
+      .then((res) => setGearList(res.data ?? []))
+      .catch((err) => setError(err.message || 'Failed to load gear'))
+      .finally(() => setLoading(false))
+  }
+
   return (
     <section
       id="gearPage"
@@ -376,12 +385,18 @@ export default function ShoeRotation() {
       aria-live="polite"
       className="flex flex-col h-full"
     >
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Shoe Rotation
-      </h2>
+      <Card className="border border-slate-200/70 shadow-sm flex-1 py-0">
+        <CardContent className="px-5 py-5">
+          <div className="flex flex-col gap-1 mb-4">
+            <div className="flex items-center gap-2">
+              <Footprints className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-slate-700">Shoe Rotation</h3>
+            </div>
+            <p className="text-xs text-slate-400">
+              Active shoes synced from Strava with mileage tracking.
+            </p>
+          </div>
 
-      <Card className="border border-slate-200/70 shadow-sm flex-1 py-4">
-        <CardContent className="px-5">
           {loading && (
             <div id="gearLoadingSkeleton" aria-label="Loading gear" className="flex flex-col gap-3">
               {[1, 2, 3].map((i) => (
@@ -400,25 +415,13 @@ export default function ShoeRotation() {
           )}
 
           {!loading && error && (
-            <div
-              id="gearError"
-              role="alert"
-              className="flex flex-col items-center gap-2 py-6 text-center"
-            >
-              <AlertTriangle className="size-5 text-slate-400" aria-hidden="true" />
-              <p className="text-sm text-slate-500">{error}</p>
+            <div id="gearError" role="alert" className="flex items-center gap-3">
+              <p className="text-sm text-red-600">{error}</p>
               <button
-                onClick={() => {
-                  setError(null)
-                  setLoading(true)
-                  fetchGear()
-                    .then((res) => setGearList(res.data ?? []))
-                    .catch((err) => setError(err.message || 'Failed to load gear'))
-                    .finally(() => setLoading(false))
-                }}
-                className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                onClick={retryLoad}
+                className="text-xs text-violet-600 hover:underline shrink-0"
               >
-                Try again
+                Retry
               </button>
             </div>
           )}

@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-16
-**Branch:** test/issue-351-activity-detail-coverage
+**Last Updated:** 2026-06-18 (issue #395)
+**Branch:** release/v1.14
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,063  | 38%  |
-| UI        | 1,755  | 62%  |
-| **Total** | **2,818** | 100% |
+| API       | 1,065  | 38%  |
+| UI        | 1,747  | 62%  |
+| **Total** | **2,812** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 375 | 703   | 1,078 |
+| Running Tracker      | 377 | 695   | 1,072 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,063** | **1,755** | **2,818** |
+| **Total**            | **1,065** | **1,747** | **2,812** |
 
 ---
 
@@ -191,11 +191,12 @@
 
 #### AI Coach
 
-| Feature           | API | UI | Total |
-| ----------------- | --- | -- | ----- |
-| AI Coach Page     | 0   | 56 | 56    |
-| Friday Prep Card  | 0   | 44 | 44    |
-| **Subtotal**      | **0** | **100** | **100** |
+| Feature              | API | UI | Total |
+| -------------------- | --- | -- | ----- |
+| AI Coach Page        | 0   | 56 | 56    |
+| Friday Prep Card     | 0   | 44 | 44    |
+| AI Coach API         | 44  | 0  | 44    |
+| **Subtotal**         | **44** | **100** | **144** |
 
 #### Analytics
 
@@ -216,17 +217,16 @@
 
 | Feature          | API | UI | Total |
 | ---------------- | --- | -- | ----- |
-| Friday Prep      | 6   | 0  | 6     |
-| Injury Coach     | 6   | 12 | 18    |
-| Symptom Log      | 6   | 0  | 6     |
-| **Subtotal**     | **18** | **12** | **30** |
+| Friday Prep      | 0   | 0  | 0     |
+| Injury Coach     | 0   | 12 | 12    |
+| Symptom Log      | 0   | 0  | 0     |
+| **Subtotal**     | **0** | **12** | **12** |
 
 #### Race Log
 
 | Feature                      | API | UI | Total |
 | ---------------------------- | --- | -- | ----- |
-| Race Log                     | 31  | 51 | 82    |
-| Upcoming Races               | 18  | 38 | 56    |
+| Race Log + Upcoming Races    | 49  | 89 | 138   |
 | Upcoming Races Target Time   | 0   | 19 | 19    |
 | **Subtotal**                 | **49** | **108** | **157** |
 
@@ -234,47 +234,26 @@
 
 | Feature        | API | UI | Total |
 | -------------- | --- | -- | ----- |
-| Manual Entry   | 21  | 0  | 21    |
-| **Subtotal**   | **21** | **0** | **21** |
+| Manual Entry   | 0   | 0  | 0     |
+| **Subtotal**   | **0** | **0** | **0** |
 
 #### Onboarding
 
 | Feature      | API | UI | Total |
 | ------------ | --- | -- | ----- |
-| Onboarding   | 13  | 38 | 51    |
-| **Subtotal** | **13** | **38** | **51** |
+| Onboarding   | 12  | 38 | 50    |
+| **Subtotal** | **12** | **38** | **50** |
 
 #### Settings
 
 | Feature                  | API | UI | Total |
 | ------------------------ | --- | -- | ----- |
 | HR Zones                 | 20  | 0  | 20    |
-| Settings                 | 11  | 21 | 32    |
+| Settings                 | 27  | 21 | 48    |
 | Threshold Pace Detect    | 6   | 0  | 6     |
-| **Subtotal**             | **37** | **21** | **58** |
+| **Subtotal**             | **53** | **21** | **74** |
 
-#### Strava
-
-| Feature             | API | UI | Total |
-| ------------------- | --- | -- | ----- |
-| Strava Connection   | 6   | 8  | 14    |
-| **Subtotal**        | **6** | **8** | **14** |
-
-#### Sync
-
-| Feature      | API | UI | Total |
-| ------------ | --- | -- | ----- |
-| Sync         | 8   | 0  | 8     |
-| **Subtotal** | **8** | **0** | **8** |
-
-#### Push Notification
-
-| Feature             | API | UI | Total |
-| ------------------- | --- | -- | ----- |
-| Push Subscription   | 4   | 0  | 4     |
-| **Subtotal**        | **4** | **0** | **4** |
-
-**Running Total — API: 375 | UI: 703 | Total: 1,078**
+**Running Total — API: 377 | UI: 695 | Total: 1,072**
 
 ---
 
@@ -303,7 +282,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 637 | 454   | 1,091 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 375 | 703   | 1,078 |
+| Running Tracker      | 377 | 695   | 1,072 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,063** | **1,755** | **2,818** |
+| **Total**            | **1,065** | **1,747** | **2,812** |

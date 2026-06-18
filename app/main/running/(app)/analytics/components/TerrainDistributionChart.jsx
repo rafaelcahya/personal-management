@@ -33,8 +33,8 @@ export default function TerrainDistributionChart({ activities }) {
   })).filter((d) => d.count > 0)
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-4">
-      <ResponsiveContainer width="100%" height={200} className="sm:max-w-[200px]">
+    <div className="flex flex-col items-center gap-4">
+      <ResponsiveContainer width="100%" height={200} className="max-w-[200px]">
         <PieChart>
           <Pie
             data={data}

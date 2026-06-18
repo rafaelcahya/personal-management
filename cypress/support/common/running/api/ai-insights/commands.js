@@ -42,3 +42,15 @@ Cypress.Commands.add('patchAiInsightAck', (id) => {
 Cypress.Commands.add('patchAiInsightAckNoAuth', (id) => {
   return cy.apiRequestNoAuth('PATCH', `${ACK_BASE}/${id}/ack`)
 })
+
+Cypress.Commands.add('postAiInsightsDailyNoAuth', (body = {}) => {
+  return cy.apiRequestNoAuth('POST', DAILY, { body })
+})
+
+Cypress.Commands.add('postAiInsightsFollowupNoAuth', (body = {}) => {
+  return cy.apiRequestNoAuth('POST', FOLLOWUP, { body })
+})
+
+Cypress.Commands.add('postAiInsightsDaily', (body = {}) => {
+  return cy.apiRequestWithSession('POST', DAILY, { body })
+})

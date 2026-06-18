@@ -10,40 +10,40 @@
 
 #### 3.3.0 Authentication Flow Overview
 
-> Baca bagian ini dulu sebelum membaca detail teknis. Ini adalah peta besar seluruh auth flow.
+> Read this section first before reading the technical details. It is the high-level map of the entire auth flow.
 
 ---
 
 ##### LOGIN FLOW
 
 ```
-User buka halaman protected (misal: /main/trading)
+User opens a protected page (e.g. /main/trading)
     │
     ▼
-[Middleware] cek session
+[Middleware] checks session
     │
-    ├── ❌ Tidak ada session
+    ├── ❌ No session
     │       │
     │       ▼
     │   Redirect → /login?next=/main/trading
     │       │
     │       ▼
-    │   [Login Page] User klik "Sign in with Google"
+    │   [Login Page] User clicks "Sign in with Google"
     │       │
     │       ▼
-    │   signInWithOAuth() → redirect ke Google
+    │   signInWithOAuth() → redirect to Google
     │       │
     │       ▼
-    │   [Google Auth] User approve
+    │   [Google Auth] User approves
     │       │
     │       ▼
-    │   Redirect ke /auth/v1/callback?code=xxx&next=/main/trading
+    │   Redirect to /auth/v1/callback?code=xxx&next=/main/trading
     │       │
-    │       ├── ❌ code tidak ada → /login?error=no_code
-    │       ├── ❌ code exchange gagal → /login?error=auth_failed
-    │       └── ✅ berhasil → redirect ke /main/trading (dari ?next=)
+    │       ├── ❌ no code → /login?error=no_code
+    │       ├── ❌ code exchange fails → /login?error=auth_failed
+    │       └── ✅ success → redirect to /main/trading (from ?next=)
     │
-    └── ✅ Ada session → lanjut ke halaman tujuan
+    └── ✅ Session exists → proceed to the destination page
 ```
 
 ---
@@ -51,26 +51,26 @@ User buka halaman protected (misal: /main/trading)
 ##### LOGOUT FLOW
 
 ```
-User klik tombol "Sign out"
+User clicks "Sign out"
     │
     ▼
-[LogoutButton / UserMenu] set sessionStorage flag "intentional_logout"
+[LogoutButton / UserMenu] sets sessionStorage flag "intentional_logout"
     │
     ▼
 POST /api/auth/logout
     │
-    ├── ❌ Gagal → hapus flag → tampilkan toast error → tetap di halaman
+    ├── ❌ Fails → remove flag → show toast error → stay on current page
     │
-    └── ✅ Berhasil → server clear session cookie
+    └── ✅ Success → server clears session cookie
             │
             ▼
         Redirect → /login
             │
             ▼
-        [AuthListener] deteksi SIGNED_OUT event
+        [AuthListener] detects SIGNED_OUT event
             │
-            └── cek flag "intentional_logout" → ada → tidak tampilkan toast
-                (redirect sudah ditangani LogoutButton)
+            └── checks "intentional_logout" flag → present → no toast shown
+                (redirect already handled by LogoutButton)
 ```
 
 ---
@@ -78,61 +78,61 @@ POST /api/auth/logout
 ##### SESSION EXPIRY FLOW
 
 ```
-User sedang aktif di /main/* → session Supabase habis/expired
+User is active on /main/* → Supabase session expires
     │
     ▼
-[AuthListener] deteksi SIGNED_OUT event
+[AuthListener] detects SIGNED_OUT event
     │
-    └── cek flag "intentional_logout" → tidak ada
+    └── checks "intentional_logout" flag → not present
             │
             ▼
         Redirect → /login?reason=session_expired
-        (tidak ada toast di sini — untuk menghindari double toast)
+        (no toast here — avoids double toast)
             │
             ▼
-        [Login Page] baca ?reason=session_expired
+        [Login Page] reads ?reason=session_expired
             │
             ▼
-        Tampilkan toast: "You've been signed out. Please sign in again to continue."
+        Shows toast: "You've been signed out. Please sign in again to continue."
 ```
 
 ---
 
 ##### ERROR MESSAGES QUICK REFERENCE
 
-| URL Param                 | Artinya                   | Pesan ke User                                               |
-| ------------------------- | ------------------------- | ----------------------------------------------------------- |
-| `?error=auth_failed`      | Google OAuth gagal        | "Login failed. Please try again."                           |
-| `?error=no_code`          | Callback tidak dapat code | "Invalid login attempt. Please try again."                  |
-| `?reason=session_expired` | Sesi habis otomatis       | "You've been signed out. Please sign in again to continue." |
+| URL Param                 | Meaning                       | Message shown to user                                       |
+| ------------------------- | ----------------------------- | ----------------------------------------------------------- |
+| `?error=auth_failed`      | Google OAuth failed           | "Login failed. Please try again."                           |
+| `?error=no_code`          | Callback received no code     | "Invalid login attempt. Please try again."                  |
+| `?reason=session_expired` | Session expired automatically | "You've been signed out. Please sign in again to continue." |
 
 ---
 
 #### 3.3.1 Login (`/login`)
 
-**Deskripsi:** Halaman login dengan Google OAuth. Menangani error params dan session expiry messaging. Menampilkan app identity (logo + nama app) di atas card login.
+**Description:** Login page using Google OAuth. Handles error query params and session expiry messaging. Displays app identity (logo + app name) above the login card.
 
-**Fitur:**
+**Features:**
 
-- [DEPRECATED v1.1] ~~Form email + password~~ — diganti Google OAuth only
-- [DEPRECATED v1.1] ~~Validasi format email~~ — tidak relevan setelah OAuth only
-- [DEPRECATED v1.1] ~~Error message jika credentials salah~~ — tidak relevan setelah OAuth only
-- App identity ditampilkan di atas Card: icon `LayoutDashboard` + teks "Personal Management"
+- [DEPRECATED v1.1] ~~Email + password form~~ — replaced by Google OAuth only
+- [DEPRECATED v1.1] ~~Email format validation~~ — not relevant after OAuth only
+- [DEPRECATED v1.1] ~~Error message for wrong credentials~~ — not relevant after OAuth only
+- App identity displayed above the Card: `LayoutDashboard` icon + text "Personal Management"
 - Login via Google OAuth (single sign-on button)
-- **Google button harus mengikuti Google branding guidelines:**
-  - Background putih (`bg-white`), border `border-slate-300`, teks `text-slate-700`
-  - SVG icon Google 4-warna (bukan `currentColor`): `#4285F4`, `#34A853`, `#FBBC05`, `#EA4335`
-  - Label button: `"Sign in with Google"` (bukan "Continue with Google")
-- Loading/disabled state pada Google button selama OAuth redirect berlangsung
+- **Google button must follow Google branding guidelines:**
+  - White background (`bg-white`), border `border-slate-300`, text `text-slate-700`
+  - 4-color Google SVG icon (not `currentColor`): `#4285F4`, `#34A853`, `#FBBC05`, `#EA4335`
+  - Button label: `"Sign in with Google"` (not "Continue with Google")
+- Loading/disabled state on Google button while OAuth redirect is in progress
   - Loading text: `"Redirecting to Google..."`
-- Baca `?error=` query param dan tampilkan toast message:
+- Reads `?error=` query param and shows a toast message:
   - `?error=auth_failed` → `"Login failed. Please try again."`
   - `?error=no_code` → `"Invalid login attempt. Please try again."`
-- Baca `?reason=` query param dan tampilkan toast message:
+- Reads `?reason=` query param and shows a toast message:
   - `?reason=session_expired` → `"You've been signed out. Please sign in again to continue."`
-  - **Catatan:** Toast session expiry hanya ditampilkan di login page via `?reason=` param, BUKAN di `AuthListener` (untuk menghindari double toast)
-- `?next=` param diteruskan melalui OAuth flow untuk preservasi redirect tujuan
-- Halaman di-wrap dalam `<Suspense>` untuk kompatibilitas Next.js SSR
+  - **Note:** The session expiry toast is shown only by the login page via `?reason=` param, NOT inside `AuthListener` (to prevent double toast)
+- `?next=` param is forwarded through the OAuth flow to preserve the intended redirect destination
+- Page is wrapped in `<Suspense>` for Next.js SSR compatibility
 
 **User Story:**
 
@@ -162,15 +162,15 @@ THEN I am redirected back to /main/inventory (via ?next= param)
 
 #### 3.3.2 Auth Callback (`/auth/v1/callback`)
 
-**Deskripsi:** Handler OAuth callback dari Supabase. Menggunakan `lib/supabase/server.ts` createClient.
+**Description:** OAuth callback handler from Supabase. Uses `lib/supabase/server.ts` `createClient`.
 
 **Behavior:**
 
-- Jika `?code=` param tidak ada → redirect ke `/login?error=no_code`
-- Jika code exchange gagal → redirect ke `/login?error=auth_failed`
-- Jika auth berhasil → redirect ke `?next=` param (jika ada) atau ke `/main/landing`
-- `?next=` param dipreservasi dari original request dan diteruskan ke redirect tujuan
-- Menggunakan `lib/supabase/server.ts` `createClient()` (bukan manual `createServerClient`)
+- If `?code=` param is missing → redirect to `/login?error=no_code`
+- If code exchange fails → redirect to `/login?error=auth_failed`
+- If auth succeeds → redirect to `?next=` param (if present) or to `/main/landing`
+- `?next=` param is preserved from the original request and forwarded to the redirect destination
+- Uses `lib/supabase/server.ts` `createClient()` (not manual `createServerClient`)
 
 **Acceptance Criteria:**
 
@@ -192,46 +192,46 @@ THEN redirect to /login?error=auth_failed
 
 #### 3.3.3 Logout
 
-**Deskripsi:** Logout terpusat via dua komponen tergantung lokasi. Logout dilakukan **server-side** melalui API endpoint untuk memastikan session cookie benar-benar di-clear di server sebelum redirect.
+**Description:** Centralized logout via two components depending on location. Logout is performed **server-side** through an API endpoint to ensure the session cookie is fully cleared on the server before redirecting.
 
-**Komponen:**
+**Components:**
 
-- `app/login/components/Logout.jsx` → `LogoutButton` — dipakai di Inventory & Trading layout
-- `app/login/components/UserMenu.jsx` → `UserMenu` — dipakai di Landing page (menampilkan avatar + email user)
+- `app/login/components/Logout.jsx` → `LogoutButton` — used in Inventory and Trading layouts
+- `app/login/components/UserMenu.jsx` → `UserMenu` — used in the Landing page (shows user avatar + email)
 
-**`LogoutButton` — Fitur:**
+**`LogoutButton` — Features:**
 
-- Default `size="sm"` (bisa di-override via prop) — konsisten dengan tombol action lain di layout
+- Default `size="sm"` (overridable via prop) — consistent with other action buttons in the layout
 - Label: `"Sign out"` | Loading: `"Signing out..."`
-- Warna: neutral (`text-slate-500`, `hover:text-slate-700`) — bukan merah (logout bukan aksi destructive)
-- Set `sessionStorage` flag `intentional_logout` sebelum memanggil API
-- Panggil `POST /api/auth/logout` (server-side session termination)
-- Loading/disabled state selama proses
-- Toast error jika gagal: `"Couldn't sign you out — please try again."`
-- Redirect ke `/login` setelah berhasil
+- Color: neutral (`text-slate-500`, `hover:text-slate-700`) — not red (logout is not a destructive action)
+- Sets `sessionStorage` flag `intentional_logout` before calling the API
+- Calls `POST /api/auth/logout` (server-side session termination)
+- Loading/disabled state during the process
+- Toast error if it fails: `"Couldn't sign you out — please try again."`
+- Redirects to `/login` on success
 - WCAG: `aria-label="Sign out from application"`, keyboard accessible
 
-**`UserMenu` — Fitur:**
+**`UserMenu` — Features:**
 
-- Tampilkan avatar Google user (foto profil dari `user_metadata.avatar_url`)
-- Fallback avatar: inisial huruf pertama nama user dengan background `bg-primary/10`
-- Tampilkan first name di sebelah avatar (hidden on mobile `sm:inline`)
-- Klik buka `DropdownMenu` yang menampilkan email user dan opsi "Sign out"
-- Logout logic sama dengan `LogoutButton` (API call + intentional flag + redirect)
+- Shows the user's Google avatar (profile photo from `user_metadata.avatar_url`)
+- Fallback avatar: first letter of the user's name with `bg-primary/10` background
+- Shows first name next to the avatar (hidden on mobile `sm:inline`)
+- Click opens a `DropdownMenu` showing the user's email and a "Sign out" option
+- Logout logic is the same as `LogoutButton` (API call + intentional flag + redirect)
 
-**Lokasi:**
+**Locations:**
 
 - Inventory layout (`app/main/inventory/layout.jsx`) → `LogoutButton`
-- Trading layout (`app/main/trading/layout.jsx`) → `LogoutButton` (di samping Settings button)
-- Landing page (`app/main/landing/page.jsx`) → `UserMenu` (dengan `user` prop dari `requireAuth()`)
+- Trading layout (`app/main/trading/layout.jsx`) → `LogoutButton` (next to the Settings button)
+- Landing page (`app/main/landing/page.jsx`) → `UserMenu` (with `user` prop from `requireAuth()`)
 
 **API endpoint:** `POST /api/auth/logout`
 
-- Validasi session dulu — return 401 jika tidak authenticated
+- Validates session first — returns 401 if not authenticated
 - Server-side session termination via `supabase.auth.signOut()`
-- Clear session cookie di server
-- Response success: `{ message: "Logged out successfully" }` (200)
-- Response error: `{ error: "LOGOUT_FAILED", message: "..." }` (500)
+- Clears session cookie on the server
+- Success response: `{ message: "Logged out successfully" }` (200)
+- Error response: `{ error: "LOGOUT_FAILED", message: "..." }` (500)
 
 **User Story:**
 
@@ -261,20 +261,20 @@ THEN logout is triggered (keyboard accessible, aria-label present)
 
 #### 3.3.4 Session Expiry
 
-**Deskripsi:** Global listener untuk deteksi sesi yang habis, dipasang di root layout.
+**Description:** Global listener for detecting expired sessions, mounted in the root layout.
 
 **Component:** `components/AuthListener.jsx`
 
 **Behavior:**
 
-- Di-mount secara global di `app/layout.tsx`
-- Mendengarkan `supabase.auth.onAuthStateChange`
-- Saat event `SIGNED_OUT` terdeteksi:
-  - Cek `sessionStorage` key `intentional_logout`
-  - Jika ada → intentional logout (sudah ditangani `LogoutButton`/`UserMenu`) → tidak lakukan apapun
-  - Jika tidak ada → session expired → redirect ke `/login?reason=session_expired`
-- Toast ditampilkan **hanya oleh login page** (bukan AuthListener) via `?reason=session_expired` param
-- **Mengapa tidak toast di AuthListener:** Untuk menghindari double toast — toast dari AuthListener bisa muncul sebelum redirect terjadi, lalu login page menampilkan toast kedua
+- Mounted globally in `app/layout.tsx`
+- Listens to `supabase.auth.onAuthStateChange`
+- When a `SIGNED_OUT` event is detected:
+  - Checks `sessionStorage` key `intentional_logout`
+  - If present → intentional logout (already handled by `LogoutButton`/`UserMenu`) → do nothing
+  - If not present → session expired → redirect to `/login?reason=session_expired`
+- Toast is shown **only by the login page** (not AuthListener) via the `?reason=session_expired` param
+- **Why not toast in AuthListener:** To avoid a double toast — a toast from AuthListener could appear before the redirect, and then the login page would show a second toast
 
 **User Story:**
 
@@ -300,37 +300,86 @@ THEN AuthListener does NOT redirect or show toast (LogoutButton handles the redi
 
 ---
 
+#### 3.3.5 Strava OAuth (Cross-reference)
+
+Strava OAuth is a separate authentication flow used exclusively by the Running Tracker module. It is not part of the core app login flow described in sections 3.3.1–3.3.4.
+
+The Strava OAuth flow (authorization, callback, token storage, token refresh) is documented in **PRD_Running_Tracker.md section 5**.
+
+The middleware (`middleware.js`) explicitly bypasses auth checks for the Strava callback route:
+`/api/running/v1/auth/strava/callback`
+
+---
+
 ### 3.4 User Settings (`/settings`)
 
-**Status:** `/settings` page belum diimplementasi — P2 backlog.
+**Status:** API endpoints are implemented (`GET /api/user`, `PUT /api/user`, and `POST /api/user/avatar`). Only the Settings page UI is pending (P2 backlog).
 
-**Data Source:** `auth.users` via `supabase.auth.getUser()` + tabel `users`
+**Data Source:** `auth.users` via `supabase.auth.getUser()` + `users` table
 
 **API Endpoints:**
 
 `GET /api/user`
 
 - Auth: Required (via `lib/supabase/server.ts` + `supabase.auth.getUser()`)
-- Response: `{ data: { user: { id, username, nickname, avatar } } }`
+- Response (200):
+  ```json
+  {
+    "data": {
+      "user": {
+        "id": "uuid",
+        "username": "string",
+        "nickname": "string",
+        "avatar": "string (public URL from Supabase Storage, or null)"
+      }
+    },
+    "message": "User fetched successfully"
+  }
+  ```
+- Error (401): `{ "error": "Unauthorized", "message": "Authentication required" }`
+- Error (500): `{ "error": "INTERNAL_ERROR", "message": "Something went wrong" }`
 
 `PUT /api/user`
 
 - Auth: Required
-- Body: `{ username, nickname, avatar }`
-- Response: `{ data: { user: {...} }, message: "Updated successfully" }`
+- Body (JSON): `{ "username": "string", "nickname": "string", "avatar": "string" }` — all fields optional; only fields present in the body are updated
+- Response (200):
+  ```json
+  {
+    "data": { "user": { "username": "...", "nickname": "...", "avatar": "..." } },
+    "message": "User updated successfully"
+  }
+  ```
+- Error (401): `{ "error": "Unauthorized", "message": "Authentication required" }`
+- Error (500): `{ "error": "INTERNAL_ERROR", "message": "Something went wrong" }`
 
 `POST /api/user/avatar`
 
 - Auth: Required
-- Body: multipart form data (file upload)
-- Storage: Supabase Storage bucket `avatar`
-- Response: `{ data: { path, url }, message: "Avatar uploaded" }`
+- Body: multipart form data — field name `file` (image file)
+- Storage: Supabase Storage bucket `avatar`, path pattern `avatars/{userId}-{timestamp}.{ext}`
+- Response (201):
+  ```json
+  {
+    "data": { "path": "avatars/...", "url": "https://..." },
+    "message": "Avatar uploaded successfully"
+  }
+  ```
+- Error (400): `{ "error": "BAD_REQUEST", "message": "No file provided" }`
+- Error (401): `{ "error": "Unauthorized", "message": "Authentication required" }`
+- Error (500): `{ "error": "INTERNAL_ERROR", "message": "Something went wrong" }`
 
-**Fitur (P2 — belum diimplementasi):**
+**Features (P2 — Settings page UI not yet built):**
 
-- Tampilkan & edit profil user
-- Upload foto avatar
-- Preferensi aplikasi
+- Display and edit user profile
+- Upload avatar photo
+- Application preferences
 
 ---
 
+### Version History
+
+| Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.3    | 2026-06-17 | Full language cleanup — translated all Indonesian text to English. Updated section 3.4 status note to reflect that API endpoints are implemented. Expanded API endpoint docs with request/response shapes. Added section 3.3.5 for Strava OAuth cross-reference. Fixed response message strings to match actual route implementations. |
+| v1.2    | —          | Prior version (Indonesian content, stub API docs)                                                                                                                                                                                                                                                                                      |

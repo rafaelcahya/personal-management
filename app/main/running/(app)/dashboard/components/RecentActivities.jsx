@@ -61,11 +61,16 @@ export default function RecentActivities({ activities }) {
 
   return (
     <section id="recentActivitiesCard" aria-label="Recent activities">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Recent Activities
-      </h2>
-
       <Card className="border border-slate-200/70 shadow-sm overflow-hidden">
+        <CardContent className="px-5 py-5 pb-0">
+          <div className="flex flex-col gap-1 mb-4">
+            <div className="flex items-center gap-2">
+              <Activity className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-slate-700">Recent Activities</h3>
+            </div>
+            <p className="text-xs text-slate-400">Your 5 most recent logged activities.</p>
+          </div>
+        </CardContent>
         {shown.length === 0 ? (
           <CardContent className="py-10 text-center">
             <p className="text-slate-400 text-sm">No activities yet</p>

@@ -1,7 +1,7 @@
 'use client'
 
-import { Activity, Timer, Footprints, Zap } from 'lucide-react'
-import { Card } from '@/components/ui/card'
+import { Activity, Timer, Footprints, Zap, CalendarRange } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
 import { fmtDistance, fmtDuration, fmtPace } from '../utils/format'
 
 export default function WeeklyStats({ data }) {
@@ -127,11 +127,18 @@ export default function WeeklyStats({ data }) {
 
   return (
     <section id="weeklyStatsCard" aria-label="Weekly stats">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        This Week
-      </h2>
-
-      <Card className="border border-slate-200/70 shadow-sm py-4">
+      <Card className="border border-slate-200/70 shadow-sm py-5 gap-4">
+        <CardContent className="px-5">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <CalendarRange className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-slate-700">This Week</h3>
+            </div>
+            <p className="text-xs text-slate-400">
+              Distance, duration, sessions, and pace compared to last week.
+            </p>
+          </div>
+        </CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
           {statTiles.map((t, i) => {
             const Icon = t.icon

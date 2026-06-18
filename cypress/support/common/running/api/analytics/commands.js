@@ -5,6 +5,10 @@ const PERSONAL_BESTS = constants.endpoints.running_analytics.personal_bests
 const CALORIE_TREND = constants.endpoints.running_analytics.calorie_trend
 const FITNESS_AGE = constants.endpoints.running_analytics.fitness_age
 const ENDURANCE_SCORE = constants.endpoints.running_analytics.endurance_score
+const ZONES = constants.endpoints.running_analytics.zones
+const ZONES_REFERENCE = constants.endpoints.running_analytics.zones_reference
+const GEAR_ANALYTICS = constants.endpoints.running_analytics.gear
+const PMC = constants.endpoints.running_analytics.pmc
 
 Cypress.Commands.add('getTargetEffort', (qs = {}) => {
   return cy.apiRequestWithSession('GET', TARGET_EFFORT, { qs })
@@ -44,4 +48,36 @@ Cypress.Commands.add('getEnduranceScore', () => {
 
 Cypress.Commands.add('getEnduranceScoreNoAuth', () => {
   return cy.apiRequestNoAuth('GET', ENDURANCE_SCORE)
+})
+
+Cypress.Commands.add('getZoneAnalytics', (qs = {}) => {
+  return cy.apiRequestWithSession('GET', ZONES, { qs })
+})
+
+Cypress.Commands.add('getZoneAnalyticsNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', ZONES)
+})
+
+Cypress.Commands.add('getZonesReference', () => {
+  return cy.apiRequestWithSession('GET', ZONES_REFERENCE)
+})
+
+Cypress.Commands.add('getZonesReferenceNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', ZONES_REFERENCE)
+})
+
+Cypress.Commands.add('getGearAnalytics', (qs = {}) => {
+  return cy.apiRequestWithSession('GET', GEAR_ANALYTICS, { qs })
+})
+
+Cypress.Commands.add('getGearAnalyticsNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', GEAR_ANALYTICS)
+})
+
+Cypress.Commands.add('getPmc', (qs = {}) => {
+  return cy.apiRequestWithSession('GET', PMC, { qs })
+})
+
+Cypress.Commands.add('getPmcNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', PMC)
 })
