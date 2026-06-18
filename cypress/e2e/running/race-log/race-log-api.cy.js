@@ -1,3 +1,7 @@
+// API-only spec: no cy.visit, no DOM assertions.
+// Covers GET / POST / PATCH / DELETE for /api/running/v1/race-log
+// and GET / POST / PATCH / DELETE for /api/running/v1/upcoming-races.
+
 function getFirstRaceLogId() {
   return cy.getRaceLog().then((res) => {
     const list = res.body?.data ?? []
@@ -5,7 +9,7 @@ function getFirstRaceLogId() {
   })
 }
 
-// ─── GET /race-log ──────────────────────────────────────────────────────────
+// GET /race-log
 
 describe('Race Log API — GET (authenticated)', () => {
   beforeEach(() => {
@@ -70,7 +74,7 @@ describe('Race Log API — GET (unauthenticated)', () => {
   })
 })
 
-// ─── GET /race-log/:id ──────────────────────────────────────────────────────
+// GET /race-log/:id
 
 describe('Race Log API — GET detail (authenticated)', () => {
   let raceLogId
@@ -122,7 +126,7 @@ describe('Race Log API — GET detail (unauthenticated)', () => {
   })
 })
 
-// ─── POST /race-log ─────────────────────────────────────────────────────────
+// POST /race-log
 
 describe('Race Log API — POST (authenticated)', () => {
   const createdIds = []
@@ -243,7 +247,7 @@ describe('Race Log API — POST (unauthenticated)', () => {
   })
 })
 
-// ─── PATCH /race-log/:id ────────────────────────────────────────────────────
+// PATCH /race-log/:id
 
 describe('Race Log API — PATCH (authenticated)', () => {
   let entryId
@@ -320,7 +324,7 @@ describe('Race Log API — PATCH (unauthenticated)', () => {
   })
 })
 
-// ─── DELETE /race-log/:id ───────────────────────────────────────────────────
+// DELETE /race-log/:id
 
 describe('Race Log API — DELETE (authenticated)', () => {
   let entryId
@@ -386,7 +390,7 @@ describe('Race Log API — DELETE (unauthenticated)', () => {
   })
 })
 
-// ─── api vs database comparison ───────────────────────────────────────────────
+// API vs database comparison
 
 describe('Race Log API — API vs Database Comparison', () => {
   beforeEach(() => {
@@ -447,6 +451,280 @@ describe('Race Log API — API vs Database Comparison', () => {
           expect(dbRow).to.be.null
         })
       })
+    })
+  })
+})
+
+// GET /upcoming-races
+
+describe('Upcoming Races API — GET list (authenticated)', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('returns 200 with data array and message', () => {
+    cy.getUpcomingRaces().then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('data')
+      expect(res.body.data).to.be.an('array')
+      expect(res.body).to.have.property('message')
+    })
+  })
+
+  it('each entry has required fields when list is non-empty', () => {
+    cy.getUpcomingRaces().then((res) => {
+      const entries = res.body.data
+      if (entries.length === 0) return
+      const entry = entries[0]
+      expect(entry).to.have.property('id')
+      expect(entry).to.have.property('title')
+      expect(entry).to.have.property('race_date')
+      expect(entry).to.have.property('distance_m')
+      expect(entry).to.have.property('created_at')
+    })
+  })
+})
+
+describe('Upcoming Races API — GET list (unauthenticated)', () => {
+  beforeEach(() => {
+    cy.clearCookies()
+    cy.clearLocalStorage()
+  })
+
+  it('returns 401 without a session', () => {
+    cy.getUpcomingRacesNoAuth().then((res) => {
+      expect(res.status).to.eq(401)
+    })
+  })
+})
+
+// POST /upcoming-races
+
+describe('Upcoming Races API — POST create (authenticated)', () => {
+  const createdIds = []
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  after(() => {
+    cy.setupApiAuthCookies()
+    createdIds.forEach((id) => cy.deleteUpcomingRace(id))
+  })
+
+  it('creates an entry and returns 201 with the new record', () => {
+    cy.postUpcomingRace({
+      title: 'Cypress Upcoming Test Race',
+      race_date: '2099-12-31',
+      distance_m: 42195,
+    }).then((res) => {
+      expect(res.status).to.eq(201)
+      expect(res.body).to.have.property('data')
+      const entry = res.body.data
+      expect(entry).to.have.property('id')
+      expect(entry.title).to.eq('Cypress Upcoming Test Race')
+      expect(entry.distance_m).to.eq(42195)
+      createdIds.push(entry.id)
+    })
+  })
+
+  it('accepts optional location and notes fields', () => {
+    cy.postUpcomingRace({
+      title: 'Cypress Optional Fields Race',
+      race_date: '2099-11-01',
+      distance_m: 10000,
+      location: 'Bali, Indonesia',
+      notes: 'Target sub-50',
+    }).then((res) => {
+      if (res.status === 201) {
+        const entry = res.body.data
+        expect(entry.location).to.eq('Bali, Indonesia')
+        expect(entry.notes).to.eq('Target sub-50')
+        createdIds.push(entry.id)
+      }
+    })
+  })
+
+  it('returns 400 when title is missing', () => {
+    cy.postUpcomingRace({
+      race_date: '2099-12-31',
+      distance_m: 10000,
+    }).then((res) => {
+      expect(res.status).to.eq(400)
+    })
+  })
+
+  it('returns 400 when race_date is missing', () => {
+    cy.postUpcomingRace({
+      title: 'No Date Race',
+      distance_m: 10000,
+    }).then((res) => {
+      expect(res.status).to.eq(400)
+    })
+  })
+
+  it('returns 400 when distance_m is missing', () => {
+    cy.postUpcomingRace({
+      title: 'No Distance Race',
+      race_date: '2099-12-31',
+    }).then((res) => {
+      expect(res.status).to.eq(400)
+    })
+  })
+
+  it('returns 400 when race_date is in the past', () => {
+    cy.postUpcomingRace({
+      title: 'Past Race',
+      race_date: '2020-01-01',
+      distance_m: 10000,
+    }).then((res) => {
+      expect(res.status).to.eq(400)
+    })
+  })
+
+  it('returns 400 when distance_m is zero or negative', () => {
+    cy.postUpcomingRace({
+      title: 'Zero Distance Race',
+      race_date: '2099-12-31',
+      distance_m: 0,
+    }).then((res) => {
+      expect(res.status).to.eq(400)
+    })
+  })
+})
+
+describe('Upcoming Races API — POST create (unauthenticated)', () => {
+  beforeEach(() => {
+    cy.clearCookies()
+    cy.clearLocalStorage()
+  })
+
+  it('returns 401 without a session', () => {
+    cy.postUpcomingRaceNoAuth({
+      title: 'Unauth Race',
+      race_date: '2099-12-31',
+      distance_m: 5000,
+    }).then((res) => {
+      expect(res.status).to.eq(401)
+    })
+  })
+})
+
+// PATCH /upcoming-races/:id
+
+describe('Upcoming Races API — PATCH update (authenticated)', () => {
+  let entryId
+
+  before(() => {
+    cy.setupApiAuthCookies()
+    cy.postUpcomingRace({
+      title: 'Cypress Patch Base Race',
+      race_date: '2099-09-15',
+      distance_m: 21097.5,
+    }).then((res) => {
+      if (res.status === 201) entryId = res.body.data.id
+    })
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  after(() => {
+    if (entryId) {
+      cy.setupApiAuthCookies()
+      cy.deleteUpcomingRace(entryId)
+    }
+  })
+
+  it('returns 200 with updated entry on valid partial payload', function () {
+    if (!entryId) this.skip()
+    cy.patchUpcomingRace(entryId, {
+      title: 'Updated Cypress Upcoming Race',
+      location: 'Jakarta, Indonesia',
+    }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('data')
+      const updated = res.body.data
+      expect(updated.title).to.eq('Updated Cypress Upcoming Race')
+      expect(updated.location).to.eq('Jakarta, Indonesia')
+    })
+  })
+
+  it('returns 400 when request body is empty', function () {
+    if (!entryId) this.skip()
+    cy.patchUpcomingRace(entryId, {}).then((res) => {
+      expect(res.status).to.eq(400)
+    })
+  })
+
+  it('returns 404 for an ID that does not belong to the authenticated user', () => {
+    const nonExistentId = '00000000-0000-0000-0000-000000000000'
+    cy.patchUpcomingRace(nonExistentId, { title: 'Should not update' }).then((res) => {
+      expect(res.status).to.eq(404)
+    })
+  })
+})
+
+describe('Upcoming Races API — PATCH update (unauthenticated)', () => {
+  beforeEach(() => {
+    cy.clearCookies()
+    cy.clearLocalStorage()
+  })
+
+  it('returns 401 without a session', () => {
+    cy.patchUpcomingRaceNoAuth('any-id', { title: 'Unauth update' }).then((res) => {
+      expect(res.status).to.eq(401)
+    })
+  })
+})
+
+// DELETE /upcoming-races/:id
+
+describe('Upcoming Races API — DELETE (authenticated)', () => {
+  let entryId
+
+  before(() => {
+    cy.setupApiAuthCookies()
+    cy.postUpcomingRace({
+      title: 'Cypress Delete Target Race',
+      race_date: '2099-08-20',
+      distance_m: 5000,
+    }).then((res) => {
+      if (res.status === 201) entryId = res.body.data.id
+    })
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('returns 200 with message on successful delete', function () {
+    if (!entryId) this.skip()
+    cy.deleteUpcomingRace(entryId).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('message')
+      entryId = null
+    })
+  })
+
+  it('returns 404 for an ID that does not belong to the authenticated user', () => {
+    const nonExistentId = '00000000-0000-0000-0000-000000000000'
+    cy.deleteUpcomingRace(nonExistentId).then((res) => {
+      expect(res.status).to.eq(404)
+    })
+  })
+})
+
+describe('Upcoming Races API — DELETE (unauthenticated)', () => {
+  beforeEach(() => {
+    cy.clearCookies()
+    cy.clearLocalStorage()
+  })
+
+  it('returns 401 without a session', () => {
+    cy.deleteUpcomingRaceNoAuth('any-id').then((res) => {
+      expect(res.status).to.eq(401)
     })
   })
 })
