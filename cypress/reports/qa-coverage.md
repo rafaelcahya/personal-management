@@ -1,7 +1,7 @@
 # QA Coverage Report
 
 **Last Updated:** 2026-06-18
-**Branch:** feat/issue-361-ai-coach-api-tests
+**Branch:** release/v1.14
 
 ---
 
@@ -226,8 +226,7 @@
 
 | Feature                      | API | UI | Total |
 | ---------------------------- | --- | -- | ----- |
-| Race Log                     | 31  | 51 | 82    |
-| Upcoming Races               | 18  | 38 | 56    |
+| Race Log + Upcoming Races    | 49  | 89 | 138   |
 | Upcoming Races Target Time   | 0   | 19 | 19    |
 | **Subtotal**                 | **49** | **108** | **157** |
 
