@@ -150,14 +150,8 @@ export default function SectionsManager({
   const triggerContent = (
     <>
       <LayoutList className="size-3.5" aria-hidden="true" />
-      <span className="hidden md:inline">
+      <span>
         Sections ({visibleCount}/{total})
-      </span>
-      <span
-        className="md:hidden inline-flex items-center justify-center size-4 text-[10px] font-bold bg-violet-100 text-violet-700 rounded-full"
-        aria-label={`${visibleCount} sections visible`}
-      >
-        {visibleCount}
       </span>
     </>
   )
