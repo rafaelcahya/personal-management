@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,072  | 38%  |
+| API       | 1,085  | 38%  |
 | UI        | 1,747  | 62%  |
-| **Total** | **2,819** | 100% |
+| **Total** | **2,832** | 100% |
 
 ---
 
@@ -20,12 +20,12 @@
 | Module               | API | UI    | Total |
 | -------------------- | --- | ----- | ----- |
 | Auth                 | 22  | 107   | 129   |
-| Inventory Management | 637 | 454   | 1,091 |
+| Inventory Management | 650 | 454   | 1,104 |
 | Trading Management   | 29  | 450   | 479   |
 | Running Tracker      | 384 | 695   | 1,079 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,072** | **1,747** | **2,819** |
+| **Total**            | **1,085** | **1,747** | **2,832** |
 
 ---
 
@@ -49,9 +49,9 @@
 
 | Feature       | API | UI | Total |
 | ------------- | --- | -- | ----- |
-| Dashboard     | 56  | 95 | 151   |
+| Dashboard     | 54  | 95 | 149   |
 | Summary       | 17  | 0  | 17    |
-| **Subtotal**  | **73** | **95** | **168** |
+| **Subtotal**  | **71** | **95** | **166** |
 
 #### Product
 
@@ -63,7 +63,7 @@
 | Delete Product       | 23  | 0  | 23    |
 | Favorite Product     | 27  | 0  | 27    |
 | Last Price           | 17  | 0  | 17    |
-| List Product         | 26  | 98 | 124   |
+| List Product         | 41  | 98 | 139   |
 | Product Detail       | 25  | 35 | 60    |
 | Product Filter       | 0   | 9  | 9     |
 | Product History      | 25  | 0  | 25    |
@@ -71,7 +71,7 @@
 | Restock Predictions  | 16  | 0  | 16    |
 | Product Summary      | 16  | 0  | 16    |
 | Update Product       | 39  | 0  | 39    |
-| **Subtotal**         | **320** | **211** | **531** |
+| **Subtotal**         | **335** | **211** | **546** |
 
 #### Product Brand
 
@@ -105,7 +105,7 @@
 | Update Name      | 29  | 14 | 43    |
 | **Subtotal**     | **111** | **58** | **169** |
 
-**Inventory Total — API: 637 | UI: 454 | Total: 1,091**
+**Inventory Total — API: 650 | UI: 454 | Total: 1,104**
 
 ---
 
@@ -186,8 +186,7 @@
 | Dashboard            | 42  | 28 | 70    |
 | Dashboard Extended   | 0   | 14 | 14    |
 | Gear                 | 6   | 18 | 24    |
-| Performance Trends   | 5   | 0  | 5     |
-| **Subtotal**         | **53** | **80** | **133** |
+| **Subtotal**         | **48** | **80** | **128** |
 
 #### AI Coach
 
@@ -207,11 +206,12 @@
 | Endurance Score        | 9   | 0  | 9     |
 | Fitness Age            | 10  | 0  | 10    |
 | Gear Analytics         | 10  | 0  | 10    |
+| Performance Trends     | 5   | 0  | 5     |
 | Personal Bests         | 7   | 19 | 26    |
 | Qualifying Run Count   | 0   | 8  | 8     |
 | VO2Max Target Effort   | 4   | 31 | 35    |
 | Zone Analytics         | 24  | 0  | 24    |
-| **Subtotal**           | **79** | **87** | **166** |
+| **Subtotal**           | **84** | **87** | **171** |
 
 #### Injury AI
 
@@ -280,9 +280,9 @@
 | Module               | API | UI    | Total |
 | -------------------- | --- | ----- | ----- |
 | Auth                 | 22  | 107   | 129   |
-| Inventory Management | 637 | 454   | 1,091 |
+| Inventory Management | 650 | 454   | 1,104 |
 | Trading Management   | 29  | 450   | 479   |
 | Running Tracker      | 384 | 695   | 1,079 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,072** | **1,747** | **2,819** |
+| **Total**            | **1,085** | **1,747** | **2,832** |

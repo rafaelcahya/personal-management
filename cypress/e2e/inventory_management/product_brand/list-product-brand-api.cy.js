@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker'
 
 describe('Product Brand List API', () => {
   let testUserId
-  let testProductBrandIds = []
   let testProductBrandsData = []
 
   const request = () => ({
@@ -23,7 +22,6 @@ describe('Product Brand List API', () => {
         expect(response.status).to.eq(201)
         const productBrand = response.body.productBrand
         testUserId = productBrand.user_id
-        testProductBrandIds.push(productBrand.id)
         testProductBrandsData.push(productBrand)
       })
     })
@@ -38,10 +36,7 @@ describe('Product Brand List API', () => {
       expect(response.status).to.eq(200)
       expect(response.body.success).to.be.true
       expect(response.body.data).to.be.an('array')
-      expect(response.body.data.length).to.be.gte(testProductBrandIds.length)
-      testProductBrandIds.forEach((id) => {
-        expect(response.body.data.some((t) => t.id === id)).to.be.true
-      })
+      expect(response.body.total).to.be.gte(testProductBrandsData.length)
     })
   })
 
@@ -65,17 +60,17 @@ describe('Product Brand List API', () => {
   })
 
   it('should include all product brands created in before()', () => {
-    cy.GetListProductBrand().then((response) => {
-      expect(response.body.data.length).to.be.gte(testProductBrandIds.length)
-      testProductBrandIds.forEach((id) => {
-        expect(response.body.data.some((t) => t.id === id)).to.be.true
+    testProductBrandsData.forEach((created) => {
+      cy.GetListProductBrand({ search: created.brand }).then((response) => {
+        expect(response.status).to.eq(200)
+        expect(response.body.data.some((t) => t.id === created.id)).to.be.true
       })
     })
   })
 
   it('should return created product brands with correct field values', () => {
-    cy.GetListProductBrand().then((response) => {
-      testProductBrandsData.forEach((created) => {
+    testProductBrandsData.forEach((created) => {
+      cy.GetListProductBrand({ search: created.brand }).then((response) => {
         const found = response.body.data.find((t) => t.id === created.id)
         expect(found).to.exist
         expect(found.brand).to.eq(created.brand)
@@ -98,13 +93,16 @@ describe('Product Brand List API', () => {
 
   it('should return correct response structure', () => {
     cy.GetListProductBrand().then((response) => {
-      expect(response.body).to.have.all.keys('success', 'data')
+      expect(response.body).to.have.all.keys('success', 'data', 'total', 'page', 'limit')
       expect(response.body.success).to.be.a('boolean')
       expect(response.body.data).to.be.an('array')
+      expect(response.body.total).to.be.a('number')
+      expect(response.body.page).to.be.a('number')
+      expect(response.body.limit).to.be.a('number')
 
       if (response.body.data.length > 0) {
-        const productBrands = response.body.data[0]
-        expect(productBrands).to.have.all.keys([
+        const productBrand = response.body.data[0]
+        expect(productBrand).to.have.all.keys([
           'created_at',
           'deleted_at',
           'id',
@@ -146,6 +144,7 @@ describe('Product Brand List API', () => {
 
   describe('product_count field', () => {
     let countBrandId
+    let countBrandName
     let countProductNameId
 
     before(() => {
@@ -153,9 +152,10 @@ describe('Product Brand List API', () => {
       cy.clearLocalStorage()
       cy.setupApiAuthCookies()
 
-      // Create a brand dedicated to product_count tests
+      countBrandName = faker.food.fruit() + '-cnt-' + Date.now()
+
       cy.AddProductBrand({
-        brand: faker.food.fruit() + '-cnt-' + Date.now(),
+        brand: countBrandName,
         brand_status: 'active',
         note: faker.word.words(5),
       }).then((res) => {
@@ -164,7 +164,6 @@ describe('Product Brand List API', () => {
         cy.log(`✅ Count brand created, ID: ${countBrandId}`)
       })
 
-      // Create a product name for linking to the brand
       cy.AddProductName({
         product_name: faker.food.ingredient() + '-cnt-' + Date.now(),
       }).then((res) => {
@@ -205,9 +204,10 @@ describe('Product Brand List API', () => {
     })
 
     it('should return 0 for brands with no active products', () => {
-      // Create a brand with no products linked
+      const zeroBrandName = faker.food.fruit() + '-zero-' + Date.now()
+
       cy.AddProductBrand({
-        brand: faker.food.fruit() + '-zero-' + Date.now(),
+        brand: zeroBrandName,
         brand_status: 'active',
         note: faker.word.words(5),
       }).then((brandRes) => {
@@ -215,7 +215,7 @@ describe('Product Brand List API', () => {
         const zeroBrandId = brandRes.body.productBrand.id
         cy.log(`✅ Zero-product brand created, ID: ${zeroBrandId}`)
 
-        cy.GetListProductBrand().then((response) => {
+        cy.GetListProductBrand({ search: zeroBrandName }).then((response) => {
           const found = response.body.data.find((b) => b.id === zeroBrandId)
           expect(found, 'Brand should appear in list').to.exist
           expect(found.product_count).to.eq(0)
@@ -225,7 +225,6 @@ describe('Product Brand List API', () => {
     })
 
     it('API vs DB: product_count should match active product count in DB after creating a product linked to the brand', () => {
-      // Create one product linked to countBrandId
       cy.AddProduct({
         product_id: countProductNameId,
         brand_id: countBrandId,
@@ -237,14 +236,12 @@ describe('Product Brand List API', () => {
         expect(productRes.status).to.eq(201)
         cy.log(`✅ Product created with brand_id: ${countBrandId}`)
 
-        // Get product_count from API
-        cy.GetListProductBrand().then((listRes) => {
+        cy.GetListProductBrand({ search: countBrandName }).then((listRes) => {
           const apiBrand = listRes.body.data.find((b) => b.id === countBrandId)
           expect(apiBrand, 'Brand should be in list').to.exist
           const apiCount = apiBrand.product_count
           cy.log(`📊 API product_count: ${apiCount}`)
 
-          // Get count from DB
           cy.getActiveProductCountByBrandFromDb(countBrandId).then((dbCount) => {
             cy.log(`📊 DB active product count: ${dbCount}`)
             expect(apiCount).to.eq(dbCount)

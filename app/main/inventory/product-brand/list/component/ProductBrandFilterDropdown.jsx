@@ -21,10 +21,10 @@ const FILTER_OPTIONS = [
 ]
 
 const SORT_OPTIONS = [
-  { value: 'name-asc', label: 'A → Z' },
-  { value: 'name-desc', label: 'Z → A' },
-  { value: 'most-products', label: 'Most products first' },
-  { value: 'least-products', label: 'Fewest products first' },
+  { value: 'name_asc', label: 'A → Z' },
+  { value: 'name_desc', label: 'Z → A' },
+  { value: 'most_products', label: 'Most products first' },
+  { value: 'least_products', label: 'Fewest products first' },
 ]
 
 export default function ProductBrandFilterDropdown({
@@ -60,7 +60,7 @@ export default function ProductBrandFilterDropdown({
   }
 
   const hasActiveFilter = filter !== null
-  const hasNonDefaultSort = sortOrder !== 'name-asc'
+  const hasNonDefaultSort = sortOrder !== 'name_asc'
   const activeCount = (hasActiveFilter ? 1 : 0) + (hasNonDefaultSort ? 1 : 0)
 
   return (
@@ -131,7 +131,7 @@ export default function ProductBrandFilterDropdown({
               className="h-6 px-2 text-xs hover:bg-violet-100 text-violet-500 hover:text-violet-500"
               onClick={(e) => {
                 e.stopPropagation()
-                onSortChange?.('name-asc')
+                onSortChange?.('name_asc')
               }}
             >
               Reset

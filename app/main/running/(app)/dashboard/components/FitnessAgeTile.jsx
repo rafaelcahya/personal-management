@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { Brain, Info } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
@@ -7,7 +8,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 const TOOLTIP_TEXT =
   'Fitness Age compares your estimated VO₂max against population norms from the NTNU study (Nes et al. 2011). A lower Fitness Age means your cardiovascular fitness is above average for your chronological age.'
 
-export default function FitnessAgeTile({ fitnessAge }) {
+export default function FitnessAgeTile({ fitnessAge, viewTrendHref }) {
   const { fitness_age, chronological_age, sex_missing } = fitnessAge ?? {}
 
   function getSubLabel() {
@@ -40,6 +41,14 @@ export default function FitnessAgeTile({ fitnessAge }) {
             <p className="text-xs text-slate-400">
               Estimated cardiovascular age based on VO₂max population norms.
             </p>
+            {viewTrendHref && (
+              <Link
+                href={viewTrendHref}
+                className="text-xs text-violet-600 hover:underline mt-1 inline-flex items-center gap-1"
+              >
+                View full trend →
+              </Link>
+            )}
           </div>
           <div className="flex items-start gap-4">
             <div className="p-2 rounded-lg bg-violet-50 shrink-0 mt-0.5">
