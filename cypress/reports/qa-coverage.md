@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-19 (issue #380)
-**Branch:** feat/issue-380-product-name-server-pagination
+**Last Updated:** 2026-06-19 (issue #402)
+**Branch:** feat/issue-402-product-api-test-coverage
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,098  | 39%  |
+| API       | 1,111  | 39%  |
 | UI        | 1,747  | 61%  |
-| **Total** | **2,845** | 100% |
+| **Total** | **2,858** | 100% |
 
 ---
 
@@ -20,12 +20,12 @@
 | Module               | API | UI    | Total |
 | -------------------- | --- | ----- | ----- |
 | Auth                 | 22  | 107   | 129   |
-| Inventory Management | 663 | 454   | 1,117 |
+| Inventory Management | 676 | 454   | 1,130 |
 | Trading Management   | 29  | 450   | 479   |
 | Running Tracker      | 384 | 695   | 1,079 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,098** | **1,747** | **2,845** |
+| **Total**            | **1,111** | **1,747** | **2,858** |
 
 ---
 
@@ -61,6 +61,7 @@
 | Add Product          | 40  | 60 | 100   |
 | Create Stock         | 40  | 0  | 40    |
 | Delete Product       | 23  | 0  | 23    |
+| Edit Product         | 13  | 0  | 13    |
 | Favorite Product     | 27  | 0  | 27    |
 | Last Price           | 17  | 0  | 17    |
 | List Product         | 41  | 98 | 139   |
@@ -71,7 +72,7 @@
 | Restock Predictions  | 16  | 0  | 16    |
 | Product Summary      | 16  | 0  | 16    |
 | Update Product       | 39  | 0  | 39    |
-| **Subtotal**         | **335** | **211** | **546** |
+| **Subtotal**         | **348** | **211** | **559** |
 
 #### Product Brand
 
@@ -105,7 +106,7 @@
 | Update Name      | 29  | 14 | 43    |
 | **Subtotal**     | **124** | **58** | **182** |
 
-**Inventory Total — API: 663 | UI: 454 | Total: 1,117**
+**Inventory Total — API: 676 | UI: 454 | Total: 1,130**
 
 ---
 
@@ -280,9 +281,9 @@
 | Module               | API | UI    | Total |
 | -------------------- | --- | ----- | ----- |
 | Auth                 | 22  | 107   | 129   |
-| Inventory Management | 663 | 454   | 1,117 |
+| Inventory Management | 676 | 454   | 1,130 |
 | Trading Management   | 29  | 450   | 479   |
 | Running Tracker      | 384 | 695   | 1,079 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,098** | **1,747** | **2,845** |
+| **Total**            | **1,111** | **1,747** | **2,858** |

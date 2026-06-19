@@ -18,14 +18,14 @@ describe('GET Last Purchase Price API - /api/inventory/v1/product/[id]/last-pric
     cy.setupApiAuthCookies()
 
     cy.AddProductBrand({
-      brand: faker.food.fruit(),
+      brand: 'LastPriceBrand-' + Date.now() + '-' + faker.string.alphanumeric(6),
       brand_status: 'active',
       note: faker.word.words(3),
     }).then((brandRes) => {
       expect(brandRes.status).to.eq(201)
 
       cy.AddProductName({
-        product_name: faker.food.ingredient(),
+        product_name: 'LastPriceName-' + Date.now() + '-' + faker.string.alphanumeric(6),
         product_name_status: 'active',
       }).then((nameRes) => {
         expect(nameRes.status).to.eq(201)
@@ -50,7 +50,7 @@ describe('GET Last Purchase Price API - /api/inventory/v1/product/[id]/last-pric
             })
           ).then((res1) => {
             expect(res1.status).to.eq(201)
-            stockEntries.push(res1.body.productQuantity)
+            stockEntries.push(res1.body.data)
 
             cy.CreateProductStock(
               buildStockRequest({
@@ -59,7 +59,7 @@ describe('GET Last Purchase Price API - /api/inventory/v1/product/[id]/last-pric
               })
             ).then((res2) => {
               expect(res2.status).to.eq(201)
-              stockEntries.push(res2.body.productQuantity)
+              stockEntries.push(res2.body.data)
             })
           })
         })
@@ -147,12 +147,12 @@ describe('GET Last Purchase Price API - /api/inventory/v1/product/[id]/last-pric
 
     it('should return null fields when product has no stock history', () => {
       cy.AddProductBrand({
-        brand: faker.food.fruit(),
+        brand: 'NoStockBrand-' + Date.now() + '-' + faker.string.alphanumeric(6),
         brand_status: 'active',
         note: faker.word.words(3),
       }).then((brandRes) => {
         cy.AddProductName({
-          product_name: faker.food.ingredient(),
+          product_name: 'NoStockName-' + Date.now() + '-' + faker.string.alphanumeric(6),
           product_name_status: 'active',
         }).then((nameRes) => {
           cy.AddProduct({
@@ -258,12 +258,12 @@ describe('GET Last Purchase Price API - /api/inventory/v1/product/[id]/last-pric
 
     it('should return null when product_quantity table has no records for this product', () => {
       cy.AddProductBrand({
-        brand: faker.food.fruit(),
+        brand: 'DbNullBrand-' + Date.now() + '-' + faker.string.alphanumeric(6),
         brand_status: 'active',
         note: faker.word.words(3),
       }).then((brandRes) => {
         cy.AddProductName({
-          product_name: faker.food.ingredient(),
+          product_name: 'DbNullName-' + Date.now() + '-' + faker.string.alphanumeric(6),
           product_name_status: 'active',
         }).then((nameRes) => {
           cy.AddProduct({
