@@ -1,0 +1,81 @@
+import { BarChart2, TrendingUp, Zap, Activity, Trophy, Mountain, MapPin, Heart } from 'lucide-react'
+
+export const ANALYTICS_SECTIONS = [
+  {
+    id: 'performanceTrendsSection_analyticsPage',
+    label: 'Performance Trends',
+    icon: TrendingUp,
+    defaultVisible: true,
+  },
+  { id: 'weeklyDistanceSection', label: 'Weekly Distance', icon: BarChart2, defaultVisible: true },
+  { id: 'paceTrendSection', label: 'Pace Trend', icon: TrendingUp, defaultVisible: true },
+  { id: 'bestPaceSection', label: 'Best Pace by Distance', icon: Zap, defaultVisible: true },
+  {
+    id: 'elevationTerrainSection_analyticsPage',
+    label: 'Elevation & Terrain',
+    icon: Mountain,
+    defaultVisible: true,
+  },
+  {
+    id: 'pmcSection_analyticsPage',
+    label: 'Performance Management',
+    icon: Activity,
+    defaultVisible: true,
+  },
+  { id: 'vo2maxTrendSection', label: 'VO2max Trend', icon: Activity, defaultVisible: true },
+  {
+    id: 'runningPowerSection_analyticsPage',
+    label: 'Running Power',
+    icon: Zap,
+    defaultVisible: true,
+  },
+  {
+    id: 'vo2maxTargetEffortSection',
+    label: 'VO2max Target Effort',
+    icon: Activity,
+    defaultVisible: true,
+  },
+  {
+    id: 'efTrendSection',
+    label: 'Efficiency Factor Trend',
+    icon: TrendingUp,
+    defaultVisible: true,
+  },
+  { id: 'racePredictorSection', label: 'Race Predictor', icon: TrendingUp, defaultVisible: true },
+  {
+    id: 'personalBestsSection_analyticsPage',
+    label: 'Personal Bests',
+    icon: Trophy,
+    defaultVisible: true,
+  },
+  {
+    id: 'calorieTrendSection_analyticsPage',
+    label: 'Calorie Burn Trend',
+    icon: BarChart2,
+    defaultVisible: true,
+  },
+  {
+    id: 'fitnessAgeTrendSection_analyticsPage',
+    label: 'Fitness Age Trend',
+    icon: Activity,
+    defaultVisible: true,
+  },
+  {
+    id: 'enduranceScoreTrendSection_analyticsPage',
+    label: 'Endurance Score Trend',
+    icon: Activity,
+    defaultVisible: true,
+  },
+  {
+    id: 'trainingZonesSection_analyticsPage',
+    label: 'Training Zones Reference',
+    icon: MapPin,
+    defaultVisible: true,
+  },
+  {
+    id: 'zoneAnalyticsSection_analyticsPage',
+    label: 'Zone Analytics',
+    icon: Heart,
+    defaultVisible: true,
+  },
+]

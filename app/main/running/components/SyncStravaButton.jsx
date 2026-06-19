@@ -15,7 +15,7 @@ function formatRelativeTime(isoString) {
   return `${Math.floor(diffHour / 24)}d ago`
 }
 
-export default function SyncStravaButton({ id = 'syncStravaBtn' }) {
+export default function SyncStravaButton({ id = 'syncStravaBtn', actions }) {
   const [connected, setConnected] = useState(false)
   const [lastSyncAt, setLastSyncAt] = useState(null)
   const [syncing, setSyncing] = useState(false)
@@ -59,6 +59,7 @@ export default function SyncStravaButton({ id = 'syncStravaBtn' }) {
       </div>
 
       <div className="flex items-center gap-3">
+        {actions}
         {syncResult !== null && (
           <span
             className={`flex items-center gap-1.5 text-xs font-medium ${
