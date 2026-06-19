@@ -10,6 +10,9 @@ import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
 import { Search, X, PackageOpen } from 'lucide-react'
 import InventoryTableSkeleton from '@/app/main/components/InventoryTableSkeleton'
+import { Button } from '@/components/ui/button'
+
+const LIMIT = 15
 
 function NameSearchInput({ searchQuery, setSearchQuery }) {
   return (
@@ -54,32 +57,59 @@ const NAME_SKELETON_ROW = [
   'h-6 w-6 rounded',
 ]
 
-export default function ProductNamesPageClient({ initialNames }) {
-  const [names, setNames] = useState(initialNames ?? null)
-  const [loading, setLoading] = useState(initialNames == null)
+export default function ProductNamesPageClient() {
+  const [names, setNames] = useState([])
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [filterStatus, setFilterStatus] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortOrder, setSortOrder] = useState('name-asc')
+  const [sortOrder, setSortOrder] = useState('name_asc')
 
-  const fetchProductNames = async () => {
-    try {
-      const productNames = await fetchProductName()
-      setNames(productNames || [])
-    } catch (err) {
-      console.error('Failed to fetch product names:', err)
-      setNames([])
-    } finally {
-      setLoading(false)
-    }
-  }
+  const totalPages = Math.ceil(total / LIMIT)
+  const hasActiveFilters = !!searchQuery || !!filterStatus
 
   useEffect(() => {
-    if (initialNames == null) {
-      fetchProductNames()
-    }
-  }, [])
+    setPage(1)
+  }, [searchQuery, filterStatus, sortOrder])
 
-  const nameList = names ?? []
+  useEffect(() => {
+    let cancelled = false
+
+    async function load() {
+      setLoading(true)
+      setError(null)
+      try {
+        const result = await fetchProductName({
+          page,
+          limit: LIMIT,
+          search: searchQuery || undefined,
+          status: filterStatus || undefined,
+          sort: sortOrder,
+        })
+        if (!cancelled) {
+          setNames(result.data ?? [])
+          setTotal(result.total ?? 0)
+        }
+      } catch (err) {
+        if (!cancelled) setError(err.message || 'Failed to load product names')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    load()
+    return () => {
+      cancelled = true
+    }
+  }, [page, searchQuery, filterStatus, sortOrder])
+
+  function handleRefresh() {
+    setPage((p) => p)
+  }
+
+  const showTable = !error && (loading || total > 0 || hasActiveFilters)
 
   return (
     <div className="flex flex-col gap-3 sm:gap-5">
@@ -92,7 +122,7 @@ export default function ProductNamesPageClient({ initialNames }) {
       <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white flex flex-col">
         {/* Title */}
         <div className="px-3 sm:px-5 pt-3 sm:pt-5">
-          <ProductNameTableHeader names={nameList} />
+          <ProductNameTableHeader names={names} />
         </div>
 
         {/* Controls bar */}
@@ -109,20 +139,31 @@ export default function ProductNamesPageClient({ initialNames }) {
                 sortOrder={sortOrder}
                 onSortChange={setSortOrder}
               />
-              <AddProductName onAdded={fetchProductNames} />
+              <AddProductName onAdded={handleRefresh} />
             </div>
           </div>
         </div>
 
         {/* Table area */}
         <div className="px-3 sm:px-5 py-3 sm:py-4">
-          {loading ? (
+          {error ? (
+            <div
+              id="errorState_productNamePage"
+              className="flex flex-col items-center justify-center gap-3 py-12 text-center"
+            >
+              <p className="text-sm font-semibold text-red-600">Failed to load product names</p>
+              <p className="text-xs text-slate-400">{error}</p>
+              <Button variant="outline" size="sm" onClick={handleRefresh} className="text-xs h-8">
+                Retry
+              </Button>
+            </div>
+          ) : loading ? (
             <InventoryTableSkeleton
               id="loadingSkeleton_productNamePage"
               headerCols={NAME_SKELETON_HEADER}
               rowCols={NAME_SKELETON_ROW}
             />
-          ) : nameList.length === 0 ? (
+          ) : total === 0 && !hasActiveFilters ? (
             <div
               id="emptyState_productNamePage"
               className="flex flex-col items-center justify-center gap-3 py-12 text-center"
@@ -134,18 +175,23 @@ export default function ProductNamesPageClient({ initialNames }) {
                   Add your first product name to start organizing your inventory
                 </p>
               </div>
-              <AddProductName onAdded={fetchProductNames} />
+              <AddProductName onAdded={handleRefresh} />
             </div>
-          ) : (
+          ) : showTable ? (
             <ProductNamesTable
-              productNames={nameList}
+              names={names}
+              page={page}
+              totalPages={totalPages}
+              total={total}
               filterStatus={filterStatus}
               searchQuery={searchQuery}
-              sortOrder={sortOrder}
+              onPrev={() => setPage((p) => Math.max(1, p - 1))}
+              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+              onRefresh={handleRefresh}
               onClearSearch={() => setSearchQuery('')}
               onClearFilter={() => setFilterStatus(null)}
             />
-          )}
+          ) : null}
         </div>
       </div>
     </div>
