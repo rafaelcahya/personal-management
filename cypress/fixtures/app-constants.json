@@ -287,7 +287,12 @@
       "usage_log_duration_col": "durationCol_usageLogTable",
       "log_row_duration": "logRowDuration_usageLogTable",
       "log_row_ongoing_label": "ongoingLabel_usageLogTable",
-      "image_preview_dialog": "imagePreviewDialog_productListPage"
+      "image_preview_dialog": "imagePreviewDialog_productListPage",
+      "pagination_footer": "paginationFooter_productListPage",
+      "loading_skeleton": "loadingSkeleton_productListPage",
+      "error_state": "errorState_productListPage",
+      "empty_state": "emptyState_productListPage",
+      "filtered_empty_state": "filteredEmptyState_productListPage"
     },
     "product_detail": {
       "page": "container_productDetailPage",
@@ -590,7 +595,7 @@
       "add_btn": "addRaceBtn",
       "form_modal": "raceLogFormModal",
       "save_btn": "raceLogSaveBtn",
-      "pb_rank_chip": "pbRankChip_{distance}_raceLogPage",
+      "pb_rank_chip": "pbRankChip_{distance}_raceDetailPage",
       "delete_btn": "deleteRaceBtn_raceDetailPage",
       "delete_confirm_btn": "deleteRaceConfirmBtn_raceDetailPage",
       "edit_goal_btn": "editGoalBtn",
@@ -636,7 +641,6 @@
       "burn_bar_empty": "burnBarEmpty_raceDetailPage",
       "burn_bar_pace_btn": "burnBarPaceBtn_raceDetailPage",
       "burn_bar_hr_btn": "burnBarHrBtn_raceDetailPage",
-      "pb_rank_chip": "pbRankChip_{distance}_raceDetailPage",
       "route_start_marker": "routeStartMarker_raceDetailPage",
       "route_end_marker": "routeEndMarker_raceDetailPage",
       "lap_marker": "lapMarker_{n}_raceDetailPage",
