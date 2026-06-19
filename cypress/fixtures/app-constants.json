@@ -37,7 +37,9 @@
       "update": "/api/inventory/v1/update",
       "delete": "/api/inventory/v1/delete",
       "detail": "/api/inventory/v1/detail",
-      "get_products": "/api/inventory/v1/get-products"
+      "get_products": "/api/inventory/v1/get-products",
+      "dashboard": "/api/inventory/v1/dashboard",
+      "budget": "/api/inventory/v1/budget"
     },
     "product": {
       "list": "/api/inventory/v1/product/list",
