@@ -22,7 +22,6 @@ import { getDashboard, syncStrava, fetchUpcomingRaces } from '@/lib/api/running'
 import WeeklyStats from './components/WeeklyStats'
 import TrainingLoad from './components/TrainingLoad'
 import ActivitySection from './components/ActivitySection'
-import PerformanceTrends from './components/PerformanceTrends'
 import DashboardSkeleton from './components/DashboardSkeleton'
 import DashboardError from './components/DashboardError'
 import ShoeRotation from './components/ShoeRotation'
@@ -279,12 +278,20 @@ export default function RunningDashboardPage() {
             />
           )}
           <YtdStats ytd_stats={dashboardData.training_load?.ytd_stats} />
-          {dashboardData.fitness_age != null && (
-            <FitnessAgeTile fitnessAge={dashboardData.fitness_age} />
-          )}
-          {dashboardData.endurance_score !== undefined && (
-            <EnduranceScoreTile enduranceScore={dashboardData.endurance_score} />
-          )}
+          <div className="grid grid-cols-2 gap-6">
+            {dashboardData.fitness_age != null && (
+              <FitnessAgeTile
+                fitnessAge={dashboardData.fitness_age}
+                viewTrendHref="/main/running/analytics#fitnessAgeTrendSection_analyticsPage"
+              />
+            )}
+            {dashboardData.endurance_score !== undefined && (
+              <EnduranceScoreTile
+                enduranceScore={dashboardData.endurance_score}
+                viewTrendHref="/main/running/analytics#enduranceScoreTrendSection_analyticsPage"
+              />
+            )}
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <NextRace upcoming_races={upcomingRaces} />
             <ShoeRotation />
@@ -294,7 +301,6 @@ export default function RunningDashboardPage() {
             recentActivities={dashboardData.recent_activities ?? []}
             activityType={activeType}
           />
-          <PerformanceTrends activityType={activeType} />
         </div>
       )}
     </div>
