@@ -4,7 +4,11 @@ import { getRaceLogs } from '@/lib/services/running/raceLog/getRaceLogs'
 import { createRaceLog } from '@/lib/services/running/raceLog/createRaceLog'
 import { createRaceLogSchema } from '@/schemas/raceLog'
 
-export async function GET() {
+const MAX_LIMIT = 100
+const DEFAULT_LIMIT = 15
+const VALID_BUCKETS = ['5k', '10k', '21k', '42k', 'other']
+
+export async function GET(request) {
   try {
     const supabase = await createClient()
     const {
@@ -19,8 +23,18 @@ export async function GET() {
       )
     }
 
-    const logs = await getRaceLogs(supabase, user.id)
-    return NextResponse.json({ data: logs, message: 'OK' }, { status: 200 })
+    const { searchParams } = new URL(request.url)
+    const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1)
+    const limit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, parseInt(searchParams.get('limit') ?? String(DEFAULT_LIMIT), 10) || DEFAULT_LIMIT)
+    )
+    const search = searchParams.get('search') || undefined
+    const rawBucket = searchParams.get('distance_bucket') || undefined
+    const distance_bucket = rawBucket && VALID_BUCKETS.includes(rawBucket) ? rawBucket : undefined
+
+    const result = await getRaceLogs(supabase, user.id, { page, limit, search, distance_bucket })
+    return NextResponse.json({ ...result, message: 'OK' }, { status: 200 })
   } catch (err) {
     console.error('[running/race-log GET]', err)
     return NextResponse.json(

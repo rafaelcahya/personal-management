@@ -2,7 +2,17 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Medal, Plus, AlertTriangle, Flag, Trophy, Search, X } from 'lucide-react'
+import {
+  Medal,
+  Plus,
+  AlertTriangle,
+  Flag,
+  Trophy,
+  Search,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -23,25 +33,21 @@ import UpcomingRaceFormModal from './components/UpcomingRaceFormModal'
 import { getDistanceLabel, secsToHMS, secsToMMSS, formatDate } from './components/raceLogUtils'
 import UpcomingRacesSection from './components/UpcomingRacesSection'
 
-const DISTANCE_BUCKETS = [
-  { key: '5k', label: '5K', min: 4500, max: 5499 },
-  { key: '10k', label: '10K', min: 9500, max: 10499 },
-  { key: '21k', label: '21K (Half)', min: 20500, max: 21499 },
-  { key: '42k', label: '42K (Full)', min: 41500, max: 42499 },
-  { key: 'other', label: 'Other', min: null, max: null },
-]
+const LIMIT = 15
 
-function getDistanceBucket(distanceM) {
-  if (distanceM == null) return 'other'
-  for (const b of DISTANCE_BUCKETS) {
-    if (b.min != null && distanceM >= b.min && distanceM <= b.max) return b.key
-  }
-  return 'other'
-}
+const DISTANCE_BUCKETS = [
+  { key: '5k', label: '5K' },
+  { key: '10k', label: '10K' },
+  { key: '21k', label: '21K (Half)' },
+  { key: '42k', label: '42K (Full)' },
+  { key: 'other', label: 'Other' },
+]
 
 export default function RaceLogPage() {
   const router = useRouter()
   const [entries, setEntries] = useState([])
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -57,39 +63,57 @@ export default function RaceLogPage() {
   const [activeDistance, setActiveDistance] = useState(null)
   const debounceRef = useRef(null)
 
+  const totalPages = Math.ceil(total / LIMIT)
+  const hasActiveFilters = !!(search || activeDistance)
+
   useEffect(() => {
     clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => setSearch(searchInput.trim()), 400)
+    debounceRef.current = setTimeout(() => {
+      setSearch(searchInput.trim())
+      setPage(1)
+    }, 400)
     return () => clearTimeout(debounceRef.current)
   }, [searchInput])
 
-  const knownBuckets = new Set(entries.map((e) => getDistanceBucket(e.distance_m)))
-
-  const filteredEntries = entries.filter((e) => {
-    const matchSearch = !search || e.title?.toLowerCase().includes(search.toLowerCase())
-    const matchDist = !activeDistance || getDistanceBucket(e.distance_m) === activeDistance
-    return matchSearch && matchDist
-  })
-
-  async function load() {
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await fetchRaceLog()
-      setEntries(res.data ?? [])
-    } catch (err) {
-      if (err.message === 'UNAUTHORIZED') {
-        window.location.href = '/login'
-        return
-      }
-      setError(err.message || 'Failed to load race log')
-    } finally {
-      setLoading(false)
-    }
-  }
+  // Reset page when filter changes
+  useEffect(() => {
+    setPage(1)
+  }, [activeDistance])
 
   useEffect(() => {
-    load()
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    fetchRaceLog({
+      page,
+      limit: LIMIT,
+      search: search || undefined,
+      distance_bucket: activeDistance || undefined,
+    })
+      .then((res) => {
+        if (cancelled) return
+        setEntries(res.data ?? [])
+        setTotal(res.total ?? 0)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        if (err.message === 'UNAUTHORIZED') {
+          window.location.href = '/login'
+          return
+        }
+        setError(err.message || 'Failed to load race log')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [page, search, activeDistance])
+
+  useEffect(() => {
     fetchUpcomingRaces()
       .then((res) => setUpcomingRaces(res.data ?? []))
       .catch((err) => {
@@ -102,16 +126,8 @@ export default function RaceLogPage() {
       .finally(() => setUpcomingLoading(false))
   }, [])
 
-  function handleSaved(newOrUpdated) {
-    setEntries((prev) => {
-      const idx = prev.findIndex((e) => e.id === newOrUpdated.id)
-      if (idx >= 0) {
-        const next = [...prev]
-        next[idx] = { top_best_efforts: prev[idx].top_best_efforts ?? [], ...newOrUpdated }
-        return next.sort((a, b) => new Date(b.race_date) - new Date(a.race_date))
-      }
-      return [{ top_best_efforts: [], ...newOrUpdated }, ...prev]
-    })
+  function load() {
+    setPage((p) => p)
   }
 
   function handleUpcomingAdd(race) {
@@ -126,10 +142,6 @@ export default function RaceLogPage() {
 
   function handleUpcomingDeleted(id) {
     setUpcomingRaces((prev) => prev.filter((r) => r.id !== id))
-  }
-
-  function handleUpcomingCompleted(newEntry) {
-    handleSaved(newEntry)
   }
 
   return (
@@ -190,7 +202,7 @@ export default function RaceLogPage() {
         onAdd={handleUpcomingAdd}
         onUpdated={handleUpcomingUpdated}
         onDeleted={handleUpcomingDeleted}
-        onCompleted={handleUpcomingCompleted}
+        onCompleted={load}
       />
 
       {/* Error */}
@@ -208,8 +220,8 @@ export default function RaceLogPage() {
         </div>
       )}
 
-      {/* Empty state */}
-      {!loading && !error && entries.length === 0 && (
+      {/* Empty state — no races at all */}
+      {!loading && !error && total === 0 && !hasActiveFilters && (
         <div
           id="raceLogEmptyState"
           className="flex flex-col items-center justify-center py-20 gap-4 text-center"
@@ -231,7 +243,7 @@ export default function RaceLogPage() {
       )}
 
       {/* Search + filter bar + Race table */}
-      {!error && (loading || entries.length > 0) && (
+      {!error && (loading || total > 0 || hasActiveFilters) && (
         <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden flex flex-col">
           {/* Title */}
           <div className="px-3 sm:px-5 pt-3 sm:pt-5">
@@ -265,6 +277,7 @@ export default function RaceLogPage() {
                   onClick={() => {
                     setSearchInput('')
                     setSearch('')
+                    setPage(1)
                   }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   aria-label="Clear search"
@@ -286,7 +299,7 @@ export default function RaceLogPage() {
               >
                 All
               </button>
-              {DISTANCE_BUCKETS.filter((b) => knownBuckets.has(b.key)).map((b) => (
+              {DISTANCE_BUCKETS.map((b) => (
                 <button
                   key={b.key}
                   id={`raceFilterChip_${b.key}`}
@@ -340,7 +353,7 @@ export default function RaceLogPage() {
                       </TableCell>
                     </TableRow>
                   )}
-                  {!loading && filteredEntries.length === 0 && entries.length > 0 && (
+                  {!loading && entries.length === 0 && (
                     <TableRow className="hover:bg-transparent">
                       <TableCell colSpan={7}>
                         <div className="flex flex-col items-center justify-center py-12 gap-2">
@@ -350,6 +363,7 @@ export default function RaceLogPage() {
                               setSearchInput('')
                               setSearch('')
                               setActiveDistance(null)
+                              setPage(1)
                             }}
                             className="text-xs text-violet-600 hover:underline"
                           >
@@ -360,7 +374,7 @@ export default function RaceLogPage() {
                     </TableRow>
                   )}
                   {!loading &&
-                    filteredEntries.map((entry) => {
+                    entries.map((entry) => {
                       const pace = entry.avg_pace_sec_per_km
                         ? secsToMMSS(entry.avg_pace_sec_per_km)
                         : entry.finish_time_sec && entry.distance_m
@@ -442,6 +456,35 @@ export default function RaceLogPage() {
                     })}
                 </TableBody>
               </Table>
+
+              {totalPages > 1 && (
+                <div
+                  className="flex items-center justify-between pt-2 mt-2"
+                  aria-label="Pagination"
+                >
+                  <button
+                    onClick={() => setPage((p) => p - 1)}
+                    disabled={page <= 1}
+                    className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft className="size-4" aria-hidden="true" />
+                    Prev
+                  </button>
+                  <span className="text-xs text-slate-400 text-center" aria-live="polite">
+                    Page {page} of {totalPages} · {total} records
+                  </span>
+                  <button
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={page >= totalPages}
+                    className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+                    aria-label="Next page"
+                  >
+                    Next
+                    <ChevronRight className="size-4" aria-hidden="true" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -451,7 +494,7 @@ export default function RaceLogPage() {
         open={formOpen}
         onClose={() => setFormOpen(false)}
         onSaved={(newEntry) => {
-          handleSaved(newEntry)
+          load()
           router.push(`/main/running/race-log/${newEntry.id}`)
         }}
       />

@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-19 (issue #379)
-**Branch:** feat/issue-379-product-brand-server-pagination
+**Last Updated:** 2026-06-19 (issue #381)
+**Branch:** feat/issue-381-race-log-server-pagination
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,078  | 38%  |
+| API       | 1,085  | 38%  |
 | UI        | 1,747  | 62%  |
-| **Total** | **2,825** | 100% |
+| **Total** | **2,832** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 650 | 454   | 1,104 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 377 | 695   | 1,072 |
+| Running Tracker      | 384 | 695   | 1,079 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,078** | **1,747** | **2,825** |
+| **Total**            | **1,085** | **1,747** | **2,832** |
 
 ---
 
@@ -226,9 +226,9 @@
 
 | Feature                      | API | UI | Total |
 | ---------------------------- | --- | -- | ----- |
-| Race Log + Upcoming Races    | 49  | 89 | 138   |
+| Race Log + Upcoming Races    | 56  | 89 | 145   |
 | Upcoming Races Target Time   | 0   | 19 | 19    |
-| **Subtotal**                 | **49** | **108** | **157** |
+| **Subtotal**                 | **56** | **108** | **164** |
 
 #### Manual Entry
 
@@ -253,7 +253,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **53** | **21** | **74** |
 
-**Running Total — API: 377 | UI: 695 | Total: 1,072**
+**Running Total — API: 384 | UI: 695 | Total: 1,079**
 
 ---
 
@@ -282,7 +282,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 650 | 454   | 1,104 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 377 | 695   | 1,072 |
+| Running Tracker      | 384 | 695   | 1,079 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,078** | **1,747** | **2,825** |
+| **Total**            | **1,085** | **1,747** | **2,832** |
