@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-18 (issue #395)
-**Branch:** release/v1.14
+**Last Updated:** 2026-06-19 (issue #401)
+**Branch:** feat/issue-401-inventory-dashboard-api-tests
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,065  | 38%  |
+| API       | 1,063  | 38%  |
 | UI        | 1,747  | 62%  |
-| **Total** | **2,812** | 100% |
+| **Total** | **2,810** | 100% |
 
 ---
 
@@ -20,12 +20,12 @@
 | Module               | API | UI    | Total |
 | -------------------- | --- | ----- | ----- |
 | Auth                 | 22  | 107   | 129   |
-| Inventory Management | 637 | 454   | 1,091 |
+| Inventory Management | 635 | 454   | 1,089 |
 | Trading Management   | 29  | 450   | 479   |
 | Running Tracker      | 377 | 695   | 1,072 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,065** | **1,747** | **2,812** |
+| **Total**            | **1,063** | **1,747** | **2,810** |
 
 ---
 
@@ -49,9 +49,9 @@
 
 | Feature       | API | UI | Total |
 | ------------- | --- | -- | ----- |
-| Dashboard     | 56  | 95 | 151   |
+| Dashboard     | 54  | 95 | 149   |
 | Summary       | 17  | 0  | 17    |
-| **Subtotal**  | **73** | **95** | **168** |
+| **Subtotal**  | **71** | **95** | **166** |
 
 #### Product
 
@@ -105,7 +105,7 @@
 | Update Name      | 29  | 14 | 43    |
 | **Subtotal**     | **111** | **58** | **169** |
 
-**Inventory Total — API: 637 | UI: 454 | Total: 1,091**
+**Inventory Total — API: 635 | UI: 454 | Total: 1,089**
 
 ---
 
@@ -280,9 +280,9 @@
 | Module               | API | UI    | Total |
 | -------------------- | --- | ----- | ----- |
 | Auth                 | 22  | 107   | 129   |
-| Inventory Management | 637 | 454   | 1,091 |
+| Inventory Management | 635 | 454   | 1,089 |
 | Trading Management   | 29  | 450   | 479   |
 | Running Tracker      | 377 | 695   | 1,072 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,065** | **1,747** | **2,812** |
+| **Total**            | **1,063** | **1,747** | **2,810** |
