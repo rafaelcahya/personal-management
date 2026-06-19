@@ -23,6 +23,8 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
   FilePenLine,
   MoreHorizontalIcon,
   Pencil,
@@ -37,6 +39,14 @@ import DeleteProductDialog from './component/DeleteProductDialog'
 import EditProductSheet from './component/EditProductSheet'
 
 const LOW_STOCK_THRESHOLD = 5
+
+// Maps table column clicks to SORT_MAP keys used by the API
+const COLUMN_SORT_MAP = {
+  product: { asc: 'product_asc', desc: 'product_desc' },
+  quantity: { asc: 'quantity_asc', desc: 'quantity_desc' },
+  in_use: { asc: 'in_use_asc', desc: 'in_use_desc' },
+  usage_date: { asc: 'usage_date_asc', desc: 'usage_date_desc' },
+}
 
 function QuantityBadge({ quantity }) {
   if (quantity === 0) {
@@ -124,80 +134,43 @@ function ActionMenu({
   )
 }
 
+function SortIcon({ column, sort }) {
+  if (!sort) return <ArrowUpDown className="size-3 opacity-50 inline ml-1" />
+  const sortMap = COLUMN_SORT_MAP[column]
+  if (!sortMap) return <ArrowUpDown className="size-3 opacity-50 inline ml-1" />
+  if (sort === sortMap.asc) return <ArrowUp className="size-3 inline ml-1" />
+  if (sort === sortMap.desc) return <ArrowDown className="size-3 inline ml-1" />
+  return <ArrowUpDown className="size-3 opacity-50 inline ml-1" />
+}
+
 export default function ProductsTable({
   products,
-  allProducts,
-  onProductsChange,
+  sort,
+  onSortChange,
   onRefresh,
   restockPredictions = {},
+  page,
+  total,
+  totalPages,
+  onPrev,
+  onNext,
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [editProduct, setEditProduct] = useState(null)
   const [loadingFavorite, setLoadingFavorite] = useState(null)
-  const [sortConfig, setSortConfig] = useState({ column: null, direction: 'asc' })
   const [previewImg, setPreviewImg] = useState(null)
 
   const handleSort = (column) => {
-    setSortConfig((prev) => ({
-      column,
-      direction: prev.column === column && prev.direction === 'asc' ? 'desc' : 'asc',
-    }))
-  }
-
-  const sortedProducts = [...products].sort((a, b) => {
-    const { column, direction } = sortConfig
-    if (!column) return 0
-
-    let aVal, bVal
-    if (column === 'product') {
-      aVal = `${a.brand ?? ''} ${a.product ?? ''}`.toLowerCase()
-      bVal = `${b.brand ?? ''} ${b.product ?? ''}`.toLowerCase()
-    } else if (column === 'quantity') {
-      aVal = a.quantity ?? 0
-      bVal = b.quantity ?? 0
-    } else if (column === 'usage_date') {
-      aVal = a.usage_date ? new Date(a.usage_date).getTime() : null
-      bVal = b.usage_date ? new Date(b.usage_date).getTime() : null
-      if (aVal === null && bVal === null) return 0
-      if (aVal === null) return 1
-      if (bVal === null) return -1
-    } else if (column === 'in_use') {
-      aVal = a.usage_quantity ?? 0
-      bVal = b.usage_quantity ?? 0
-    } else {
-      return 0
-    }
-
-    if (aVal < bVal) return direction === 'asc' ? -1 : 1
-    if (aVal > bVal) return direction === 'asc' ? 1 : -1
-    return 0
-  })
-
-  const SortIcon = ({ column }) => {
-    if (sortConfig.column !== column)
-      return <ArrowUpDown className="size-3 opacity-50 inline ml-1" />
-    return sortConfig.direction === 'asc' ? (
-      <ArrowUp className="size-3 inline ml-1" />
-    ) : (
-      <ArrowDown className="size-3 inline ml-1" />
-    )
+    const sortMap = COLUMN_SORT_MAP[column]
+    if (!sortMap) return
+    // toggle: if currently asc → desc; otherwise → asc
+    const newSort = sort === sortMap.asc ? sortMap.desc : sortMap.asc
+    onSortChange(newSort)
   }
 
   const handleToggleFavorite = async (product) => {
     const newFavoriteStatus = !product.is_favorite
-    const previousState = [...allProducts]
     setLoadingFavorite(product.id)
-
-    onProductsChange((prev) => {
-      const updated = prev.map((p) =>
-        p.id === product.id ? { ...p, is_favorite: newFavoriteStatus } : p
-      )
-      return updated.sort((a, b) => {
-        if (a.is_favorite === b.is_favorite) return 0
-        return a.is_favorite ? -1 : 1
-      })
-    })
-
     try {
       await favoriteProduct(product.id, newFavoriteStatus)
       toast.success(
@@ -205,8 +178,8 @@ export default function ProductsTable({
           ? `${product.brand} added to favorites`
           : `${product.brand} removed from favorites`
       )
+      await onRefresh()
     } catch (error) {
-      onProductsChange(previousState)
       toast.error(error.message || 'Failed to update favorite status')
     } finally {
       setLoadingFavorite(null)
@@ -330,28 +303,28 @@ export default function ProductsTable({
               onClick={() => handleSort('product')}
             >
               Product
-              <SortIcon column="product" />
+              <SortIcon column="product" sort={sort} />
             </TableHead>
             <TableHead
               className="py-2 text-slate-foreground text-right w-[12%] cursor-pointer select-none"
               onClick={() => handleSort('quantity')}
             >
               Quantity
-              <SortIcon column="quantity" />
+              <SortIcon column="quantity" sort={sort} />
             </TableHead>
             <TableHead
               className="py-2 text-slate-foreground text-right w-[15%] cursor-pointer select-none"
               onClick={() => handleSort('in_use')}
             >
               In Use
-              <SortIcon column="in_use" />
+              <SortIcon column="in_use" sort={sort} />
             </TableHead>
             <TableHead
               className="py-2 text-slate-foreground text-center w-[13%] cursor-pointer select-none"
               onClick={() => handleSort('usage_date')}
             >
               Usage Date
-              <SortIcon column="usage_date" />
+              <SortIcon column="usage_date" sort={sort} />
             </TableHead>
             <TableHead className="py-2 text-slate-foreground text-center w-[13%]">
               Product Status
@@ -362,7 +335,7 @@ export default function ProductsTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedProducts.map((product) => (
+          {products.map((product) => (
             <TableRow key={product.id} className="hover:bg-slate-100">
               <TableCell className="w-[35%]">
                 <div className="flex items-center gap-3">
@@ -440,6 +413,37 @@ export default function ProductsTable({
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination footer — shown only when there are multiple pages */}
+      {totalPages > 1 && (
+        <div
+          id="paginationFooter_productListPage"
+          className="flex items-center justify-between pt-2 mt-2"
+          aria-label="Pagination"
+        >
+          <button
+            onClick={onPrev}
+            disabled={page <= 1}
+            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+            aria-label="Previous page"
+          >
+            <ChevronLeft className="size-4" aria-hidden="true" />
+            Prev
+          </button>
+          <span className="text-xs text-slate-400 text-center" aria-live="polite">
+            Page {page} of {totalPages} · {total} records
+          </span>
+          <button
+            onClick={onNext}
+            disabled={page >= totalPages}
+            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+            aria-label="Next page"
+          >
+            Next
+            <ChevronRight className="size-4" aria-hidden="true" />
+          </button>
+        </div>
+      )}
 
       {selectedProduct && (
         <StockAdjustment

@@ -1,3 +1,7 @@
+import constants from '../../../../fixtures/app-constants.json'
+
+const PRODUCT_LIST = constants.endpoints.product.list
+
 Cypress.Commands.add('AddProduct', (request) => {
   return cy.apiRequestWithSession('POST', '/api/inventory/v1/product/create', { body: request })
 })
@@ -8,12 +12,12 @@ Cypress.Commands.add('AddProductNoAuth', (request) => {
   })
 })
 
-Cypress.Commands.add('GetProductList', () => {
-  return cy.apiRequestWithSession('GET', '/api/inventory/v1/product/list')
+Cypress.Commands.add('GetProductList', (qs = {}) => {
+  return cy.apiRequestWithSession('GET', PRODUCT_LIST, { qs })
 })
 
-Cypress.Commands.add('GetProductListNoAuth', () => {
-  return cy.apiRequestNoAuth('GET', '/api/inventory/v1/product/list')
+Cypress.Commands.add('GetProductListNoAuth', (qs = {}) => {
+  return cy.apiRequestNoAuth('GET', PRODUCT_LIST, { qs })
 })
 
 Cypress.Commands.add('GetProductSummary', () => {

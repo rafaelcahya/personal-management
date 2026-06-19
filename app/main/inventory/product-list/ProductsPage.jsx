@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { fetchProductList, getProductSummary, getRestockPredictions } from '@/lib/api/product'
 import { toast } from 'sonner'
@@ -15,57 +15,94 @@ import { Search, X } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
 
 const FILTER_STORAGE_KEY = 'product-list-filter'
-const LOW_STOCK_THRESHOLD = 5
 
 export default function ProductsPageClient() {
   const searchParams = useSearchParams()
-  const [listProduct, setListProduct] = useState([])
+
+  // pagination + server data
+  const [products, setProducts] = useState([])
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  // filter + search + sort
   const [filter, setFilter] = useState(null)
   const [search, setSearch] = useState('')
+  const [sort, setSort] = useState(null)
+
+  // summary + restock (separate endpoints — unchanged)
   const [summary, setSummary] = useState(null)
   const [summaryLoading, setSummaryLoading] = useState(true)
   const [restockPredictions, setRestockPredictions] = useState({})
 
   const debouncedSearch = useDebounce(search, 300)
 
+  // initialised ref so URL params + localStorage run only once
+  const initialised = useRef(false)
+
   useEffect(() => {
+    if (initialised.current) return
+    initialised.current = true
+
+    // URL params take priority over localStorage
+    const brandParam = searchParams.get('brand')
+    const nameParam = searchParams.get('name')
+    if (brandParam) {
+      setSearch(decodeURIComponent(brandParam))
+      return
+    }
+    if (nameParam) {
+      setSearch(decodeURIComponent(nameParam))
+      return
+    }
+
+    // restore filter from localStorage
     try {
       const savedFilter = localStorage.getItem(FILTER_STORAGE_KEY)
       if (savedFilter) {
         setFilter(savedFilter === 'null' ? null : savedFilter)
       }
-    } catch (error) {
-      console.error('Failed to load filter from localStorage:', error)
+    } catch {
+      // ignore
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    const brandParam = searchParams.get('brand')
-    const nameParam = searchParams.get('name')
-    if (brandParam) {
-      setSearch(decodeURIComponent(brandParam))
-    } else if (nameParam) {
-      setSearch(decodeURIComponent(nameParam))
-    }
-  }, [])
-
+  // persist filter to localStorage
   useEffect(() => {
     try {
       localStorage.setItem(FILTER_STORAGE_KEY, filter === null ? 'null' : filter)
-    } catch (error) {
-      console.error('Failed to save filter to localStorage:', error)
+    } catch {
+      // ignore
     }
   }, [filter])
 
-  const fetchProducts = useCallback(async () => {
-    try {
-      const products = await fetchProductList()
-      setListProduct(products || [])
-    } catch (err) {
-      console.error('Fetch error:', err)
-      toast.error(err.message || 'Failed to fetch products')
-    }
-  }, [])
+  const fetchProducts = useCallback(
+    async (overridePage) => {
+      const targetPage = overridePage ?? page
+      setLoading(true)
+      setError(null)
+      try {
+        const result = await fetchProductList({
+          page: targetPage,
+          limit: 15,
+          search: debouncedSearch || undefined,
+          filter: filter || undefined,
+          sort: sort || undefined,
+        })
+        setProducts(result.data || [])
+        setTotal(result.total || 0)
+        setPage(result.page || targetPage)
+      } catch (err) {
+        console.error('Fetch error:', err)
+        setError(err.message || 'Failed to fetch products')
+        toast.error(err.message || 'Failed to fetch products')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [page, debouncedSearch, filter, sort]
+  )
 
   const fetchSummary = useCallback(async () => {
     try {
@@ -92,52 +129,25 @@ export default function ProductsPageClient() {
     }
   }, [])
 
-  const handleRefresh = useCallback(async () => {
-    await Promise.all([fetchProducts(), fetchSummary(), fetchRestockPredictions()])
-  }, [fetchProducts, fetchSummary, fetchRestockPredictions])
-
+  // fetch products whenever page / debouncedSearch / filter / sort changes
   useEffect(() => {
     fetchProducts()
+  }, [page, debouncedSearch, filter, sort]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // summary + restock are independent — fetch once on mount
+  useEffect(() => {
     fetchSummary()
     fetchRestockPredictions()
+  }, [fetchSummary, fetchRestockPredictions])
+
+  const handleRefresh = useCallback(async () => {
+    await Promise.all([fetchProducts(1), fetchSummary(), fetchRestockPredictions()])
+    setPage(1)
   }, [fetchProducts, fetchSummary, fetchRestockPredictions])
-
-  const filteredProducts = listProduct.filter((product) => {
-    const matchesFilter = (() => {
-      if (!filter) return true
-      switch (filter) {
-        case 'low-stock':
-          return product.quantity > 0 && product.quantity < LOW_STOCK_THRESHOLD
-        case 'out-stock':
-          return product.quantity === 0
-        case 'active':
-          return product.product_status === 'active'
-        case 'inactive':
-          return product.product_status === 'inactive'
-        case 'favorite':
-          return product.is_favorite
-        case 'never-used':
-          return !product.usage_date
-        default:
-          return true
-      }
-    })()
-
-    const matchesSearch = (() => {
-      if (!debouncedSearch) return true
-      const q = debouncedSearch.toLowerCase()
-      return (
-        product.brand?.toLowerCase().includes(q) ||
-        product.product?.toLowerCase().includes(q) ||
-        product.type?.toLowerCase().includes(q)
-      )
-    })()
-
-    return matchesFilter && matchesSearch
-  })
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter)
+    setPage(1)
 
     const messages = {
       null: 'Showing all products',
@@ -162,12 +172,25 @@ export default function ProductsPageClient() {
     toast[toastTypes[newFilter] || 'success'](messages[newFilter] || messages[null])
   }
 
+  const handleSortChange = (newSort) => {
+    setSort(newSort)
+    setPage(1)
+  }
+
+  const handleSearchChange = (value) => {
+    setSearch(value)
+    setPage(1)
+  }
+
   const handleClearFilters = () => {
     setFilter(null)
     setSearch('')
+    setSort(null)
+    setPage(1)
   }
 
-  const isFiltering = filter !== null || debouncedSearch !== ''
+  const totalPages = Math.ceil(total / 15)
+  const isFiltering = filter !== null || debouncedSearch !== '' || sort !== null
 
   return (
     <div className="flex flex-col gap-3 sm:gap-5">
@@ -188,20 +211,19 @@ export default function ProductsPageClient() {
           <ProductTableHeader summary={summary} loading={summaryLoading} />
         </div>
 
-        {/* Controls bar — sticky to viewport top while page scrolls */}
+        {/* Controls bar */}
         <div
           id="controlsBar_productListPage"
           className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5"
         >
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
-            <SearchInput search={search} setSearch={setSearch} />
+            <SearchInput search={search} onSearchChange={handleSearchChange} />
             <div className="flex items-center justify-between gap-2 shrink-0">
               <ProductFilterDropdown
                 filter={filter}
                 onFilterChange={handleFilterChange}
                 summary={summary}
                 summaryLoading={summaryLoading}
-                products={listProduct}
               />
               <AddProductForm onAdded={handleRefresh} />
             </div>
@@ -210,12 +232,37 @@ export default function ProductsPageClient() {
 
         {/* Table area */}
         <div className="px-3 sm:px-5 py-3 sm:py-4">
-          {listProduct.length === 0 ? (
-            <p className="text-center font-medium text-slate-foreground py-8 sm:py-10 text-sm sm:text-base">
+          {loading ? (
+            <div id="loadingSkeleton_productListPage" className="flex flex-col gap-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-12 w-full rounded-md bg-slate-100 animate-pulse" />
+              ))}
+            </div>
+          ) : error ? (
+            <div
+              id="errorState_productListPage"
+              className="flex flex-col items-center gap-3 py-16 text-center"
+            >
+              <p className="text-sm text-red-600 font-medium">{error}</p>
+              <button
+                onClick={() => fetchProducts()}
+                className="text-xs text-violet-600 hover:text-violet-700 underline underline-offset-2"
+              >
+                Try again
+              </button>
+            </div>
+          ) : products.length === 0 && !isFiltering ? (
+            <p
+              id="emptyState_productListPage"
+              className="text-center font-medium text-slate-foreground py-8 sm:py-10 text-sm sm:text-base"
+            >
               No products yet. Start by adding a new product 🚀
             </p>
-          ) : filteredProducts.length === 0 && isFiltering ? (
-            <div className="flex flex-col items-center gap-3 py-16 text-center">
+          ) : products.length === 0 && isFiltering ? (
+            <div
+              id="filteredEmptyState_productListPage"
+              className="flex flex-col items-center gap-3 py-16 text-center"
+            >
               <span className="text-5xl text-slate-300">📦</span>
               <p className="font-semibold text-slate-600 text-sm">No products match your filters</p>
               {filter && (
@@ -237,11 +284,16 @@ export default function ProductsPageClient() {
             </div>
           ) : (
             <ProductsTable
-              products={filteredProducts}
-              allProducts={listProduct}
-              onProductsChange={setListProduct}
+              products={products}
+              sort={sort}
+              onSortChange={handleSortChange}
               onRefresh={handleRefresh}
               restockPredictions={restockPredictions}
+              page={page}
+              total={total}
+              totalPages={totalPages}
+              onPrev={() => setPage((p) => Math.max(1, p - 1))}
+              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
             />
           )}
         </div>
@@ -250,21 +302,22 @@ export default function ProductsPageClient() {
   )
 }
 
-function SearchInput({ search, setSearch }) {
+function SearchInput({ search, onSearchChange }) {
   return (
     <div className="relative w-full sm:max-w-xs">
       <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none" />
       <Input
         id="searchInput_productListPage"
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => onSearchChange(e.target.value)}
         placeholder="Search by brand or product name..."
         className="pl-8 pr-7 text-sm h-9 focus-visible:ring-violet-200 focus-visible:border-violet-500"
       />
       {search && (
         <button
-          onClick={() => setSearch('')}
+          onClick={() => onSearchChange('')}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+          aria-label="Clear search"
         >
           <X className="size-3.5" />
         </button>
