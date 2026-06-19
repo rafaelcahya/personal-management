@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-18 (issue #395)
-**Branch:** release/v1.14
+**Last Updated:** 2026-06-19 (issue #402)
+**Branch:** feat/issue-402-product-api-test-coverage
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,065  | 38%  |
-| UI        | 1,747  | 62%  |
-| **Total** | **2,812** | 100% |
+| API       | 1,111  | 39%  |
+| UI        | 1,747  | 61%  |
+| **Total** | **2,858** | 100% |
 
 ---
 
@@ -20,12 +20,12 @@
 | Module               | API | UI    | Total |
 | -------------------- | --- | ----- | ----- |
 | Auth                 | 22  | 107   | 129   |
-| Inventory Management | 637 | 454   | 1,091 |
+| Inventory Management | 676 | 454   | 1,130 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 377 | 695   | 1,072 |
+| Running Tracker      | 384 | 695   | 1,079 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,065** | **1,747** | **2,812** |
+| **Total**            | **1,111** | **1,747** | **2,858** |
 
 ---
 
@@ -49,9 +49,9 @@
 
 | Feature       | API | UI | Total |
 | ------------- | --- | -- | ----- |
-| Dashboard     | 56  | 95 | 151   |
+| Dashboard     | 54  | 95 | 149   |
 | Summary       | 17  | 0  | 17    |
-| **Subtotal**  | **73** | **95** | **168** |
+| **Subtotal**  | **71** | **95** | **166** |
 
 #### Product
 
@@ -61,9 +61,10 @@
 | Add Product          | 40  | 60 | 100   |
 | Create Stock         | 40  | 0  | 40    |
 | Delete Product       | 23  | 0  | 23    |
+| Edit Product         | 13  | 0  | 13    |
 | Favorite Product     | 27  | 0  | 27    |
 | Last Price           | 17  | 0  | 17    |
-| List Product         | 26  | 98 | 124   |
+| List Product         | 41  | 98 | 139   |
 | Product Detail       | 25  | 35 | 60    |
 | Product Filter       | 0   | 9  | 9     |
 | Product History      | 25  | 0  | 25    |
@@ -71,7 +72,7 @@
 | Restock Predictions  | 16  | 0  | 16    |
 | Product Summary      | 16  | 0  | 16    |
 | Update Product       | 39  | 0  | 39    |
-| **Subtotal**         | **320** | **211** | **531** |
+| **Subtotal**         | **348** | **211** | **559** |
 
 #### Product Brand
 
@@ -97,15 +98,15 @@
 | Feature          | API | UI | Total |
 | ---------------- | --- | -- | ----- |
 | Add Name         | 23  | 13 | 36    |
-| Bulk Name        | 0   | 16 | 16    |
+| Bulk Name        | 6   | 16 | 22    |
 | Delete Name      | 15  | 0  | 15    |
-| List Name        | 11  | 15 | 26    |
+| List Name        | 18  | 15 | 33    |
 | Name Detail      | 20  | 0  | 20    |
 | Name Summary     | 13  | 0  | 13    |
 | Update Name      | 29  | 14 | 43    |
-| **Subtotal**     | **111** | **58** | **169** |
+| **Subtotal**     | **124** | **58** | **182** |
 
-**Inventory Total — API: 637 | UI: 454 | Total: 1,091**
+**Inventory Total — API: 676 | UI: 454 | Total: 1,130**
 
 ---
 
@@ -186,8 +187,7 @@
 | Dashboard            | 42  | 28 | 70    |
 | Dashboard Extended   | 0   | 14 | 14    |
 | Gear                 | 6   | 18 | 24    |
-| Performance Trends   | 5   | 0  | 5     |
-| **Subtotal**         | **53** | **80** | **133** |
+| **Subtotal**         | **48** | **80** | **128** |
 
 #### AI Coach
 
@@ -207,11 +207,12 @@
 | Endurance Score        | 9   | 0  | 9     |
 | Fitness Age            | 10  | 0  | 10    |
 | Gear Analytics         | 10  | 0  | 10    |
+| Performance Trends     | 5   | 0  | 5     |
 | Personal Bests         | 7   | 19 | 26    |
 | Qualifying Run Count   | 0   | 8  | 8     |
 | VO2Max Target Effort   | 4   | 31 | 35    |
 | Zone Analytics         | 24  | 0  | 24    |
-| **Subtotal**           | **79** | **87** | **166** |
+| **Subtotal**           | **84** | **87** | **171** |
 
 #### Injury AI
 
@@ -226,9 +227,9 @@
 
 | Feature                      | API | UI | Total |
 | ---------------------------- | --- | -- | ----- |
-| Race Log + Upcoming Races    | 49  | 89 | 138   |
+| Race Log + Upcoming Races    | 56  | 89 | 145   |
 | Upcoming Races Target Time   | 0   | 19 | 19    |
-| **Subtotal**                 | **49** | **108** | **157** |
+| **Subtotal**                 | **56** | **108** | **164** |
 
 #### Manual Entry
 
@@ -253,7 +254,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **53** | **21** | **74** |
 
-**Running Total — API: 377 | UI: 695 | Total: 1,072**
+**Running Total — API: 384 | UI: 695 | Total: 1,079**
 
 ---
 
@@ -280,9 +281,9 @@
 | Module               | API | UI    | Total |
 | -------------------- | --- | ----- | ----- |
 | Auth                 | 22  | 107   | 129   |
-| Inventory Management | 637 | 454   | 1,091 |
+| Inventory Management | 676 | 454   | 1,130 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 377 | 695   | 1,072 |
+| Running Tracker      | 384 | 695   | 1,079 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,065** | **1,747** | **2,812** |
+| **Total**            | **1,111** | **1,747** | **2,858** |

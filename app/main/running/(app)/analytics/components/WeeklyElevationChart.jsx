@@ -22,7 +22,10 @@ export default function WeeklyElevationChart({ activities }) {
     const day = d.getDay()
     const diff = d.getDate() - day + (day === 0 ? -6 : 1)
     const monday = new Date(new Date(d).setDate(diff))
-    weeks.push(monday.toISOString().slice(0, 10))
+    const yyyy = monday.getFullYear()
+    const mm = String(monday.getMonth() + 1).padStart(2, '0')
+    const dd = String(monday.getDate()).padStart(2, '0')
+    weeks.push(`${yyyy}-${mm}-${dd}`)
   }
 
   const weekMap = {}
@@ -60,7 +63,7 @@ export default function WeeklyElevationChart({ activities }) {
       weekEnd,
       elevation_gain_m: Math.round(weekMap[wk].elevation_gain_m),
       count: weekMap[wk].count,
-      isCurrentWeek: wk === getWeekKey(now.toISOString()),
+      isCurrentWeek: wk === getWeekKey(now),
     }
   })
 

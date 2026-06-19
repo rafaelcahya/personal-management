@@ -8,8 +8,11 @@ import { fetchProductBrand } from '@/lib/api/productBrand'
 import ProductBrandFilterDropdown from './list/component/ProductBrandFilterDropdown'
 import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
-import { Search, X, PackageOpen } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Search, X, PackageOpen, AlertCircle, RefreshCw } from 'lucide-react'
 import InventoryTableSkeleton from '@/app/main/components/InventoryTableSkeleton'
+
+const LIMIT = 15
 
 function BrandSearchInput({ searchQuery, setSearchQuery }) {
   return (
@@ -56,32 +59,56 @@ const BRAND_SKELETON_ROW = [
   'h-6 w-6 rounded',
 ]
 
-export default function ProductBrandsPageClient({ initialBrands }) {
-  const [brands, setBrands] = useState(initialBrands ?? null)
-  const [loading, setLoading] = useState(initialBrands == null)
+export default function ProductBrandsPageClient() {
+  const [brands, setBrands] = useState([])
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [filterStatus, setFilterStatus] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortOrder, setSortOrder] = useState('name-asc')
+  const [sortOrder, setSortOrder] = useState('name_asc')
 
-  const fetchProductBrands = async () => {
-    try {
-      const data = await fetchProductBrand()
-      setBrands(data || [])
-    } catch (err) {
-      console.error('Failed to fetch product brands:', err)
-      setBrands([])
-    } finally {
-      setLoading(false)
-    }
-  }
+  const totalPages = Math.ceil(total / LIMIT)
+
+  // Reset to page 1 when filters/sort/search change
+  useEffect(() => {
+    setPage(1)
+  }, [searchQuery, filterStatus, sortOrder])
 
   useEffect(() => {
-    if (initialBrands == null) {
-      fetchProductBrands()
-    }
-  }, [])
+    let cancelled = false
+    setLoading(true)
+    setError(null)
 
-  const brandList = brands ?? []
+    fetchProductBrand({
+      page,
+      limit: LIMIT,
+      search: searchQuery || undefined,
+      status: filterStatus || undefined,
+      sort: sortOrder,
+    })
+      .then((result) => {
+        if (cancelled) return
+        setBrands(result.data ?? [])
+        setTotal(result.total ?? 0)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setError(err.message || 'Failed to load brands')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [page, searchQuery, filterStatus, sortOrder])
+
+  const handleRefresh = () => setPage((p) => p)
+
+  const hasActiveFilters = !!(filterStatus || searchQuery)
 
   return (
     <div className="flex flex-col gap-3 sm:gap-5">
@@ -94,7 +121,7 @@ export default function ProductBrandsPageClient({ initialBrands }) {
       <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white flex flex-col">
         {/* Title */}
         <div className="px-3 sm:px-5 pt-3 sm:pt-5">
-          <ProductBrandTableHeader brands={brandList} />
+          <ProductBrandTableHeader brands={brands} />
         </div>
 
         {/* Controls bar */}
@@ -111,7 +138,7 @@ export default function ProductBrandsPageClient({ initialBrands }) {
                 sortOrder={sortOrder}
                 onSortChange={setSortOrder}
               />
-              <AddProductBrand onAdded={fetchProductBrands} />
+              <AddProductBrand onAdded={handleRefresh} />
             </div>
           </div>
         </div>
@@ -123,7 +150,24 @@ export default function ProductBrandsPageClient({ initialBrands }) {
               headerCols={BRAND_SKELETON_HEADER}
               rowCols={BRAND_SKELETON_ROW}
             />
-          ) : brandList.length === 0 ? (
+          ) : error ? (
+            <div
+              id="errorState_productBrandPage"
+              className="flex flex-col items-center justify-center gap-3 py-12 text-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <AlertCircle className="h-10 w-10 text-red-400" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-slate-600">Failed to load brands</p>
+                <p className="text-xs text-slate-400">{error}</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleRefresh} className="gap-1.5">
+                <RefreshCw className="size-3.5" aria-hidden="true" />
+                Retry
+              </Button>
+            </div>
+          ) : !hasActiveFilters && brands.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
               <PackageOpen className="h-10 w-10 text-slate-300" aria-hidden="true" />
               <div className="space-y-1">
@@ -132,14 +176,19 @@ export default function ProductBrandsPageClient({ initialBrands }) {
                   Add your first brand to start organizing your inventory
                 </p>
               </div>
-              <AddProductBrand onAdded={fetchProductBrands} />
+              <AddProductBrand onAdded={handleRefresh} />
             </div>
           ) : (
             <ProductBrandsTable
-              productBrands={brandList}
+              brands={brands}
+              page={page}
+              totalPages={totalPages}
+              total={total}
               filterStatus={filterStatus}
               searchQuery={searchQuery}
-              sortOrder={sortOrder}
+              onPrev={() => setPage((p) => p - 1)}
+              onNext={() => setPage((p) => p + 1)}
+              onRefresh={handleRefresh}
             />
           )}
         </div>

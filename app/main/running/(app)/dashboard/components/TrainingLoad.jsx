@@ -376,6 +376,19 @@ function EffortSplitBar({ effort_split }) {
   )
 }
 
+function computeWeeksElapsed() {
+  const now = new Date()
+  const yearStart = new Date(now.getFullYear(), 0, 1)
+  return Math.max(1, Math.ceil((now - yearStart) / (7 * 24 * 3600 * 1000)))
+}
+
+function formatAvgWeeklyKm(ytdStats) {
+  const distM = ytdStats?.distance_m
+  if (!distM) return '—'
+  const km = distM / 1000 / computeWeeksElapsed()
+  return `${km.toFixed(1)} km`
+}
+
 export default function TrainingLoad({ data, weeklyStats }) {
   const {
     acwr,
@@ -388,6 +401,7 @@ export default function TrainingLoad({ data, weeklyStats }) {
     ramp_pct,
     effort_split,
     training_status,
+    ytd_stats,
   } = data
 
   const current = weeklyStats?.current ?? {}
@@ -484,6 +498,15 @@ export default function TrainingLoad({ data, weeklyStats }) {
 
           {/* Stats grid — activity metrics */}
           <div className="grid grid-cols-3 gap-x-4 gap-y-4">
+            <StatCell
+              label={
+                <span className="flex items-center gap-1">
+                  Avg weekly <MapPin className="size-3 text-violet-400" />
+                </span>
+              }
+              value={formatAvgWeeklyKm(ytd_stats)}
+              sub="this year"
+            />
             <StatCell
               label={
                 <span className="flex items-center gap-1">

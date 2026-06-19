@@ -875,6 +875,62 @@ describe('PMC API — days query param', () => {
 // ascending date order, series length bounded by ?days param) cover the
 // meaningful API-contract obligations for this endpoint.
 
+// ─── performance trends ───────────────────────────────────────────────────────
+
+describe('Running Performance Trends API — GET /performance-trends', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('returns 200 with data array', () => {
+    cy.getPerformanceTrends().then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('data')
+      expect(res.body.data).to.be.an('array')
+    })
+  })
+
+  it('each item has started_at and distance_m fields', () => {
+    cy.getPerformanceTrends().then((res) => {
+      const items = res.body.data
+      if (items.length === 0)
+        return cy.log('No performance trend items — skipping field assertions')
+      items.forEach((item) => {
+        expect(item).to.have.property('started_at')
+        expect(item).to.have.property('distance_m')
+      })
+    })
+  })
+
+  it('?limit=20 returns at most 20 items', () => {
+    cy.getPerformanceTrends({ limit: 20 }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.data).to.be.an('array')
+      expect(res.body.data.length).to.be.lte(20)
+    })
+  })
+
+  it('?type=Run filter returns 200', () => {
+    cy.getPerformanceTrends({ type: 'Run' }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.data).to.be.an('array')
+    })
+  })
+})
+
+describe('Running Performance Trends API — GET /performance-trends — unauthenticated', () => {
+  beforeEach(() => {
+    cy.clearCookies()
+    cy.clearLocalStorage()
+  })
+
+  it('returns 401 when unauthenticated', () => {
+    cy.getPerformanceTrendsNoAuth().then((res) => {
+      expect(res.status).to.eq(401)
+    })
+  })
+})
+
 // ─── analytics AI insights ───────────────────────────────────────────────────
 
 describe('Analytics AI Insights API — GET list (authenticated)', () => {

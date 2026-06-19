@@ -11,8 +11,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Filter, Check, Loader2 } from 'lucide-react'
 
-const LOW_STOCK_THRESHOLD = 5
-
 const FILTER_OPTIONS = [
   { value: null, label: 'All Products', icon: '📦', group: 'general' },
   { value: 'active', label: 'Active Products', icon: '✅', group: 'status' },
@@ -38,19 +36,9 @@ const FILTER_OPTIONS = [
   { value: 'never-used', label: 'Never Used', icon: '🆕', group: 'usage' },
 ]
 
-export default function ProductFilterDropdown({
-  filter,
-  onFilterChange,
-  summary,
-  summaryLoading,
-  products = [],
-}) {
+export default function ProductFilterDropdown({ filter, onFilterChange, summary, summaryLoading }) {
   const currentFilter = FILTER_OPTIONS.find((opt) => opt.value === filter)
   const currentFilterLabel = currentFilter?.label || 'All Products'
-
-  const lowStock = products.filter((p) => p.quantity > 0 && p.quantity < LOW_STOCK_THRESHOLD).length
-  const outOfStock = products.filter((p) => p.quantity === 0).length
-  const neverUsed = products.filter((p) => !p.usage_date).length
 
   const getFilterCount = (filterValue) => {
     if (summaryLoading) return <Loader2 className="size-3 animate-spin" />
@@ -60,12 +48,11 @@ export default function ProductFilterDropdown({
       active: summary?.activeProducts ?? 0,
       inactive: summary?.inactiveProducts ?? 0,
       favorite: summary?.favoriteProducts ?? 0,
-      'low-stock': lowStock,
-      'out-stock': outOfStock,
-      'never-used': neverUsed,
     }
 
-    return counts[filterValue] ?? 0
+    // low-stock / out-stock / never-used counts are not in the summary endpoint
+    // — hide count rather than show a misleading page-level number
+    return counts[filterValue] ?? null
   }
 
   return (

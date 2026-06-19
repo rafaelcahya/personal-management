@@ -1,7 +1,5 @@
 import { faker } from '@faker-js/faker'
 
-import { INVENTORY_ENDPOINTS } from '../../../fixtures/endpoints.js'
-
 describe('GET Product By ID API - /api/inventory/v1/product/[id]', () => {
   let validBrandId
   let validProductId
@@ -22,7 +20,7 @@ describe('GET Product By ID API - /api/inventory/v1/product/[id]', () => {
     cy.setupApiAuthCookies()
 
     cy.AddProductBrand({
-      brand: faker.food.fruit(),
+      brand: 'DetailBrand-' + Date.now() + '-' + faker.string.alphanumeric(6),
       brand_status: 'active',
       note: faker.word.words(5),
     }).then((res) => {
@@ -32,7 +30,7 @@ describe('GET Product By ID API - /api/inventory/v1/product/[id]', () => {
     })
 
     cy.AddProductName({
-      product_name: faker.food.ingredient(),
+      product_name: 'DetailName-' + Date.now() + '-' + faker.string.alphanumeric(6),
       product_name_status: 'active',
     }).then((res) => {
       expect(res.status).to.eq(201)
@@ -120,11 +118,6 @@ describe('GET Product By ID API - /api/inventory/v1/product/[id]', () => {
     })
 
     it('should return 404 when product belongs to another user', () => {
-      cy.intercept('GET', `${INVENTORY_ENDPOINTS.PRODUCT_BASE}/888888888`, {
-        statusCode: 404,
-        body: { success: false, error: 'Product not found' },
-      }).as('otherUserProduct')
-
       cy.GetProductDetail(888888888).then((response) => {
         expect(response.status).to.eq(404)
         expect(response.body.success).to.be.false
