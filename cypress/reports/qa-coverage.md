@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-19 (issue #381)
-**Branch:** feat/issue-381-race-log-server-pagination
+**Last Updated:** 2026-06-19 (issue #380)
+**Branch:** feat/issue-380-product-name-server-pagination
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,085  | 38%  |
-| UI        | 1,747  | 62%  |
-| **Total** | **2,832** | 100% |
+| API       | 1,098  | 39%  |
+| UI        | 1,747  | 61%  |
+| **Total** | **2,845** | 100% |
 
 ---
 
@@ -20,12 +20,12 @@
 | Module               | API | UI    | Total |
 | -------------------- | --- | ----- | ----- |
 | Auth                 | 22  | 107   | 129   |
-| Inventory Management | 650 | 454   | 1,104 |
+| Inventory Management | 663 | 454   | 1,117 |
 | Trading Management   | 29  | 450   | 479   |
 | Running Tracker      | 384 | 695   | 1,079 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,085** | **1,747** | **2,832** |
+| **Total**            | **1,098** | **1,747** | **2,845** |
 
 ---
 
@@ -97,15 +97,15 @@
 | Feature          | API | UI | Total |
 | ---------------- | --- | -- | ----- |
 | Add Name         | 23  | 13 | 36    |
-| Bulk Name        | 0   | 16 | 16    |
+| Bulk Name        | 6   | 16 | 22    |
 | Delete Name      | 15  | 0  | 15    |
-| List Name        | 11  | 15 | 26    |
+| List Name        | 18  | 15 | 33    |
 | Name Detail      | 20  | 0  | 20    |
 | Name Summary     | 13  | 0  | 13    |
 | Update Name      | 29  | 14 | 43    |
-| **Subtotal**     | **111** | **58** | **169** |
+| **Subtotal**     | **124** | **58** | **182** |
 
-**Inventory Total — API: 650 | UI: 454 | Total: 1,104**
+**Inventory Total — API: 663 | UI: 454 | Total: 1,117**
 
 ---
 
@@ -280,9 +280,9 @@
 | Module               | API | UI    | Total |
 | -------------------- | --- | ----- | ----- |
 | Auth                 | 22  | 107   | 129   |
-| Inventory Management | 650 | 454   | 1,104 |
+| Inventory Management | 663 | 454   | 1,117 |
 | Trading Management   | 29  | 450   | 479   |
 | Running Tracker      | 384 | 695   | 1,079 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,085** | **1,747** | **2,832** |
+| **Total**            | **1,098** | **1,747** | **2,845** |
