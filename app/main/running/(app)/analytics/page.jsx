@@ -7,18 +7,17 @@ import {
   fetchPerformanceTrends,
   getDashboard,
   fetchAnalyticsStaleness,
+  fetchZoneReference,
 } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 import { RUN_TYPES } from './components/utils'
 import Section from './components/Section'
-import SummaryStats from './components/SummaryStats'
 import WeeklyDistanceChart from './components/WeeklyDistanceChart'
 import PaceTrendChart from './components/PaceTrendChart'
 import BestPaceChart from './components/BestPaceChart'
 import WeeklyElevationChart from './components/WeeklyElevationChart'
 import TerrainDistributionChart from './components/TerrainDistributionChart'
-import TrainingLoadChart from './components/TrainingLoadChart'
 import PerformanceManagementChart from './components/PerformanceManagementChart'
 import Vo2maxTrendChart from './components/Vo2maxTrendChart'
 import RunningPowerChart from './components/RunningPowerChart'
@@ -31,6 +30,8 @@ import CalorieTrendChart from './components/CalorieTrendChart'
 import ZoneAnalyticsSection from './components/ZoneAnalyticsSection'
 import FitnessAgeTrendChart from './components/FitnessAgeTrendChart'
 import EnduranceScoreTrendChart from './components/EnduranceScoreTrendChart'
+import TrainingZonesReference from './components/TrainingZonesReference'
+import PerformanceTrends from '../dashboard/components/PerformanceTrends'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -39,6 +40,22 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isPageStale, setIsPageStale] = useState(false)
+  const [refData, setRefData] = useState(null)
+  const [refLoading, setRefLoading] = useState(true)
+  const [refError, setRefError] = useState(null)
+
+  function loadRefData() {
+    setRefLoading(true)
+    setRefError(null)
+    fetchZoneReference()
+      .then((data) => setRefData(data))
+      .catch(() => setRefError('Failed to load zone reference'))
+      .finally(() => setRefLoading(false))
+  }
+
+  useEffect(() => {
+    loadRefData()
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -141,7 +158,7 @@ export default function AnalyticsPage() {
 
       {!loading && !error && (
         <>
-          <SummaryStats activities={activities} />
+          <PerformanceTrends />
 
           <Section
             id="weeklyDistanceSection"
@@ -197,16 +214,6 @@ export default function AnalyticsPage() {
                 <WeeklyElevationChart activities={activities} />
               </div>
             </div>
-          </Section>
-
-          <Section
-            id="trainingLoadSection"
-            title="Training Load (ACWR)"
-            description="Acute:Chronic Workload Ratio compares your last 7 days of effort against your 28-day baseline. Stay between 0.8–1.3 to minimize injury risk."
-            icon={Activity}
-          >
-            <TrainingLoadChart trainingLoad={trainingLoad} />
-            <AnalyticsAICard section="training_load" isPageStale={isPageStale} />
           </Section>
 
           <Section
@@ -301,6 +308,13 @@ export default function AnalyticsPage() {
           >
             <EnduranceScoreTrendChart />
           </Section>
+
+          <TrainingZonesReference
+            data={refData}
+            loading={refLoading}
+            error={refError}
+            onRetry={loadRefData}
+          />
 
           <ZoneAnalyticsSection />
         </>

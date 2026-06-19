@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-19 (issue #401)
-**Branch:** feat/issue-401-inventory-dashboard-api-tests
+**Last Updated:** 2026-06-19 (issue #400)
+**Branch:** feat/issue-400-dashboard-analytics-refactor
 
 ---
 
@@ -186,8 +186,7 @@
 | Dashboard            | 42  | 28 | 70    |
 | Dashboard Extended   | 0   | 14 | 14    |
 | Gear                 | 6   | 18 | 24    |
-| Performance Trends   | 5   | 0  | 5     |
-| **Subtotal**         | **53** | **80** | **133** |
+| **Subtotal**         | **48** | **80** | **128** |
 
 #### AI Coach
 
@@ -207,11 +206,12 @@
 | Endurance Score        | 9   | 0  | 9     |
 | Fitness Age            | 10  | 0  | 10    |
 | Gear Analytics         | 10  | 0  | 10    |
+| Performance Trends     | 5   | 0  | 5     |
 | Personal Bests         | 7   | 19 | 26    |
 | Qualifying Run Count   | 0   | 8  | 8     |
 | VO2Max Target Effort   | 4   | 31 | 35    |
 | Zone Analytics         | 24  | 0  | 24    |
-| **Subtotal**           | **79** | **87** | **166** |
+| **Subtotal**           | **84** | **87** | **171** |
 
 #### Injury AI
 

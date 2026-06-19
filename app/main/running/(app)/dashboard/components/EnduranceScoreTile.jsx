@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { Gauge, Info } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
@@ -15,7 +16,7 @@ const TIER_COLORS = {
   Advanced: 'text-emerald-600',
 }
 
-export default function EnduranceScoreTile({ enduranceScore }) {
+export default function EnduranceScoreTile({ enduranceScore, viewTrendHref }) {
   const { endurance_score, endurance_tier } = enduranceScore ?? {}
 
   return (
@@ -30,6 +31,14 @@ export default function EnduranceScoreTile({ enduranceScore }) {
             <p className="text-xs text-slate-400">
               Composite fitness score (0–100) from VO₂max, training load, and long run history.
             </p>
+            {viewTrendHref && (
+              <Link
+                href={viewTrendHref}
+                className="text-xs text-violet-600 hover:underline mt-1 inline-flex items-center gap-1"
+              >
+                View full trend →
+              </Link>
+            )}
           </div>
           <div className="flex items-start gap-4">
             <div className="p-2 rounded-lg bg-indigo-50 shrink-0 mt-0.5">
