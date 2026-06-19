@@ -33,9 +33,13 @@ export function getBracket(distance_m) {
 export function getWeekKey(dateStr) {
   const d = new Date(dateStr)
   const day = d.getDay()
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
-  const monday = new Date(d.setDate(diff))
-  return monday.toISOString().slice(0, 10)
+  const diff = day === 0 ? -6 : 1 - day
+  const monday = new Date(d)
+  monday.setDate(d.getDate() + diff)
+  const yyyy = monday.getFullYear()
+  const mm = String(monday.getMonth() + 1).padStart(2, '0')
+  const dd = String(monday.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
 }
 
 export function fmtWeekLabel(weekKey) {
