@@ -22,6 +22,9 @@ describe('Race Log API — GET (authenticated)', () => {
       expect(res.body).to.have.property('data')
       expect(res.body.data).to.be.an('array')
       expect(res.body).to.have.property('message')
+      expect(res.body).to.have.property('total').and.be.a('number')
+      expect(res.body).to.have.property('page').and.be.a('number')
+      expect(res.body).to.have.property('limit').and.be.a('number')
     })
   })
 
@@ -355,7 +358,7 @@ describe('Race Log API — DELETE (authenticated)', () => {
 
   it('entry is absent from the list after delete', function () {
     if (!entryId) this.skip()
-    cy.getRaceLog().then((res) => {
+    cy.getRaceLog({ search: 'Cypress Delete Test Race' }).then((res) => {
       const found = res.body.data.find((e) => e.id === entryId)
       expect(found).to.be.undefined
     })
@@ -401,7 +404,7 @@ describe('Race Log API — API vs Database Comparison', () => {
     cy.getRaceLog().then((apiRes) => {
       expect(apiRes.status).to.eq(200)
       cy.getRaceLogCountFromDb().then((dbCount) => {
-        expect(apiRes.body.data.length).to.eq(dbCount)
+        expect(apiRes.body.total).to.eq(dbCount)
       })
     })
   })
@@ -725,6 +728,102 @@ describe('Upcoming Races API — DELETE (unauthenticated)', () => {
   it('returns 401 without a session', () => {
     cy.deleteUpcomingRaceNoAuth('any-id').then((res) => {
       expect(res.status).to.eq(401)
+    })
+  })
+})
+
+// Pagination, search, and distance_bucket filter
+
+describe('Race Log API — Pagination, Search, and Filter', () => {
+  let createdId
+
+  before(() => {
+    cy.setupApiAuthCookies()
+    cy.postRaceLog({
+      title: 'Cypress Pagination Filter Race',
+      race_date: '2025-03-15',
+      distance_m: 10000,
+      finish_time_sec: 3600,
+    }).then((res) => {
+      if (res.status === 201) createdId = res.body.data.id
+    })
+  })
+
+  after(() => {
+    if (createdId) {
+      cy.setupApiAuthCookies()
+      cy.deleteRaceLog(createdId)
+    }
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('returns total, page, and limit in response', () => {
+    cy.getRaceLog({ page: 1, limit: 5 }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.page).to.eq(1)
+      expect(res.body.limit).to.eq(5)
+      expect(res.body.total).to.be.a('number')
+      expect(res.body.data.length).to.be.lte(5)
+    })
+  })
+
+  it('page 1 and page 2 return different entries', () => {
+    cy.getRaceLog({ page: 1, limit: 5 }).then((page1Res) => {
+      if (page1Res.body.total <= 5) return
+      cy.getRaceLog({ page: 2, limit: 5 }).then((page2Res) => {
+        const ids1 = page1Res.body.data.map((e) => e.id)
+        const ids2 = page2Res.body.data.map((e) => e.id)
+        const overlap = ids1.filter((id) => ids2.includes(id))
+        expect(overlap.length).to.eq(0)
+      })
+    })
+  })
+
+  it('search param filters results by title', function () {
+    if (!createdId) this.skip()
+    cy.getRaceLog({ search: 'Cypress Pagination Filter Race' }).then((res) => {
+      expect(res.status).to.eq(200)
+      const found = res.body.data.find((e) => e.id === createdId)
+      expect(found).to.exist
+      expect(res.body.total).to.be.gte(1)
+    })
+  })
+
+  it('search param with no match returns empty data and total 0', () => {
+    cy.getRaceLog({ search: 'zzzNonExistentRaceXYZ9999' }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.data).to.have.length(0)
+      expect(res.body.total).to.eq(0)
+    })
+  })
+
+  it('distance_bucket 10k returns only entries in 9500–10499m range', function () {
+    if (!createdId) this.skip()
+    cy.getRaceLog({ distance_bucket: '10k', limit: 100 }).then((res) => {
+      expect(res.status).to.eq(200)
+      res.body.data.forEach((e) => {
+        expect(e.distance_m).to.be.gte(9500).and.lte(10499)
+      })
+      const found = res.body.data.find((e) => e.id === createdId)
+      expect(found).to.exist
+    })
+  })
+
+  it('invalid distance_bucket is ignored and returns full list', () => {
+    cy.getRaceLog({ distance_bucket: 'invalid' }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.data).to.be.an('array')
+    })
+  })
+
+  it('respects limit param — data length does not exceed limit', () => {
+    cy.getRaceLog({ limit: 3 }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.data.length).to.be.lte(3)
+      expect(res.body.limit).to.eq(3)
     })
   })
 })
