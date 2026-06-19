@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-19 (issue #377)
-**Branch:** feat/issue-377-product-list-server-pagination
+**Last Updated:** 2026-06-19 (issue #379)
+**Branch:** feat/issue-379-product-brand-server-pagination
 
 ---
 

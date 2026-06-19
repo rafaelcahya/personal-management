@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
@@ -15,70 +15,25 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import ProductBrandUpdate from '../UpdateProductBrand'
-import { fetchProductBrand, updateProductBrand } from '@/lib/api/productBrand'
-import { Pencil, X } from 'lucide-react'
+import { updateProductBrand } from '@/lib/api/productBrand'
+import { ChevronLeft, ChevronRight, Pencil, X } from 'lucide-react'
 import { toast } from 'sonner'
 
-const SORT_OPTIONS = [
-  { value: 'name-asc', label: 'A → Z' },
-  { value: 'name-desc', label: 'Z → A' },
-  { value: 'most-products', label: 'Most' },
-  { value: 'least-products', label: 'Fewest' },
-]
-
-function applySorting(brands, sortOrder) {
-  const list = [...brands]
-  switch (sortOrder) {
-    case 'name-desc':
-      return list.sort((a, b) => b.brand.localeCompare(a.brand))
-    case 'most-products':
-      return list.sort((a, b) => (b.product_count ?? 0) - (a.product_count ?? 0))
-    case 'least-products':
-      return list.sort((a, b) => (a.product_count ?? 0) - (b.product_count ?? 0))
-    case 'name-asc':
-    default:
-      return list.sort((a, b) => a.brand.localeCompare(b.brand))
-  }
-}
-
 export default function ProductBrandsTable({
-  productBrands: initialProductBrands,
+  brands = [],
+  page,
+  totalPages,
+  total,
   filterStatus,
   searchQuery = '',
-  sortOrder = 'name-asc',
+  onPrev,
+  onNext,
+  onRefresh,
 }) {
   const router = useRouter()
-  const [productBrandList, setProductBrandList] = useState(initialProductBrands || [])
   const [selectedBrand, setSelectedBrand] = useState(null)
   const [selectedIds, setSelectedIds] = useState([])
   const [bulkLoading, setBulkLoading] = useState(false)
-
-  const filteredBrands = applySorting(
-    (productBrandList || []).filter((brand) => {
-      const matchesStatus = !filterStatus || brand.brand_status === filterStatus
-      const matchesSearch =
-        !searchQuery || brand.brand.toLowerCase().includes(searchQuery.toLowerCase())
-      return matchesStatus && matchesSearch
-    }),
-    sortOrder
-  )
-
-  const fetchProductBrands = async () => {
-    try {
-      const brands = await fetchProductBrand()
-      setProductBrandList(brands || [])
-    } catch (err) {
-      console.error('Failed to fetch product brands:', err)
-    }
-  }
-
-  const refreshAll = useCallback(async () => {
-    try {
-      await fetchProductBrands()
-    } catch (err) {
-      console.error('Refresh error:', err)
-    }
-  }, [])
 
   const getStatusClasses = (status) => {
     switch (status) {
@@ -93,18 +48,12 @@ export default function ProductBrandsTable({
     }
   }
 
-  useEffect(() => {
-    setProductBrandList(initialProductBrands)
-  }, [initialProductBrands])
-
-  useEffect(() => {
-    const visibleIds = new Set(filteredBrands.map((b) => b.id))
-    setSelectedIds((prev) => prev.filter((id) => visibleIds.has(id)))
-  }, [filterStatus, searchQuery])
+  const allSelected = brands.length > 0 && brands.every((b) => selectedIds.includes(b.id))
+  const someSelected = brands.some((b) => selectedIds.includes(b.id)) && !allSelected
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedIds(filteredBrands.map((b) => b.id))
+      setSelectedIds(brands.map((b) => b.id))
     } else {
       setSelectedIds([])
     }
@@ -117,7 +66,7 @@ export default function ProductBrandsTable({
   const handleBulkStatusChange = async (newStatus) => {
     setBulkLoading(true)
     try {
-      const brandsToUpdate = productBrandList.filter((b) => selectedIds.includes(b.id))
+      const brandsToUpdate = brands.filter((b) => selectedIds.includes(b.id))
       await Promise.all(
         brandsToUpdate.map((b) =>
           updateProductBrand(b.id, {
@@ -129,18 +78,13 @@ export default function ProductBrandsTable({
       )
       toast.success(`${brandsToUpdate.length} brand${brandsToUpdate.length > 1 ? 's' : ''} updated`)
       setSelectedIds([])
-      await refreshAll()
+      onRefresh()
     } catch (err) {
       toast.error(err.message || 'Failed to update brands')
     } finally {
       setBulkLoading(false)
     }
   }
-
-  const allFilteredSelected =
-    filteredBrands.length > 0 && filteredBrands.every((b) => selectedIds.includes(b.id))
-  const someFilteredSelected =
-    filteredBrands.some((b) => selectedIds.includes(b.id)) && !allFilteredSelected
 
   const emptyMessage = (() => {
     if (searchQuery) return 'No brands match your search'
@@ -193,7 +137,7 @@ export default function ProductBrandsTable({
         </div>
       )}
 
-      {filteredBrands.length === 0 ? (
+      {brands.length === 0 ? (
         <div
           id="emptyState_productBrandPage"
           className="text-center font-medium text-slate-foreground py-10"
@@ -211,9 +155,7 @@ export default function ProductBrandsTable({
                 >
                   <Checkbox
                     id="selectAllBrands_productBrandPage"
-                    checked={
-                      allFilteredSelected ? true : someFilteredSelected ? 'indeterminate' : false
-                    }
+                    checked={allSelected ? true : someSelected ? 'indeterminate' : false}
                     onCheckedChange={handleSelectAll}
                     aria-label="Select all brands"
                     className="mx-auto"
@@ -237,14 +179,13 @@ export default function ProductBrandsTable({
             </TableHeader>
 
             <TableBody>
-              {filteredBrands.map((productBrand, index) => (
+              {brands.map((productBrand, index) => (
                 <TableRow
                   key={productBrand.id}
                   data-testid={`brandRow_${productBrand.id}_productBrandPage`}
                   className="hover:bg-slate-100 cursor-pointer"
                   onClick={() => setSelectedBrand(productBrand)}
                 >
-                  {/* Checkbox cell */}
                   <TableCell className="text-center w-[40px]" onClick={(e) => e.stopPropagation()}>
                     <Checkbox
                       data-testid={`brandCheckbox_${productBrand.id}_productBrandPage`}
@@ -256,7 +197,7 @@ export default function ProductBrandsTable({
                   </TableCell>
 
                   <TableCell className="text-center text-sm font-mono w-[30px]">
-                    {index + 1}
+                    {(page - 1) * 15 + index + 1}
                   </TableCell>
                   <TableCell className="font-semibold w-[200px]">{productBrand.brand}</TableCell>
                   <TableCell className="text-center w-[120px]">
@@ -293,7 +234,6 @@ export default function ProductBrandsTable({
                     </p>
                   </TableCell>
 
-                  {/* Edit action button */}
                   <TableCell className="text-center w-[60px]" onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
@@ -312,13 +252,39 @@ export default function ProductBrandsTable({
               ))}
             </TableBody>
           </Table>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">
+              <button
+                onClick={onPrev}
+                disabled={page <= 1}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="size-4" aria-hidden="true" />
+                Prev
+              </button>
+              <span className="text-xs text-slate-400 text-center" aria-live="polite">
+                Page {page} of {totalPages} · {total} records
+              </span>
+              <button
+                onClick={onNext}
+                disabled={page >= totalPages}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+                aria-label="Next page"
+              >
+                Next
+                <ChevronRight className="size-4" aria-hidden="true" />
+              </button>
+            </div>
+          )}
         </div>
       )}
 
       <ProductBrandUpdate
         productBrand={selectedBrand}
         onClose={() => setSelectedBrand(null)}
-        onUpdated={refreshAll}
+        onUpdated={onRefresh}
       />
     </>
   )
