@@ -131,28 +131,6 @@ export default function Vo2maxProjectionChart({ data, activities }) {
 
   return (
     <div id="vo2maxProjectionChart_analyticsPage" className="flex flex-col gap-2">
-      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block w-4 h-0.5 bg-violet-500 rounded" aria-hidden="true" />
-          Historical avg
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span
-            className="inline-block w-4 h-0.5 border-t-2 border-dashed border-violet-400"
-            aria-hidden="true"
-          />
-          Projected
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block w-4 h-2 bg-violet-100 rounded" aria-hidden="true" />
-          Confidence band
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block w-4 h-0.5 bg-amber-400 rounded" aria-hidden="true" />
-          Target VO2max
-        </span>
-      </div>
-
       <ResponsiveContainer width="100%" height={220}>
         <ComposedChart data={allPoints} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -219,6 +197,28 @@ export default function Vo2maxProjectionChart({ data, activities }) {
           />
         </ComposedChart>
       </ResponsiveContainer>
+
+      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-4 h-0.5 bg-violet-500 rounded" aria-hidden="true" />
+          Historical avg
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span
+            className="inline-block w-4 h-0.5 border-t-2 border-dashed border-violet-400"
+            aria-hidden="true"
+          />
+          Projected
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-4 h-2 bg-violet-100 rounded" aria-hidden="true" />
+          Confidence band
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-4 h-0.5 bg-amber-400 rounded" aria-hidden="true" />
+          Target VO2max
+        </span>
+      </div>
     </div>
   )
 }
