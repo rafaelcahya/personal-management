@@ -1,4 +1,14 @@
-import { BarChart2, TrendingUp, Zap, Activity, Trophy, Mountain, MapPin, Heart } from 'lucide-react'
+import {
+  BarChart2,
+  TrendingUp,
+  Zap,
+  Activity,
+  Trophy,
+  Mountain,
+  MapPin,
+  Heart,
+  Clock,
+} from 'lucide-react'
 
 export const ANALYTICS_SECTIONS = [
   {
@@ -76,6 +86,12 @@ export const ANALYTICS_SECTIONS = [
     id: 'zoneAnalyticsSection_analyticsPage',
     label: 'Zone Analytics',
     icon: Heart,
+    defaultVisible: true,
+  },
+  {
+    id: 'sessionProfileSection_analyticsPage',
+    label: 'Session Profile — Morning vs Evening',
+    icon: Clock,
     defaultVisible: true,
   },
 ]

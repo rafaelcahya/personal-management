@@ -47,24 +47,24 @@ Cypress.Commands.add('{commandName}NoAuth', (params) => {
 
 ## `app-constants.json` Endpoint Keys (Running Module)
 
-| Key                        | Subkeys                                                      | Endpoint                            |
-| -------------------------- | ------------------------------------------------------------ | ----------------------------------- |
-| `running_manual`           | `activities`                                                 | `/api/running/v1/activities`        |
-| `running_manual`           | `subjective_health`                                          | `/api/running/v1/health/subjective` |
-| `running_manual`           | `weight_log`                                                 | `/api/running/v1/health/weight`     |
-| `running_dashboard`        | `dashboard`                                                  | `/api/running/v1/dashboard`         |
-| `running_gear`             | `list` / `update`                                            | `/api/running/v1/gear`              |
-| `running_race_log`         | `list` / `create` / `detail` / `update` / `delete`           | `/api/running/v1/race-log`          |
-| `running_goals`            | `update`                                                     | `/api/running/v1/goals`             |
-| `running_activity_streams` | `get`                                                        | `/api/running/v1/activities`        |
-| `running_ai_insights`      | `list` / `generate`                                          | `/api/running/v1/ai/insights`       |
-| `running_analytics`        | `target_effort` / `personal_bests` / `calorie_trend`         | `/api/running/v1/analytics/...`     |
-| `running_user_profile`     | `get` / `patch`                                              | `/api/running/v1/user/profile`      |
-| `running_user`             | `settings` / `activities` / `push_subscription`              | `/api/running/v1/user/...`          |
-| `running_upcoming_races`   | `list` / `create` / `detail` / `update` / `delete`           | `/api/running/v1/upcoming-races`    |
-| `running_ai`               | `symptoms` / `injury_coach` / `injury_coach_history`         | `/api/running/v1/...`               |
-| `running_analytics_ai`     | `insights` / `generate` / `staleness` / `daily` / `followup` | `/api/running/v1/ai/insights/...`   |
-| `running_sync`             | `sync_strava` / `sync_status`                                | `/api/running/v1/sync/...`          |
+| Key                        | Subkeys                                                                                                                                                     | Endpoint                            |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `running_manual`           | `activities`                                                                                                                                                | `/api/running/v1/activities`        |
+| `running_manual`           | `subjective_health`                                                                                                                                         | `/api/running/v1/health/subjective` |
+| `running_manual`           | `weight_log`                                                                                                                                                | `/api/running/v1/health/weight`     |
+| `running_dashboard`        | `dashboard`                                                                                                                                                 | `/api/running/v1/dashboard`         |
+| `running_gear`             | `list` / `update`                                                                                                                                           | `/api/running/v1/gear`              |
+| `running_race_log`         | `list` / `create` / `detail` / `update` / `delete`                                                                                                          | `/api/running/v1/race-log`          |
+| `running_goals`            | `update`                                                                                                                                                    | `/api/running/v1/goals`             |
+| `running_activity_streams` | `get`                                                                                                                                                       | `/api/running/v1/activities`        |
+| `running_ai_insights`      | `list` / `generate`                                                                                                                                         | `/api/running/v1/ai/insights`       |
+| `running_analytics`        | `target_effort` / `personal_bests` / `calorie_trend` / `zones` / `zones_reference` / `gear` / `fitness_age` / `endurance_score` / `pmc` / `session_profile` | `/api/running/v1/analytics/...`     |
+| `running_user_profile`     | `get` / `patch`                                                                                                                                             | `/api/running/v1/user/profile`      |
+| `running_user`             | `settings` / `activities` / `push_subscription`                                                                                                             | `/api/running/v1/user/...`          |
+| `running_upcoming_races`   | `list` / `create` / `detail` / `update` / `delete`                                                                                                          | `/api/running/v1/upcoming-races`    |
+| `running_ai`               | `symptoms` / `injury_coach` / `injury_coach_history`                                                                                                        | `/api/running/v1/...`               |
+| `running_analytics_ai`     | `insights` / `generate` / `staleness` / `daily` / `followup`                                                                                                | `/api/running/v1/ai/insights/...`   |
+| `running_sync`             | `sync_strava` / `sync_status`                                                                                                                               | `/api/running/v1/sync/...`          |
 
 > For path params (e.g. `/api/running/v1/symptoms/:id`), append the ID manually: `` `${BASE}/${id}` ``
 

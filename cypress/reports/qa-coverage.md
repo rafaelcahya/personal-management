@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-19 (issue #402)
-**Branch:** feat/issue-402-product-api-test-coverage
+**Last Updated:** 2026-06-20 (issue #413)
+**Branch:** feat/issue-413-pagi-vs-sore-analytics
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,111  | 39%  |
+| API       | 1,129  | 39%  |
 | UI        | 1,747  | 61%  |
-| **Total** | **2,858** | 100% |
+| **Total** | **2,876** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 676 | 454   | 1,130 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 384 | 695   | 1,079 |
+| Running Tracker      | 402 | 695   | 1,097 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,111** | **1,747** | **2,858** |
+| **Total**            | **1,129** | **1,747** | **2,876** |
 
 ---
 
@@ -210,9 +210,10 @@
 | Performance Trends     | 5   | 0  | 5     |
 | Personal Bests         | 7   | 19 | 26    |
 | Qualifying Run Count   | 0   | 8  | 8     |
+| Session Profile        | 18  | 0  | 18    |
 | VO2Max Target Effort   | 4   | 31 | 35    |
 | Zone Analytics         | 24  | 0  | 24    |
-| **Subtotal**           | **84** | **87** | **171** |
+| **Subtotal**           | **102** | **87** | **189** |
 
 #### Injury AI
 
@@ -254,7 +255,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **53** | **21** | **74** |
 
-**Running Total — API: 384 | UI: 695 | Total: 1,079**
+**Running Total — API: 402 | UI: 695 | Total: 1,097**
 
 ---
 
@@ -283,7 +284,7 @@
 | Auth                 | 22  | 107   | 129   |
 | Inventory Management | 676 | 454   | 1,130 |
 | Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 384 | 695   | 1,079 |
+| Running Tracker      | 402 | 695   | 1,097 |
 | Landing Page         | 0   | 33    | 33    |
 | Shared               | 0   | 8     | 8     |
-| **Total**            | **1,111** | **1,747** | **2,858** |
+| **Total**            | **1,129** | **1,747** | **2,876** |

@@ -62,6 +62,7 @@
 
 ## Lessons Learned
 
+- 2026-06-20: **Session-profile test pattern** — when an endpoint returns parallel blocks (pagi/sore), test both blocks in the same `it()` using `[res.body.pagi, res.body.sore].forEach(block => ...)` rather than writing duplicate describe blocks. Also test cross-block invariants (pagi.count + sore.count === total_runs, threshold.pagi_re_count === pagi.relative_effort_count) in dedicated `it()` assertions — they catch service-layer bugs that shape checks alone miss.
 - 2026-05-14: **Regression run workflow** — `npm run cy:regression` (defined in package.json, runs `cypress/run-regression.mjs`) runs 4 groups headless with live output + saves to `cypress/reports/logs/{group}.log`. Then `! npm run cy:summary` (runs `cypress/parse-results.js`) sends compact markdown into Claude conversation. Use this to update all 3 reports. Never estimate pass/fail — wait for actual output.
 - 2026-05-07: Cypress tidak support `.yaml` sebagai fixture format — `cy.fixture('app-constants')` akan gagal jika file-nya `.yaml`. File yang dipakai adalah `app-constants.json`. File `.yaml` tetap ada tapi hanya untuk human readability — selalu update keduanya jika ada perubahan constants.
 - 2026-05-07: Report conventions yang disepakati user — (1) selalu tanya dulu sebelum buat report; (2) app version diambil dari `.claude/prd/PRD_Shared.md` header `Version:` field; (3) `coverage-report.md` bersifat kumulatif — jangan overwrite, hanya update/append.
@@ -70,6 +71,6 @@
 
 ## Cross-Agent Signals
 
-| Date | To Agent | Finding | Severity | Resolution |
-| ---- | -------- | ------- | -------- | ---------- |
-| —    | —        | No open signals | — | — |
+| Date | To Agent | Finding         | Severity | Resolution |
+| ---- | -------- | --------------- | -------- | ---------- |
+| —    | —        | No open signals | —        | —          |
