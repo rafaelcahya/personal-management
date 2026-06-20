@@ -35,6 +35,7 @@ import EnduranceScoreTrendChart from './components/EnduranceScoreTrendChart'
 import TrainingZonesReference from './components/TrainingZonesReference'
 import PerformanceTrends from '../dashboard/components/PerformanceTrends'
 import SessionProfileSection from './components/SessionProfileSection'
+import TemperatureEfficiencySection from './components/TemperatureEfficiencySection'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -379,6 +380,8 @@ export default function AnalyticsPage() {
           )}
 
           {vis('sessionProfileSection_analyticsPage') && <SessionProfileSection />}
+
+          {vis('temperatureEfficiencySection_analyticsPage') && <TemperatureEfficiencySection />}
         </>
       )}
     </div>

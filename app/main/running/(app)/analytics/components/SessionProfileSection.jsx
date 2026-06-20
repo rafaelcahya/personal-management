@@ -216,7 +216,7 @@ export default function SessionProfileSection() {
       <Card className="border border-slate-200/70 shadow-sm py-0">
         <CardContent className="px-5 py-5">
           <div className="flex flex-col gap-1 mb-4">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <div className="flex items-center gap-2">
                 <Clock className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
                 <h3 className="text-sm font-semibold text-slate-700">
