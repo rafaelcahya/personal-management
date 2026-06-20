@@ -34,6 +34,7 @@ import FitnessAgeTrendChart from './components/FitnessAgeTrendChart'
 import EnduranceScoreTrendChart from './components/EnduranceScoreTrendChart'
 import TrainingZonesReference from './components/TrainingZonesReference'
 import PerformanceTrends from '../dashboard/components/PerformanceTrends'
+import SessionProfileSection from './components/SessionProfileSection'
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
@@ -376,6 +377,8 @@ export default function AnalyticsPage() {
               <ZoneAnalyticsSection />
             </div>
           )}
+
+          {vis('sessionProfileSection_analyticsPage') && <SessionProfileSection />}
         </>
       )}
     </div>

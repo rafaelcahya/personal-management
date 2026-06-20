@@ -122,7 +122,8 @@
       "gear": "/api/running/v1/analytics/gear",
       "fitness_age": "/api/running/v1/analytics/fitness-age",
       "endurance_score": "/api/running/v1/analytics/endurance-score",
-      "pmc": "/api/running/v1/analytics/pmc"
+      "pmc": "/api/running/v1/analytics/pmc",
+      "session_profile": "/api/running/v1/analytics/session-profile"
     },
     "running_user_profile": {
       "get": "/api/running/v1/user/profile",
