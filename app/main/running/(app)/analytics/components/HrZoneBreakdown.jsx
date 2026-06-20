@@ -6,12 +6,6 @@ import EmptyState from './EmptyState'
 // Matches ZONE_COLORS in StreamCharts.jsx: Z1→Z5 light-to-dark red
 const HR_ZONE_COLORS = ['#fecdd3', '#fca5a5', '#f87171', '#ef4444', '#b91c1c']
 
-const METHOD_LABELS = {
-  max_hr: 'Max HR',
-  karvonen: 'Heart Rate Reserve',
-  threshold: 'Lactate Threshold',
-}
-
 export default function HrZoneBreakdown({ data, error }) {
   if (error) {
     return <EmptyState message="Failed to load HR zone data" />
@@ -39,9 +33,6 @@ export default function HrZoneBreakdown({ data, error }) {
 
   return (
     <div id="hrZoneBreakdown_analyticsPage" className="flex flex-col gap-3">
-      <p className="text-[10px] text-slate-400 uppercase tracking-wide font-semibold">
-        Method: {METHOD_LABELS[data.method] ?? data.method}
-      </p>
       <ZoneBreakdownBars zones={data.zones} colors={HR_ZONE_COLORS} />
     </div>
   )
