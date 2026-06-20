@@ -10,6 +10,7 @@ const ZONES_REFERENCE = constants.endpoints.running_analytics.zones_reference
 const GEAR_ANALYTICS = constants.endpoints.running_analytics.gear
 const PMC = constants.endpoints.running_analytics.pmc
 const SESSION_PROFILE = constants.endpoints.running_analytics.session_profile
+const TEMPERATURE_EFFICIENCY = constants.endpoints.running_analytics.temperature_efficiency
 
 Cypress.Commands.add('getTargetEffort', (qs = {}) => {
   return cy.apiRequestWithSession('GET', TARGET_EFFORT, { qs })
@@ -90,4 +91,12 @@ Cypress.Commands.add('getSessionProfile', () => {
 
 Cypress.Commands.add('getSessionProfileNoAuth', () => {
   return cy.apiRequestNoAuth('GET', SESSION_PROFILE)
+})
+
+Cypress.Commands.add('getTemperatureEfficiency', () => {
+  return cy.apiRequestWithSession('GET', TEMPERATURE_EFFICIENCY)
+})
+
+Cypress.Commands.add('getTemperatureEfficiencyNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', TEMPERATURE_EFFICIENCY)
 })

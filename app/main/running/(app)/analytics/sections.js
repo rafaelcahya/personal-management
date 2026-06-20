@@ -8,6 +8,7 @@ import {
   MapPin,
   Heart,
   Clock,
+  Thermometer,
 } from 'lucide-react'
 
 export const ANALYTICS_SECTIONS = [
@@ -92,6 +93,12 @@ export const ANALYTICS_SECTIONS = [
     id: 'sessionProfileSection_analyticsPage',
     label: 'Session Profile — Morning vs Evening',
     icon: Clock,
+    defaultVisible: true,
+  },
+  {
+    id: 'temperatureEfficiencySection_analyticsPage',
+    label: 'Temperature vs Cardiac Efficiency',
+    icon: Thermometer,
     defaultVisible: true,
   },
 ]
