@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-20 (issue #412)
-**Branch:** feat/issue-412-temperature-efficiency
+**Last Updated:** 2026-06-20 (issue #415)
+**Branch:** feat/issue-413-pagi-vs-sore-analytics
 
 ---
 
@@ -9,23 +9,23 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,153  | 40%  |
+| API       | 1,178  | 40%  |
 | UI        | 1,747  | 60%  |
-| **Total** | **2,900** | 100% |
+| **Total** | **2,925** | 100% |
 
 ---
 
 ## Module Overview
 
-| Module               | API | UI    | Total |
-| -------------------- | --- | ----- | ----- |
-| Auth                 | 22  | 107   | 129   |
-| Inventory Management | 676 | 454   | 1,130 |
-| Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 426 | 695   | 1,121 |
-| Landing Page         | 0   | 33    | 33    |
-| Shared               | 0   | 8     | 8     |
-| **Total**            | **1,153** | **1,747** | **2,900** |
+| Module               | API   | UI    | Total |
+| -------------------- | ----- | ----- | ----- |
+| Auth                 | 22    | 107   | 129   |
+| Inventory Management | 701   | 454   | 1,155 |
+| Trading Management   | 29    | 450   | 479   |
+| Running Tracker      | 426   | 695   | 1,121 |
+| Landing Page         | 0     | 33    | 33    |
+| Shared               | 0     | 8     | 8     |
+| **Total**            | **1,178** | **1,747** | **2,925** |
 
 ---
 
@@ -90,8 +90,8 @@
 
 | Feature          | API | UI | Total |
 | ---------------- | --- | -- | ----- |
-| Product History  | 15  | 28 | 43    |
-| **Subtotal**     | **15** | **28** | **43** |
+| Product History  | 40  | 28 | 68    |
+| **Subtotal**     | **40** | **28** | **68** |
 
 #### Product Name
 
@@ -106,7 +106,7 @@
 | Update Name      | 29  | 14 | 43    |
 | **Subtotal**     | **124** | **58** | **182** |
 
-**Inventory Total — API: 676 | UI: 454 | Total: 1,130**
+**Inventory Total — API: 701 | UI: 454 | Total: 1,155**
 
 ---
 
@@ -280,12 +280,12 @@
 
 ## Grand Total
 
-| Module               | API | UI    | Total |
-| -------------------- | --- | ----- | ----- |
-| Auth                 | 22  | 107   | 129   |
-| Inventory Management | 676 | 454   | 1,130 |
-| Trading Management   | 29  | 450   | 479   |
-| Running Tracker      | 426 | 695   | 1,121 |
-| Landing Page         | 0   | 33    | 33    |
-| Shared               | 0   | 8     | 8     |
-| **Total**            | **1,153** | **1,747** | **2,900** |
+| Module               | API   | UI    | Total |
+| -------------------- | ----- | ----- | ----- |
+| Auth                 | 22    | 107   | 129   |
+| Inventory Management | 701   | 454   | 1,155 |
+| Trading Management   | 29    | 450   | 479   |
+| Running Tracker      | 426   | 695   | 1,121 |
+| Landing Page         | 0     | 33    | 33    |
+| Shared               | 0     | 8     | 8     |
+| **Total**            | **1,178** | **1,747** | **2,925** |
