@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-20 (issue #415)
-**Branch:** feat/issue-413-pagi-vs-sore-analytics
+**Last Updated:** 2026-06-21 (issue #425)
+**Branch:** feat/issue-425-trading-dashboard-api-tests
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,178  | 40%  |
-| UI        | 1,747  | 60%  |
-| **Total** | **2,925** | 100% |
+| API       | 1,205  | 41%  |
+| UI        | 1,747  | 59%  |
+| **Total** | **2,952** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 29    | 450   | 479   |
+| Trading Management   | 56    | 450   | 506   |
 | Running Tracker      | 426   | 695   | 1,121 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,178** | **1,747** | **2,925** |
+| **Total**            | **1,205** | **1,747** | **2,952** |
 
 ---
 
@@ -112,6 +112,13 @@
 
 ### Trading Management
 
+#### Dashboard
+
+| Feature          | API | UI | Total |
+| ---------------- | --- | -- | ----- |
+| Dashboard API    | 27  | 0  | 27    |
+| **Subtotal**     | **27** | **0** | **27** |
+
 #### Trade
 
 | Feature       | API | UI  | Total |
@@ -150,7 +157,7 @@
 | Update Event   | 0   | 20 | 20    |
 | **Subtotal**   | **0** | **134** | **134** |
 
-**Trading Total — API: 29 | UI: 450 | Total: 479**
+**Trading Total — API: 56 | UI: 450 | Total: 506**
 
 ---
 
@@ -284,8 +291,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 29    | 450   | 479   |
+| Trading Management   | 56    | 450   | 506   |
 | Running Tracker      | 426   | 695   | 1,121 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,178** | **1,747** | **2,925** |
+| **Total**            | **1,205** | **1,747** | **2,952** |

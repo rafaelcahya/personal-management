@@ -167,6 +167,10 @@
       "event_analysis_get": "/api/trade/v1/ai/event-analysis",
       "event_analysis_post": "/api/trade/v1/ai/event-analysis"
     },
+    "trading_dashboard": {
+      "metrics": "/api/trade/v1/dashboard/metrics",
+      "quick_view": "/api/trade/v1/dashboard/quick-view"
+    },
     "running_ai": {
       "symptoms": "/api/running/v1/symptoms",
       "symptoms_by_id": "/api/running/v1/symptoms/:id",
