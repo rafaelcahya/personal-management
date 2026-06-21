@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-21 (issue #425)
-**Branch:** feat/issue-425-trading-dashboard-api-tests
+**Last Updated:** 2026-06-21 (issue #433)
+**Branch:** feat/issue-433-trades-ux-improvements
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,205  | 41%  |
-| UI        | 1,747  | 59%  |
-| **Total** | **2,952** | 100% |
+| API       | 1,230  | 42%  |
+| UI        | 1,731  | 58%  |
+| **Total** | **2,961** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 56    | 450   | 506   |
+| Trading Management   | 81    | 434   | 515   |
 | Running Tracker      | 426   | 695   | 1,121 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,205** | **1,747** | **2,952** |
+| **Total**            | **1,230** | **1,731** | **2,961** |
 
 ---
 
@@ -126,12 +126,12 @@
 | Auth Guard    | 29  | 0   | 29    |
 | Add Trade     | 0   | 109 | 109   |
 | Delete Trade  | 0   | 6   | 6     |
-| List Trade    | 0   | 6   | 6     |
+| List Trade    | 12  | 0   | 12    |
 | Option Trade  | 0   | 7   | 7     |
-| Trade Summary | 0   | 10  | 10    |
+| Trade Summary | 13  | 0   | 13    |
 | Trade Detail  | 0   | 15  | 15    |
 | Update Trade  | 0   | 32  | 32    |
-| **Subtotal**  | **29** | **185** | **214** |
+| **Subtotal**  | **54** | **169** | **223** |
 
 #### Fee
 
@@ -157,7 +157,7 @@
 | Update Event   | 0   | 20 | 20    |
 | **Subtotal**   | **0** | **134** | **134** |
 
-**Trading Total — API: 56 | UI: 450 | Total: 506**
+**Trading Total — API: 81 | UI: 434 | Total: 515**
 
 ---
 
@@ -291,8 +291,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 56    | 450   | 506   |
+| Trading Management   | 81    | 434   | 515   |
 | Running Tracker      | 426   | 695   | 1,121 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,205** | **1,747** | **2,952** |
+| **Total**            | **1,230** | **1,731** | **2,961** |
