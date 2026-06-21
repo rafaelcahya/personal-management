@@ -47,3 +47,9 @@ Cypress.Commands.add('getEntrySessionSummaryFromDb', (userId) => {
 Cypress.Commands.add('getEntryOccasionSummaryFromDb', (userId) => {
   return cy.task('getEntryOccasionSummaryFromDb', { userId })
 })
+
+Cypress.Commands.add('getTradeSettingsFromDb', () => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('getTradeSettingsFromDb', { userId })
+  })
+})

@@ -20,6 +20,7 @@
     "trading_trade": "/main/trading/trade",
     "trading_event": "/main/trading/event",
     "trading_fee": "/main/trading/fee",
+    "trading_settings": "/main/trading/settings",
     "login": "/login",
     "auth_callback": "/auth/callback",
     "auth_callback_v1": "/auth/v1/callback"
@@ -152,6 +153,10 @@
       "max_hr_detect": "/api/running/v1/user/max-hr-detect",
       "strava_disconnect": "/api/running/v1/auth/strava/disconnect",
       "push_subscription": "/api/running/v1/user/push-subscription"
+    },
+    "trading_settings": {
+      "get": "/api/trade/v1/settings",
+      "update": "/api/trade/v1/settings/update"
     },
     "trading_event": {
       "list": "/api/trade/v1/event/list",
@@ -935,6 +940,18 @@
       "danger_zone_error": "dangerZoneError_settingsPage",
       "bmi_chip": "bmiChip_settingsPage",
       "bmi_missing_prompt": "bmiMissingPrompt_settingsPage"
+    },
+    "trading_settings": {
+      "section": "performConfigSection_settingsPage",
+      "loading": "settingsLoadingSkeleton_settingsPage",
+      "error": "settingsError_settingsPage",
+      "retry_btn": "settingsRetryBtn_settingsPage",
+      "form": "settingsForm_settingsPage",
+      "initial_margin_input": "initialMarginInput_settingsPage",
+      "bi_risk_free_rate_input": "biRiskFreeRateInput_settingsPage",
+      "personal_risk_free_rate_input": "personalRiskFreeRateInput_settingsPage",
+      "margin_of_error_input": "marginOfErrorInput_settingsPage",
+      "save_btn": "saveSettingsBtn_settingsPage"
     },
     "trading_trade": {
       "metric_strip": "tradeMetricStrip_tradePage",

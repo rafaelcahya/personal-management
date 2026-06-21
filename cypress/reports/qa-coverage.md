@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-21 (issue #433)
-**Branch:** feat/issue-433-trades-ux-improvements
+**Last Updated:** 2026-06-21 (issue #438)
+**Branch:** feat/issue-438-trading-settings
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,230  | 42%  |
+| API       | 1,246  | 42%  |
 | UI        | 1,731  | 58%  |
-| **Total** | **2,961** | 100% |
+| **Total** | **2,977** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 81    | 434   | 515   |
+| Trading Management   | 97    | 434   | 531   |
 | Running Tracker      | 426   | 695   | 1,121 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,230** | **1,731** | **2,961** |
+| **Total**            | **1,246** | **1,731** | **2,977** |
 
 ---
 
@@ -157,7 +157,14 @@
 | Update Event   | 0   | 20 | 20    |
 | **Subtotal**   | **0** | **134** | **134** |
 
-**Trading Total — API: 81 | UI: 434 | Total: 515**
+#### Settings
+
+| Feature          | API | UI | Total |
+| ---------------- | --- | -- | ----- |
+| Trading Settings | 16  | 0  | 16    |
+| **Subtotal**     | **16** | **0** | **16** |
+
+**Trading Total — API: 97 | UI: 434 | Total: 531**
 
 ---
 
@@ -291,8 +298,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 81    | 434   | 515   |
+| Trading Management   | 97    | 434   | 531   |
 | Running Tracker      | 426   | 695   | 1,121 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,230** | **1,731** | **2,961** |
+| **Total**            | **1,246** | **1,731** | **2,977** |
