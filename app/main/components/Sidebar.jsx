@@ -254,7 +254,6 @@ export default function Sidebar({ user }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname()
-  const isTrading = pathname.startsWith('/main/trading')
 
   useEffect(() => {
     const saved = localStorage.getItem('sidebar-collapsed')
@@ -344,7 +343,7 @@ export default function Sidebar({ user }) {
         </div>
 
         <SidebarNav collapsed={collapsed} />
-        {!isTrading && !collapsed && (
+        {!collapsed && (
           <div className="px-4 pb-1">
             <p id="appVersion_sidebar" className="text-[10px] text-slate-400">
               v{packageJson.version}
@@ -408,13 +407,11 @@ export default function Sidebar({ user }) {
               </button>
             </div>
             <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
-            {!isTrading && (
-              <div className="px-4 pb-1">
-                <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400">
-                  v{packageJson.version}
-                </p>
-              </div>
-            )}
+            <div className="px-4 pb-1">
+              <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400">
+                v{packageJson.version}
+              </p>
+            </div>
             <UserSection collapsed={false} user={user} mobile={true} />
           </aside>
         </>
