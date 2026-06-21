@@ -72,3 +72,19 @@ Cypress.Commands.add('UpdateTradeNoAuth', (id, request) => {
     body: request,
   })
 })
+
+Cypress.Commands.add('GetTradeSettings', () => {
+  return cy.apiRequestWithSession('GET', '/api/trade/v1/settings')
+})
+
+Cypress.Commands.add('GetTradeSettingsNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', '/api/trade/v1/settings')
+})
+
+Cypress.Commands.add('UpdateTradeSettings', (body) => {
+  return cy.apiRequestWithSession('PUT', '/api/trade/v1/settings/update', { body })
+})
+
+Cypress.Commands.add('UpdateTradeSettingsNoAuth', (body) => {
+  return cy.apiRequestNoAuth('PUT', '/api/trade/v1/settings/update', { body })
+})

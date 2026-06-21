@@ -539,6 +539,19 @@ export const TEST_IDS = {
     injury_history_error: 'injuryHistoryError_aiPage',
   },
 
+  trading_settings: {
+    section: 'performConfigSection_settingsPage',
+    loading: 'settingsLoadingSkeleton_settingsPage',
+    error: 'settingsError_settingsPage',
+    retry_btn: 'settingsRetryBtn_settingsPage',
+    form: 'settingsForm_settingsPage',
+    initial_margin_input: 'initialMarginInput_settingsPage',
+    bi_risk_free_rate_input: 'biRiskFreeRateInput_settingsPage',
+    personal_risk_free_rate_input: 'personalRiskFreeRateInput_settingsPage',
+    margin_of_error_input: 'marginOfErrorInput_settingsPage',
+    save_btn: 'saveSettingsBtn_settingsPage',
+  },
+
   running_strava_connection: {
     disconnect_banner: 'stravaDisconnectBanner',
     reconnect_btn: 'stravaReconnectBtn',
