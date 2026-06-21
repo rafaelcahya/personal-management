@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card'
 
 export default function Section({ id, title, description, icon: Icon, children }) {
   return (
-    <section id={id} aria-label={title}>
+    <section id={id} aria-label={title} className="scroll-mt-20">
       <Card className="border border-slate-200/70 shadow-sm py-0">
         <CardContent className="px-5 py-5">
           <div className="flex flex-col gap-1 mb-4">

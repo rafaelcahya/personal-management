@@ -1,462 +1,189 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-    Shield,
-    ArrowUpRight,
-    ArrowDownRight,
-    AlertTriangle,
-    TrendingUpDown,
-    Target,
-    Activity,
-    Gauge,
-} from "lucide-react";
-import { toast } from "sonner";
-import MetricCard from "./component/MetricCard";
-import RiskGauge from "./component/RiskGauge";
-import SkeletonGrid from "../../../../../components/ui/common/SkeletonGrid";
-import RiskStatCard from "./component/RiskStatCard";
-import ComparisonCard from "./component/ComparisonCard";
-import { getTradeSettings } from "@/lib/api/tradeSettings";
+import { Card, CardContent } from '@/components/ui/card'
+import { Shield, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+
+function StatCell({ label, value, sub, valueClassName, chip }) {
+  return (
+    <div className="flex flex-col gap-0.5 bg-slate-50 rounded-lg px-4 py-3">
+      <div className="flex items-start justify-between gap-1">
+        <span className="text-xs text-slate-400">{label}</span>
+        {chip && (
+          <span
+            className={`inline-flex px-1.5 py-0.5 rounded-full text-xs font-medium shrink-0 ${chip.className}`}
+          >
+            {chip.label}
+          </span>
+        )}
+      </div>
+      <span className={`text-sm font-semibold tabular-nums ${valueClassName ?? 'text-slate-800'}`}>
+        {value ?? '—'}
+      </span>
+      {sub && <span className="text-xs text-slate-400">{sub}</span>}
+    </div>
+  )
+}
 
 export default function RiskSection({ metrics, loading }) {
-    const [config, setConfig] = useState({
-        margin_of_error: 10,
-    });
-    const [configLoading, setConfigLoading] = useState(true);
-
-    useEffect(() => {
-        async function fetchConfig() {
-            try {
-                const settings = await getTradeSettings();
-                setConfig({
-                    margin_of_error: parseFloat(settings.margin_of_error) || 10,
-                });
-            } catch (err) {
-                console.error("Failed to fetch config:", err);
-                toast.error("Failed to load settings");
-            } finally {
-                setConfigLoading(false);
-            }
-        }
-        fetchConfig();
-    }, []);
-
-    if (loading || configLoading) {
-        return <SkeletonGrid count={2} />;
-    }
-
-    if (!metrics || metrics.totalTrades === 0) {
-        return (
-            <Card className="border-0 shadow-md shadow-slate-200/50">
-                <CardContent className="p-8 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
-                            <Shield className="size-8 text-slate-400" />
-                        </div>
-                        <div>
-                            <h3 className="font-semibold text-base mb-1">
-                                No Risk Data Available
-                            </h3>
-                            <p className="text-sm text-slate-500">
-                                Add more trades to see risk analysis and
-                                suggestions
-                            </p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        );
-    }
-
-    const {
-        safeZoneAvgProfitWithoutMoe,
-        safeZoneAvgProfitWithMoe,
-        safeZoneAvgLossWithoutMoe,
-        safeZoneAvgLossWithMoe,
-        timesToZeroWithoutMoe,
-        timesToZeroWithMoe,
-        stdDevRupiah,
-        stdDevComment,
-        accountValue,
-        avgProfit,
-        avgLoss,
-        winRate,
-    } = metrics;
-
-    const riskPerTrade = Math.abs(safeZoneAvgLossWithMoe);
-    const rewardPerTrade = safeZoneAvgProfitWithMoe;
-    const riskRewardRatio =
-        riskPerTrade > 0 ? (rewardPerTrade / riskPerTrade).toFixed(2) : 0;
-    const riskPercentage =
-        accountValue > 0 ? ((riskPerTrade / accountValue) * 100).toFixed(2) : 0;
-    const maxRiskCapital =
-        accountValue > 0 ? Math.floor(accountValue * 0.02) : 0;
-    const positionSizing =
-        maxRiskCapital > 0 && riskPerTrade > 0
-            ? Math.floor(maxRiskCapital / riskPerTrade)
-            : 0;
-
-    const expectedValue =
-        (winRate / 100) * avgProfit + ((100 - winRate) / 100) * avgLoss;
-
+  if (loading) {
     return (
-        <div className="space-y-4">
-            {/* Risk Summary Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <RiskStatCard
-                    label="Risk/Trade"
-                    value={`${riskPercentage}%`}
-                    subtitle={`Rp ${Math.floor(riskPerTrade).toLocaleString("id-ID")}`}
-                    color="red"
-                    icon={<AlertTriangle className="size-4" />}
-                />
-                <RiskStatCard
-                    label="R:R Ratio"
-                    value={`1:${riskRewardRatio}`}
-                    subtitle="Risk vs Reward"
-                    color="blue"
-                    icon={<Target className="size-4" />}
-                />
-                <RiskStatCard
-                    label="Safe Buffer"
-                    value={`${timesToZeroWithMoe}x`}
-                    subtitle="Consecutive losses"
-                    color="violet"
-                    icon={<Shield className="size-4" />}
-                />
-                <RiskStatCard
-                    label="Volatility"
-                    value={stdDevComment}
-                    subtitle={`σ: Rp ${Math.floor(stdDevRupiah).toLocaleString("id-ID")}`}
-                    color="amber"
-                    icon={<Activity className="size-4" />}
-                />
-            </div>
-
-            {/* Risk Overview with Gauge */}
-            <Card className="border border-slate-200/50 shadow-slate-100">
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm flex items-center gap-2">
-                            <div className="p-1.5 bg-slate-100 rounded-lg">
-                                <Shield className="size-4 text-slate-700" />
-                            </div>
-                            Risk Assessment
-                        </CardTitle>
-                        <Badge variant="outline" className="text-xs">
-                            MoE: {config.margin_of_error}%
-                        </Badge>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <RiskGauge
-                        stdDev={stdDevRupiah}
-                        comment={stdDevComment}
-                        timesToZero={timesToZeroWithMoe}
-                    />
-                </CardContent>
-            </Card>
-
-            {/* TP/SL Suggestions - Compact */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Take Profit Card */}
-                <Card className="border border-slate-200/50 shadow-slate-100">
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm flex items-center gap-2">
-                                <div className="p-1.5 bg-green-100 rounded-lg">
-                                    <ArrowUpRight className="size-4 text-green-600" />
-                                </div>
-                                Take Profit Targets
-                            </CardTitle>
-                            <Badge variant="success" className="text-xs">
-                                Reward
-                            </Badge>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                        <MetricCard
-                            label="Suggested TP"
-                            value={safeZoneAvgProfitWithoutMoe}
-                            format="currency"
-                            description="Based on average profit"
-                            color="green"
-                        />
-                        <MetricCard
-                            label="Conservative TP"
-                            value={safeZoneAvgProfitWithMoe}
-                            format="currency"
-                            description={`With ${config.margin_of_error}% buffer`}
-                            color="green"
-                            badge="Recommended"
-                        />
-                        <Separator />
-                        <div className="pt-1">
-                            <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-600 font-medium">
-                                    Expected Gain
-                                </span>
-                                <span className="font-bold text-green-600">
-                                    +
-                                    {(
-                                        (rewardPerTrade / accountValue) *
-                                        100
-                                    ).toFixed(2)}
-                                    %
-                                </span>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Stop Loss Card */}
-                <Card className="border border-slate-200/50 shadow-slate-100">
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm flex items-center gap-2">
-                                <div className="p-1.5 bg-red-100 rounded-lg">
-                                    <ArrowDownRight className="size-4 text-red-600" />
-                                </div>
-                                Stop Loss Levels
-                            </CardTitle>
-                            <Badge variant="destructive" className="text-xs">
-                                Risk
-                            </Badge>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                        <MetricCard
-                            label="Suggested SL"
-                            value={safeZoneAvgLossWithoutMoe}
-                            format="currency"
-                            description="Based on average loss"
-                            color="red"
-                        />
-                        <MetricCard
-                            label="Conservative SL"
-                            value={safeZoneAvgLossWithMoe}
-                            format="currency"
-                            description={`With ${config.margin_of_error}% buffer`}
-                            color="red"
-                            badge="Recommended"
-                        />
-                        <Separator />
-                        <div className="pt-1">
-                            <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-600 font-medium">
-                                    Max Risk/Trade
-                                </span>
-                                <span className="font-bold text-red-600">
-                                    -{riskPercentage}%
-                                </span>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Risk Management Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Capital Protection */}
-                <Card className="border border-slate-200/50 shadow-slate-100">
-                    <CardHeader>
-                        <CardTitle className="text-sm flex items-center gap-2">
-                            <div className="bg-slate-100 p-1.5 rounded-lg">
-                                <Shield className="size-4 text-slate-700" />
-                            </div>
-                            Capital Protection
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <div className="flex justify-between items-center p-2.5 bg-slate-50 hover:bg-slate-100/80 transition-colors rounded-lg">
-                            <span className="text-xs text-slate-600">
-                                Current Capital
-                            </span>
-                            <span className="text-sm font-bold text-slate-900">
-                                Rp{" "}
-                                {Math.floor(accountValue).toLocaleString(
-                                    "id-ID",
-                                )}
-                            </span>
-                        </div>
-                        <div className="flex justify-between items-center p-2.5 bg-slate-50 hover:bg-slate-100/80 transition-colors rounded-lg">
-                            <span className="text-xs text-slate-600">
-                                Max Risk (2% Rule)
-                            </span>
-                            <span className="text-sm font-bold text-amber-600">
-                                Rp {maxRiskCapital.toLocaleString("id-ID")}
-                            </span>
-                        </div>
-                        <div className="flex justify-between items-center p-2.5 bg-slate-50 hover:bg-slate-100/80 transition-colors rounded-lg">
-                            <span className="text-xs text-slate-600">
-                                Risk per Trade
-                            </span>
-                            <span className="text-sm font-bold text-red-600">
-                                Rp{" "}
-                                {Math.floor(riskPerTrade).toLocaleString(
-                                    "id-ID",
-                                )}
-                            </span>
-                        </div>
-                        <div className="flex justify-between items-center p-2.5 bg-slate-50 hover:bg-slate-100/80 transition-colors rounded-lg">
-                            <span className="text-xs text-slate-600">
-                                Suggested Position Size
-                            </span>
-                            <span className="text-sm font-bold text-blue-600">
-                                {positionSizing} lots
-                            </span>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Risk Tolerance */}
-                <Card className="border border-slate-200/50 shadow-slate-100">
-                    <CardHeader>
-                        <CardTitle className="text-sm flex items-center gap-2">
-                            <div className="bg-slate-100 rounded-lg p-1.5">
-                                <Gauge className="size-4 text-slate-700" />
-                            </div>
-                            Risk Tolerance
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <div className="p-2.5 bg-slate-50 rounded-lg">
-                            <div className="flex justify-between items-center mb-1">
-                                <span className="text-xs text-slate-600">
-                                    Standard Deviation
-                                </span>
-                                <Badge variant="secondary" className="text-xs">
-                                    {stdDevComment}
-                                </Badge>
-                            </div>
-                            <p className="text-sm font-bold text-slate-900">
-                                Rp{" "}
-                                {Math.floor(stdDevRupiah).toLocaleString(
-                                    "id-ID",
-                                )}
-                            </p>
-                        </div>
-                        <div className="p-2.5 bg-slate-50 rounded-lg">
-                            <div className="flex justify-between items-center mb-1">
-                                <span className="text-xs text-slate-600">
-                                    Lose Streak Buffer (Base)
-                                </span>
-                            </div>
-                            <p className="text-sm font-bold text-slate-900">
-                                {timesToZeroWithoutMoe}x consecutive losses
-                            </p>
-                        </div>
-                        <div className="p-2.5 bg-slate-100 rounded-lg">
-                            <div className="flex justify-between items-center mb-1">
-                                <span className="text-xs text-slate-700 font-medium">
-                                    Safe Buffer (Adjusted)
-                                </span>
-                                <Badge variant="default" className="text-xs">
-                                    +{config.margin_of_error}% MoE
-                                </Badge>
-                            </div>
-                            <p className="text-sm font-bold text-slate-900">
-                                {timesToZeroWithMoe}x consecutive losses
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Risk vs Reward Comparison */}
-            <Card className="border border-slate-200/50 shadow-slate-100">
-                <CardHeader>
-                    <CardTitle className="text-sm flex items-center gap-2">
-                        <div className="bg-slate-100 rounded-lg p-1.5">
-                            <TrendingUpDown className="size-4 text-slate-700" />
-                        </div>
-                        Risk vs Reward Analysis
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-3">
-                        {/* Visual R:R Bar */}
-                        <div className="space-y-2">
-                            <div className="flex justify-between text-xs text-slate-600">
-                                <span>Risk</span>
-                                <span className="font-bold text-slate-900">
-                                    1:{riskRewardRatio} R:R
-                                </span>
-                                <span>Reward</span>
-                            </div>
-                            <div className="h-8 bg-slate-100 rounded-lg overflow-hidden flex">
-                                <div
-                                    className="bg-red-500 flex items-center justify-center text-white text-xs font-bold"
-                                    style={{ width: "33.33%" }}
-                                >
-                                    Risk
-                                </div>
-                                <div
-                                    className="bg-green-500 flex items-center justify-center text-white text-xs font-bold"
-                                    style={{ width: "66.67%" }}
-                                >
-                                    Reward
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Comparison Grid */}
-                        <div className="grid grid-cols-3 gap-3">
-                            <ComparisonCard
-                                label="Risk/Trade"
-                                value={`Rp ${Math.floor(riskPerTrade).toLocaleString("id-ID")}`}
-                                percentage={`${riskPercentage}%`}
-                                color="red"
-                            />
-                            <ComparisonCard
-                                label="Reward/Trade"
-                                value={`Rp ${Math.floor(rewardPerTrade).toLocaleString("id-ID")}`}
-                                percentage={`${((rewardPerTrade / accountValue) * 100).toFixed(2)}%`}
-                                color="green"
-                            />
-                            <ComparisonCard
-                                label="Win Rate"
-                                value={`${winRate}%`}
-                                percentage={`${riskRewardRatio} R:R`}
-                                color="blue"
-                            />
-                        </div>
-
-                        {/* Expectancy Calculation */}
-                        <div className="p-3 bg-slate-50 rounded-lg">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-xs text-slate-700 font-medium mb-1">
-                                        Expected Value per Trade
-                                    </p>
-                                    <p className="text-xs text-slate-500">
-                                        (Win% × Avg Win) - (Loss% × Avg Loss)
-                                    </p>
-                                </div>
-                                <div className="text-right">
-                                    <p
-                                        className={`text-lg font-bold ${
-                                            expectedValue >= 0
-                                                ? "text-green-600"
-                                                : "text-red-600"
-                                        }`}
-                                    >
-                                        {expectedValue >= 0 ? "+" : ""}
-                                        Rp{" "}
-                                        {Math.floor(
-                                            expectedValue,
-                                        ).toLocaleString("id-ID")}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+      <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-4 animate-pulse">
+        {/* Take Profit */}
+        <div className="flex flex-col gap-1.5">
+          <div className="h-4 w-40 bg-slate-200 rounded" />
+          <div className="h-3 w-72 bg-slate-100 rounded" />
         </div>
-    );
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-slate-100 rounded-lg px-4 py-3 flex flex-col gap-1.5">
+              <div className="flex items-start justify-between">
+                <div className="h-3 w-10 bg-slate-200 rounded" />
+                <div className="h-4 w-14 bg-slate-200 rounded-full" />
+              </div>
+              <div className="h-5 w-28 bg-slate-200 rounded" />
+              <div className="h-3 w-20 bg-slate-100 rounded" />
+            </div>
+          ))}
+        </div>
+        <div className="border-t border-slate-100" />
+        {/* Stop Loss */}
+        <div className="flex flex-col gap-1.5">
+          <div className="h-4 w-36 bg-slate-200 rounded" />
+          <div className="h-3 w-72 bg-slate-100 rounded" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-slate-100 rounded-lg px-4 py-3 flex flex-col gap-1.5">
+              <div className="flex items-start justify-between">
+                <div className="h-3 w-10 bg-slate-200 rounded" />
+                <div className="h-4 w-14 bg-slate-200 rounded-full" />
+              </div>
+              <div className="h-5 w-28 bg-slate-200 rounded" />
+              <div className="h-3 w-20 bg-slate-100 rounded" />
+            </div>
+          ))}
+        </div>
+      </Card>
+    )
+  }
+
+  if (!metrics || metrics.totalTrades === 0) {
+    return (
+      <Card className="border border-slate-200/70 shadow-sm">
+        <CardContent className="p-8 text-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
+              <Shield className="size-8 text-slate-400" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-base mb-1">No Risk Data Available</h3>
+              <p className="text-sm text-slate-500">
+                Add more trades to see risk analysis and suggestions
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const { bullTP, baseTP, bearTP, bullSL, baseSL, bearSL } = metrics
+
+  return (
+    <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-4">
+      {/* Take Profit row */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <ArrowUpRight className="size-4 text-violet-500 shrink-0" />
+          <h3 className="text-sm font-semibold text-slate-700">Take Profit Targets</h3>
+        </div>
+        <p className="text-xs text-slate-400">
+          Tiered targets based on historical average profit and standard deviation.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <StatCell
+          label={
+            <span className="flex items-center gap-1">
+              Bull <TrendingUp className="size-3 text-green-600" />
+            </span>
+          }
+          chip={{ label: 'stretch', className: 'bg-green-100 text-green-700' }}
+          value={`Rp ${Math.floor(bullTP).toLocaleString('id-ID')}`}
+          valueClassName="text-green-600"
+          sub="avg profit + 1σ"
+        />
+        <StatCell
+          label={
+            <span className="flex items-center gap-1">
+              Base <Minus className="size-3 text-blue-500" />
+            </span>
+          }
+          chip={{ label: 'expected', className: 'bg-blue-100 text-blue-700' }}
+          value={`Rp ${Math.floor(baseTP).toLocaleString('id-ID')}`}
+          valueClassName="text-blue-600"
+          sub="avg profit"
+        />
+        <StatCell
+          label={
+            <span className="flex items-center gap-1">
+              Bear <TrendingDown className="size-3 text-amber-500" />
+            </span>
+          }
+          chip={{ label: 'conservative', className: 'bg-amber-100 text-amber-700' }}
+          value={bearTP > 0 ? `Rp ${Math.floor(bearTP).toLocaleString('id-ID')}` : '—'}
+          valueClassName={bearTP > 0 ? 'text-amber-600' : 'text-slate-400'}
+          sub={bearTP > 0 ? 'avg profit − 1σ' : 'volatility exceeds avg profit'}
+        />
+      </div>
+
+      <div className="border-t border-slate-100" />
+
+      {/* Stop Loss row */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <ArrowDownRight className="size-4 text-violet-500 shrink-0" />
+          <h3 className="text-sm font-semibold text-slate-700">Stop Loss Levels</h3>
+        </div>
+        <p className="text-xs text-slate-400">
+          Tiered stop levels based on historical average loss and standard deviation.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <StatCell
+          label={
+            <span className="flex items-center gap-1">
+              Bull <TrendingUp className="size-3 text-green-600" />
+            </span>
+          }
+          chip={{ label: 'tight', className: 'bg-green-100 text-green-700' }}
+          value={bullSL < 0 ? `Rp ${Math.floor(Math.abs(bullSL)).toLocaleString('id-ID')}` : '—'}
+          valueClassName={bullSL < 0 ? 'text-green-600' : 'text-slate-400'}
+          sub={bullSL < 0 ? 'narrowed by 1σ' : 'volatility exceeds avg loss'}
+        />
+        <StatCell
+          label={
+            <span className="flex items-center gap-1">
+              Base <Minus className="size-3 text-blue-500" />
+            </span>
+          }
+          chip={{ label: 'expected', className: 'bg-blue-100 text-blue-700' }}
+          value={`Rp ${Math.floor(Math.abs(baseSL)).toLocaleString('id-ID')}`}
+          valueClassName="text-blue-600"
+          sub="avg loss"
+        />
+        <StatCell
+          label={
+            <span className="flex items-center gap-1">
+              Bear <TrendingDown className="size-3 text-red-400" />
+            </span>
+          }
+          chip={{ label: 'wide', className: 'bg-red-100 text-red-700' }}
+          value={`Rp ${Math.floor(Math.abs(bearSL)).toLocaleString('id-ID')}`}
+          valueClassName="text-red-500"
+          sub="widened by 1σ"
+        />
+      </div>
+    </Card>
+  )
 }

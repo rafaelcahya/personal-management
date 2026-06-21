@@ -10,12 +10,24 @@ import PaceZoneBreakdown from './PaceZoneBreakdown'
 import CadenceZoneBreakdown from './CadenceZoneBreakdown'
 import GearUsageBreakdown from './GearUsageBreakdown'
 
-function SubSection({ icon: Icon, title, children }) {
+const HR_METHOD_LABELS = {
+  max_hr: 'Max HR',
+  karvonen: 'Heart Rate Reserve',
+  threshold: 'Lactate Threshold',
+}
+
+function SubSection({ icon: Icon, title, meta, children }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-1.5">
         <Icon className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />
         <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{title}</h3>
+        {meta && (
+          <>
+            <span className="text-[10px] text-slate-300">·</span>
+            <span className="text-[10px] text-slate-400 uppercase tracking-wide">{meta}</span>
+          </>
+        )}
       </div>
       {children}
     </div>
@@ -142,7 +154,11 @@ export default function ZoneAnalyticsSection() {
                 id="hrZoneSubSection_analyticsPage"
                 className="flex flex-col gap-3 border-t border-slate-100 pt-4"
               >
-                <SubSection icon={Heart} title="HR Zones">
+                <SubSection
+                  icon={Heart}
+                  title="HR Zones"
+                  meta={HR_METHOD_LABELS[zoneData?.hr?.method] ?? null}
+                >
                   <HrZoneBreakdown data={zoneData?.hr ?? null} error={zoneError} />
                 </SubSection>
               </div>

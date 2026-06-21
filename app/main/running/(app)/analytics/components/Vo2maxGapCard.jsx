@@ -277,24 +277,28 @@ export default function Vo2maxGapCard({ data }) {
       className="rounded-xl border border-slate-200 bg-white p-5 flex flex-col gap-4"
       aria-label="VO2max target effort status"
     >
-      <div className="flex items-center gap-2 flex-wrap">
-        <Target className="h-4 w-4 text-violet-500 shrink-0" aria-hidden="true" />
-        <p className="text-sm font-semibold text-slate-700">VO2max Target Effort</p>
-        <span
-          id="vo2maxGapStatusBadge_analyticsPage"
-          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium ${statusMeta.cls}`}
-        >
-          <StatusIcon className="h-3 w-3" aria-hidden="true" />
-          {statusMeta.label}
-        </span>
-        {data.categoryBadge && (
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <Target className="h-4 w-4 text-violet-500 shrink-0" aria-hidden="true" />
+          <p className="text-sm font-semibold text-slate-700">VO2max Target Effort</p>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
           <span
-            id="vo2maxCategoryBadge_analyticsPage"
-            className="inline-flex items-center px-2 py-0.5 rounded border text-xs font-medium bg-blue-50 text-blue-700 border-blue-200"
+            id="vo2maxGapStatusBadge_analyticsPage"
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-medium ${statusMeta.cls}`}
           >
-            {data.categoryBadge}
+            <StatusIcon className="h-3 w-3" aria-hidden="true" />
+            {statusMeta.label}
           </span>
-        )}
+          {data.categoryBadge && (
+            <span
+              id="vo2maxCategoryBadge_analyticsPage"
+              className="inline-flex items-center px-2 py-0.5 rounded border text-xs font-medium bg-blue-50 text-blue-700 border-blue-200"
+            >
+              {data.categoryBadge}
+            </span>
+          )}
+        </div>
       </div>
 
       {data.physiologicalWarning && (
@@ -356,18 +360,6 @@ export default function Vo2maxGapCard({ data }) {
             maxWeeks={maxWeeks}
             colorClass="bg-amber-400"
           />
-        </div>
-      )}
-
-      {data.recommendedTraining && (
-        <div
-          id="vo2maxRecommendedTraining_analyticsPage"
-          className="rounded-lg bg-violet-50 border border-violet-100 px-3 py-2.5"
-        >
-          <p className="text-xs font-semibold text-violet-600 uppercase tracking-wide mb-1">
-            Recommended training
-          </p>
-          <p className="text-sm text-slate-700 leading-relaxed">{data.recommendedTraining}</p>
         </div>
       )}
 
