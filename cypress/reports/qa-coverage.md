@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-22 (issue #436 — consolidate event API tests)
-**Branch:** release/v1.17
+**Last Updated:** 2026-06-22 (issue #449 — onboarding flow fixes)
+**Branch:** feat/issue-449-onboarding-fixes
 
 ---
 
