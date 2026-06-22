@@ -126,7 +126,7 @@ export default function StravaSection() {
                 <Button
                   onClick={redirectToStravaConnect}
                   size="sm"
-                  className="bg-[#FC4C02] hover:bg-[#e04402] text-white shrink-0 min-h-11 min-w-11 focus-visible:ring-2 focus-visible:ring-orange-300"
+                  className="bg-[#FC4C02] hover:bg-[#e04402] text-white shrink-0 min-w-11 focus-visible:ring-2 focus-visible:ring-orange-300"
                 >
                   <Link2 className="w-4 h-4 mr-2" aria-hidden="true" />
                   Connect Strava
@@ -155,7 +155,7 @@ export default function StravaSection() {
                   id="stravaReconnectBtn_settings"
                   onClick={redirectToStravaConnect}
                   size="sm"
-                  className="bg-amber-600 hover:bg-amber-700 text-white shrink-0 min-h-11 min-w-11 focus-visible:ring-2 focus-visible:ring-amber-300"
+                  className="bg-amber-600 hover:bg-amber-700 text-white shrink-0 min-w-11 focus-visible:ring-2 focus-visible:ring-amber-300"
                 >
                   <Unplug className="mr-2" aria-hidden="true" />
                   Reconnect

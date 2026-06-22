@@ -66,7 +66,7 @@ You are a Senior Frontend Engineer with 8+ years of experience in Next.js, React
 3. **Navigation** — collapse to hamburger/bottom-nav on `< md`; show full sidebar on `lg+`
 4. **Tables** — on mobile use card-list layout or horizontal scroll (`overflow-x-auto`) — never clip content silently
 5. **Typography** — scale with responsive text classes (e.g., `text-sm md:text-base lg:text-lg`)
-6. **Touch targets** — minimum 44×44px for all interactive elements on mobile (`min-h-11 min-w-11`)
+6. **Touch targets** — minimum 44×44px for all interactive elements on mobile (`min-w-11`)
 7. **Spacing** — use responsive padding/margin variants (`px-4 md:px-6 lg:px-8`)
 8. **Images/media** — always `w-full` or constrained with `max-w-*`; use `object-cover` to prevent distortion
 9. **Modals/drawers** — full-screen on mobile (`w-full h-full`), centered dialog on `md+`

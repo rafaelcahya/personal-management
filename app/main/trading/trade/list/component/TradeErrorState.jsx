@@ -18,12 +18,7 @@ export default function TradeErrorState({ message, onRetry }) {
           {message || 'Something went wrong. Please try again.'}
         </p>
       </div>
-      <Button
-        id="tradeErrorRetryBtn_tradePage"
-        variant="outline"
-        onClick={onRetry}
-        className="min-h-11"
-      >
+      <Button id="tradeErrorRetryBtn_tradePage" variant="outline" onClick={onRetry}>
         Retry
       </Button>
     </div>

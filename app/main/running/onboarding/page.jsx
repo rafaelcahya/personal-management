@@ -459,7 +459,7 @@ function StepBiometrics({ onNext, defaultValues }) {
               id="continueBtn_onboarding"
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white min-h-11"
+              className="w-full bg-violet-600 hover:bg-violet-700 text-white"
             >
               {isSubmitting ? (
                 <>
@@ -549,7 +549,7 @@ function StepStrava({ onNext, onSkip, initialError = null }) {
           id="connectStravaBtn_onboarding"
           onClick={handleConnect}
           disabled={isConnecting}
-          className="w-full bg-[#FC4C02] hover:bg-[#e04402] text-white min-h-11"
+          className="w-full bg-[#FC4C02] hover:bg-[#e04402] text-white"
           aria-label="Connect with Strava"
         >
           {isConnecting ? (
@@ -569,7 +569,7 @@ function StepStrava({ onNext, onSkip, initialError = null }) {
           id="skipStravaBtn_onboarding"
           variant="ghost"
           onClick={onSkip}
-          className="w-full text-slate-500 hover:text-slate-700 min-h-11"
+          className="w-full text-slate-500 hover:text-slate-700"
           aria-label="Skip Strava connection for now"
         >
           <SkipForwardIcon className="size-4" aria-hidden="true" />
@@ -611,7 +611,7 @@ function StepComplete({ stravaConnected, onFinish }) {
         id="goToDashboardBtn_onboarding"
         onClick={onFinish}
         disabled={completing}
-        className="w-full bg-violet-600 hover:bg-violet-700 text-white min-h-11"
+        className="w-full bg-violet-600 hover:bg-violet-700 text-white"
       >
         {completing ? (
           <>

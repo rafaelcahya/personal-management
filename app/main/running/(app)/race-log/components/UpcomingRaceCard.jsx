@@ -323,7 +323,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
               size="sm"
               onClick={() => setPickerOpen(true)}
               disabled={linking}
-              className="flex items-center gap-1.5 text-xs min-h-11 md:min-h-9"
+              className="flex items-center gap-1.5 text-xs md:min-h-9"
             >
               {linking ? (
                 <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
@@ -337,7 +337,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
               variant="outline"
               size="sm"
               onClick={handleAddToCalendar}
-              className="flex items-center gap-1.5 text-xs min-h-11 md:min-h-9"
+              className="flex items-center gap-1.5 text-xs md:min-h-9"
             >
               <CalendarPlus className="size-3.5" aria-hidden="true" />
               Add to Calendar
@@ -348,7 +348,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
           <div className="flex items-center gap-2">
             <button
               onClick={() => setEditOpen(true)}
-              className="flex items-center justify-center size-8 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors min-h-11 min-w-11 md:min-h-8 md:min-w-8"
+              className="flex items-center justify-center size-8 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors min-w-11 md:min-h-8 md:min-w-8"
               aria-label="Edit upcoming race"
             >
               <Pencil className="size-3.5" aria-hidden="true" />
@@ -359,7 +359,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
                 size="sm"
                 onClick={handleSaveAsCompleted}
                 disabled={completing}
-                className="flex items-center gap-1.5 text-xs min-h-11 md:min-h-9"
+                className="flex items-center gap-1.5 text-xs md:min-h-9"
               >
                 {completing ? (
                   <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
@@ -371,7 +371,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
             <button
               id="deleteUpcomingRaceBtn_raceLogPage"
               onClick={() => setDeleteOpen(true)}
-              className="flex items-center justify-center size-8 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors min-h-11 min-w-11 md:min-h-8 md:min-w-8"
+              className="flex items-center justify-center size-8 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors min-w-11 md:min-h-8 md:min-w-8"
               aria-label="Delete upcoming race"
             >
               <Trash2 className="size-3.5" aria-hidden="true" />

@@ -483,5 +483,5 @@ When Tester Agent sends a `🔖 id Request`, treat it as a blocking task:
 </div>
 
 // Touch-safe button
-<Button className="min-h-11 min-w-11">...</Button>
+<Button className="min-w-11">...</Button>
 ```
