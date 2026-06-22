@@ -35,7 +35,7 @@ export default function TradeEmptyState({ onAddTrade, search }) {
           Start tracking your performance by logging your first trade.
         </p>
       </div>
-      <Button id="tradeEmptyStateAddBtn_tradePage" onClick={onAddTrade} className="min-h-11">
+      <Button id="tradeEmptyStateAddBtn_tradePage" onClick={onAddTrade}>
         Add Trade
       </Button>
     </div>

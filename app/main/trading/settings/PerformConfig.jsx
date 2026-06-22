@@ -56,7 +56,7 @@ function SettingsErrorState({ onRetry }) {
         size="sm"
         onClick={onRetry}
         id="settingsRetryBtn_settingsPage"
-        className="min-h-11 min-w-11"
+        className="min-w-11"
       >
         Try again
       </Button>
@@ -178,84 +178,86 @@ export default function PerformConfig() {
                 )}
               />
 
-              {/* BI Risk Free Rate */}
-              <FormField
-                control={control}
-                name="bi_risk_free_rate"
-                render={({ field, fieldState }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium flex items-center gap-1.5">
-                      BI Risk Free Rate
-                      <Info className="size-3.5 text-slate-400" aria-hidden="true" />
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        id="biRiskFreeRateInput_settingsPage"
-                        type="text"
-                        placeholder="6.5"
-                        value={field.value}
-                        onChange={(e) => {
-                          const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
-                          field.onChange(cleaned)
-                        }}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                        aria-describedby="biRiskFreeRateDesc_settingsPage"
-                        aria-invalid={!!fieldState.error}
-                        className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                          fieldState.error ? 'border-rose-500' : ''
-                        }`}
-                      />
-                    </FormControl>
-                    <FormDescription
-                      id="biRiskFreeRateDesc_settingsPage"
-                      className="text-xs text-slate-400"
-                    >
-                      Bank Indonesia reference rate (in %)
-                    </FormDescription>
-                    <FormMessage id="biRiskFreeRateError_settingsPage" className="text-xs" />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                {/* BI Risk Free Rate */}
+                <FormField
+                  control={control}
+                  name="bi_risk_free_rate"
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">BI Risk Free Rate</FormLabel>
+                      <FormControl>
+                        <Input
+                          id="biRiskFreeRateInput_settingsPage"
+                          type="text"
+                          placeholder="6.5"
+                          value={field.value}
+                          onChange={(e) => {
+                            const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
+                            field.onChange(cleaned)
+                          }}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                          aria-describedby="biRiskFreeRateDesc_settingsPage"
+                          aria-invalid={!!fieldState.error}
+                          className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                            fieldState.error ? 'border-rose-500' : ''
+                          }`}
+                        />
+                      </FormControl>
+                      <FormDescription
+                        id="biRiskFreeRateDesc_settingsPage"
+                        className="text-xs text-slate-400"
+                      >
+                        Bank Indonesia reference rate (in %)
+                      </FormDescription>
+                      <FormMessage id="biRiskFreeRateError_settingsPage" className="text-xs" />
+                    </FormItem>
+                  )}
+                />
 
-              {/* Personal Risk Free Rate */}
-              <FormField
-                control={control}
-                name="personal_risk_free_rate"
-                render={({ field, fieldState }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">Personal Risk Free Rate</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="personalRiskFreeRateInput_settingsPage"
-                        type="text"
-                        placeholder="8.0"
-                        value={field.value}
-                        onChange={(e) => {
-                          const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
-                          field.onChange(cleaned)
-                        }}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                        aria-describedby="personalRiskFreeRateDesc_settingsPage"
-                        aria-invalid={!!fieldState.error}
-                        className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                          fieldState.error ? 'border-rose-500' : ''
-                        }`}
+                {/* Personal Risk Free Rate */}
+                <FormField
+                  control={control}
+                  name="personal_risk_free_rate"
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">Personal Risk Free Rate</FormLabel>
+                      <FormControl>
+                        <Input
+                          id="personalRiskFreeRateInput_settingsPage"
+                          type="text"
+                          placeholder="8.0"
+                          value={field.value}
+                          onChange={(e) => {
+                            const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
+                            field.onChange(cleaned)
+                          }}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                          aria-describedby="personalRiskFreeRateDesc_settingsPage"
+                          aria-invalid={!!fieldState.error}
+                          className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                            fieldState.error ? 'border-rose-500' : ''
+                          }`}
+                        />
+                      </FormControl>
+                      <FormDescription
+                        id="personalRiskFreeRateDesc_settingsPage"
+                        className="text-xs text-slate-400"
+                      >
+                        Your personal target return rate (in %)
+                      </FormDescription>
+                      <FormMessage
+                        id="personalRiskFreeRateError_settingsPage"
+                        className="text-xs"
                       />
-                    </FormControl>
-                    <FormDescription
-                      id="personalRiskFreeRateDesc_settingsPage"
-                      className="text-xs text-slate-400"
-                    >
-                      Your personal target return rate (in %)
-                    </FormDescription>
-                    <FormMessage id="personalRiskFreeRateError_settingsPage" className="text-xs" />
-                  </FormItem>
-                )}
-              />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               {/* Margin of Error */}
               <FormField
@@ -302,7 +304,7 @@ export default function PerformConfig() {
                 type="submit"
                 id="saveSettingsBtn_settingsPage"
                 disabled={formState.isSubmitting}
-                className="min-h-11 bg-violet-600 hover:bg-violet-700"
+                className="bg-violet-600 hover:bg-violet-700"
               >
                 {formState.isSubmitting && (
                   <Loader2 className="size-4 mr-2 animate-spin" aria-hidden="true" />

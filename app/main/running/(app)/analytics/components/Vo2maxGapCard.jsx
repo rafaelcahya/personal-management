@@ -87,7 +87,7 @@ export default function Vo2maxGapCard({ data }) {
             id="setGoalBtn_analyticsPage"
             size="sm"
             asChild
-            className="bg-violet-600 hover:bg-violet-700 text-white min-h-11"
+            className="bg-violet-600 hover:bg-violet-700 text-white"
           >
             <Link href="/main/running/race-log">Set a race goal</Link>
           </Button>
@@ -133,7 +133,7 @@ export default function Vo2maxGapCard({ data }) {
           id="setGoalBtn_analyticsPage"
           size="sm"
           asChild
-          className="bg-violet-600 hover:bg-violet-700 text-white self-start min-h-11"
+          className="bg-violet-600 hover:bg-violet-700 text-white self-start"
         >
           <Link href="/main/running/race-log">Add target time</Link>
         </Button>
@@ -202,7 +202,7 @@ export default function Vo2maxGapCard({ data }) {
             id="setNewGoalBtn_analyticsPage"
             size="sm"
             asChild
-            className="bg-violet-600 hover:bg-violet-700 text-white min-h-11"
+            className="bg-violet-600 hover:bg-violet-700 text-white"
           >
             <Link href="/main/running/race-log">Set a new goal</Link>
           </Button>
