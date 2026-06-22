@@ -270,7 +270,9 @@ export default function RunningDashboardPage() {
             </div>
           </div>
 
-          {dashboardData.weekly_stats && <WeeklyStats data={dashboardData.weekly_stats} />}
+          {dashboardData.weekly_stats && (
+            <WeeklyStats data={dashboardData.weekly_stats} activityType={activeType} />
+          )}
           {dashboardData.training_load && (
             <TrainingLoad
               data={dashboardData.training_load}
