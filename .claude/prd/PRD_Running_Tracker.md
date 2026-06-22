@@ -2040,39 +2040,39 @@ There are 6 AI cards on the Analytics page, each placed below its corresponding 
 
 ### 11.6 Pace Calculator page
 
-**Route:** `/main/running/pace-calculator`
-**Component:** `app/main/running/(app)/pace-calculator/page.jsx`
+**Route:** `/main/running/run-calculator`
+**Component:** `app/main/running/(app)/run-calculator/page.jsx`
 
 > As a runner, I want to calculate my target pace, project a finish time for a given distance, and see per-km splits, so that I can plan my race strategy without leaving the app.
 
-The Pace Calculator is a fully client-side tool — no API calls are made. All calculations use in-browser JavaScript. The unit preference (km / mi) is persisted to `localStorage` under the key `paceCalculatorUnit`.
+The Pace Calculator is a fully client-side tool — no API calls are made. All calculations use in-browser JavaScript. The unit preference (km / mi) is persisted to `localStorage` under the key `runCalculatorUnit`.
 
 **Three calculator modes (tabbed layout):**
 
-| Tab              | Test ID                        | Purpose                                                               |
-| ---------------- | ------------------------------ | --------------------------------------------------------------------- |
-| Pace Mode        | `tabPace_paceCalculator`       | Given distance + total time → compute avg pace, speed in km/h and mph |
-| Projection Mode  | `tabProjection_paceCalculator` | Given pace → find finish time for a distance OR distance for a time   |
-| Steps → Distance | `tabSteps_paceCalculator`      | Given step count → estimate distance (assumes 0.9m avg step length)   |
+| Tab              | Test ID                       | Purpose                                                               |
+| ---------------- | ----------------------------- | --------------------------------------------------------------------- |
+| Pace Mode        | `tabPace_runCalculator`       | Given distance + total time → compute avg pace, speed in km/h and mph |
+| Projection Mode  | `tabProjection_runCalculator` | Given pace → find finish time for a distance OR distance for a time   |
+| Steps → Distance | `tabSteps_runCalculator`      | Given step count → estimate distance (assumes 0.9m avg step length)   |
 
 **Pace Mode inputs:**
 
-- Distance selector (`DistanceSelect.jsx`) — preset dropdown (5K, 10K, 21.1K, 42.2K, Custom) + custom numeric input when "Custom" is selected. Test IDs: `distancePreset_paceCalculator`, `customDistance_paceCalculator`
-- Time input (`TimeInput.jsx`) — HH:MM:SS fields. Test IDs: `time_paceCalculator_{hours,minutes,seconds}`
-- Results: pace /km (`paceKm_paceCalculator`), pace /mi (`paceMi_paceCalculator`), speed km/h (`speedKmh_paceCalculator`), speed mph (`speedMph_paceCalculator`)
+- Distance selector (`DistanceSelect.jsx`) — preset dropdown (5K, 10K, 21.1K, 42.2K, Custom) + custom numeric input when "Custom" is selected. Test IDs: `distancePreset_runCalculator`, `customDistance_runCalculator`
+- Time input (`TimeInput.jsx`) — HH:MM:SS fields. Test IDs: `time_runCalculator_{hours,minutes,seconds}`
+- Results: pace /km (`paceKm_runCalculator`), pace /mi (`paceMi_runCalculator`), speed km/h (`speedKmh_runCalculator`), speed mph (`speedMph_runCalculator`)
 
 **Projection Mode inputs:**
 
-- Pace input (MM:SS per km or mi) — `projPaceMinutes_paceCalculator`, `projPaceSeconds_paceCalculator`
-- Sub-mode toggle (`projSubMode_paceCalculator`): "I have a distance → find time" (`projModeDistance_paceCalculator`) or "I have a time → find distance" (`projModeTime_paceCalculator`)
-- Distance selector: `projDistancePreset_paceCalculator`, `projCustomDistance_paceCalculator`
-- Time input: `projTime_paceCalculator_{hours,minutes,seconds}`
-- Results: estimated time (`projResultTime_paceCalculator`) or estimated distance (`projResultDistance_paceCalculator`), avg pace (`projAvgPace_paceCalculator`)
+- Pace input (MM:SS per km or mi) — `projPaceMinutes_runCalculator`, `projPaceSeconds_runCalculator`
+- Sub-mode toggle (`projSubMode_runCalculator`): "I have a distance → find time" (`projModeDistance_runCalculator`) or "I have a time → find distance" (`projModeTime_runCalculator`)
+- Distance selector: `projDistancePreset_runCalculator`, `projCustomDistance_runCalculator`
+- Time input: `projTime_runCalculator_{hours,minutes,seconds}`
+- Results: estimated time (`projResultTime_runCalculator`) or estimated distance (`projResultDistance_runCalculator`), avg pace (`projAvgPace_runCalculator`)
 
 **Steps Mode input:**
 
-- Step count input (`stepsCount_paceCalculator`) — positive integer, max 200,000
-- Results: distance in km (`stepsDistanceKm_paceCalculator`), distance in mi (`stepsDistanceMi_paceCalculator`)
+- Step count input (`stepsCount_runCalculator`) — positive integer, max 200,000
+- Results: distance in km (`stepsDistanceKm_runCalculator`), distance in mi (`stepsDistanceMi_runCalculator`)
 
 **Below the tabs (when valid pace + distance are computed):**
 
@@ -2085,7 +2085,7 @@ The Pace Calculator is a fully client-side tool — no API calls are made. All c
 - Steps input that is not a positive integer → amber warning "Steps must be a positive whole number"
 - Steps > 200,000 → treated as invalid
 
-**Unit toggle (`unitToggle_paceCalculator`):** km / mi radio buttons. Switching unit recalculates all displayed values immediately. Selected unit is saved to `localStorage`.
+**Unit toggle (`unitToggle_runCalculator`):** km / mi radio buttons. Switching unit recalculates all displayed values immediately. Selected unit is saved to `localStorage`.
 
 **Acceptance criteria:**
 

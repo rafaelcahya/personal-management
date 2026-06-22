@@ -72,9 +72,9 @@ const RUNNING_ITEMS = [
   { name: 'Analytics', href: '/main/running/analytics', icon: BarChart2 },
   { name: 'AI Coach', href: '/main/running/ai', icon: BrainCircuit },
   {
-    id: 'paceCalcNav_sidebar',
-    name: 'Pace Calc',
-    href: '/main/running/pace-calculator',
+    id: 'runCalcNav_sidebar',
+    name: 'Run Calc',
+    href: '/main/running/run-calculator',
     icon: Timer,
   },
   { name: 'Settings', href: '/main/running/settings', icon: Settings },

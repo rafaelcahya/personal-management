@@ -6,7 +6,7 @@ export default function SplitsTable({ splits, unit }) {
   if (!splits || splits.length === 0) return null
 
   return (
-    <div id="splitsTable_paceCalculator" className="flex flex-col gap-2">
+    <div id="splitsTable_runCalculator" className="flex flex-col gap-2">
       <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Splits</p>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
