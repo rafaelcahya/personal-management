@@ -87,7 +87,8 @@
       "weight_log": "/api/running/v1/health/weight"
     },
     "running_dashboard": {
-      "dashboard": "/api/running/v1/dashboard"
+      "dashboard": "/api/running/v1/dashboard",
+      "weekly_stats": "/api/running/v1/dashboard/weekly-stats"
     },
     "running_gear": {
       "list": "/api/running/v1/gear",

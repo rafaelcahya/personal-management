@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-22 (issue #437)
-**Branch:** feat/issue-437-fee-pagination-15
+**Last Updated:** 2026-06-22 (issue #444 — weekly stats filter)
+**Branch:** feat/issue-444-weekly-stats-filter
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,253  | 42%  |
+| API       | 1,270  | 42%  |
 | UI        | 1,731  | 58%  |
-| **Total** | **2,984** | 100% |
+| **Total** | **3,001** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
 | Trading Management   | 104   | 434   | 538   |
-| Running Tracker      | 426   | 695   | 1,121 |
+| Running Tracker      | 443   | 695   | 1,138 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,253** | **1,731** | **2,984** |
+| **Total**            | **1,270** | **1,731** | **3,001** |
 
 ---
 
@@ -140,10 +140,10 @@
 | Add Fee      | 0   | 62 | 62    |
 | Delete Fee   | 0   | 6  | 6     |
 | Fee Detail   | 0   | 15 | 15    |
-| List Fee     | 7   | 6  | 13    |
+| List Fee     | 13  | 6  | 19    |
 | Fee Summary  | 0   | 23 | 23    |
 | Update Fee   | 0   | 19 | 19    |
-| **Subtotal** | **7** | **131** | **138** |
+| **Subtotal** | **13** | **131** | **144** |
 
 #### Event
 
@@ -201,7 +201,8 @@
 | Dashboard            | 42  | 28 | 70    |
 | Dashboard Extended   | 0   | 14 | 14    |
 | Gear                 | 6   | 18 | 24    |
-| **Subtotal**         | **48** | **80** | **128** |
+| Weekly Stats Filter  | 17  | 0  | 17    |
+| **Subtotal**         | **65** | **80** | **145** |
 
 #### AI Coach
 
@@ -270,7 +271,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **53** | **21** | **74** |
 
-**Running Total — API: 426 | UI: 695 | Total: 1,121**
+**Running Total — API: 443 | UI: 695 | Total: 1,138**
 
 ---
 
@@ -299,7 +300,7 @@
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
 | Trading Management   | 104   | 434   | 538   |
-| Running Tracker      | 426   | 695   | 1,121 |
+| Running Tracker      | 443   | 695   | 1,138 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,253** | **1,731** | **2,984** |
+| **Total**            | **1,270** | **1,731** | **3,001** |
