@@ -6,18 +6,7 @@ import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  List,
-  AlignLeft,
-  CalendarX2,
-  SearchX,
-  Sparkles,
-  X,
-  History,
-} from 'lucide-react'
+import { Search, List, AlignLeft, CalendarX2, SearchX, Sparkles, X, History } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
 import EventTableHeader from './component/EventTableHeader'
 import EventsTable from './EventTable'
@@ -26,24 +15,33 @@ import EventFilterDropdown from './component/EventFilterDropdown'
 import TimelineView from './component/TimelineView'
 import EventAnalysisModal from './component/EventAnalysisModal'
 import EventAnalysisHistoryModal from './component/EventAnalysisHistoryModal'
+import EventPagination from './component/EventPagination'
 
 const FILTER_STORAGE_KEY = 'event-list-filter'
 
-export default function EventsPageClient({ initialEvents }) {
-  const [listEvent, setListEvent] = useState(initialEvents || [])
+export default function EventsPageClient() {
+  const [listEvent, setListEvent] = useState([])
   const [filter, setFilter] = useState(null)
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [total, setTotal] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [view, setView] = useState('list')
   const [selectedEvents, setSelectedEvents] = useState(new Map())
   const [analysisModalOpen, setAnalysisModalOpen] = useState(false)
   const [historyModalOpen, setHistoryModalOpen] = useState(false)
 
   const searchDebounceRef = useRef(null)
+  const isMounted = useRef(true)
+
+  useEffect(() => {
+    isMounted.current = true
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
 
   useEffect(() => {
     try {
@@ -68,14 +66,16 @@ export default function EventsPageClient({ initialEvents }) {
     try {
       setIsLoading(true)
       const result = await fetchEventList({ search: searchVal, page: pageVal, filter: filterVal })
+      if (!isMounted.current) return
       setListEvent(result.events || [])
       setTotalPages(result.totalPages ?? 1)
       setTotal(result.total ?? 0)
     } catch (err) {
+      if (!isMounted.current) return
       console.error('Fetch error:', err)
       toast.error(err.message || 'Failed to fetch events')
     } finally {
-      setIsLoading(false)
+      if (isMounted.current) setIsLoading(false)
     }
   }, [])
 
@@ -268,39 +268,12 @@ export default function EventsPageClient({ initialEvents }) {
                 />
               )}
 
-              {totalPages > 1 && (
-                <div
-                  id="eventPagination_eventPage"
-                  className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2 shrink-0"
-                >
-                  <p className="text-xs text-slate-500">
-                    Page {page} of {totalPages} ({total} total)
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      id="prevPageBtn_eventPage"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={page <= 1 || isLoading}
-                      className="h-7 w-7 p-0"
-                    >
-                      <ChevronLeft className="size-4" />
-                    </Button>
-                    <span className="text-xs font-medium text-slate-600 px-2">{page}</span>
-                    <Button
-                      id="nextPageBtn_eventPage"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={page >= totalPages || isLoading}
-                      className="h-7 w-7 p-0"
-                    >
-                      <ChevronRight className="size-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
+              <EventPagination
+                page={page}
+                totalPages={totalPages}
+                total={total}
+                onPageChange={(p) => setPage(p)}
+              />
             </>
           )}
         </div>
