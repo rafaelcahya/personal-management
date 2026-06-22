@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-21 (issue #438)
-**Branch:** feat/issue-438-trading-settings
+**Last Updated:** 2026-06-22 (issue #437)
+**Branch:** feat/issue-437-fee-pagination-15
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,246  | 42%  |
+| API       | 1,253  | 42%  |
 | UI        | 1,731  | 58%  |
-| **Total** | **2,977** | 100% |
+| **Total** | **2,984** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 97    | 434   | 531   |
+| Trading Management   | 104   | 434   | 538   |
 | Running Tracker      | 426   | 695   | 1,121 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,246** | **1,731** | **2,977** |
+| **Total**            | **1,253** | **1,731** | **2,984** |
 
 ---
 
@@ -140,10 +140,10 @@
 | Add Fee      | 0   | 62 | 62    |
 | Delete Fee   | 0   | 6  | 6     |
 | Fee Detail   | 0   | 15 | 15    |
-| List Fee     | 0   | 6  | 6     |
+| List Fee     | 7   | 6  | 13    |
 | Fee Summary  | 0   | 23 | 23    |
 | Update Fee   | 0   | 19 | 19    |
-| **Subtotal** | **0** | **131** | **131** |
+| **Subtotal** | **7** | **131** | **138** |
 
 #### Event
 
@@ -164,7 +164,7 @@
 | Trading Settings | 16  | 0  | 16    |
 | **Subtotal**     | **16** | **0** | **16** |
 
-**Trading Total — API: 97 | UI: 434 | Total: 531**
+**Trading Total — API: 104 | UI: 434 | Total: 538**
 
 ---
 
@@ -298,8 +298,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 97    | 434   | 531   |
+| Trading Management   | 104   | 434   | 538   |
 | Running Tracker      | 426   | 695   | 1,121 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,246** | **1,731** | **2,977** |
+| **Total**            | **1,253** | **1,731** | **2,984** |
