@@ -80,7 +80,7 @@ function buildSplits(distM, paceSecPerKm, unit) {
   return splits
 }
 
-export default function PaceCalculatorPage() {
+export default function RunCalculatorPage() {
   const [unit, setUnit] = useState('km')
   const [unitReady, setUnitReady] = useState(false)
 
@@ -107,14 +107,14 @@ export default function PaceCalculatorPage() {
   const [activeTab, setActiveTab] = useState('pace')
 
   useEffect(() => {
-    const saved = localStorage.getItem('paceCalculatorUnit')
+    const saved = localStorage.getItem('runCalculatorUnit')
     if (saved === 'km' || saved === 'mi') setUnit(saved)
     setUnitReady(true)
   }, [])
 
   function handleUnitChange(val) {
     setUnit(val)
-    localStorage.setItem('paceCalculatorUnit', val)
+    localStorage.setItem('runCalculatorUnit', val)
   }
 
   // Pace mode calculations
@@ -221,7 +221,7 @@ export default function PaceCalculatorPage() {
           <Timer className="size-5 text-violet-600" aria-hidden="true" />
         </div>
         <div>
-          <h1 className="text-lg font-semibold text-slate-800">Pace Calculator</h1>
+          <h1 className="text-lg font-semibold text-slate-800">Run Calculator</h1>
           <p className="text-sm text-slate-500">
             Calculate pace, project race times, and view splits
           </p>
@@ -234,24 +234,24 @@ export default function PaceCalculatorPage() {
           <div className="flex items-center gap-3">
             <Label className="text-sm font-medium text-slate-600 shrink-0">Unit</Label>
             <RadioGroup
-              id="unitToggle_paceCalculator"
+              id="unitToggle_runCalculator"
               value={unit}
               onValueChange={handleUnitChange}
               className="flex gap-4"
             >
               <div className="flex items-center gap-1.5">
-                <RadioGroupItem value="km" id="unitKm_paceCalculator" />
+                <RadioGroupItem value="km" id="unitKm_runCalculator" />
                 <Label
-                  htmlFor="unitKm_paceCalculator"
+                  htmlFor="unitKm_runCalculator"
                   className="text-sm font-medium cursor-pointer"
                 >
                   km
                 </Label>
               </div>
               <div className="flex items-center gap-1.5">
-                <RadioGroupItem value="mi" id="unitMi_paceCalculator" />
+                <RadioGroupItem value="mi" id="unitMi_runCalculator" />
                 <Label
-                  htmlFor="unitMi_paceCalculator"
+                  htmlFor="unitMi_runCalculator"
                   className="text-sm font-medium cursor-pointer"
                 >
                   mi
@@ -265,13 +265,13 @@ export default function PaceCalculatorPage() {
       {/* Calculator */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full">
-          <TabsTrigger id="tabPace_paceCalculator" value="pace" className="flex-1">
+          <TabsTrigger id="tabPace_runCalculator" value="pace" className="flex-1">
             Pace Mode
           </TabsTrigger>
-          <TabsTrigger id="tabProjection_paceCalculator" value="projection" className="flex-1">
+          <TabsTrigger id="tabProjection_runCalculator" value="projection" className="flex-1">
             Projection Mode
           </TabsTrigger>
-          <TabsTrigger id="tabSteps_paceCalculator" value="steps" className="flex-1">
+          <TabsTrigger id="tabSteps_runCalculator" value="steps" className="flex-1">
             Steps → Distance
           </TabsTrigger>
         </TabsList>
@@ -283,22 +283,22 @@ export default function PaceCalculatorPage() {
               <p className="text-xs text-slate-500">
                 Enter a distance and total time to find your average pace.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <DistanceSelect
                   preset={paceDistPreset}
                   customValue={paceCustomDist}
                   unit={unit}
                   onPresetChange={setPaceDistPreset}
                   onCustomChange={setPaceCustomDist}
-                  selectId="distancePreset_paceCalculator"
-                  customId="customDistance_paceCalculator"
+                  selectId="distancePreset_runCalculator"
+                  customId="customDistance_runCalculator"
                 />
                 <TimeInput
                   hours={paceH}
                   minutes={paceM}
                   seconds={paceS}
                   onChange={(field, val) => handleTimeChange('pace', field, val)}
-                  idPrefix="time_paceCalculator"
+                  idPrefix="time_runCalculator"
                 />
               </div>
 
@@ -316,7 +316,7 @@ export default function PaceCalculatorPage() {
                       Pace
                     </span>
                     <span
-                      id="paceKm_paceCalculator"
+                      id="paceKm_runCalculator"
                       className="text-base font-semibold text-violet-700"
                     >
                       {formatPaceSec(paceCalc.paceSecPerKm)} /km
@@ -327,7 +327,7 @@ export default function PaceCalculatorPage() {
                       Pace
                     </span>
                     <span
-                      id="paceMi_paceCalculator"
+                      id="paceMi_runCalculator"
                       className="text-base font-semibold text-slate-700"
                     >
                       {formatPaceSec(paceCalc.paceSecPerMi)} /mi
@@ -338,7 +338,7 @@ export default function PaceCalculatorPage() {
                       Speed
                     </span>
                     <span
-                      id="speedKmh_paceCalculator"
+                      id="speedKmh_runCalculator"
                       className="text-base font-semibold text-slate-700"
                     >
                       {paceCalc.speedKmh.toFixed(1)} km/h
@@ -349,7 +349,7 @@ export default function PaceCalculatorPage() {
                       Speed
                     </span>
                     <span
-                      id="speedMph_paceCalculator"
+                      id="speedMph_runCalculator"
                       className="text-base font-semibold text-slate-700"
                     >
                       {paceCalc.speedMph.toFixed(1)} mph
@@ -373,7 +373,7 @@ export default function PaceCalculatorPage() {
                 <div className="flex items-center gap-1.5">
                   <div className="flex flex-col items-center gap-0.5">
                     <Input
-                      id="projPaceMinutes_paceCalculator"
+                      id="projPaceMinutes_runCalculator"
                       type="number"
                       min={0}
                       value={projPaceMin}
@@ -386,7 +386,7 @@ export default function PaceCalculatorPage() {
                   <span className="text-slate-400 font-medium pb-3">:</span>
                   <div className="flex flex-col items-center gap-0.5">
                     <Input
-                      id="projPaceSeconds_paceCalculator"
+                      id="projPaceSeconds_runCalculator"
                       type="number"
                       min={0}
                       max={59}
@@ -407,24 +407,24 @@ export default function PaceCalculatorPage() {
 
               {/* Sub-mode toggle */}
               <RadioGroup
-                id="projSubMode_paceCalculator"
+                id="projSubMode_runCalculator"
                 value={projSubMode}
                 onValueChange={setProjSubMode}
                 className="flex gap-4"
               >
                 <div className="flex items-center gap-1.5">
-                  <RadioGroupItem value="distance" id="projModeDistance_paceCalculator" />
+                  <RadioGroupItem value="distance" id="projModeDistance_runCalculator" />
                   <Label
-                    htmlFor="projModeDistance_paceCalculator"
+                    htmlFor="projModeDistance_runCalculator"
                     className="text-sm font-medium cursor-pointer"
                   >
                     I have a distance → find time
                   </Label>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <RadioGroupItem value="time" id="projModeTime_paceCalculator" />
+                  <RadioGroupItem value="time" id="projModeTime_runCalculator" />
                   <Label
-                    htmlFor="projModeTime_paceCalculator"
+                    htmlFor="projModeTime_runCalculator"
                     className="text-sm font-medium cursor-pointer"
                   >
                     I have a time → find distance
@@ -439,8 +439,8 @@ export default function PaceCalculatorPage() {
                   unit={unit}
                   onPresetChange={setProjDistPreset}
                   onCustomChange={setProjCustomDist}
-                  selectId="projDistancePreset_paceCalculator"
-                  customId="projCustomDistance_paceCalculator"
+                  selectId="projDistancePreset_runCalculator"
+                  customId="projCustomDistance_runCalculator"
                 />
               ) : (
                 <TimeInput
@@ -448,7 +448,7 @@ export default function PaceCalculatorPage() {
                   minutes={projM}
                   seconds={projS}
                   onChange={(field, val) => handleTimeChange('proj', field, val)}
-                  idPrefix="projTime_paceCalculator"
+                  idPrefix="projTime_runCalculator"
                 />
               )}
 
@@ -467,7 +467,7 @@ export default function PaceCalculatorPage() {
                         Estimated Time
                       </span>
                       <span
-                        id="projResultTime_paceCalculator"
+                        id="projResultTime_runCalculator"
                         className="text-base font-semibold text-violet-700"
                       >
                         {formatDuration(projCalc.result.totalSec)}
@@ -479,7 +479,7 @@ export default function PaceCalculatorPage() {
                         Estimated Distance
                       </span>
                       <span
-                        id="projResultDistance_paceCalculator"
+                        id="projResultDistance_runCalculator"
                         className="text-base font-semibold text-violet-700"
                       >
                         {formatDistance(projCalc.result.distM, unit)}
@@ -491,7 +491,7 @@ export default function PaceCalculatorPage() {
                       Avg Pace
                     </span>
                     <span
-                      id="projAvgPace_paceCalculator"
+                      id="projAvgPace_runCalculator"
                       className="text-base font-semibold text-slate-700"
                     >
                       {unit === 'mi'
@@ -514,11 +514,11 @@ export default function PaceCalculatorPage() {
               </p>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="stepsCount_paceCalculator" className="text-sm font-medium">
+                <Label htmlFor="stepsCount_runCalculator" className="text-sm font-medium">
                   Steps
                 </Label>
                 <Input
-                  id="stepsCount_paceCalculator"
+                  id="stepsCount_runCalculator"
                   type="number"
                   inputMode="numeric"
                   min={1}
@@ -554,7 +554,7 @@ export default function PaceCalculatorPage() {
                       Distance
                     </span>
                     <span
-                      id="stepsDistanceKm_paceCalculator"
+                      id="stepsDistanceKm_runCalculator"
                       className={`text-base font-semibold ${
                         unit === 'km' ? 'text-violet-700' : 'text-slate-700'
                       }`}
@@ -575,7 +575,7 @@ export default function PaceCalculatorPage() {
                       Distance
                     </span>
                     <span
-                      id="stepsDistanceMi_paceCalculator"
+                      id="stepsDistanceMi_runCalculator"
                       className={`text-base font-semibold ${
                         unit === 'mi' ? 'text-violet-700' : 'text-slate-700'
                       }`}

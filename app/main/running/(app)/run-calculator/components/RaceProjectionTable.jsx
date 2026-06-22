@@ -27,7 +27,7 @@ export default function RaceProjectionTable({ refTimeSec, refDistM, unit }) {
   })
 
   return (
-    <div id="raceProjectionTable_paceCalculator" className="flex flex-col gap-2">
+    <div id="raceProjectionTable_runCalculator" className="flex flex-col gap-2">
       <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
         Race Projections
       </p>
