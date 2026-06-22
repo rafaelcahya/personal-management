@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CheckCircle2, AlertCircle, Zap, Info } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { CheckCircle2, AlertCircle, Zap, Info, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -157,28 +156,35 @@ export default function HrZonesSection() {
   const hasValidMaxHr = maxHr !== '' && !isNaN(maxHrNum) && maxHrNum >= 60
 
   return (
-    <section aria-label="HR zones">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        HR Zones
-      </h2>
+    <section
+      aria-label="HR zones"
+      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+    >
+      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+          <Heart className="size-4 text-violet-600" aria-hidden="true" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-900">HR Zones</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Heart rate boundaries for training intensity
+          </p>
+        </div>
+      </div>
 
       {loading ? (
-        <Card className="border border-slate-200/70 py-0">
-          <CardContent id="hrZonesLoading_settingsPage" className="px-5 py-4 flex flex-col gap-3">
-            <Skeleton className="h-4 w-40 rounded" />
-            <Skeleton className="h-9 w-full rounded" />
-            <Skeleton className="h-9 w-full rounded" />
-          </CardContent>
-        </Card>
+        <div id="hrZonesLoading_settingsPage" className="px-5 py-4 flex flex-col gap-3">
+          <Skeleton className="h-4 w-40 rounded" />
+          <Skeleton className="h-9 w-full rounded" />
+          <Skeleton className="h-9 w-full rounded" />
+        </div>
       ) : loadError ? (
-        <Card className="border border-red-200 bg-red-50">
-          <CardContent className="px-5 py-4">
-            <p className="text-sm text-red-700">{loadError}</p>
-          </CardContent>
-        </Card>
+        <div className="px-5 py-4">
+          <p className="text-sm text-red-700">{loadError}</p>
+        </div>
       ) : (
-        <Card className="border border-slate-200/70 py-0">
-          <CardContent className="px-5 py-4 flex flex-col gap-4">
+        <div className="px-5 py-5 flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {/* Max HR */}
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="maxHrInput_settingsPage" className="text-sm font-medium">
@@ -344,41 +350,41 @@ export default function HrZonesSection() {
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
-            <div className="flex items-center justify-end gap-3 pt-1">
-              {saveSuccess && (
-                <div
-                  id="hrZonesSaveSuccess_settingsPage"
-                  className="flex items-center gap-1.5 text-sm text-green-700"
-                  role="status"
-                  aria-live="polite"
-                >
-                  <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
-                  Saved
-                </div>
-              )}
-              {saveError && (
-                <div
-                  id="hrZonesSaveError_settingsPage"
-                  className="flex items-center gap-1.5 text-sm text-red-600"
-                  role="alert"
-                  aria-live="assertive"
-                >
-                  <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
-                  {saveError}
-                </div>
-              )}
-              <Button
-                id="hrZonesSaveBtn_settingsPage"
-                onClick={handleSave}
-                disabled={saving}
-                size="sm"
+          <div className="flex items-center justify-end gap-3 pt-1">
+            {saveSuccess && (
+              <div
+                id="hrZonesSaveSuccess_settingsPage"
+                className="flex items-center gap-1.5 text-sm text-green-700"
+                role="status"
+                aria-live="polite"
               >
-                {saving ? 'Saving…' : 'Save'}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+                <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
+                Saved
+              </div>
+            )}
+            {saveError && (
+              <div
+                id="hrZonesSaveError_settingsPage"
+                className="flex items-center gap-1.5 text-sm text-red-600"
+                role="alert"
+                aria-live="assertive"
+              >
+                <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+                {saveError}
+              </div>
+            )}
+            <Button
+              id="hrZonesSaveBtn_settingsPage"
+              onClick={handleSave}
+              disabled={saving}
+              size="sm"
+            >
+              {saving ? 'Saving…' : 'Save'}
+            </Button>
+          </div>
+        </div>
       )}
     </section>
   )
