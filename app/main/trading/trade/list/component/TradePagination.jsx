@@ -8,7 +8,7 @@ export default function TradePagination({ page, totalPages, total, onPageChange 
   return (
     <div
       id="tradePagination_tradePage"
-      className="flex items-center justify-between pt-2 mt-2"
+      className="flex items-center justify-between px-5 pt-2 mt-2"
       aria-label="Pagination"
     >
       <button

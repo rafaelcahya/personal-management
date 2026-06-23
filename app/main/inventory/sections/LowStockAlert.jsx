@@ -1,14 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { AlertTriangle, AlertCircle } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import StatusBadge from '../components/StatusBadge'
-import SkeletonRows from '../components/SkeletonRows'
 
 function StockBadge({ quantity }) {
   if (quantity === 0) {
     return (
-      <span className="bg-red-100 text-red-700 border border-red-200 rounded-full px-2 py-0.5 text-xs font-medium">
+      <span className="bg-red-100 text-red-700 border border-red-200 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap">
         Out of Stock
       </span>
     )
@@ -20,24 +22,55 @@ function StockBadge({ quantity }) {
   )
 }
 
+function TableSkeleton() {
+  return (
+    <div className="animate-pulse" aria-label="Loading data">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
+          <Skeleton className="h-4 w-6" />
+          <Skeleton className="h-4 flex-1" />
+          <Skeleton className="h-5 w-16 rounded-full hidden sm:block" />
+          <Skeleton className="h-5 w-20 rounded-full" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
+      <AlertTriangle className="size-10 text-slate-300" aria-hidden="true" />
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-slate-700">All good! Stock levels are healthy</p>
+        <p className="text-xs text-slate-500">No products are running low right now</p>
+      </div>
+    </div>
+  )
+}
+
 function LowStockTable({ items }) {
   return (
-    <div>
+    <>
       {/* Desktop table */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
+        <table
+          id="lowStockAlertTable_inventoryPage"
+          className="min-w-full text-sm"
+          aria-label="Low stock alerts"
+        >
           <thead>
-            <tr className="bg-slate-100">
-              <th className="text-left py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide rounded-l-lg w-8">
+            <tr className="border-b border-slate-100">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-8">
                 No
               </th>
-              <th className="text-left py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Product
               </th>
-              <th className="text-center py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Status
               </th>
-              <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide rounded-r-lg">
+              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Stock
               </th>
             </tr>
@@ -46,13 +79,13 @@ function LowStockTable({ items }) {
             {items.map((item, index) => (
               <tr
                 key={item.id}
-                className="border-b border-slate-100 hover:bg-violet-50/30 transition-colors"
+                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
               >
-                <td className="py-3 px-3 text-slate-400 text-xs">{index + 1}</td>
-                <td className="py-3 px-3">
+                <td className="px-5 py-3.5 text-slate-500 text-xs">{index + 1}</td>
+                <td className="px-5 py-3.5">
                   <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <p className="font-medium text-slate-700">{item.product}</p>
+                  <div className="flex flex-col items-start gap-1.5 mt-0.5">
+                    <p className="font-semibold text-slate-900">{item.product}</p>
                     {item.type && (
                       <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
                         {item.type}
@@ -60,10 +93,10 @@ function LowStockTable({ items }) {
                     )}
                   </div>
                 </td>
-                <td className="py-3 px-3 text-center">
+                <td className="px-5 py-3.5 text-right">
                   <StatusBadge status={item.product_status} />
                 </td>
-                <td className="py-3 px-3 text-right">
+                <td className="px-5 py-3.5 text-right">
                   <StockBadge quantity={item.quantity} />
                 </td>
               </tr>
@@ -73,17 +106,17 @@ function LowStockTable({ items }) {
       </div>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2">
+      <div className="md:hidden space-y-2 px-2 py-2">
         {items.map((item, index) => (
           <div
             key={item.id}
-            className="border border-slate-100 rounded-lg p-3 hover:bg-violet-50/20 transition-colors"
+            className="border border-slate-100 rounded-lg p-3 hover:bg-slate-50 transition-colors"
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
                 <div className="flex flex-wrap items-center gap-1.5 mt-0.5 min-w-0">
-                  <p className="font-medium text-slate-700 break-words min-w-0">{item.product}</p>
+                  <p className="font-semibold text-slate-900 break-words min-w-0">{item.product}</p>
                   {item.type && (
                     <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
                       {item.type}
@@ -102,43 +135,63 @@ function LowStockTable({ items }) {
           </div>
         ))}
       </div>
-    </div>
+    </>
   )
 }
 
-export default function LowStockAlert({ items, loading }) {
+export default function LowStockAlert({ items, loading, error, onRetry }) {
   const [modalOpen, setModalOpen] = useState(false)
   const top5 = items.slice(0, 5)
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-base font-semibold text-slate-800">🚨 Low Stock Alert</h2>
-          <p className="text-xs text-slate-400 mt-0.5">Products running low — restock soon</p>
+      <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+          <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+            <AlertTriangle className="size-4 text-violet-600" aria-hidden="true" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-slate-900">Low Stock Alert</p>
+            <p className="text-xs text-slate-500 mt-0.5">Products running low — restock soon</p>
+          </div>
         </div>
-        <div className="px-2 py-2">
-          {loading ? (
-            <SkeletonRows count={3} />
-          ) : items.length === 0 ? (
-            <div className="py-8 text-center">
-              <p className="text-sm text-slate-400">All good! Stock levels are healthy 🎉</p>
+
+        {loading ? (
+          <TableSkeleton />
+        ) : error ? (
+          <div
+            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+            role="alert"
+            aria-live="assertive"
+          >
+            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-slate-700">Failed to load data</p>
+              <p className="text-xs text-slate-500">Check your connection and try again</p>
             </div>
-          ) : (
-            <LowStockTable items={top5} />
-          )}
-        </div>
-        {!loading && items.length > 0 && (
+            {onRetry && (
+              <Button variant="outline" size="sm" onClick={onRetry} className="min-w-11">
+                Try again
+              </Button>
+            )}
+          </div>
+        ) : items.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <LowStockTable items={top5} />
+        )}
+
+        {!loading && !error && items.length > 0 && (
           <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
             <button
               onClick={() => setModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium text-violet-700 border border-violet-200 hover:bg-violet-50 focus:outline-none transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium text-violet-700 border border-violet-200 hover:bg-violet-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 transition-colors"
             >
               View All
             </button>
           </div>
         )}
-      </div>
+      </section>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0">
@@ -148,7 +201,7 @@ export default function LowStockAlert({ items, loading }) {
             </DialogTitle>
             <p className="text-xs text-slate-400">Sorted by lowest stock first</p>
           </DialogHeader>
-          <div className="overflow-y-auto flex-1 px-2 py-2">
+          <div className="overflow-y-auto flex-1">
             <LowStockTable items={items} />
           </div>
         </DialogContent>

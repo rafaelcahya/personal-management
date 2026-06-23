@@ -3,14 +3,6 @@
 import Link from 'next/link'
 import { SearchX, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
@@ -68,36 +60,47 @@ export default function ProductHistoryTable({
   }
 
   return (
-    <div className="flex-1 overflow-auto">
-      <Table id="productHistoryTable_productHistoryPage" className="w-full table-auto">
-        <TableHeader className="bg-slate-100">
-          <TableRow className="border-none">
-            <TableHead className="py-2 text-slate-foreground rounded-l-lg text-center w-[40px]">
+    <div className="flex-1 overflow-x-auto">
+      <table
+        id="productHistoryTable_productHistoryPage"
+        className="min-w-full text-sm"
+        aria-label="Product history"
+      >
+        <thead>
+          <tr className="border-b border-slate-100">
+            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[40px]">
               #
-            </TableHead>
-            <TableHead className="py-2 text-slate-foreground w-[250px]">Product</TableHead>
-            <TableHead className="py-2 text-slate-foreground text-center w-[100px]">
+            </th>
+            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
+              Product
+            </th>
+            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[100px]">
               Status
-            </TableHead>
-            <TableHead className="py-2 text-slate-foreground text-center w-[80px]">
-              Quantity
-            </TableHead>
-            <TableHead className="py-2 text-slate-foreground text-center w-[130px]">
+            </th>
+            <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[80px]">
+              Qty
+            </th>
+            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[130px]">
               Start Date
-            </TableHead>
-            <TableHead className="py-2 text-slate-foreground text-center w-[130px]">
+            </th>
+            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[130px]">
               End Date
-            </TableHead>
-            <TableHead className="py-2 text-slate-foreground rounded-r-lg">Note</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+            </th>
+            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
+              Note
+            </th>
+          </tr>
+        </thead>
+        <tbody>
           {histories.map((history, index) => (
-            <TableRow key={history.id} className="hover:bg-slate-100">
-              <TableCell className="text-center text-sm font-mono w-[40px]">
+            <tr
+              key={history.id}
+              className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+            >
+              <td className="px-5 py-3.5 text-right font-mono text-slate-700 w-[40px]">
                 {(page - 1) * 15 + index + 1}
-              </TableCell>
-              <TableCell className="w-[250px]">
+              </td>
+              <td className="px-5 py-3.5 w-[250px]">
                 <div className="min-w-0">
                   <p className="text-xs text-slate-400 truncate leading-tight">
                     {history.brand || '—'}
@@ -107,12 +110,12 @@ export default function ProductHistoryTable({
                     Number.isInteger(Number(history.product_list_id)) ? (
                       <Link
                         href={`/main/inventory/product-list/${history.product_list_id}`}
-                        className="font-medium text-violet-700 text-sm truncate hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1 rounded"
+                        className="font-semibold text-slate-900 text-sm truncate hover:text-violet-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1 rounded"
                       >
                         {history.product}
                       </Link>
                     ) : (
-                      <p className="font-medium text-slate-700 text-sm truncate">
+                      <p className="font-semibold text-slate-900 text-sm truncate">
                         {history.product}
                       </p>
                     )}
@@ -123,28 +126,28 @@ export default function ProductHistoryTable({
                     )}
                   </div>
                 </div>
-              </TableCell>
-              <TableCell className="text-center w-[100px]">
+              </td>
+              <td className="px-5 py-3.5 w-[100px]">
                 <Badge className={cn('capitalize', getStatusClasses(history.status))}>
                   {history.status}
                 </Badge>
-              </TableCell>
-              <TableCell className="text-center font-mono font-medium w-[80px]">
+              </td>
+              <td className="px-5 py-3.5 text-right font-mono text-slate-700 w-[80px]">
                 {history.quantity}
-              </TableCell>
-              <TableCell className="text-center text-sm w-[130px]">
+              </td>
+              <td className="px-5 py-3.5 text-slate-700 w-[130px]">
                 {formatDate(history.start_usage_date)}
-              </TableCell>
-              <TableCell className="text-center text-sm w-[130px]">
+              </td>
+              <td className="px-5 py-3.5 text-slate-700 w-[130px]">
                 {formatDate(history.end_usage_date)}
-              </TableCell>
-              <TableCell>
-                <p className="line-clamp-2 text-sm text-slate-600">{history.note || '-'}</p>
-              </TableCell>
-            </TableRow>
+              </td>
+              <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate">
+                {history.note || '—'}
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
+        </tbody>
+      </table>
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">

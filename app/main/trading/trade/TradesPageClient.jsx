@@ -156,22 +156,18 @@ export default function TradesPageClient({
         breadcrumbs={[{ label: 'Trading', href: '/main/trading/dashboard' }, { label: 'Trades' }]}
       />
 
-      <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden flex flex-col">
-        {/* Title section */}
-        <div className="px-3 sm:px-5 pt-3 sm:pt-5">
-          <div className="flex items-start justify-between gap-3 mb-4">
-            <TradeTableHeader />
-            <div className="shrink-0">
-              <AddTrade
-                open={addTradeOpen}
-                onOpenChange={setAddTradeOpen}
-                onAdded={async () => {
-                  await Promise.all([fetchTrades(1), fetchSummary()])
-                }}
-              />
-            </div>
-          </div>
-        </div>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <TradeTableHeader
+          action={
+            <AddTrade
+              open={addTradeOpen}
+              onOpenChange={setAddTradeOpen}
+              onAdded={async () => {
+                await Promise.all([fetchTrades(1), fetchSummary()])
+              }}
+            />
+          }
+        />
 
         {/* Sticky filter bar */}
         <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5">
@@ -204,35 +200,35 @@ export default function TradesPageClient({
         </div>
 
         {/* Table area */}
-        <div className="px-3 sm:px-5 py-3 sm:py-4">
+        <div className="px-5 pt-3">
           <TradeMetricStrip summary={summary} />
-
-          {isLoading ? (
-            <TradeTableSkeleton />
-          ) : error ? (
-            <TradeErrorState message={error} onRetry={() => fetchTrades(page)} />
-          ) : filteredAndSorted.length === 0 ? (
-            <TradeEmptyState onAddTrade={() => setAddTradeOpen(true)} search={debouncedSearch} />
-          ) : (
-            <>
-              <TradesTable
-                trades={filteredAndSorted}
-                sortKey={sortKey}
-                sortDir={sortDir}
-                onSort={handleSort}
-                onRefresh={refresh}
-              />
-              {showPagination && (
-                <TradePagination
-                  page={page}
-                  totalPages={totalPages}
-                  total={total}
-                  onPageChange={handlePageChange}
-                />
-              )}
-            </>
-          )}
         </div>
+
+        {isLoading ? (
+          <TradeTableSkeleton />
+        ) : error ? (
+          <TradeErrorState message={error} onRetry={() => fetchTrades(page)} />
+        ) : filteredAndSorted.length === 0 ? (
+          <TradeEmptyState onAddTrade={() => setAddTradeOpen(true)} search={debouncedSearch} />
+        ) : (
+          <>
+            <TradesTable
+              trades={filteredAndSorted}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={handleSort}
+              onRefresh={refresh}
+            />
+            {showPagination && (
+              <TradePagination
+                page={page}
+                totalPages={totalPages}
+                total={total}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </>
+        )}
       </div>
     </div>
   )

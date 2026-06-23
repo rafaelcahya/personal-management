@@ -1,14 +1,17 @@
-export default function ProductHistoryTableHeader({ total = 0 }) {
+import { History } from 'lucide-react'
+
+export default function ProductHistoryTableHeader() {
   return (
-    <div className="space-y-1">
-      <h2 className="text-xl font-bold text-slate-800">📊 Product History</h2>
-      <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
-        Track your complete inventory movement timeline. Monitor when products were activated, used,
-        and depleted. Review historical data to understand usage patterns and make informed
-        restocking decisions. Currently tracking{' '}
-        <span className="font-semibold text-violet-600">{total}</span>{' '}
-        {total === 1 ? 'record' : 'records'}.
-      </p>
+    <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+      <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+        <History className="size-4 text-violet-600" aria-hidden="true" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-slate-900">Product History</p>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Track product usage and restock movement over time
+        </p>
+      </div>
     </div>
   )
 }

@@ -1,18 +1,17 @@
-export default function ProductNameTableHeader({ names = [] }) {
-    return (
-        <div className="space-y-1">
-            <h2 className="text-xl font-bold text-slate-800">
-                📝 Product Names
-            </h2>
-            <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
-                Organize and manage your product catalog. Track product name
-                statuses, maintain detailed notes, and keep your inventory
-                nomenclature consistent. Currently managing{" "}
-                <span className="font-semibold text-violet-600">
-                    {names.length}
-                </span>{" "}
-                product {names.length === 1 ? "name" : "names"}.
-            </p>
-        </div>
-    );
+import { FileText } from 'lucide-react'
+
+export default function ProductNameTableHeader() {
+  return (
+    <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+      <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+        <FileText className="size-4 text-violet-600" aria-hidden="true" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-slate-900">Product Names</p>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Manage product name statuses and notes for your inventory
+        </p>
+      </div>
+    </div>
+  )
 }

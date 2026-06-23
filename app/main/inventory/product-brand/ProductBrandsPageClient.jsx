@@ -9,8 +9,8 @@ import ProductBrandFilterDropdown from './list/component/ProductBrandFilterDropd
 import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, X, PackageOpen, AlertCircle, RefreshCw } from 'lucide-react'
-import InventoryTableSkeleton from '@/app/main/components/InventoryTableSkeleton'
+import { Search, X, Tag, AlertCircle } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const LIMIT = 15
 
@@ -39,25 +39,6 @@ function BrandSearchInput({ searchQuery, setSearchQuery }) {
     </div>
   )
 }
-
-const BRAND_SKELETON_HEADER = [
-  'h-4 w-4 rounded',
-  'h-4 w-6 rounded',
-  'h-4 w-28 rounded',
-  'h-4 w-16 rounded ml-auto',
-  'h-4 w-16 rounded',
-  'h-4 w-24 rounded',
-  'h-4 w-10 rounded',
-]
-const BRAND_SKELETON_ROW = [
-  'h-4 w-4 rounded',
-  'h-4 w-4 rounded',
-  'h-4 w-28 rounded',
-  'h-5 w-16 rounded-full ml-auto',
-  'h-5 w-8 rounded-full',
-  'h-4 w-32 rounded',
-  'h-6 w-6 rounded',
-]
 
 export default function ProductBrandsPageClient() {
   const [brands, setBrands] = useState([])
@@ -118,11 +99,8 @@ export default function ProductBrandsPageClient() {
         breadcrumbs={[{ label: 'Inventory', href: '/main/inventory' }, { label: 'Product Brand' }]}
       />
 
-      <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white flex flex-col">
-        {/* Title */}
-        <div className="px-3 sm:px-5 pt-3 sm:pt-5">
-          <ProductBrandTableHeader brands={brands} />
-        </div>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <ProductBrandTableHeader brands={brands} />
 
         {/* Controls bar */}
         <div
@@ -144,54 +122,60 @@ export default function ProductBrandsPageClient() {
         </div>
 
         {/* Table area */}
-        <div className="px-3 sm:px-5 py-3 sm:py-4">
-          {loading ? (
-            <InventoryTableSkeleton
-              headerCols={BRAND_SKELETON_HEADER}
-              rowCols={BRAND_SKELETON_ROW}
-            />
-          ) : error ? (
-            <div
-              id="errorState_productBrandPage"
-              className="flex flex-col items-center justify-center gap-3 py-12 text-center"
-              role="alert"
-              aria-live="assertive"
-            >
-              <AlertCircle className="h-10 w-10 text-red-400" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-slate-600">Failed to load brands</p>
-                <p className="text-xs text-slate-400">{error}</p>
+        {loading ? (
+          <div className="animate-pulse" aria-label="Loading brands">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
+                <Skeleton className="h-4 w-4" />
+                <Skeleton className="h-4 w-6" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="h-5 w-10 rounded-full" />
+                <Skeleton className="h-4 flex-1 hidden sm:block" />
+                <Skeleton className="h-6 w-6 rounded" />
               </div>
-              <Button variant="outline" size="sm" onClick={handleRefresh} className="gap-1.5">
-                <RefreshCw className="size-3.5" aria-hidden="true" />
-                Retry
-              </Button>
+            ))}
+          </div>
+        ) : error ? (
+          <div
+            id="errorState_productBrandPage"
+            className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+            role="alert"
+            aria-live="assertive"
+          >
+            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-slate-700">Failed to load brands</p>
+              <p className="text-xs text-slate-500">Check your connection and try again</p>
             </div>
-          ) : !hasActiveFilters && brands.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-              <PackageOpen className="h-10 w-10 text-slate-300" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-slate-600">No brands yet</p>
-                <p className="text-xs text-slate-400">
-                  Add your first brand to start organizing your inventory
-                </p>
-              </div>
-              <AddProductBrand onAdded={handleRefresh} />
+            <Button variant="outline" size="sm" onClick={handleRefresh} className="min-w-11">
+              Try again
+            </Button>
+          </div>
+        ) : !hasActiveFilters && brands.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+            <Tag className="size-10 text-slate-300" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-slate-700">No brands yet</p>
+              <p className="text-xs text-slate-500">
+                Add your first brand to start organizing your inventory
+              </p>
             </div>
-          ) : (
-            <ProductBrandsTable
-              brands={brands}
-              page={page}
-              totalPages={totalPages}
-              total={total}
-              filterStatus={filterStatus}
-              searchQuery={searchQuery}
-              onPrev={() => setPage((p) => p - 1)}
-              onNext={() => setPage((p) => p + 1)}
-              onRefresh={handleRefresh}
-            />
-          )}
-        </div>
+            <AddProductBrand onAdded={handleRefresh} />
+          </div>
+        ) : (
+          <ProductBrandsTable
+            brands={brands}
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            filterStatus={filterStatus}
+            searchQuery={searchQuery}
+            onPrev={() => setPage((p) => p - 1)}
+            onNext={() => setPage((p) => p + 1)}
+            onRefresh={handleRefresh}
+          />
+        )}
       </div>
     </div>
   )

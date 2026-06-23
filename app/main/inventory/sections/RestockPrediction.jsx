@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { format } from 'date-fns'
+import { Sparkles, AlertCircle } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import SkeletonRows from '../components/SkeletonRows'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 
 function UrgencyBadge({ quantity, daysUntilEmpty }) {
   if (quantity === 0)
@@ -37,27 +39,59 @@ function UrgencyBadge({ quantity, daysUntilEmpty }) {
   )
 }
 
+function TableSkeleton() {
+  return (
+    <div className="animate-pulse" aria-label="Loading data">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
+          <Skeleton className="h-4 w-6" />
+          <Skeleton className="h-4 flex-1" />
+          <Skeleton className="h-4 w-16 hidden sm:block" />
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-5 w-16 rounded-full" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
+      <Sparkles className="size-10 text-slate-300" aria-hidden="true" />
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-slate-700">Not enough data yet</p>
+        <p className="text-xs text-slate-500">Use products regularly to see predictions</p>
+      </div>
+    </div>
+  )
+}
+
 function PredictionTable({ items }) {
   return (
-    <div>
+    <>
       {/* Desktop table */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
+        <table
+          id="restockPredictionTable_inventoryPage"
+          className="min-w-full text-sm"
+          aria-label="Restock predictions"
+        >
           <thead>
-            <tr className="bg-slate-100">
-              <th className="text-left py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide rounded-l-lg w-8">
+            <tr className="border-b border-slate-100">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-8">
                 No
               </th>
-              <th className="text-left py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Product
               </th>
-              <th className="text-center py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Qty
               </th>
-              <th className="text-center py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Est. Empty
               </th>
-              <th className="text-right py-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wide rounded-r-lg">
+              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Status
               </th>
             </tr>
@@ -66,13 +100,13 @@ function PredictionTable({ items }) {
             {items.map((item, index) => (
               <tr
                 key={item.id}
-                className="border-b border-slate-100 hover:bg-violet-50/30 transition-colors"
+                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
               >
-                <td className="py-3 px-3 text-slate-400 text-xs">{index + 1}</td>
-                <td className="py-3 px-3">
+                <td className="px-5 py-3.5 text-slate-500 text-xs">{index + 1}</td>
+                <td className="px-5 py-3.5">
                   <p className="text-xs text-slate-400">{item.brand || '—'}</p>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <p className="font-medium text-slate-700">{item.product}</p>
+                    <p className="font-semibold text-slate-900">{item.product}</p>
                     {item.type && (
                       <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
                         {item.type}
@@ -80,11 +114,11 @@ function PredictionTable({ items }) {
                     )}
                   </div>
                 </td>
-                <td className="py-3 px-3 text-center font-mono font-medium">{item.quantity}</td>
-                <td className="py-3 px-3 text-center text-sm text-slate-600">
+                <td className="px-5 py-3.5 text-right font-mono text-slate-700">{item.quantity}</td>
+                <td className="px-5 py-3.5 text-right text-slate-700">
                   {item.predicted_date ? format(new Date(item.predicted_date), 'dd MMM yyyy') : '—'}
                 </td>
-                <td className="py-3 px-3 text-right">
+                <td className="px-5 py-3.5 text-right">
                   <UrgencyBadge quantity={item.quantity} daysUntilEmpty={item.days_until_empty} />
                 </td>
               </tr>
@@ -94,17 +128,17 @@ function PredictionTable({ items }) {
       </div>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2">
+      <div className="md:hidden space-y-2 px-2 py-2">
         {items.map((item, index) => (
           <div
             key={item.id}
-            className="border border-slate-100 rounded-lg p-3 hover:bg-violet-50/20 transition-colors"
+            className="border border-slate-100 rounded-lg p-3 hover:bg-slate-50 transition-colors"
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
                 <div className="flex flex-wrap items-center gap-1.5 mt-0.5 min-w-0">
-                  <p className="font-medium text-slate-700 break-words min-w-0">{item.product}</p>
+                  <p className="font-semibold text-slate-900 break-words min-w-0">{item.product}</p>
                   {item.type && (
                     <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
                       {item.type}
@@ -120,11 +154,11 @@ function PredictionTable({ items }) {
             <div className="mt-2 pt-2 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
               <div>
                 <p className="text-slate-400">Qty</p>
-                <p className="font-mono font-medium text-slate-700 mt-0.5">{item.quantity}</p>
+                <p className="font-mono text-slate-700 mt-0.5">{item.quantity}</p>
               </div>
               <div>
                 <p className="text-slate-400">Est. Empty</p>
-                <p className="font-medium text-slate-600 mt-0.5">
+                <p className="text-slate-700 mt-0.5">
                   {item.predicted_date ? format(new Date(item.predicted_date), 'dd MMM yyyy') : '—'}
                 </p>
               </div>
@@ -132,45 +166,65 @@ function PredictionTable({ items }) {
           </div>
         ))}
       </div>
-    </div>
+    </>
   )
 }
 
-export default function RestockPrediction({ items, loading }) {
+export default function RestockPrediction({ items, loading, error, onRetry }) {
   const [modalOpen, setModalOpen] = useState(false)
   const top5 = items.slice(0, 5)
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-base font-semibold text-slate-800">🔮 Restock Prediction</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Estimated when each product will run out based on usage history
-          </p>
+      <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+          <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+            <Sparkles className="size-4 text-violet-600" aria-hidden="true" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-slate-900">Restock Prediction</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Estimated when each product will run out based on usage history
+            </p>
+          </div>
         </div>
-        <div className="px-2 py-2">
-          {loading ? (
-            <SkeletonRows count={5} />
-          ) : items.length === 0 ? (
-            <div className="py-8 text-center">
-              <p className="text-sm text-slate-400">Not enough usage data to predict 🔍</p>
+
+        {loading ? (
+          <TableSkeleton />
+        ) : error ? (
+          <div
+            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+            role="alert"
+            aria-live="assertive"
+          >
+            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-slate-700">Failed to load data</p>
+              <p className="text-xs text-slate-500">Check your connection and try again</p>
             </div>
-          ) : (
-            <PredictionTable items={top5} />
-          )}
-        </div>
-        {!loading && items.length > 0 && (
+            {onRetry && (
+              <Button variant="outline" size="sm" onClick={onRetry} className="min-w-11">
+                Try again
+              </Button>
+            )}
+          </div>
+        ) : items.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <PredictionTable items={top5} />
+        )}
+
+        {!loading && !error && items.length > 0 && (
           <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
             <button
               onClick={() => setModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium text-violet-700 border border-violet-200 hover:bg-violet-50 focus:outline-none transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium text-violet-700 border border-violet-200 hover:bg-violet-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 transition-colors"
             >
               View All
             </button>
           </div>
         )}
-      </div>
+      </section>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0">
@@ -180,7 +234,7 @@ export default function RestockPrediction({ items, loading }) {
             </DialogTitle>
             <p className="text-xs text-slate-400">Sorted by most urgent first</p>
           </DialogHeader>
-          <div className="overflow-y-auto flex-1 px-2 py-2">
+          <div className="overflow-y-auto flex-1">
             <PredictionTable items={items} />
           </div>
         </DialogContent>

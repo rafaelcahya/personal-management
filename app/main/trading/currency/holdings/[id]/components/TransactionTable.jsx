@@ -70,25 +70,25 @@ export default function TransactionTable({ transactions, onDelete, currency }) {
         >
           <thead>
             <tr className="border-b border-slate-100">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Date
               </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Type
               </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 IDR Amount
               </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Rate
               </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Qty
               </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 hidden sm:table-cell">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap hidden sm:table-cell">
                 Notes
               </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 w-10">
+              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-10">
                 <span className="sr-only">Actions</span>
               </th>
             </tr>

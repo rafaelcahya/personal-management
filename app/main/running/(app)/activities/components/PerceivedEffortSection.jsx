@@ -231,30 +231,41 @@ export default function PerceivedEffortSection({
           id="rpeGuideTable_activityDetailPage"
           className="overflow-x-auto rounded-lg border border-slate-100"
         >
-          <table className="w-full text-xs">
+          <table className="min-w-full text-xs" aria-label="RPE guide reference">
             <thead>
-              <tr className="bg-slate-50 text-left">
-                <th className="px-3 py-2 font-semibold text-slate-500 whitespace-nowrap">RPE</th>
-                <th className="px-3 py-2 font-semibold text-slate-500 whitespace-nowrap">Label</th>
-                <th className="px-3 py-2 font-semibold text-slate-500">Breathing / Talk test</th>
-                <th className="px-3 py-2 font-semibold text-slate-500 whitespace-nowrap">Zone</th>
-                <th className="px-3 py-2 font-semibold text-slate-500 whitespace-nowrap">
+              <tr className="border-b border-slate-100">
+                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
+                  RPE
+                </th>
+                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
+                  Label
+                </th>
+                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
+                  Breathing / Talk test
+                </th>
+                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
+                  Zone
+                </th>
+                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                   Typical use
                 </th>
               </tr>
             </thead>
             <tbody>
               {RPE_LEVELS.map((level) => (
-                <tr key={level.value} className="border-t border-slate-100">
-                  <td className="px-3 py-2 font-semibold" style={{ color: level.bg }}>
+                <tr
+                  key={level.value}
+                  className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                >
+                  <td className="px-3 py-2.5 font-semibold" style={{ color: level.bg }}>
                     {level.value}
                   </td>
-                  <td className="px-3 py-2 text-slate-700 font-medium whitespace-nowrap">
+                  <td className="px-3 py-2.5 font-semibold text-slate-900 whitespace-nowrap">
                     {level.label}
                   </td>
-                  <td className="px-3 py-2 text-slate-500">{level.breathing}</td>
-                  <td className="px-3 py-2 text-slate-500 whitespace-nowrap">{level.zone}</td>
-                  <td className="px-3 py-2 text-slate-500 whitespace-nowrap">{level.use}</td>
+                  <td className="px-3 py-2.5 text-slate-500">{level.breathing}</td>
+                  <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{level.zone}</td>
+                  <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{level.use}</td>
                 </tr>
               ))}
             </tbody>

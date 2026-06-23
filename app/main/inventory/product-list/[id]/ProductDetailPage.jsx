@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, RefreshCw, Package } from 'lucide-react'
+import { ChevronLeft, RefreshCw, Package, ShoppingCart, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
 import { getProductById, getStockHistory, getProductUsageHistory } from '@/lib/api/product'
 import PageHeader from '@/app/main/components/PageHeader'
 import ProductUsageLog from '@/app/main/inventory/product-list/detail/ProductUsageLog'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -45,10 +46,13 @@ function PurchaseHistorySection({ history }) {
     return (
       <div
         id="purchaseEmpty_productDetailPage"
-        className="flex flex-col items-center gap-2 py-12 text-center"
+        className="flex flex-col items-center justify-center py-16 gap-4 text-center"
       >
-        <Package className="size-8 text-slate-300" aria-hidden="true" />
-        <p className="text-sm font-medium text-slate-500">No purchase history yet</p>
+        <ShoppingCart className="size-10 text-slate-300" aria-hidden="true" />
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-slate-700">No purchase history yet</p>
+          <p className="text-xs text-slate-500">Add stock to see purchase records here</p>
+        </div>
       </div>
     )
   }
@@ -58,15 +62,23 @@ function PurchaseHistorySection({ history }) {
 
   return (
     <div className="overflow-x-auto">
-      <table id="purchaseTable_productDetailPage" className="min-w-full text-sm">
+      <table
+        id="purchaseTable_productDetailPage"
+        className="min-w-full text-sm"
+        aria-label="Purchase history"
+      >
         <thead>
-          <tr className="bg-slate-100">
-            <th className="py-2.5 px-3 text-left text-xs font-medium text-slate-500 rounded-l-lg">
+          <tr className="border-b border-slate-100">
+            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
               Date
             </th>
-            <th className="py-2.5 px-3 text-right text-xs font-medium text-slate-500">Qty Added</th>
-            <th className="py-2.5 px-3 text-right text-xs font-medium text-slate-500">Price</th>
-            <th className="py-2.5 px-3 text-left text-xs font-medium text-slate-500 rounded-r-lg">
+            <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
+              Qty Added
+            </th>
+            <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
+              Price
+            </th>
+            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
               Note
             </th>
           </tr>
@@ -76,18 +88,18 @@ function PurchaseHistorySection({ history }) {
             <tr
               key={h.id ?? idx}
               id="purchaseRow_productDetailPage"
-              className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors"
+              className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
             >
-              <td className="py-2.5 px-3 text-slate-700 whitespace-nowrap">
+              <td className="px-5 py-3.5 text-slate-700 whitespace-nowrap">
                 {h.purchase_date ? format(new Date(h.purchase_date), 'd MMM yyyy') : '—'}
               </td>
-              <td className="py-2.5 px-3 text-right font-mono text-slate-700">
+              <td className="px-5 py-3.5 text-right font-mono text-slate-700">
                 {h.quantity_added ?? '—'}
               </td>
-              <td className="py-2.5 px-3 text-right font-mono text-slate-700 whitespace-nowrap">
+              <td className="px-5 py-3.5 text-right font-mono text-slate-700 whitespace-nowrap">
                 {h.price != null ? `Rp ${Number(h.price).toLocaleString('id-ID')}` : '—'}
               </td>
-              <td className="py-2.5 px-3 text-slate-500">{h.note || '—'}</td>
+              <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate">{h.note || '—'}</td>
             </tr>
           ))}
         </tbody>
@@ -291,24 +303,40 @@ export default function ProductDetailPage({ productId }) {
         {/* Purchase History */}
         <section
           id="purchaseSection_productDetailPage"
-          className="bg-white border border-slate-200/50 shadow-sm shadow-slate-100 rounded-xl p-4 sm:p-5"
+          className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden"
           aria-labelledby="purchase-history-heading"
         >
-          <h2 id="purchase-history-heading" className="text-sm font-semibold text-slate-700 mb-4">
-            Purchase History
-          </h2>
+          <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+            <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+              <ShoppingCart className="size-4 text-violet-600" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p id="purchase-history-heading" className="text-sm font-semibold text-slate-900">
+                Purchase History
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">All restocks for this product</p>
+            </div>
+          </div>
           <PurchaseHistorySection history={stockHistory} />
         </section>
 
         {/* Usage History */}
         <section
           id="usageSection_productDetailPage"
-          className="bg-white border border-slate-200/50 shadow-sm shadow-slate-100 rounded-xl p-4 sm:p-5"
+          className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden"
           aria-labelledby="usage-history-heading"
         >
-          <h2 id="usage-history-heading" className="text-sm font-semibold text-slate-700 mb-4">
-            Usage History
-          </h2>
+          <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+            <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+              <Package className="size-4 text-violet-600" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p id="usage-history-heading" className="text-sm font-semibold text-slate-900">
+                Usage History
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">Recorded usage sessions</p>
+            </div>
+          </div>
           <ProductUsageLog log={usageHistory} onUpdate={loadData} />
         </section>
       </div>
