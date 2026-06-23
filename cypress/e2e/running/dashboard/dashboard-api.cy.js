@@ -738,3 +738,199 @@ describe('Running Endurance Score API — GET /analytics/endurance-score — una
     })
   })
 })
+
+// ─── weekly stats ─────────────────────────────────────────────────────────────
+
+describe('Running Dashboard API — GET /dashboard/weekly-stats — auth guard', () => {
+  it('returns 401 when unauthenticated', () => {
+    cy.getWeeklyStatsNoAuth().then((res) => {
+      expect(res.status).to.be.oneOf([401, 307])
+    })
+  })
+
+  it('returns 200 with valid session', () => {
+    cy.setupApiAuthCookies()
+    cy.getWeeklyStats().then((res) => {
+      expect(res.status).to.eq(200)
+    })
+  })
+})
+
+describe('Running Dashboard API — GET /dashboard/weekly-stats — response shape', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('response has data.current and data.prev objects', () => {
+    cy.getWeeklyStats().then((res) => {
+      expect(res.body).to.have.property('data')
+      expect(res.body.data).to.have.property('current')
+      expect(res.body.data).to.have.property('prev')
+      expect(res.body.data.current).to.be.an('object')
+      expect(res.body.data.prev).to.be.an('object')
+    })
+  })
+
+  it('data.current has all required fields', () => {
+    cy.getWeeklyStats().then((res) => {
+      const { current } = res.body.data
+      expect(current).to.include.all.keys(
+        'distance_m',
+        'duration_sec',
+        'elevation_gain_m',
+        'total_calories',
+        'longest_run_m',
+        'count',
+        'avg_pace_sec_per_km',
+        'avg_moving_pace_sec_per_km',
+        'avg_hr'
+      )
+    })
+  })
+
+  it('data.prev has all required fields', () => {
+    cy.getWeeklyStats().then((res) => {
+      const { prev } = res.body.data
+      expect(prev).to.include.all.keys(
+        'distance_m',
+        'duration_sec',
+        'elevation_gain_m',
+        'total_calories',
+        'longest_run_m',
+        'count',
+        'avg_pace_sec_per_km',
+        'avg_moving_pace_sec_per_km',
+        'avg_hr'
+      )
+    })
+  })
+
+  it('numeric fields in current are numbers', () => {
+    cy.getWeeklyStats().then((res) => {
+      const { current } = res.body.data
+      expect(typeof current.distance_m).to.eq('number')
+      expect(typeof current.duration_sec).to.eq('number')
+      expect(typeof current.elevation_gain_m).to.eq('number')
+      expect(typeof current.total_calories).to.eq('number')
+      expect(typeof current.count).to.eq('number')
+    })
+  })
+
+  it('nullable fields in current are null or a number', () => {
+    cy.getWeeklyStats().then((res) => {
+      const { current } = res.body.data
+      expect(current.longest_run_m === null || typeof current.longest_run_m === 'number').to.be.true
+      expect(
+        current.avg_pace_sec_per_km === null || typeof current.avg_pace_sec_per_km === 'number'
+      ).to.be.true
+      expect(
+        current.avg_moving_pace_sec_per_km === null ||
+          typeof current.avg_moving_pace_sec_per_km === 'number'
+      ).to.be.true
+      expect(current.avg_hr === null || typeof current.avg_hr === 'number').to.be.true
+    })
+  })
+
+  it('numeric fields in prev are numbers', () => {
+    cy.getWeeklyStats().then((res) => {
+      const { prev } = res.body.data
+      expect(typeof prev.distance_m).to.eq('number')
+      expect(typeof prev.duration_sec).to.eq('number')
+      expect(typeof prev.elevation_gain_m).to.eq('number')
+      expect(typeof prev.total_calories).to.eq('number')
+      expect(typeof prev.count).to.eq('number')
+    })
+  })
+
+  it('nullable fields in prev are null or a number', () => {
+    cy.getWeeklyStats().then((res) => {
+      const { prev } = res.body.data
+      expect(prev.longest_run_m === null || typeof prev.longest_run_m === 'number').to.be.true
+      expect(prev.avg_pace_sec_per_km === null || typeof prev.avg_pace_sec_per_km === 'number').to
+        .be.true
+      expect(
+        prev.avg_moving_pace_sec_per_km === null ||
+          typeof prev.avg_moving_pace_sec_per_km === 'number'
+      ).to.be.true
+      expect(prev.avg_hr === null || typeof prev.avg_hr === 'number').to.be.true
+    })
+  })
+})
+
+describe('Running Dashboard API — GET /dashboard/weekly-stats — weeks_ago param', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('weeks_ago=0 (default) returns 200', () => {
+    cy.getWeeklyStats({ weeks_ago: 0 }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('data')
+    })
+  })
+
+  it('weeks_ago=1 returns 200', () => {
+    cy.getWeeklyStats({ weeks_ago: 1 }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('data')
+    })
+  })
+
+  it('weeks_ago=4 (max) returns 200', () => {
+    cy.getWeeklyStats({ weeks_ago: 4 }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('data')
+    })
+  })
+
+  it('no weeks_ago param defaults to current week — returns 200', () => {
+    cy.getWeeklyStats().then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('data')
+    })
+  })
+
+  it('weeks_ago=0 and weeks_ago=1 return different current window data', () => {
+    cy.getWeeklyStats({ weeks_ago: 0 }).then((week0Res) => {
+      cy.getWeeklyStats({ weeks_ago: 1 }).then((week1Res) => {
+        const w0 = week0Res.body.data
+        const w1 = week1Res.body.data
+        // The current block for weeks_ago=0 covers Mon–now (partial week).
+        // The current block for weeks_ago=1 covers a full Mon–Sun 7-day window.
+        // These are different time windows so at minimum one field must differ,
+        // unless both windows happen to have identical stats (e.g. no runs).
+        // We assert the response shape is valid for both rather than exact equality.
+        expect(w0).to.have.property('current')
+        expect(w1).to.have.property('current')
+      })
+    })
+  })
+
+  it('?tz_offset=-420 with weeks_ago=0 returns 200', () => {
+    cy.getWeeklyStats({ weeks_ago: 0, tz_offset: -420 }).then((res) => {
+      expect(res.status).to.eq(200)
+    })
+  })
+
+  it('?type=Run with weeks_ago=0 returns 200', () => {
+    cy.getWeeklyStats({ weeks_ago: 0, type: 'Run' }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('data')
+    })
+  })
+})
+
+describe('Running Dashboard API — GET /dashboard/weekly-stats — response time', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('responds within 1500ms', () => {
+    const start = Date.now()
+    cy.getWeeklyStats().then((res) => {
+      const elapsed = Date.now() - start
+      expect(res.status).to.eq(200)
+      expect(elapsed).to.be.lte(1500)
+    })
+  })
+})

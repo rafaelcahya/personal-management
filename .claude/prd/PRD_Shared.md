@@ -104,6 +104,39 @@ The following endpoints power the AI chat features. Full specs are documented in
 - **Error States:** Every form and API call must handle errors with clear messages
 - **Accessibility:** WCAG 2.1 AA (keyboard nav, contrast ratio, aria labels, semantic HTML)
 
+### Page Container
+
+Every page must follow this exact structure — outer wrapper, PageHeader, then section content.
+
+```jsx
+export default function ExamplePage() {
+  return (
+    <main id="{pageName}" className="space-y-6">
+      <PageHeader
+        title="Page Title"
+        description="Short description"
+        breadcrumbs={[{ label: 'Module', href: '/main/module' }, { label: 'Current Page' }]}
+      />
+
+      <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        {/* content */}
+      </section>
+    </main>
+  )
+}
+```
+
+**Rules:**
+
+| Rule            | Value                                                                                                |
+| --------------- | ---------------------------------------------------------------------------------------------------- |
+| Outer element   | `<main>` — never `<div>`                                                                             |
+| Spacing         | `space-y-6` — never `flex flex-col gap-*`                                                            |
+| Page ID         | `id="{pageName}"` on `<main>` — camelCase, e.g. `holdingsPage`, `analyticsPage`                      |
+| PageHeader      | Required on every page — no inline breadcrumb nav                                                    |
+| Section card    | `bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden` — exact classes, no variants |
+| Section element | `<section>` for primary content blocks, `<div>` only for layout grouping inside a section            |
+
 ### PageHeader Component
 
 **Component:** `app/main/components/PageHeader.jsx`
@@ -160,6 +193,612 @@ When the sidebar is collapsed (icon only, no text label), each nav item must sho
 
 - GIVEN the sidebar is in collapsed state WHEN the user hovers a nav icon THEN a tooltip appears to the right of the icon showing the menu name
 - GIVEN the sidebar is in expanded state WHEN the user hovers a nav item THEN no tooltip appears (the label is already visible)
+
+### Form (Dialog/Modal)
+
+**Reference implementation:** `app/main/trading/currency/holdings/[id]/components/AddTransactionSheet.jsx`
+
+All forms in the app are rendered inside a `Dialog` modal. This section documents every layer of the pattern.
+
+---
+
+#### 1. Stack
+
+- **Schema:** Zod (`z.object`) with `superRefine` for cross-field validation
+- **Form state:** `react-hook-form` + `zodResolver`
+- **Components:** shadcn/ui `Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormDescription`, `FormMessage`
+
+---
+
+#### 2. Dialog Container
+
+```jsx
+<Dialog open={open} onOpenChange={onOpenChange}>
+  <DialogContent
+    ref={dialogRef}
+    id="{formName}_{pageName}"
+    className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
+  >
+    <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+      <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+        <SomeIcon className="size-4 text-violet-500" />
+        Form Title
+      </DialogTitle>
+      <DialogDescription className="text-xs text-slate-500">
+        Short description of what this form does
+      </DialogDescription>
+    </DialogHeader>
+
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+        noValidate
+      >
+        {/* fields */}
+
+        <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
+          {/* buttons */}
+        </DialogFooter>
+      </form>
+    </Form>
+  </DialogContent>
+</Dialog>
+```
+
+**Key classes:**
+| Element | Classes |
+|---|---|
+| `DialogContent` | `max-w-md max-h-[90vh] flex flex-col p-0 gap-0` |
+| `DialogHeader` | `border-b border-slate-100 px-5 py-4 shrink-0` |
+| `DialogTitle` | `flex items-center gap-2 text-base font-semibold` — icon left, text right |
+| `DialogDescription` | `text-xs text-slate-500` |
+| `<form>` | `flex flex-col overflow-y-auto px-5 py-5 gap-5` + `noValidate` |
+| `DialogFooter` | `gap-2 pt-2 border-t border-slate-100` |
+
+---
+
+#### 3. Text Input Field
+
+```jsx
+<FormField
+  control={form.control}
+  name="fieldName"
+  render={({ field, fieldState }) => (
+    <FormItem>
+      <FormLabel className="text-sm font-medium">Label</FormLabel>
+      <FormControl>
+        <Input
+          id="{fieldName}_{formName}"
+          type="text"
+          placeholder="..."
+          {...field}
+          aria-invalid={!!fieldState.error}
+          className={cn(
+            'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+            fieldState.error && 'border-rose-500'
+          )}
+        />
+      </FormControl>
+      <FormDescription className="text-xs text-slate-400">Helper text 💡</FormDescription>
+      <FormMessage className="text-xs" />
+    </FormItem>
+  )}
+/>
+```
+
+**Input class rules:**
+| State | Classes |
+|---|---|
+| Default | `text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500` |
+| Error | add `border-rose-500` |
+| Textarea | add `resize-none` |
+
+**Optional field label:**
+
+```jsx
+<FormLabel className="text-sm font-medium">
+  Label <span className="text-slate-400 font-normal">(optional)</span>
+</FormLabel>
+```
+
+---
+
+#### 4. Textarea Field
+
+Same as text input but use `<Textarea>` with `rows={3}` and add `resize-none` to className.
+
+```jsx
+<Textarea
+  id="{fieldName}_{formName}"
+  rows={3}
+  {...field}
+  aria-invalid={!!fieldState.error}
+  className={cn(
+    'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none',
+    fieldState.error && 'border-rose-500'
+  )}
+/>
+```
+
+---
+
+#### 5. Toggle Button Group
+
+Used for mutually exclusive options (e.g. buy/sell, type selection).
+
+```jsx
+<div
+  id="{groupName}_{formName}"
+  role="group"
+  aria-label="Group label"
+  className="flex rounded-lg border border-slate-200 overflow-hidden"
+>
+  {OPTIONS.map((opt) => (
+    <button
+      key={opt}
+      type="button"
+      aria-pressed={field.value === opt}
+      onClick={() => field.onChange(opt)}
+      className={cn(
+        'flex-1 py-2 text-sm font-medium capitalize transition-colors',
+        field.value === opt ? 'bg-violet-600 text-white' : 'text-slate-600 hover:bg-slate-50'
+      )}
+    >
+      {opt}
+    </button>
+  ))}
+</div>
+```
+
+---
+
+#### 6. Date Picker Field
+
+Uses a `Button` trigger + `Calendar` rendered via `createPortal` into the dialog ref (prevents clipping by Dialog's overflow).
+
+```jsx
+;<Button
+  ref={dateTriggerRef}
+  id="{fieldName}_{formName}"
+  type="button"
+  variant="outline"
+  onClick={openCalendar}
+  aria-invalid={!!fieldState.error}
+  className={cn(
+    'w-full justify-start text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
+    fieldState.error && 'border-rose-500',
+    !field.value && 'text-slate-500'
+  )}
+>
+  <CalendarIcon className="mr-2 size-4 opacity-50" />
+  {field.value ? format(parseISO(field.value), 'PPP') : 'Pick a date'}
+</Button>
+
+{
+  calendarOpen &&
+    dialogRef.current &&
+    createPortal(
+      <div
+        ref={calendarRef}
+        style={{ position: 'absolute', top: calendarPos.top, left: calendarPos.left, zIndex: 9999 }}
+        className="bg-white border border-slate-200 rounded-md shadow-lg p-0"
+      >
+        <Calendar
+          mode="single"
+          selected={field.value ? parseISO(field.value) : undefined}
+          onSelect={(date) => {
+            field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
+            setCalendarOpen(false)
+          }}
+          initialFocus
+        />
+      </div>,
+      dialogRef.current
+    )
+}
+```
+
+> Always use `createPortal` into `dialogRef.current` for dropdowns and calendars so they are not clipped by the Dialog's overflow.
+
+---
+
+#### 7. Computed Result Box
+
+Displayed between fields when a value is auto-calculated from user inputs.
+
+```jsx
+{
+  result !== null && (
+    <div className="bg-slate-50 rounded-md p-3 text-sm flex flex-col gap-0.5" aria-live="polite">
+      <div>
+        <span className="text-slate-500">= </span>
+        <span className="font-semibold font-mono text-slate-800">{formattedValue}</span>
+        <span className="text-slate-500 ml-1">{unit}</span>
+      </div>
+      {/* optional sub-line */}
+      <div className="text-xs text-slate-400">implied rate: ...</div>
+    </div>
+  )
+}
+```
+
+---
+
+#### 8. Footer Buttons
+
+```jsx
+<DialogFooter className="gap-2 pt-2 border-t border-slate-100">
+  <DialogClose asChild>
+    <Button
+      type="button"
+      disabled={formState.isSubmitting}
+      className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+    >
+      Cancel
+    </Button>
+  </DialogClose>
+  <Button
+    id="submitBtn_{formName}"
+    type="submit"
+    disabled={formState.isSubmitting}
+    className="min-w-[80px]"
+  >
+    {formState.isSubmitting ? (
+      <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+    ) : (
+      'Submit Label'
+    )}
+  </Button>
+</DialogFooter>
+```
+
+**Button rules:**
+| Button | Classes |
+|---|---|
+| Cancel | `text-violet-600 bg-white hover:bg-violet-100 font-medium` |
+| Submit | default variant + `min-w-[80px]` |
+| Submit loading | replace label with `<Loader2 className="size-4 animate-spin" />` |
+| Both | `disabled={formState.isSubmitting}` |
+
+---
+
+#### 9. ID Naming
+
+| Element       | Pattern                  | Example                                  |
+| ------------- | ------------------------ | ---------------------------------------- |
+| DialogContent | `{formName}_{pageName}`  | `addTransactionModal_currencyDetailPage` |
+| Field input   | `{fieldName}_{formName}` | `amountInput_addTransactionModal`        |
+| Toggle group  | `{groupName}_{formName}` | `typeToggle_addTransactionModal`         |
+| Submit button | `submitBtn_{formName}`   | `submitBtn_addTransactionModal`          |
+
+---
+
+#### 10. Form Reset on Open
+
+Always reset the form when the dialog opens to clear stale state:
+
+```jsx
+useEffect(() => {
+  if (open) {
+    form.reset({ ...defaultValues })
+  }
+}, [open, form])
+```
+
+---
+
+### Data Table Component
+
+**Reference implementation:** `app/main/trading/currency/holdings/page.jsx` (Holdings table) and `app/main/trading/currency/holdings/[currency]/components/TransactionTable.jsx` (Transaction table)
+
+Every data table in the app follows this exact structure and styling convention.
+
+---
+
+#### 1. Outer Container
+
+```jsx
+<section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+  {/* Section Header */}
+  {/* Body — one of: loading / error / empty / table */}
+</section>
+```
+
+---
+
+#### 2. Section Header
+
+Icon on the left, title + subtitle in the middle, optional action button on the right.
+
+```jsx
+<div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+  <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+    <SomeIcon className="size-4 text-violet-600" aria-hidden="true" />
+  </div>
+  <div className="min-w-0 flex-1">
+    <p className="text-sm font-semibold text-slate-900">Section Title</p>
+    <p className="text-xs text-slate-500 mt-0.5">Short description of what this table shows</p>
+  </div>
+  {/* Optional action button */}
+  <Button
+    id="actionBtn_{pageName}"
+    size="sm"
+    onClick={onAction}
+    className="bg-violet-600 hover:bg-violet-700 shrink-0 min-w-11"
+  >
+    <Plus className="size-4 mr-1.5" aria-hidden="true" />
+    <span className="hidden sm:inline">Add Item</span>
+    <span className="sm:hidden">Add</span>
+  </Button>
+</div>
+```
+
+---
+
+#### 3. Loading State
+
+Renders inside the section body when data is loading.
+
+```jsx
+function TableSkeleton() {
+  return (
+    <div className="animate-pulse" aria-label="Loading data">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
+          <Skeleton className="h-4 w-12" />
+          <Skeleton className="h-4 w-24 hidden sm:block" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+      ))}
+    </div>
+  )
+}
+```
+
+---
+
+#### 4. Empty State
+
+```jsx
+function EmptyState({ onAdd }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
+      <SomeIcon className="size-10 text-slate-300" aria-hidden="true" />
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-slate-700">No items yet</p>
+        <p className="text-xs text-slate-500">Add your first item to get started</p>
+      </div>
+      <Button size="sm" onClick={onAdd} className="bg-violet-600 hover:bg-violet-700 min-w-11">
+        <Plus className="size-4 mr-1.5" aria-hidden="true" />
+        Add Item
+      </Button>
+    </div>
+  )
+}
+```
+
+---
+
+#### 5. Error State
+
+```jsx
+function ErrorState({ onRetry }) {
+  return (
+    <div
+      className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+      role="alert"
+      aria-live="assertive"
+    >
+      <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-slate-700">Failed to load data</p>
+        <p className="text-xs text-slate-500">Check your connection and try again</p>
+      </div>
+      <Button variant="outline" size="sm" onClick={onRetry} className="min-w-11">
+        Try again
+      </Button>
+    </div>
+  )
+}
+```
+
+---
+
+#### 6. Table Structure
+
+```jsx
+<div className="overflow-x-auto">
+  <table
+    id="{tableName}_{pageName}"
+    className="min-w-full text-sm"
+    aria-label="Descriptive table label"
+  >
+    <thead>
+      <tr className="border-b border-slate-100">
+        {/* Left-aligned header (text/label columns) */}
+        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Column
+        </th>
+        {/* Right-aligned header (numeric columns) */}
+        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Amount
+        </th>
+        {/* Hidden on mobile */}
+        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 hidden sm:table-cell">
+          Extra Column
+        </th>
+        {/* Actions column — screen-reader only label */}
+        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 w-10">
+          <span className="sr-only">Actions</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr key={row.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+          {/* Text cell */}
+          <td className="px-5 py-3.5 text-slate-700 whitespace-nowrap">{row.label}</td>
+          {/* Numeric cell — always font-mono, text-right */}
+          <td className="px-5 py-3.5 text-right font-mono text-slate-700">{row.amount}</td>
+          {/* Hidden on mobile */}
+          <td className="px-5 py-3.5 text-right font-mono text-slate-700 hidden sm:table-cell">
+            {row.extra}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+```
+
+**Clickable rows** (navigate to detail page):
+
+```jsx
+<tr
+  key={row.id}
+  id={`{tableName}Row_${row.id}_{pageName}`}
+  onClick={() => router.push(`/path/${row.id}`)}
+  className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors"
+  role="button"
+  tabIndex={0}
+  aria-label={`View ${row.label} details`}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      router.push(`/path/${row.id}`)
+    }
+  }}
+>
+```
+
+---
+
+#### 7. Cell Conventions
+
+| Content type                             | Alignment | Classes                                        |
+| ---------------------------------------- | --------- | ---------------------------------------------- |
+| Text / label / date                      | Left      | `text-slate-700`                               |
+| Primary identifier (currency code, name) | Left      | `font-semibold text-slate-900`                 |
+| Number / amount / rate                   | Right     | `text-right font-mono text-slate-700`          |
+| Truncatable text (notes)                 | Left      | `text-slate-500 max-w-xs truncate`             |
+| Badge                                    | Left      | inline component — see Badge pattern below     |
+| % Change with color                      | Right     | inline component — see PctChange pattern below |
+
+---
+
+#### 8. Reusable Cell Components
+
+**TypeBadge** — buy/sell pill:
+
+```jsx
+function TypeBadge({ type }) {
+  return (
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+        type === 'buy' ? 'bg-violet-50 text-violet-700' : 'bg-slate-100 text-slate-600'
+      }`}
+    >
+      {type.toUpperCase()}
+    </span>
+  )
+}
+```
+
+**PctChange** — colored percentage with trend icon:
+
+```jsx
+function PctChange({ pct }) {
+  if (pct === null || pct === undefined || isNaN(pct)) {
+    return (
+      <span className="flex items-center gap-1 text-slate-500">
+        <Minus className="size-3" aria-hidden="true" />
+        <span>—</span>
+      </span>
+    )
+  }
+  const isPos = pct > 0
+  const isNeg = pct < 0
+  return (
+    <span
+      className={`flex items-center gap-1 font-medium ${
+        isPos ? 'text-emerald-600' : isNeg ? 'text-red-500' : 'text-slate-500'
+      }`}
+    >
+      {isPos && <TrendingUp className="size-3" aria-hidden="true" />}
+      {isNeg && <TrendingDown className="size-3" aria-hidden="true" />}
+      {!isPos && !isNeg && <Minus className="size-3" aria-hidden="true" />}
+      <span>
+        {isPos ? '+' : ''}
+        {pct.toFixed(2)}%
+      </span>
+    </span>
+  )
+}
+```
+
+---
+
+#### 9. Row Actions (DropdownMenu)
+
+```jsx
+<td className="px-5 py-3.5 text-right">
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <button
+        id={`actionBtn_${row.id}_{pageName}`}
+        aria-label={`Actions for ${row.label}`}
+        className="flex items-center justify-center size-7 rounded-md hover:bg-slate-100 transition-colors"
+      >
+        <MoreHorizontal className="size-4 text-slate-400" aria-hidden="true" />
+      </button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end">
+      <DropdownMenuItem
+        className="text-red-600 focus:text-red-600 focus:bg-red-50 gap-2"
+        onClick={() => handleDelete(row)}
+      >
+        <Trash2 className="size-4" aria-hidden="true" />
+        Delete
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+</td>
+```
+
+---
+
+#### 10. ID Naming
+
+Follow the `{elementName}_{pageName}` convention in camelCase:
+
+| Element                 | Pattern                          | Example                                          |
+| ----------------------- | -------------------------------- | ------------------------------------------------ |
+| Table                   | `{tableName}_{pageName}`         | `holdingsTable_holdingsPage`                     |
+| Clickable row           | `{tableName}Row_{id}_{pageName}` | `holdingsTableRow_USD_holdingsPage`              |
+| Action button in header | `{action}Btn_{pageName}`         | `addInvestmentBtn_holdingsPage`                  |
+| Row-level action button | `{action}Btn_{id}_{pageName}`    | `deleteTransactionBtn_abc123_currencyDetailPage` |
+
+---
+
+#### 11. Composing States
+
+```jsx
+<section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+  <SectionHeader />
+  {loading ? (
+    <TableSkeleton />
+  ) : error ? (
+    <ErrorState onRetry={loadData} />
+  ) : rows.length === 0 ? (
+    <EmptyState onAdd={openSheet} />
+  ) : (
+    <div className="overflow-x-auto">
+      <table>...</table>
+    </div>
+  )}
+</section>
+```
 
 ---
 

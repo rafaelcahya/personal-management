@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Info } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Info, Bell } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { getUserSettings, updateUserSettings, savePushSubscription } from '@/lib/api/running'
@@ -167,100 +166,103 @@ export default function NotificationsSection() {
   }
 
   return (
-    <section aria-label="Notifications">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Notifications
-      </h2>
+    <section
+      aria-label="Notifications"
+      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+    >
+      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+          <Bell className="size-4 text-violet-600" aria-hidden="true" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-900">Notifications</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Configure push alerts for your training insights
+          </p>
+        </div>
+      </div>
 
       {loading ? (
-        <Card className="border border-slate-200/70 py-0">
-          <CardContent
-            id="notificationsLoading_settingsPage"
-            className="px-5 py-4 flex flex-col gap-4"
-          >
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center justify-between gap-4">
-                <div className="flex flex-col gap-1">
-                  <Skeleton className="h-4 w-36 rounded" />
-                  <Skeleton className="h-3 w-56 rounded" />
-                </div>
-                <Skeleton className="h-6 w-11 rounded-full shrink-0" />
+        <div id="notificationsLoading_settingsPage" className="px-5 py-4 flex flex-col gap-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center justify-between gap-4">
+              <div className="flex flex-col gap-1">
+                <Skeleton className="h-4 w-36 rounded" />
+                <Skeleton className="h-3 w-56 rounded" />
               </div>
-            ))}
-          </CardContent>
-        </Card>
+              <Skeleton className="h-6 w-11 rounded-full shrink-0" />
+            </div>
+          ))}
+        </div>
       ) : loadError ? (
-        <Card className="border border-red-200 py-0 bg-red-50">
-          <CardContent className="px-5 py-4">
-            <p className="text-sm text-red-700">{loadError}</p>
-          </CardContent>
-        </Card>
+        <div className="px-5 py-4">
+          <p className="text-sm text-red-700">{loadError}</p>
+        </div>
       ) : (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2 mx-5 my-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
             <Info className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" aria-hidden="true" />
             <p className="text-xs text-amber-700">
               Push notifications are in beta. Some browsers or devices may behave differently.
             </p>
           </div>
 
-          <Card className="border border-slate-200/70 py-0">
-            <CardContent className="px-5 py-4 flex flex-col divide-y divide-slate-100">
-              {/* Push notifications master toggle */}
-              <div className="flex items-start justify-between gap-4 pb-4">
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <p className="text-sm font-medium text-slate-800">Enable push notifications</p>
-                  <p className="text-xs text-slate-400">
-                    {swSupported
-                      ? 'Allow this app to send browser push notifications'
-                      : 'Not supported in this browser'}
+          <div className="px-5 flex flex-col divide-y divide-slate-100">
+            {/* Push notifications master toggle */}
+            <div className="flex items-start justify-between gap-4 pb-4">
+              <div className="flex flex-col gap-0.5 min-w-0">
+                <p className="text-sm font-medium text-slate-800">Enable push notifications</p>
+                <p className="text-xs text-slate-400">
+                  {swSupported
+                    ? 'Allow this app to send browser push notifications'
+                    : 'Not supported in this browser'}
+                </p>
+                {pushError && (
+                  <p
+                    id="pushNotificationsError_settingsPage"
+                    className="text-xs text-red-600 mt-1"
+                    role="alert"
+                    aria-live="polite"
+                  >
+                    {pushError}
                   </p>
-                  {pushError && (
-                    <p
-                      id="pushNotificationsError_settingsPage"
-                      className="text-xs text-red-600 mt-1"
-                      role="alert"
-                      aria-live="polite"
-                    >
-                      {pushError}
-                    </p>
-                  )}
+                )}
+              </div>
+              <Switch
+                id="pushNotificationsToggle_settingsPage"
+                checked={pushEnabled}
+                onCheckedChange={handlePushToggle}
+                disabled={!swSupported || pushPending}
+                aria-label="Enable push notifications"
+                className="shrink-0 mt-0.5"
+              />
+            </div>
+
+            {/* Per-notification toggles */}
+            {TOGGLES.map((toggle, i) => (
+              <div
+                key={toggle.key}
+                className={`flex items-center justify-between gap-4 ${i === TOGGLES.length - 1 ? 'pt-4 pb-5' : 'py-4'}`}
+              >
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <p className="text-sm font-medium text-slate-800">{toggle.label}</p>
+                  <p className="text-xs text-slate-400">{toggle.description}</p>
                 </div>
                 <Switch
-                  id="pushNotificationsToggle_settingsPage"
-                  checked={pushEnabled}
-                  onCheckedChange={handlePushToggle}
-                  disabled={!swSupported || pushPending}
-                  aria-label="Enable push notifications"
-                  className="shrink-0 mt-0.5"
+                  id={toggle.id}
+                  checked={values[toggle.key]}
+                  onCheckedChange={(checked) => handleToggle(toggle.key, checked)}
+                  aria-label={toggle.label}
+                  className="shrink-0"
                 />
               </div>
+            ))}
+          </div>
 
-              {/* Per-notification toggles */}
-              {TOGGLES.map((toggle, i) => (
-                <div
-                  key={toggle.key}
-                  className={`flex items-center justify-between gap-4 ${i === TOGGLES.length - 1 ? 'pt-4' : 'py-4'}`}
-                >
-                  <div className="flex flex-col gap-0.5 min-w-0">
-                    <p className="text-sm font-medium text-slate-800">{toggle.label}</p>
-                    <p className="text-xs text-slate-400">{toggle.description}</p>
-                  </div>
-                  <Switch
-                    id={toggle.id}
-                    checked={values[toggle.key]}
-                    onCheckedChange={(checked) => handleToggle(toggle.key, checked)}
-                    aria-label={toggle.label}
-                    className="shrink-0"
-                  />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
           {toggleError && (
             <p
               id="notifyToggleError_settingsPage"
-              className="text-xs text-red-600 mt-1"
+              className="text-xs text-red-600 px-5 pb-4"
               role="alert"
               aria-live="polite"
             >

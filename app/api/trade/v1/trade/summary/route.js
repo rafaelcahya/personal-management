@@ -11,13 +11,19 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json(
+        { error: 'Unauthorized', message: 'Authentication required' },
+        { status: 401 }
+      )
     }
 
-    const summary = await getTradeSummary(user.id)
+    const summary = await getTradeSummary(supabase, user.id)
 
-    return NextResponse.json({ success: true, data: summary })
+    return NextResponse.json({ data: summary, message: 'OK' })
   } catch {
-    return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Internal server error', message: 'Something went wrong' },
+      { status: 500 }
+    )
   }
 }

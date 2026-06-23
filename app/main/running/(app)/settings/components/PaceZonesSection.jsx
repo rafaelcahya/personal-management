@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CheckCircle2, AlertCircle, Zap, Pencil } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { CheckCircle2, AlertCircle, Zap, Pencil, Timer } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -115,186 +114,190 @@ export default function PaceZonesSection() {
   }
 
   return (
-    <section aria-label="Pace zones">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Pace Zones
-      </h2>
+    <section
+      aria-label="Pace zones"
+      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+    >
+      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+          <Timer className="size-4 text-violet-600" aria-hidden="true" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-900">Pace Zones</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Threshold pace used to calculate your 5 training zones
+          </p>
+        </div>
+      </div>
 
       {loading ? (
-        <Card className="border border-slate-200/70 py-0">
-          <CardContent id="paceZonesLoading_settingsPage" className="px-5 py-4 flex flex-col gap-3">
-            <Skeleton className="h-4 w-40 rounded" />
-            <Skeleton className="h-9 w-full rounded" />
-          </CardContent>
-        </Card>
+        <div id="paceZonesLoading_settingsPage" className="px-5 py-4 flex flex-col gap-3">
+          <Skeleton className="h-4 w-40 rounded" />
+          <Skeleton className="h-9 w-full rounded" />
+        </div>
       ) : loadError ? (
-        <Card className="border border-red-200 bg-red-50">
-          <CardContent className="px-5 py-4">
-            <p className="text-sm text-red-700">{loadError}</p>
-          </CardContent>
-        </Card>
+        <div className="px-5 py-4">
+          <p className="text-sm text-red-700">{loadError}</p>
+        </div>
       ) : (
-        <Card className="border border-slate-200/70 py-0">
-          <CardContent className="px-5 py-4 flex flex-col gap-4">
-            {/* Mode tabs */}
-            <div
-              id="paceZonesModeToggle_settingsPage"
-              className="flex rounded-lg overflow-hidden border border-slate-200 text-[11px] font-semibold w-fit"
-            >
-              {INPUT_MODES.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  id={`paceZonesMode_${id}_settingsPage`}
-                  onClick={() => setMode(id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 transition-colors ${mode === id ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
-                >
-                  <Icon className="size-3" aria-hidden="true" />
-                  {label}
-                </button>
-              ))}
-            </div>
+        <div className="px-5 py-5 flex flex-col gap-4">
+          {/* Mode tabs */}
+          <div
+            id="paceZonesModeToggle_settingsPage"
+            className="flex rounded-lg overflow-hidden border border-slate-200 text-[11px] font-semibold w-fit"
+          >
+            {INPUT_MODES.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                id={`paceZonesMode_${id}_settingsPage`}
+                onClick={() => setMode(id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 transition-colors ${mode === id ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+              >
+                <Icon className="size-3" aria-hidden="true" />
+                {label}
+              </button>
+            ))}
+          </div>
 
-            {/* Manual mode */}
-            {mode === 'manual' && (
+          {/* Manual mode */}
+          {mode === 'manual' && (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="thresholdPaceInput_settingsPage" className="text-sm font-medium">
+                Threshold Pace (min:sec /km)
+              </Label>
+              <Input
+                id="thresholdPaceInput_settingsPage"
+                type="text"
+                value={paceMmss}
+                onChange={(e) => setPaceMmss(e.target.value)}
+                placeholder="e.g. 5:20"
+                className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 max-w-[120px]"
+              />
+              <p className="text-xs text-slate-400">
+                Your sustainable pace for ~60 min — the anchor for all 5 pace zones.
+              </p>
+            </div>
+          )}
+
+          {/* From Activity mode */}
+          {mode === 'activity' && (
+            <div className="flex flex-col gap-3">
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Analyses your recent run stream data to find your average pace when your heart rate
+                is in the threshold zone (±6% of Threshold HR). Requires Threshold HR to be set in
+                HR Zones.
+              </p>
+              <Button
+                id="detectThresholdPaceBtn_settingsPage"
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={detecting}
+                onClick={handleDetect}
+                className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50 w-fit"
+              >
+                <Zap className="size-3.5" aria-hidden="true" />
+                {detecting ? 'Analysing…' : 'Detect from activities'}
+              </Button>
+              {detectResult && (
+                <div className="flex flex-col gap-2">
+                  <div
+                    id="detectThresholdPaceResult_settingsPage"
+                    className="flex items-center gap-1.5 text-xs text-green-700"
+                  >
+                    <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
+                    Detected: <span className="font-semibold">{secToMmss(detectResult)} /km</span>
+                    {detectSampleCount && (
+                      <span className="text-slate-400">from {detectSampleCount} data points</span>
+                    )}
+                  </div>
+                  {detectActivities && detectActivities.length > 0 && (
+                    <div className="rounded-md border border-slate-100 bg-slate-50 px-3 py-2 flex flex-col gap-1">
+                      <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-0.5">
+                        Activities analysed ({detectActivities.length})
+                      </p>
+                      {detectActivities.map((a) => (
+                        <div
+                          key={a.id}
+                          className="flex items-center justify-between gap-2 text-xs text-slate-600"
+                        >
+                          <span className="truncate max-w-[200px]">{a.name || 'Run'}</span>
+                          <div className="flex items-center gap-2 shrink-0 text-slate-400">
+                            {a.distance_m && <span>{(a.distance_m / 1000).toFixed(1)} km</span>}
+                            <span>
+                              {new Date(a.started_at).toLocaleDateString('en-GB', {
+                                day: 'numeric',
+                                month: 'short',
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              {detectError && (
+                <div
+                  id="detectThresholdPaceError_settingsPage"
+                  className="flex items-center gap-1.5 text-xs text-red-600"
+                >
+                  <AlertCircle className="size-3.5 shrink-0" aria-hidden="true" />
+                  {detectError}
+                </div>
+              )}
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="thresholdPaceInput_settingsPage" className="text-sm font-medium">
+                <Label
+                  htmlFor="thresholdPaceActivityInput_settingsPage"
+                  className="text-sm font-medium"
+                >
                   Threshold Pace (min:sec /km)
                 </Label>
                 <Input
-                  id="thresholdPaceInput_settingsPage"
+                  id="thresholdPaceActivityInput_settingsPage"
                   type="text"
                   value={paceMmss}
                   onChange={(e) => setPaceMmss(e.target.value)}
                   placeholder="e.g. 5:20"
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 max-w-[120px]"
                 />
-                <p className="text-xs text-slate-400">
-                  Your sustainable pace for ~60 min — the anchor for all 5 pace zones.
-                </p>
               </div>
-            )}
-
-            {/* From Activity mode */}
-            {mode === 'activity' && (
-              <div className="flex flex-col gap-3">
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Analyses your recent run stream data to find your average pace when your heart
-                  rate is in the threshold zone (±6% of Threshold HR). Requires Threshold HR to be
-                  set in HR Zones.
-                </p>
-                <Button
-                  id="detectThresholdPaceBtn_settingsPage"
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={detecting}
-                  onClick={handleDetect}
-                  className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50 w-fit"
-                >
-                  <Zap className="size-3.5" aria-hidden="true" />
-                  {detecting ? 'Analysing…' : 'Detect from activities'}
-                </Button>
-                {detectResult && (
-                  <div className="flex flex-col gap-2">
-                    <div
-                      id="detectThresholdPaceResult_settingsPage"
-                      className="flex items-center gap-1.5 text-xs text-green-700"
-                    >
-                      <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
-                      Detected: <span className="font-semibold">{secToMmss(detectResult)} /km</span>
-                      {detectSampleCount && (
-                        <span className="text-slate-400">from {detectSampleCount} data points</span>
-                      )}
-                    </div>
-                    {detectActivities && detectActivities.length > 0 && (
-                      <div className="rounded-md border border-slate-100 bg-slate-50 px-3 py-2 flex flex-col gap-1">
-                        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-0.5">
-                          Activities analysed ({detectActivities.length})
-                        </p>
-                        {detectActivities.map((a) => (
-                          <div
-                            key={a.id}
-                            className="flex items-center justify-between gap-2 text-xs text-slate-600"
-                          >
-                            <span className="truncate max-w-[200px]">{a.name || 'Run'}</span>
-                            <div className="flex items-center gap-2 shrink-0 text-slate-400">
-                              {a.distance_m && <span>{(a.distance_m / 1000).toFixed(1)} km</span>}
-                              <span>
-                                {new Date(a.started_at).toLocaleDateString('en-GB', {
-                                  day: 'numeric',
-                                  month: 'short',
-                                })}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-                {detectError && (
-                  <div
-                    id="detectThresholdPaceError_settingsPage"
-                    className="flex items-center gap-1.5 text-xs text-red-600"
-                  >
-                    <AlertCircle className="size-3.5 shrink-0" aria-hidden="true" />
-                    {detectError}
-                  </div>
-                )}
-                <div className="flex flex-col gap-1.5">
-                  <Label
-                    htmlFor="thresholdPaceActivityInput_settingsPage"
-                    className="text-sm font-medium"
-                  >
-                    Threshold Pace (min:sec /km)
-                  </Label>
-                  <Input
-                    id="thresholdPaceActivityInput_settingsPage"
-                    type="text"
-                    value={paceMmss}
-                    onChange={(e) => setPaceMmss(e.target.value)}
-                    placeholder="e.g. 5:20"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 max-w-[120px]"
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center justify-end gap-3 pt-1">
-              {saveSuccess && (
-                <div
-                  id="paceZonesSaveSuccess_settingsPage"
-                  className="flex items-center gap-1.5 text-sm text-green-700"
-                  role="status"
-                  aria-live="polite"
-                >
-                  <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
-                  Saved
-                </div>
-              )}
-              {saveError && (
-                <div
-                  id="paceZonesSaveError_settingsPage"
-                  className="flex items-center gap-1.5 text-sm text-red-600"
-                  role="alert"
-                  aria-live="assertive"
-                >
-                  <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
-                  {saveError}
-                </div>
-              )}
-              <Button
-                id="paceZonesSaveBtn_settingsPage"
-                onClick={handleSave}
-                disabled={saving}
-                size="sm"
-              >
-                {saving ? 'Saving…' : 'Save'}
-              </Button>
             </div>
-          </CardContent>
-        </Card>
+          )}
+          <div className="flex items-center justify-end gap-3 pt-1">
+            {saveSuccess && (
+              <div
+                id="paceZonesSaveSuccess_settingsPage"
+                className="flex items-center gap-1.5 text-sm text-green-700"
+                role="status"
+                aria-live="polite"
+              >
+                <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
+                Saved
+              </div>
+            )}
+            {saveError && (
+              <div
+                id="paceZonesSaveError_settingsPage"
+                className="flex items-center gap-1.5 text-sm text-red-600"
+                role="alert"
+                aria-live="assertive"
+              >
+                <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+                {saveError}
+              </div>
+            )}
+            <Button
+              id="paceZonesSaveBtn_settingsPage"
+              onClick={handleSave}
+              disabled={saving}
+              size="sm"
+            >
+              {saving ? 'Saving…' : 'Save'}
+            </Button>
+          </div>
+        </div>
       )}
     </section>
   )

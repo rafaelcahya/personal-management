@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-21 (issue #425)
-**Branch:** feat/issue-425-trading-dashboard-api-tests
+**Last Updated:** 2026-06-23 (issue #458 — currency investment feature)
+**Branch:** feat/issue-458-currency-investment
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,205  | 41%  |
-| UI        | 1,747  | 59%  |
-| **Total** | **2,952** | 100% |
+| API       | 1,371  | 46%  |
+| UI        | 1,597  | 54%  |
+| **Total** | **2,968** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 56    | 450   | 506   |
-| Running Tracker      | 426   | 695   | 1,121 |
+| Trading Management   | 205   | 300   | 505   |
+| Running Tracker      | 443   | 695   | 1,138 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,205** | **1,747** | **2,952** |
+| **Total**            | **1,371** | **1,597** | **2,968** |
 
 ---
 
@@ -126,12 +126,12 @@
 | Auth Guard    | 29  | 0   | 29    |
 | Add Trade     | 0   | 109 | 109   |
 | Delete Trade  | 0   | 6   | 6     |
-| List Trade    | 0   | 6   | 6     |
+| List Trade    | 12  | 0   | 12    |
 | Option Trade  | 0   | 7   | 7     |
-| Trade Summary | 0   | 10  | 10    |
+| Trade Summary | 13  | 0   | 13    |
 | Trade Detail  | 0   | 15  | 15    |
 | Update Trade  | 0   | 32  | 32    |
-| **Subtotal**  | **29** | **185** | **214** |
+| **Subtotal**  | **54** | **169** | **223** |
 
 #### Fee
 
@@ -140,24 +140,47 @@
 | Add Fee      | 0   | 62 | 62    |
 | Delete Fee   | 0   | 6  | 6     |
 | Fee Detail   | 0   | 15 | 15    |
-| List Fee     | 0   | 6  | 6     |
+| List Fee     | 13  | 6  | 19    |
 | Fee Summary  | 0   | 23 | 23    |
 | Update Fee   | 0   | 19 | 19    |
-| **Subtotal** | **0** | **131** | **131** |
+| **Subtotal** | **13** | **131** | **144** |
 
 #### Event
 
 | Feature        | API | UI | Total |
 | -------------- | --- | -- | ----- |
-| Add Event      | 0   | 59 | 59    |
-| Delete Event   | 0   | 9  | 9     |
-| Event Detail   | 0   | 15 | 15    |
-| List Event     | 0   | 6  | 6     |
-| Event Summary  | 0   | 25 | 25    |
-| Update Event   | 0   | 20 | 20    |
-| **Subtotal**   | **0** | **134** | **134** |
+| List Event     | 6   | 0  | 6     |
+| Event Summary  | 4   | 0  | 4     |
+| Event Detail   | 5   | 0  | 5     |
+| Create Event   | 8   | 0  | 8     |
+| Update Event   | 5   | 0  | 5     |
+| Delete Event   | 4   | 0  | 4     |
+| Favorite Event | 5   | 0  | 5     |
+| Event Tags     | 4   | 0  | 4     |
+| **Subtotal**   | **41** | **0** | **41** |
 
-**Trading Total — API: 56 | UI: 450 | Total: 506**
+#### Settings
+
+| Feature          | API | UI | Total |
+| ---------------- | --- | -- | ----- |
+| Trading Settings | 16  | 0  | 16    |
+| **Subtotal**     | **16** | **0** | **16** |
+
+#### Currency Investment
+
+| Feature              | API | UI | Total |
+| -------------------- | --- | -- | ----- |
+| List Investments     | 9   | 0  | 9     |
+| Create Investment    | 15  | 0  | 15    |
+| Delete Investment    | 4   | 0  | 4     |
+| Holdings List        | 5   | 0  | 5     |
+| Holdings Detail      | 5   | 0  | 5     |
+| Forex Rates          | 6   | 0  | 6     |
+| Forex History        | 9   | 0  | 9     |
+| Forex Currencies     | 7   | 0  | 7     |
+| **Subtotal**         | **60** | **0** | **60** |
+
+**Trading Total — API: 205 | UI: 300 | Total: 505**
 
 ---
 
@@ -194,7 +217,8 @@
 | Dashboard            | 42  | 28 | 70    |
 | Dashboard Extended   | 0   | 14 | 14    |
 | Gear                 | 6   | 18 | 24    |
-| **Subtotal**         | **48** | **80** | **128** |
+| Weekly Stats Filter  | 17  | 0  | 17    |
+| **Subtotal**         | **65** | **80** | **145** |
 
 #### AI Coach
 
@@ -263,7 +287,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **53** | **21** | **74** |
 
-**Running Total — API: 426 | UI: 695 | Total: 1,121**
+**Running Total — API: 443 | UI: 695 | Total: 1,138**
 
 ---
 
@@ -291,8 +315,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 56    | 450   | 506   |
-| Running Tracker      | 426   | 695   | 1,121 |
+| Trading Management   | 205   | 300   | 505   |
+| Running Tracker      | 443   | 695   | 1,138 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,205** | **1,747** | **2,952** |
+| **Total**            | **1,371** | **1,597** | **2,968** |

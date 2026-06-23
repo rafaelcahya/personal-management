@@ -14,12 +14,16 @@
     "running_analytics": "/main/running/analytics",
     "running_ai_coach": "/main/running/ai",
     "running_settings": "/main/running/settings",
-    "running_pace_calculator": "/main/running/pace-calculator",
+    "running_pace_calculator": "/main/running/run-calculator",
     "trading": "/main/trading",
     "trading_dashboard": "/main/trading/dashboard",
     "trading_trade": "/main/trading/trade",
     "trading_event": "/main/trading/event",
     "trading_fee": "/main/trading/fee",
+    "trading_settings": "/main/trading/settings",
+    "trading_currency": "/main/trading/currency",
+    "trading_currency_holdings": "/main/trading/currency/holdings",
+    "trading_currency_detail": "/main/trading/currency/holdings/1",
     "login": "/login",
     "auth_callback": "/auth/callback",
     "auth_callback_v1": "/auth/v1/callback"
@@ -86,7 +90,8 @@
       "weight_log": "/api/running/v1/health/weight"
     },
     "running_dashboard": {
-      "dashboard": "/api/running/v1/dashboard"
+      "dashboard": "/api/running/v1/dashboard",
+      "weekly_stats": "/api/running/v1/dashboard/weekly-stats"
     },
     "running_gear": {
       "list": "/api/running/v1/gear",
@@ -153,6 +158,10 @@
       "strava_disconnect": "/api/running/v1/auth/strava/disconnect",
       "push_subscription": "/api/running/v1/user/push-subscription"
     },
+    "trading_settings": {
+      "get": "/api/trade/v1/settings",
+      "update": "/api/trade/v1/settings/update"
+    },
     "trading_event": {
       "list": "/api/trade/v1/event/list",
       "create": "/api/trade/v1/event/create",
@@ -170,6 +179,17 @@
     "trading_dashboard": {
       "metrics": "/api/trade/v1/dashboard/metrics",
       "quick_view": "/api/trade/v1/dashboard/quick-view"
+    },
+    "currency_investments": {
+      "list": "/api/currency-investments/v1/list",
+      "create": "/api/currency-investments/v1/create",
+      "delete": "/api/currency-investments/v1/delete",
+      "holdings": "/api/currency-investments/v1/holdings"
+    },
+    "forex": {
+      "rates": "/api/forex/v1/rates",
+      "history": "/api/forex/v1/history",
+      "currencies": "/api/forex/v1/currencies"
     },
     "running_ai": {
       "symptoms": "/api/running/v1/symptoms",
@@ -191,7 +211,8 @@
       "inventory_dashboard_nav": "inventoryDashboardNav_sidebar",
       "trading_dashboard_nav": "tradingDashboardNav_sidebar",
       "running_dashboard_nav": "runningDashboardNav_sidebar",
-      "pace_calc_nav": "paceCalcNav_sidebar"
+      "pace_calc_nav": "paceCalcNav_sidebar",
+      "currency_nav": "currencyNav_sidebar"
     },
     "shared": {
       "submit_btn": "submit-btn",
@@ -936,40 +957,106 @@
       "bmi_chip": "bmiChip_settingsPage",
       "bmi_missing_prompt": "bmiMissingPrompt_settingsPage"
     },
+    "trading_settings": {
+      "section": "performConfigSection_settingsPage",
+      "loading": "settingsLoadingSkeleton_settingsPage",
+      "error": "settingsError_settingsPage",
+      "retry_btn": "settingsRetryBtn_settingsPage",
+      "form": "settingsForm_settingsPage",
+      "initial_margin_input": "initialMarginInput_settingsPage",
+      "bi_risk_free_rate_input": "biRiskFreeRateInput_settingsPage",
+      "personal_risk_free_rate_input": "personalRiskFreeRateInput_settingsPage",
+      "margin_of_error_input": "marginOfErrorInput_settingsPage",
+      "save_btn": "saveSettingsBtn_settingsPage"
+    },
+    "trading_trade": {
+      "metric_strip": "tradeMetricStrip_tradePage",
+      "metric_strip_count": "tradeMetricStrip_count_tradePage",
+      "metric_strip_win_rate": "tradeMetricStrip_winRate_tradePage",
+      "metric_strip_net_pnl": "tradeMetricStrip_netPnL_tradePage",
+      "search_bar": "tradeSearchBar_tradePage",
+      "search_input": "tradeSearchInput_tradePage",
+      "search_clear_btn": "tradeSearchClearBtn_tradePage",
+      "table": "tradeTable_tradePage",
+      "table_row": "tradeTableRow_tradePage",
+      "skeleton": "tradeTableSkeleton_tradePage",
+      "error_state": "tradeErrorState_tradePage",
+      "error_retry_btn": "tradeErrorRetryBtn_tradePage",
+      "empty_state": "tradeEmptyState_tradePage",
+      "empty_state_add_btn": "tradeEmptyStateAddBtn_tradePage",
+      "pagination": "tradePagination_tradePage",
+      "pagination_prev_btn": "tradePaginationPrevBtn_tradePage",
+      "pagination_next_btn": "tradePaginationNextBtn_tradePage",
+      "add_btn": "addNewTradeBtn_tradePage",
+      "add_form": "addNewTradeForm_tradePage",
+      "cancel_btn": "cancelNewTradeBtn_tradePage",
+      "submit_btn": "submitNewTradeBtn_tradePage"
+    },
     "running_pace_calculator": {
-      "unit_toggle": "unitToggle_paceCalculator",
-      "unit_km": "unitKm_paceCalculator",
-      "unit_mi": "unitMi_paceCalculator",
-      "tab_pace": "tabPace_paceCalculator",
-      "tab_projection": "tabProjection_paceCalculator",
-      "tab_steps": "tabSteps_paceCalculator",
-      "distance_preset": "distancePreset_paceCalculator",
-      "custom_distance": "customDistance_paceCalculator",
-      "time_hours": "time_paceCalculatorHours",
-      "time_minutes": "time_paceCalculatorMinutes",
-      "time_seconds": "time_paceCalculatorSeconds",
-      "pace_km": "paceKm_paceCalculator",
-      "pace_mi": "paceMi_paceCalculator",
-      "speed_kmh": "speedKmh_paceCalculator",
-      "speed_mph": "speedMph_paceCalculator",
-      "proj_pace_minutes": "projPaceMinutes_paceCalculator",
-      "proj_pace_seconds": "projPaceSeconds_paceCalculator",
-      "proj_sub_mode": "projSubMode_paceCalculator",
-      "proj_mode_distance": "projModeDistance_paceCalculator",
-      "proj_mode_time": "projModeTime_paceCalculator",
-      "proj_distance_preset": "projDistancePreset_paceCalculator",
-      "proj_custom_distance": "projCustomDistance_paceCalculator",
-      "proj_time_hours": "projTime_paceCalculatorHours",
-      "proj_time_minutes": "projTime_paceCalculatorMinutes",
-      "proj_time_seconds": "projTime_paceCalculatorSeconds",
-      "proj_result_time": "projResultTime_paceCalculator",
-      "proj_result_distance": "projResultDistance_paceCalculator",
-      "proj_avg_pace": "projAvgPace_paceCalculator",
-      "splits_table": "splitsTable_paceCalculator",
-      "race_projection_table": "raceProjectionTable_paceCalculator",
-      "steps_count": "stepsCount_paceCalculator",
-      "steps_distance_km": "stepsDistanceKm_paceCalculator",
-      "steps_distance_mi": "stepsDistanceMi_paceCalculator"
+      "unit_toggle": "unitToggle_runCalculator",
+      "unit_km": "unitKm_runCalculator",
+      "unit_mi": "unitMi_runCalculator",
+      "tab_pace": "tabPace_runCalculator",
+      "tab_projection": "tabProjection_runCalculator",
+      "tab_steps": "tabSteps_runCalculator",
+      "distance_preset": "distancePreset_runCalculator",
+      "custom_distance": "customDistance_runCalculator",
+      "time_hours": "time_runCalculatorHours",
+      "time_minutes": "time_runCalculatorMinutes",
+      "time_seconds": "time_runCalculatorSeconds",
+      "pace_km": "paceKm_runCalculator",
+      "pace_mi": "paceMi_runCalculator",
+      "speed_kmh": "speedKmh_runCalculator",
+      "speed_mph": "speedMph_runCalculator",
+      "proj_pace_minutes": "projPaceMinutes_runCalculator",
+      "proj_pace_seconds": "projPaceSeconds_runCalculator",
+      "proj_sub_mode": "projSubMode_runCalculator",
+      "proj_mode_distance": "projModeDistance_runCalculator",
+      "proj_mode_time": "projModeTime_runCalculator",
+      "proj_distance_preset": "projDistancePreset_runCalculator",
+      "proj_custom_distance": "projCustomDistance_runCalculator",
+      "proj_time_hours": "projTime_runCalculatorHours",
+      "proj_time_minutes": "projTime_runCalculatorMinutes",
+      "proj_time_seconds": "projTime_runCalculatorSeconds",
+      "proj_result_time": "projResultTime_runCalculator",
+      "proj_result_distance": "projResultDistance_runCalculator",
+      "proj_avg_pace": "projAvgPace_runCalculator",
+      "splits_table": "splitsTable_runCalculator",
+      "race_projection_table": "raceProjectionTable_runCalculator",
+      "steps_count": "stepsCount_runCalculator",
+      "steps_distance_km": "stepsDistanceKm_runCalculator",
+      "steps_distance_mi": "stepsDistanceMi_runCalculator"
+    },
+    "trading_currency": {
+      "currency_nav": "currencyNav_sidebar",
+      "allocation_chart": "allocationChart_currencyPage",
+      "pnl_chart": "pnlChart_currencyPage",
+      "pnl_filter_7d": "pnlFilter_7d_currencyPage",
+      "pnl_filter_30d": "pnlFilter_30d_currencyPage",
+      "pnl_filter_3m": "pnlFilter_3m_currencyPage",
+      "pnl_filter_6m": "pnlFilter_6m_currencyPage",
+      "pnl_filter_1y": "pnlFilter_1y_currencyPage"
+    },
+    "trading_currency_holdings": {
+      "add_investment_btn": "addInvestmentBtn_holdingsPage",
+      "holdings_table": "holdingsTable_holdingsPage",
+      "holdings_table_row": "holdingsTableRow_{currency}_holdingsPage"
+    },
+    "trading_currency_detail": {
+      "add_transaction_btn": "addTransactionBtn_currencyDetailPage",
+      "transaction_table": "transactionTable_currencyDetailPage",
+      "delete_transaction_btn": "deleteTransactionBtn_{id}_currencyDetailPage"
+    },
+    "add_transaction_modal": {
+      "modal": "addTransactionModal_currencyDetailPage",
+      "currency_select": "currencySelect_addTransactionModal",
+      "type_toggle": "typeToggle_addTransactionModal",
+      "date_input": "dateInput_addTransactionModal",
+      "amount_input": "amountInput_addTransactionModal",
+      "units_input": "unitsInput_addTransactionModal",
+      "rate_input": "rateInput_addTransactionModal",
+      "notes_input": "notesInput_addTransactionModal",
+      "submit_btn": "submitBtn_addTransactionModal"
     }
   },
   "seed": {

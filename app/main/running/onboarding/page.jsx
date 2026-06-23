@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,7 +9,6 @@ import { format } from 'date-fns'
 import {
   UserIcon,
   LinkIcon,
-  FlagIcon,
   CheckCircle2Icon,
   HeartPulseIcon,
   RulerIcon,
@@ -20,6 +19,7 @@ import {
   ArrowRightIcon,
   ArrowLeftIcon,
   LoaderIcon,
+  InfoIcon,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -98,26 +98,6 @@ const biometricSchema = z
     }
   })
 
-const goalSchema = z.object({
-  has_goal: z.boolean(),
-  target_distance_km: z
-    .string()
-    .optional()
-    .refine((val) => {
-      if (!val || val === '') return true
-      const n = Number(val)
-      return !isNaN(n) && n > 0
-    }, 'Distance must be a positive number'),
-  target_date: z
-    .string()
-    .optional()
-    .refine((val) => {
-      if (!val || val === '') return true
-      const d = new Date(val)
-      return !isNaN(d.getTime()) && d > new Date()
-    }, 'Target date must be in the future'),
-})
-
 // ---------------------------------------------------------------------------
 // Step indicator
 // ---------------------------------------------------------------------------
@@ -125,7 +105,7 @@ const goalSchema = z.object({
 const STEPS = [
   { id: 1, label: 'Biometrics', icon: UserIcon },
   { id: 2, label: 'Connect Strava', icon: LinkIcon },
-  { id: 3, label: 'First Goal', icon: FlagIcon },
+  { id: 3, label: 'Done', icon: CheckCircle2Icon },
 ]
 
 function StepIndicator({ currentStep }) {
@@ -199,17 +179,10 @@ function calculateMaxHr(birthDate) {
   return Math.max(0, 220 - age)
 }
 
-function StepBiometrics({ onNext }) {
+function StepBiometrics({ onNext, defaultValues }) {
   const form = useForm({
     resolver: zodResolver(biometricSchema),
-    defaultValues: {
-      birth_date: '',
-      height_cm: '',
-      weight_kg: '',
-      resting_hr_baseline: '',
-      max_hr_mode: 'formula',
-      max_hr: '',
-    },
+    defaultValues,
   })
 
   const maxHrMode = form.watch('max_hr_mode')
@@ -233,7 +206,7 @@ function StepBiometrics({ onNext }) {
         resting_hr_baseline: Number(values.resting_hr_baseline),
         max_hr: resolvedMaxHr,
       })
-      onNext()
+      onNext(values)
     } catch (err) {
       form.setError('root', { message: err.message })
     } finally {
@@ -289,7 +262,7 @@ function StepBiometrics({ onNext }) {
                         selected={selectedDate}
                         onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
                         disabled={(date) => date > new Date()}
-                        defaultMonth={selectedDate ?? new Date(1990, 0)}
+                        defaultMonth={selectedDate}
                         fromYear={1930}
                         toYear={new Date().getFullYear()}
                       />
@@ -486,7 +459,7 @@ function StepBiometrics({ onNext }) {
               id="continueBtn_onboarding"
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white min-h-11"
+              className="w-full bg-violet-600 hover:bg-violet-700 text-white"
             >
               {isSubmitting ? (
                 <>
@@ -511,18 +484,15 @@ function StepBiometrics({ onNext }) {
 // Step 2 — Connect Strava
 // ---------------------------------------------------------------------------
 
-function StepStrava({ onNext, onSkip }) {
+function StepStrava({ onNext, onSkip, initialError = null }) {
   const [isConnecting, setIsConnecting] = useState(false)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState(initialError)
 
   async function handleConnect() {
     setIsConnecting(true)
     setError(null)
     try {
       redirectToStravaConnect()
-      if (false) {
-        window.location.href = data.redirectUrl
-      }
     } catch (err) {
       setError(err.message)
       setIsConnecting(false)
@@ -539,7 +509,7 @@ function StepStrava({ onNext, onSkip }) {
       </div>
 
       {/* Strava benefits card */}
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 mb-6 space-y-2.5">
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 mb-4 space-y-2.5">
         {[
           'Auto-sync all past and future activities',
           'Real-time HR, GPS, and pace streams',
@@ -553,6 +523,15 @@ function StepStrava({ onNext, onSkip }) {
             {benefit}
           </div>
         ))}
+      </div>
+
+      {/* Data permission note */}
+      <div className="flex items-start gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200 text-sm text-blue-700 mb-4">
+        <InfoIcon className="size-4 shrink-0 mt-0.5" aria-hidden="true" />
+        <p>
+          You must allow data permission on Strava first — check Settings &gt; Privacy Controls &gt;
+          Data Permissions in the Strava app.
+        </p>
       </div>
 
       {error && (
@@ -570,7 +549,7 @@ function StepStrava({ onNext, onSkip }) {
           id="connectStravaBtn_onboarding"
           onClick={handleConnect}
           disabled={isConnecting}
-          className="w-full bg-[#FC4C02] hover:bg-[#e04402] text-white min-h-11"
+          className="w-full bg-[#FC4C02] hover:bg-[#e04402] text-white"
           aria-label="Connect with Strava"
         >
           {isConnecting ? (
@@ -590,7 +569,7 @@ function StepStrava({ onNext, onSkip }) {
           id="skipStravaBtn_onboarding"
           variant="ghost"
           onClick={onSkip}
-          className="w-full text-slate-500 hover:text-slate-700 min-h-11"
+          className="w-full text-slate-500 hover:text-slate-700"
           aria-label="Skip Strava connection for now"
         >
           <SkipForwardIcon className="size-4" aria-hidden="true" />
@@ -602,215 +581,50 @@ function StepStrava({ onNext, onSkip }) {
 }
 
 // ---------------------------------------------------------------------------
-// Step 3 — First Goal
+// Step 3 — Complete
 // ---------------------------------------------------------------------------
 
-function StepGoal({ onFinish }) {
-  const form = useForm({
-    resolver: zodResolver(goalSchema),
-    defaultValues: {
-      has_goal: false,
-      target_distance_km: '',
-      target_date: '',
-    },
-  })
+function StepComplete({ stravaConnected, onFinish }) {
+  const [completing, setCompleting] = useState(false)
 
-  const hasGoal = form.watch('has_goal')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  async function onSubmit(values) {
-    setIsSubmitting(true)
-    try {
-      const payload = {}
-      if (values.has_goal && values.target_distance_km && values.target_date) {
-        payload.goal_type = 'race'
-        payload.target_date = values.target_date
-        payload.target_distance_m = Number(values.target_distance_km) * 1000
-      }
-      await completeOnboarding(payload)
-    } catch {
-      // Goal save failure non-blocking — tetap lanjut ke dashboard
-    } finally {
-      setIsSubmitting(false)
-      onFinish()
-    }
-  }
-
-  const RACE_DISTANCES = [
-    { label: '5K', value: '5' },
-    { label: '10K', value: '10' },
-    { label: 'Half Marathon', value: '21.1' },
-    { label: 'Marathon', value: '42.195' },
-  ]
+  useEffect(() => {
+    setCompleting(true)
+    completeOnboarding({})
+      .catch(() => {})
+      .finally(() => setCompleting(false))
+  }, [])
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-slate-800">Set your first goal</h2>
-        <p className="text-sm text-slate-500 mt-1">
-          Got an upcoming race? Let the AI Coach tailor your weekly plan and taper advice.
-        </p>
+    <div className="flex flex-col items-center text-center py-4">
+      <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+        <CheckCircle2Icon className="size-8 text-green-600" aria-hidden="true" />
       </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="space-y-5">
-          {/* Toggle: has goal */}
-          <div
-            role="radiogroup"
-            aria-label="Do you have an upcoming race?"
-            className="grid grid-cols-2 gap-3"
-          >
-            {[
-              { value: true, label: 'Yes, I have a race' },
-              { value: false, label: 'No race planned yet' },
-            ].map((option) => (
-              <label
-                key={String(option.value)}
-                className={[
-                  'flex items-center justify-center gap-2 px-3 py-3 rounded-xl border text-sm font-medium cursor-pointer transition-all',
-                  hasGoal === option.value
-                    ? 'border-violet-500 bg-violet-50 text-violet-700'
-                    : 'border-slate-200 text-slate-600 hover:border-slate-300',
-                ].join(' ')}
-              >
-                <input
-                  id={option.value === true ? 'goalYesRadio_onboarding' : 'goalNoRadio_onboarding'}
-                  type="radio"
-                  className="sr-only"
-                  checked={hasGoal === option.value}
-                  onChange={() => form.setValue('has_goal', option.value)}
-                  aria-label={option.label}
-                />
-                {option.label}
-              </label>
-            ))}
-          </div>
-
-          {/* Goal fields — shown when user has a race */}
-          {hasGoal && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
-              {/* Quick distance buttons */}
-              <div>
-                <p className="text-sm font-medium text-slate-700 mb-2">Target distance</p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-                  {RACE_DISTANCES.map((d) => (
-                    <button
-                      key={d.value}
-                      type="button"
-                      onClick={() => form.setValue('target_distance_km', d.value)}
-                      className={[
-                        'py-2 px-3 rounded-lg border text-sm font-medium transition-all',
-                        form.watch('target_distance_km') === d.value
-                          ? 'border-violet-500 bg-violet-50 text-violet-700'
-                          : 'border-slate-200 text-slate-600 hover:border-slate-300',
-                      ].join(' ')}
-                      aria-pressed={form.watch('target_distance_km') === d.value}
-                    >
-                      {d.label}
-                    </button>
-                  ))}
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="target_distance_km"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm text-slate-600">
-                        Or enter custom distance (km)
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          id="targetDistanceInput_onboarding"
-                          type="number"
-                          inputMode="decimal"
-                          placeholder="e.g. 30"
-                          min={1}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="target_date"
-                render={({ field }) => {
-                  const selectedDate = field.value ? new Date(field.value + 'T00:00:00') : undefined
-                  return (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-1.5 text-slate-700">
-                        <CalendarIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                        Race date
-                      </FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              id="targetDateInput_onboarding"
-                              variant="outline"
-                              className={cn(
-                                'w-full justify-start text-left font-normal',
-                                !field.value && 'text-muted-foreground'
-                              )}
-                            >
-                              <CalendarIcon
-                                className="size-4 mr-2 text-slate-400"
-                                aria-hidden="true"
-                              />
-                              {field.value
-                                ? format(selectedDate, 'd MMM yyyy')
-                                : 'Select race date'}
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            captionLayout="dropdown"
-                            selected={selectedDate}
-                            onSelect={(date) =>
-                              field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
-                            }
-                            disabled={(date) => date <= new Date()}
-                            fromYear={new Date().getFullYear()}
-                            toYear={new Date().getFullYear() + 5}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )
-                }}
-              />
-            </div>
-          )}
-
-          <div className="pt-2">
-            <Button
-              id="finishBtn_onboarding"
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white min-h-11"
-            >
-              {isSubmitting ? (
-                <>
-                  <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />
-                  Setting up your dashboard…
-                </>
-              ) : (
-                <>
-                  <CheckCircle2Icon className="size-4" aria-hidden="true" />
-                  {hasGoal ? 'Save goal & go to dashboard' : 'Go to dashboard'}
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
-      </Form>
+      <h2 className="text-xl font-semibold text-slate-800 mb-2">
+        {stravaConnected ? 'Strava connected!' : 'Setup complete!'}
+      </h2>
+      <p className="text-sm text-slate-500 mb-6">
+        {stravaConnected
+          ? 'Your activities will sync automatically. The AI Coach will start analysing your runs.'
+          : 'You can connect Strava later from Settings to auto-sync your activities.'}
+      </p>
+      <Button
+        id="goToDashboardBtn_onboarding"
+        onClick={onFinish}
+        disabled={completing}
+        className="w-full bg-violet-600 hover:bg-violet-700 text-white"
+      >
+        {completing ? (
+          <>
+            <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />
+            Setting up…
+          </>
+        ) : (
+          <>
+            <ArrowRightIcon className="size-4" aria-hidden="true" />
+            Go to dashboard
+          </>
+        )}
+      </Button>
     </div>
   )
 }
@@ -825,12 +639,32 @@ export default function OnboardingPage() {
   const initialStep = Math.min(3, Math.max(1, parseInt(searchParams.get('step') ?? '1', 10) || 1))
   const [step, setStep] = useState(initialStep)
 
-  function goNext() {
+  const stravaConnectedViaOAuth =
+    searchParams.get('step') === '3' && !searchParams.get('strava_error')
+  const [stravaConnected, setStravaConnected] = useState(stravaConnectedViaOAuth)
+  const stravaError = searchParams.get('strava_error') === '1'
+
+  const [biometricValues, setBiometricValues] = useState({
+    birth_date: format(new Date(), 'yyyy-MM-dd'),
+    height_cm: '',
+    weight_kg: '',
+    resting_hr_baseline: '',
+    max_hr_mode: 'formula',
+    max_hr: '',
+  })
+
+  function goNext(values) {
+    if (values) setBiometricValues(values)
     setStep((s) => Math.min(s + 1, 3))
   }
 
   function goBack() {
     setStep((s) => Math.max(s - 1, 1))
+  }
+
+  function handleSkip() {
+    setStravaConnected(false)
+    goNext()
   }
 
   function handleFinish() {
@@ -858,12 +692,22 @@ export default function OnboardingPage() {
 
       {/* Step card */}
       <div className="w-full max-w-lg bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
-        {step === 1 && <StepBiometrics onNext={goNext} />}
-        {step === 2 && <StepStrava onNext={goNext} onSkip={goNext} />}
-        {step === 3 && <StepGoal onFinish={handleFinish} />}
+        {step === 1 && <StepBiometrics onNext={goNext} defaultValues={biometricValues} />}
+        {step === 2 && (
+          <StepStrava
+            onNext={goNext}
+            onSkip={handleSkip}
+            initialError={
+              stravaError
+                ? 'Failed to connect Strava. Please check if your Strava account is already linked to another account.'
+                : null
+            }
+          />
+        )}
+        {step === 3 && <StepComplete stravaConnected={stravaConnected} onFinish={handleFinish} />}
 
-        {/* Back navigation for steps 2+ */}
-        {step > 1 && (
+        {/* Back navigation for steps 2 only (step 3 is final) */}
+        {step === 2 && (
           <button
             id="backBtn_onboarding"
             type="button"

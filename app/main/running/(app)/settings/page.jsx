@@ -4,13 +4,12 @@ import ProfileSection from './components/ProfileSection'
 import HrZonesSection from './components/HrZonesSection'
 import PaceZonesSection from './components/PaceZonesSection'
 import NotificationsSection from './components/NotificationsSection'
-import StravaConnectionSection from './components/StravaConnectionSection'
-import StravaIntegrationSection from './components/StravaIntegrationSection'
+import StravaSection from './components/StravaSection'
 import DangerZoneSection from './components/DangerZoneSection'
 
 export default function RunningSettingsPage() {
   return (
-    <div id="settingsPage" className="flex flex-col gap-6 max-w-2xl">
+    <div id="settingsPage" className="flex flex-col gap-6">
       <div>
         <h1 className="text-xl font-semibold text-slate-800">Settings</h1>
         <p className="text-sm text-slate-500 mt-0.5">Profile & preferences</p>
@@ -20,8 +19,7 @@ export default function RunningSettingsPage() {
       <HrZonesSection />
       <PaceZonesSection />
       <NotificationsSection />
-      <StravaConnectionSection />
-      <StravaIntegrationSection />
+      <StravaSection />
       <DangerZoneSection />
     </div>
   )

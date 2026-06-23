@@ -1,5 +1,21 @@
 import { z } from 'zod'
 
+export const eventListQuerySchema = z.object({
+  page: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 1))
+    .pipe(z.number().int().min(1)),
+  limit: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 15))
+    .pipe(z.number().int().min(1).max(100)),
+  filter: z.enum(['bullish', 'bearish', 'upcoming', 'past']).nullable().optional(),
+  search: z.string().optional().default(''),
+  today: z.string().optional().nullable(),
+})
+
 const linkEntrySchema = z.object({
   hyperlink: z.string().min(1, 'Hyperlink text is required'),
   link: z.string().url('Must be a valid URL'),

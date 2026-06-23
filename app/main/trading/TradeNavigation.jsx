@@ -38,7 +38,9 @@ const navigationItems = [
 export default function TradeNavigation() {
   const router = useRouter()
   const pathname = usePathname()
-  const activeItem = navigationItems.find((item) => pathname === item.href)
+  const activeItem = navigationItems.find(
+    (item) => pathname === item.href || pathname.startsWith(item.href + '/')
+  )
 
   return (
     <div className="w-full">
@@ -46,7 +48,7 @@ export default function TradeNavigation() {
       <div className="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
         {navigationItems.map((item) => {
           const Icon = item.icon
-          const isActive = pathname === item.href
+          const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
 
           return (
             <button
@@ -70,7 +72,7 @@ export default function TradeNavigation() {
       <div className="md:hidden flex gap-1.5 overflow-x-auto py-1 scrollbar-hide">
         {navigationItems.map((item) => {
           const Icon = item.icon
-          const isActive = pathname === item.href
+          const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
 
           return (
             <button

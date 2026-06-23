@@ -5,18 +5,37 @@ import { encrypt } from '@/lib/utils/running/encrypt'
 
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
 const SETTINGS_ERROR_URL = '/main/running/settings?error=strava_auth'
+const ONBOARDING_ERROR_URL = '/main/running/onboarding?step=2&strava_error=1'
 const DASHBOARD_URL = '/main/running/dashboard'
 const ONBOARDING_NEXT_URL = '/main/running/onboarding?step=3'
+
+async function getErrorRedirect(supabase) {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return SETTINGS_ERROR_URL
+    const { data: rtUser } = await supabase
+      .from('rt_users')
+      .select('onboarding_complete')
+      .eq('id', user.id)
+      .maybeSingle()
+    if (rtUser?.onboarding_complete === false) return ONBOARDING_ERROR_URL
+  } catch {
+    // fall through
+  }
+  return SETTINGS_ERROR_URL
+}
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
 
-  if (!code) {
-    return NextResponse.redirect(new URL(SETTINGS_ERROR_URL, request.url))
-  }
-
   const supabase = await createClient()
+
+  if (!code) {
+    return NextResponse.redirect(new URL(await getErrorRedirect(supabase), request.url))
+  }
 
   const {
     data: { user },
@@ -41,12 +60,12 @@ export async function GET(request) {
     })
 
     if (!tokenRes.ok) {
-      return NextResponse.redirect(new URL(SETTINGS_ERROR_URL, request.url))
+      return NextResponse.redirect(new URL(await getErrorRedirect(supabase), request.url))
     }
 
     tokenData = await tokenRes.json()
   } catch {
-    return NextResponse.redirect(new URL(SETTINGS_ERROR_URL, request.url))
+    return NextResponse.redirect(new URL(await getErrorRedirect(supabase), request.url))
   }
 
   try {
@@ -71,7 +90,7 @@ export async function GET(request) {
 
     if (dbError) {
       console.error('[strava/callback] upsert error:', dbError.message)
-      return NextResponse.redirect(new URL(SETTINGS_ERROR_URL, request.url))
+      return NextResponse.redirect(new URL(await getErrorRedirect(supabase), request.url))
     }
 
     await inngest.send({ name: 'strava/backfill', data: { userId: user.id } })
@@ -86,6 +105,6 @@ export async function GET(request) {
     return NextResponse.redirect(new URL(dest, request.url))
   } catch (err) {
     console.error('[strava/callback] post-token error:', err.message)
-    return NextResponse.redirect(new URL(SETTINGS_ERROR_URL, request.url))
+    return NextResponse.redirect(new URL(await getErrorRedirect(supabase), request.url))
   }
 }

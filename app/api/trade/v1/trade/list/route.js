@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getTradeList } from '@/lib/services/trade/getTradeList'
+import { tradeListQuerySchema } from '@/schemas/trade'
 
-export async function GET() {
+export async function GET(request) {
   try {
     const supabase = await createClient()
     const {
@@ -11,14 +12,41 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json(
+        { error: 'Unauthorized', message: 'Authentication required' },
+        { status: 401 }
+      )
     }
 
-    const trades = await getTradeList(user.id)
+    const { searchParams } = new URL(request.url)
+    const parsed = tradeListQuerySchema.safeParse(Object.fromEntries(searchParams))
 
-    return NextResponse.json({ success: true, trades }, { status: 200 })
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', message: parsed.error.issues[0].message },
+        { status: 400 }
+      )
+    }
+
+    const result = await getTradeList(supabase, user.id, parsed.data)
+
+    return NextResponse.json(
+      {
+        data: {
+          trades: result.trades,
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+        },
+        message: 'OK',
+      },
+      { status: 200 }
+    )
   } catch (err) {
-    console.error('GET /api/trade/list error:', err)
-    return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
+    console.error('[trade/list]', err)
+    return NextResponse.json(
+      { error: 'Internal server error', message: 'Something went wrong' },
+      { status: 500 }
+    )
   }
 }

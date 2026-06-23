@@ -270,7 +270,9 @@ export default function RunningDashboardPage() {
             </div>
           </div>
 
-          {dashboardData.weekly_stats && <WeeklyStats data={dashboardData.weekly_stats} />}
+          {dashboardData.weekly_stats && (
+            <WeeklyStats data={dashboardData.weekly_stats} activityType={activeType} />
+          )}
           {dashboardData.training_load && (
             <TrainingLoad
               data={dashboardData.training_load}
@@ -278,7 +280,7 @@ export default function RunningDashboardPage() {
             />
           )}
           <YtdStats ytd_stats={dashboardData.training_load?.ytd_stats} />
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {dashboardData.fitness_age != null && (
               <FitnessAgeTile
                 fitnessAge={dashboardData.fitness_age}

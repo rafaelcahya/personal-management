@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -25,6 +25,8 @@ import {
   BrainCircuit,
   Trophy,
   Timer,
+  DollarSign,
+  ChevronDown,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -59,6 +61,22 @@ const TRADING_ITEMS = [
   { name: 'Settings', href: '/main/trading/settings', icon: Settings },
 ]
 
+const CURRENCY_SUBITEMS = [
+  {
+    id: 'currencyDashboardNav_sidebar',
+    name: 'Dashboard',
+    href: '/main/trading/currency',
+    exact: true,
+    icon: LayoutDashboard,
+  },
+  {
+    id: 'currencyHoldingsNav_sidebar',
+    name: 'Holdings',
+    href: '/main/trading/currency/holdings',
+    icon: BarChart2,
+  },
+]
+
 const RUNNING_ITEMS = [
   {
     id: 'runningDashboardNav_sidebar',
@@ -72,9 +90,9 @@ const RUNNING_ITEMS = [
   { name: 'Analytics', href: '/main/running/analytics', icon: BarChart2 },
   { name: 'AI Coach', href: '/main/running/ai', icon: BrainCircuit },
   {
-    id: 'paceCalcNav_sidebar',
-    name: 'Pace Calc',
-    href: '/main/running/pace-calculator',
+    id: 'runCalcNav_sidebar',
+    name: 'Run Calc',
+    href: '/main/running/run-calculator',
     icon: Timer,
   },
   { name: 'Settings', href: '/main/running/settings', icon: Settings },
@@ -82,9 +100,8 @@ const RUNNING_ITEMS = [
 
 function NavItem({ item, collapsed, onClick }) {
   const pathname = usePathname()
-  // '/main/inventory' is a prefix of all inventory routes — use exact match only
   const isActive =
-    item.href === '/main/inventory'
+    item.exact || item.href === '/main/inventory'
       ? pathname === item.href
       : pathname === item.href || pathname.startsWith(item.href + '/')
   const Icon = item.icon
@@ -119,6 +136,70 @@ function NavItem({ item, collapsed, onClick }) {
   )
 }
 
+function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItemClick }) {
+  const pathname = usePathname()
+  const isActive = pathname === basePath || pathname.startsWith(basePath + '/')
+  const [open, setOpen] = useState(isActive)
+
+  useEffect(() => {
+    if (isActive) setOpen(true)
+  }, [isActive])
+
+  if (collapsed) {
+    const trigger = (
+      <button
+        className={cn(
+          'flex items-center justify-center px-2 py-2.5 w-full rounded-lg text-sm font-medium transition-colors',
+          isActive
+            ? 'bg-violet-50 text-violet-700'
+            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+        )}
+      >
+        <Icon className={cn('size-4 shrink-0', isActive ? 'text-violet-600' : 'text-slate-400')} />
+      </button>
+    )
+    return (
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+          <TooltipContent side="right">{label}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
+
+  return (
+    <div>
+      <button
+        id={id}
+        onClick={() => setOpen((prev) => !prev)}
+        className={cn(
+          'flex items-center gap-3 rounded-lg text-sm font-medium transition-colors w-full px-3 py-2',
+          isActive
+            ? 'bg-violet-50 text-violet-700'
+            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+        )}
+      >
+        <Icon className={cn('size-4 shrink-0', isActive ? 'text-violet-600' : 'text-slate-400')} />
+        <span className="truncate flex-1 text-left">{label}</span>
+        <ChevronDown
+          className={cn(
+            'size-3.5 shrink-0 transition-transform duration-200',
+            open ? 'rotate-180' : ''
+          )}
+        />
+      </button>
+      {open && (
+        <div className="ml-4 pl-3 border-l border-slate-100 mt-0.5 space-y-0.5">
+          {subitems.map((item) => (
+            <NavItem key={item.href} item={item} collapsed={false} onClick={onItemClick} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function SidebarNav({ collapsed, onNavClick }) {
   return (
     <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-0.5">
@@ -139,9 +220,23 @@ function SidebarNav({ collapsed, onNavClick }) {
           Trading
         </p>
       )}
-      {TRADING_ITEMS.map((item) => (
+      {TRADING_ITEMS.filter((item) => item.href !== '/main/trading/settings').map((item) => (
         <NavItem key={item.href} item={item} collapsed={collapsed} onClick={onNavClick} />
       ))}
+      <NavGroup
+        id="currencyNav_sidebar"
+        label="Currency"
+        icon={DollarSign}
+        basePath="/main/trading/currency"
+        subitems={CURRENCY_SUBITEMS}
+        collapsed={collapsed}
+        onItemClick={onNavClick}
+      />
+      <NavItem
+        item={TRADING_ITEMS.find((i) => i.href === '/main/trading/settings')}
+        collapsed={collapsed}
+        onClick={onNavClick}
+      />
 
       <div className="border-t border-slate-100 pt-3" />
 
