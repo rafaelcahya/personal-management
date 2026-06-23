@@ -21,6 +21,9 @@
     "trading_event": "/main/trading/event",
     "trading_fee": "/main/trading/fee",
     "trading_settings": "/main/trading/settings",
+    "trading_currency": "/main/trading/currency",
+    "trading_currency_holdings": "/main/trading/currency/holdings",
+    "trading_currency_detail": "/main/trading/currency/holdings/1",
     "login": "/login",
     "auth_callback": "/auth/callback",
     "auth_callback_v1": "/auth/v1/callback"
@@ -177,6 +180,17 @@
       "metrics": "/api/trade/v1/dashboard/metrics",
       "quick_view": "/api/trade/v1/dashboard/quick-view"
     },
+    "currency_investments": {
+      "list": "/api/currency-investments/v1/list",
+      "create": "/api/currency-investments/v1/create",
+      "delete": "/api/currency-investments/v1/delete",
+      "holdings": "/api/currency-investments/v1/holdings"
+    },
+    "forex": {
+      "rates": "/api/forex/v1/rates",
+      "history": "/api/forex/v1/history",
+      "currencies": "/api/forex/v1/currencies"
+    },
     "running_ai": {
       "symptoms": "/api/running/v1/symptoms",
       "symptoms_by_id": "/api/running/v1/symptoms/:id",
@@ -197,7 +211,8 @@
       "inventory_dashboard_nav": "inventoryDashboardNav_sidebar",
       "trading_dashboard_nav": "tradingDashboardNav_sidebar",
       "running_dashboard_nav": "runningDashboardNav_sidebar",
-      "pace_calc_nav": "paceCalcNav_sidebar"
+      "pace_calc_nav": "paceCalcNav_sidebar",
+      "currency_nav": "currencyNav_sidebar"
     },
     "shared": {
       "submit_btn": "submit-btn",
@@ -1011,6 +1026,37 @@
       "steps_count": "stepsCount_runCalculator",
       "steps_distance_km": "stepsDistanceKm_runCalculator",
       "steps_distance_mi": "stepsDistanceMi_runCalculator"
+    },
+    "trading_currency": {
+      "currency_nav": "currencyNav_sidebar",
+      "allocation_chart": "allocationChart_currencyPage",
+      "pnl_chart": "pnlChart_currencyPage",
+      "pnl_filter_7d": "pnlFilter_7d_currencyPage",
+      "pnl_filter_30d": "pnlFilter_30d_currencyPage",
+      "pnl_filter_3m": "pnlFilter_3m_currencyPage",
+      "pnl_filter_6m": "pnlFilter_6m_currencyPage",
+      "pnl_filter_1y": "pnlFilter_1y_currencyPage"
+    },
+    "trading_currency_holdings": {
+      "add_investment_btn": "addInvestmentBtn_holdingsPage",
+      "holdings_table": "holdingsTable_holdingsPage",
+      "holdings_table_row": "holdingsTableRow_{currency}_holdingsPage"
+    },
+    "trading_currency_detail": {
+      "add_transaction_btn": "addTransactionBtn_currencyDetailPage",
+      "transaction_table": "transactionTable_currencyDetailPage",
+      "delete_transaction_btn": "deleteTransactionBtn_{id}_currencyDetailPage"
+    },
+    "add_transaction_modal": {
+      "modal": "addTransactionModal_currencyDetailPage",
+      "currency_select": "currencySelect_addTransactionModal",
+      "type_toggle": "typeToggle_addTransactionModal",
+      "date_input": "dateInput_addTransactionModal",
+      "amount_input": "amountInput_addTransactionModal",
+      "units_input": "unitsInput_addTransactionModal",
+      "rate_input": "rateInput_addTransactionModal",
+      "notes_input": "notesInput_addTransactionModal",
+      "submit_btn": "submitBtn_addTransactionModal"
     }
   },
   "seed": {
