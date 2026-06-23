@@ -93,46 +93,38 @@ export default function FeesPageClient() {
       <FeeListSummary feeCount={summary.feeCount} totalFee={summary.totalFee} />
 
       {/* Main Table Container */}
-      <div className="flex-1 min-h-0 relative border border-slate-200/50 shadow-slate-100 rounded-xl overflow-hidden flex flex-col p-5 bg-white">
-        <div className="flex flex-col gap-5 sm:gap-0 h-full overflow-hidden">
-          {/* Header Section */}
-          <div className="flex flex-col sm:flex-row justify-between mb-3 sm:mb-4 gap-3">
-            <div className="max-w-[500px]">
-              <FeeTableHeader />
-            </div>
-            <div className="flex items-center justify-end gap-2">
-              <AddFee onAdded={handleAdded} />
-            </div>
-          </div>
+      <div className="flex-1 min-h-0 relative bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <FeeTableHeader action={<AddFee onAdded={handleAdded} />} />
 
-          {/* Metric Strip */}
+        <div className="px-5 pt-3">
           <FeeMetricStrip feeCount={summary.feeCount} totalFee={summary.totalFee} />
-
-          {/* Table or States */}
-          {isLoading ? (
-            <FeeTableSkeleton />
-          ) : isError ? (
-            <FeeErrorState onRetry={() => fetchFees(page)} />
-          ) : listFee.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <p className="text-center font-medium text-slate-600 text-lg">No fees yet</p>
-              <p className="text-center text-slate-500 text-sm">
-                Start by adding your first fee to track expenses! 💰
-              </p>
-            </div>
-          ) : (
-            <div ref={tableRef} className="overflow-auto flex-1">
-              <FeesTable fees={listFee} onFeesChange={setListFee} onRefresh={handleRefresh} />
-            </div>
-          )}
-
-          <FeePagination
-            page={page}
-            totalPages={totalPages}
-            total={total}
-            onPageChange={handlePageChange}
-          />
         </div>
+
+        {isLoading ? (
+          <div className="px-5 pb-5">
+            <FeeTableSkeleton />
+          </div>
+        ) : isError ? (
+          <FeeErrorState onRetry={() => fetchFees(page)} />
+        ) : listFee.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 gap-3">
+            <p className="text-center font-medium text-slate-600 text-lg">No fees yet</p>
+            <p className="text-center text-slate-500 text-sm">
+              Start by adding your first fee to track expenses! 💰
+            </p>
+          </div>
+        ) : (
+          <div ref={tableRef} className="overflow-auto flex-1">
+            <FeesTable fees={listFee} onFeesChange={setListFee} onRefresh={handleRefresh} />
+          </div>
+        )}
+
+        <FeePagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
   )

@@ -1,14 +1,9 @@
 import { Trophy } from 'lucide-react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { SectionLabel } from './activityShared'
 import { fmtDuration } from '../../dashboard/utils/format'
+
+const TH =
+  'px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap'
 
 export default function BestEffortsTable({ bestEfforts }) {
   if (bestEfforts.length === 0) return null
@@ -16,26 +11,25 @@ export default function BestEffortsTable({ bestEfforts }) {
     <div>
       <SectionLabel>Best Efforts</SectionLabel>
       <div className="overflow-x-auto">
-        <Table className="w-full table-auto">
-          <TableHeader className="bg-slate-100">
-            <TableRow className="border-none uppercase text-xs">
-              <TableHead className="py-2 text-slate-foreground rounded-l-lg">Distance</TableHead>
-              <TableHead className="py-2 text-slate-foreground text-right">Time</TableHead>
-              <TableHead className="py-2 text-slate-foreground text-right rounded-r-lg">
-                PR
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+        <table className="min-w-full text-sm" aria-label="Best efforts">
+          <thead>
+            <tr className="border-b border-slate-100">
+              <th className={`${TH} text-left`}>Distance</th>
+              <th className={`${TH} text-right`}>Time</th>
+              <th className={`${TH} text-right`}>PR</th>
+            </tr>
+          </thead>
+          <tbody>
             {bestEfforts.map((e) => (
-              <TableRow key={e.id} className="hover:bg-slate-50">
-                <TableCell className="text-sm text-slate-700 font-medium">{e.name}</TableCell>
-                <TableCell className="text-right">
-                  <span className="font-mono tabular-nums text-sm text-slate-700">
-                    {e.elapsed_time_sec ? fmtDuration(e.elapsed_time_sec) : '—'}
-                  </span>
-                </TableCell>
-                <TableCell className="text-right">
+              <tr
+                key={e.id}
+                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+              >
+                <td className="px-5 py-3.5 text-slate-700 font-medium">{e.name}</td>
+                <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
+                  {e.elapsed_time_sec ? fmtDuration(e.elapsed_time_sec) : '—'}
+                </td>
+                <td className="px-5 py-3.5 text-right">
                   {e.pr_rank === 1 ? (
                     <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
                       <Trophy className="size-3" aria-hidden="true" />
@@ -46,11 +40,11 @@ export default function BestEffortsTable({ bestEfforts }) {
                   ) : (
                     <span className="text-xs text-slate-300">—</span>
                   )}
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
     </div>
   )

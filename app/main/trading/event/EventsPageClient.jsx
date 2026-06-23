@@ -136,14 +136,11 @@ export default function EventsPageClient() {
         ]}
       />
 
-      <div className="flex-1 min-h-0 relative border border-slate-200/50 shadow-slate-100 rounded-xl overflow-hidden flex flex-col p-5 bg-white">
-        <div className="flex flex-col gap-5 h-full overflow-hidden">
-          {/* Header */}
-          <div className="w-full lg:w-1/2">
-            <EventTableHeader />
-          </div>
+      <div className="flex-1 min-h-0 relative bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <EventTableHeader />
 
-          {/* Controls bar */}
+        {/* Controls area */}
+        <div className="px-5 py-3 border-b border-slate-100 flex flex-col gap-3">
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
             {/* View toggle — left */}
             <div className="flex items-center border border-slate-200 rounded-md overflow-hidden shrink-0 self-start">
@@ -212,71 +209,71 @@ export default function EventsPageClient() {
               AI Analysis History
             </Button>
           </div>
-
-          {/* Content area */}
-          {isLoading ? (
-            <div className="flex flex-col gap-3">
-              {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full rounded-lg" />
-              ))}
-            </div>
-          ) : isEmpty ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
-              {isFiltered ? (
-                <>
-                  <SearchX className="size-10 text-slate-300" />
-                  <p className="text-center font-medium text-slate-600 text-lg">
-                    No matching events
-                  </p>
-                  <p className="text-center text-slate-500 text-sm">
-                    Try a different search term or filter
-                  </p>
-                  {filter && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleFilterChange(null)}
-                      className="text-violet-600 border-violet-200 hover:bg-violet-50"
-                    >
-                      Clear filter
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <>
-                  <CalendarX2 className="size-10 text-slate-300" />
-                  <p className="text-center font-medium text-slate-600 text-lg">No events yet</p>
-                  <p className="text-center text-slate-500 text-sm">
-                    Start by adding your first market event to track!
-                  </p>
-                  <AddEvent
-                    onAdded={() => doFetch({ searchVal: search, pageVal: 1, filterVal: filter })}
-                  />
-                </>
-              )}
-            </div>
-          ) : (
-            <>
-              {view === 'timeline' ? (
-                <TimelineView events={listEvent} />
-              ) : (
-                <EventsTable
-                  events={listEvent}
-                  onRefresh={handleRefresh}
-                  selectedIds={selectedIds}
-                  onToggle={handleToggle}
-                />
-              )}
-
-              <EventPagination
-                page={page}
-                totalPages={totalPages}
-                total={total}
-                onPageChange={(p) => setPage(p)}
-              />
-            </>
-          )}
         </div>
+
+        {/* Content area */}
+        {isLoading ? (
+          <div className="flex flex-col gap-3 px-5 py-5">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full rounded-lg" />
+            ))}
+          </div>
+        ) : isEmpty ? (
+          <div className="flex flex-col items-center justify-center py-12 gap-3">
+            {isFiltered ? (
+              <>
+                <SearchX className="size-10 text-slate-300" />
+                <p className="text-center font-medium text-slate-600 text-lg">No matching events</p>
+                <p className="text-center text-slate-500 text-sm">
+                  Try a different search term or filter
+                </p>
+                {filter && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleFilterChange(null)}
+                    className="text-violet-600 border-violet-200 hover:bg-violet-50"
+                  >
+                    Clear filter
+                  </Button>
+                )}
+              </>
+            ) : (
+              <>
+                <CalendarX2 className="size-10 text-slate-300" />
+                <p className="text-center font-medium text-slate-600 text-lg">No events yet</p>
+                <p className="text-center text-slate-500 text-sm">
+                  Start by adding your first market event to track!
+                </p>
+                <AddEvent
+                  onAdded={() => doFetch({ searchVal: search, pageVal: 1, filterVal: filter })}
+                />
+              </>
+            )}
+          </div>
+        ) : (
+          <>
+            {view === 'timeline' ? (
+              <div className="px-5 py-4">
+                <TimelineView events={listEvent} />
+              </div>
+            ) : (
+              <EventsTable
+                events={listEvent}
+                onRefresh={handleRefresh}
+                selectedIds={selectedIds}
+                onToggle={handleToggle}
+              />
+            )}
+
+            <EventPagination
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              onPageChange={(p) => setPage(p)}
+            />
+          </>
+        )}
       </div>
 
       {/* Floating multi-select action bar */}

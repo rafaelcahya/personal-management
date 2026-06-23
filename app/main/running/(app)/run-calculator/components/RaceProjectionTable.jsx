@@ -35,22 +35,31 @@ export default function RaceProjectionTable({ refTimeSec, refDistM, unit }) {
         Estimated via Riegel formula — accuracy decreases for distances far from your reference.
       </p>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="min-w-full text-sm" aria-label="Race time projections">
           <thead>
-            <tr className="border-b border-slate-200">
-              <th className="text-left py-1.5 pr-4 text-xs font-semibold text-slate-500">Race</th>
-              <th className="text-left py-1.5 pr-4 text-xs font-semibold text-slate-500">
+            <tr className="border-b border-slate-100">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
+                Race
+              </th>
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Finish Time
               </th>
-              <th className="text-left py-1.5 text-xs font-semibold text-slate-500">Avg Pace</th>
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
+                Avg Pace
+              </th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.label} className="border-b border-slate-100 last:border-0">
-                <td className="py-1.5 pr-4 text-slate-700 font-medium">{row.label}</td>
-                <td className="py-1.5 pr-4 text-slate-600">{formatDuration(row.projSec)}</td>
-                <td className="py-1.5 text-slate-500">{row.paceDisplay}</td>
+              <tr
+                key={row.label}
+                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+              >
+                <td className="px-5 py-3.5 font-semibold text-slate-900">{row.label}</td>
+                <td className="px-5 py-3.5 font-mono text-slate-700">
+                  {formatDuration(row.projSec)}
+                </td>
+                <td className="px-5 py-3.5 font-mono text-slate-500">{row.paceDisplay}</td>
               </tr>
             ))}
           </tbody>

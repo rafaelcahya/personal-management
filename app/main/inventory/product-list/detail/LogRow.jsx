@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { TableCell, TableRow } from '@/components/ui/table'
 import { format, differenceInDays } from 'date-fns'
 import UsageCompletionForm from './UsageCompletionForm'
 
@@ -23,16 +22,16 @@ export default function LogRow({ item, onUpdate }) {
 
   return (
     <>
-      <TableRow
+      <tr
         className={cn(
-          'cursor-pointer transition-colors',
+          'border-b border-slate-50 cursor-pointer transition-colors',
           isOpen && 'bg-violet-50/75',
-          isActive && 'hover:bg-violet-50/75',
-          !isActive && 'hover:bg-slate-50/50'
+          isActive && !isOpen && 'hover:bg-violet-50/75',
+          !isActive && !isOpen && 'hover:bg-slate-50'
         )}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <TableCell className="w-8">
+        <td className="px-5 py-3.5 w-8">
           <div className="flex items-center">
             {isOpen ? (
               <ChevronDown className="h-4 w-4 text-slate-500" />
@@ -40,15 +39,17 @@ export default function LogRow({ item, onUpdate }) {
               <ChevronRight className="h-4 w-4 text-slate-500" />
             )}
           </div>
-        </TableCell>
-        <TableCell className="font-mono text-sm">
+        </td>
+        <td className="px-5 py-3.5 font-mono text-slate-700">
           {item.start_usage_date ? format(new Date(item.start_usage_date), 'dd MMM yyyy') : '-'}
-        </TableCell>
-        <TableCell className="font-mono text-sm">
+        </td>
+        <td className="px-5 py-3.5 font-mono text-slate-700">
           {item.end_usage_date ? format(new Date(item.end_usage_date), 'dd MMM yyyy') : '-'}
-        </TableCell>
-        <TableCell id="logRowDuration_usageLogTable" className="text-sm">
-          <span className={cn('font-medium', isActive ? 'text-violet-600' : 'text-slate-600')}>
+        </td>
+        <td id="logRowDuration_usageLogTable" className="px-5 py-3.5">
+          <span
+            className={cn('font-medium text-sm', isActive ? 'text-violet-600' : 'text-slate-600')}
+          >
             {duration}
           </span>
           {isActive && (
@@ -56,8 +57,8 @@ export default function LogRow({ item, onUpdate }) {
               (ongoing)
             </span>
           )}
-        </TableCell>
-        <TableCell>
+        </td>
+        <td className="px-5 py-3.5">
           <span
             className={cn(
               'px-2 py-0.5 rounded-md text-xs font-semibold capitalize',
@@ -66,20 +67,20 @@ export default function LogRow({ item, onUpdate }) {
           >
             {item.status}
           </span>
-        </TableCell>
-        <TableCell className="font-mono">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-sm">{item.quantity}</span>
+        </td>
+        <td className="px-5 py-3.5 text-right font-mono">
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="text-slate-700">{item.quantity}</span>
             {item.remaining_quantity && (
-              <span className="text-xs text-muted-foreground">{item.remaining_quantity} left</span>
+              <span className="text-xs text-slate-400">{item.remaining_quantity} left</span>
             )}
           </div>
-        </TableCell>
-      </TableRow>
+        </td>
+      </tr>
 
       {isOpen && (
-        <TableRow className="bg-violet-50/50 hover:bg-violet-50/50">
-          <TableCell colSpan={6} className="p-6">
+        <tr className="bg-violet-50/50">
+          <td colSpan={6} className="px-5 py-4">
             {item.note && (
               <div className="mb-4 p-3 bg-white rounded-lg border border-slate-200">
                 <p className="text-xs font-medium text-slate-500 mb-1">Note</p>
@@ -91,8 +92,8 @@ export default function LogRow({ item, onUpdate }) {
               onUpdate={onUpdate}
               onCancel={() => setIsOpen(false)}
             />
-          </TableCell>
-        </TableRow>
+          </td>
+        </tr>
       )}
     </>
   )

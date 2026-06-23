@@ -617,19 +617,19 @@ function ErrorState({ onRetry }) {
     <thead>
       <tr className="border-b border-slate-100">
         {/* Left-aligned header (text/label columns) */}
-        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
           Column
         </th>
         {/* Right-aligned header (numeric columns) */}
-        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
           Amount
         </th>
         {/* Hidden on mobile */}
-        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 hidden sm:table-cell">
+        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap hidden sm:table-cell">
           Extra Column
         </th>
         {/* Actions column — screen-reader only label */}
-        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 w-10">
+        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-10">
           <span className="sr-only">Actions</span>
         </th>
       </tr>
