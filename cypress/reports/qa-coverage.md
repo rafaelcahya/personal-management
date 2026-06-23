@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-22 (issue #449 — onboarding flow fixes)
-**Branch:** feat/issue-449-onboarding-fixes
+**Last Updated:** 2026-06-23 (issue #458 — currency investment feature)
+**Branch:** feat/issue-458-currency-investment
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,311  | 45%  |
-| UI        | 1,597  | 55%  |
-| **Total** | **2,908** | 100% |
+| API       | 1,371  | 46%  |
+| UI        | 1,597  | 54%  |
+| **Total** | **2,968** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 145   | 300   | 445   |
+| Trading Management   | 205   | 300   | 505   |
 | Running Tracker      | 443   | 695   | 1,138 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,311** | **1,597** | **2,908** |
+| **Total**            | **1,371** | **1,597** | **2,968** |
 
 ---
 
@@ -166,7 +166,21 @@
 | Trading Settings | 16  | 0  | 16    |
 | **Subtotal**     | **16** | **0** | **16** |
 
-**Trading Total — API: 145 | UI: 300 | Total: 445**
+#### Currency Investment
+
+| Feature              | API | UI | Total |
+| -------------------- | --- | -- | ----- |
+| List Investments     | 9   | 0  | 9     |
+| Create Investment    | 15  | 0  | 15    |
+| Delete Investment    | 4   | 0  | 4     |
+| Holdings List        | 5   | 0  | 5     |
+| Holdings Detail      | 5   | 0  | 5     |
+| Forex Rates          | 6   | 0  | 6     |
+| Forex History        | 9   | 0  | 9     |
+| Forex Currencies     | 7   | 0  | 7     |
+| **Subtotal**         | **60** | **0** | **60** |
+
+**Trading Total — API: 205 | UI: 300 | Total: 505**
 
 ---
 
@@ -301,8 +315,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 104   | 434   | 538   |
+| Trading Management   | 205   | 300   | 505   |
 | Running Tracker      | 443   | 695   | 1,138 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,270** | **1,731** | **3,001** |
+| **Total**            | **1,371** | **1,597** | **2,968** |

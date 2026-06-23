@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getTradeList } from '@/lib/services/trade/getTradeList'
-import { tradeListQuerySchema } from '@/schemas/trade'
+import { getCurrencyHoldingById } from '@/lib/services/currencyInvestment/getCurrencyHoldingById'
 
-export async function GET(request) {
+export async function GET(request, { params }) {
   try {
     const supabase = await createClient()
     const {
@@ -18,32 +17,26 @@ export async function GET(request) {
       )
     }
 
-    const { searchParams } = new URL(request.url)
-    const parsed = tradeListQuerySchema.safeParse(Object.fromEntries(searchParams))
-
-    if (!parsed.success) {
+    const { id: rawId } = await params
+    const id = parseInt(rawId, 10)
+    if (!Number.isInteger(id) || id <= 0) {
       return NextResponse.json(
-        { error: 'Validation failed', message: parsed.error.issues[0].message },
+        { error: 'Invalid ID', message: 'ID must be a positive integer' },
         { status: 400 }
       )
     }
 
-    const result = await getTradeList(supabase, user.id, parsed.data)
+    const holding = await getCurrencyHoldingById(supabase, user.id, id)
+    if (!holding) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
 
     return NextResponse.json(
-      {
-        data: {
-          trades: result.trades,
-          total: result.total,
-          page: result.page,
-          limit: result.limit,
-        },
-        message: 'OK',
-      },
+      { data: { id: holding.id, currency: holding.currency }, message: 'OK' },
       { status: 200 }
     )
   } catch (err) {
-    console.error('[trade/list]', err)
+    console.error('[currency-investments/holdings/[id]]', err)
     return NextResponse.json(
       { error: 'Internal server error', message: 'Something went wrong' },
       { status: 500 }

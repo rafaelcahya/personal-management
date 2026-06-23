@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getTradeList } from '@/lib/services/trade/getTradeList'
-import { tradeListQuerySchema } from '@/schemas/trade'
+import { createCurrencyInvestment } from '@/lib/services/currencyInvestment/createCurrencyInvestment'
+import { createCurrencyInvestmentSchema } from '@/schemas/currencyInvestment'
 
-export async function GET(request) {
+export async function POST(request) {
   try {
     const supabase = await createClient()
     const {
@@ -18,8 +18,8 @@ export async function GET(request) {
       )
     }
 
-    const { searchParams } = new URL(request.url)
-    const parsed = tradeListQuerySchema.safeParse(Object.fromEntries(searchParams))
+    const body = await request.json()
+    const parsed = createCurrencyInvestmentSchema.safeParse(body)
 
     if (!parsed.success) {
       return NextResponse.json(
@@ -28,22 +28,13 @@ export async function GET(request) {
       )
     }
 
-    const result = await getTradeList(supabase, user.id, parsed.data)
-
+    const investment = await createCurrencyInvestment(supabase, user.id, parsed.data)
     return NextResponse.json(
-      {
-        data: {
-          trades: result.trades,
-          total: result.total,
-          page: result.page,
-          limit: result.limit,
-        },
-        message: 'OK',
-      },
-      { status: 200 }
+      { data: investment, message: 'Investment created successfully' },
+      { status: 201 }
     )
   } catch (err) {
-    console.error('[trade/list]', err)
+    console.error('[currency-investments/create]', err)
     return NextResponse.json(
       { error: 'Internal server error', message: 'Something went wrong' },
       { status: 500 }
