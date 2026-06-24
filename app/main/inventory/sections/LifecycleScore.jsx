@@ -175,7 +175,7 @@ function ScoreTable({ items }) {
                 <TierBadge score={item.score} />
               </div>
             </div>
-            <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+            <div className="mt-2 flex items-center justify-between gap-2">
               <div className="flex flex-wrap gap-2 text-xs flex-1">
                 <div>
                   <p className="text-slate-400">Cost/Use</p>

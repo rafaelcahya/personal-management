@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -112,10 +113,10 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
                   max={product.quantity}
                 />
               </FormControl>
-              <p className="text-xs text-slate-400">
+              <FormDescription className="text-xs text-slate-400">
                 How many units are you opening? {product.quantity} available in stock.
-              </p>
-              <FormMessage />
+              </FormDescription>
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
@@ -162,10 +163,10 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
                   />
                 </PopoverContent>
               </Popover>
-              <p className="text-xs text-slate-400">
+              <FormDescription className="text-xs text-slate-400">
                 When did you open and start using this product?
-              </p>
-              <FormMessage />
+              </FormDescription>
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
@@ -205,13 +206,18 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
           <Button
             type="button"
             onClick={onClose}
-            className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+            className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
             id="cancelBtn_recordUsageForm"
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting} id="startTrackingBtn_recordUsageForm">
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            id="startTrackingBtn_recordUsageForm"
+            className="min-w-[80px]"
+          >
+            {isSubmitting && <Loader2 className="size-4 animate-spin" />}
             {isSubmitting ? 'Saving...' : 'Record Usage'}
           </Button>
         </div>

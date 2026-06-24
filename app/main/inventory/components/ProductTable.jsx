@@ -93,7 +93,7 @@ export default function ProductTable({ products }) {
                 <StatusBadge status={item.product_status} />
               </div>
             </div>
-            <div className="mt-2 pt-2 border-t border-slate-100 flex flex-wrap justify-between gap-2 text-xs">
+            <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs">
               <div>
                 <p className="text-slate-400">Total Spent</p>
                 <p className="font-mono text-slate-700 mt-0.5 whitespace-nowrap">

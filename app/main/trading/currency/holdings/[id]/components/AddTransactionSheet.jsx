@@ -751,7 +751,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
               )}
             />
 
-            <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
+            <DialogFooter className="gap-2">
               <DialogClose asChild>
                 <Button
                   type="button"

@@ -151,7 +151,7 @@ function PredictionTable({ items }) {
                 <UrgencyBadge quantity={item.quantity} daysUntilEmpty={item.days_until_empty} />
               </div>
             </div>
-            <div className="mt-2 pt-2 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+            <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
               <div>
                 <p className="text-slate-400">Qty</p>
                 <p className="font-mono text-slate-700 mt-0.5">{item.quantity}</p>

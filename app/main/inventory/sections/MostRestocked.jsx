@@ -120,7 +120,7 @@ function RestockTable({ items }) {
                 </span>
               </div>
             </div>
-            <div className="mt-2 pt-2 border-t border-slate-100 text-xs">
+            <div className="mt-2 text-xs">
               <p className="text-slate-400">Last Restock</p>
               <p className="text-slate-700 mt-0.5">
                 {item.last_restock_date

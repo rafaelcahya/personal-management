@@ -80,10 +80,7 @@ function GearEditForm({ gear, onSave, onCancel }) {
     >
       {/* Category */}
       <div>
-        <Label
-          htmlFor={`gearCategoryInput-${gear.id}`}
-          className="text-xs text-slate-600 mb-1 block"
-        >
+        <Label htmlFor={`gearCategoryInput-${gear.id}`} className="text-sm font-medium">
           Category
         </Label>
         <div className="flex flex-wrap gap-1.5">
@@ -121,10 +118,7 @@ function GearEditForm({ gear, onSave, onCancel }) {
 
       {/* Retirement km */}
       <div>
-        <Label
-          htmlFor={`gearRetirementKmInput-${gear.id}`}
-          className="text-xs text-slate-600 mb-1 block"
-        >
+        <Label htmlFor={`gearRetirementKmInput-${gear.id}`} className="text-sm font-medium">
           Retire at (km)
         </Label>
         <Input
@@ -133,7 +127,7 @@ function GearEditForm({ gear, onSave, onCancel }) {
           min={0}
           max={100000}
           placeholder="e.g. 800"
-          className="h-8 text-sm"
+          className="h-8 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
           aria-describedby={errors.retirement_km ? `retirementKmErr-${gear.id}` : undefined}
           {...register('retirement_km', {
             setValueAs: (v) => (v === '' || v == null ? null : Number(v)),

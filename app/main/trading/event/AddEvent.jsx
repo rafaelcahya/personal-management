@@ -36,7 +36,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { toast } from 'sonner'
-import { Loader2, PlusIcon, CalendarIcon } from 'lucide-react'
+import { Loader2, PlusIcon, CalendarIcon, Newspaper } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
@@ -138,19 +138,26 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
         </DialogTrigger>
       )}
       <DialogContent
-        className="sm:max-w-3xl flex flex-col max-h-[90vh]"
+        className="sm:max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0"
         id="addNewEventForm_eventPage"
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>Add Market Event</DialogTitle>
-          <DialogDescription className="text-slate-600">
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+            <Newspaper className="size-4 text-violet-500" />
+            Add Market Event
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
             Track events that may impact market movements
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit(handleAddEvent)} className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+          <form
+            onSubmit={handleSubmit(handleAddEvent)}
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
+          >
+            <div className="flex flex-col gap-5">
               {/* Title */}
               <FormField
                 control={control}
@@ -158,7 +165,7 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <div className="flex items-center justify-between">
-                      <FormLabel className="font-medium">Title</FormLabel>
+                      <FormLabel className="text-sm font-medium">Title</FormLabel>
                       {titleValue.length > 0 && (
                         <span
                           className={`text-xs font-medium ${
@@ -196,7 +203,7 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
                   name="impact_direction"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">Impact</FormLabel>
+                      <FormLabel className="text-sm font-medium">Impact</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger
@@ -213,7 +220,7 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
                           <SelectItem value="DOWN">Bearish</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormMessage className="font-medium">{fieldState.error?.message}</FormMessage>
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -224,7 +231,7 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
                   name="actual_outcome"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">
+                      <FormLabel className="text-sm font-medium">
                         Actual Outcome
                         <span className="text-slate-400 ml-1 font-normal text-xs">(optional)</span>
                       </FormLabel>
@@ -260,7 +267,7 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
                 name="event_date"
                 render={({ field, fieldState }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="font-medium">Date</FormLabel>
+                    <FormLabel className="text-sm font-medium">Date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -395,20 +402,27 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
               />
             </div>
 
-            <DialogFooter className="shrink-0 pt-4">
+            <DialogFooter className="gap-2">
               <DialogClose asChild>
                 <Button
                   type="button"
                   className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
                   id="cancelNewEventBtn_eventPage"
-                  disabled={loading}
+                  disabled={form.formState.isSubmitting || loading}
                 >
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={loading} id="submitNewEventBtn_eventPage">
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Creating...' : 'Create Event'}
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting || loading}
+                id="submitNewEventBtn_eventPage"
+                className="min-w-[80px]"
+              >
+                {(form.formState.isSubmitting || loading) && (
+                  <Loader2 className="size-4 animate-spin" />
+                )}
+                {form.formState.isSubmitting || loading ? 'Creating...' : 'Create Event'}
               </Button>
             </DialogFooter>
           </form>

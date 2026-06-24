@@ -18,6 +18,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -32,7 +33,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { Loader2, PlusIcon } from 'lucide-react'
+import { Loader2, PlusIcon, PackagePlus } from 'lucide-react'
 import { productSchema } from '@/schemas/product'
 import { createProduct } from '@/lib/api/product'
 import { fetchProductBrand } from '@/lib/api/productBrand'
@@ -75,9 +76,8 @@ export default function AddProductForm({ onAdded }) {
 
   const loadProductBrands = async () => {
     try {
-      const brands = await fetchProductBrand()
-      const activeBrands = brands?.filter((brand) => brand.brand_status === 'active') || []
-      setProductBrands(activeBrands)
+      const res = await fetchProductBrand({ status: 'active', limit: 100 })
+      setProductBrands(res?.data || [])
     } catch (err) {
       console.error('Fetch brands error:', err)
     }
@@ -85,9 +85,8 @@ export default function AddProductForm({ onAdded }) {
 
   const loadProductNames = async () => {
     try {
-      const names = await fetchProductName()
-      const activeNames = names?.filter((name) => name.product_name_status === 'active') || []
-      setProductNames(activeNames)
+      const res = await fetchProductName({ status: 'active', limit: 100 })
+      setProductNames(res?.data || [])
     } catch (err) {
       console.error('Fetch names error:', err)
     }
@@ -159,24 +158,33 @@ export default function AddProductForm({ onAdded }) {
         </Button>
       </DialogTrigger>
       <DialogContent
-        className="sm:max-w-md flex flex-col max-h-[90vh]"
+        className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
         id="addNewProductForm_productPage"
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>🛍️ Add New Product</DialogTitle>
-          <DialogDescription>Got a new item? Let's add it to your inventory!</DialogDescription>
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+            <PackagePlus className="size-4 text-violet-500" />
+            Add New Product
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
+            Got a new item? Let's add it to your inventory!
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 overflow-y-auto space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
+          >
+            <div className="flex flex-col gap-5">
               {/* Image Upload */}
               <FormField
                 control={control}
                 name="image"
                 render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className="font-medium">Product Image</FormLabel>
+                    <FormLabel className="text-sm font-medium">Product Image</FormLabel>
                     <FormControl className="cursor-pointer">
                       <Input
                         id="productImageField_productPage"
@@ -199,12 +207,13 @@ export default function AddProductForm({ onAdded }) {
                         />
                       </div>
                     )}
-                    <FormMessage id="productImageField_errorMessage_productPage">
-                      {fieldState.error?.message}
-                    </FormMessage>
-                    <p className="text-xs text-slate-400">
-                      Add a photo to easily identify this product later 🖼️
-                    </p>
+                    <FormMessage
+                      id="productImageField_errorMessage_productPage"
+                      className="text-xs"
+                    />
+                    <FormDescription className="text-xs text-slate-400">
+                      Add a photo to easily identify this product later
+                    </FormDescription>
                   </FormItem>
                 )}
               />
@@ -215,7 +224,7 @@ export default function AddProductForm({ onAdded }) {
                 name="product_brand"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product brand</FormLabel>
+                    <FormLabel className="text-sm font-medium">Product brand</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger
@@ -239,8 +248,13 @@ export default function AddProductForm({ onAdded }) {
                         )}
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-slate-400">Which brand is this from? 🏷️</p>
-                    <FormMessage id="productBrandField_errorMessage_productPage" />
+                    <FormDescription className="text-xs text-slate-400">
+                      Which brand is this from?
+                    </FormDescription>
+                    <FormMessage
+                      id="productBrandField_errorMessage_productPage"
+                      className="text-xs"
+                    />
                   </FormItem>
                 )}
               />
@@ -251,7 +265,7 @@ export default function AddProductForm({ onAdded }) {
                 name="product_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product name</FormLabel>
+                    <FormLabel className="text-sm font-medium">Product name</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger
@@ -275,8 +289,13 @@ export default function AddProductForm({ onAdded }) {
                         )}
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-slate-400">What's the product called? 📦</p>
-                    <FormMessage id="productNameField_errorMessage_productPage" />
+                    <FormDescription className="text-xs text-slate-400">
+                      What's the product called?
+                    </FormDescription>
+                    <FormMessage
+                      id="productNameField_errorMessage_productPage"
+                      className="text-xs"
+                    />
                   </FormItem>
                 )}
               />
@@ -298,12 +317,10 @@ export default function AddProductForm({ onAdded }) {
                         }`}
                       />
                     </FormControl>
-                    <p className="text-xs text-slate-400">
-                      What kind is it? (serum, lotion, toner, etc.) 💡
-                    </p>
-                    <FormMessage className="font-medium" id="typeField_errorMessage_productPage">
-                      {fieldState.error?.message}
-                    </FormMessage>
+                    <FormDescription className="text-xs text-slate-400">
+                      What kind is it? (serum, lotion, toner, etc.)
+                    </FormDescription>
+                    <FormMessage id="typeField_errorMessage_productPage" className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -324,7 +341,9 @@ export default function AddProductForm({ onAdded }) {
                         className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
                       />
                     </FormControl>
-                    <p className="text-xs text-slate-400">Optional notes about this product 📝</p>
+                    <FormDescription className="text-xs text-slate-400">
+                      Optional notes about this product
+                    </FormDescription>
                   </FormItem>
                 )}
               />
@@ -347,20 +366,27 @@ export default function AddProductForm({ onAdded }) {
               )}
             </div>
 
-            <DialogFooter className="shrink-0 pt-4">
+            <DialogFooter className="gap-2">
               <DialogClose asChild>
                 <Button
                   type="button"
                   id="cancelBtn_productPage"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
-                  disabled={loading}
+                  className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                  disabled={form.formState.isSubmitting || loading}
                 >
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={loading} id="submitBtn_productPage">
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Adding...' : 'Add Product'}
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting || loading}
+                id="submitBtn_productPage"
+                className="min-w-[80px]"
+              >
+                {(form.formState.isSubmitting || loading) && (
+                  <Loader2 className="size-4 animate-spin" />
+                )}
+                {form.formState.isSubmitting || loading ? 'Adding...' : 'Add Product'}
               </Button>
             </DialogFooter>
           </form>

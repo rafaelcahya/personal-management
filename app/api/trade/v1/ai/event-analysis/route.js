@@ -134,7 +134,7 @@ export async function GET(request) {
       .eq('user_id', user.id)
       .eq('analysis_type', 'multi')
       .is('deleted_at', null)
-      .contains('event_ids', [event_id])
+      .contains('event_ids', JSON.stringify([event_id]))
       .order('generated_at', { ascending: false })
       .limit(5)
 

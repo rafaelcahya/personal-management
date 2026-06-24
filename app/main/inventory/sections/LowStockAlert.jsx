@@ -129,7 +129,7 @@ function LowStockTable({ items }) {
                 <StockBadge quantity={item.quantity} />
               </div>
             </div>
-            <div className="mt-2 pt-2 border-t border-slate-100">
+            <div className="mt-2">
               <StatusBadge status={item.product_status} />
             </div>
           </div>

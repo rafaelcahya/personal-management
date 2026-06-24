@@ -34,7 +34,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { toast } from 'sonner'
-import { Loader2, CalendarIcon } from 'lucide-react'
+import { Loader2, CalendarIcon, Pencil } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
@@ -125,15 +125,24 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
 
   return (
     <Dialog open={!!event} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl flex flex-col max-h-[90vh]">
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>Update Event</DialogTitle>
-          <DialogDescription className="text-slate-600">Modify event details</DialogDescription>
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+            <Pencil className="size-4 text-violet-500" />
+            Update Event
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
+            Modify event details
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
+          >
+            <div className="flex flex-col gap-5">
               {/* Title */}
               <FormField
                 control={control}
@@ -141,7 +150,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <div className="flex items-center justify-between">
-                      <FormLabel className="font-medium">Title</FormLabel>
+                      <FormLabel className="text-sm font-medium">Title</FormLabel>
                       {titleValue.length > 0 && (
                         <span
                           className={`text-xs font-medium ${
@@ -179,7 +188,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                   name="impact_direction"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">Impact</FormLabel>
+                      <FormLabel className="text-sm font-medium">Impact</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger
@@ -196,7 +205,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                           <SelectItem value="DOWN">Bearish</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormMessage className="font-medium">{fieldState.error?.message}</FormMessage>
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -207,7 +216,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                   name="actual_outcome"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">
+                      <FormLabel className="text-sm font-medium">
                         Actual Outcome
                         <span className="text-slate-400 ml-1 font-normal text-xs">(optional)</span>
                       </FormLabel>
@@ -243,7 +252,7 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                 name="event_date"
                 render={({ field, fieldState }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="font-medium">Date</FormLabel>
+                    <FormLabel className="text-sm font-medium">Date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -374,23 +383,27 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
               />
             </div>
 
-            <DialogFooter className="shrink-0 pt-4 flex-col sm:flex-row gap-2">
-              <div className="flex gap-2 flex-1 justify-end">
-                <Button
-                  type="button"
-                  id="cancelUpdateEventBtn_eventPage"
-                  variant="outline"
-                  onClick={onClose}
-                  disabled={loading}
-                  className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" id="submitUpdateEventBtn_eventPage" disabled={loading}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {loading ? 'Updating...' : 'Update Event'}
-                </Button>
-              </div>
+            <DialogFooter className="gap-2">
+              <Button
+                type="button"
+                id="cancelUpdateEventBtn_eventPage"
+                onClick={onClose}
+                disabled={form.formState.isSubmitting || loading}
+                className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                id="submitUpdateEventBtn_eventPage"
+                disabled={form.formState.isSubmitting || loading}
+                className="min-w-[80px]"
+              >
+                {(form.formState.isSubmitting || loading) && (
+                  <Loader2 className="size-4 animate-spin" />
+                )}
+                {form.formState.isSubmitting || loading ? 'Updating...' : 'Update Event'}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

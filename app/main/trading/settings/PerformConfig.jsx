@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/form'
 import { toast } from 'sonner'
 import { Info, Loader2, Settings, AlertCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { tradeSettingsSchema } from '@/schemas/tradeSettings'
 import { getTradeSettings, updateTradeSettings } from '@/lib/api/tradeSettings'
 
@@ -162,9 +163,10 @@ export default function PerformConfig() {
                         ref={field.ref}
                         aria-describedby="initialMarginDesc_settingsPage"
                         aria-invalid={!!fieldState.error}
-                        className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                          fieldState.error ? 'border-rose-500' : ''
-                        }`}
+                        className={cn(
+                          'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                          fieldState.error && 'border-rose-500'
+                        )}
                       />
                     </FormControl>
                     <FormDescription
@@ -201,9 +203,10 @@ export default function PerformConfig() {
                           ref={field.ref}
                           aria-describedby="biRiskFreeRateDesc_settingsPage"
                           aria-invalid={!!fieldState.error}
-                          className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                            fieldState.error ? 'border-rose-500' : ''
-                          }`}
+                          className={cn(
+                            'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                            fieldState.error && 'border-rose-500'
+                          )}
                         />
                       </FormControl>
                       <FormDescription
@@ -239,9 +242,10 @@ export default function PerformConfig() {
                           ref={field.ref}
                           aria-describedby="personalRiskFreeRateDesc_settingsPage"
                           aria-invalid={!!fieldState.error}
-                          className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                            fieldState.error ? 'border-rose-500' : ''
-                          }`}
+                          className={cn(
+                            'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                            fieldState.error && 'border-rose-500'
+                          )}
                         />
                       </FormControl>
                       <FormDescription
@@ -281,9 +285,10 @@ export default function PerformConfig() {
                         ref={field.ref}
                         aria-describedby="marginOfErrorDesc_settingsPage"
                         aria-invalid={!!fieldState.error}
-                        className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                          fieldState.error ? 'border-rose-500' : ''
-                        }`}
+                        className={cn(
+                          'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                          fieldState.error && 'border-rose-500'
+                        )}
                       />
                     </FormControl>
                     <FormDescription

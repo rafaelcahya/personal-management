@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -39,9 +39,6 @@ import { updateProductBrand } from '@/lib/api/productBrand'
 import ProductBrandDelete from './DeleteProductBrand'
 
 export default function ProductBrandUpdate({ productBrand, onClose, onUpdated }) {
-  const [loading, setLoading] = useState(false)
-  const [restoring, setRestoring] = useState(false)
-
   const form = useForm({
     resolver: zodResolver(productBrandSchema),
     defaultValues: {
@@ -51,7 +48,7 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
     },
   })
 
-  const { control, handleSubmit, reset } = form
+  const { control, handleSubmit, reset, formState } = form
 
   useEffect(() => {
     if (productBrand) {
@@ -64,7 +61,6 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
   }, [productBrand, reset])
 
   const handleUpdate = async (values) => {
-    setLoading(true)
     try {
       await updateProductBrand(productBrand.id, values)
       toast.success('Product brand updated successfully!')
@@ -76,13 +72,10 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
       } else {
         toast.error(err.message || 'Failed to update product name')
       }
-    } finally {
-      setLoading(false)
     }
   }
 
   const handleRestore = async () => {
-    setRestoring(true)
     try {
       await updateProductBrand(productBrand.id, {
         brand: productBrand.brand,
@@ -94,8 +87,6 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
       onClose()
     } catch (err) {
       toast.error(err.message || 'Failed to restore brand')
-    } finally {
-      setRestoring(false)
     }
   }
 
@@ -106,23 +97,33 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
 
   return (
     <Dialog open={!!productBrand} onOpenChange={onClose}>
-      <DialogContent id="updateBrandDialog_productBrandPage" className="sm:max-w-md">
-        <DialogHeader className="text-left">
-          <DialogTitle>✏️ Update Product Brand</DialogTitle>
-          <DialogDescription className="text-slate-foreground">
+      <DialogContent
+        id="updateBrandDialog_productBrandPage"
+        className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
+      >
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2">
+            <Pencil className="size-4 text-violet-600" aria-hidden="true" />
+            Update Product Brand
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
             Edit brand details including name, status, and notes.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit(handleUpdate)} className="space-y-4">
+          <form
+            onSubmit={handleSubmit(handleUpdate)}
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
+          >
             {/* Brand Name */}
             <FormField
               control={control}
               name="brand"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel className="font-medium">Brand Name</FormLabel>
+                  <FormLabel className="text-sm font-medium">Brand Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -130,11 +131,11 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
                       placeholder="e.g. Clear"
                       className={cn(
                         'text-sm font-medium capitalize focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                        fieldState.error && 'border-red-500 focus-visible:ring-red-500'
+                        fieldState.error && 'border-rose-500'
                       )}
                     />
                   </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
+                  <FormMessage className="text-xs">{fieldState.error?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -143,12 +144,18 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
             <FormField
               control={control}
               name="brand_status"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel className="font-medium">Status</FormLabel>
+                  <FormLabel className="text-sm font-medium">Status</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger id="statusSelect_updateBrandDialog" className="w-full">
+                      <SelectTrigger
+                        id="statusSelect_updateBrandDialog"
+                        className={cn(
+                          'w-full text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                          fieldState.error && 'border-rose-500'
+                        )}
+                      >
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                     </FormControl>
@@ -175,7 +182,9 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
                       )}
                     </SelectContent>
                   </Select>
-                  <FormMessage>{form.formState.errors.brand_status?.message}</FormMessage>
+                  <FormMessage className="text-xs">
+                    {form.formState.errors.brand_status?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -186,7 +195,7 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-medium">Note</FormLabel>
+                  <FormLabel className="text-sm font-medium">Note</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
@@ -221,11 +230,13 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
                     type="button"
                     id="restoreBrandBtn_productBrandPage"
                     onClick={handleRestore}
-                    disabled={restoring}
+                    disabled={formState.isSubmitting}
                     className="bg-green-600 hover:bg-green-700 text-white"
                   >
-                    {restoring && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {restoring ? 'Restoring...' : 'Restore Brand'}
+                    {formState.isSubmitting && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                    )}
+                    {formState.isSubmitting ? 'Restoring...' : 'Restore Brand'}
                   </Button>
                 ) : (
                   <ProductBrandDelete
@@ -235,12 +246,13 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
                     disabled={isInUse}
                   />
                 )}
-                <div className="space-x-2">
+                <div className="flex gap-2">
                   <DialogClose asChild>
                     <Button
                       type="button"
                       id="cancelUpdateBrandBtn_productBrandPage"
-                      className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                      className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                      disabled={formState.isSubmitting}
                     >
                       Cancel
                     </Button>
@@ -248,10 +260,13 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
                   <Button
                     id="submitUpdateBrandBtn_productBrandPage"
                     type="submit"
-                    disabled={loading || isDeleted}
+                    disabled={formState.isSubmitting || isDeleted}
+                    className="min-w-[80px]"
                   >
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {loading ? 'Updating...' : 'Update Product Brand'}
+                    {formState.isSubmitting && (
+                      <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                    )}
+                    {formState.isSubmitting ? '' : 'Update Product Brand'}
                   </Button>
                 </div>
               </div>

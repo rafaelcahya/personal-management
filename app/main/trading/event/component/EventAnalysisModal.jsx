@@ -263,7 +263,7 @@ export default function EventAnalysisModal({
 
           {/* Complete state — timestamp + refresh */}
           {status === 'complete' && generatedAt && (
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between">
               <p id="lastAnalyzedTimestamp_eventDetailPage" className="text-xs text-slate-400">
                 Last analyzed: {formatTimestamp(generatedAt)}
               </p>

@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -111,10 +112,10 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
                       max={remainingQty}
                     />
                   </FormControl>
-                  <p className="text-xs text-slate-400">
+                  <FormDescription className="text-xs text-slate-400">
                     Max: {remainingQty} {remainingQty === 1 ? 'unit' : 'units'}
-                  </p>
-                  <FormMessage />
+                  </FormDescription>
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -153,8 +154,10 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
                       />
                     </PopoverContent>
                   </Popover>
-                  <p className="text-xs text-slate-400">When did this run out?</p>
-                  <FormMessage />
+                  <FormDescription className="text-xs text-slate-400">
+                    When did this run out?
+                  </FormDescription>
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -179,7 +182,7 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
           <div className="flex justify-end gap-2 pt-2">
             <Button
               type="button"
-              className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+              className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
               onClick={onCancel}
               disabled={isSubmitting}
               id="cancelBtn-usageCompletionForm"
@@ -191,8 +194,9 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
               size="sm"
               disabled={isSubmitting}
               id="updateRecordBtn-usageCompletionForm"
+              className="min-w-[80px]"
             >
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting && <Loader2 className="size-4 animate-spin" />}
               {isSubmitting ? 'Updating...' : 'Update Record'}
             </Button>
           </div>

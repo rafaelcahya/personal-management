@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, CalendarIcon, Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { AlertTriangle, CalendarIcon, Loader2, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -21,11 +21,21 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar as CalendarPicker } from '@/components/ui/calendar'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { format, parseISO } from 'date-fns'
 import { toast } from 'sonner'
 import { updateRaceLog } from '@/lib/api/running'
@@ -57,19 +67,11 @@ function secsToHMSInput(s) {
 
 export default function EditRaceModal({ open, onClose, entry, onSaved }) {
   const [distanceMode, setDistanceMode] = useState('preset')
-  const [saving, setSaving] = useState(false)
   const [serverError, setServerError] = useState(null)
   const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [finishTimeStr, setFinishTimeStr] = useState('')
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const form = useForm({
     resolver: zodResolver(updateRaceLogSchema),
     defaultValues: {
       title: '',
@@ -85,7 +87,8 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
     },
   })
 
-  const dnf = watch('did_not_finish')
+  const { control, handleSubmit, reset, formState } = form
+  const dnf = form.watch('did_not_finish')
 
   useEffect(() => {
     if (open && entry) {
@@ -111,7 +114,6 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
   }, [open, entry, reset])
 
   async function onSubmit(data) {
-    setSaving(true)
     setServerError(null)
     try {
       const result = await updateRaceLog(entry.id, data)
@@ -120,8 +122,6 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
       onClose()
     } catch (err) {
       setServerError(err.message || 'Something went wrong')
-    } finally {
-      setSaving(false)
     }
   }
 
@@ -129,289 +129,354 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent
         id="editRaceModal_raceDetailPage"
-        className="max-w-lg max-h-[90vh] overflow-y-auto"
+        className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
       >
-        <DialogHeader>
-          <DialogTitle>Edit Race Entry</DialogTitle>
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2">
+            <Pencil className="size-4 text-violet-600" aria-hidden="true" />
+            Edit Race Entry
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
+            Update your race result, time, and placement details.
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="editRaceTitle">
-              Race name <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="editRaceTitle"
-              placeholder="e.g. Jakarta Marathon 2025"
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-              {...register('title')}
-            />
-            {errors.title && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              Race date <span className="text-red-500">*</span>
-            </Label>
-            <Controller
-              name="race_date"
-              control={control}
-              render={({ field }) => (
-                <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="editRaceDate"
-                      variant="outline"
-                      className={`w-full justify-start text-left text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 ${!field.value ? 'text-slate-400' : 'text-slate-900'}`}
-                    >
-                      <CalendarIcon
-                        className="size-4 mr-2 shrink-0 text-slate-400"
-                        aria-hidden="true"
-                      />
-                      {field.value ? format(parseISO(field.value), 'd MMM yyyy') : 'Pick a date'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarPicker
-                      mode="single"
-                      selected={field.value ? parseISO(field.value) : undefined}
-                      onSelect={(date) => {
-                        field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
-                        setDatePickerOpen(false)
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              )}
-            />
-            {errors.race_date && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.race_date.message}
-              </p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              Distance <span className="text-red-500">*</span>
-            </Label>
-            <Controller
-              name="distance_m"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  value={
-                    distanceMode === 'custom'
-                      ? 'custom'
-                      : field.value != null
-                        ? String(field.value)
-                        : ''
-                  }
-                  onValueChange={(v) => {
-                    if (v === 'custom') {
-                      setDistanceMode('custom')
-                      field.onChange(null)
-                    } else {
-                      setDistanceMode('preset')
-                      field.onChange(Number(v))
-                    }
-                  }}
-                >
-                  <SelectTrigger className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500">
-                    <SelectValue placeholder="Select distance…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DISTANCE_PRESETS.map((p) => (
-                      <SelectItem key={String(p.value)} value={String(p.value)}>
-                        {p.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {distanceMode === 'custom' && (
-              <Controller
-                name="distance_m"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    type="number"
-                    placeholder="Distance in meters"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
-            )}
-            {errors.distance_m && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.distance_m.message}
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <Controller
-              name="did_not_finish"
-              control={control}
-              render={({ field }) => (
-                <Checkbox id="editDnf" checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
-            <Label htmlFor="editDnf" className="cursor-pointer select-none">
-              Did not finish (DNF)
-            </Label>
-          </div>
-
-          {!dnf && (
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="editFinishTime">Finish time (HH:MM:SS)</Label>
-              <Controller
-                name="finish_time_sec"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="editFinishTime"
-                    placeholder="e.g. 00:45:30"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={finishTimeStr}
-                    onChange={(e) => setFinishTimeStr(e.target.value)}
-                    onBlur={() => {
-                      const secs = hmsToSecs(finishTimeStr)
-                      field.onChange(secs ?? null)
-                      if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
-                    }}
-                  />
-                )}
-              />
-              {errors.finish_time_sec && (
-                <p className="text-xs text-red-600" role="alert">
-                  {errors.finish_time_sec.message}
-                </p>
-              )}
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="editAvgHr">Avg HR (bpm)</Label>
-              <Controller
-                name="avg_hr"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="editAvgHr"
-                    type="number"
-                    placeholder="e.g. 165"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="editElevation">Elevation gain (m)</Label>
-              <Controller
-                name="elevation_gain_m"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="editElevation"
-                    type="number"
-                    placeholder="e.g. 250"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="editPosPlace">Position (place)</Label>
-              <Controller
-                name="position_place"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="editPosPlace"
-                    type="number"
-                    placeholder="e.g. 42"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="editPosMale">Position (male)</Label>
-              <Controller
-                name="position_male"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="editPosMale"
-                    type="number"
-                    placeholder="e.g. 8"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="editNotes">Notes</Label>
-            <Textarea
-              id="editNotes"
-              placeholder="Weather, conditions, how you felt…"
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-              rows={3}
-              {...register('notes')}
-            />
-          </div>
-
-          {serverError && (
-            <p className="text-xs text-red-600 flex items-center gap-1" role="alert">
-              <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
-              {serverError}
-            </p>
-          )}
-        </form>
-
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
-            <Button
-              className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
-              type="button"
-              disabled={saving}
-            >
-              Cancel
-            </Button>
-          </DialogClose>
-          <Button
-            id="editRaceSaveBtn_raceDetailPage"
-            onClick={handleSubmit(onSubmit)}
-            disabled={saving}
-            className="min-w-[80px]"
+        <Form {...form}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
           >
-            {saving ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-            ) : (
-              'Save changes'
+            {/* Race name */}
+            <FormField
+              control={control}
+              name="title"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">
+                    Race name <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      id="editRaceTitle"
+                      placeholder="e.g. Jakarta Marathon 2025"
+                      className={cn(
+                        'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                        fieldState.error && 'border-rose-500'
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
+            {/* Race date */}
+            <FormField
+              control={control}
+              name="race_date"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">
+                    Race date <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          id="editRaceDate"
+                          variant="outline"
+                          className={cn(
+                            'w-full justify-start text-left text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
+                            !field.value ? 'text-slate-400' : 'text-slate-900',
+                            fieldState.error && 'border-rose-500'
+                          )}
+                        >
+                          <CalendarIcon
+                            className="size-4 mr-2 shrink-0 text-slate-400"
+                            aria-hidden="true"
+                          />
+                          {field.value
+                            ? format(parseISO(field.value), 'd MMM yyyy')
+                            : 'Pick a date'}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarPicker
+                        mode="single"
+                        selected={field.value ? parseISO(field.value) : undefined}
+                        onSelect={(date) => {
+                          field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
+                          setDatePickerOpen(false)
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
+            {/* Distance */}
+            <FormField
+              control={control}
+              name="distance_m"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">
+                    Distance <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <Select
+                    value={
+                      distanceMode === 'custom'
+                        ? 'custom'
+                        : field.value != null
+                          ? String(field.value)
+                          : ''
+                    }
+                    onValueChange={(v) => {
+                      if (v === 'custom') {
+                        setDistanceMode('custom')
+                        field.onChange(null)
+                      } else {
+                        setDistanceMode('preset')
+                        field.onChange(Number(v))
+                      }
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger
+                        className={cn(
+                          'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                          fieldState.error && 'border-rose-500'
+                        )}
+                      >
+                        <SelectValue placeholder="Select distance…" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {DISTANCE_PRESETS.map((p) => (
+                        <SelectItem key={String(p.value)} value={String(p.value)}>
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {distanceMode === 'custom' && (
+                    <Input
+                      type="number"
+                      placeholder="Distance in meters"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? Number(e.target.value) : null)
+                      }
+                    />
+                  )}
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
+            {/* DNF */}
+            <FormField
+              control={control}
+              name="did_not_finish"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-2.5">
+                    <FormControl>
+                      <Checkbox
+                        id="editDnf"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel
+                      htmlFor="editDnf"
+                      className="text-sm font-medium cursor-pointer select-none"
+                    >
+                      Did not finish (DNF)
+                    </FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            {/* Finish time */}
+            {!dnf && (
+              <FormField
+                control={control}
+                name="finish_time_sec"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Finish time (HH:MM:SS)</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="editFinishTime"
+                        placeholder="e.g. 00:45:30"
+                        className={cn(
+                          'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                          fieldState.error && 'border-rose-500'
+                        )}
+                        value={finishTimeStr}
+                        onChange={(e) => setFinishTimeStr(e.target.value)}
+                        onBlur={() => {
+                          const secs = hmsToSecs(finishTimeStr)
+                          field.onChange(secs ?? null)
+                          if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
             )}
-          </Button>
-        </DialogFooter>
+
+            {/* Stats grid */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={control}
+                name="avg_hr"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Avg HR (bpm)</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="editAvgHr"
+                        type="number"
+                        placeholder="e.g. 165"
+                        className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : null)
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="elevation_gain_m"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Elevation gain (m)</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="editElevation"
+                        type="number"
+                        placeholder="e.g. 250"
+                        className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : null)
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="position_place"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Position (place)</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="editPosPlace"
+                        type="number"
+                        placeholder="e.g. 42"
+                        className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : null)
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={control}
+                name="position_male"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Position (male)</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="editPosMale"
+                        type="number"
+                        placeholder="e.g. 8"
+                        className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : null)
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Notes */}
+            <FormField
+              control={control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="editNotes"
+                      placeholder="Weather, conditions, how you felt…"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {serverError && (
+              <p className="text-xs text-red-600 flex items-center gap-1" role="alert">
+                <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
+                {serverError}
+              </p>
+            )}
+
+            <DialogFooter className="gap-2">
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                  disabled={formState.isSubmitting}
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                id="editRaceSaveBtn_raceDetailPage"
+                type="submit"
+                disabled={formState.isSubmitting}
+                className="min-w-[80px]"
+              >
+                {formState.isSubmitting ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  'Save changes'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

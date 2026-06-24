@@ -19,13 +19,14 @@ import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2, Pencil } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -106,16 +107,26 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
 
   return (
     <Dialog open={!!productName} onOpenChange={onClose}>
-      <DialogContent id="updateProductNameDialog_productNamePage" className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Update Product Name</DialogTitle>
-          <DialogDescription className="text-slate-foreground">
+      <DialogContent
+        id="updateProductNameDialog_productNamePage"
+        className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
+      >
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+            <Pencil className="size-4 text-violet-500" />
+            Update Product Name
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
             Edit name details including name, status, and notes.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit(handleUpdate)} className="space-y-4">
+          <form
+            onSubmit={handleSubmit(handleUpdate)}
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
+          >
             <FormField
               control={control}
               name="product_name"
@@ -132,9 +143,10 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
                       )}
                     />
                   </FormControl>
-                  <FormMessage id="productNameField_errorMessage_updateDialog">
-                    {fieldState.error?.message}
-                  </FormMessage>
+                  <FormMessage
+                    id="productNameField_errorMessage_updateDialog"
+                    className="text-xs"
+                  />
                 </FormItem>
               )}
             />
@@ -175,7 +187,7 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
                       )}
                     </SelectContent>
                   </Select>
-                  <FormMessage>{form.formState.errors.product_name_status?.message}</FormMessage>
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />

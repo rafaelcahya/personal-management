@@ -29,7 +29,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { toast } from 'sonner'
-import { Loader2, PlusIcon, CalendarIcon } from 'lucide-react'
+import { Loader2, PlusIcon, CalendarIcon, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { tradeSchema } from '@/schemas/trade'
 import { createTrade, fetchAllTradeOptions } from '@/lib/api/trade'
@@ -189,12 +189,15 @@ export default function AddTrade({
         </Button>
       </DialogTrigger>
       <DialogContent
-        className="sm:max-w-2xl flex flex-col max-h-[90vh]"
+        className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0"
         id="addNewTradeForm_tradePage"
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>📊 Add New Trade</DialogTitle>
-          <DialogDescription className="text-slate-600">
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+            <TrendingUp className="size-4 text-violet-500" />
+            Add New Trade
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
             Record your trade details to track performance and learn from every position
           </DialogDescription>
         </DialogHeader>
@@ -209,15 +212,19 @@ export default function AddTrade({
           </div>
         ) : (
           <Form {...form}>
-            <form onSubmit={handleSubmit(handleAddTrade)} className="flex flex-col flex-1 min-h-0">
-              <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+            <form
+              onSubmit={handleSubmit(handleAddTrade)}
+              className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+              noValidate
+            >
+              <div className="flex flex-col gap-5">
                 {/* Trade Date */}
                 <FormField
                   control={control}
                   name="trade_date"
                   render={({ field, fieldState }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel className="font-medium">Trade Date</FormLabel>
+                      <FormLabel className="text-sm font-medium">Trade Date</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -249,15 +256,10 @@ export default function AddTrade({
                           />
                         </PopoverContent>
                       </Popover>
-                      <FormDescription className="text-xs">
-                        When did you execute this trade? 📅
+                      <FormDescription className="text-xs text-slate-400">
+                        When did you execute this trade?
                       </FormDescription>
-                      <FormMessage
-                        id="tradeDateField_errorMessage_tradePage"
-                        className="font-medium"
-                      >
-                        {fieldState.error?.message}
-                      </FormMessage>
+                      <FormMessage id="tradeDateField_errorMessage_tradePage" className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -268,7 +270,7 @@ export default function AddTrade({
                   name="ticker"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">Ticker</FormLabel>
+                      <FormLabel className="text-sm font-medium">Ticker</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -279,12 +281,10 @@ export default function AddTrade({
                           }`}
                         />
                       </FormControl>
-                      <FormDescription className="text-xs">
-                        Stock symbol you traded 🏷️
+                      <FormDescription className="text-xs text-slate-400">
+                        Stock symbol you traded
                       </FormDescription>
-                      <FormMessage id="tickerField_errorMessage_tradePage" className="font-medium">
-                        {fieldState.error?.message}
-                      </FormMessage>
+                      <FormMessage id="tickerField_errorMessage_tradePage" className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -320,7 +320,7 @@ export default function AddTrade({
                     name="realized_gain"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-medium">Realized Gain/Loss</FormLabel>
+                        <FormLabel className="text-sm font-medium">Realized Gain/Loss</FormLabel>
                         <FormControl>
                           <Input
                             value={formatRupiah(field.value)}
@@ -329,7 +329,9 @@ export default function AddTrade({
                             className="font-medium bg-slate-50"
                           />
                         </FormControl>
-                        <FormDescription className="text-xs">Auto-calculated 🧮</FormDescription>
+                        <FormDescription className="text-xs text-slate-400">
+                          Auto-calculated
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
@@ -340,7 +342,7 @@ export default function AddTrade({
                     name="return_percent"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-medium">Return %</FormLabel>
+                        <FormLabel className="text-sm font-medium">Return %</FormLabel>
                         <FormControl>
                           <Input
                             value={field.value}
@@ -349,7 +351,9 @@ export default function AddTrade({
                             className="font-medium bg-slate-50"
                           />
                         </FormControl>
-                        <FormDescription className="text-xs">Auto-calculated 📊</FormDescription>
+                        <FormDescription className="text-xs text-slate-400">
+                          Auto-calculated
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
@@ -375,7 +379,7 @@ export default function AddTrade({
                   name="notes"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">Notes (Optional)</FormLabel>
+                      <FormLabel className="text-sm font-medium">Notes (Optional)</FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
@@ -384,28 +388,35 @@ export default function AddTrade({
                           className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium min-h-[80px]"
                         />
                       </FormControl>
-                      <FormDescription className="text-xs">
-                        Document your thought process 📝
+                      <FormDescription className="text-xs text-slate-400">
+                        Document your thought process
                       </FormDescription>
                     </FormItem>
                   )}
                 />
               </div>
 
-              <DialogFooter className="shrink-0 pt-4">
+              <DialogFooter className="gap-2">
                 <DialogClose asChild>
                   <Button
                     type="button"
                     className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
                     id="cancelNewTradeBtn_tradePage"
-                    disabled={loading}
+                    disabled={form.formState.isSubmitting || loading}
                   >
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button type="submit" disabled={loading} id="submitNewTradeBtn_tradePage">
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {loading ? 'Adding...' : 'Add Trade'}
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting || loading}
+                  id="submitNewTradeBtn_tradePage"
+                  className="min-w-[80px]"
+                >
+                  {(form.formState.isSubmitting || loading) && (
+                    <Loader2 className="size-4 animate-spin" />
+                  )}
+                  {form.formState.isSubmitting || loading ? 'Adding...' : 'Add Trade'}
                 </Button>
               </DialogFooter>
             </form>

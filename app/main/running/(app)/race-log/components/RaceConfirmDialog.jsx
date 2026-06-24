@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import {
   AlertTriangle,
   Calendar,
@@ -11,36 +11,38 @@ import {
   Loader2,
   MapPin,
   Mountain,
+  Trophy,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { createRaceLog } from '@/lib/api/running'
 import { getDistanceLabel, secsToHMS } from './raceLogUtils'
 
 export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) {
-  const [saving, setSaving] = useState(false)
   const [serverError, setServerError] = useState(null)
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const form = useForm({
     defaultValues: {
       title: '',
       did_not_finish: false,
@@ -50,12 +52,12 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
     },
   })
 
-  const dnf = watch('did_not_finish')
+  const dnf = form.watch('did_not_finish')
 
   useEffect(() => {
     if (open) {
       setServerError(null)
-      reset({
+      form.reset({
         title: activity?.name ?? '',
         did_not_finish: false,
         position_place: null,
@@ -63,11 +65,10 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
         notes: '',
       })
     }
-  }, [open, activity, reset])
+  }, [open, activity, form])
 
   async function onSubmit(fields) {
     if (!activity) return
-    setSaving(true)
     setServerError(null)
     try {
       const result = await createRaceLog({
@@ -92,8 +93,6 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
       onClose()
     } catch (err) {
       setServerError(err.message || 'Something went wrong')
-    } finally {
-      setSaving(false)
     }
   }
 
@@ -111,173 +110,235 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent id="raceConfirmDialog" className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Confirm Race Entry</DialogTitle>
+      <DialogContent
+        id="raceConfirmDialog"
+        className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
+      >
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+            <Trophy className="size-4 text-violet-500" aria-hidden="true" />
+            Confirm Race Entry
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
+            Log this activity as an official race result
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          {/* Race name */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="confirmRaceTitle">
-              Race name <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="confirmRaceTitle"
-              placeholder="e.g. Jakarta Marathon 2025"
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-              {...register('title', { required: 'Race name is required' })}
-            />
-            {errors.title && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
-
-          {/* Activity data summary */}
-          <div className="rounded-lg border border-slate-200 bg-slate-50 divide-y divide-slate-100">
-            <div className="flex items-center justify-between px-3 py-2 text-sm">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <Calendar className="size-3.5 text-slate-400" aria-hidden="true" /> Date
-              </span>
-              <span className="font-medium text-slate-700">{raceDate}</span>
-            </div>
-            <div className="flex items-center justify-between px-3 py-2 text-sm">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <MapPin className="size-3.5 text-slate-400" aria-hidden="true" /> Distance
-              </span>
-              <span className="font-medium text-slate-700">{distLabel}</span>
-            </div>
-            {finishTime && !dnf && (
-              <div className="flex items-center justify-between px-3 py-2 text-sm">
-                <span className="flex items-center gap-1.5 text-slate-500">
-                  <Clock className="size-3.5 text-slate-400" aria-hidden="true" /> Finish time
-                </span>
-                <span className="font-medium text-slate-700">{secsToHMS(finishTime)}</span>
-              </div>
-            )}
-            {activity.avg_hr && (
-              <div className="flex items-center justify-between px-3 py-2 text-sm">
-                <span className="flex items-center gap-1.5 text-slate-500">
-                  <Heart className="size-3.5 text-red-400" aria-hidden="true" /> Avg HR
-                </span>
-                <span className="font-medium text-slate-700">
-                  {Math.round(activity.avg_hr)} bpm
-                </span>
-              </div>
-            )}
-            {activity.elevation_gain_m && (
-              <div className="flex items-center justify-between px-3 py-2 text-sm">
-                <span className="flex items-center gap-1.5 text-slate-500">
-                  <Mountain className="size-3.5 text-slate-400" aria-hidden="true" /> Elevation
-                </span>
-                <span className="font-medium text-slate-700">
-                  {Math.round(activity.elevation_gain_m)} m
-                </span>
-              </div>
-            )}
-            <div className="flex items-center justify-between px-3 py-2 text-sm">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <Link2 className="size-3.5 text-violet-400" aria-hidden="true" /> Strava activity
-              </span>
-              <span className="font-medium text-slate-700 truncate max-w-[180px]">
-                {activity.name || 'Untitled'}
-              </span>
-            </div>
-          </div>
-
-          {/* DNF */}
-          <div className="flex items-center gap-2.5">
-            <Controller
-              name="did_not_finish"
-              control={control}
-              render={({ field }) => (
-                <Checkbox id="confirmDnf" checked={field.value} onCheckedChange={field.onChange} />
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
+          >
+            {/* Race name */}
+            <FormField
+              control={form.control}
+              name="title"
+              rules={{ required: 'Race name is required' }}
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Race name</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="confirmRaceTitle"
+                      placeholder="e.g. Jakarta Marathon 2025"
+                      className={cn(
+                        'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                        fieldState.error && 'border-rose-500'
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
               )}
             />
-            <Label htmlFor="confirmDnf" className="cursor-pointer select-none">
-              Did not finish (DNF)
-            </Label>
-          </div>
 
-          {/* Position */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="confirmPosPlace">Position (place)</Label>
-              <Controller
-                name="position_place"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="confirmPosPlace"
-                    type="number"
-                    placeholder="e.g. 42"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
+            {/* Activity data summary */}
+            <div className="rounded-lg border border-slate-200 bg-slate-50 divide-y divide-slate-100">
+              <div className="flex items-center justify-between px-3 py-2 text-sm">
+                <span className="flex items-center gap-1.5 text-slate-500">
+                  <Calendar className="size-3.5 text-slate-400" aria-hidden="true" /> Date
+                </span>
+                <span className="font-medium text-slate-700">{raceDate}</span>
+              </div>
+              <div className="flex items-center justify-between px-3 py-2 text-sm">
+                <span className="flex items-center gap-1.5 text-slate-500">
+                  <MapPin className="size-3.5 text-slate-400" aria-hidden="true" /> Distance
+                </span>
+                <span className="font-medium text-slate-700">{distLabel}</span>
+              </div>
+              {finishTime && !dnf && (
+                <div className="flex items-center justify-between px-3 py-2 text-sm">
+                  <span className="flex items-center gap-1.5 text-slate-500">
+                    <Clock className="size-3.5 text-slate-400" aria-hidden="true" /> Finish time
+                  </span>
+                  <span className="font-medium text-slate-700">{secsToHMS(finishTime)}</span>
+                </div>
+              )}
+              {activity.avg_hr && (
+                <div className="flex items-center justify-between px-3 py-2 text-sm">
+                  <span className="flex items-center gap-1.5 text-slate-500">
+                    <Heart className="size-3.5 text-red-400" aria-hidden="true" /> Avg HR
+                  </span>
+                  <span className="font-medium text-slate-700">
+                    {Math.round(activity.avg_hr)} bpm
+                  </span>
+                </div>
+              )}
+              {activity.elevation_gain_m && (
+                <div className="flex items-center justify-between px-3 py-2 text-sm">
+                  <span className="flex items-center gap-1.5 text-slate-500">
+                    <Mountain className="size-3.5 text-slate-400" aria-hidden="true" /> Elevation
+                  </span>
+                  <span className="font-medium text-slate-700">
+                    {Math.round(activity.elevation_gain_m)} m
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-between px-3 py-2 text-sm">
+                <span className="flex items-center gap-1.5 text-slate-500">
+                  <Link2 className="size-3.5 text-violet-400" aria-hidden="true" /> Strava activity
+                </span>
+                <span className="font-medium text-slate-700 truncate max-w-[180px]">
+                  {activity.name || 'Untitled'}
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="confirmPosMale">Position (male)</Label>
-              <Controller
-                name="position_male"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="confirmPosMale"
-                    type="number"
-                    placeholder="e.g. 8"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                )}
-              />
-            </div>
-          </div>
 
-          {/* Notes */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="confirmNotes">Notes</Label>
-            <Textarea
-              id="confirmNotes"
-              placeholder="Weather, conditions, how you felt…"
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-              rows={2}
-              {...register('notes')}
+            {/* DNF */}
+            <FormField
+              control={form.control}
+              name="did_not_finish"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-2.5">
+                  <FormControl>
+                    <Checkbox
+                      id="confirmDnf"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel
+                    htmlFor="confirmDnf"
+                    className="text-sm font-medium cursor-pointer select-none !mt-0"
+                  >
+                    Did not finish (DNF)
+                  </FormLabel>
+                </FormItem>
+              )}
             />
-          </div>
 
-          {serverError && (
-            <p className="text-xs text-red-600 flex items-center gap-1" role="alert">
-              <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
-              {serverError}
-            </p>
-          )}
-        </form>
+            {/* Position */}
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="position_place"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Position (place)</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="confirmPosPlace"
+                        type="number"
+                        placeholder="e.g. 42"
+                        className={cn(
+                          'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                          fieldState.error && 'border-rose-500'
+                        )}
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : null)
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="position_male"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Position (male)</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="confirmPosMale"
+                        type="number"
+                        placeholder="e.g. 8"
+                        className={cn(
+                          'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                          fieldState.error && 'border-rose-500'
+                        )}
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : null)
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
-            <Button
-              className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
-              type="button"
-              disabled={saving}
-            >
-              Cancel
-            </Button>
-          </DialogClose>
-          <Button
-            id="raceConfirmSubmitBtn"
-            onClick={handleSubmit(onSubmit)}
-            disabled={saving}
-            className="min-w-[80px]"
-          >
-            {saving ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Log race'}
-          </Button>
-        </DialogFooter>
+            {/* Notes */}
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="confirmNotes"
+                      placeholder="Weather, conditions, how you felt…"
+                      rows={2}
+                      className={cn(
+                        'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none',
+                        fieldState.error && 'border-rose-500'
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
+            {serverError && (
+              <p className="text-xs text-red-600 flex items-center gap-1" role="alert">
+                <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
+                {serverError}
+              </p>
+            )}
+
+            <DialogFooter className="gap-2">
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  disabled={form.formState.isSubmitting}
+                  className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                id="raceConfirmSubmitBtn"
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className="min-w-[80px]"
+              >
+                {form.formState.isSubmitting ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  'Log race'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

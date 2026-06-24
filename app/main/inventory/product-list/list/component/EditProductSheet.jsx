@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -18,6 +18,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -64,9 +65,12 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
 
     async function loadOptions() {
       try {
-        const [b, n] = await Promise.all([fetchProductBrand(), fetchProductName()])
-        setBrands(b?.filter((x) => x.brand_status === 'active') ?? [])
-        setProductNames(n?.filter((x) => x.product_name_status === 'active') ?? [])
+        const [b, n] = await Promise.all([
+          fetchProductBrand({ status: 'active', limit: 100 }),
+          fetchProductName({ status: 'active', limit: 100 }),
+        ])
+        setBrands(b?.data ?? [])
+        setProductNames(n?.data ?? [])
       } catch (err) {
         console.error('Failed to load brands/names:', err)
       }
@@ -104,11 +108,14 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         id="editProductDialog_productListPage"
-        className="sm:max-w-md flex flex-col max-h-[90vh]"
+        className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>✏️ Edit Product</DialogTitle>
-          <DialogDescription>
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+            <Pencil className="size-4 text-violet-500" />
+            Edit Product
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
             Update details for{' '}
             <span className="font-medium text-slate-700">
               {product?.brand} {product?.type} {product?.product}
@@ -120,16 +127,17 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
           <form
             id="editProductForm_productListPage"
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col flex-1 min-h-0"
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
           >
-            <div className="flex-1 overflow-y-auto space-y-5">
+            <div className="flex flex-col gap-5">
               {/* Brand */}
               <FormField
                 control={control}
                 name="brand_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Brand</FormLabel>
+                    <FormLabel className="text-sm font-medium">Brand</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger
@@ -153,8 +161,10 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                         )}
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-slate-400">Which brand is this from? 🏷️</p>
-                    <FormMessage />
+                    <FormDescription className="text-xs text-slate-400">
+                      Which brand is this from?
+                    </FormDescription>
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -165,7 +175,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                 name="product_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product Name</FormLabel>
+                    <FormLabel className="text-sm font-medium">Product Name</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger
@@ -189,8 +199,10 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                         )}
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-slate-400">What's the product called? 📦</p>
-                    <FormMessage />
+                    <FormDescription className="text-xs text-slate-400">
+                      What's the product called?
+                    </FormDescription>
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -202,7 +214,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                 rules={{ required: 'Type is required' }}
                 render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel>Type</FormLabel>
+                    <FormLabel className="text-sm font-medium">Type</FormLabel>
                     <FormControl>
                       <Input
                         id="typeInput_editProductDialog"
@@ -213,10 +225,10 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                         }`}
                       />
                     </FormControl>
-                    <p className="text-xs text-slate-400">
-                      What kind is it? (serum, lotion, toner, etc.) 💡
-                    </p>
-                    <FormMessage />
+                    <FormDescription className="text-xs text-slate-400">
+                      What kind is it? (serum, lotion, toner, etc.)
+                    </FormDescription>
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -227,7 +239,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                 name="product_status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel className="text-sm font-medium">Status</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger
@@ -242,11 +254,11 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                         <SelectItem value="inactive">Inactive</SelectItem>
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-slate-400">
+                    <FormDescription className="text-xs text-slate-400">
                       Active products appear in your inventory, inactive ones are hidden from stock
-                      tracking. 🔄
-                    </p>
-                    <FormMessage />
+                      tracking.
+                    </FormDescription>
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -261,20 +273,27 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
               )}
             </div>
 
-            <DialogFooter className="shrink-0 pt-4">
+            <DialogFooter className="gap-2">
               <DialogClose asChild>
                 <Button
                   id="cancelBtn_editProductDialog"
                   type="button"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
-                  disabled={loading}
+                  className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                  disabled={form.formState.isSubmitting || loading}
                 >
                   Cancel
                 </Button>
               </DialogClose>
-              <Button id="saveBtn_editProductDialog" type="submit" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Saving...' : 'Save Changes'}
+              <Button
+                id="saveBtn_editProductDialog"
+                type="submit"
+                disabled={form.formState.isSubmitting || loading}
+                className="min-w-[80px]"
+              >
+                {(form.formState.isSubmitting || loading) && (
+                  <Loader2 className="size-4 animate-spin" />
+                )}
+                {form.formState.isSubmitting || loading ? 'Saving...' : 'Save Changes'}
               </Button>
             </DialogFooter>
           </form>

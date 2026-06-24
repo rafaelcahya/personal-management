@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
-import { CalendarIcon, Loader2, Plus } from 'lucide-react'
+import { CalendarIcon, Loader2, Plus, PackagePlus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,6 +23,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -115,7 +116,7 @@ export default function AddStockForm({ product, onAdded }) {
         </button>
       </DialogTrigger>
       <DialogContent
-        className="sm:max-w-md flex flex-col max-h-[90vh]"
+        className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
         id="addStockPopup"
         onPointerDownOutside={(e) => {
           if (e.target.closest('[data-radix-popper-content-wrapper]')) {
@@ -123,17 +124,24 @@ export default function AddStockForm({ product, onAdded }) {
           }
         }}
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>📦 Add More Stock</DialogTitle>
-          <DialogDescription>
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+            <PackagePlus className="size-4 text-violet-500" />
+            Add More Stock
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
             Restocking {product.brand} {product.type} {product.product}. Let's add it to your
-            inventory and keep things organized! 🎯
+            inventory and keep things organized!
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 overflow-y-auto space-y-5">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
+          >
+            <div className="flex flex-col gap-5">
               {/* Recent Purchases */}
               {(historyLoading || stockHistory.length > 0) && (
                 <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-3">
@@ -181,10 +189,10 @@ export default function AddStockForm({ product, onAdded }) {
                         min={1}
                       />
                     </FormControl>
-                    <p className="text-xs text-slate-400">
-                      Right now you've got {product.quantity} units in on hand 📦
-                    </p>
-                    <FormMessage />
+                    <FormDescription className="text-xs text-slate-400">
+                      Right now you've got {product.quantity} units in on hand
+                    </FormDescription>
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -268,8 +276,10 @@ export default function AddStockForm({ product, onAdded }) {
                         />
                       </PopoverContent>
                     </Popover>
-                    <p className="text-xs text-slate-400">When did you buy this? 📅</p>
-                    <FormMessage />
+                    <FormDescription className="text-xs text-slate-400">
+                      When did you buy this?
+                    </FormDescription>
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -308,20 +318,27 @@ export default function AddStockForm({ product, onAdded }) {
               )}
             </div>
 
-            <DialogFooter className="shrink-0 pt-4">
+            <DialogFooter className="gap-2">
               <DialogClose asChild>
                 <Button
                   type="button"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                  className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
                   id="cancelBtn-addStockPopup"
-                  disabled={loading}
+                  disabled={form.formState.isSubmitting || loading}
                 >
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={loading} id="submitBtn-addStockPopup">
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Adding...' : 'Add Stock'}
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting || loading}
+                id="submitBtn-addStockPopup"
+                className="min-w-[80px]"
+              >
+                {(form.formState.isSubmitting || loading) && (
+                  <Loader2 className="size-4 animate-spin" />
+                )}
+                {form.formState.isSubmitting || loading ? 'Adding...' : 'Add Stock'}
               </Button>
             </DialogFooter>
           </form>

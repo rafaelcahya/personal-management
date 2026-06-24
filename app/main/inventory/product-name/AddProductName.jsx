@@ -18,6 +18,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,7 +26,7 @@ import {
 } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Tag } from 'lucide-react'
 import { productNameSchema } from '@/schemas/productName'
 import { createProductName } from '@/lib/api/productName'
 
@@ -68,17 +69,27 @@ export default function AddProductName({ onAdded }) {
       <DialogTrigger asChild id="addNewProductNameBtn_productNamePage">
         <Button>Add New Product Name</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md" id="addNewProductNameForm_productNamePage">
-        <DialogHeader>
-          <DialogTitle>Add New Product Name</DialogTitle>
-          <DialogDescription className="text-slate-foreground">
+      <DialogContent
+        className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
+        id="addNewProductNameForm_productNamePage"
+      >
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+            <Tag className="size-4 text-violet-500" />
+            Add New Product Name
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
             Create a new product name to organize your inventory — keep stock levels accurate and
             operations smooth.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit(handleAddNewProductName)} className="space-y-4">
+          <form
+            onSubmit={handleSubmit(handleAddNewProductName)}
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
+          >
             <FormField
               control={control}
               name="product_name"
@@ -97,10 +108,8 @@ export default function AddProductName({ onAdded }) {
                   </FormControl>
                   <FormMessage
                     id="productNameField_errorMessage_productNamePage"
-                    className="font-medium"
-                  >
-                    {fieldState.error?.message}
-                  </FormMessage>
+                    className="text-xs"
+                  />
                 </FormItem>
               )}
             />
@@ -123,19 +132,27 @@ export default function AddProductName({ onAdded }) {
               )}
             />
 
-            <DialogFooter>
+            <DialogFooter className="gap-2">
               <DialogClose asChild>
                 <Button
                   type="button"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                  className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
                   id="cancelNewProductNameBtn_productNamePage"
+                  disabled={form.formState.isSubmitting || loading}
                 >
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={loading} id="submitNewProductNameBtn_productNamePage">
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Adding...' : 'Add Product Name'}
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting || loading}
+                id="submitNewProductNameBtn_productNamePage"
+                className="min-w-[80px]"
+              >
+                {(form.formState.isSubmitting || loading) && (
+                  <Loader2 className="size-4 animate-spin" />
+                )}
+                {form.formState.isSubmitting || loading ? 'Adding...' : 'Add Product Name'}
               </Button>
             </DialogFooter>
           </form>

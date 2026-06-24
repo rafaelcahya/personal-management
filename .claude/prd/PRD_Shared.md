@@ -237,9 +237,7 @@ All forms in the app are rendered inside a `Dialog` modal. This section document
       >
         {/* fields */}
 
-        <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
-          {/* buttons */}
-        </DialogFooter>
+        <DialogFooter className="gap-2">{/* buttons */}</DialogFooter>
       </form>
     </Form>
   </DialogContent>
@@ -254,7 +252,7 @@ All forms in the app are rendered inside a `Dialog` modal. This section document
 | `DialogTitle` | `flex items-center gap-2 text-base font-semibold` — icon left, text right |
 | `DialogDescription` | `text-xs text-slate-500` |
 | `<form>` | `flex flex-col overflow-y-auto px-5 py-5 gap-5` + `noValidate` |
-| `DialogFooter` | `gap-2 pt-2 border-t border-slate-100` |
+| `DialogFooter` | `gap-2` |
 
 ---
 
@@ -428,7 +426,7 @@ Displayed between fields when a value is auto-calculated from user inputs.
 #### 8. Footer Buttons
 
 ```jsx
-<DialogFooter className="gap-2 pt-2 border-t border-slate-100">
+<DialogFooter className="gap-2">
   <DialogClose asChild>
     <Button
       type="button"

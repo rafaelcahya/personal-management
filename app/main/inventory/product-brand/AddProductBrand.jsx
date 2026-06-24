@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -25,13 +26,12 @@ import {
 } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, PlusCircle } from 'lucide-react'
 import { productBrandSchema } from '@/schemas/productBrand'
 import { addProductBrand } from '@/lib/api/productBrand'
 
 export default function AddProduct({ onAdded, context = 'desktop' }) {
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
 
   const form = useForm({
     resolver: zodResolver(productBrandSchema),
@@ -42,10 +42,9 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
     },
   })
 
-  const { control, handleSubmit, reset } = form
+  const { control, handleSubmit, reset, formState } = form
 
   const handleAddNewProductBrand = async (values) => {
-    setLoading(true)
     try {
       await addProductBrand(values)
       toast.success('New product brand added successfully!')
@@ -58,8 +57,6 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
       } else {
         toast.error(err.message || 'Something went wrong')
       }
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -76,41 +73,44 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
         <Button>Add Product Brand</Button>
       </DialogTrigger>
       <DialogContent
-        className="w-full sm:w-md"
+        className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
         id={`addNewProductBrandForm_${context}_productBrandPage`}
       >
-        <DialogHeader className="text-left">
-          <DialogTitle>🏷️ Add New Product Brand</DialogTitle>
-          <DialogDescription className="text-slate-foreground">
+        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <DialogTitle className="flex items-center gap-2">
+            <PlusCircle className="size-4 text-violet-600" aria-hidden="true" />
+            Add New Product Brand
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500">
             Create a new product brand to organize your inventory — keep stock levels accurate and
             operations smooth.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit(handleAddNewProductBrand)} className="space-y-4">
+          <form
+            onSubmit={handleSubmit(handleAddNewProductBrand)}
+            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+            noValidate
+          >
             <FormField
               control={control}
               name="brand"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel className="font-medium">Product brand</FormLabel>
+                  <FormLabel className="text-sm font-medium">Product brand</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="e.g. Clear"
                       id="brandNameInput_addBrandDialog"
-                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                        fieldState.error ? 'border-rose-500' : ''
-                      }`}
+                      className={cn(
+                        'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                        fieldState.error && 'border-rose-500'
+                      )}
                     />
                   </FormControl>
-                  <FormMessage
-                    id="brandField_errorMessage_productBrandPage"
-                    className="font-medium"
-                  >
-                    {fieldState.error?.message}
-                  </FormMessage>
+                  <FormMessage id="brandField_errorMessage_productBrandPage" className="text-xs" />
                 </FormItem>
               )}
             />
@@ -120,36 +120,40 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-medium">Notes</FormLabel>
+                  <FormLabel className="text-sm font-medium">Notes</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
                       placeholder="Additional notes"
                       id="noteInput_addBrandDialog"
-                      className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                     />
                   </FormControl>
                 </FormItem>
               )}
             />
 
-            <DialogFooter>
+            <DialogFooter className="gap-2">
               <DialogClose asChild>
                 <Button
                   type="button"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                  className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
                   id="cancelNewProductBrandBtn_productBrandPage"
+                  disabled={formState.isSubmitting}
                 >
                   Cancel
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={formState.isSubmitting}
                 id="submitNewProductBrandBtn_productBrandPage"
+                className="min-w-[80px]"
               >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Adding...' : 'Add Product Brand'}
+                {formState.isSubmitting && (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                )}
+                {formState.isSubmitting ? '' : 'Add Product Brand'}
               </Button>
             </DialogFooter>
           </form>
