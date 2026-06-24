@@ -195,7 +195,7 @@ export default function ProductsPageClient() {
   const isFiltering = filter !== null || debouncedSearch !== '' || sort !== null
 
   return (
-    <div className="flex flex-col gap-3 sm:gap-5">
+    <main id="productListPage" className="space-y-6">
       <PageHeader
         title="Product List"
         description="Manage and track all your products"
@@ -317,7 +317,7 @@ export default function ProductsPageClient() {
           />
         )}
       </div>
-    </div>
+    </main>
   )
 }
 

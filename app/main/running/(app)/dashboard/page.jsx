@@ -160,7 +160,7 @@ export default function RunningDashboardPage() {
   }
 
   return (
-    <div id="dashboardPage" className="flex flex-col gap-5">
+    <main id="dashboardPage" className="space-y-6">
       <PageHeader
         title="Dashboard"
         description="Overview of your training, load, and performance trends."
@@ -305,6 +305,6 @@ export default function RunningDashboardPage() {
           />
         </div>
       )}
-    </div>
+    </main>
   )
 }

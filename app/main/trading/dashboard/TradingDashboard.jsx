@@ -52,7 +52,7 @@ export default function TradingDashboard() {
   }
 
   return (
-    <main className="space-y-8">
+    <main id="tradingDashboardPage" className="space-y-6">
       <PageHeader
         title="Trading Dashboard"
         description="Complete overview of your trading performance and analytics"
