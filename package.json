@@ -17,7 +17,9 @@
     "cy:product": "cypress run --spec \"cypress/e2e/inventory_management/product/**/*.cy.js\"",
     "cy:regression": "node cypress/run-regression.mjs",
     "cy:summary": "node cypress/parse-results.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "storybook": "cross-env NEXT_PRIVATE_LOCAL_WEBPACK=1 storybook dev -p 6006",
+    "build-storybook": "cross-env NEXT_PRIVATE_LOCAL_WEBPACK=1 storybook build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
@@ -92,10 +94,13 @@
     "@cypress/grep": "^4.1.0",
     "@eslint/eslintrc": "^3",
     "@faker-js/faker": "^10.1.0",
+    "@storybook/addon-themes": "^8.6.18",
+    "@storybook/nextjs": "^8.6.18",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.20",
+    "cross-env": "^10.1.0",
     "cypress": "^15.11.0",
     "cypress-mochawesome-reporter": "^4.0.2",
     "cypress-real-events": "^1.15.0",
@@ -106,9 +111,11 @@
     "lint-staged": "^17.0.2",
     "postcss": "^8",
     "prettier": "^3.8.3",
+    "storybook": "^8.6.18",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5",
+    "vite": "^5.4.21",
     "wait-on": "^9.0.4"
   }
 }
