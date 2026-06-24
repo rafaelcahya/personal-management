@@ -149,7 +149,7 @@ export default function TradesPageClient({
   const showPagination = totalPages > 1
 
   return (
-    <div className="flex flex-col h-full gap-5">
+    <main id="tradePage" className="space-y-6">
       <PageHeader
         title="Trades"
         description="Log and manage your trading positions"
@@ -230,6 +230,6 @@ export default function TradesPageClient({
           </>
         )}
       </div>
-    </div>
+    </main>
   )
 }

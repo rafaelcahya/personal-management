@@ -113,7 +113,7 @@ export default function AnalyticsPage() {
   const vis = (id) => visibility[id] !== false
 
   return (
-    <div id="analyticsPage" className="flex flex-col gap-6">
+    <main id="analyticsPage" className="space-y-6">
       <PageHeader
         title="Analytics"
         description="Training trends, load analysis, and race predictions"
@@ -384,6 +384,6 @@ export default function AnalyticsPage() {
           {vis('temperatureEfficiencySection_analyticsPage') && <TemperatureEfficiencySection />}
         </>
       )}
-    </div>
+    </main>
   )
 }

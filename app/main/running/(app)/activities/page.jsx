@@ -228,7 +228,7 @@ function ActivitiesInner() {
   }
 
   return (
-    <div id="activitiesPage" className="flex flex-col gap-3 sm:gap-5">
+    <main id="activitiesPage" className="space-y-6">
       <PageHeader
         title="Activities"
         description="All your recorded workouts in one place"
@@ -239,7 +239,7 @@ function ActivitiesInner() {
       />
       <SyncStravaButton id="syncStravaBtn_activities" />
 
-      <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white overflow-hidden flex flex-col">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
           <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
@@ -583,7 +583,7 @@ function ActivitiesInner() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   )
 }
 

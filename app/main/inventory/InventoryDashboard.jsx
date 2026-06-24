@@ -75,7 +75,7 @@ export default function InventoryDashboard() {
   }, [])
 
   return (
-    <div className="flex flex-col gap-6 pb-6">
+    <main id="inventoryDashboardPage" className="space-y-6">
       <PageHeader
         title="Inventory Dashboard"
         description="Overview of your inventory, spending, and product analytics"
@@ -104,6 +104,6 @@ export default function InventoryDashboard() {
       <CostPerUseHistory items={costPerUseHistory} loading={loading} />
       <AvgUsageDuration items={avgUsageDuration} loading={loading} />
       <LifecycleScore items={lifecycleScore} loading={loading} />
-    </div>
+    </main>
   )
 }
