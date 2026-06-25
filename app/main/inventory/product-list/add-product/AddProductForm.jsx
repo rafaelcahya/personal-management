@@ -75,8 +75,10 @@ export default function AddProductForm({ onAdded }) {
 
   const loadProductBrands = async () => {
     try {
-      const brands = await fetchProductBrand()
-      const activeBrands = brands?.filter((brand) => brand.brand_status === 'active') || []
+      const { data: brands } = await fetchProductBrand()
+      const activeBrands = Array.isArray(brands)
+        ? brands.filter((b) => b.brand_status === 'active')
+        : []
       setProductBrands(activeBrands)
     } catch (err) {
       console.error('Fetch brands error:', err)
@@ -85,8 +87,10 @@ export default function AddProductForm({ onAdded }) {
 
   const loadProductNames = async () => {
     try {
-      const names = await fetchProductName()
-      const activeNames = names?.filter((name) => name.product_name_status === 'active') || []
+      const { data: names } = await fetchProductName()
+      const activeNames = Array.isArray(names)
+        ? names.filter((n) => n.product_name_status === 'active')
+        : []
       setProductNames(activeNames)
     } catch (err) {
       console.error('Fetch names error:', err)
