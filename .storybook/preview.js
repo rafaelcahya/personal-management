@@ -7,6 +7,14 @@ const preview = {
     nextjs: {
       appDirectory: true,
     },
+    options: {
+      storySort: {
+        order: [
+          'Base',
+          ['Button', ['Docs', 'Default', 'Secondary', 'Ghost', 'Outline', 'Link', 'Destructive']],
+        ],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,
