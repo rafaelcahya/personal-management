@@ -52,7 +52,7 @@ export default function ProductBrandDelete({ productBrand, onDeleted, onClose, d
         <AlertDialogFooter>
           <AlertDialogCancel
             id="cancelDeleteBrandBtn_productBrandPage"
-            className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
+            className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
           >
             Cancel
           </AlertDialogCancel>
