@@ -13,6 +13,7 @@ export default {
     theme: {
         extend: {
             colors: {
+                /* Surfaces */
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
                 card: {
@@ -23,39 +24,16 @@ export default {
                     DEFAULT: "hsl(var(--popover))",
                     foreground: "hsl(var(--popover-foreground))",
                 },
-                black: "hsl(var(--black))",
-                slate: {
-                    foreground: "hsl(var(--slate-foreground))",
-                },
+                /* Brand */
                 primary: {
                     DEFAULT: "hsl(var(--primary))",
                     foreground: "hsl(var(--primary-foreground))",
-                    hover: "hsl(var(--primary-hover))",
-                },
-                trade: {
-                    profit: {
-                        DEFAULT: "hsl(var(--trade-profit))",
-                        foreground: "hsl(var(--trade-profit-foreground))",
-                    },
-                    loss: {
-                        DEFAULT: "hsl(var(--trade-loss))",
-                        foreground: "hsl(var(--trade-loss-foreground))",
-                    },
-                    warning: {
-                        DEFAULT: "hsl(var(--trade-warning))",
-                        foreground: "hsl(var(--trade-warning-foreground))",
-                    },
                 },
                 secondary: {
                     DEFAULT: "hsl(var(--secondary))",
                     foreground: "hsl(var(--secondary-foreground))",
-                    hover: "hsl(var(--secondary-hover))",
                 },
-                tertiary: {
-                    DEFAULT: "hsl(var(--tertiary))",
-                    foreground: "hsl(var(--tertiary-foreground))",
-                    hover: "hsl(var(--tertiary-hover))",
-                },
+                /* UI */
                 muted: {
                     DEFAULT: "hsl(var(--muted))",
                     foreground: "hsl(var(--muted-foreground))",
@@ -64,13 +42,40 @@ export default {
                     DEFAULT: "hsl(var(--accent))",
                     foreground: "hsl(var(--accent-foreground))",
                 },
+                border: "hsl(var(--border))",
+                input: "hsl(var(--input))",
+                ring: "hsl(var(--ring))",
+                /* Feedback */
                 destructive: {
                     DEFAULT: "hsl(var(--destructive))",
                     foreground: "hsl(var(--destructive-foreground))",
                 },
-                border: "hsl(var(--border))",
-                input: "hsl(var(--input))",
-                ring: "hsl(var(--ring))",
+                success: {
+                    DEFAULT: "hsl(var(--success))",
+                    foreground: "hsl(var(--success-foreground))",
+                },
+                warning: {
+                    DEFAULT: "hsl(var(--warning))",
+                    foreground: "hsl(var(--warning-foreground))",
+                },
+                info: {
+                    DEFAULT: "hsl(var(--info))",
+                    foreground: "hsl(var(--info-foreground))",
+                },
+                /* Additional */
+                "success-subtle": {
+                    DEFAULT: "hsl(var(--success-subtle))",
+                    foreground: "hsl(var(--success-subtle-foreground))",
+                },
+                "destructive-subtle": {
+                    DEFAULT: "hsl(var(--destructive-subtle))",
+                    foreground: "hsl(var(--destructive-subtle-foreground))",
+                },
+                "warning-subtle": {
+                    DEFAULT: "hsl(var(--warning-subtle))",
+                    foreground: "hsl(var(--warning-subtle-foreground))",
+                },
+                /* Charts */
                 chart: {
                     "1": "hsl(var(--chart-1))",
                     "2": "hsl(var(--chart-2))",
