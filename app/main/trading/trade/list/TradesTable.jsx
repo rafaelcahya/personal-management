@@ -5,7 +5,7 @@ import { ArrowUp, ArrowDown } from 'lucide-react'
 import UpdateTrade from '../UpdateTrade'
 
 const profitLossColor = (value) =>
-  value < 0 ? 'text-[var(--color-trade-loss,#dc2626)]' : 'text-[var(--color-trade-profit,#16a34a)]'
+  value < 0 ? 'text-destructive-subtle-foreground' : 'text-success-subtle-foreground'
 
 const TH_BASE =
   'px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap'

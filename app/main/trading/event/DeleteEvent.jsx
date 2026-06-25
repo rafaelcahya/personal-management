@@ -52,7 +52,7 @@ export default function DeleteEvent({ event, onDeleted, onClose, redirectTo, ope
           <AlertDialogFooter>
             <AlertDialogCancel
               disabled={loading}
-              className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
+              className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
             >
               Cancel
             </AlertDialogCancel>
@@ -92,7 +92,7 @@ export default function DeleteEvent({ event, onDeleted, onClose, redirectTo, ope
         <AlertDialogFooter>
           <AlertDialogCancel
             disabled={loading}
-            className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
+            className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
           >
             Cancel
           </AlertDialogCancel>
