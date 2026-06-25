@@ -11,7 +11,11 @@ const preview = {
       storySort: {
         order: [
           'Base',
-          ['Button', ['Docs', 'Default', 'Secondary', 'Ghost', 'Outline', 'Link', 'Destructive']],
+          [
+            'Colors',
+            'Button',
+            ['Docs', 'Default', 'Secondary', 'Ghost', 'Outline', 'Link', 'Destructive'],
+          ],
         ],
       },
     },
