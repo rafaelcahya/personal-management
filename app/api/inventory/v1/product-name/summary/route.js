@@ -15,11 +15,11 @@ export async function GET() {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
-    const productNames = await getProductNameList(user.id)
+    const { data: productNames } = await getProductNameList(user.id)
 
     const totalProductNames = Array.isArray(productNames) ? productNames.length : 0
 
-    const totalStatus = productNames.reduce((acc, totalProductName) => {
+    const totalStatus = (productNames ?? []).reduce((acc, totalProductName) => {
       const type = totalProductName.product_name_status
       acc[type] = (acc[type] || 0) + 1
       return acc

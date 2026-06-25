@@ -64,9 +64,12 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
 
     async function loadOptions() {
       try {
-        const [b, n] = await Promise.all([fetchProductBrand(), fetchProductName()])
-        setBrands(b?.filter((x) => x.brand_status === 'active') ?? [])
-        setProductNames(n?.filter((x) => x.product_name_status === 'active') ?? [])
+        const [{ data: b }, { data: n }] = await Promise.all([
+          fetchProductBrand(),
+          fetchProductName(),
+        ])
+        setBrands(Array.isArray(b) ? b.filter((x) => x.brand_status === 'active') : [])
+        setProductNames(Array.isArray(n) ? n.filter((x) => x.product_name_status === 'active') : [])
       } catch (err) {
         console.error('Failed to load brands/names:', err)
       }
