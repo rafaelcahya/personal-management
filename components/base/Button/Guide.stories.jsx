@@ -3,7 +3,7 @@ import Button from '../Button'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
-  title: 'Base/Button',
+  title: 'Input/Button',
 }
 
 export default meta

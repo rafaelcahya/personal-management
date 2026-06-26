@@ -3,7 +3,7 @@ import Button from '../Button'
 
 /** @type {import('@storybook/nextjs').Meta<typeof Button>} */
 const meta = {
-  title: 'Base/Button/Link',
+  title: 'Input/Button/Link',
   component: Button,
 }
 
