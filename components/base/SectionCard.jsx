@@ -1,15 +1,5 @@
-import { createElement, useId } from 'react'
-
-const variants = {
-  shell: {
-    section: 'bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden',
-    header: 'px-5 py-4 border-b border-slate-100',
-  },
-  transparent: {
-    section: '',
-    header: 'pb-3',
-  },
-}
+import { useId } from 'react'
+import Card, { CardAction, CardDescription, CardHeader, CardIcon, CardTitle } from './Card'
 
 export default function SectionCard({
   icon,
@@ -38,35 +28,25 @@ export default function SectionCard({
           : 'justify-end'
       : ''
 
-  const v = variants[variant] ?? variants.shell
-
   return (
-    <section
-      id={id}
-      aria-labelledby={titleId}
-      className={[v.section, className].filter(Boolean).join(' ')}
-    >
+    <Card variant={variant} id={id} className={className} aria-labelledby={titleId}>
       {hasHeader && (
-        <div className={`flex items-start gap-3 ${v.header} ${alignClass}`}>
-          {icon && (
-            <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-              {createElement(icon, { className: 'size-4 text-violet-600', 'aria-hidden': 'true' })}
-            </div>
-          )}
+        <CardHeader className={alignClass || undefined}>
+          {icon && <CardIcon icon={icon} />}
           {(title || description) && (
             <div className="min-w-0 flex-1">
               {title && (
-                <TitleTag id={titleId} className="text-sm font-semibold text-slate-900">
+                <CardTitle as={TitleTag} id={titleId}>
                   {title}
-                </TitleTag>
+                </CardTitle>
               )}
-              {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
+              {description && <CardDescription>{description}</CardDescription>}
             </div>
           )}
-          {action && <div className="shrink-0">{action}</div>}
-        </div>
+          {action && <CardAction>{action}</CardAction>}
+        </CardHeader>
       )}
       {children}
-    </section>
+    </Card>
   )
 }
