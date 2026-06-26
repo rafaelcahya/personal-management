@@ -11,7 +11,9 @@ import AddProductForm from './add-product/AddProductForm'
 import ProductFilterDropdown from './list/component/ProductFilterDropdown'
 import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
-import { Search, X } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
+import { Search, X, AlertCircle, Package } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
 
 const FILTER_STORAGE_KEY = 'product-list-filter'
@@ -193,7 +195,7 @@ export default function ProductsPageClient() {
   const isFiltering = filter !== null || debouncedSearch !== '' || sort !== null
 
   return (
-    <div className="flex flex-col gap-3 sm:gap-5">
+    <main id="productListPage" className="space-y-6">
       <PageHeader
         title="Product List"
         description="Manage and track all your products"
@@ -205,11 +207,8 @@ export default function ProductsPageClient() {
         onFilterChange={handleFilterChange}
       />
 
-      <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white flex flex-col">
-        {/* Title */}
-        <div className="px-3 sm:px-5 pt-3 sm:pt-5">
-          <ProductTableHeader summary={summary} loading={summaryLoading} />
-        </div>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <ProductTableHeader summary={summary} loading={summaryLoading} />
 
         {/* Controls bar */}
         <div
@@ -231,74 +230,94 @@ export default function ProductsPageClient() {
         </div>
 
         {/* Table area */}
-        <div className="px-3 sm:px-5 py-3 sm:py-4">
-          {loading ? (
-            <div id="loadingSkeleton_productListPage" className="flex flex-col gap-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-12 w-full rounded-md bg-slate-100 animate-pulse" />
-              ))}
+        {loading ? (
+          <div
+            id="loadingSkeleton_productListPage"
+            className="animate-pulse"
+            aria-label="Loading products"
+          >
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
+                <Skeleton className="h-4 w-6" />
+                <Skeleton className="h-4 flex-1" />
+                <Skeleton className="h-4 w-20 hidden sm:block" />
+                <Skeleton className="h-4 w-16 hidden sm:block" />
+                <Skeleton className="h-4 w-24 hidden sm:block" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div
+            id="errorState_productListPage"
+            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+            role="alert"
+            aria-live="assertive"
+          >
+            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-slate-700">Failed to load products</p>
+              <p className="text-xs text-slate-500">Check your connection and try again</p>
             </div>
-          ) : error ? (
-            <div
-              id="errorState_productListPage"
-              className="flex flex-col items-center gap-3 py-16 text-center"
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fetchProducts()}
+              className="min-w-11"
             >
-              <p className="text-sm text-red-600 font-medium">{error}</p>
-              <button
-                onClick={() => fetchProducts()}
-                className="text-xs text-violet-600 hover:text-violet-700 underline underline-offset-2"
-              >
-                Try again
-              </button>
+              Try again
+            </Button>
+          </div>
+        ) : products.length === 0 && !isFiltering ? (
+          <div
+            id="emptyState_productListPage"
+            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+          >
+            <Package className="size-10 text-slate-300" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-slate-700">No products yet</p>
+              <p className="text-xs text-slate-500">Start by adding your first product</p>
             </div>
-          ) : products.length === 0 && !isFiltering ? (
-            <p
-              id="emptyState_productListPage"
-              className="text-center font-medium text-slate-foreground py-8 sm:py-10 text-sm sm:text-base"
-            >
-              No products yet. Start by adding a new product 🚀
-            </p>
-          ) : products.length === 0 && isFiltering ? (
-            <div
-              id="filteredEmptyState_productListPage"
-              className="flex flex-col items-center gap-3 py-16 text-center"
-            >
-              <span className="text-5xl text-slate-300">📦</span>
-              <p className="font-semibold text-slate-600 text-sm">No products match your filters</p>
+          </div>
+        ) : products.length === 0 && isFiltering ? (
+          <div
+            id="filteredEmptyState_productListPage"
+            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+          >
+            <Package className="size-10 text-slate-300" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-slate-700">No products match your filters</p>
               {filter && (
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   Active filter: <span className="font-medium">{filter}</span>
                 </p>
               )}
               {debouncedSearch && (
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   Search: <span className="font-medium">"{debouncedSearch}"</span>
                 </p>
               )}
-              <button
-                onClick={handleClearFilters}
-                className="mt-1 text-xs text-violet-600 hover:text-violet-700 underline underline-offset-2"
-              >
-                Clear filters & search
-              </button>
             </div>
-          ) : (
-            <ProductsTable
-              products={products}
-              sort={sort}
-              onSortChange={handleSortChange}
-              onRefresh={handleRefresh}
-              restockPredictions={restockPredictions}
-              page={page}
-              total={total}
-              totalPages={totalPages}
-              onPrev={() => setPage((p) => Math.max(1, p - 1))}
-              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
-            />
-          )}
-        </div>
+            <Button variant="outline" size="sm" onClick={handleClearFilters} className="min-w-11">
+              Clear filters
+            </Button>
+          </div>
+        ) : (
+          <ProductsTable
+            products={products}
+            sort={sort}
+            onSortChange={handleSortChange}
+            onRefresh={handleRefresh}
+            restockPredictions={restockPredictions}
+            page={page}
+            total={total}
+            totalPages={totalPages}
+            onPrev={() => setPage((p) => Math.max(1, p - 1))}
+            onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+          />
+        )}
       </div>
-    </div>
+    </main>
   )
 }
 

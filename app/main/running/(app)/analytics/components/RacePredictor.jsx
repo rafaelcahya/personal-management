@@ -88,28 +88,35 @@ export default function RacePredictor({ activities }) {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm" aria-label="Race predictor results">
+        <table
+          id="racePredictorTable_analyticsPage"
+          className="min-w-full text-sm"
+          aria-label="Race predictor results"
+        >
           <thead>
             <tr className="border-b border-slate-100">
-              <th className="text-left py-2 pr-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Distance
               </th>
-              <th className="text-left py-2 pr-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Predicted Time
               </th>
-              <th className="text-left py-2 text-xs font-medium text-slate-400 uppercase tracking-wide">
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Predicted Pace
               </th>
             </tr>
           </thead>
           <tbody>
             {predictions.map((p) => (
-              <tr key={p.label} className="border-b border-slate-50 last:border-0">
-                <td className="py-2.5 pr-4 font-medium text-slate-700">{p.label}</td>
-                <td className="py-2.5 pr-4 text-slate-800 font-semibold tabular-nums">
+              <tr
+                key={p.label}
+                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+              >
+                <td className="px-5 py-3.5 font-semibold text-slate-900">{p.label}</td>
+                <td className="px-5 py-3.5 font-mono font-semibold text-slate-700">
                   {fmtDurationShort(p.predicted_sec)}
                 </td>
-                <td className="py-2.5 text-slate-600 tabular-nums">{fmtPace(p.pace_sec)} /km</td>
+                <td className="px-5 py-3.5 font-mono text-slate-700">{fmtPace(p.pace_sec)} /km</td>
               </tr>
             ))}
           </tbody>

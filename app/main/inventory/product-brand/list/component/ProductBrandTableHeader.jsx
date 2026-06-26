@@ -1,19 +1,17 @@
+import { Tag } from 'lucide-react'
+
 export default function ProductBrandTableHeader({ brands = [] }) {
-    return (
-        <div className="space-y-1">
-            <h2 className="text-xl font-bold text-slate-800">
-                🏷️ Product Brands
-            </h2>
-            <p className="text-sm text-slate-600 leading-relaxed max-w-xl">
-                Your complete brand management hub. Keep track of all your
-                favorite brands, monitor their status, and add important notes
-                to remember what makes each one special. You're currently
-                managing{" "}
-                <span className="font-semibold text-violet-600">
-                    {brands.length}
-                </span>{" "}
-                awesome {brands.length === 1 ? "brand" : "brands"}!
-            </p>
-        </div>
-    );
+  return (
+    <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+      <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+        <Tag className="size-4 text-violet-600" aria-hidden="true" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-slate-900">Product Brands</p>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Manage brand status and notes for your inventory
+        </p>
+      </div>
+    </div>
+  )
 }

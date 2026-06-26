@@ -50,7 +50,7 @@ export default function DeleteProductName({ productName, onDeleted, onClose, dis
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none">
+          <AlertDialogCancel className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction

@@ -9,8 +9,8 @@ export default function TradeMetricStrip({ summary }) {
   const isPositive = netPnL >= 0
   const sign = isPositive ? '+' : ''
   const netPnLColor = isPositive
-    ? 'text-[var(--color-trade-profit,#16a34a)]'
-    : 'text-[var(--color-trade-loss,#dc2626)]'
+    ? 'text-success-subtle-foreground'
+    : 'text-destructive-subtle-foreground'
 
   return (
     <p

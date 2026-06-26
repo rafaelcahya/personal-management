@@ -2,14 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import UpdateEvent from './UpdateEvent'
 import ImpactBadge from './component/ImpactBadge'
@@ -45,44 +37,44 @@ export default function EventTable({ events, onRefresh, selectedIds = new Set(),
       </div>
 
       {/* Desktop table — lg and above */}
-      <div className="hidden lg:block">
-        <Table className="w-full">
-          <TableHeader className="bg-slate-100 sticky top-0 z-20">
-            <TableRow className="border-none">
-              {onToggle && <TableHead className="py-2 w-10 rounded-l-lg" />}
-              <TableHead
-                className={`py-2 text-slate-foreground ${!onToggle ? 'rounded-l-lg' : ''}`}
-              >
+      <div className="hidden lg:block overflow-x-auto">
+        <table className="min-w-full text-sm" aria-label="Events">
+          <thead>
+            <tr className="border-b border-slate-100">
+              {onToggle && (
+                <th className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-10" />
+              )}
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Event
-              </TableHead>
-              <TableHead className="py-2 text-slate-foreground text-center w-[130px]">
+              </th>
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[130px]">
                 Impact
-              </TableHead>
-              <TableHead className="py-2 text-slate-foreground text-center w-[140px]">
+              </th>
+              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[140px]">
                 Date
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
             {events.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={onToggle ? 4 : 3} className="text-center py-8 text-slate-500">
+              <tr>
+                <td colSpan={onToggle ? 4 : 3} className="px-5 py-8 text-center text-slate-500">
                   No events found.
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ) : (
               events.map((event) => {
                 const linkCount = Array.isArray(event.links) ? event.links.length : 0
                 const isSelected = selectedIds.has(event.id)
                 return (
-                  <TableRow
+                  <tr
                     key={event.id}
-                    className={`cursor-pointer ${isSelected ? 'bg-violet-50' : 'hover:bg-slate-50'}`}
+                    className={`border-b border-slate-50 cursor-pointer transition-colors ${isSelected ? 'bg-violet-50' : 'hover:bg-slate-50'}`}
                     onClick={() => router.push(`/main/trading/event/${event.id}`)}
                   >
                     {onToggle && (
-                      <TableCell
-                        className="w-10 pl-3"
+                      <td
+                        className="px-5 py-3.5 w-10"
                         onClick={(e) => {
                           e.stopPropagation()
                           onToggle(event.id, event)
@@ -96,9 +88,9 @@ export default function EventTable({ events, onRefresh, selectedIds = new Set(),
                           onClick={(e) => e.stopPropagation()}
                           className="size-4 rounded accent-violet-600 cursor-pointer"
                         />
-                      </TableCell>
+                      </td>
                     )}
-                    <TableCell className="py-3 whitespace-normal">
+                    <td className="px-5 py-3.5 whitespace-normal">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="font-semibold text-sm text-slate-800">
@@ -126,23 +118,19 @@ export default function EventTable({ events, onRefresh, selectedIds = new Set(),
                           </div>
                         )}
                       </div>
-                    </TableCell>
-
-                    <TableCell className="text-center w-[130px]">
-                      <div className="flex items-center justify-center">
-                        <ImpactBadge value={event.impact_direction} />
-                      </div>
-                    </TableCell>
-
-                    <TableCell className="text-center w-[140px]">
+                    </td>
+                    <td className="px-5 py-3.5 w-[130px]">
+                      <ImpactBadge value={event.impact_direction} />
+                    </td>
+                    <td className="px-5 py-3.5 text-slate-700 w-[140px]">
                       <p className="font-medium text-sm">{formatEventDate(event.event_date)}</p>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 )
               })
             )}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
 
       {selectedEvent && (

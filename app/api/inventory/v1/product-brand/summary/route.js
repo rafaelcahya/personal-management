@@ -15,7 +15,7 @@ export async function GET() {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
-    const productBrands = await getProductBrandList(user.id)
+    const { data: productBrands } = await getProductBrandList(user.id)
 
     const totalProductBrands = Array.isArray(productBrands) ? productBrands.length : 0
 

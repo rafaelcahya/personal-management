@@ -1,14 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import {
   DropdownMenu,
@@ -197,7 +189,7 @@ export default function ProductsTable({
   return (
     <>
       {/* ── Mobile Card List (< sm) ── */}
-      <div id="mobileCards_productListPage" className="flex flex-col gap-2 sm:hidden">
+      <div id="mobileCards_productListPage" className="flex flex-col gap-2 sm:hidden px-3 py-3">
         {products.map((product) => (
           <div
             key={product.id}
@@ -295,155 +287,159 @@ export default function ProductsTable({
       </div>
 
       {/* ── Desktop Table (sm+) ── */}
-      <Table id="desktopTable_productListPage" className="hidden sm:table w-full table-auto">
-        <TableHeader className="bg-slate-100">
-          <TableRow className="border-none uppercase text-xs">
-            <TableHead
-              className="py-2 text-slate-foreground rounded-l-lg w-[35%] cursor-pointer select-none"
-              onClick={() => handleSort('product')}
-            >
-              Product
-              <SortIcon column="product" sort={sort} />
-            </TableHead>
-            <TableHead
-              className="py-2 text-slate-foreground text-right w-[12%] cursor-pointer select-none"
-              onClick={() => handleSort('quantity')}
-            >
-              Quantity
-              <SortIcon column="quantity" sort={sort} />
-            </TableHead>
-            <TableHead
-              className="py-2 text-slate-foreground text-right w-[15%] cursor-pointer select-none"
-              onClick={() => handleSort('in_use')}
-            >
-              In Use
-              <SortIcon column="in_use" sort={sort} />
-            </TableHead>
-            <TableHead
-              className="py-2 text-slate-foreground text-center w-[13%] cursor-pointer select-none"
-              onClick={() => handleSort('usage_date')}
-            >
-              Usage Date
-              <SortIcon column="usage_date" sort={sort} />
-            </TableHead>
-            <TableHead className="py-2 text-slate-foreground text-center w-[13%]">
-              Product Status
-            </TableHead>
-            <TableHead className="py-2 text-slate-foreground text-center rounded-r-lg w-[12%]">
-              Actions
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {products.map((product) => (
-            <TableRow key={product.id} className="hover:bg-slate-100">
-              <TableCell className="w-[35%]">
-                <div className="flex items-center gap-3">
-                  <StarIcon
-                    className={`size-4 flex-shrink-0 ${
-                      product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'
-                    }`}
-                  />
-                  {product.product_image && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setPreviewImg(product.product_image)
-                      }}
-                      className="shrink-0"
-                      aria-label="View product image"
-                    >
-                      <img
-                        src={product.product_image}
-                        alt={product.product}
-                        className="size-8 rounded object-cover border border-slate-200"
-                      />
-                    </button>
-                  )}
-                  <div className="min-w-0">
-                    <p className="text-xs text-slate-400 truncate">{product.brand}</p>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <p className="font-medium text-slate-700 truncate">{product.product}</p>
-                      {product.type && (
-                        <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                          {product.type}
-                        </span>
-                      )}
+      <div className="hidden sm:block overflow-x-auto flex-1">
+        <table
+          id="desktopTable_productListPage"
+          className="min-w-full text-sm"
+          aria-label="Products"
+        >
+          <thead>
+            <tr className="border-b border-slate-100">
+              <th
+                className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[35%] cursor-pointer select-none"
+                onClick={() => handleSort('product')}
+              >
+                Product <SortIcon column="product" sort={sort} />
+              </th>
+              <th
+                className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[12%] cursor-pointer select-none"
+                onClick={() => handleSort('quantity')}
+              >
+                Quantity <SortIcon column="quantity" sort={sort} />
+              </th>
+              <th
+                className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[15%] cursor-pointer select-none"
+                onClick={() => handleSort('in_use')}
+              >
+                In Use <SortIcon column="in_use" sort={sort} />
+              </th>
+              <th
+                className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[13%] cursor-pointer select-none"
+                onClick={() => handleSort('usage_date')}
+              >
+                Usage Date <SortIcon column="usage_date" sort={sort} />
+              </th>
+              <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[13%]">
+                Status
+              </th>
+              <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[12%]">
+                <span className="sr-only">Actions</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product) => (
+              <tr
+                key={product.id}
+                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+              >
+                <td className="px-5 py-3.5 w-[35%]">
+                  <div className="flex items-center gap-3">
+                    <StarIcon
+                      className={`size-4 flex-shrink-0 ${
+                        product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'
+                      }`}
+                    />
+                    {product.product_image && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setPreviewImg(product.product_image)
+                        }}
+                        className="shrink-0"
+                        aria-label="View product image"
+                      >
+                        <img
+                          src={product.product_image}
+                          alt={product.product}
+                          className="size-8 rounded object-cover border border-slate-200"
+                        />
+                      </button>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-xs text-slate-400 truncate">{product.brand}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <p className="font-semibold text-slate-900 truncate">{product.product}</p>
+                        {product.type && (
+                          <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
+                            {product.type}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </TableCell>
-              <TableCell className="text-right w-[12%]">
-                <QuantityBadge quantity={product.quantity} />
-                {restockPredictions[product.id] &&
-                  product.quantity > 0 &&
-                  (() => {
-                    const { days_until_empty } = restockPredictions[product.id]
-                    const isUrgent = days_until_empty <= 7
-                    return (
-                      <p
-                        className={`text-xs mt-0.5 font-mono ${isUrgent ? 'text-orange-500' : 'text-muted-foreground'}`}
-                      >
-                        ~{days_until_empty}d left
-                      </p>
-                    )
-                  })()}
-              </TableCell>
-              <TableCell className="text-right font-mono font-medium tabular-nums w-[15%]">
-                {product.usage_quantity}
-              </TableCell>
-              <TableCell className="text-center text-sm w-[13%]">
-                {product.usage_date ? format(new Date(product.usage_date), 'dd MMM yyyy') : '-'}
-              </TableCell>
-              <TableCell className="text-center w-[13%]">
-                <Badge
-                  className={`${
-                    product.product_status === 'active'
-                      ? 'bg-green-100 text-green-600 hover:bg-green-100 capitalize'
-                      : 'bg-red-100 text-red-600 hover:bg-red-100 capitalize'
-                  }`}
-                >
-                  {product.product_status}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-center w-[12%]">
-                <ActionMenu product={product} {...sharedActionProps} />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                </td>
+                <td className="px-5 py-3.5 text-right w-[12%]">
+                  <QuantityBadge quantity={product.quantity} />
+                  {restockPredictions[product.id] &&
+                    product.quantity > 0 &&
+                    (() => {
+                      const { days_until_empty } = restockPredictions[product.id]
+                      const isUrgent = days_until_empty <= 7
+                      return (
+                        <p
+                          className={`text-xs mt-0.5 font-mono ${isUrgent ? 'text-orange-500' : 'text-muted-foreground'}`}
+                        >
+                          ~{days_until_empty}d left
+                        </p>
+                      )
+                    })()}
+                </td>
+                <td className="px-5 py-3.5 text-right font-mono font-medium tabular-nums text-slate-700 w-[15%]">
+                  {product.usage_quantity}
+                </td>
+                <td className="px-5 py-3.5 text-center text-slate-700 w-[13%]">
+                  {product.usage_date ? format(new Date(product.usage_date), 'dd MMM yyyy') : '—'}
+                </td>
+                <td className="px-5 py-3.5 text-center w-[13%]">
+                  <Badge
+                    className={`${
+                      product.product_status === 'active'
+                        ? 'bg-green-100 text-green-600 hover:bg-green-100 capitalize'
+                        : 'bg-red-100 text-red-600 hover:bg-red-100 capitalize'
+                    }`}
+                  >
+                    {product.product_status}
+                  </Badge>
+                </td>
+                <td className="px-5 py-3.5 text-center w-[12%]">
+                  <ActionMenu product={product} {...sharedActionProps} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      {/* Pagination footer — shown only when there are multiple pages */}
-      {totalPages > 1 && (
-        <div
-          id="paginationFooter_productListPage"
-          className="flex items-center justify-between pt-2 mt-2"
-          aria-label="Pagination"
-        >
-          <button
-            onClick={onPrev}
-            disabled={page <= 1}
-            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
-            aria-label="Previous page"
+        {totalPages > 1 && (
+          <div
+            id="paginationFooter_productListPage"
+            className="flex items-center justify-between px-5 pt-2 mt-2"
+            aria-label="Pagination"
           >
-            <ChevronLeft className="size-4" aria-hidden="true" />
-            Prev
-          </button>
-          <span className="text-xs text-slate-400 text-center" aria-live="polite">
-            Page {page} of {totalPages} · {total} records
-          </span>
-          <button
-            onClick={onNext}
-            disabled={page >= totalPages}
-            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
-            aria-label="Next page"
-          >
-            Next
-            <ChevronRight className="size-4" aria-hidden="true" />
-          </button>
-        </div>
-      )}
+            <button
+              onClick={onPrev}
+              disabled={page <= 1}
+              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="size-4" aria-hidden="true" />
+              Prev
+            </button>
+            <span className="text-xs text-slate-400 text-center" aria-live="polite">
+              Page {page} of {totalPages} · {total} records
+            </span>
+            <button
+              onClick={onNext}
+              disabled={page >= totalPages}
+              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+              aria-label="Next page"
+            >
+              Next
+              <ChevronRight className="size-4" aria-hidden="true" />
+            </button>
+          </div>
+        )}
+      </div>
 
       {selectedProduct && (
         <StockAdjustment

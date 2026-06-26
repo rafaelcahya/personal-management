@@ -4,14 +4,6 @@ import { useState } from 'react'
 import { Heart, Info } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
   BarChart,
   Bar,
   XAxis,
@@ -24,6 +16,9 @@ import {
 } from 'recharts'
 import { fmtPace, fmtDuration } from '../../dashboard/utils/format'
 import { SectionLabel } from './activityShared'
+
+const TH =
+  'px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap'
 
 const METRICS = ['Pace', 'Time', 'HR', 'GAP', 'EF']
 
@@ -316,33 +311,30 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
 
       {view === 'table' && (
         <div className="overflow-x-auto">
-          <Table className="w-full table-auto">
-            <TableHeader className="bg-slate-100">
-              <TableRow className="border-none uppercase text-xs">
-                <TableHead className="py-2 text-slate-foreground rounded-l-lg w-10">#</TableHead>
-                <TableHead className="py-2 text-slate-foreground text-right">Dist</TableHead>
-                <TableHead className="py-2 text-slate-foreground text-right">Pace</TableHead>
-                <TableHead className="py-2 text-slate-foreground text-right">Time</TableHead>
-                {hasSplitsHr && (
-                  <TableHead className="py-2 text-slate-foreground text-right">HR</TableHead>
-                )}
-                <TableHead className="py-2 text-slate-foreground text-right rounded-r-lg">
-                  Elev
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <table className="min-w-full text-sm" aria-label="Splits table">
+            <thead>
+              <tr className="border-b border-slate-100">
+                <th className={`${TH} text-left w-10`}>#</th>
+                <th className={`${TH} text-right`}>Dist</th>
+                <th className={`${TH} text-right`}>Pace</th>
+                <th className={`${TH} text-right`}>Time</th>
+                {hasSplitsHr && <th className={`${TH} text-right`}>HR</th>}
+                <th className={`${TH} text-right`}>Elev</th>
+              </tr>
+            </thead>
+            <tbody>
               {splits.map((s) => (
-                <TableRow key={s.id ?? s.split_number} className="hover:bg-slate-50">
-                  <TableCell className="text-xs text-slate-400 font-medium">
+                <tr
+                  key={s.id ?? s.split_number}
+                  className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                >
+                  <td className="px-5 py-3.5 text-xs text-slate-400 font-medium">
                     {s.split_number}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="font-mono tabular-nums text-sm text-slate-700">
-                      {s.distance_m ? `${(s.distance_m / 1000).toFixed(2)} km` : '—'}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
+                  </td>
+                  <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
+                    {s.distance_m ? `${(s.distance_m / 1000).toFixed(2)} km` : '—'}
+                  </td>
+                  <td className="px-5 py-3.5 text-right">
                     <span className="font-mono tabular-nums text-sm text-slate-700">
                       {s.pace_sec_per_km ? `${fmtPace(s.pace_sec_per_km)}/km` : '—'}
                     </span>
@@ -360,30 +352,24 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                         })()}
                       </div>
                     )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="font-mono tabular-nums text-sm text-slate-700">
-                      {s.duration_sec ? fmtDuration(s.duration_sec) : '—'}
-                    </span>
-                  </TableCell>
+                  </td>
+                  <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
+                    {s.duration_sec ? fmtDuration(s.duration_sec) : '—'}
+                  </td>
                   {hasSplitsHr && (
-                    <TableCell className="text-right">
-                      <span className="font-mono tabular-nums text-sm text-slate-700">
-                        {s.avg_hr ? `${s.avg_hr}` : '—'}
-                      </span>
-                    </TableCell>
+                    <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
+                      {s.avg_hr ? `${s.avg_hr}` : '—'}
+                    </td>
                   )}
-                  <TableCell className="text-right">
-                    <span className="font-mono tabular-nums text-sm text-slate-700">
-                      {s.elevation_gain_m != null
-                        ? `${s.elevation_gain_m > 0 ? '+' : ''}${Math.round(s.elevation_gain_m)} m`
-                        : '—'}
-                    </span>
-                  </TableCell>
-                </TableRow>
+                  <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
+                    {s.elevation_gain_m != null
+                      ? `${s.elevation_gain_m > 0 ? '+' : ''}${Math.round(s.elevation_gain_m)} m`
+                      : '—'}
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       )}
 

@@ -8,8 +8,8 @@ import { fetchProductName } from '@/lib/api/productName'
 import ProductNameFilterDropdown from './list/component/ProductNameFilterDropdown'
 import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
-import { Search, X, PackageOpen } from 'lucide-react'
-import InventoryTableSkeleton from '@/app/main/components/InventoryTableSkeleton'
+import { Search, X, FileText, AlertCircle } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 
 const LIMIT = 15
@@ -39,23 +39,6 @@ function NameSearchInput({ searchQuery, setSearchQuery }) {
     </div>
   )
 }
-
-const NAME_SKELETON_HEADER = [
-  'h-4 w-6 rounded',
-  'h-4 w-28 rounded',
-  'h-4 w-16 rounded ml-auto',
-  'h-4 w-16 rounded',
-  'h-4 w-24 rounded',
-  'h-4 w-10 rounded',
-]
-const NAME_SKELETON_ROW = [
-  'h-4 w-4 rounded',
-  'h-4 w-32 rounded',
-  'h-5 w-16 rounded-full ml-auto',
-  'h-5 w-8 rounded-full',
-  'h-4 w-32 rounded',
-  'h-6 w-6 rounded',
-]
 
 export default function ProductNamesPageClient() {
   const [names, setNames] = useState([])
@@ -119,11 +102,8 @@ export default function ProductNamesPageClient() {
         breadcrumbs={[{ label: 'Inventory', href: '/main/inventory' }, { label: 'Product Name' }]}
       />
 
-      <div className="border border-slate-200/50 shadow-slate-100 rounded-xl bg-white flex flex-col">
-        {/* Title */}
-        <div className="px-3 sm:px-5 pt-3 sm:pt-5">
-          <ProductNameTableHeader names={names} />
-        </div>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <ProductNameTableHeader names={names} />
 
         {/* Controls bar */}
         <div
@@ -145,54 +125,69 @@ export default function ProductNamesPageClient() {
         </div>
 
         {/* Table area */}
-        <div className="px-3 sm:px-5 py-3 sm:py-4">
-          {error ? (
-            <div
-              id="errorState_productNamePage"
-              className="flex flex-col items-center justify-center gap-3 py-12 text-center"
-            >
-              <p className="text-sm font-semibold text-red-600">Failed to load product names</p>
-              <p className="text-xs text-slate-400">{error}</p>
-              <Button variant="outline" size="sm" onClick={handleRefresh} className="text-xs h-8">
-                Retry
-              </Button>
+        {error ? (
+          <div
+            id="errorState_productNamePage"
+            className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+            role="alert"
+            aria-live="assertive"
+          >
+            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-slate-700">Failed to load product names</p>
+              <p className="text-xs text-slate-500">Check your connection and try again</p>
             </div>
-          ) : loading ? (
-            <InventoryTableSkeleton
-              id="loadingSkeleton_productNamePage"
-              headerCols={NAME_SKELETON_HEADER}
-              rowCols={NAME_SKELETON_ROW}
-            />
-          ) : total === 0 && !hasActiveFilters ? (
-            <div
-              id="emptyState_productNamePage"
-              className="flex flex-col items-center justify-center gap-3 py-12 text-center"
-            >
-              <PackageOpen className="h-10 w-10 text-slate-300" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-slate-600">No product names yet</p>
-                <p className="text-xs text-slate-400">
-                  Add your first product name to start organizing your inventory
-                </p>
+            <Button variant="outline" size="sm" onClick={handleRefresh} className="min-w-11">
+              Try again
+            </Button>
+          </div>
+        ) : loading ? (
+          <div
+            id="loadingSkeleton_productNamePage"
+            className="animate-pulse"
+            aria-label="Loading product names"
+          >
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
+                <Skeleton className="h-4 w-4" />
+                <Skeleton className="h-4 w-6" />
+                <Skeleton className="h-4 w-36" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="h-5 w-10 rounded-full" />
+                <Skeleton className="h-4 flex-1 hidden sm:block" />
+                <Skeleton className="h-6 w-6 rounded" />
               </div>
-              <AddProductName onAdded={handleRefresh} />
+            ))}
+          </div>
+        ) : total === 0 && !hasActiveFilters ? (
+          <div
+            id="emptyState_productNamePage"
+            className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+          >
+            <FileText className="size-10 text-slate-300" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-slate-700">No product names yet</p>
+              <p className="text-xs text-slate-500">
+                Add your first product name to start organizing your inventory
+              </p>
             </div>
-          ) : showTable ? (
-            <ProductNamesTable
-              names={names}
-              page={page}
-              totalPages={totalPages}
-              total={total}
-              filterStatus={filterStatus}
-              searchQuery={searchQuery}
-              onPrev={() => setPage((p) => Math.max(1, p - 1))}
-              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
-              onRefresh={handleRefresh}
-              onClearSearch={() => setSearchQuery('')}
-              onClearFilter={() => setFilterStatus(null)}
-            />
-          ) : null}
-        </div>
+            <AddProductName onAdded={handleRefresh} />
+          </div>
+        ) : showTable ? (
+          <ProductNamesTable
+            names={names}
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            filterStatus={filterStatus}
+            searchQuery={searchQuery}
+            onPrev={() => setPage((p) => Math.max(1, p - 1))}
+            onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+            onRefresh={handleRefresh}
+            onClearSearch={() => setSearchQuery('')}
+            onClearFilter={() => setFilterStatus(null)}
+          />
+        ) : null}
       </div>
     </div>
   )

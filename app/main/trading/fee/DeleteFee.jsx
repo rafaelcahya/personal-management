@@ -1,80 +1,77 @@
-"use client";
+'use client'
 
-import { useState } from "react";
+import { useState } from 'react'
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Trash2, Loader2 } from "lucide-react";
-import { deleteFee } from "@/lib/api/fee";
-import { toast } from "sonner";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import { Trash2, Loader2 } from 'lucide-react'
+import { deleteFee } from '@/lib/api/fee'
+import { toast } from 'sonner'
 
 export default function DeleteFee({ fee, onDeleted, onClose }) {
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-    const handleDelete = async () => {
-        setLoading(true);
-        try {
-            await deleteFee(fee.id);
-            toast.success("Fee deleted successfully 🗑️");
-            onClose?.();
-            onDeleted?.();
-        } catch (error) {
-            console.error("Delete error:", error);
-            toast.error(error.message || "Failed to delete fee");
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleDelete = async () => {
+    setLoading(true)
+    try {
+      await deleteFee(fee.id)
+      toast.success('Fee deleted successfully 🗑️')
+      onClose?.()
+      onDeleted?.()
+    } catch (error) {
+      console.error('Delete error:', error)
+      toast.error(error.message || 'Failed to delete fee')
+    } finally {
+      setLoading(false)
+    }
+  }
 
-    return (
-        <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="justify-start text-red-600 hover:text-red-600 hover:bg-red-50 font-medium"
-                >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete Fee
-                </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Fee?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-slate-600">
-                        This will remove the fee from your active list. You can
-                        still access deleted fees from your archived records if
-                        needed.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel
-                        disabled={loading}
-                        className="bg-transparent hover:bg-secondary-hover text-secondary-foreground hover:text-secondary-foreground border-none"
-                    >
-                        Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                        onClick={handleDelete}
-                        disabled={loading}
-                        className="bg-rose-600 hover:bg-rose-700 text-white font-medium"
-                    >
-                        {loading && (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        {loading ? "Deleting..." : "Delete"}
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    );
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="justify-start text-red-600 hover:text-red-600 hover:bg-red-50 font-medium"
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          Delete Fee
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete Fee?</AlertDialogTitle>
+          <AlertDialogDescription className="text-slate-600">
+            This will remove the fee from your active list. You can still access deleted fees from
+            your archived records if needed.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel
+            disabled={loading}
+            className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleDelete}
+            disabled={loading}
+            className="bg-rose-600 hover:bg-rose-700 text-white font-medium"
+          >
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {loading ? 'Deleting...' : 'Delete'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
 }

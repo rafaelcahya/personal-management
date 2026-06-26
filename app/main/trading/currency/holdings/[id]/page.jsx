@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import {
-  ChevronRight,
   ArrowLeft,
   TrendingUp,
   BarChart2,
@@ -23,6 +22,7 @@ import RateHistoryChart from './components/RateHistoryChart'
 import SummaryStats from './components/SummaryStats'
 import TransactionTable from './components/TransactionTable'
 import AddTransactionSheet from './components/AddTransactionSheet'
+import PageHeader from '@/app/main/components/PageHeader'
 import {
   getCurrencyInvestments,
   getForexRates,
@@ -206,44 +206,17 @@ export default function CurrencyDetailPage() {
   const isNegative = pctChange !== null && pctChange < 0
 
   return (
-    <main className="space-y-6">
+    <main id="currencyDetailPage" className="space-y-6">
       <div className="space-y-2">
-        {/* Breadcrumbs */}
-        <nav
-          aria-label="Breadcrumb"
-          className="flex items-center gap-1 text-xs text-slate-400 overflow-hidden"
-        >
-          {[
+        <PageHeader
+          title={currency || '—'}
+          breadcrumbs={[
             { label: 'Trading' },
             { label: 'Currency', href: '/main/trading/currency' },
             { label: 'Holdings', href: '/main/trading/currency/holdings' },
             { label: currency },
-          ].map((crumb, i, arr) => {
-            const isLast = i === arr.length - 1
-            return (
-              <span
-                key={i}
-                className={`flex items-center gap-1 ${isLast ? 'min-w-0' : 'shrink-0'}`}
-              >
-                {i > 0 && (
-                  <ChevronRight className="size-3 text-slate-300 shrink-0" aria-hidden="true" />
-                )}
-                {crumb.href ? (
-                  <Link
-                    href={crumb.href}
-                    className="hover:text-slate-600 transition-colors shrink-0"
-                  >
-                    {crumb.label}
-                  </Link>
-                ) : (
-                  <span className={`text-slate-500 font-medium ${isLast ? 'truncate' : ''}`}>
-                    {crumb.label}
-                  </span>
-                )}
-              </span>
-            )
-          })}
-        </nav>
+          ]}
+        />
 
         {/* Back link */}
         <Link

@@ -1,58 +1,53 @@
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 
 const ROW_COUNT = 15
+
+const TH =
+  'px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap'
 
 export default function TradeTableSkeleton() {
   return (
     <div id="tradeTableSkeleton_tradePage" className="overflow-x-auto flex-1">
-      <Table className="w-full table-auto">
-        <TableHeader className="bg-slate-100 sticky top-0 z-20">
-          <TableRow className="border-none">
-            <TableHead className="py-2 text-slate-foreground rounded-l-lg">Date</TableHead>
-            <TableHead className="py-2 text-slate-foreground">Ticker</TableHead>
-            <TableHead className="py-2 text-slate-foreground text-right">Margin</TableHead>
-            <TableHead className="py-2 text-slate-foreground text-right">Proceeds</TableHead>
-            <TableHead className="py-2 text-slate-foreground">Return %</TableHead>
-            <TableHead className="py-2 text-slate-foreground text-right">P/L</TableHead>
-            <TableHead className="py-2 text-slate-foreground rounded-r-lg">Type</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      <table className="min-w-full text-sm animate-pulse">
+        <thead>
+          <tr className="border-b border-slate-100">
+            <th className={`${TH} text-left`}>Date</th>
+            <th className={`${TH} text-left`}>Ticker</th>
+            <th className={`${TH} text-right`}>Margin</th>
+            <th className={`${TH} text-right`}>Proceeds</th>
+            <th className={`${TH} text-left`}>Return %</th>
+            <th className={`${TH} text-right`}>P/L</th>
+            <th className={`${TH} text-left`}>Type</th>
+          </tr>
+        </thead>
+        <tbody>
           {Array.from({ length: ROW_COUNT }).map((_, i) => (
-            <TableRow key={i} className="border-none">
-              <TableCell>
+            <tr key={i} className="border-b border-slate-50">
+              <td className="px-5 py-3.5">
                 <Skeleton className="h-4 w-24" />
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="px-5 py-3.5">
                 <Skeleton className="h-4 w-12" />
-              </TableCell>
-              <TableCell className="text-right">
+              </td>
+              <td className="px-5 py-3.5 text-right">
                 <Skeleton className="h-4 w-28 ml-auto" />
-              </TableCell>
-              <TableCell className="text-right">
+              </td>
+              <td className="px-5 py-3.5 text-right">
                 <Skeleton className="h-4 w-28 ml-auto" />
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="px-5 py-3.5">
                 <Skeleton className="h-4 w-14" />
-              </TableCell>
-              <TableCell className="text-right">
+              </td>
+              <td className="px-5 py-3.5 text-right">
                 <Skeleton className="h-4 w-28 ml-auto" />
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="px-5 py-3.5">
                 <Skeleton className="h-4 w-16" />
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
+        </tbody>
+      </table>
     </div>
   )
 }

@@ -51,30 +51,37 @@ export default function GearUsageBreakdown({ gear, error }) {
 
   return (
     <div id="gearUsageBreakdown_analyticsPage" className="flex flex-col gap-3">
-      <div className="overflow-x-auto rounded-lg border border-slate-100">
-        <table className="w-full text-xs">
+      <div className="overflow-x-auto">
+        <table
+          id="gearUsageTable_analyticsPage"
+          className="min-w-full text-sm"
+          aria-label="Gear usage breakdown"
+        >
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50">
-              <th className="px-3 py-2 text-left font-semibold text-slate-400 uppercase tracking-wide">
+            <tr className="border-b border-slate-100">
+              <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Gear
               </th>
-              <th className="px-3 py-2 text-right font-semibold text-slate-400 uppercase tracking-wide">
+              <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Activities
               </th>
-              <th className="px-3 py-2 text-right font-semibold text-slate-400 uppercase tracking-wide">
+              <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Time
               </th>
-              <th className="px-3 py-2 text-right font-semibold text-slate-400 uppercase tracking-wide">
+              <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 Distance
               </th>
             </tr>
           </thead>
           <tbody>
             {visible.map((g) => (
-              <tr key={g.id} className="border-b border-slate-50 last:border-0">
-                <td className="px-3 py-2.5">
+              <tr
+                key={g.id}
+                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+              >
+                <td className="px-3 py-3.5">
                   <div className="flex flex-col gap-0.5">
-                    <span className="font-medium text-slate-700 leading-tight">
+                    <span className="font-semibold text-slate-900 leading-tight">
                       {gearDisplayName(g)}
                     </span>
                     {g.retired && (
@@ -84,13 +91,13 @@ export default function GearUsageBreakdown({ gear, error }) {
                     )}
                   </div>
                 </td>
-                <td className="px-3 py-2.5 text-right tabular-nums text-slate-600">
+                <td className="px-3 py-3.5 text-right font-mono text-slate-700">
                   {g.total_activities}
                 </td>
-                <td className="px-3 py-2.5 text-right tabular-nums text-slate-600">
+                <td className="px-3 py-3.5 text-right font-mono text-slate-700">
                   {fmtTime(g.total_moving_time_sec)}
                 </td>
-                <td className="px-3 py-2.5 text-right tabular-nums text-slate-600">
+                <td className="px-3 py-3.5 text-right font-mono text-slate-700">
                   {fmtDistKm(g.total_distance_m)}
                 </td>
               </tr>
