@@ -37,6 +37,8 @@ const preview = {
             'DatePicker',
             ['Docs', 'Basic', 'Disabled', 'Error State', '*'],
           ],
+          'Breadcrumb',
+          ['Docs', 'Basic', 'Custom Separator', 'Collapsed', '*'],
           'Layout',
           [
             'Section',
