@@ -45,6 +45,17 @@ const preview = {
           ['Docs', 'Basic', 'Sizes', 'Animation', 'Controlled', 'Example', '*'],
           'Breadcrumb',
           ['Docs', 'Basic', 'Custom Separator', 'Collapsed', '*'],
+          'Tooltip',
+          [
+            'Docs',
+            'Basic',
+            'Positions',
+            'Alignment',
+            'Animation',
+            'Controlled',
+            'Rich Content',
+            '*',
+          ],
           'Layout',
           [
             'Card',
