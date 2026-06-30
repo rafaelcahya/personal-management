@@ -14,6 +14,8 @@ const preview = {
           ['Colors'],
           'Input',
           ['Button', ['Docs', 'Default', 'Secondary', 'Ghost', 'Outline', 'Link', 'Destructive']],
+          'Breadcrumb',
+          ['Docs', 'Basic', 'Custom Separator', 'Collapsed', '*'],
           'Layout',
           [
             'Section',
