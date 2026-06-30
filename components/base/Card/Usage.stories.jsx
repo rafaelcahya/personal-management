@@ -7,7 +7,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react'
-import Button from '../Button'
+import Button from '../Button/Button'
 import Card, {
   CardAction,
   CardContent,
@@ -16,7 +16,7 @@ import Card, {
   CardHeader,
   CardIcon,
   CardTitle,
-} from '../Card'
+} from './Card'
 import PageHeader from '@/app/main/components/PageHeader'
 
 /** @type {import('@storybook/nextjs').Meta} */
