@@ -1,5 +1,5 @@
 import { Plus, Trash2, Download, Save, ArrowRight, X } from 'lucide-react'
-import Button from '../Button'
+import Button from './Button'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
@@ -96,34 +96,95 @@ export const Docs = {
         title="Anatomy"
         description="A button is composed of up to three slots: leading icon, label, and trailing icon."
       >
-        <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg mb-4">
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex items-center gap-2 h-9 px-4 bg-primary text-primary-foreground rounded-md text-sm font-medium">
-              <Plus className="size-4" aria-hidden />
-              <span>Add Item</span>
-              <ArrowRight className="size-4" aria-hidden />
+        <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
+          <div className="relative inline-flex p-5 border-2 border-dashed border-violet-400 rounded-xl gap-4">
+            <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
+              Button
+            </span>
+
+            {/* Icon left */}
+            <div className="relative px-3 py-2 border border-dashed border-green-300 rounded shrink-0">
+              <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
+                useIcon
+              </span>
+              <Plus className="size-4 text-slate-400" />
+            </div>
+
+            {/* Label */}
+            <div className="relative px-5 py-2 border border-dashed border-blue-300 rounded">
+              <span className="absolute -top-2 left-1.5 bg-gray-50 px-0.5 text-[10px] font-mono text-blue-500">
+                children
+              </span>
+              <span className="text-sm text-slate-500 font-mono">Add Item</span>
+            </div>
+
+            {/* Icon right */}
+            <div className="relative px-3 py-2 border border-dashed border-green-300 rounded shrink-0">
+              <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
+                useIcon
+              </span>
+              <ArrowRight className="size-4 text-slate-400" />
             </div>
           </div>
-          <div className="flex justify-center gap-8 text-xs text-gray-500">
-            <div className="flex items-center gap-1.5">
-              <Tag color="violet">useIcon</Tag>
-              <span>— boolean or ReactElement</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Tag color="violet">children</Tag>
-              <span>— label text</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Tag color="violet">iconPosition</Tag>
-              <span>— "left" | "right"</span>
-            </div>
-          </div>
+
+          <p className="mt-4 text-[10px] text-gray-400 font-mono">
+            When isLoading=true, the icon slot is replaced by a Spinner regardless of useIcon.
+          </p>
         </div>
-        <p className="text-xs text-gray-400">
-          When <code className="font-mono bg-gray-100 px-1 rounded">isLoading</code> is true, the
-          icon slot is replaced by a spinner regardless of{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded">useIcon</code>.
-        </p>
+
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Part', 'Element', 'Description'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['children', '<span>', 'Button label text. Required.'],
+                [
+                  'Icon',
+                  'ReactNode',
+                  'Optional icon rendered before or after children. Pass via useIcon prop. Position via iconPosition ("left" | "right").',
+                ],
+                [
+                  'Spinner',
+                  '—',
+                  'Auto-rendered in the icon slot when isLoading=true. Keeps button width stable.',
+                ],
+              ].map(([part, el, desc]) => (
+                <tr key={part} className="even:bg-gray-50">
+                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                    {part}
+                  </td>
+                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
+                    {el}
+                  </td>
+                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <Code>{`import Button from '@/components/base/Button/Button'
+import { Plus } from 'lucide-react'
+
+{/* Default */}
+<Button>Save</Button>
+
+{/* With icon */}
+<Button useIcon={<Plus />} iconPosition="left">Add Item</Button>
+
+{/* Loading */}
+<Button isLoading>Saving...</Button>`}</Code>
       </Section>
 
       {/* Variants */}

@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react'
-import Button from '../Button'
+import Button from './Button'
 
 /** @type {import('@storybook/nextjs').Meta<typeof Button>} */
 const meta = {
