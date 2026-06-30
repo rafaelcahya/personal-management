@@ -168,7 +168,11 @@ export default function SectionsManager({
             {triggerContent}
           </button>
         </SheetTrigger>
-        <SheetContent side="bottom" className="px-0 pb-0 gap-0 rounded-t-xl">
+        <SheetContent
+          side="bottom"
+          className="px-0 pb-0 gap-0 rounded-t-xl"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <SheetHeader className="px-4 pt-4 pb-2">
             <SheetTitle className="text-sm">Sections</SheetTitle>
           </SheetHeader>
