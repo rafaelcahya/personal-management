@@ -8,7 +8,7 @@ import {
   TrendingUp,
   User,
 } from 'lucide-react'
-import Button from '../../Button'
+import Button from '../Button/Button'
 import Card, {
   CardAction,
   CardContent,
@@ -17,11 +17,11 @@ import Card, {
   CardHeader,
   CardIcon,
   CardTitle,
-} from '../../Card'
+} from './Card'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
-  title: 'Layout/Card/Card/Default',
+  title: 'Layout/Card/Transparent',
 }
 
 export default meta
@@ -43,7 +43,7 @@ export const FullContent = {
     <div className="p-6 max-w-4xl">
       <div className="grid grid-cols-2 gap-6">
         {/* Table */}
-        <Card className="col-span-2">
+        <Card variant="transparent" className="col-span-2">
           <CardHeader>
             <CardIcon icon={ShoppingCart} />
             <div className="min-w-0 flex-1">
@@ -95,7 +95,7 @@ export const FullContent = {
         </Card>
 
         {/* Login */}
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <div className="min-w-0 flex-1">
               <CardTitle>Welcome back</CardTitle>
@@ -130,7 +130,7 @@ export const FullContent = {
         </Card>
 
         {/* Register */}
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <div className="min-w-0 flex-1">
               <CardTitle>Create an account</CardTitle>
@@ -172,7 +172,7 @@ export const FullContent = {
         </Card>
 
         {/* Stats */}
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <CardIcon icon={BarChart2} />
             <div className="min-w-0 flex-1">
@@ -218,7 +218,7 @@ export const FullContent = {
         </Card>
 
         {/* Low Stock Alert */}
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <CardIcon icon={ShoppingCart} />
             <div className="min-w-0 flex-1">
@@ -246,7 +246,7 @@ export const FullContent = {
         </Card>
 
         {/* Pending Order */}
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <CardIcon icon={ShoppingCart} />
             <div className="min-w-0 flex-1">
@@ -277,7 +277,7 @@ export const FullContent = {
         </Card>
 
         {/* Export Report */}
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <CardIcon icon={ShoppingCart} />
             <div className="min-w-0 flex-1">
@@ -311,7 +311,7 @@ export const FullContent = {
         </Card>
 
         {/* Delete Category */}
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <CardIcon icon={ShoppingCart} />
             <div className="min-w-0 flex-1">
@@ -346,7 +346,7 @@ export const ScrollableContent = {
   name: 'Scrollable Content',
   render: () => (
     <div className="p-6 max-w-2xl">
-      <Card>
+      <Card variant="transparent">
         <CardHeader>
           <CardIcon icon={ShoppingCart} />
           <div className="min-w-0 flex-1">
@@ -404,7 +404,7 @@ export const Grid = {
   render: () => (
     <div className="p-6 max-w-5xl space-y-6">
       <div className="grid grid-cols-1 gap-3">
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <CardIcon icon={ShoppingCart} />
             <div className="min-w-0 flex-1">
@@ -425,7 +425,7 @@ export const Grid = {
           { label: 'Total Products', value: '48', unit: 'items', sub: 'All active inventory' },
           { label: 'Low Stock', value: '6', unit: 'items', sub: 'Need restocking' },
         ].map((s) => (
-          <Card key={s.label}>
+          <Card key={s.label} variant="transparent">
             <CardHeader>
               <CardIcon icon={ShoppingCart} />
               <div className="min-w-0 flex-1">
@@ -448,7 +448,7 @@ export const Grid = {
           { label: 'Active', value: '42', unit: 'items', sub: 'Currently in use' },
           { label: 'Low Stock', value: '6', unit: 'items', sub: 'Need restocking' },
         ].map((s) => (
-          <Card key={s.label}>
+          <Card key={s.label} variant="transparent">
             <CardHeader>
               <CardIcon icon={ShoppingCart} />
               <div className="min-w-0 flex-1">
@@ -472,7 +472,7 @@ export const Grid = {
           { label: 'Low Stock', value: '6', unit: 'items', sub: 'Restock soon' },
           { label: 'Out of Stock', value: '2', unit: 'items', sub: 'Empty' },
         ].map((s) => (
-          <Card key={s.label}>
+          <Card key={s.label} variant="transparent">
             <CardHeader>
               <CardIcon icon={ShoppingCart} />
               <div className="min-w-0 flex-1">
@@ -497,7 +497,7 @@ export const Grid = {
           { label: 'Out of Stock', value: '2', unit: 'items', sub: 'Need reorder' },
           { label: 'Categories', value: '5', unit: 'groups', sub: 'Item groups' },
         ].map((s) => (
-          <Card key={s.label}>
+          <Card key={s.label} variant="transparent">
             <CardHeader>
               <CardIcon icon={ShoppingCart} />
               <div className="min-w-0 flex-1">
@@ -522,7 +522,7 @@ export const FooterAlignment = {
   render: () => (
     <div className="p-6 max-w-lg">
       <div className="grid grid-cols-1 gap-6">
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <CardIcon icon={ShoppingCart} />
             <div className="min-w-0 flex-1">
@@ -554,7 +554,7 @@ export const FooterAlignment = {
           </CardFooter>
         </Card>
 
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <CardIcon icon={ShoppingCart} />
             <div className="min-w-0 flex-1">
@@ -587,7 +587,7 @@ export const FooterAlignment = {
           </CardFooter>
         </Card>
 
-        <Card>
+        <Card variant="transparent">
           <CardHeader>
             <CardIcon icon={ShoppingCart} />
             <div className="min-w-0 flex-1">
@@ -628,7 +628,7 @@ export const Padding = {
         { size: 'lg', label: 'lg · p-6 · 24px' },
         { size: 'xl', label: 'xl · p-8 · 32px' },
       ].map(({ size, label }) => (
-        <Card key={size}>
+        <Card key={size} variant="transparent">
           <CardHeader padding={size}>
             <CardIcon icon={ShoppingCart} />
             <div className="min-w-0 flex-1">
@@ -680,7 +680,7 @@ export const HeaderOnly = {
   name: 'Header Only',
   render: () => (
     <div className="p-6 max-w-2xl">
-      <Card>
+      <Card variant="transparent">
         <CardHeader>
           <CardIcon icon={ShoppingCart} />
           <div className="min-w-0 flex-1">

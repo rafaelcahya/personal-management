@@ -1,5 +1,5 @@
 import { Plus, Trash2, Download, Save, ArrowRight, X } from 'lucide-react'
-import Button from '../Button'
+import Button from './Button'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {

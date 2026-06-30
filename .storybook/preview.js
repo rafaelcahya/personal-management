@@ -24,6 +24,20 @@ const preview = {
           ['Docs', 'Basic', 'Custom Separator', 'Collapsed', '*'],
           'Layout',
           [
+            'Card',
+            [
+              'Docs',
+              'Card',
+              [
+                'Default',
+                'Transparent',
+                'Status',
+                ['All Variants', 'Loading State', 'Error State', 'With Action', '*'],
+                '*',
+              ],
+              'Usage',
+              '*',
+            ],
             'Section',
             [
               'Docs',
@@ -42,7 +56,6 @@ const preview = {
                 'Error State',
                 'Data State',
               ],
-              'SectionCard',
               [
                 'Default',
                 [
