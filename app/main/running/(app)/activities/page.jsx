@@ -526,27 +526,27 @@ function ActivitiesInner() {
                       </td>
 
                       {/* Distance */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
+                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
                         {dist ?? NULL_CELL}
                       </td>
 
                       {/* Pace */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
+                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
                         {pace ?? NULL_CELL}
                       </td>
 
                       {/* Duration */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
+                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
                         {dur != null ? fmtDuration(dur) : NULL_CELL}
                       </td>
 
                       {/* HR */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
+                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
                         {a.avg_hr ? `${a.avg_hr} bpm` : NULL_CELL}
                       </td>
 
                       {/* Elev */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
+                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
                         {elev ?? NULL_CELL}
                       </td>
                     </tr>
