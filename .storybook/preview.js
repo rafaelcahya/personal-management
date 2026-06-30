@@ -39,6 +39,8 @@ const preview = {
           ],
           'Accordion',
           ['Docs', 'Basic', 'Card', 'Multiple', 'Disabled', '*'],
+          'Badge',
+          ['Docs', 'Default', 'Size', 'Radius', 'With Icon', 'As Child', '*'],
           'Breadcrumb',
           ['Docs', 'Basic', 'Custom Separator', 'Collapsed', '*'],
           'Layout',
