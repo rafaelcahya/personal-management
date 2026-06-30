@@ -18,6 +18,8 @@ const preview = {
           ['Docs', 'Basic', 'Card', 'Multiple', 'Disabled', '*'],
           'Badge',
           ['Docs', 'Default', 'Size', 'Radius', 'With Icon', 'As Child', '*'],
+          'Modal',
+          ['Docs', 'Basic', 'Sizes', 'Animation', 'Controlled', 'Example', '*'],
           'Breadcrumb',
           ['Docs', 'Basic', 'Custom Separator', 'Collapsed', '*'],
           'Layout',
