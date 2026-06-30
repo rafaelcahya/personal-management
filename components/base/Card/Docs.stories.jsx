@@ -1,5 +1,5 @@
 import { Lock, Mail, ShoppingCart } from 'lucide-react'
-import Button from '../Button'
+import Button from '../Button/Button'
 import Card, {
   CardAction,
   CardContent,
@@ -8,7 +8,7 @@ import Card, {
   CardHeader,
   CardIcon,
   CardTitle,
-} from '../Card'
+} from './Card'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
