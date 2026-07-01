@@ -173,6 +173,8 @@ const preview = {
             'Compact',
             '*',
           ],
+          'Popover',
+          ['Docs', 'Basic', 'Positions', 'With Form', 'With Filter', 'Controlled', '*'],
           'Table',
           [
             'Docs',

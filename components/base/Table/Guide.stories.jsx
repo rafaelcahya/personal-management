@@ -9,7 +9,7 @@ import {
   TableCaption,
 } from './Table'
 import { DataTable } from './DataTable'
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/base/Popover/Popover'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = { title: 'Table' }
@@ -451,7 +451,7 @@ const columns = [
           </div>
 
           <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+            <code>{`import { Popover, PopoverTrigger, PopoverContent } from '@/components/base/Popover/Popover'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/base/Table/Table'
 
 <Popover>
