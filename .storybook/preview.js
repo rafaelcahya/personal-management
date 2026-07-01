@@ -159,6 +159,8 @@ const preview = {
           ],
           'Separator',
           ['Docs', 'Basic', 'Orientations', 'Variants', 'With Label', '*'],
+          'Spinner',
+          ['Docs', 'Basic', 'Sizes', 'Variants', 'Inside Button', 'Full Page', '*'],
         ],
       },
     },
