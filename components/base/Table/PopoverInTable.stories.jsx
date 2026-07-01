@@ -1,5 +1,5 @@
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './Table'
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/base/Popover/Popover'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = { title: 'Table/Popover in Table' }
