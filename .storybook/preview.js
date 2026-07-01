@@ -20,6 +20,8 @@ const preview = {
             ['Docs', '*'],
             'Input Field',
             ['Docs', 'Normal', 'Filled', 'Disabled', 'Error State', 'Affix', '*'],
+            'Password Input',
+            ['Docs', 'Basic', 'Disabled', 'Error State', 'Strength Rules', '*'],
             'Textarea',
             ['Docs', 'Normal', 'Filled', 'Disabled', 'Error State', '*'],
             'Select',
