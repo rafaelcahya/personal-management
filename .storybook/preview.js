@@ -33,6 +33,8 @@ const preview = {
             'Rich Content',
             '*',
           ],
+          'Toast',
+          ['Docs', 'Basic', 'Variants', 'Positions', 'With Action', 'Animation', 'Controlled', '*'],
           'Layout',
           [
             'Card',
