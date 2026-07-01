@@ -58,6 +58,17 @@ const preview = {
           ],
           'Toast',
           ['Docs', 'Basic', 'Variants', 'Positions', 'With Action', 'Animation', 'Controlled', '*'],
+          'EmptyState',
+          [
+            'Docs',
+            'Basic',
+            'Sizes',
+            'Variants',
+            'With Actions',
+            'Without Icon',
+            'Inside Table',
+            'Inside Card',
+            'Inside Dropdown',
           'Sidebar',
           [
             'Docs',
