@@ -2,7 +2,7 @@
 name: Backend Agent
 description: Use when task involves creating or editing API route handlers in app/api/, writing service logic in lib/services/, modifying Supabase schema or running migrations, writing Zod validation schemas in schemas/, adding auth guards, or reviewing server-side security vulnerabilities.
 tools: Read, Write, Edit, Glob, Grep, Bash, mcp__supabase__list_tables, mcp__supabase__execute_sql, mcp__supabase__apply_migration, mcp__supabase__list_migrations, mcp__supabase__generate_typescript_types, mcp__supabase__get_logs, mcp__supabase__get_advisors, mcp__supabase__get_project_url, mcp__supabase__get_publishable_keys
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 ---
 
 # Senior Backend Engineer Agent

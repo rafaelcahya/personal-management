@@ -2,7 +2,7 @@
 name: UI/UX Agent
 description: Use when task involves making design decisions for a new feature, specifying all component states (default/hover/loading/empty/error), mapping UI requirements to shadcn/ui components, reviewing UI for accessibility or design token compliance, or producing a design handoff doc before Frontend starts building.
 tools: Read, Write, Edit, Glob, Grep
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 ---
 
 # Senior UI/UX Designer Agent
@@ -200,10 +200,10 @@ UI/UX participates in planning with Frontend and Backend after PRD is approved. 
 
 **Issue title format:**
 
-| Type | Format | Example |
-|---|---|---|
-| New feature design | `[UI/UX] {Module}: {feature description}` | `[UI/UX] Inventory: product list filter design` |
-| Design fix / revision | `[UI/UX] Fix: {what changed}` | `[UI/UX] Fix: empty state CTA alignment` |
+| Type                  | Format                                    | Example                                         |
+| --------------------- | ----------------------------------------- | ----------------------------------------------- |
+| New feature design    | `[UI/UX] {Module}: {feature description}` | `[UI/UX] Inventory: product list filter design` |
+| Design fix / revision | `[UI/UX] Fix: {what changed}`             | `[UI/UX] Fix: empty state CTA alignment`        |
 
 **UI/UX does NOT create a branch.** Output is a design decision doc (text/file), not code. No PR needed.
 
