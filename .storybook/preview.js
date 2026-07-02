@@ -97,6 +97,8 @@ const preview = {
             'Interactions',
             '*',
           ],
+          'Command',
+          ['Docs', 'Basic', 'With Groups', 'With Shortcuts', 'Empty State', 'Controlled', '*'],
           'Toast',
           ['Docs', 'Basic', 'Variants', 'Positions', 'With Action', 'Animation', 'Controlled', '*'],
           'Sidebar',
