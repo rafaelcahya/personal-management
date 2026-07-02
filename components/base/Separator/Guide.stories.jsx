@@ -79,6 +79,128 @@ export const Docs = {
         </div>
       </section>
 
+      {/* When to Use */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Separator when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      You need a visual break between two distinct content sections (e.g. form
+                      groups, list items, card regions).
+                    </li>
+                    <li>
+                      You want an inline label like "or" to sit between two options without adding
+                      extra DOM structure.
+                    </li>
+                    <li>
+                      You need a vertical rule to separate inline elements such as nav links or
+                      toolbar actions.
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>margin / padding</strong> when you only need spacing — a Separator
+                      adds a visible line and semantic meaning that would be misleading without real
+                      content separation.
+                    </li>
+                    <li>
+                      Use a <strong>Card</strong> or <strong>section heading</strong> when the
+                      grouping requires a title or elevated surface, not just a dividing line.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Dos & Don'ts */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Dos &amp; Don&apos;ts</h2>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Place a Separator between content sections that are semantically related but
+                  visually distinct — for example, between shipping and billing fields in a checkout
+                  form.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use the <code className="font-mono">label</code> prop to add short conjunctions
+                  like "or" or "and" so screen readers announce the relationship between the two
+                  sections.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always pass an explicit height class (e.g.{' '}
+                  <code className="font-mono">className="h-4"</code>) when using a vertical
+                  Separator so it renders with a defined size.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don&apos;t</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don&apos;t use Separator as a layout spacer. It carries{' '}
+                  <code className="font-mono">role="separator"</code> and announces itself to
+                  assistive technology — adding it purely for spacing is misleading.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don&apos;t stack multiple Separators back-to-back with nothing between them. Each
+                  divider implies a content group exists on both sides.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don&apos;t put a long sentence or phrase in the{' '}
+                  <code className="font-mono">label</code> prop — it is designed for short
+                  conjunctions only. Use a heading element for longer labels.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* API Reference */}
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">API Reference</h2>

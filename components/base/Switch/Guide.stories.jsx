@@ -442,6 +442,117 @@ export const Docs = {
         </div>
       </Section>
 
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Switch when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>The action takes immediate effect without a form submit button</li>
+                    <li>
+                      Toggling a persistent app or system setting (e.g. dark mode, notifications)
+                    </li>
+                    <li>The binary on/off metaphor is immediately clear to the user</li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Checkbox</strong> when the value is collected and submitted as
+                      part of a form
+                    </li>
+                    <li>
+                      Use <strong>RadioGroup</strong> when the user must pick one exclusive option
+                      from a labeled set of choices
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use descriptive labels that make the setting clear — "Email notifications" is
+                  better than just "Notifications". The label should name what is being toggled.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Place the switch on the trailing edge of the label row so the eye reads the label
+                  first, then reaches the control. This matches the natural left-to-right reading
+                  flow.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Apply the change immediately on toggle — Switch implies instant effect. If
+                  persistence requires a network call, show a loading indicator on the switch
+                  itself.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use Switch for values that need a form submission before taking effect. If
+                  the user must click a Save button for the change to apply, use a Checkbox instead.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use vague labels like "Enable" without context. The label must always
+                  describe what is being enabled — a Switch without a meaningful label is unusable
+                  for assistive technology.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use Switch when there are more than two mutually exclusive states. If the
+                  user chooses between three or more options (e.g. Off / Low / High), use a
+                  RadioGroup or Select instead.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       {/* Props */}
       <Section title="Props">
         <div className="overflow-x-auto">

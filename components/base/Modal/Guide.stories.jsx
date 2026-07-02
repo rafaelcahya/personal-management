@@ -665,6 +665,60 @@ export const Docs = {
           </div>
         </section>
 
+        {/* When to Use */}
+        <section className="flex flex-col gap-4">
+          <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
+          <div className="overflow-x-auto mb-4">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-gray-50">
+                  {['Use Modal when…', 'Consider an alternative when…'].map((h) => (
+                    <th
+                      key={h}
+                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                    <ul className="flex flex-col gap-1.5">
+                      <li>
+                        The action requires the user's full attention before they can continue —
+                        e.g. confirming a destructive delete or accepting terms.
+                      </li>
+                      <li>
+                        You need to collect input (a form) that must be submitted before the
+                        underlying page can proceed.
+                      </li>
+                      <li>
+                        An async event (API response, error, permission request) must surface a
+                        blocking message mid-flow.
+                      </li>
+                    </ul>
+                  </td>
+                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                    <ul className="flex flex-col gap-1.5">
+                      <li>
+                        Use <strong>Sheet</strong> when showing supplemental detail or a side panel
+                        that doesn't block the main content — e.g. a filter drawer or record
+                        preview.
+                      </li>
+                      <li>
+                        Use <strong>Popover</strong> when the content is lightweight and contextual
+                        — e.g. a date picker, color swatch, or short tooltip-style form.
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         {/* Dos and Don'ts */}
         <section className="flex flex-col gap-4">
           <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Dos & Don'ts</h2>

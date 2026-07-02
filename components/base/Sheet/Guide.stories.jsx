@@ -567,6 +567,128 @@ export const Docs = {
             </div>
           </SubSection>
         </Section>
+
+        {/* When to Use */}
+        <Section title="When to Use">
+          <div className="overflow-x-auto mb-4">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-gray-50">
+                  {['Use Sheet when…', 'Consider an alternative when…'].map((h) => (
+                    <th
+                      key={h}
+                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                    <ul className="flex flex-col gap-1.5">
+                      <li>
+                        You need to show supplemental detail or a form without navigating away from
+                        the current page
+                      </li>
+                      <li>
+                        The content is too large or complex for a Popover (e.g. multi-field edit
+                        forms, long detail panels)
+                      </li>
+                      <li>
+                        The action is non-blocking — the user should still be aware of the page
+                        behind it
+                      </li>
+                    </ul>
+                  </td>
+                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                    <ul className="flex flex-col gap-1.5">
+                      <li>
+                        Use <strong>Modal (Dialog)</strong> when the action is critical and must be
+                        confirmed before the user can continue (e.g. destructive delete
+                        confirmations)
+                      </li>
+                      <li>
+                        Use <strong>Popover</strong> when the content is small and contextually
+                        anchored to a specific element (e.g. date picker, color swatch, tooltip with
+                        action)
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </Section>
+
+        {/* Dos & Don'ts */}
+        <Section title="Dos & Don'ts">
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                  ✓
+                </span>
+                <span className="text-sm font-semibold text-green-700">Do</span>
+              </div>
+              <div className="space-y-3">
+                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                  <p className="text-xs text-green-800">
+                    Always include a <strong>SheetTitle</strong> inside SheetHeader. It labels the
+                    panel for screen readers and gives users immediate context about what the sheet
+                    contains.
+                  </p>
+                </div>
+                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                  <p className="text-xs text-green-800">
+                    Place primary action buttons in <strong>SheetFooter</strong> and always provide
+                    a clear way to close — either a Cancel button with <strong>SheetClose</strong>{' '}
+                    or the built-in X button.
+                  </p>
+                </div>
+                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                  <p className="text-xs text-green-800">
+                    Use the <strong>controlled pattern</strong> (<code>open</code> +{' '}
+                    <code>onOpenChange</code>) when you need to prevent closing on validation errors
+                    or coordinate the sheet with other UI state.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                  ✕
+                </span>
+                <span className="text-sm font-semibold text-red-700">Don't</span>
+              </div>
+              <div className="space-y-3">
+                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                  <p className="text-xs text-red-800">
+                    Don't open a Sheet from inside another Sheet. Nested sheets create confusing
+                    layered overlays and break the focus trap. Use a single sheet with internal step
+                    navigation instead.
+                  </p>
+                </div>
+                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                  <p className="text-xs text-red-800">
+                    Don't use Sheet for critical destructive actions (e.g. "Delete account"). Sheet
+                    feels dismissible — use a <strong>Modal</strong> so the user must explicitly
+                    confirm or cancel before anything else.
+                  </p>
+                </div>
+                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                  <p className="text-xs text-red-800">
+                    Don't put tiny, single-line content in a Sheet. A date picker or a short options
+                    list belongs in a <strong>Popover</strong> — Sheet panels carry visual weight
+                    that should match their content.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Section>
       </div>
     )
   },

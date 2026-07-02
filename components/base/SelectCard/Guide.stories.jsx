@@ -556,6 +556,143 @@ export const Docs = {
         ))}
       </Section>
 
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use SelectCard when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Each option benefits from a visual icon or illustration to convey its meaning
+                    </li>
+                    <li>
+                      Options have a title plus supporting description (e.g. plan name + feature
+                      summary)
+                    </li>
+                    <li>
+                      The number of choices is small — typically 2–5 items — and worth giving visual
+                      weight
+                    </li>
+                    <li>
+                      You want the selected state to be obvious at a glance (highlighted card, not
+                      just a radio dot)
+                    </li>
+                    <li>
+                      Options are laid out in a grid (pricing tiers) or a stacked list (shipping
+                      methods, payment methods)
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>RadioGroup</strong> when options are text-only labels with no
+                      icons or descriptions — a compact list is clearer and takes less space
+                    </li>
+                    <li>
+                      Use <strong>Select / Combobox</strong> when there are 6+ options — a dropdown
+                      scales better than a row of cards
+                    </li>
+                    <li>
+                      Use <strong>Checkbox</strong> when users can pick multiple options
+                      simultaneously — SelectCard is single-select only
+                    </li>
+                    <li>
+                      Use <strong>ToggleGroup</strong> when options are very short labels (e.g. "S /
+                      M / L") and a button-bar style fits better
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Keep the number of cards small — 2 to 5 options. More than 5 cards in a row
+                  becomes overwhelming and defeats the visual clarity SelectCard is meant to
+                  provide.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always provide a{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">SelectCardTitle</code> for
+                  every card. Icons and descriptions are optional, but a clear label is required so
+                  users understand each option without guessing.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Pre-select a sensible default when one option is clearly the most common choice
+                  (e.g. the recommended plan or the free shipping tier). Leaving all cards
+                  unselected forces an extra click with no user benefit.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't mix SelectCard with a separate RadioGroup or Checkbox for the same selection
+                  — it creates inconsistent interaction patterns in the same form and confuses users
+                  about which control is authoritative.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't put long paragraphs inside{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">SelectCardDescription</code>
+                  . It should be one short sentence or a key detail (price, ETA, feature count). If
+                  you need more copy, use a tooltip or an expandable detail panel instead.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use SelectCard for multi-select scenarios. The component is designed for
+                  single-option selection — using it for multi-select requires custom state logic
+                  that breaks the expected UX (only one card highlighted at a time).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       {/* Props */}
       <Section title="Props">
         <SubSection title="SelectCard">

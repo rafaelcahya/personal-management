@@ -700,6 +700,143 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
         </p>
       </section>
 
+      {/* When to Use */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Table when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Displaying multi-column structured data where users need to compare values
+                      across rows — e.g. a trade list, stock portfolio, or inventory log.
+                    </li>
+                    <li>
+                      Users need to sort by a column, search/filter rows, or page through a long
+                      dataset.
+                    </li>
+                    <li>
+                      Rows have uniform structure and each column has a clear label — the header row
+                      is meaningful.
+                    </li>
+                    <li>
+                      Bulk actions (select + delete, export) are needed across multiple rows at
+                      once.
+                    </li>
+                    <li>
+                      Rows contain expandable detail that should be revealed inline without
+                      navigating away.
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use a plain <strong>ul / li list</strong> when data is single-column and no
+                      comparison across attributes is needed — e.g. a notification feed or tag list.
+                    </li>
+                    <li>
+                      Use a <strong>definition list (dl/dt/dd)</strong> or a key-value card when
+                      showing properties of a single entity — e.g. a detail panel or summary card.
+                    </li>
+                    <li>
+                      Use a <strong>stat card grid</strong> when the goal is to highlight aggregated
+                      numbers at a glance rather than browse rows of raw data.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Dos & Don'ts */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Dos & Don'ts</h2>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always right-align numeric columns (price, quantity, P&L) — it makes values
+                  scannable by magnitude and aligns decimal points vertically.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use <code className="font-mono bg-green-100 px-1 rounded">DataTable</code> with{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">pagination</code> when the
+                  dataset can grow beyond 20–30 rows. This keeps the page height predictable and
+                  avoids overwhelming the user.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Provide a meaningful{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">emptyState</code> node when
+                  the data array may be empty — explain why it's empty and offer a next action (e.g.
+                  "No trades yet — add your first trade").
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't nest a <code className="font-mono bg-red-100 px-1 rounded">Table</code>{' '}
+                  inside a <code className="font-mono bg-red-100 px-1 rounded">TableCell</code> for
+                  layout purposes — use CSS grid or flexbox instead. Nested tables break column
+                  alignment and screen-reader accessibility.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't omit the <code className="font-mono bg-red-100 px-1 rounded">rowId</code>{' '}
+                  prop or use a non-unique value as the key. Missing or duplicate IDs break row
+                  selection, expand state, and React reconciliation.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't put too many columns in a single table — more than 7–8 columns becomes
+                  unreadable on standard screen widths. Split secondary attributes into an
+                  expandable detail row using{' '}
+                  <code className="font-mono bg-red-100 px-1 rounded">expandContent</code> instead.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* API Reference */}
       <section className="flex flex-col gap-6">
         <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">API Reference</h2>

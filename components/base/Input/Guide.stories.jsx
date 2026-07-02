@@ -476,6 +476,132 @@ export const Docs = {
 </FieldContent>`}</Code>
         </SubSection>
       </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Input Field when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The user needs to type a short, free-form value — name, email, URL, or amount
+                    </li>
+                    <li>
+                      The input is a single line and the expected value has no fixed set of options
+                    </li>
+                    <li>You need a search field, filter box, or inline lookup</li>
+                    <li>
+                      The field requires a prefix or suffix — currency symbol, unit, icon, or toggle
+                      (e.g. password reveal)
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Textarea</strong> when the value spans multiple lines — notes,
+                      descriptions, or comments
+                    </li>
+                    <li>
+                      Use <strong>Select</strong> when the user must pick from a fixed, enumerated
+                      list of options
+                    </li>
+                    <li>
+                      Use a <strong>DatePicker</strong> when the value is a calendar date or time
+                      range
+                    </li>
+                    <li>
+                      Use a <strong>NumberInput</strong> or stepper when the value is numeric with
+                      increment/decrement controls
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always pair an Input with a <strong>FieldLabel</strong>. Labels give the field an
+                  accessible name and help users understand what to enter — never rely on
+                  placeholder text alone.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use <strong>placeholder</strong> to show an example value or format hint (e.g.
+                  "you@example.com", "YYYY-MM-DD"). Keep it concise — it disappears once the user
+                  starts typing.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Surface validation errors via <strong>FieldError</strong> and the{' '}
+                  <strong>error</strong> prop on FieldContent. The error variant ring and the error
+                  message together give both visual and assistive-technology feedback.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use placeholder text as a substitute for a label. Placeholders vanish on
+                  focus and are not announced reliably by screen readers — users lose context the
+                  moment they start typing.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use an Input for content that wraps across multiple lines — notes,
+                  addresses, or long descriptions. Use a <strong>Textarea</strong> instead so the
+                  full value stays visible while the user edits.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't set the <strong>error</strong> variant without also providing a FieldError
+                  message. A red ring alone doesn't tell the user what went wrong or how to fix it.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
     </div>
   ),
 }

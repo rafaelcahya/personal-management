@@ -260,6 +260,131 @@ export const Docs = {
 <Textarea rows={6} placeholder="Long description" />`}</Code>
       </Section>
 
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Textarea when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The user needs to enter multiple lines of free-form text (notes, descriptions,
+                      comments)
+                    </li>
+                    <li>
+                      Content length is open-ended or unpredictable — you don't know how much the
+                      user will write
+                    </li>
+                    <li>Line breaks and paragraph structure matter to the reader</li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Input</strong> when the answer is a single line — name, email,
+                      search query, or a short value
+                    </li>
+                    <li>
+                      Use a <strong>rich text editor</strong> when the user needs formatting
+                      controls such as bold, lists, or headings
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Set <code className="font-mono bg-green-100 px-0.5 rounded">rows</code> to match
+                  the expected content length — use{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">rows=2</code> for short
+                  notes and <code className="font-mono bg-green-100 px-0.5 rounded">rows=6</code>{' '}
+                  for longer descriptions so the field feels appropriately sized.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Pair with{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldDescription</code> to
+                  communicate constraints like character limits or formatting hints (e.g. "Max 500
+                  characters" or "One item per line").
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Wrap inside{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldContent</code> so
+                  error state, disabled state, and accessible label linkage are handled
+                  automatically by context.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use Textarea for single-line inputs like names, emails, or numbers — use{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">Input</code> instead so the
+                  field height matches user expectations.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't skip <code className="font-mono bg-red-100 px-0.5 rounded">FieldLabel</code>{' '}
+                  — an unlabelled textarea is inaccessible. Always provide a visible label or at
+                  minimum an <code className="font-mono bg-red-100 px-0.5 rounded">aria-label</code>
+                  .
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't manually set{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">variant="error"</code> or{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">variant="disabled"</code>{' '}
+                  when the textarea is inside{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">FieldContent</code> — those
+                  states are derived from context automatically.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       {/* Props */}
       <Section title="Props">
         <div className="overflow-x-auto">

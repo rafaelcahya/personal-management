@@ -344,6 +344,132 @@ export const Docs = {
         </div>
       </section>
 
+      {/* When to Use */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Popover when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The content is freeform — a form, date picker, filter panel, or rich layout
+                      that cannot fit in a menu item.
+                    </li>
+                    <li>
+                      The user must interact with the content (type, check, click buttons) without
+                      the panel closing.
+                    </li>
+                    <li>
+                      You need programmatic control over open/close state from outside the trigger
+                      element.
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Tooltip</strong> when the content is read-only and no user
+                      interaction is needed inside the panel.
+                    </li>
+                    <li>
+                      Use <strong>DropdownMenu</strong> when the content is a list of actions or
+                      links that close the panel on selection.
+                    </li>
+                    <li>
+                      Use <strong>Dialog</strong> when the content is complex enough to warrant a
+                      modal — blocking focus and requiring an explicit dismiss.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Dos & Don'ts */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Dos & Don'ts</h2>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Keep popover content focused and scoped. Use it for a single task — a quick edit
+                  form, a filter set, or a detail peek — not as a catch-all drawer.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Provide a clear close mechanism inside the panel when interactions are multi-step.
+                  Use <code className="font-mono bg-green-100 px-1 rounded">PopoverClose</code> on a
+                  Cancel or X button so the user always knows how to dismiss.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Set an explicit width via{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">className="w-64"</code> on{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">PopoverContent</code>.
+                  Without a width the panel will collapse to the width of its narrowest child.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't nest another Popover or DropdownMenu inside a Popover. Overlapping floating
+                  panels create z-index conflicts and confuse click-outside detection — flatten the
+                  hierarchy instead.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use Popover for a list of navigation links or action items. Keyboard users
+                  expect arrow-key navigation in those cases — reach for DropdownMenu which provides
+                  that out of the box.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't rely solely on click-outside to dismiss when the panel contains a form with
+                  unsaved data. Warn the user or disable click-outside by controlling the open state
+                  manually.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* API Reference */}
       <section className="flex flex-col gap-6">
         <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">API Reference</h2>

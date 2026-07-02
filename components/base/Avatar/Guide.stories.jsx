@@ -448,6 +448,136 @@ export const Docs = {
           </div>
         </SubSection>
       </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Avatar when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Representing a person's identity — profile picture, initials, or a generic
+                      user icon
+                    </li>
+                    <li>
+                      Showing a user in a list, comment thread, chat message, or activity feed
+                    </li>
+                    <li>
+                      Stacking multiple contributors or participants with{' '}
+                      <code className="font-mono">AvatarGroup</code>
+                    </li>
+                    <li>
+                      Displaying a user's presence or availability using{' '}
+                      <code className="font-mono">AvatarStatus</code>
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Badge</strong> when showing a status label or count with no
+                      identity context (e.g. "3 new", "Active")
+                    </li>
+                    <li>
+                      Use an <strong>Icon button</strong> when the purpose is an action rather than
+                      representing a person
+                    </li>
+                    <li>
+                      Use a plain <strong>icon</strong> when representing a non-person entity such
+                      as a team, company, or product
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always pair <code className="font-mono">AvatarImage</code> with an{' '}
+                  <code className="font-mono">AvatarFallback</code> so the avatar always shows
+                  something meaningful — initials or an icon — when the image URL fails or is slow
+                  to load.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use 1–2 uppercase initials in <code className="font-mono">AvatarFallback</code>{' '}
+                  (e.g. "RC"). They are compact, instantly readable, and maintain a consistent
+                  visual weight across all avatar sizes.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Match the avatar size to its context — <code className="font-mono">xs</code> /{' '}
+                  <code className="font-mono">sm</code> for dense tables and inline mentions,{' '}
+                  <code className="font-mono">lg</code> / <code className="font-mono">xl</code> for
+                  profile headers and detail pages.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't render <code className="font-mono">AvatarImage</code> alone without a
+                  fallback. A broken image leaves an empty circle with no visual feedback, which
+                  looks like a layout bug to users.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't add <code className="font-mono">AvatarStatus</code> on{' '}
+                  <code className="font-mono">xs</code> or <code className="font-mono">sm</code>{' '}
+                  avatars — the dot overlaps the initials area and becomes too small to read or tap
+                  reliably.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't set a very high <code className="font-mono">max</code> on{' '}
+                  <code className="font-mono">AvatarGroup</code> in tight layouts. Keep it at 3–5 so
+                  the overflow badge stays meaningful and the group does not stretch its container.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
     </div>
   ),
 }

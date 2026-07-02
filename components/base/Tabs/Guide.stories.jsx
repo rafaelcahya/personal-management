@@ -305,6 +305,133 @@ export const Docs = {
         </div>
       </Section>
 
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Tabs when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      You have 2–5 peer-level content views on the same page (e.g. Overview, Trades,
+                      Settings)
+                    </li>
+                    <li>Content panels are mutually exclusive — only one is relevant at a time</li>
+                    <li>
+                      You need keyboard-navigable in-page section switching without a full page
+                      reload
+                    </li>
+                    <li>
+                      You want a compact toggle between chart views, filter presets, or data
+                      breakdowns
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Sidebar / NavMenu</strong> when switching between distinct routes
+                      or full pages — tabs are for in-page content only
+                    </li>
+                    <li>
+                      Use <strong>Accordion</strong> when sections are optional, collapsible, or
+                      need to be open simultaneously
+                    </li>
+                    <li>
+                      Use a <strong>dropdown select</strong> when there are more than 5–6 options
+                      and horizontal space is limited
+                    </li>
+                    <li>
+                      Use a <strong>stepper</strong> when the sections represent sequential steps
+                      with a defined order
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Keep tab labels short and scannable — 1 to 2 words (e.g. "Overview", "Trades") so
+                  users can read the full tab list at a glance without scrolling.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use the <strong>underline</strong> variant for primary page-level sections and the{' '}
+                  <strong>pill</strong> variant for compact or nested contexts such as a card or
+                  sidebar panel.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Ensure every tab contains meaningful, distinct content — each panel should justify
+                  its own existence and not duplicate information shown in another tab.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't hide critical or primary-action content behind a non-default tab. Users
+                  often miss content that isn't visible on first load — keep the most important
+                  information in the default panel.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use tabs for sequential workflows where step order matters. A stepper
+                  communicates progression and prevents skipping steps; tabs imply all panels are
+                  equally accessible at any time.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't nest Tabs inside another Tabs component unless the two levels have clearly
+                  different scopes. Nested tabs create orientation confusion and make keyboard
+                  navigation hard to follow.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       {/* API Reference */}
       <Section title="API Reference">
         <SubSection

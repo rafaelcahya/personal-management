@@ -619,6 +619,138 @@ const pathname = usePathname()
           </div>
         </SubSection>
       </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use NavMenu when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The app has 3–7 top-level sections that benefit from horizontal grouping in a
+                      persistent nav bar
+                    </li>
+                    <li>
+                      Some sections have sub-pages that are easier to discover in a grouped dropdown
+                      or mega menu panel
+                    </li>
+                    <li>
+                      The layout is wide (desktop/tablet) and a horizontal nav bar fits naturally
+                      above the main content area
+                    </li>
+                    <li>
+                      You need hover-triggered or click-triggered dropdowns with a brief close delay
+                      for fluid mouse movement
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Sidebar</strong> when the app has many sections (8+), deep
+                      nesting, or needs to stay visible at all times for quick jumps between areas
+                    </li>
+                    <li>
+                      Use <strong>Tabs</strong> when switching between views within the same page —
+                      NavMenu is for global app navigation, not in-page content switching
+                    </li>
+                    <li>
+                      Use a simple <strong>anchor link list</strong> when the page is a single long
+                      document and navigation is scroll-based rather than route-based
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Keep top-level trigger labels short — 1 to 2 words (e.g. "Products", "Settings").
+                  Long labels crowd the nav bar and make the sliding underline animation feel off.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">NavMenuGroupTitle</code>{' '}
+                  to label each column in a mega menu. It gives users a clear mental model of how
+                  the sub-pages are organised before they scan the items.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always pass the{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">active</code> prop to{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">NavMenuLink</code> and{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">NavMenuGroupItem</code> so
+                  the sliding underline and highlighted state reflect the current route.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't nest a second dropdown inside{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">NavMenuContent</code>.
+                  NavMenu only supports one level of dropdowns — deeper hierarchies should be
+                  handled by a Sidebar or a dedicated sub-navigation pattern.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't place more than 5–6 items in{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">NavMenuList</code>. Too many
+                  triggers crowd the bar and collapse awkwardly on narrower screens — move
+                  lower-priority sections behind a "More" menu instead.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use NavMenu as in-page tab navigation. If the content below changes without
+                  a route change, use the <strong>Tabs</strong> component — NavMenu is designed for
+                  route-level navigation only.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
     </div>
   ),
 }
