@@ -5,7 +5,7 @@ import Button from '@/components/base/Button/Button'
 import { BrainCircuit } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { fetchInsights } from '@/lib/api/running'
 
 function firstParagraph(content) {

@@ -9,7 +9,7 @@ import ProductNameFilterDropdown from './list/component/ProductNameFilterDropdow
 import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
 import { Search, X, FileText, AlertCircle } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import Button from '@/components/base/Button/Button'
 
 const LIMIT = 15

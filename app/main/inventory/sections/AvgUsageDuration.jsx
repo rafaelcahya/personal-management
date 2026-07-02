@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Timer, AlertCircle } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import Button from '@/components/base/Button/Button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 
 function DurationBadge({ days }) {
   let cls = 'bg-green-100 text-green-700 border-green-200'

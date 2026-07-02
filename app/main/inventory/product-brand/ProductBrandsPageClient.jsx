@@ -10,7 +10,7 @@ import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
 import Button from '@/components/base/Button/Button'
 import { Search, X, Tag, AlertCircle } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 
 const LIMIT = 15
 

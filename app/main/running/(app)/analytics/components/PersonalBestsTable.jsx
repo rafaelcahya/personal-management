@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Button from '@/components/base/Button/Button'
 import { useRouter } from 'next/navigation'
 import { Trophy } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { fetchPersonalBests } from '@/lib/api/running'
 
 const DISTANCES = ['1 mile', '5K', '10K', '15K', 'Half-Marathon']

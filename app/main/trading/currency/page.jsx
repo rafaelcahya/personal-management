@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { DollarSign, BarChart2, AlertCircle, TrendingUp } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import Button from '@/components/base/Button/Button'
 import { cn } from '@/lib/utils'
 import AllocationChart from './components/AllocationChart'

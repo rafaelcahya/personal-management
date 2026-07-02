@@ -10,7 +10,7 @@ import ProductUsageLog from '@/app/main/inventory/product-list/detail/ProductUsa
 import { Badge } from '@/components/base/Badge/Badge'
 import Button from '@/components/base/Button/Button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 
 // ----------------------------------------------------------------
 // Stat card component

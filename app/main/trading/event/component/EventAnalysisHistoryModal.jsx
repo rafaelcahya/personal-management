@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import Button from '@/components/base/Button/Button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { ChevronLeft, Sparkles, History } from 'lucide-react'
 import { fetchAnalysisHistory } from '@/lib/api/event'
 
