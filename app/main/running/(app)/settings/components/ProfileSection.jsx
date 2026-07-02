@@ -8,7 +8,7 @@ import { CalendarIcon, CheckCircle2, AlertCircle, User } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {

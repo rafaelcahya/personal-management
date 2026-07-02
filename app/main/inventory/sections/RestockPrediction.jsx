@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { Sparkles, AlertCircle } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import Button from '@/components/base/Button/Button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 
 function UrgencyBadge({ quantity, daysUntilEmpty }) {
   if (quantity === 0)

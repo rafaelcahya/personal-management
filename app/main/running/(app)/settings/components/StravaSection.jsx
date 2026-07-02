@@ -12,7 +12,7 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import {
   getStravaStatus,
   redirectToStravaConnect,

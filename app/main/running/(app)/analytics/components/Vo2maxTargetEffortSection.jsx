@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { getTargetEffort } from '@/lib/api/running'
 import Vo2maxGapCard from './Vo2maxGapCard'
 import Vo2maxProjectionChart from './Vo2maxProjectionChart'

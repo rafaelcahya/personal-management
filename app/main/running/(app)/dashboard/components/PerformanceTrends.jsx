@@ -14,7 +14,7 @@ import {
   ReferenceLine,
 } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { TrendingUp } from 'lucide-react'
 import { fetchPerformanceTrends } from '@/lib/api/running'
 

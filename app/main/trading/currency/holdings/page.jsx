@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { BarChart2, TrendingUp, TrendingDown, Minus, AlertCircle, Plus } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import Button from '@/components/base/Button/Button'
 import AddTransactionSheet from './[id]/components/AddTransactionSheet'
 import {

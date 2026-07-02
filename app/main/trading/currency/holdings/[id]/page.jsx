@@ -13,7 +13,7 @@ import {
   TrendingDown,
   Minus,
 } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Badge } from '@/components/base/Badge/Badge'
 import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'

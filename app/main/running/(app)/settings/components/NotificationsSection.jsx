@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Info, Bell } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Switch } from '@/components/ui/switch'
 import { getUserSettings, updateUserSettings, savePushSubscription } from '@/lib/api/running'
 

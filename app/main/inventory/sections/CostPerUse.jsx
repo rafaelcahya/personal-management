@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { BarChart2, AlertCircle } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import Button from '@/components/base/Button/Button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import ProductTable from '../components/ProductTable'
 
 function TableSkeleton() {
