@@ -305,6 +305,128 @@ import {
           <code className="font-mono bg-gray-100 px-1 rounded text-xs">Banner</code> via context.
         </p>
       </section>
+
+      {/* When to Use */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Banner when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The message is persistent and relevant to the current page context (e.g. a
+                      stock threshold warning that stays until resolved)
+                    </li>
+                    <li>
+                      You need to display a system-level status that affects the user's workflow
+                      (e.g. a failed save or a maintenance notice)
+                    </li>
+                    <li>
+                      The message is non-blocking — the user should still be able to interact with
+                      the page while the banner is visible
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Toast</strong> when the feedback is transient and auto-dismisses
+                      after a short duration (e.g. "Changes saved")
+                    </li>
+                    <li>
+                      Use <strong>Modal</strong> when you need to block the user from proceeding
+                      until they acknowledge or take action (e.g. a destructive confirmation dialog)
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Dos & Don'ts */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Dos & Don&apos;ts</h2>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Match the variant to the severity of the message — use <strong>info</strong> for
+                  neutral updates, <strong>success</strong> for completed actions,{' '}
+                  <strong>warning</strong> for recoverable issues, and <strong>danger</strong> for
+                  failures or destructive states.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Keep the title short and the description actionable. Users should know at a glance
+                  what happened and what to do next (e.g. "Stock below threshold — Restock now").
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use <strong>dismissible</strong> with <strong>onDismiss</strong> together so the
+                  close button has a handler. Manage visibility state in the parent so the banner
+                  can be hidden without unmounting the whole page section.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don&apos;t</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don&apos;t stack multiple Banners of the same variant simultaneously. If you have
+                  more than one persistent message, consider consolidating them or using a list
+                  within a single Banner description.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don&apos;t use Banner for transient feedback like "Item added to cart" or "Copied
+                  to clipboard" — these should be Toasts that auto-dismiss, not persistent strips
+                  that clutter the layout.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don&apos;t place Banner inside a card or modal. It is designed as a full-width
+                  strip and loses its visual hierarchy when constrained to a smaller container. Use
+                  an inline alert pattern instead.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   ),
 }

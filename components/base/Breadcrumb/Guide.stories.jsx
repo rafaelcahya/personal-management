@@ -507,6 +507,58 @@ export const Docs = {
         </SubSection>
       </Section>
 
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Breadcrumb when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The page hierarchy is 3 or more levels deep (e.g. Home → Inventory → Products
+                      → Detail).
+                    </li>
+                    <li>
+                      Users navigate between deeply nested pages and need a quick way to jump back
+                      up the tree.
+                    </li>
+                    <li>
+                      The URL structure mirrors a clear parent–child relationship that benefits from
+                      visual reinforcement.
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use a <strong>Back button</strong> when navigation is linear (1–2 levels) and
+                      users always return to the previous screen.
+                    </li>
+                    <li>
+                      Use <strong>Tabs</strong> when the user switches between sibling views at the
+                      same level — not up and down a hierarchy.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
       {/* Dos & Don'ts */}
       <Section title="Dos & Don'ts">
         <div className="grid grid-cols-2 gap-6">

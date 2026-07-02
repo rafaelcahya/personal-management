@@ -489,6 +489,132 @@ export const Docs = {
           </div>
         </SubSection>
       </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Command when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      You need a global shortcut (⌘K) that works from any page without navigating
+                      away
+                    </li>
+                    <li>
+                      The action list is long or dynamic and users need to filter it by typing
+                    </li>
+                    <li>
+                      You want to group heterogeneous actions — navigation, account, quick-create —
+                      in one unified surface
+                    </li>
+                    <li>
+                      Power users expect keyboard-first interaction with shortcut hints per item
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Select</strong> when choosing a single value from a short, stable
+                      list (e.g. status, category)
+                    </li>
+                    <li>
+                      Use <strong>DropdownMenu</strong> when showing contextual actions tied to a
+                      specific element (row actions, avatar menu)
+                    </li>
+                    <li>
+                      Use a plain <strong>search input</strong> when filtering a visible list on the
+                      page rather than dispatching a global action
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always include a <strong>CommandEmpty</strong> inside CommandList so users see a
+                  "No results" message when their query matches nothing — never leave the list
+                  silently blank.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Group related actions with <strong>CommandGroup</strong> and a descriptive label
+                  (e.g. "Navigation", "Account") so the palette stays scannable as the item count
+                  grows.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use the <strong>shortcut</strong> prop to surface keyboard shortcuts that also
+                  work elsewhere in the app (e.g. <code>G I</code> for Inventory). Keep them
+                  consistent with the app-wide keybind map.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't put destructive actions (delete, log out) alongside safe navigation items
+                  without visual separation — use a <strong>CommandSeparator</strong> and place
+                  destructive items at the bottom of their own group.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't overload the palette with every possible action. Limit items to globally
+                  relevant commands; page-specific actions belong in contextual menus or inline
+                  controls.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't omit the <strong>icon</strong> prop when mixing icon-bearing and icon-less
+                  items in the same group — inconsistent leading alignment makes the list feel
+                  unpolished.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
     </div>
   ),
 }

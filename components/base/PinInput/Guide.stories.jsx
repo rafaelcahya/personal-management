@@ -185,6 +185,119 @@ export const Docs = {
         </div>
       </Section>
 
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Pin Input when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>Entering a fixed-length numeric OTP or SMS verification code</li>
+                    <li>Entering a numeric PIN of known length (4 or 6 digits)</li>
+                    <li>Any flow where each digit is entered and confirmed individually</li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>password input</strong> when the user is creating or entering a
+                      secret passphrase — PinInput does not mask characters
+                    </li>
+                    <li>
+                      Use a <strong>text input</strong> when the code is alphanumeric (e.g.
+                      "AB12CD") — PinInput accepts digits only
+                    </li>
+                    <li>
+                      Use a <strong>number or text input</strong> when the length is variable or
+                      unknown at render time
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Match the <code>length</code> prop exactly to the code users receive — 4 for a
+                  PIN, 6 for a typical OTP — so the cell count sets the right expectation before
+                  they start typing.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always wrap PinInput inside <code>FieldContent</code> with a{' '}
+                  <code>FieldLabel</code> and <code>FieldError</code> so size, disabled state, and
+                  validation errors are communicated consistently.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Clear the value and refocus the first cell when a verification attempt fails, so
+                  users can re-enter the code without manually deleting each digit.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use PinInput for passwords or alphanumeric codes — the component filters out
+                  non-digit keystrokes, so letters will silently be ignored and users will be
+                  confused.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't auto-submit the form the instant the last cell is filled — give users a
+                  moment to notice and correct a paste error before the form fires.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't render more cells than the code length just to "leave room" — empty trailing
+                  cells make the input look incomplete and mislead users about how many digits to
+                  enter.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       {/* API */}
       <Section title="API Reference">
         <SubSection title="PinInput">

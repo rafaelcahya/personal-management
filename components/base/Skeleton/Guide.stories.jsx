@@ -536,6 +536,127 @@ export const Docs = {
           </div>
         </SubSection>
       </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Skeleton when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The content has a known, predictable shape (card, list row, text block) that
+                      can be mirrored as a placeholder
+                    </li>
+                    <li>
+                      The data fetch takes 200 ms or longer — skeleton prevents layout shift and
+                      gives users a sense of progress
+                    </li>
+                    <li>
+                      You are loading a list of items and want to reserve the correct amount of
+                      space before data arrives
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Spinner</strong> when the load time is indeterminate or the
+                      content shape is unknown (e.g. a file upload, a background job)
+                    </li>
+                    <li>
+                      Use <strong>nothing</strong> (no placeholder at all) when the operation
+                      consistently resolves in under 200 ms — flashing a skeleton for that duration
+                      is worse than showing nothing
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Match the skeleton shape to the real content — use the same width, height, and
+                  border-radius as the element it replaces so there is no layout shift when data
+                  loads.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use a preset (SkeletonCard, SkeletonText, SkeletonAvatar) for common shapes and
+                  only reach for the base Skeleton when you need a freeform size that no preset
+                  covers.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Keep animation consistent within a single loading state — pick either pulse or
+                  wave for all skeletons on the same surface so they feel like one cohesive
+                  placeholder.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use Skeleton for operations under 200 ms — showing a brief flash of
+                  placeholder before immediately replacing it with content is more disorienting than
+                  simply waiting for the data.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't place interactive elements (buttons, links) inside a skeleton block —
+                  skeletons are purely decorative placeholders and must be aria-hidden; users should
+                  never be able to interact with them.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't mix pulse and wave on the same screen — inconsistent animation styles within
+                  a single loading state look unpolished and suggest multiple unrelated loading
+                  phases.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
     </div>
   ),
 }

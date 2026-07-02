@@ -406,6 +406,138 @@ export const Docs = {
         ))}
       </section>
 
+      {/* When to Use */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use DropdownMenu when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      You need a list of contextual actions tied to a specific trigger (row action
+                      button, avatar menu, kebab menu).
+                    </li>
+                    <li>
+                      Actions are commands — Edit, Delete, Share, Export — not value selections.
+                    </li>
+                    <li>
+                      You want nested submenus to group related actions without cluttering the
+                      primary surface.
+                    </li>
+                    <li>
+                      You need inline toggles (checkbox items) or mutually-exclusive modes (radio
+                      group) alongside regular actions.
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Popover</strong> when the overlay needs rich content like form
+                      fields, date pickers, or multi-step flows — DropdownMenu items are
+                      single-action only.
+                    </li>
+                    <li>
+                      Use <strong>Select</strong> when the purpose is picking a value from a list
+                      and surfacing the current selection in the trigger — not executing a command.
+                    </li>
+                    <li>
+                      Use <strong>AlertDialog</strong> when a destructive or irreversible action
+                      requires an explicit confirmation step before proceeding.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Dos & Don'ts */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">{"Dos & Don'ts"}</h2>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Keep menu items short and action-oriented — use verbs like "Edit", "Delete",
+                  "Export as CSV". Users scan menus fast; long labels cause hesitation.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Group related actions with{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">DropdownMenuGroup</code> and
+                  separate unrelated groups with{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">DropdownMenuSeparator</code>
+                  . Destructive actions like Delete should always be isolated at the bottom.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use <code className="font-mono bg-green-100 px-1 rounded">asChild</code> on{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">DropdownMenuTrigger</code>{' '}
+                  when wrapping an existing Button or icon — this avoids double DOM nodes and keeps
+                  the trigger semantics clean.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">{"Don't"}</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't put form inputs, date pickers, or multi-field content inside a DropdownMenu.
+                  It is not a Popover — menu items do not support arbitrary interactive content and
+                  will break keyboard navigation.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't exceed 2 levels of nesting. A submenu inside a submenu creates disorienting
+                  navigation. If actions need deeper hierarchy, reconsider the information
+                  architecture — use a separate page or dialog instead.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't trigger a DropdownMenu on hover for primary navigation or global menus —
+                  hover mode is only appropriate for desktop-only power-user shortcuts where
+                  accidental opening is acceptable.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Usage */}
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Usage</h2>

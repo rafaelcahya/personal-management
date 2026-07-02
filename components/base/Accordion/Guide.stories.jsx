@@ -565,6 +565,59 @@ export const Docs = {
         </SubSection>
       </Section>
 
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Accordion when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      You have multiple sections of content where only one (or a few) need to be
+                      visible at a time — e.g. FAQ lists, settings groups, or help topics.
+                    </li>
+                    <li>
+                      Screen space is limited and progressive disclosure helps reduce cognitive load
+                      — users expand only what they need.
+                    </li>
+                    <li>
+                      Content within each section is self-contained and does not need to be
+                      cross-referenced with other sections simultaneously.
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Tabs</strong> when users switch between mutually exclusive views
+                      and the number of sections is small — tabs expose all options at a glance
+                      without extra clicks.
+                    </li>
+                    <li>
+                      Use <strong>plain sections</strong> (always-visible headings and content) when
+                      all content is equally important and should be scannable without interaction.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
       {/* Dos & Don'ts */}
       <Section title="Dos & Don'ts">
         <div className="grid grid-cols-2 gap-6">

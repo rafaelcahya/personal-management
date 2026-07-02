@@ -323,6 +323,127 @@ export const Docs = {
         </SubSection>
       </Section>
 
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use HoverCard when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      You need a hover-triggered preview with rich, structured content — e.g. stock
+                      ticker details, inventory item specs, or user profile snapshots
+                    </li>
+                    <li>
+                      The preview contains interactive elements such as links or action buttons
+                      (e.g. "View trades", "Add to cart") that the user may want to click
+                    </li>
+                    <li>
+                      Content must remain visible while the mouse travels from the trigger into the
+                      panel itself
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Tooltip</strong> when the hint is a short plain-text label — no
+                      interactive content needed and the panel can close instantly on mouse-leave
+                    </li>
+                    <li>
+                      Use <strong>Popover</strong> when the user must explicitly click to open a
+                      panel that contains forms, multi-step controls, or content that should persist
+                      until dismissed
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Set a short <code className="font-mono">openDelay</code> (200–400 ms) so the panel
+                  doesn't flash open on accidental mouse-overs, but still feels responsive when the
+                  user intentionally hovers.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Keep HoverCard content concise and scannable — a small set of key facts, one
+                  optional action button. The panel should supplement the trigger, not replace a
+                  full detail page.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use <code className="font-mono">asChild</code> on HoverCardTrigger so hover props
+                  are merged onto your own element (e.g. a ticker badge or item name) rather than
+                  adding an extra wrapper span to the DOM.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't place large forms, multi-step wizards, or destructive actions (e.g. delete
+                  confirmation) inside HoverCard — hover is an unreliable trigger for high-stakes
+                  interactions. Use Popover or a Dialog instead.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't rely on HoverCard as the only way to access critical information — hover is
+                  not available on touch devices. Always ensure the underlying trigger or a nearby
+                  link exposes the same data.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't set <code className="font-mono">openDelay={0}</code> in production UIs with
+                  dense trigger areas (e.g. tables full of tickers) — panels will open on every
+                  accidental mouse-over and create visual noise.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       {/* API Reference */}
       <Section title="API Reference">
         <SubSection title="HoverCard" description="Root component. Manages open state and timers.">

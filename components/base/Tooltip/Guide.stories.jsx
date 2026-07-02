@@ -522,6 +522,117 @@ export const Docs = {
           </div>
         </SubSection>
       </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Tooltip when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      You need a short plain-text label for an icon button with no visible text
+                    </li>
+                    <li>
+                      You want to show a keyboard shortcut next to an action (e.g. "Save (⌘S)")
+                    </li>
+                    <li>You want to surface a stat breakdown or quick numeric detail on hover</li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>HoverCard</strong> when the content includes images, links, or
+                      multi-line rich layouts that need more space
+                    </li>
+                    <li>
+                      Use <strong>Popover</strong> when the content contains interactive elements
+                      like buttons, inputs, or forms that the user needs to click
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Keep tooltip text short — one sentence or a brief phrase. Tooltips are hints, not
+                  documentation.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use Tooltip on icon-only buttons to provide a text label, improving accessibility
+                  for screen readers and mouse users alike.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Set <code className="font-mono">delayDuration={`{0}`}</code> on tooltips that
+                  appear in dense UI areas (e.g. toolbars) so users get instant feedback.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't put critical information only inside a Tooltip — it is invisible until hover
+                  and completely inaccessible on touch devices.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't place interactive elements (links, buttons, inputs) inside TooltipContent —
+                  users cannot reliably move their cursor into the tooltip before it closes. Use
+                  Popover instead.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't wrap disabled elements in TooltipTrigger without{' '}
+                  <code className="font-mono">asChild</code> and a focusable wrapper — disabled
+                  buttons don't fire pointer events, so the tooltip will never open.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
     </div>
   ),
 }

@@ -422,6 +422,144 @@ export const Docs = {
 />`}</Code>
       </Section>
 
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Radio Group when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The user must pick <strong>exactly one</strong> option and cannot deselect
+                    </li>
+                    <li>
+                      You have <strong>2–4 options</strong> that should all be visible at once
+                      without expanding
+                    </li>
+                    <li>
+                      Options are <strong>mutually exclusive</strong> and semantically distinct
+                      (e.g. payment method, shipping speed)
+                    </li>
+                    <li>
+                      You want built-in <strong>arrow-key navigation</strong> between options for
+                      keyboard users
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Select</strong> when there are 5 or more options — a dropdown
+                      keeps the form compact
+                    </li>
+                    <li>
+                      Use <strong>Switch</strong> when the choice is a binary on/off toggle that
+                      takes effect immediately without form submission
+                    </li>
+                    <li>
+                      Use <strong>Checkbox Group</strong> when the user can pick multiple options
+                      simultaneously
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always pair each{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">RadioGroupItem</code> with
+                  a visible{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">&lt;label&gt;</code>{' '}
+                  linked via matching{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">id</code> /{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">htmlFor</code>. This is
+                  required for accessibility and enables click-anywhere-on-label-to-select behavior.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Wrap in{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldContent</code> with
+                  an <code className="font-mono bg-green-100 px-0.5 rounded">error</code> prop and
+                  add <code className="font-mono bg-green-100 px-0.5 rounded">aria-invalid</code> to
+                  each item to surface validation errors with the correct error border and
+                  screen-reader announcement.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Pre-select a sensible default using{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">defaultValue</code> when
+                  one option is clearly recommended or safest — this prevents users from
+                  accidentally submitting the form without making a choice.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use Radio Group for a binary yes/no toggle that immediately changes a
+                  setting — use <strong>Switch</strong> instead. Radio Group implies a form choice
+                  that is confirmed on submit, not an instant action.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't add more than 4–5 options to a Radio Group. When the list grows, the form
+                  becomes cluttered. Switch to a <strong>Select</strong> dropdown to keep the layout
+                  manageable.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't omit the <code className="font-mono bg-red-100 px-0.5 rounded">value</code>{' '}
+                  prop on{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">RadioGroupItem</code> or
+                  reuse the same value across items in the same group — each item must have a
+                  unique, non-empty value for selection and keyboard navigation to work correctly.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       {/* Props */}
       <Section title="Props">
         <p className="text-xs font-mono text-violet-700 mb-3">RadioGroup</p>
