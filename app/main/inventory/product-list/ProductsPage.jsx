@@ -8,15 +8,12 @@ import ProductListSummary from './list/component/ProductListSummary'
 import ProductTableHeader from './list/component/ProductTableHeader'
 import ProductsTable from './list/ProductsTable'
 import AddProductForm from './add-product/AddProductForm'
-import ProductFilterDropdown from './list/component/ProductFilterDropdown'
 import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import Button from '@/components/base/Button/Button'
 import { Search, X, AlertCircle, Package } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
-
-const FILTER_STORAGE_KEY = 'product-list-filter'
 
 export default function ProductsPageClient() {
   const searchParams = useSearchParams()
@@ -28,8 +25,7 @@ export default function ProductsPageClient() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  // filter + search + sort
-  const [filter, setFilter] = useState(null)
+  // search + sort
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState(null)
 
@@ -40,14 +36,14 @@ export default function ProductsPageClient() {
 
   const debouncedSearch = useDebounce(search, 300)
 
-  // initialised ref so URL params + localStorage run only once
+  // initialised ref so URL params run only once
   const initialised = useRef(false)
 
   useEffect(() => {
     if (initialised.current) return
     initialised.current = true
 
-    // URL params take priority over localStorage
+    // URL params take priority
     const brandParam = searchParams.get('brand')
     const nameParam = searchParams.get('name')
     if (brandParam) {
@@ -56,28 +52,8 @@ export default function ProductsPageClient() {
     }
     if (nameParam) {
       setSearch(decodeURIComponent(nameParam))
-      return
-    }
-
-    // restore filter from localStorage
-    try {
-      const savedFilter = localStorage.getItem(FILTER_STORAGE_KEY)
-      if (savedFilter) {
-        setFilter(savedFilter === 'null' ? null : savedFilter)
-      }
-    } catch {
-      // ignore
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // persist filter to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(FILTER_STORAGE_KEY, filter === null ? 'null' : filter)
-    } catch {
-      // ignore
-    }
-  }, [filter])
 
   const fetchProducts = useCallback(
     async (overridePage) => {
@@ -89,7 +65,6 @@ export default function ProductsPageClient() {
           page: targetPage,
           limit: 15,
           search: debouncedSearch || undefined,
-          filter: filter || undefined,
           sort: sort || undefined,
         })
         setProducts(result.data || [])
@@ -103,7 +78,7 @@ export default function ProductsPageClient() {
         setLoading(false)
       }
     },
-    [page, debouncedSearch, filter, sort]
+    [page, debouncedSearch, sort]
   )
 
   const fetchSummary = useCallback(async () => {
@@ -131,10 +106,10 @@ export default function ProductsPageClient() {
     }
   }, [])
 
-  // fetch products whenever page / debouncedSearch / filter / sort changes
+  // fetch products whenever page / debouncedSearch / sort changes
   useEffect(() => {
     fetchProducts()
-  }, [page, debouncedSearch, filter, sort]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [page, debouncedSearch, sort]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // summary + restock are independent — fetch once on mount
   useEffect(() => {
@@ -147,33 +122,6 @@ export default function ProductsPageClient() {
     setPage(1)
   }, [fetchProducts, fetchSummary, fetchRestockPredictions])
 
-  const handleFilterChange = (newFilter) => {
-    setFilter(newFilter)
-    setPage(1)
-
-    const messages = {
-      null: 'Showing all products',
-      active: 'Showing active products',
-      inactive: 'Showing inactive products',
-      favorite: 'Showing favorite products',
-      'low-stock': 'Showing low stock products',
-      'out-stock': 'Showing out of stock products',
-      'never-used': 'Showing never used products',
-    }
-
-    const toastTypes = {
-      null: 'success',
-      active: 'success',
-      inactive: 'success',
-      favorite: 'success',
-      'low-stock': 'warning',
-      'out-stock': 'error',
-      'never-used': 'info',
-    }
-
-    toast[toastTypes[newFilter] || 'success'](messages[newFilter] || messages[null])
-  }
-
   const handleSortChange = (newSort) => {
     setSort(newSort)
     setPage(1)
@@ -184,15 +132,14 @@ export default function ProductsPageClient() {
     setPage(1)
   }
 
-  const handleClearFilters = () => {
-    setFilter(null)
+  const handleClearSearch = () => {
     setSearch('')
     setSort(null)
     setPage(1)
   }
 
   const totalPages = Math.ceil(total / 15)
-  const isFiltering = filter !== null || debouncedSearch !== '' || sort !== null
+  const isSearching = debouncedSearch !== '' || sort !== null
 
   return (
     <main id="productListPage" className="space-y-6">
@@ -201,11 +148,7 @@ export default function ProductsPageClient() {
         description="Manage and track all your products"
         breadcrumbs={[{ label: 'Inventory', href: '/main/inventory' }, { label: 'Product List' }]}
       />
-      <ProductListSummary
-        summary={summary}
-        loading={summaryLoading}
-        onFilterChange={handleFilterChange}
-      />
+      <ProductListSummary summary={summary} loading={summaryLoading} />
 
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
         <ProductTableHeader summary={summary} loading={summaryLoading} />
@@ -218,12 +161,6 @@ export default function ProductsPageClient() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
             <SearchInput search={search} onSearchChange={handleSearchChange} />
             <div className="flex items-center justify-between gap-2 shrink-0">
-              <ProductFilterDropdown
-                filter={filter}
-                onFilterChange={handleFilterChange}
-                summary={summary}
-                summaryLoading={summaryLoading}
-              />
               <AddProductForm onAdded={handleRefresh} />
             </div>
           </div>
@@ -268,7 +205,7 @@ export default function ProductsPageClient() {
               Try again
             </Button>
           </div>
-        ) : products.length === 0 && !isFiltering ? (
+        ) : products.length === 0 && !isSearching ? (
           <div
             id="emptyState_productListPage"
             className="flex flex-col items-center justify-center py-16 gap-4 text-center"
@@ -279,27 +216,22 @@ export default function ProductsPageClient() {
               <p className="text-xs text-slate-500">Start by adding your first product</p>
             </div>
           </div>
-        ) : products.length === 0 && isFiltering ? (
+        ) : products.length === 0 && isSearching ? (
           <div
-            id="filteredEmptyState_productListPage"
+            id="searchEmptyState_productListPage"
             className="flex flex-col items-center justify-center py-16 gap-4 text-center"
           >
             <Package className="size-10 text-slate-300" aria-hidden="true" />
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">No products match your filters</p>
-              {filter && (
-                <p className="text-xs text-slate-500">
-                  Active filter: <span className="font-medium">{filter}</span>
-                </p>
-              )}
+              <p className="text-sm font-medium text-slate-700">No products match your search</p>
               {debouncedSearch && (
                 <p className="text-xs text-slate-500">
                   Search: <span className="font-medium">"{debouncedSearch}"</span>
                 </p>
               )}
             </div>
-            <Button variant="outline" size="base" onClick={handleClearFilters} className="min-w-11">
-              Clear filters
+            <Button variant="outline" size="base" onClick={handleClearSearch} className="min-w-11">
+              Clear search
             </Button>
           </div>
         ) : (
