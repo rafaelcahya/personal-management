@@ -1,213 +1,172 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-    TrendingUp,
-    TrendingDown,
-    Activity,
-    Target,
-    ChevronDown,
-    ChevronUp,
-} from "lucide-react";
+import { useState } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
+import Button from '@/components/base/Button/Button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { TrendingUp, TrendingDown, Activity, Target, ChevronDown, ChevronUp } from 'lucide-react'
 
 export default function TradeListSummary({ summary }) {
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
-    const {
-        totalTrades = 0,
-        totalWins = 0,
-        totalLosses = 0,
-        totalProfit = 0,
-        netPnL = 0,
-    } = summary;
+  const { totalTrades = 0, totalWins = 0, totalLosses = 0, totalProfit = 0, netPnL = 0 } = summary
 
-    const winRate =
-        totalTrades > 0 ? ((totalWins / totalTrades) * 100).toFixed(1) : 0;
+  const winRate = totalTrades > 0 ? ((totalWins / totalTrades) * 100).toFixed(1) : 0
 
-    const stats = [
-        {
-            id: "totalTradesSummary_tradePage",
-            title: "Total Trades",
-            value: totalTrades,
-            icon: Activity,
-            color: "text-blue-600",
-            bgColor: "bg-blue-50",
-        },
-        {
-            id: "winRateSummary_tradePage",
-            title: "Win Rate",
-            value: `${winRate}%`,
-            subValue: `${totalWins}W / ${totalLosses}L`,
-            icon: Target,
-            color: "text-violet-600",
-            bgColor: "bg-violet-50",
-        },
-        {
-            id: "totalProfitSummary_tradePage",
-            title: "Total Profit",
-            value: `Rp ${totalProfit.toLocaleString("id-ID")}`,
-            icon: TrendingUp,
-            color: "text-green-600",
-            bgColor: "bg-green-50",
-        },
-        {
-            id: "netPnLSummary_tradePage",
-            title: "Net P/L",
-            value: `Rp ${netPnL.toLocaleString("id-ID")}`,
-            icon: netPnL >= 0 ? TrendingUp : TrendingDown,
-            color: netPnL >= 0 ? "text-green-600" : "text-red-600",
-            bgColor: netPnL >= 0 ? "bg-green-50" : "bg-red-50",
-        },
-    ];
+  const stats = [
+    {
+      id: 'totalTradesSummary_tradePage',
+      title: 'Total Trades',
+      value: totalTrades,
+      icon: Activity,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+    },
+    {
+      id: 'winRateSummary_tradePage',
+      title: 'Win Rate',
+      value: `${winRate}%`,
+      subValue: `${totalWins}W / ${totalLosses}L`,
+      icon: Target,
+      color: 'text-violet-600',
+      bgColor: 'bg-violet-50',
+    },
+    {
+      id: 'totalProfitSummary_tradePage',
+      title: 'Total Profit',
+      value: `Rp ${totalProfit.toLocaleString('id-ID')}`,
+      icon: TrendingUp,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+    },
+    {
+      id: 'netPnLSummary_tradePage',
+      title: 'Net P/L',
+      value: `Rp ${netPnL.toLocaleString('id-ID')}`,
+      icon: netPnL >= 0 ? TrendingUp : TrendingDown,
+      color: netPnL >= 0 ? 'text-green-600' : 'text-red-600',
+      bgColor: netPnL >= 0 ? 'bg-green-50' : 'bg-red-50',
+    },
+  ]
 
-    return (
-        <>
-            {/* Desktop View */}
-            <div
-                id="tradeListSummaryDesktop_tradePage"
-                className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4"
+  return (
+    <>
+      {/* Desktop View */}
+      <div
+        id="tradeListSummaryDesktop_tradePage"
+        className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        {stats.map((stat, index) => {
+          const Icon = stat.icon
+          return (
+            <Card
+              id={`${stat.id}_desktopView`}
+              key={index}
+              className="p-0 border border-slate-200/50 shadow-slate-100"
             >
+              <CardContent className="px-4 py-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-600 mb-1">{stat.title}</p>
+                    <p id={`${stat.id}_value_desktopView`} className="text-xl font-semibold">
+                      {stat.value}
+                    </p>
+                    {stat.subValue && (
+                      <p
+                        id={`${stat.id}_subValue_desktopView`}
+                        className="text-xs text-slate-400 mt-1"
+                      >
+                        {stat.subValue}
+                      </p>
+                    )}
+                  </div>
+                  <div className={`p-3 rounded-lg ${stat.bgColor}`}>
+                    <Icon className={`size-5 ${stat.color}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </div>
+
+      {/* Mobile View */}
+      <Collapsible
+        id="tradeSummaryCollapsible_tradePage"
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        className="sm:hidden w-full"
+      >
+        <Card className="py-2">
+          <CardContent className="px-0">
+            <CollapsibleTrigger asChild>
+              <Button
+                id="tradeSummaryCollapsibleTrigger_tradePage"
+                variant="ghost"
+                className="w-full flex items-center justify-between bg-white"
+              >
+                <div
+                  id="tradeSummaryCollapsibleDefault_tradePage"
+                  className="flex items-center gap-3"
+                >
+                  <div className="p-2 rounded-lg bg-violet-50">
+                    <Activity className="size-4 text-violet-600" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-semibold">Trade Summary</p>
+                    <span
+                      className={`text-xs font-medium ${netPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                    >
+                      Net P/L: Rp{' '}
+                      <p id="tradeSummaryNetPnL_tradePage_value_mobileView">
+                        {netPnL.toLocaleString('id-ID')}
+                      </p>
+                    </span>
+                  </div>
+                </div>
+                {isOpen ? (
+                  <ChevronUp className="size-5 text-slate-400" />
+                ) : (
+                  <ChevronDown className="size-5 text-slate-400" />
+                )}
+              </Button>
+            </CollapsibleTrigger>
+
+            <CollapsibleContent id="tradeSummaryCollapsibleContent_tradePage" className="px-4 pt-2">
+              <div className="pt-2 grid grid-cols-2 gap-3">
                 {stats.map((stat, index) => {
-                    const Icon = stat.icon;
-                    return (
-                        <Card
-                            id={`${stat.id}_desktopView`}
-                            key={index}
-                            className="p-0 border border-slate-200/50 shadow-slate-100"
+                  const Icon = stat.icon
+                  return (
+                    <div
+                      id={`${stat.id}_mobileView`}
+                      key={index}
+                      className="p-3 rounded-lg border bg-slate-50/50"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className={`p-1.5 rounded-md ${stat.bgColor}`}>
+                          <Icon className={`size-3.5 ${stat.color}`} />
+                        </div>
+                        <p className="text-xs font-medium text-slate-600">{stat.title}</p>
+                      </div>
+                      <p id={`${stat.id}_value_mobileView`} className="text-lg font-bold ml-0.5">
+                        {stat.value}
+                      </p>
+                      {stat.subValue && (
+                        <p
+                          id={`${stat.id}_subValue_mobileView`}
+                          className="text-xs text-slate-400 mt-1 ml-0.5"
                         >
-                            <CardContent className="px-4 py-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-slate-600 mb-1">
-                                            {stat.title}
-                                        </p>
-                                        <p
-                                            id={`${stat.id}_value_desktopView`}
-                                            className="text-xl font-semibold"
-                                        >
-                                            {stat.value}
-                                        </p>
-                                        {stat.subValue && (
-                                            <p
-                                                id={`${stat.id}_subValue_desktopView`}
-                                                className="text-xs text-slate-400 mt-1"
-                                            >
-                                                {stat.subValue}
-                                            </p>
-                                        )}
-                                    </div>
-                                    <div
-                                        className={`p-3 rounded-lg ${stat.bgColor}`}
-                                    >
-                                        <Icon
-                                            className={`size-5 ${stat.color}`}
-                                        />
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    );
+                          {stat.subValue}
+                        </p>
+                      )}
+                    </div>
+                  )
                 })}
-            </div>
-
-            {/* Mobile View */}
-            <Collapsible
-                id="tradeSummaryCollapsible_tradePage"
-                open={isOpen}
-                onOpenChange={setIsOpen}
-                className="sm:hidden w-full"
-            >
-                <Card className="py-2">
-                    <CardContent className="px-0">
-                        <CollapsibleTrigger asChild>
-                            <Button
-                                id="tradeSummaryCollapsibleTrigger_tradePage"
-                                variant="ghost"
-                                className="w-full flex items-center justify-between bg-white"
-                            >
-                                <div
-                                    id="tradeSummaryCollapsibleDefault_tradePage"
-                                    className="flex items-center gap-3"
-                                >
-                                    <div className="p-2 rounded-lg bg-violet-50">
-                                        <Activity className="size-4 text-violet-600" />
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="text-sm font-semibold">
-                                            Trade Summary
-                                        </p>
-                                        <span
-                                            className={`text-xs font-medium ${netPnL >= 0 ? "text-green-600" : "text-red-600"}`}
-                                        >
-                                            Net P/L: Rp{" "}
-                                            <p id="tradeSummaryNetPnL_tradePage_value_mobileView">
-                                                {netPnL.toLocaleString("id-ID")}
-                                            </p>
-                                        </span>
-                                    </div>
-                                </div>
-                                {isOpen ? (
-                                    <ChevronUp className="size-5 text-slate-400" />
-                                ) : (
-                                    <ChevronDown className="size-5 text-slate-400" />
-                                )}
-                            </Button>
-                        </CollapsibleTrigger>
-
-                        <CollapsibleContent
-                            id="tradeSummaryCollapsibleContent_tradePage"
-                            className="px-4 pt-2"
-                        >
-                            <div className="pt-2 grid grid-cols-2 gap-3">
-                                {stats.map((stat, index) => {
-                                    const Icon = stat.icon;
-                                    return (
-                                        <div
-                                            id={`${stat.id}_mobileView`}
-                                            key={index}
-                                            className="p-3 rounded-lg border bg-slate-50/50"
-                                        >
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <div
-                                                    className={`p-1.5 rounded-md ${stat.bgColor}`}
-                                                >
-                                                    <Icon
-                                                        className={`size-3.5 ${stat.color}`}
-                                                    />
-                                                </div>
-                                                <p className="text-xs font-medium text-slate-600">
-                                                    {stat.title}
-                                                </p>
-                                            </div>
-                                            <p
-                                                id={`${stat.id}_value_mobileView`}
-                                                className="text-lg font-bold ml-0.5"
-                                            >
-                                                {stat.value}
-                                            </p>
-                                            {stat.subValue && (
-                                                <p
-                                                    id={`${stat.id}_subValue_mobileView`}
-                                                    className="text-xs text-slate-400 mt-1 ml-0.5"
-                                                >
-                                                    {stat.subValue}
-                                                </p>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </CollapsibleContent>
-                    </CardContent>
-                </Card>
-            </Collapsible>
-        </>
-    );
+              </div>
+            </CollapsibleContent>
+          </CardContent>
+        </Card>
+      </Collapsible>
+    </>
+  )
 }

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Flag, Plus, AlertTriangle } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import UpcomingRaceCard from './UpcomingRaceCard'
 import UpcomingRaceFormModal from './UpcomingRaceFormModal'
 
@@ -43,7 +43,7 @@ export default function UpcomingRacesSection({
         <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
           <AlertTriangle className="size-6 text-red-400" aria-hidden="true" />
           <p className="text-sm text-slate-600">{error}</p>
-          <Button variant="outline" size="sm" onClick={onRetry}>
+          <Button variant="outline" size="base" onClick={onRetry}>
             Try again
           </Button>
         </div>
@@ -64,7 +64,11 @@ export default function UpcomingRacesSection({
               Add a race you&apos;re planning to run and track your progress.
             </p>
           </div>
-          <Button size="sm" onClick={() => setFormOpen(true)} className="flex items-center gap-1.5">
+          <Button
+            size="base"
+            onClick={() => setFormOpen(true)}
+            className="flex items-center gap-1.5"
+          >
             <Plus className="size-4" aria-hidden="true" />
             Add upcoming race
           </Button>

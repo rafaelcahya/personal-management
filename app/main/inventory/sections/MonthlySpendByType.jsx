@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { format } from 'date-fns'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
+import Button from '@/components/base/Button/Button'
 
 function thisMonthTotal(items) {
   const thisMonth = new Date().toISOString().slice(0, 7)
@@ -94,12 +95,9 @@ export default function MonthlySpendByType({ items, loading }) {
         </div>
         {!loading && items.length > 0 && (
           <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
-            <button
-              onClick={() => setModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium text-violet-700 border border-violet-200 hover:bg-violet-50 focus:outline-none transition-colors"
-            >
+            <Button variant="ghost" onClick={() => setModalOpen(true)}>
               View All
-            </button>
+            </Button>
           </div>
         )}
       </div>

@@ -73,12 +73,12 @@ export default function TrainingZonesReference({ data, loading, error, onRetry }
           <div className="flex items-center gap-3">
             <p className="text-sm text-red-600">{error}</p>
             {onRetry && (
-              <button
+              <Button
                 onClick={onRetry}
                 className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
               >
                 Retry
-              </button>
+              </Button>
             )}
           </div>
         )}

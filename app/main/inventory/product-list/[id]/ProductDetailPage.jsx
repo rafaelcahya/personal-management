@@ -7,8 +7,8 @@ import { format } from 'date-fns'
 import { getProductById, getStockHistory, getProductUsageHistory } from '@/lib/api/product'
 import PageHeader from '@/app/main/components/PageHeader'
 import ProductUsageLog from '@/app/main/inventory/product-list/detail/ProductUsageLog'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/base/Badge/Badge'
+import Button from '@/components/base/Button/Button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -230,14 +230,15 @@ export default function ProductDetailPage({ productId }) {
             <p className="font-semibold text-slate-700">Failed to load product</p>
             <p className="text-sm text-slate-500 mt-1">{error}</p>
           </div>
-          <button
+          <Button
             id="retryBtn_productDetailPage"
+            variant="ghost"
             onClick={loadData}
-            className="inline-flex items-center gap-1.5 text-sm text-violet-600 hover:text-violet-700 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-2 rounded"
+            className="text-sm text-violet-600 hover:text-violet-700 font-medium"
           >
             <RefreshCw className="size-3.5" aria-hidden="true" />
             Try again
-          </button>
+          </Button>
         </div>
       </div>
     )

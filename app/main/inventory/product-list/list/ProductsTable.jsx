@@ -9,8 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/base/Badge/Badge'
+import Button from '@/components/base/Button/Button'
 import {
   ArrowDown,
   ArrowUp,
@@ -205,12 +205,14 @@ export default function ProductsTable({
                   }`}
                 />
                 {product.product_image && (
-                  <button
+                  <Button
+                    size="xs"
+                    variant="ghost"
                     onClick={(e) => {
                       e.stopPropagation()
                       setPreviewImg(product.product_image)
                     }}
-                    className="shrink-0"
+                    className="shrink-0 hover:bg-transparent"
                     aria-label="View product image"
                   >
                     <img
@@ -218,7 +220,7 @@ export default function ProductsTable({
                       alt={product.product}
                       className="size-8 rounded object-cover border border-slate-200"
                     />
-                  </button>
+                  </Button>
                 )}
                 <div className="min-w-0">
                   <p className="text-xs text-slate-400 truncate leading-tight">{product.brand}</p>
@@ -341,12 +343,14 @@ export default function ProductsTable({
                       }`}
                     />
                     {product.product_image && (
-                      <button
+                      <Button
+                        size="xs"
+                        variant="ghost"
                         onClick={(e) => {
                           e.stopPropagation()
                           setPreviewImg(product.product_image)
                         }}
-                        className="shrink-0"
+                        className="shrink-0 hover:bg-transparent"
                         aria-label="View product image"
                       >
                         <img
@@ -354,7 +358,7 @@ export default function ProductsTable({
                           alt={product.product}
                           className="size-8 rounded object-cover border border-slate-200"
                         />
-                      </button>
+                      </Button>
                     )}
                     <div className="min-w-0">
                       <p className="text-xs text-slate-400 truncate">{product.brand}</p>
@@ -416,27 +420,29 @@ export default function ProductsTable({
             className="flex items-center justify-between px-5 pt-2 mt-2"
             aria-label="Pagination"
           >
-            <button
+            <Button
+              variant="ghost"
               onClick={onPrev}
               disabled={page <= 1}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
               aria-label="Previous page"
             >
               <ChevronLeft className="size-4" aria-hidden="true" />
               Prev
-            </button>
+            </Button>
             <span className="text-xs text-slate-400 text-center" aria-live="polite">
               Page {page} of {totalPages} · {total} records
             </span>
-            <button
+            <Button
+              variant="ghost"
               onClick={onNext}
               disabled={page >= totalPages}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
               aria-label="Next page"
             >
               Next
               <ChevronRight className="size-4" aria-hidden="true" />
-            </button>
+            </Button>
           </div>
         )}
       </div>

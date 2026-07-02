@@ -26,7 +26,7 @@ import {
   Mountain,
 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import {
   fetchActivity,
@@ -190,13 +190,14 @@ export default function ActivityDetailPage() {
   return (
     <div id="activityDetailPage" className="flex flex-col gap-3 sm:gap-5">
       <div className="flex items-center gap-3">
-        <button
+        <Button
           onClick={() => router.back()}
-          className="flex items-center justify-center size-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition-colors shrink-0"
+          variant="ghost"
+          className="flex items-center justify-center size-8 rounded-lg shrink-0"
           aria-label="Go back"
         >
           <ChevronLeft className="size-4" />
-        </button>
+        </Button>
         <PageHeader
           title={activityName ?? 'Activity'}
           breadcrumbs={[
@@ -216,12 +217,13 @@ export default function ActivityDetailPage() {
           aria-live="assertive"
         >
           <span>{error}</span>
-          <button
+          <Button
             onClick={() => window.location.reload()}
+            variant="ghost"
             className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
           >
             Try again
-          </button>
+          </Button>
         </div>
       )}
 
@@ -845,16 +847,17 @@ export default function ActivityDetailPage() {
                         <div className="flex gap-2 justify-end">
                           <Button
                             id="notesCancelBtn_activityDetailPage"
-                            size="sm"
+                            variant="secondary"
+                            size="base"
                             onClick={() => setNotesEditing(false)}
                             disabled={notesSaving}
-                            className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                            className="text-violet-600 font-medium"
                           >
                             Cancel
                           </Button>
                           <Button
                             id="notesSaveBtn_activityDetailPage"
-                            size="sm"
+                            size="base"
                             onClick={handleSaveNotes}
                             disabled={notesSaving}
                             className="min-w-[60px]"
@@ -868,13 +871,15 @@ export default function ActivityDetailPage() {
                         </div>
                       </div>
                     ) : (
-                      <button
+                      <Button
                         id="notesEditBtn_activityDetailPage"
+                        variant="ghost"
+                        fullWidth
                         onClick={() => {
                           setNotesValue(activity.notes ?? '')
                           setNotesEditing(true)
                         }}
-                        className="flex items-start gap-2 px-3 py-2.5 bg-slate-50 rounded-lg w-full text-left hover:bg-slate-100 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
+                        className="items-start gap-2 px-3 py-2.5 h-auto bg-slate-50 rounded-lg hover:bg-slate-100 group"
                         aria-label="Edit notes"
                       >
                         <NotebookText
@@ -890,7 +895,7 @@ export default function ActivityDetailPage() {
                           className="size-3.5 text-slate-300 group-hover:text-slate-400 shrink-0 mt-0.5 transition-colors"
                           aria-hidden="true"
                         />
-                      </button>
+                      </Button>
                     )}
 
                     {activity.weather_summary && (

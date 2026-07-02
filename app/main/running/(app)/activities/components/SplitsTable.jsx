@@ -1,6 +1,7 @@
 'use client'
 
 import { Heart, Info } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { fmtPace, fmtDuration } from '../../dashboard/utils/format'
 import { SectionLabel } from './activityShared'
@@ -78,13 +79,9 @@ export default function SplitsTable({ splits }) {
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-                  aria-label="Cardiac drift information"
-                >
+                <Button variant="ghost" size="icon-xs" aria-label="Cardiac drift information">
                   <Info className="size-3.5" aria-hidden="true" />
-                </button>
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
                 <p className="font-semibold mb-1">What is Cardiac Drift?</p>

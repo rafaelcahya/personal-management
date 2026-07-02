@@ -7,9 +7,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Filter, TrendingUp, TrendingDown, Calendar, Clock } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/base/Badge/Badge'
 
 export default function EventFilterDropdown({ filter, onFilterChange, events }) {
   const filterOptions = [

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import {
   Dialog,
@@ -269,7 +269,8 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                 <Button
                   id="cancelBtn_editProductDialog"
                   type="button"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                  variant="secondary"
+                  className="text-violet-600 font-medium"
                   disabled={loading}
                 >
                   Cancel

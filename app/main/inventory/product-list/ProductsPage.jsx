@@ -12,7 +12,7 @@ import ProductFilterDropdown from './list/component/ProductFilterDropdown'
 import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Search, X, AlertCircle, Package } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
 
@@ -261,7 +261,7 @@ export default function ProductsPageClient() {
             </div>
             <Button
               variant="outline"
-              size="sm"
+              size="base"
               onClick={() => fetchProducts()}
               className="min-w-11"
             >
@@ -298,7 +298,7 @@ export default function ProductsPageClient() {
                 </p>
               )}
             </div>
-            <Button variant="outline" size="sm" onClick={handleClearFilters} className="min-w-11">
+            <Button variant="outline" size="base" onClick={handleClearFilters} className="min-w-11">
               Clear filters
             </Button>
           </div>
@@ -333,13 +333,15 @@ function SearchInput({ search, onSearchChange }) {
         className="pl-8 pr-7 text-sm h-9 focus-visible:ring-violet-200 focus-visible:border-violet-500"
       />
       {search && (
-        <button
+        <Button
+          variant="ghost"
+          size="xs"
           onClick={() => onSearchChange('')}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
           aria-label="Clear search"
         >
           <X className="size-3.5" />
-        </button>
+        </Button>
       )}
     </div>
   )

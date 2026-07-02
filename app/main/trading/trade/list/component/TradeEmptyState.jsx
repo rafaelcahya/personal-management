@@ -1,5 +1,5 @@
 import { TrendingUp, SearchX } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 
 export default function TradeEmptyState({ onAddTrade, search }) {
   if (search) {

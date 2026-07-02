@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Info, Heart } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -205,7 +205,7 @@ export default function HrZonesSection() {
                   id="detectMaxHrBtn_settingsPage"
                   type="button"
                   variant="outline"
-                  size="sm"
+                  size="base"
                   disabled={detecting}
                   onClick={handleDetectMaxHr}
                   className="shrink-0 gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
@@ -268,13 +268,14 @@ export default function HrZonesSection() {
                 <UITooltipProvider delayDuration={0}>
                   <UITooltip>
                     <UITooltipTrigger asChild>
-                      <button
-                        type="button"
-                        className="text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
                         aria-label="What is Threshold HR?"
+                        className="text-slate-300 hover:text-slate-500"
                       >
                         <Info className="size-3.5" aria-hidden="true" />
-                      </button>
+                      </Button>
                     </UITooltipTrigger>
                     <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
                       <p className="font-semibold mb-1">Threshold HR (LTHR)</p>
@@ -305,7 +306,7 @@ export default function HrZonesSection() {
                   id="thresholdHrAutoFillBtn_settingsPage"
                   type="button"
                   variant="outline"
-                  size="sm"
+                  size="base"
                   disabled={!hasValidMaxHr}
                   onClick={handleAutoFillThresholdHr}
                   className="shrink-0 text-xs text-violet-600 border-violet-200 hover:bg-violet-50 disabled:opacity-50"
@@ -379,7 +380,7 @@ export default function HrZonesSection() {
               id="hrZonesSaveBtn_settingsPage"
               onClick={handleSave}
               disabled={saving}
-              size="sm"
+              size="base"
             >
               {saving ? 'Saving…' : 'Save'}
             </Button>

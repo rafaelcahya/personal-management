@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { Loader2, CalendarIcon, AlertCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
@@ -205,7 +205,8 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
           <Button
             type="button"
             onClick={onClose}
-            className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+            variant="secondary"
+            className="text-violet-600 font-medium"
             id="cancelBtn_recordUsageForm"
           >
             Cancel

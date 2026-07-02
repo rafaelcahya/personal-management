@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Button from '@/components/base/Button/Button'
 import { Activity, Timer, Footprints, Zap, CalendarRange } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { format, startOfWeek, subWeeks, addDays } from 'date-fns'
@@ -194,20 +195,22 @@ export default function WeeklyStats({ data, activityType = null }) {
                 aria-label="Select week"
               >
                 {WEEK_OPTIONS.map((opt) => (
-                  <button
+                  <Button
                     key={opt.value}
                     id={`weeklyStatsWeekBtn_${opt.value === 0 ? 'current' : `W${opt.value}`}_dashboardPage`}
+                    variant="ghost"
+                    size="xs"
                     onClick={() => handleWeekSelect(opt.value)}
                     disabled={loadingWeek}
                     aria-pressed={selectedWeek === opt.value}
-                    className={`px-2 py-0.5 rounded text-xs font-medium transition-colors disabled:opacity-50 ${
+                    className={
                       selectedWeek === opt.value
-                        ? 'bg-violet-600 text-white'
+                        ? 'bg-violet-600 text-white hover:bg-violet-700'
                         : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                    }`}
+                    }
                   >
                     {opt.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
+import Button from '@/components/base/Button/Button'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
 import {
   TrendingUp,
@@ -276,13 +277,14 @@ function InfoTip({ content }) {
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <button
-            type="button"
-            className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+          <Button
+            variant="ghost"
+            size="icon-xs"
             aria-label="More information"
+            className="text-slate-300 hover:text-slate-500"
           >
             <Info className="size-3.5" aria-hidden="true" />
-          </button>
+          </Button>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
           {content}

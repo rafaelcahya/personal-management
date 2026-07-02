@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { fetchActivities } from '@/lib/api/running'
 import { fmtDistance, fmtPace, fmtDuration } from '../dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
@@ -129,18 +129,20 @@ const WORKOUT_BADGE = {
 
 function TypeChip({ type, label, icon: Icon, active, onClick }) {
   return (
-    <button
+    <Button
       onClick={onClick}
       aria-pressed={active}
-      className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium border whitespace-nowrap transition-colors ${
+      variant="outline"
+      size="xs"
+      className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors ${
         active
           ? 'border-violet-300 bg-violet-100 text-violet-700'
-          : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'
+          : 'border-slate-200 bg-white text-slate-500'
       }`}
     >
       {Icon && <Icon className="size-3" aria-hidden="true" />}
       {label}
-    </button>
+    </Button>
   )
 }
 
@@ -270,8 +272,10 @@ function ActivitiesInner() {
               className="pl-8 pr-8 h-8 text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600"
             />
             {searchInput && (
-              <button
+              <Button
                 id="activitiesSearchClear_activitiesPage"
+                variant="ghost"
+                size="xs"
                 onClick={() => {
                   setSearchInput('')
                   setSearch('')
@@ -280,7 +284,7 @@ function ActivitiesInner() {
                 aria-label="Clear search"
               >
                 <X className="size-3.5" aria-hidden="true" />
-              </button>
+              </Button>
             )}
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -362,7 +366,8 @@ function ActivitiesInner() {
             <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
             <span>
               {error}{' '}
-              <button
+              <Button
+                variant="ghost"
                 className="underline font-medium"
                 onClick={() => {
                   setError(null)
@@ -370,7 +375,7 @@ function ActivitiesInner() {
                 }}
               >
                 Try again
-              </button>
+              </Button>
             </span>
           </div>
         )}
@@ -440,7 +445,7 @@ function ActivitiesInner() {
                         {hasFilters ? 'No activities match your filters.' : 'No activities yet.'}
                       </p>
                       {hasFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <Button variant="ghost" size="base" onClick={clearFilters}>
                           Clear filters
                         </Button>
                       )}
@@ -559,27 +564,29 @@ function ActivitiesInner() {
         {/* Pagination */}
         {!loading && !error && totalPages > 1 && (
           <div className="flex items-center justify-between px-5 pt-2 mt-2" aria-label="Pagination">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => router.push(buildUrl(searchParams, { page: page - 1 }))}
               disabled={page <= 1}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
               aria-label="Previous page"
             >
               <ChevronLeft className="size-4" aria-hidden="true" />
               Prev
-            </button>
+            </Button>
             <span className="text-xs text-slate-400 text-center" aria-live="polite">
               Page {page} of {totalPages} · {total} activities
             </span>
-            <button
+            <Button
+              variant="ghost"
               onClick={() => router.push(buildUrl(searchParams, { page: page + 1 }))}
               disabled={page >= totalPages}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
               aria-label="Next page"
             >
               Next
               <ChevronRight className="size-4" aria-hidden="true" />
-            </button>
+            </Button>
           </div>
         )}
       </div>

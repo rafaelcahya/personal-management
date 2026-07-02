@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/base/Badge/Badge'
+import Button from '@/components/base/Button/Button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { bulkUpdateProductNameStatus } from '@/lib/api/productName'
 import ProductNameUpdate from '../UpdateProductName'
@@ -102,7 +102,7 @@ export default function ProductNamesTable({
           <p className="text-sm font-semibold text-slate-600">No results found</p>
           <p className="text-xs text-slate-400">{emptySubtext}</p>
         </div>
-        <Button variant="outline" size="sm" onClick={handleClearAll} className="text-xs h-8">
+        <Button variant="outline" size="base" onClick={handleClearAll} className="text-xs h-8">
           {clearLabel}
         </Button>
       </div>
@@ -120,7 +120,7 @@ export default function ProductNamesTable({
           <span className="text-sm font-medium text-violet-700">{selectedIds.length} selected</span>
           <div className="flex items-center gap-2 ml-auto">
             <Button
-              size="sm"
+              size="base"
               variant="outline"
               id="bulkSetActiveBtn_productNamePage"
               className="h-7 text-xs border-green-300 text-green-700 hover:bg-green-50"
@@ -130,7 +130,7 @@ export default function ProductNamesTable({
               Set Active
             </Button>
             <Button
-              size="sm"
+              size="base"
               variant="outline"
               id="bulkSetInactiveBtn_productNamePage"
               className="h-7 text-xs border-orange-300 text-orange-700 hover:bg-orange-50"
@@ -140,7 +140,7 @@ export default function ProductNamesTable({
               Set Inactive
             </Button>
             <Button
-              size="sm"
+              size="base"
               variant="ghost"
               id="bulkDeselectAllBtn_productNamePage"
               className="h-7 text-xs text-slate-500 hover:text-slate-700"
@@ -226,8 +226,10 @@ export default function ProductNamesTable({
                   onClick={(e) => e.stopPropagation()}
                 >
                   {productName.product_count > 0 ? (
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="xs"
                       id={`productCountBadge_${productName.id}_productNamePage`}
                       aria-label={`View ${productName.product_count} product(s) for ${productName.product_name}`}
                       onClick={() =>
@@ -235,12 +237,12 @@ export default function ProductNamesTable({
                           `/main/inventory/product-list?name=${encodeURIComponent(productName.product_name)}`
                         )
                       }
-                      className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1 rounded"
+                      className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1 rounded hover:bg-transparent"
                     >
                       <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200 cursor-pointer">
                         {productName.product_count}
                       </Badge>
-                    </button>
+                    </Button>
                   ) : (
                     <Badge className="bg-slate-100 text-slate-500 border-slate-200">0</Badge>
                   )}
@@ -252,8 +254,10 @@ export default function ProductNamesTable({
                   className="px-5 py-3.5 text-center w-[60px]"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <button
+                  <Button
                     type="button"
+                    size="xs"
+                    variant="ghost"
                     id={`editProductNameBtn_${productName.id}_productNamePage`}
                     aria-label={`Edit ${productName.product_name}`}
                     onClick={(e) => {
@@ -263,7 +267,7 @@ export default function ProductNamesTable({
                     className="inline-flex items-center justify-center rounded-md p-1.5 text-violet-500 hover:bg-violet-100 transition-colors min-h-[32px] min-w-[32px]"
                   >
                     <Pencil className="size-3.5" />
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -283,7 +287,7 @@ export default function ProductNamesTable({
           <div className="flex items-center gap-1">
             <Button
               variant="outline"
-              size="sm"
+              size="base"
               id="prevPageBtn_productNamePage"
               className="h-7 px-2 text-xs"
               onClick={onPrev}
@@ -293,7 +297,7 @@ export default function ProductNamesTable({
             </Button>
             <Button
               variant="outline"
-              size="sm"
+              size="base"
               id="nextPageBtn_productNamePage"
               className="h-7 px-2 text-xs"
               onClick={onNext}

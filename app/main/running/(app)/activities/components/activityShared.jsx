@@ -1,6 +1,7 @@
 'use client'
 
 import { Info } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 export function StatTile({
@@ -25,13 +26,14 @@ export function StatTile({
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
                   aria-label={`Info about ${label}`}
+                  className="text-slate-300 hover:text-slate-500"
                 >
                   <Info className="size-3.5" aria-hidden="true" />
-                </button>
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
                 {tooltip}

@@ -13,7 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { fmtDistance } from '../dashboard/utils/format'
 import { fetchRaceLog, fetchUpcomingRaces } from '@/lib/api/running'
@@ -154,7 +154,7 @@ export default function RaceLogPage() {
           <Button
             id="addRaceBtn"
             onClick={() => setFormOpen(true)}
-            size="sm"
+            size="base"
             className="flex items-center gap-1.5"
             aria-label="Log race"
           >
@@ -164,8 +164,7 @@ export default function RaceLogPage() {
           <Button
             id="addUpcomingRaceBtn_raceLogPage"
             onClick={() => setAddUpcomingOpen(true)}
-            size="sm"
-            variant="outline"
+            size="base"
             className="flex items-center gap-1.5"
             aria-label="Add upcoming race"
           >
@@ -209,7 +208,7 @@ export default function RaceLogPage() {
         >
           <AlertTriangle className="size-8 text-red-400" aria-hidden="true" />
           <p className="text-sm text-slate-600">{error}</p>
-          <Button variant="outline" size="sm" onClick={load}>
+          <Button variant="outline" size="base" onClick={load}>
             Try again
           </Button>
         </div>
@@ -230,7 +229,11 @@ export default function RaceLogPage() {
               Every race you finish deserves to be remembered.
             </p>
           </div>
-          <Button onClick={() => setFormOpen(true)} size="sm" className="flex items-center gap-1.5">
+          <Button
+            onClick={() => setFormOpen(true)}
+            size="base"
+            className="flex items-center gap-1.5"
+          >
             <Flag className="size-4" aria-hidden="true" />
             Log your first race
           </Button>
@@ -269,7 +272,9 @@ export default function RaceLogPage() {
                 className="pl-8 pr-8 h-8 text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600"
               />
               {searchInput && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
                   onClick={() => {
                     setSearchInput('')
                     setSearch('')
@@ -279,36 +284,32 @@ export default function RaceLogPage() {
                   aria-label="Clear search"
                 >
                   <X className="size-3.5" aria-hidden="true" />
-                </button>
+                </Button>
               )}
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <button
+              <Button
                 id="raceFilterChip_all"
+                variant="ghost"
+                size="xs"
                 aria-pressed={!activeDistance}
                 onClick={() => setActiveDistance(null)}
-                className={`flex items-center rounded-full px-3 py-1 text-xs font-medium border whitespace-nowrap transition-colors ${
-                  !activeDistance
-                    ? 'border-violet-300 bg-violet-100 text-violet-700'
-                    : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'
-                }`}
+                className={`rounded-full border whitespace-nowrap ${!activeDistance ? 'border-violet-300 bg-violet-100 text-violet-700' : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'}`}
               >
                 All
-              </button>
+              </Button>
               {DISTANCE_BUCKETS.map((b) => (
-                <button
+                <Button
                   key={b.key}
                   id={`raceFilterChip_${b.key}`}
+                  variant="ghost"
+                  size="xs"
                   aria-pressed={activeDistance === b.key}
                   onClick={() => setActiveDistance(activeDistance === b.key ? null : b.key)}
-                  className={`flex items-center rounded-full px-3 py-1 text-xs font-medium border whitespace-nowrap transition-colors ${
-                    activeDistance === b.key
-                      ? 'border-violet-300 bg-violet-100 text-violet-700'
-                      : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'
-                  }`}
+                  className={`rounded-full border whitespace-nowrap ${activeDistance === b.key ? 'border-violet-300 bg-violet-100 text-violet-700' : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'}`}
                 >
                   {b.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -349,17 +350,18 @@ export default function RaceLogPage() {
                     <td colSpan={7}>
                       <div className="flex flex-col items-center justify-center py-12 gap-2">
                         <p className="text-sm text-slate-500">No races match your filters.</p>
-                        <button
+                        <Button
+                          variant="link"
+                          size="sm"
                           onClick={() => {
                             setSearchInput('')
                             setSearch('')
                             setActiveDistance(null)
                             setPage(1)
                           }}
-                          className="text-xs text-violet-600 hover:underline"
                         >
                           Clear filters
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -452,27 +454,27 @@ export default function RaceLogPage() {
               className="flex items-center justify-between px-5 pt-2 mt-2"
               aria-label="Pagination"
             >
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setPage((p) => p - 1)}
                 disabled={page <= 1}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
                 aria-label="Previous page"
               >
                 <ChevronLeft className="size-4" aria-hidden="true" />
                 Prev
-              </button>
+              </Button>
               <span className="text-xs text-slate-400 text-center" aria-live="polite">
                 Page {page} of {totalPages} · {total} records
               </span>
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= totalPages}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
                 aria-label="Next page"
               >
                 Next
                 <ChevronRight className="size-4" aria-hidden="true" />
-              </button>
+              </Button>
             </div>
           )}
         </div>

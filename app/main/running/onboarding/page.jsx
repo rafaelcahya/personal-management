@@ -21,7 +21,7 @@ import {
   LoaderIcon,
   InfoIcon,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -708,16 +708,17 @@ export default function OnboardingPage() {
 
         {/* Back navigation for steps 2 only (step 3 is final) */}
         {step === 2 && (
-          <button
+          <Button
             id="backBtn_onboarding"
-            type="button"
+            variant="ghost"
+            size="sm"
             onClick={goBack}
-            className="mt-4 flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
+            className="mt-4 text-slate-400 hover:text-slate-600"
             aria-label="Go back to previous step"
           >
             <ArrowLeftIcon className="size-3.5" aria-hidden="true" />
             Back
-          </button>
+          </Button>
         )}
       </div>
 

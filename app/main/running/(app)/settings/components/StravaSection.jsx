@@ -11,7 +11,7 @@ import {
   RefreshCw,
   CheckCircle2,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   getStravaStatus,
@@ -125,7 +125,7 @@ export default function StravaSection() {
                 </div>
                 <Button
                   onClick={redirectToStravaConnect}
-                  size="sm"
+                  size="base"
                   className="bg-[#FC4C02] hover:bg-[#e04402] text-white shrink-0 min-w-11 focus-visible:ring-2 focus-visible:ring-orange-300"
                 >
                   <Link2 className="w-4 h-4 mr-2" aria-hidden="true" />
@@ -154,7 +154,7 @@ export default function StravaSection() {
                 <Button
                   id="stravaReconnectBtn_settings"
                   onClick={redirectToStravaConnect}
-                  size="sm"
+                  size="base"
                   className="bg-amber-600 hover:bg-amber-700 text-white shrink-0 min-w-11 focus-visible:ring-2 focus-visible:ring-amber-300"
                 >
                   <Unplug className="mr-2" aria-hidden="true" />
@@ -191,10 +191,10 @@ export default function StravaSection() {
                     onClick={handleDisconnect}
                     disabled={disconnecting}
                     variant="outline"
-                    size="sm"
+                    size="base"
                     className="shrink-0 border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800 focus-visible:ring-2 focus-visible:ring-red-200"
                   >
-                    <LogOut className="mr-2" aria-hidden="true" />
+                    <LogOut className="mr-2 w-4" aria-hidden="true" />
                     {disconnecting ? 'Disconnecting…' : 'Disconnect'}
                   </Button>
                 </div>
@@ -226,7 +226,7 @@ export default function StravaSection() {
                 id="syncStravaBtn_settings"
                 onClick={handleSync}
                 disabled={syncing}
-                size="sm"
+                size="base"
                 className="bg-[#FC4C02] hover:bg-[#e04402] text-white shrink-0"
               >
                 <RefreshCw

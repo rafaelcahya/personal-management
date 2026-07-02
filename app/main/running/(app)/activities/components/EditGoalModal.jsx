@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -199,8 +199,9 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
         <DialogFooter className="gap-2">
           <DialogClose asChild>
             <Button
-              className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+              className="text-violet-600 font-medium"
               type="button"
+              variant="secondary"
               disabled={saving}
             >
               Cancel

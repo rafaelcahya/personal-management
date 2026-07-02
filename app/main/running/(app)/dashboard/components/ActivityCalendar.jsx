@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Button from '@/components/base/Button/Button'
 import {
   ChevronLeft,
   ChevronRight,
@@ -178,22 +179,24 @@ export default function ActivityCalendar({ activities, activityType }) {
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-semibold text-slate-700">{monthLabel}</p>
             <div className="flex items-center gap-1">
-              <button
+              <Button
+                variant="ghost"
+                size="icon-xs"
                 onClick={prevMonth}
                 disabled={calLoading}
-                className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-40"
                 aria-label="Previous month"
               >
                 <ChevronLeft className="size-4" />
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-xs"
                 onClick={nextMonth}
                 disabled={isCurrentMonth || calLoading}
-                className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-30 disabled:pointer-events-none"
                 aria-label="Next month"
               >
                 <ChevronRight className="size-4" />
-              </button>
+              </Button>
             </div>
           </div>
 

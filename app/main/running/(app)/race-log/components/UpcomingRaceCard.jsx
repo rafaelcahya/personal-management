@@ -14,7 +14,7 @@ import {
   Loader2,
   ChevronDown,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -246,11 +246,12 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
 
         {/* Manual result fields — collapsible */}
         <div className="border border-slate-200/70 rounded-lg overflow-hidden">
-          <button
+          <Button
             id={`resultsToggle_${race.id}_raceLogPage`}
-            type="button"
+            variant="ghost"
+            fullWidth
             onClick={() => setResultsOpen((v) => !v)}
-            className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50 transition-colors"
+            className="justify-between px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50"
             aria-expanded={resultsOpen}
           >
             <span>Log result</span>
@@ -258,7 +259,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
               className={`size-3.5 transition-transform duration-200 ${resultsOpen ? 'rotate-180' : ''}`}
               aria-hidden="true"
             />
-          </button>
+          </Button>
           {resultsOpen && (
             <div className="grid grid-cols-2 gap-3 px-3 pb-3 pt-2 border-t border-slate-200/70">
               <div className="col-span-2 flex flex-col gap-1.5">
@@ -319,8 +320,8 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
           <div className="flex items-center gap-2">
             <Button
               id="linkActivityBtn_raceLogPage"
-              variant="outline"
-              size="sm"
+              variant="secondary"
+              size="base"
               onClick={() => setPickerOpen(true)}
               disabled={linking}
               className="flex items-center gap-1.5 text-xs md:min-h-9"
@@ -334,8 +335,8 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
             </Button>
             <Button
               id="addToCalendarBtn_raceLogPage"
-              variant="outline"
-              size="sm"
+              variant="secondary"
+              size="base"
               onClick={handleAddToCalendar}
               className="flex items-center gap-1.5 text-xs md:min-h-9"
             >
@@ -346,17 +347,19 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
 
           {/* Right actions */}
           <div className="flex items-center gap-2">
-            <button
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={() => setEditOpen(true)}
-              className="flex items-center justify-center size-8 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors min-w-11 md:min-h-8 md:min-w-8"
+              className="text-slate-400 hover:text-slate-700"
               aria-label="Edit upcoming race"
             >
               <Pencil className="size-3.5" aria-hidden="true" />
-            </button>
+            </Button>
             {linked && (
               <Button
                 id="saveAsCompletedBtn_raceLogPage"
-                size="sm"
+                size="base"
                 onClick={handleSaveAsCompleted}
                 disabled={completing}
                 className="flex items-center gap-1.5 text-xs md:min-h-9"
@@ -368,14 +371,16 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
                 )}
               </Button>
             )}
-            <button
+            <Button
               id="deleteUpcomingRaceBtn_raceLogPage"
+              variant="ghost"
+              size="icon-sm"
               onClick={() => setDeleteOpen(true)}
-              className="flex items-center justify-center size-8 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors min-w-11 md:min-h-8 md:min-w-8"
+              className="text-slate-400 hover:text-red-600 hover:bg-red-50"
               aria-label="Delete upcoming race"
             >
               <Trash2 className="size-3.5" aria-hidden="true" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -14,6 +14,7 @@ import {
   LabelList,
   ResponsiveContainer,
 } from 'recharts'
+import Button from '@/components/base/Button/Button'
 import { fmtPace, fmtDuration } from '../../dashboard/utils/format'
 import { SectionLabel } from './activityShared'
 
@@ -161,32 +162,34 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
       <div className="flex items-center justify-between mb-2">
         <SectionLabel>Splits (per km)</SectionLabel>
         <div className="flex items-center gap-1">
-          <button
+          <Button
             id={`splitsViewBarBtn_${pagePrefix}`}
-            type="button"
+            variant="ghost"
+            size="xs"
             aria-pressed={view === 'bar'}
             onClick={() => setView('bar')}
-            className={`text-xs px-2 py-1 rounded transition-colors ${
+            className={`text-xs px-2 py-1 ${
               view === 'bar'
-                ? 'bg-slate-800 text-white'
+                ? 'bg-slate-800 text-white hover:bg-slate-800'
                 : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
             }`}
           >
             Bar
-          </button>
-          <button
+          </Button>
+          <Button
             id={`splitsViewTableBtn_${pagePrefix}`}
-            type="button"
+            variant="ghost"
+            size="xs"
             aria-pressed={view === 'table'}
             onClick={() => setView('table')}
-            className={`text-xs px-2 py-1 rounded transition-colors ${
+            className={`text-xs px-2 py-1 ${
               view === 'table'
-                ? 'bg-slate-800 text-white'
+                ? 'bg-slate-800 text-white hover:bg-slate-800'
                 : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
             }`}
           >
             Table
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -194,8 +197,9 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
         <>
           <div className="flex flex-wrap gap-1 mb-3">
             {availableMetrics.map((m) => (
-              <button
+              <Button
                 key={m}
+                size="sm"
                 id={`splitsMetric${m}_${pagePrefix}`}
                 type="button"
                 onClick={() => setMetric(m)}
@@ -206,7 +210,7 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                 }`}
               >
                 {m}
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -389,13 +393,9 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-                  aria-label="Cardiac drift information"
-                >
+                <Button variant="ghost" size="icon-xs" aria-label="Cardiac drift information">
                   <Info className="size-3.5" aria-hidden="true" />
-                </button>
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
                 <p className="font-semibold mb-1">What is Cardiac Drift?</p>

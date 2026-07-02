@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Button from '@/components/base/Button/Button'
 import { Brain, Info } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
@@ -88,13 +89,14 @@ export default function FitnessAgeTile({ fitnessAge, viewTrendHref }) {
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    className="text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
                     aria-label="About Fitness Age"
+                    className="text-slate-300 hover:text-slate-500 shrink-0"
                   >
                     <Info className="size-4" aria-hidden="true" />
-                  </button>
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-72 text-xs leading-relaxed">
                   {TOOLTIP_TEXT}

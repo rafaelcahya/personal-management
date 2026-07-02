@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
 import { CalendarIcon, CheckCircle2, AlertCircle, User } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -340,45 +340,49 @@ export default function ProfileSection() {
                   {!hasWeight && !hasHeight ? (
                     <>
                       Fill in your{' '}
-                      <button
-                        type="button"
+                      <Button
+                        variant="link"
+                        size="sm"
                         onClick={() => weightRef.current?.focus()}
-                        className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        className="px-0 h-auto text-violet-500"
                       >
                         weight
-                      </button>{' '}
+                      </Button>{' '}
                       and{' '}
-                      <button
-                        type="button"
+                      <Button
+                        variant="link"
+                        size="sm"
                         onClick={() => heightRef.current?.focus()}
-                        className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        className="px-0 h-auto text-violet-500"
                       >
                         height
-                      </button>{' '}
+                      </Button>{' '}
                       to calculate BMI
                     </>
                   ) : !hasWeight ? (
                     <>
                       Fill in your{' '}
-                      <button
-                        type="button"
+                      <Button
+                        variant="link"
+                        size="sm"
                         onClick={() => weightRef.current?.focus()}
-                        className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        className="px-0 h-auto text-violet-500"
                       >
                         weight
-                      </button>{' '}
+                      </Button>{' '}
                       to calculate BMI
                     </>
                   ) : (
                     <>
                       Fill in your{' '}
-                      <button
-                        type="button"
+                      <Button
+                        variant="link"
+                        size="sm"
                         onClick={() => heightRef.current?.focus()}
-                        className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        className="px-0 h-auto text-violet-500"
                       >
                         height
-                      </button>{' '}
+                      </Button>{' '}
                       to calculate BMI
                     </>
                   )}
@@ -413,7 +417,7 @@ export default function ProfileSection() {
                   {saveError}
                 </div>
               )}
-              <Button id="profileSaveBtn_settingsPage" type="submit" disabled={saving} size="sm">
+              <Button id="profileSaveBtn_settingsPage" type="submit" disabled={saving} size="base">
                 {saving ? 'Saving…' : 'Save'}
               </Button>
             </div>

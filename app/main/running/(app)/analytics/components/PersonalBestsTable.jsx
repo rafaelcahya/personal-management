@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Button from '@/components/base/Button/Button'
 import { useRouter } from 'next/navigation'
 import { Trophy } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -53,11 +54,13 @@ function DistanceColumn({ distance, entries, onRowClick }) {
         const isPR = entry.rank === 1
         const distanceKey = distance.replace(/\s+/g, '-')
         return (
-          <button
+          <Button
             key={entry.rank}
             id={`personalBestsRow_${distanceKey}_${entry.rank}_analyticsPage`}
+            variant="ghost"
+            fullWidth
             onClick={() => entry.activity_id && onRowClick(entry.activity_id)}
-            className={`flex flex-col gap-0.5 px-3 py-2.5 text-left hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-b-0 ${
+            className={`flex-col items-start gap-0.5 px-3 py-2.5 h-auto hover:bg-slate-50 border-b border-slate-50 last:border-b-0 ${
               isPR ? 'bg-amber-50 hover:bg-amber-100' : ''
             }`}
           >
@@ -71,7 +74,7 @@ function DistanceColumn({ distance, entries, onRowClick }) {
             </div>
             <span className="text-xs text-slate-500">{formatPace(entry.pace_sec_per_km)}</span>
             <span className="text-xs text-slate-400">{formatDate(entry.date)}</span>
-          </button>
+          </Button>
         )
       })}
     </div>

@@ -11,6 +11,7 @@ import {
 } from './utils'
 import { fmtPace } from '@/app/main/running/(app)/dashboard/utils/format'
 import EmptyState from './EmptyState'
+import Button from '@/components/base/Button/Button'
 
 export default function RacePredictor({ activities }) {
   const [sourceBracket, setSourceBracket] = useState('5K')
@@ -63,8 +64,9 @@ export default function RacePredictor({ activities }) {
         <span className="text-xs text-slate-500">Based on your best</span>
         <div className="flex flex-wrap gap-2">
           {availableBrackets.map((b) => (
-            <button
+            <Button
               key={b.key}
+              size="xs"
               onClick={() => setSourceBracket(b.key)}
               className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
                 activeBracket.key === b.key
@@ -76,7 +78,7 @@ export default function RacePredictor({ activities }) {
               }
             >
               {b.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

@@ -15,6 +15,7 @@ import {
 } from 'recharts'
 import { BarChart2, TrendingUp } from 'lucide-react'
 import { RUN_TYPES, getWeekKey, fmtWeekLabel, fmtWeekRange } from './utils'
+import Button from '@/components/base/Button/Button'
 
 function renderDot(props) {
   const { cx, cy, payload } = props
@@ -124,8 +125,10 @@ export default function WeeklyDistanceChart({ activities }) {
           role="group"
           aria-label="Chart type"
         >
-          <button
+          <Button
             id="weeklyDistanceBarBtn_analyticsPage"
+            variant="ghost"
+            size="xs"
             onClick={() => setChartType('bar')}
             aria-pressed={chartType === 'bar'}
             aria-label="Bar chart"
@@ -136,9 +139,11 @@ export default function WeeklyDistanceChart({ activities }) {
             }`}
           >
             <BarChart2 className="size-3.5" aria-hidden="true" />
-          </button>
-          <button
+          </Button>
+          <Button
             id="weeklyDistanceLineBtn_analyticsPage"
+            variant="ghost"
+            size="xs"
             onClick={() => setChartType('line')}
             aria-pressed={chartType === 'line'}
             aria-label="Line chart"
@@ -149,7 +154,7 @@ export default function WeeklyDistanceChart({ activities }) {
             }`}
           >
             <TrendingUp className="size-3.5" aria-hidden="true" />
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import { AlertCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 
 export default function TradeErrorState({ message, onRetry }) {
   return (

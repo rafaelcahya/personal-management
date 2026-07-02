@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { MoreHorizontal, Trash2 } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -123,13 +124,15 @@ export default function TransactionTable({ transactions, onDelete, currency }) {
                 <td className="px-5 py-3.5 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button
+                      <Button
                         id={`deleteTransactionBtn_${tx.id}_currencyDetailPage`}
+                        variant="ghost"
+                        size="icon-sm"
                         aria-label={`Actions for transaction ${tx.id}`}
-                        className="flex items-center justify-center size-7 rounded-md hover:bg-slate-100 transition-colors"
+                        className="hover:bg-slate-100"
                       >
                         <MoreHorizontal className="size-4 text-slate-400" aria-hidden="true" />
-                      </button>
+                      </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem

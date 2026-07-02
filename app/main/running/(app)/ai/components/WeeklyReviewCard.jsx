@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { ChevronDown, ChevronUp, CalendarDays } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
 import { renderMarkdown } from './utils'
 
 function getFirstTwoLines(content) {
@@ -19,7 +20,9 @@ export default function WeeklyReviewCard({ weeklyReview }) {
       className="rounded-xl border border-slate-200 bg-white overflow-hidden"
       aria-label="Latest weekly review"
     >
-      <button
+      <Button
+        variant="ghost"
+        size="xs"
         onClick={() => setExpanded((v) => !v)}
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-200"
         aria-expanded={expanded}
@@ -52,7 +55,7 @@ export default function WeeklyReviewCard({ weeklyReview }) {
             <ChevronDown className="h-4 w-4 text-slate-400" aria-hidden="true" />
           )}
         </div>
-      </button>
+      </Button>
 
       {!weeklyReview && (
         <div className="px-4 pb-4 pt-1 border-t border-slate-100">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useMemo } from 'react'
+import Button from '@/components/base/Button/Button'
 import {
   AreaChart,
   Area,
@@ -203,14 +204,15 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
           <UITooltipProvider delayDuration={0}>
             <UITooltip>
               <UITooltipTrigger asChild>
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
                   id="paceSpeedInfo_activityDetailPage"
-                  className="text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                  className="text-slate-300 hover:text-slate-500"
                   aria-label="Pace and speed chart info"
                 >
                   <Info className="size-3.5" aria-hidden="true" />
-                </button>
+                </Button>
               </UITooltipTrigger>
               <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
                 <p className="font-semibold mb-1">Pace vs Speed</p>
@@ -232,22 +234,24 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
           id="paceSpeedToggle_activityDetailPage"
           className="flex rounded-lg overflow-hidden border border-slate-200 text-[10px] font-semibold"
         >
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="xs"
             id="paceTab_activityDetailPage"
             onClick={() => setMode('pace')}
-            className={`px-2.5 py-1 transition-colors ${!isSpeed ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+            className={`px-2.5 py-1 rounded-none ${!isSpeed ? 'bg-violet-600 text-white hover:bg-violet-600' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
           >
             Pace
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="ghost"
+            size="xs"
             id="speedTab_activityDetailPage"
             onClick={() => setMode('speed')}
-            className={`px-2.5 py-1 transition-colors ${isSpeed ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+            className={`px-2.5 py-1 rounded-none ${isSpeed ? 'bg-violet-600 text-white hover:bg-violet-600' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
           >
             Speed
-          </button>
+          </Button>
         </div>
       </div>
       <div className="h-[180px] sm:h-[225px] outline-none" id="streamChartPace_activityDetailPage">
@@ -801,13 +805,15 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
         <UITooltipProvider delayDuration={200}>
           <UITooltip>
             <UITooltipTrigger asChild>
-              <button
+              <Button
+                variant="ghost"
+                size="icon-xs"
                 id={`cadenceInfoTrigger_${pagePrefix}`}
-                className="text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                className="text-slate-300 hover:text-slate-500"
                 aria-label="Cadence info: about the 180 spm target"
               >
                 <Info className="size-3.5" aria-hidden="true" />
-              </button>
+              </Button>
             </UITooltipTrigger>
             <UITooltipContent
               side="top"
@@ -1057,13 +1063,14 @@ export default function StreamCharts({
       >
         <AlertCircle className="size-4 text-red-400 shrink-0" aria-hidden="true" />
         <span>Could not load stream data.</span>
-        <button
+        <Button
+          variant="ghost"
           id="streamChartsRetry_activityDetailPage"
           onClick={load}
           className="ml-auto text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
         >
           Try again
-        </button>
+        </Button>
       </div>
     )
   }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Button from '@/components/base/Button/Button'
 import Link from 'next/link'
 import {
   ChevronLeft,
@@ -332,22 +333,24 @@ function CalendarColumn({ initialActivities, activityType, selectedDate }) {
           {loading && (
             <Loader2 className="size-3.5 text-slate-400 animate-spin" aria-hidden="true" />
           )}
-          <button
+          <Button
+            variant="ghost"
+            size="icon-xs"
             onClick={prevMonth}
             disabled={loading}
-            className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-40"
             aria-label="Previous month"
           >
             <ChevronLeft className="size-4" />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-xs"
             onClick={nextMonth}
             disabled={isCurrentMonth || loading}
-            className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-30 disabled:pointer-events-none"
             aria-label="Next month"
           >
             <ChevronRight className="size-4" />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -466,11 +469,11 @@ function RecentColumn({ activities, activityType, selectedDate, onSelectDate }) 
 
             return (
               <li key={a.id}>
-                <button
+                <Button
+                  variant="ghost"
+                  fullWidth
                   onClick={() => onSelectDate(isActive ? null : dateStr)}
-                  className={`w-full flex items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 ${
-                    isActive ? 'bg-blue-50' : ''
-                  }`}
+                  className={`items-center gap-3 px-5 py-3 h-auto text-left ${isActive ? 'bg-blue-50' : ''}`}
                   aria-pressed={isActive}
                 >
                   <div className={`p-1.5 rounded-md shrink-0 ${cfg.bg}`}>
@@ -569,7 +572,7 @@ function RecentColumn({ activities, activityType, selectedDate, onSelectDate }) 
                       </div>
                     )}
                   </div>
-                </button>
+                </Button>
               </li>
             )
           })}

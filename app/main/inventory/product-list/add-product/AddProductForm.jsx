@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import {
   Dialog,
@@ -158,7 +158,7 @@ export default function AddProductForm({ onAdded }) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild id="addNewProductBtn_productPage">
         <Button>
-          <PlusIcon />
+          <PlusIcon className="w-4" />
           <span>Add Product</span>
         </Button>
       </DialogTrigger>
@@ -356,7 +356,8 @@ export default function AddProductForm({ onAdded }) {
                 <Button
                   type="button"
                   id="cancelBtn_productPage"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                  variant="secondary"
+                  className="text-violet-600 font-medium"
                   disabled={loading}
                 >
                   Cancel

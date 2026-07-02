@@ -10,7 +10,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import { deleteProductName } from '@/lib/api/productName'
 

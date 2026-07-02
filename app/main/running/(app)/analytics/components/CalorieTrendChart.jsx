@@ -46,12 +46,13 @@ export default function CalorieTrendChart() {
         aria-live="assertive"
       >
         <p className="text-sm text-red-400">{error}</p>
-        <button
+        <Button
           onClick={() => window.location.reload()}
+          variant="ghost"
           className="text-xs text-violet-600 underline hover:no-underline"
         >
           Try again
-        </button>
+        </Button>
       </div>
     )
   }

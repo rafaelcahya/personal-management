@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import Button from '@/components/base/Button/Button'
 import { BrainCircuit } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
@@ -83,13 +84,15 @@ export default function AiCoachPlaceholder() {
           {status === 'error' && (
             <div id="aiCoachError_dashboardPage" className="flex items-center gap-3">
               <p className="text-sm text-red-600">Unable to load insights.</p>
-              <button
+              <Button
                 id="aiCoachRetryBtn_dashboardPage"
+                variant="link"
+                size="sm"
                 onClick={load}
-                className="text-xs text-violet-600 hover:underline shrink-0"
+                className="shrink-0"
               >
                 Retry
-              </button>
+              </Button>
             </div>
           )}
 

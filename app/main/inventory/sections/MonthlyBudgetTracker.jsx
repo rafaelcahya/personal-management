@@ -81,22 +81,25 @@ function BudgetRow({ type, actual, budget, onSave }) {
                 }}
                 className="w-28 text-right border border-violet-300 rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-violet-400"
               />
-              <button
+              <Button
                 onClick={handleSave}
+                variant="ghost"
                 disabled={saving}
                 className="text-xs px-2 py-1 bg-violet-600 text-white rounded hover:bg-violet-700 disabled:opacity-50"
               >
                 {saving ? '...' : 'Save'}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
                 onClick={() => setEditing(false)}
                 className="text-xs px-2 py-1 text-slate-500 hover:text-slate-700"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           ) : (
-            <button
+            <Button
+              variant="ghost"
               onClick={() => {
                 setValue(budget != null ? String(budget) : '')
                 setEditing(true)
@@ -109,7 +112,7 @@ function BudgetRow({ type, actual, budget, onSave }) {
               ) : (
                 <span className="text-xs underline underline-offset-2">Set budget</span>
               )}
-            </button>
+            </Button>
           )}
         </div>
       </div>

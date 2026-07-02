@@ -14,8 +14,8 @@ import {
   Minus,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/base/Badge/Badge'
+import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import RateHistoryChart from './components/RateHistoryChart'
@@ -102,7 +102,7 @@ function ErrorState({ onRetry }) {
         <p className="text-sm font-medium text-slate-700">Failed to load currency details</p>
         <p className="text-xs text-slate-500">Check your connection and try again</p>
       </div>
-      <Button variant="outline" size="sm" onClick={onRetry} className="min-w-11">
+      <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
         Try again
       </Button>
     </div>
@@ -304,11 +304,11 @@ export default function CurrencyDetailPage() {
           </div>
           <Button
             id="addTransactionBtn_currencyDetailPage"
-            size="sm"
+            size="base"
             onClick={() => setSheetOpen(true)}
             className="bg-violet-600 hover:bg-violet-700 shrink-0 min-w-11"
           >
-            <Plus className="size-4 mr-1.5" aria-hidden="true" />
+            <Plus className="size-4" aria-hidden="true" />
             <span className="hidden sm:inline">Add Transaction</span>
             <span className="sm:hidden">Add</span>
           </Button>

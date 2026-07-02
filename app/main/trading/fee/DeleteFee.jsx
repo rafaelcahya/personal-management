@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Trash2, Loader2 } from 'lucide-react'
 import { deleteFee } from '@/lib/api/fee'
 import { toast } from 'sonner'
@@ -40,7 +40,7 @@ export default function DeleteFee({ fee, onDeleted, onClose }) {
       <AlertDialogTrigger asChild>
         <Button
           variant="ghost"
-          size="sm"
+          size="base"
           className="justify-start text-red-600 hover:text-red-600 hover:bg-red-50 font-medium"
         >
           <Trash2 className="h-4 w-4 mr-2" />

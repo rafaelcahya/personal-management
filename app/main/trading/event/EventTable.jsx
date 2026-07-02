@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/base/Badge/Badge'
 import UpdateEvent from './UpdateEvent'
 import ImpactBadge from './component/ImpactBadge'
 import EventCardList from './component/EventCardList'

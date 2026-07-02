@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -53,7 +53,7 @@ function SettingsErrorState({ onRetry }) {
       </div>
       <Button
         variant="outline"
-        size="sm"
+        size="base"
         onClick={onRetry}
         id="settingsRetryBtn_settingsPage"
         className="min-w-11"

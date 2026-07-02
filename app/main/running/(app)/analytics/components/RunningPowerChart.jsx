@@ -12,6 +12,7 @@ import {
 } from 'recharts'
 import { RUN_TYPES } from './utils'
 import EmptyState from './EmptyState'
+import Button from '@/components/base/Button/Button'
 
 const RANGE_OPTIONS = [30, 60, 90]
 const ROLLING_WINDOW = 30
@@ -65,10 +66,11 @@ export default function RunningPowerChart({ activities }) {
         </p>
         <div className="flex items-center gap-1">
           {RANGE_OPTIONS.map((opt) => (
-            <button
+            <Button
               key={opt}
               id={`powerRange${opt}Btn_analyticsPage`}
               type="button"
+              size="xs"
               aria-pressed={range === opt}
               onClick={() => setRange(opt)}
               className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
@@ -78,7 +80,7 @@ export default function RunningPowerChart({ activities }) {
               }`}
             >
               {opt}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

@@ -8,6 +8,7 @@ import {
   TooltipProvider as UITooltipProvider,
   TooltipTrigger as UITooltipTrigger,
 } from '@/components/ui/tooltip'
+import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import { updateActivity } from '@/lib/api/running'
 import { RPE_LEVELS } from '@/lib/constants/running/rpe'
@@ -91,13 +92,15 @@ export default function PerceivedEffortSection({
         <UITooltipProvider delayDuration={200}>
           <UITooltip>
             <UITooltipTrigger asChild>
-              <button
+              <Button
                 id="rpeInfoTrigger_activityDetailPage"
+                variant="ghost"
+                size="icon-xs"
                 aria-label="About the Borg CR10 scale"
-                className="flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
+                className="rounded-full text-slate-400 hover:text-slate-600"
               >
-                <Info className="size-3.5 text-slate-400 hover:text-slate-600 transition-colors" />
-              </button>
+                <Info className="size-3.5" />
+              </Button>
             </UITooltipTrigger>
             <UITooltipContent
               id="rpeInfoTooltip_activityDetailPage"
@@ -134,7 +137,7 @@ export default function PerceivedEffortSection({
         {RPE_LEVELS.map((level, idx) => {
           const selected = rpe === level.value
           return (
-            <button
+            <Button
               key={level.value}
               id={`rpePicker_${level.value}_activityDetailPage`}
               ref={(el) => (pillsRef.current[idx] = el)}
@@ -160,7 +163,7 @@ export default function PerceivedEffortSection({
                 ${selected ? '' : 'bg-white border-slate-200 text-slate-500'}`}
             >
               {level.value}
-            </button>
+            </Button>
           )
         })}
       </div>
@@ -188,13 +191,14 @@ export default function PerceivedEffortSection({
         <UITooltipProvider delayDuration={200}>
           <UITooltip>
             <UITooltipTrigger asChild>
-              <button
+              <Button
                 id="rpeSessionLoad_activityDetailPage"
-                className="inline-flex items-center gap-1.5 self-start px-3 py-1.5 bg-violet-50 rounded-lg cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
+                variant="ghost"
+                className="self-start px-3 py-1.5 h-auto bg-violet-50 rounded-lg cursor-help hover:bg-violet-100"
               >
                 <span className="text-xs text-violet-700 font-semibold">{sessionLoad}</span>
                 <span className="text-xs text-violet-500">Session Load</span>
-              </button>
+              </Button>
             </UITooltipTrigger>
             <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
               <p className="font-semibold mb-1">Session Load (Foster&apos;s method)</p>
@@ -208,10 +212,11 @@ export default function PerceivedEffortSection({
       )}
 
       {/* Expandable guide */}
-      <button
+      <Button
         id="rpeGuideToggle_activityDetailPage"
+        variant="ghost"
         onClick={() => setGuideExpanded((v) => !v)}
-        className="flex items-center gap-1 self-start text-xs text-slate-400 hover:text-slate-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+        className="self-start text-xs text-slate-400 hover:text-slate-600"
       >
         {guideExpanded ? (
           <>
@@ -224,7 +229,7 @@ export default function PerceivedEffortSection({
             Show full guide
           </>
         )}
-      </button>
+      </Button>
 
       {guideExpanded && (
         <div
