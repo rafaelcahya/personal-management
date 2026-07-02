@@ -85,8 +85,8 @@ export const Docs = {
           </div>
           <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
             A slide-in panel that pushes in from any edge of the viewport. Supports 4 sides, 4
-            sizes, focus trap, scroll lock, and keyboard accessibility. Built from scratch using{' '}
-            <code className="font-mono text-sm">createPortal</code> — no Radix, no shadcn.
+            sizes, focus trap, scroll lock, and keyboard accessibility. Renders via createPortal —
+            never clipped by overflow containers.
           </p>
         </div>
 

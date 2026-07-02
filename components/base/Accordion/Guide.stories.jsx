@@ -67,8 +67,8 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A vertically stacked set of collapsible sections. Built on Radix UI — supports single-open
-          and multi-open modes, keyboard navigation, and animated expand/collapse transitions.
+          A vertically stacked set of collapsible sections. Supports single-open and multi-open
+          modes, keyboard navigation, and animated expand/collapse transitions.
         </p>
       </div>
 

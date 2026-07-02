@@ -82,7 +82,7 @@ function OverviewDemo() {
         <Toast onOpenChange={(o) => !o && setOpen(false)} variant="default">
           <div className="flex-1 min-w-0">
             <ToastTitle>Toast notification</ToastTitle>
-            <ToastDescription>Built with @radix-ui/react-toast</ToastDescription>
+            <ToastDescription>Settings saved successfully.</ToastDescription>
           </div>
           <ToastClose />
         </Toast>
@@ -105,8 +105,8 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A brief notification that slides in from the edge of the screen. Built from scratch using{' '}
-          <code className="font-mono text-sm">@radix-ui/react-toast</code>.
+          A brief notification that slides in from the edge of the screen. Renders in a Portal via
+          ToastViewport — never clipped by overflow containers.
         </p>
       </div>
 

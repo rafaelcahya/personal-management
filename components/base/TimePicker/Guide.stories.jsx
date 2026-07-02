@@ -250,7 +250,7 @@ export const Docs = {
                 [
                   'Popover',
                   '<div>',
-                  'Container for the scroll columns. Rendered via Radix UI Popover.',
+                  'Container for the scroll columns. Opens as a popover below the trigger.',
                 ],
                 [
                   'TimeScrollColumn',

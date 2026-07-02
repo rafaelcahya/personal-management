@@ -83,8 +83,7 @@ export const Docs = {
           <kbd className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
             Ctrl+K
           </kbd>
-          . Supports real-time filtering, grouped items, keyboard navigation, and empty state —
-          built from scratch with no cmdk or Radix.
+          . Supports real-time filtering, grouped items, keyboard navigation, and empty state.
         </p>
       </div>
 

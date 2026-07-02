@@ -68,8 +68,8 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A popup that displays information when a user hovers or focuses a trigger element. Built
-          from scratch using <code className="font-mono text-sm">@radix-ui/react-tooltip</code>.
+          A popup that displays information when a user hovers or focuses a trigger element. Renders
+          in a Portal — auto-positions to stay within the viewport.
         </p>
       </div>
 
@@ -92,7 +92,7 @@ export const Docs = {
                 Hover me
               </button>
             </TooltipTrigger>
-            <TooltipContent>Built with @radix-ui/react-tooltip</TooltipContent>
+            <TooltipContent>Displays helpful context</TooltipContent>
           </Tooltip>
         </Preview>
       </Section>
@@ -337,7 +337,7 @@ export const Docs = {
       <Section title="API Reference">
         <SubSection
           title="Tooltip"
-          description="Root component. Wraps TooltipProvider + Radix Root internally — no separate Provider needed."
+          description="Root component. Wraps TooltipProvider internally — no separate Provider needed."
         >
           <div className="overflow-x-auto mb-6">
             <table className="w-full text-sm border-collapse">

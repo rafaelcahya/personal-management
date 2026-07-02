@@ -69,8 +69,7 @@ export const Docs = {
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
           A tab navigation component for switching between content panels. Supports two visual
           variants (underline with animated indicator, pill), two orientations (horizontal,
-          vertical), icon support, keyboard navigation, and controlled/uncontrolled modes — built
-          entirely from scratch with no Radix or shadcn.
+          vertical), icon support, keyboard navigation, and controlled/uncontrolled modes.
         </p>
       </div>
 

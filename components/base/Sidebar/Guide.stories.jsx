@@ -122,9 +122,8 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A composable navigation sidebar that supports collapsible desktop mode, mobile drawer (via{' '}
-          <code className="font-mono text-sm">@radix-ui/react-dialog</code>), nested items, and
-          icon-only mode with tooltips.
+          A composable navigation sidebar that supports collapsible desktop mode, mobile drawer,
+          nested items, and icon-only mode with tooltips.
         </p>
       </div>
 
@@ -226,7 +225,7 @@ export const Docs = {
                 [
                   'SidebarProvider',
                   'Context + Dialog Root',
-                  'Required root. Manages open/collapsed/isMobile state. Activates Radix Dialog on mobile.',
+                  'Required root. Manages open/collapsed/isMobile state. On mobile, renders as a dialog drawer.',
                 ],
                 [
                   'Sidebar',
