@@ -13,7 +13,7 @@ import { Skeleton } from '../Skeleton/Skeleton'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
-  title: 'Layout/Card/Status',
+  title: 'Card/Status',
 }
 
 export default meta

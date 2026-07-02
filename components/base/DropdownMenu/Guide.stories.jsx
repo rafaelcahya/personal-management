@@ -73,9 +73,8 @@ export const Docs = {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold text-gray-900">DropdownMenu</h1>
         <p className="text-base text-gray-500 leading-relaxed">
-          A fully custom dropdown menu built from scratch — no Radix, no shadcn. Supports click and
-          hover triggers, auto-positioning via viewport flip, nested submenus, keyboard navigation,
-          checkbox items, and radio groups.
+          A dropdown menu built from scratch. Supports click and hover triggers, auto-positioning
+          via viewport flip, nested submenus, keyboard navigation, checkbox items, and radio groups.
         </p>
       </div>
 

@@ -1,6 +1,6 @@
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
-  title: 'Base/Colors',
+  title: 'Colors',
 }
 
 export default meta

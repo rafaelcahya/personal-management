@@ -62,8 +62,7 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A set of mutually exclusive options — selecting one deselects the others. Built on Radix
-          UI. Pairs with{' '}
+          A set of mutually exclusive options — selecting one deselects the others. Pairs with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
           accessible labels and error messages.
         </p>
@@ -229,7 +228,7 @@ export const Docs = {
       {/* Basic */}
       <Section
         title="Basic"
-        description="Pass defaultValue for an uncontrolled group, or value + onValueChange for a controlled one. Keyboard navigation (arrow keys) is handled automatically by Radix."
+        description="Pass defaultValue for an uncontrolled group, or value + onValueChange for a controlled one. Keyboard navigation via arrow keys — pressing an arrow key moves focus and selects the next option."
       >
         <Preview>
           <RadioGroup defaultValue="standard">

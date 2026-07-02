@@ -84,8 +84,8 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          An accessible dropdown menu for selecting a single value from a list of options. Built on
-          Radix UI — keyboard navigable, screen-reader friendly, and fully composable. Combine with{' '}
+          An accessible dropdown menu for selecting a single value from a list of options. Keyboard
+          navigable, screen-reader friendly, and fully composable. Combine with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> and{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldLabel</code> for
           accessible form fields.

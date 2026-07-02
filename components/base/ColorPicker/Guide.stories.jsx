@@ -82,7 +82,7 @@ export const Docs = {
           </div>
           <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
             A popover-based color picker with HSV canvas, hue and alpha sliders, format switching,
-            and optional preset swatches. Built on Radix UI Popover. Pairs with{' '}
+            and optional preset swatches. Pairs with{' '}
             <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
             accessible labels and error messages.
           </p>

@@ -101,8 +101,8 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A range input built on Radix UI. Supports single value and range (two thumbs), three
-          variants, six sizes, tooltips (props shortcut or{' '}
+          A range input. Supports single value and range (two thumbs), three variants, six sizes,
+          tooltips (props shortcut or{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">SliderTooltip</code>{' '}
           sub-component), start/end labels, tick marks, thumb connect behavior — all composable with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code>.

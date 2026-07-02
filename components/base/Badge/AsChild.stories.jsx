@@ -14,8 +14,7 @@ export const AsChild = {
       <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
         Pass <code className="font-mono bg-gray-100 px-1 rounded text-xs">asChild</code> to render
         the badge as a different element — useful for making a badge behave as a link or button
-        while keeping badge styling. Uses Radix UI's{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">Slot</code> under the hood.
+        while keeping badge styling.
       </p>
 
       <div className="flex flex-col gap-5 w-full max-w-2xl">

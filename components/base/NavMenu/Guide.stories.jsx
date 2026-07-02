@@ -154,9 +154,9 @@ export const Docs = {
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
           A horizontal navigation bar with support for single-level dropdowns and multi-column mega
-          menus. Built from scratch — no Radix. Trigger mode (hover or click) is a prop. Links
-          support the <code className="font-mono bg-gray-100 px-1 rounded text-sm">as</code> prop
-          for Next.js routing.
+          menus. Trigger mode (hover or click) is a prop. Links support the{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-sm">as</code> prop for Next.js
+          routing.
         </p>
       </div>
 

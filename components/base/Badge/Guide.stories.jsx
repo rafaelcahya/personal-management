@@ -425,7 +425,7 @@ export const Docs = {
               <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">boolean</td>
               <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">false</td>
               <td className="py-2.5 text-xs text-gray-600">
-                Merges styles onto the child element via Radix Slot.
+                Merges badge styles onto the child element.
               </td>
             </tr>
             <tr>

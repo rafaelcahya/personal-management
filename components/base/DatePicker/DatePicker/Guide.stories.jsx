@@ -94,8 +94,7 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A popover calendar for selecting a single date. Built on Radix UI Popover + custom
-          calendar. Pairs with{' '}
+          A popover calendar for selecting a single date. Pairs with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
           accessible labels and error messages.
         </p>

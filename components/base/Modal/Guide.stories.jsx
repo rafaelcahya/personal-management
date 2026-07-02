@@ -35,8 +35,7 @@ export const Docs = {
           <h1 className="text-3xl font-bold text-gray-900">Modal</h1>
           <p className="text-base text-gray-500 leading-relaxed">
             A dialog overlay that interrupts the user to present critical information or capture
-            input. Built on Radix UI Dialog primitives with five size options and full controlled
-            state support.
+            input. Supports five size options and full controlled state support.
           </p>
         </div>
 

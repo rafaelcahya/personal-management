@@ -391,12 +391,7 @@ import { Plus } from 'lucide-react'
                   'false',
                   'Stretches the button to fill its container width',
                 ],
-                [
-                  'asChild',
-                  'boolean',
-                  'false',
-                  'Merge button props onto the single child element via Radix Slot',
-                ],
+                ['asChild', 'boolean', 'false', 'Merge button props onto the single child element'],
                 [
                   'as',
                   'React.ElementType',
@@ -547,7 +542,7 @@ import { Plus } from 'lucide-react'
         description="Button can render as any element. Use asChild for framework components like Next.js Link, or as for native HTML elements."
       >
         <SubSection
-          title="asChild — Radix Slot pattern"
+          title="asChild — component merging"
           description="Merges all button props (className, onClick, aria-*, ref) onto the single child element. Preferred for Next.js Link."
         >
           <Preview>

@@ -64,7 +64,7 @@ export const Docs = {
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
           A toggle control for binary on/off settings. Prefer Switch over Checkbox when the action
-          takes immediate effect — no form submission required. Built on Radix UI. Pairs with{' '}
+          takes immediate effect — no form submission required. Pairs with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
           accessible labels and error messages.
         </p>

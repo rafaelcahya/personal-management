@@ -21,7 +21,7 @@ import Card, {
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
-  title: 'Layout/Card/Default',
+  title: 'Card/Default',
 }
 
 export default meta

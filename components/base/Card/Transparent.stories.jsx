@@ -21,7 +21,7 @@ import Card, {
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
-  title: 'Layout/Card/Transparent',
+  title: 'Card/Transparent',
 }
 
 export default meta

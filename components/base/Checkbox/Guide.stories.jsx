@@ -70,8 +70,7 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A binary toggle for boolean values — checked, unchecked, or indeterminate. Built on Radix
-          UI. Pairs with{' '}
+          A binary toggle for boolean values — checked, unchecked, or indeterminate. Pairs with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
           accessible labels and error messages.
         </p>
@@ -362,7 +361,7 @@ export const Docs = {
       {/* react-hook-form */}
       <Section
         title="With react-hook-form"
-        description="Use Controller to integrate Checkbox — Radix's onCheckedChange returns a boolean, not a native event, so register() alone does not work."
+        description="Use Controller to integrate Checkbox — onCheckedChange returns a boolean, not a native event, so register() alone does not work."
       >
         <Code>{`import { Controller } from 'react-hook-form'
 
