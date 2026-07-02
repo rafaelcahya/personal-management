@@ -83,6 +83,8 @@ const preview = {
             'Controlled',
             '*',
           ],
+          'Skeleton',
+          ['Docs', 'Basic', 'Animation', 'Presets', 'Composing', '*'],
           'Toast',
           ['Docs', 'Basic', 'Variants', 'Positions', 'With Action', 'Animation', 'Controlled', '*'],
           'Sidebar',

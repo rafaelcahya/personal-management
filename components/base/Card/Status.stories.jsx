@@ -9,6 +9,7 @@ import Card, {
   CardTitle,
 } from './Card'
 import Button from '../Button/Button'
+import { Skeleton } from '../Skeleton/Skeleton'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
@@ -20,9 +21,9 @@ export default meta
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
 const SkeletonRow = () => (
-  <div className="flex items-center gap-3 py-2.5 border-b border-slate-100 last:border-0 animate-pulse">
-    <div className="h-3 bg-slate-200 rounded w-2/5" />
-    <div className="h-3 bg-slate-200 rounded w-1/4 ml-auto" />
+  <div className="flex items-center gap-3 py-2.5 border-b border-slate-100 last:border-0">
+    <Skeleton className="h-3 rounded w-2/5" />
+    <Skeleton className="h-3 rounded w-1/4 ml-auto" />
   </div>
 )
 
