@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { cn } from '@/lib/utils'
 
 const RANGE_OPTIONS = [
@@ -52,7 +52,7 @@ function DatePickerButton({ id, label, value, onChange, maxDate, minDate }) {
           <Button
             id={id}
             variant="outline"
-            size="sm"
+            size="base"
             className={cn(
               'h-8 gap-1.5 text-xs font-medium border-slate-200',
               value ? 'text-slate-700 pr-1' : 'text-slate-400'
@@ -81,14 +81,15 @@ function DatePickerButton({ id, label, value, onChange, maxDate, minDate }) {
         </PopoverContent>
       </Popover>
       {value && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon-xs"
           onClick={() => onChange(null)}
-          className="flex items-center justify-center size-5 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+          className="size-5 text-slate-400 hover:text-slate-600 hover:bg-slate-100"
           aria-label={`Clear ${label}`}
         >
           <X className="size-3" />
-        </button>
+        </Button>
       )}
     </div>
   )

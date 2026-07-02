@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Footprints, Pencil, Check, X, AlertTriangle, Loader2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -88,32 +88,26 @@ function GearEditForm({ gear, onSave, onCancel }) {
         </Label>
         <div className="flex flex-wrap gap-1.5">
           {CATEGORY_OPTIONS.map((cat) => (
-            <button
+            <Button
               key={cat}
-              type="button"
+              variant="ghost"
+              size="xs"
               onClick={() => setValue('category', selectedCategory === cat ? null : cat)}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
-                selectedCategory === cat
-                  ? 'bg-violet-600 text-white border-violet-600'
-                  : 'bg-white text-slate-600 border-slate-200 hover:border-violet-400 hover:text-violet-600'
-              }`}
+              className={`rounded-full border ${selectedCategory === cat ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-slate-600 border-slate-200 hover:border-violet-400 hover:text-violet-600'}`}
               aria-pressed={selectedCategory === cat}
             >
               {cat}
-            </button>
+            </Button>
           ))}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="xs"
             onClick={() => setValue('category', null)}
-            className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
-              selectedCategory === null
-                ? 'bg-slate-700 text-white border-slate-700'
-                : 'bg-white text-slate-400 border-slate-200 hover:border-slate-400'
-            }`}
+            className={`rounded-full border ${selectedCategory === null ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-400 border-slate-200 hover:border-slate-400'}`}
             aria-pressed={selectedCategory === null}
           >
             none
-          </button>
+          </Button>
         </div>
         {/* hidden input so register works */}
         <input type="hidden" {...register('category')} />
@@ -150,7 +144,7 @@ function GearEditForm({ gear, onSave, onCancel }) {
       <div className="flex items-center gap-2">
         <Button
           type="submit"
-          size="sm"
+          size="base"
           disabled={isSubmitting}
           className="h-7 px-3 text-xs gap-1.5"
           id="gearSaveBtn"
@@ -165,10 +159,11 @@ function GearEditForm({ gear, onSave, onCancel }) {
         </Button>
         <Button
           type="button"
-          size="sm"
+          size="base"
+          variant="secondary"
           disabled={isSubmitting}
           onClick={onCancel}
-          className="h-7 px-3 text-xs gap-1.5 text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+          className="h-7 px-3 text-xs gap-1.5 text-violet-600 font-medium"
           aria-label="Cancel editing"
         >
           <X className="size-3" aria-hidden="true" />
@@ -249,17 +244,19 @@ function GearCard({ gear, onUpdate }) {
             </span>
           )}
           {!gear.retired && (
-            <button
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={() => {
                 setEditing((v) => !v)
                 setSaveError(null)
               }}
-              className="p-1 rounded-md text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
+              className="text-slate-400 hover:text-violet-600 hover:bg-violet-50"
               aria-label={editing ? 'Close editor' : `Edit ${gear.name}`}
               aria-expanded={editing}
             >
               <Pencil className="size-3.5" aria-hidden="true" />
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -273,30 +270,24 @@ function GearCard({ gear, onUpdate }) {
           </span>
           {hasAnyLimit && !gear.retired && (
             <div className="flex items-center gap-1">
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="xs"
                 onClick={() => setLimitTab('strava')}
-                className={`px-2 py-0.5 rounded-l-full text-[10px] font-medium border transition-colors ${
-                  limitTab === 'strava'
-                    ? 'bg-violet-600 text-white border-violet-600'
-                    : 'bg-white text-slate-400 border-slate-200 hover:border-violet-400 hover:text-violet-600'
-                }`}
+                className={`rounded-l-full rounded-r-none border text-[10px] ${limitTab === 'strava' ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-slate-400 border-slate-200 hover:border-violet-400 hover:text-violet-600'}`}
                 aria-pressed={limitTab === 'strava'}
               >
                 Strava{stravaLimitKm != null ? ` · ${stravaLimitKm.toFixed(2)} km` : ' · —'}
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="ghost"
+                size="xs"
                 onClick={() => setLimitTab('manual')}
-                className={`px-2 py-0.5 rounded-r-full text-[10px] font-medium border-t border-b border-r transition-colors ${
-                  limitTab === 'manual'
-                    ? 'bg-violet-600 text-white border-violet-600'
-                    : 'bg-white text-slate-400 border-slate-200 hover:border-violet-400 hover:text-violet-600'
-                }`}
+                className={`rounded-r-full rounded-l-none border-t border-b border-r text-[10px] ${limitTab === 'manual' ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-slate-400 border-slate-200 hover:border-violet-400 hover:text-violet-600'}`}
                 aria-pressed={limitTab === 'manual'}
               >
                 Manual{manualLimitKm != null ? ` · ${Number(manualLimitKm).toFixed(2)} km` : ' · —'}
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -417,12 +408,9 @@ export default function ShoeRotation() {
           {!loading && error && (
             <div id="gearError" role="alert" className="flex items-center gap-3">
               <p className="text-sm text-red-600">{error}</p>
-              <button
-                onClick={retryLoad}
-                className="text-xs text-violet-600 hover:underline shrink-0"
-              >
+              <Button variant="link" size="sm" onClick={retryLoad} className="shrink-0">
                 Retry
-              </button>
+              </Button>
             </div>
           )}
 

@@ -115,13 +115,15 @@ export default function GearUsageBreakdown({ gear, error }) {
 
 function RetiredToggle({ showRetired, onToggle }) {
   return (
-    <button
+    <Button
       type="button"
+      size="xs"
+      variant="ghost"
       id="gearRetiredToggle_analyticsPage"
       onClick={onToggle}
       className="self-start text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
     >
       {showRetired ? 'Hide retired gear' : 'Show retired gear'}
-    </button>
+    </Button>
   )
 }

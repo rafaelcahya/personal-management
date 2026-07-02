@@ -17,7 +17,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import {
   Form,
   FormControl,
@@ -282,16 +282,16 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                 <FormItem>
                   <FormLabel className="text-sm font-medium">Currency</FormLabel>
                   <FormControl>
-                    <button
+                    <Button
                       ref={triggerRef}
                       id="currencySelect_addTransactionModal"
-                      type="button"
+                      variant="outline"
                       aria-expanded={currencyDropdownOpen}
                       aria-haspopup="listbox"
                       onClick={openDropdown}
                       className={cn(
-                        'flex items-center justify-between w-full h-9 px-3 text-sm border rounded-md bg-white text-left font-medium focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 outline-none transition-colors',
-                        fieldState.error ? 'border-rose-500' : 'border-input',
+                        'justify-between w-full h-9 px-3 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
+                        fieldState.error ? 'border-rose-500' : '',
                         !field.value && 'text-muted-foreground'
                       )}
                     >
@@ -309,7 +309,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                         className="size-4 text-slate-400 shrink-0"
                         aria-hidden="true"
                       />
-                    </button>
+                    </Button>
                   </FormControl>
 
                   <FormDescription className="text-xs text-slate-400 flex flex-col gap-0.5">
@@ -380,9 +380,10 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                           {!currenciesLoading && currenciesError && (
                             <div className="flex flex-col items-center gap-2 py-6 text-sm text-slate-500">
                               <p>Failed to load currencies.</p>
-                              <button
-                                type="button"
-                                className="text-violet-600 text-xs underline hover:no-underline"
+                              <Button
+                                variant="link"
+                                size="sm"
+                                className="text-violet-600 text-xs h-auto p-0"
                                 onClick={() => {
                                   setCurrenciesError(false)
                                   setCurrenciesLoading(true)
@@ -393,7 +394,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                 }}
                               >
                                 Try again
-                              </button>
+                              </Button>
                             </div>
                           )}
 
@@ -403,13 +404,14 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                 Popular
                               </p>
                               {PINNED_CURRENCIES.map((c) => (
-                                <button
+                                <Button
                                   key={c}
-                                  type="button"
+                                  variant="ghost"
+                                  fullWidth
                                   role="option"
                                   aria-selected={field.value === c}
                                   onClick={() => selectCurrency(c, field.onChange)}
-                                  className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-slate-50 text-left"
+                                  className="justify-start gap-2 px-3 py-2 text-sm hover:bg-slate-50 rounded-none"
                                 >
                                   <Check
                                     className={cn(
@@ -422,7 +424,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                   <span className="text-slate-400 text-xs truncate">
                                     {currencyMap[c]?.name}
                                   </span>
-                                </button>
+                                </Button>
                               ))}
                               <div className="mx-3 my-1 border-t border-slate-100" />
                               <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
@@ -439,13 +441,14 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
 
                           {!currenciesLoading &&
                             filteredCurrencies.map((c) => (
-                              <button
+                              <Button
                                 key={c}
-                                type="button"
+                                variant="ghost"
+                                fullWidth
                                 role="option"
                                 aria-selected={field.value === c}
                                 onClick={() => selectCurrency(c, field.onChange)}
-                                className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-slate-50 text-left"
+                                className="justify-start gap-2 px-3 py-2 text-sm hover:bg-slate-50"
                               >
                                 <Check
                                   className={cn(
@@ -458,7 +461,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                 <span className="text-slate-400 text-xs truncate">
                                   {currencyMap[c]?.name}
                                 </span>
-                              </button>
+                              </Button>
                             ))}
 
                           {!currenciesLoading &&
@@ -491,20 +494,20 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                     className="flex rounded-lg border border-slate-200 overflow-hidden"
                   >
                     {['buy', 'sell'].map((t) => (
-                      <button
+                      <Button
                         key={t}
-                        type="button"
+                        variant="ghost"
                         aria-pressed={field.value === t}
                         onClick={() => field.onChange(t)}
                         className={cn(
-                          'flex-1 py-2 text-sm font-medium capitalize transition-colors',
+                          'flex-1 py-2 text-sm font-medium capitalize rounded-none',
                           field.value === t
-                            ? 'bg-violet-600 text-white'
+                            ? 'bg-violet-600 text-white hover:bg-violet-600'
                             : 'text-slate-600 hover:bg-slate-50'
                         )}
                       >
                         {t}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                   <FormDescription className="text-xs text-slate-400">
@@ -755,8 +758,9 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
               <DialogClose asChild>
                 <Button
                   type="button"
+                  variant="secondary"
                   disabled={formState.isSubmitting}
-                  className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                  className="text-violet-600 font-medium"
                 >
                   Cancel
                 </Button>

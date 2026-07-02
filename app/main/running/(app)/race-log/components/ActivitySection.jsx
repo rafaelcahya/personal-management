@@ -19,7 +19,7 @@ import {
   Pencil,
   Mountain,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import StreamCharts from '../../activities/components/StreamCharts'
 import AIInsightCard from '../../activities/components/AIInsightCard'
 import DistanceBreakdown from './DistanceBreakdown'
@@ -87,8 +87,8 @@ export default function ActivitySection({
               {onEditClick && (
                 <Button
                   id="editRaceBtn_raceDetailPage"
-                  size="sm"
-                  variant="outline"
+                  size="base"
+                  variant="secondary"
                   onClick={onEditClick}
                   className="shrink-0 flex items-center gap-1.5"
                 >

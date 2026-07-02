@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { BarChart2, TrendingUp, TrendingDown, Minus, AlertCircle, Plus } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import AddTransactionSheet from './[id]/components/AddTransactionSheet'
 import {
   getCurrencyInvestments,
@@ -72,7 +72,7 @@ function EmptyState({ onAdd }) {
         <p className="text-sm font-medium text-slate-700">No currency holdings yet</p>
         <p className="text-xs text-slate-500">Add your first investment to get started</p>
       </div>
-      <Button size="sm" onClick={onAdd} className="bg-violet-600 hover:bg-violet-700 min-w-11">
+      <Button size="base" onClick={onAdd} className="bg-violet-600 hover:bg-violet-700 min-w-11">
         <Plus className="size-4 mr-1.5" aria-hidden="true" />
         Add Investment
       </Button>
@@ -92,7 +92,7 @@ function ErrorState({ onRetry }) {
         <p className="text-sm font-medium text-slate-700">Failed to load holdings</p>
         <p className="text-xs text-slate-500">Check your connection and try again</p>
       </div>
-      <Button variant="outline" size="sm" onClick={onRetry} className="min-w-11">
+      <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
         Try again
       </Button>
     </div>
@@ -200,7 +200,7 @@ export default function HoldingsPage() {
           </div>
           <Button
             id="addInvestmentBtn_holdingsPage"
-            size="sm"
+            size="base"
             onClick={() => setSheetOpen(true)}
             className="bg-violet-600 hover:bg-violet-700 shrink-0 min-w-11"
           >

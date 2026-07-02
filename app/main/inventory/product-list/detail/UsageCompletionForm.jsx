@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Calendar } from '@/components/ui/calendar'
 import { updateProductUsage } from '@/lib/api/productHistory'
@@ -179,7 +179,8 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
           <div className="flex justify-end gap-2 pt-2">
             <Button
               type="button"
-              className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+              variant="secondary"
+              className="text-violet-600 font-medium"
               onClick={onCancel}
               disabled={isSubmitting}
               id="cancelBtn-usageCompletionForm"
@@ -188,7 +189,7 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
             </Button>
             <Button
               type="submit"
-              size="sm"
+              size="base"
               disabled={isSubmitting}
               id="updateRecordBtn-usageCompletionForm"
             >

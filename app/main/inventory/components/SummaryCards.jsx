@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
+import Button from '@/components/base/Button/Button'
 import {
   PackageIcon,
   CheckCircle2Icon,
@@ -103,9 +104,11 @@ export default function SummaryCards({ summary, lowStockCount, loading }) {
             key={index}
             className="border border-slate-200/70 shadow-sm hover:shadow-md hover:border-slate-300 transition-[box-shadow,border-color] duration-150"
           >
-            <button
+            <Button
+              variant="ghost"
+              fullWidth
               onClick={() => handleCardClick(stat.filter, stat.href)}
-              className="w-full h-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-2 rounded-xl"
+              className="h-full justify-start cursor-pointer focus-visible:ring-violet-200 focus-visible:ring-offset-2 rounded-xl"
             >
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">
@@ -119,7 +122,7 @@ export default function SummaryCards({ summary, lowStockCount, loading }) {
                 </p>
                 {stat.subLabel && <p className="text-xs text-slate-400 mt-0.5">{stat.subLabel}</p>}
               </CardContent>
-            </button>
+            </Button>
           </Card>
         )
       })}

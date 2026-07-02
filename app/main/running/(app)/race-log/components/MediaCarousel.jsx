@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import Button from '@/components/base/Button/Button'
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight, Maximize2, X } from 'lucide-react'
 
@@ -68,37 +69,44 @@ export default function MediaCarousel({
         </div>
 
         {current.type === 'photo' && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => setExpandedPhoto(current.url)}
-            className="absolute top-2 right-2 z-[1001] bg-white/80 hover:bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity"
+            className="absolute top-2 right-2 z-[1001] bg-white/80 hover:bg-white border border-slate-200 rounded-lg shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity text-slate-600"
             aria-label="View full photo"
           >
-            <Maximize2 className="size-4 text-slate-600" />
-          </button>
+            <Maximize2 className="size-4" />
+          </Button>
         )}
 
         {slides.length > 1 && (
           <>
-            <button
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={prev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-[1001] bg-white/80 hover:bg-white border border-slate-200 rounded-full p-1 shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity"
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-[1001] bg-white/80 hover:bg-white border border-slate-200 rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity text-slate-600"
               aria-label="Previous"
             >
-              <ChevronLeft className="size-4 text-slate-600" />
-            </button>
-            <button
+              <ChevronLeft className="size-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={next}
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-[1001] bg-white/80 hover:bg-white border border-slate-200 rounded-full p-1 shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity"
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-[1001] bg-white/80 hover:bg-white border border-slate-200 rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity text-slate-600"
               aria-label="Next"
             >
-              <ChevronRight className="size-4 text-slate-600" />
-            </button>
+              <ChevronRight className="size-4" />
+            </Button>
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[1001] flex gap-1.5">
               {slides.map((_, i) => (
-                <button
+                <Button
                   key={i}
+                  variant="ghost"
                   onClick={() => setActive(i)}
-                  className={`size-1.5 rounded-full transition-all ${i === active ? 'bg-white shadow' : 'bg-white/50'}`}
+                  className={`size-1.5 rounded-full p-0 transition-all ${i === active ? 'bg-white shadow' : 'bg-white/50'}`}
                   aria-label={`Slide ${i + 1}`}
                 />
               ))}
@@ -121,13 +129,15 @@ export default function MediaCarousel({
               alt="Activity photo"
               className="max-w-full max-h-[90vh] rounded-xl object-contain shadow-2xl"
             />
-            <button
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={() => setExpandedPhoto(null)}
-              className="absolute top-3 right-3 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+              className="absolute top-3 right-3 bg-white/10 hover:bg-white/20 rounded-full text-white"
               aria-label="Close photo"
             >
-              <X className="size-5 text-white" />
-            </button>
+              <X className="size-5" />
+            </Button>
           </div>
         </div>
       )}

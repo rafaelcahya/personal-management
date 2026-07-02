@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import Button from '@/components/base/Button/Button'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -147,16 +148,18 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
 
   if (collapsed) {
     const trigger = (
-      <button
+      <Button
+        variant="ghost"
+        fullWidth
         className={cn(
-          'flex items-center justify-center px-2 py-2.5 w-full rounded-lg text-sm font-medium transition-colors',
+          'justify-center px-2 py-2.5 rounded-lg',
           isActive
             ? 'bg-violet-50 text-violet-700'
             : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
         )}
       >
         <Icon className={cn('size-4 shrink-0', isActive ? 'text-violet-600' : 'text-slate-400')} />
-      </button>
+      </Button>
     )
     return (
       <TooltipProvider delayDuration={0}>
@@ -170,11 +173,13 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
 
   return (
     <div>
-      <button
+      <Button
         id={id}
+        variant="ghost"
+        fullWidth
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
-          'flex items-center gap-3 rounded-lg text-sm font-medium transition-colors w-full px-3 py-2',
+          'justify-start gap-3 rounded-lg px-3 py-2',
           isActive
             ? 'bg-violet-50 text-violet-700'
             : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
@@ -188,7 +193,7 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
             open ? 'rotate-180' : ''
           )}
         />
-      </button>
+      </Button>
       {open && (
         <div className="ml-4 pl-3 border-l border-slate-100 mt-0.5 space-y-0.5">
           {subitems.map((item) => (
@@ -301,12 +306,14 @@ function UserSection({ collapsed, user, mobile = false }) {
                 </p>
               </div>
             )}
-            <button
+            <Button
               id={mobile ? 'userMenuSignOut_mobile' : 'logoutBtn'}
+              variant="ghost"
+              fullWidth
               onClick={handleLogout}
               disabled={loading}
               aria-label="Sign out from application"
-              className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-60"
+              className="justify-start gap-2.5 px-3 py-2.5 text-slate-600 hover:bg-slate-50"
             >
               {loading ? (
                 <Loader2 className="size-4 animate-spin text-slate-400 shrink-0" />
@@ -314,15 +321,17 @@ function UserSection({ collapsed, user, mobile = false }) {
                 <LogOut className="size-4 text-slate-400 shrink-0" />
               )}
               {loading ? 'Signing out...' : 'Sign out'}
-            </button>
+            </Button>
           </div>
         )}
-        <button
+        <Button
           id={mobile ? 'userMenuTrigger_mobile' : 'userMenuTrigger_landingPage'}
+          variant="ghost"
+          fullWidth
           aria-label="User menu"
           onClick={() => setOpen(!open)}
           className={cn(
-            'flex items-center gap-2.5 w-full rounded-xl p-2 hover:bg-slate-50 transition-colors text-left',
+            'justify-start gap-2.5 rounded-xl p-2 hover:bg-slate-50',
             collapsed && 'justify-center'
           )}
         >
@@ -335,7 +344,7 @@ function UserSection({ collapsed, user, mobile = false }) {
               <p className="text-xs text-slate-400 truncate">{email}</p>
             </div>
           )}
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -448,29 +457,33 @@ export default function Sidebar({ user }) {
         <UserSection collapsed={collapsed} user={user} />
 
         {/* Collapse toggle */}
-        <button
+        <Button
           id="sidebarCollapseBtn_sidebar"
+          variant="ghost"
+          size="icon-xs"
           onClick={toggleCollapse}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="absolute -right-3 top-[4.25rem] size-6 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:bg-slate-50 z-10 transition-colors"
+          className="absolute -right-3 top-[4.25rem] rounded-full bg-white border border-slate-200 shadow-sm hover:bg-slate-50 z-10"
         >
           {collapsed ? (
             <PanelLeftOpen className="size-3 text-slate-500" />
           ) : (
             <PanelLeftClose className="size-3 text-slate-500" />
           )}
-        </button>
+        </Button>
       </aside>
 
       {/* ── Mobile top bar ── */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-white border-b border-slate-200 flex items-center px-4 gap-3">
-        <button
+        <Button
           id="mobileMenuTrigger"
+          variant="ghost"
+          size="icon-sm"
           onClick={() => setMobileOpen(true)}
-          className="size-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors"
+          className="rounded-lg hover:bg-slate-100"
         >
           <Menu className="size-5 text-slate-600" />
-        </button>
+        </Button>
         <div className="flex items-center gap-2">
           <div className="size-6 bg-violet-600 rounded-md flex items-center justify-center">
             <Package2 className="size-3.5 text-white" />
@@ -494,12 +507,14 @@ export default function Sidebar({ user }) {
                 </div>
                 <span className="font-semibold text-slate-800 text-sm">Personal Management</span>
               </div>
-              <button
+              <Button
+                variant="ghost"
+                size="icon-sm"
                 onClick={() => setMobileOpen(false)}
-                className="size-8 flex items-center justify-center rounded-lg hover:bg-slate-100"
+                className="rounded-lg hover:bg-slate-100"
               >
                 <X className="size-4 text-slate-500" />
-              </button>
+              </Button>
             </div>
             <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
             <div className="px-4 pb-1">

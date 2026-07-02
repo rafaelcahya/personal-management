@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ChevronLeft, Trash2, Loader2, AlertTriangle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -160,13 +160,15 @@ export default function RaceDetailPage() {
     <div id="raceDetailPage" className="flex flex-col gap-3 sm:gap-5">
       {/* Back + breadcrumb */}
       <div className="flex items-center gap-3">
-        <button
+        <Button
+          variant="ghost"
+          size="icon-sm"
           onClick={() => router.back()}
-          className="flex items-center justify-center size-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition-colors shrink-0"
+          className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 shrink-0"
           aria-label="Go back"
         >
           <ChevronLeft className="size-4" />
-        </button>
+        </Button>
         <PageHeader
           title={entry?.title ?? 'Race Detail'}
           breadcrumbs={[
@@ -186,12 +188,9 @@ export default function RaceDetailPage() {
         >
           <AlertTriangle className="size-8" aria-hidden="true" />
           <span>{error}</span>
-          <button
-            onClick={() => window.location.reload()}
-            className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-          >
+          <Button variant="link" size="sm" onClick={() => window.location.reload()}>
             Try again
-          </button>
+          </Button>
         </div>
       )}
 
@@ -249,7 +248,7 @@ export default function RaceDetailPage() {
               <Button
                 id="deleteRaceBtn_raceDetailPage"
                 variant="outline"
-                size="sm"
+                size="base"
                 onClick={() => setDeleteOpen(true)}
                 className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
               >

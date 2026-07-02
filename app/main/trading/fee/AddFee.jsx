@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import {
   Dialog,
   DialogContent,
@@ -82,7 +82,7 @@ export default function AddFee({ onAdded }) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild id="addNewFeeBtn_feePage">
         <Button>
-          <PlusIcon />
+          <PlusIcon className="w-4" />
           <span>Add Fee</span>
         </Button>
       </DialogTrigger>
@@ -204,10 +204,9 @@ export default function AddFee({ onAdded }) {
             <DialogFooter className="shrink-0 pt-4">
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 onClick={() => setOpen(false)}
                 disabled={loading}
-                className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
                 id="cancelNewFeeBtn_feePage"
               >
                 Cancel

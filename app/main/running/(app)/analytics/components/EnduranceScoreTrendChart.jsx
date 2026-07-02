@@ -58,12 +58,13 @@ export default function EnduranceScoreTrendChart() {
     return (
       <div id="enduranceScoreTrendError_analyticsPage" className="flex items-center gap-3 py-4">
         <p className="text-sm text-red-400">{error}</p>
-        <button
+        <Button
+          variant="ghost"
           onClick={load}
           className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
         >
           Try again
-        </button>
+        </Button>
       </div>
     )
   }

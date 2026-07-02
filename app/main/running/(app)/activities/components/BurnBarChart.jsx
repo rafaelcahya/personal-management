@@ -13,6 +13,7 @@ import {
 } from 'recharts'
 import { fmtPace } from '../../dashboard/utils/format'
 import { SectionLabel } from './activityShared'
+import Button from '@/components/base/Button/Button'
 
 const ON_PACE_THRESHOLD_SEC = 3
 const TYPICAL_HR_THRESHOLD_BPM = 2
@@ -77,9 +78,10 @@ export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage
         <SectionLabel>Burn Bar — vs Your Average</SectionLabel>
         {hasHr && (
           <div className="flex items-center gap-1">
-            <button
+            <Button
               id={`burnBarPaceBtn_${pagePrefix}`}
               type="button"
+              size="sm"
               aria-pressed={view === 'pace'}
               onClick={() => setView('pace')}
               className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
@@ -89,10 +91,11 @@ export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage
               }`}
             >
               Pace
-            </button>
-            <button
+            </Button>
+            <Button
               id={`burnBarHrBtn_${pagePrefix}`}
               type="button"
+              size="sm"
               aria-pressed={view === 'hr'}
               onClick={() => setView('hr')}
               className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
@@ -102,7 +105,7 @@ export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage
               }`}
             >
               HR
-            </button>
+            </Button>
           </div>
         )}
       </div>

@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/base/Badge/Badge'
+import Button from '@/components/base/Button/Button'
 import { Checkbox } from '@/components/ui/checkbox'
 import ProductBrandUpdate from '../UpdateProductBrand'
 import { updateProductBrand } from '@/lib/api/productBrand'
@@ -95,7 +95,7 @@ export default function ProductBrandsTable({
           <span className="text-sm font-medium text-violet-700">{selectedIds.length} selected</span>
           <div className="flex items-center gap-2 ml-auto">
             <Button
-              size="sm"
+              size="base"
               variant="outline"
               id="bulkSetActiveBtn_productBrandPage"
               className="h-7 text-xs border-green-300 text-green-700 hover:bg-green-50"
@@ -105,7 +105,7 @@ export default function ProductBrandsTable({
               Set Active
             </Button>
             <Button
-              size="sm"
+              size="base"
               variant="outline"
               id="bulkSetInactiveBtn_productBrandPage"
               className="h-7 text-xs border-orange-300 text-orange-700 hover:bg-orange-50"
@@ -115,7 +115,7 @@ export default function ProductBrandsTable({
               Set Inactive
             </Button>
             <Button
-              size="sm"
+              size="base"
               variant="ghost"
               id="bulkDeselectAllBtn_productBrandPage"
               className="h-7 text-xs text-slate-500 hover:text-slate-700"
@@ -231,8 +231,9 @@ export default function ProductBrandsTable({
                     className="px-5 py-3.5 text-center w-[60px]"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
                       data-testid={`editBrandBtn_${productBrand.id}_productBrandPage`}
                       aria-label={`Edit ${productBrand.brand}`}
                       onClick={(e) => {
@@ -242,7 +243,7 @@ export default function ProductBrandsTable({
                       className="inline-flex items-center justify-center rounded-md p-1.5 text-violet-500 hover:bg-violet-100 transition-colors min-h-[32px] min-w-[32px]"
                     >
                       <Pencil className="size-3.5" />
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -251,7 +252,7 @@ export default function ProductBrandsTable({
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">
-              <button
+              <Button
                 onClick={onPrev}
                 disabled={page <= 1}
                 className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
@@ -259,11 +260,11 @@ export default function ProductBrandsTable({
               >
                 <ChevronLeft className="size-4" aria-hidden="true" />
                 Prev
-              </button>
+              </Button>
               <span className="text-xs text-slate-400 text-center" aria-live="polite">
                 Page {page} of {totalPages} · {total} records
               </span>
-              <button
+              <Button
                 onClick={onNext}
                 disabled={page >= totalPages}
                 className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
@@ -271,7 +272,7 @@ export default function ProductBrandsTable({
               >
                 Next
                 <ChevronRight className="size-4" aria-hidden="true" />
-              </button>
+              </Button>
             </div>
           )}
         </div>

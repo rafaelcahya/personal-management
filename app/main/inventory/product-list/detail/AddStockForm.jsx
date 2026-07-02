@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 import { toast } from 'sonner'
 import { CalendarIcon, Loader2, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
@@ -106,13 +106,15 @@ export default function AddStockForm({ product, onAdded }) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <button
-          className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-violet-50 rounded-sm transition-colors text-left"
+        <Button
+          variant="ghost"
+          fullWidth
+          className="justify-start px-2 py-1.5 text-sm hover:bg-violet-50 rounded-sm"
           id="addStockBtn-productList"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Stock
-        </button>
+        </Button>
       </DialogTrigger>
       <DialogContent
         className="sm:max-w-md flex flex-col max-h-[90vh]"
@@ -312,7 +314,8 @@ export default function AddStockForm({ product, onAdded }) {
               <DialogClose asChild>
                 <Button
                   type="button"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                  variant="secondary"
+                  className="text-violet-600 font-medium"
                   id="cancelBtn-addStockPopup"
                   disabled={loading}
                 >

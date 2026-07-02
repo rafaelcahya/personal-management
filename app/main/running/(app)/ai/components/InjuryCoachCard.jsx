@@ -14,7 +14,7 @@ import {
   History,
   ChevronLeft,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { getInjuryCoachInsight, fetchActivities, fetchInjuryCoachHistory } from '@/lib/api/running'
 import { renderMarkdown } from './utils'
 
@@ -190,15 +190,17 @@ export default function InjuryCoachCard() {
     >
       <div className="flex items-center gap-2">
         {showHistory && (
-          <button
+          <Button
             id="injuryHistoryBackBtn_aiPage"
             type="button"
+            size="xs"
+            variant="ghost"
             onClick={() => setShowHistory(false)}
             className="flex items-center justify-center w-6 h-6 rounded-md hover:bg-slate-100 transition-colors shrink-0"
             aria-label="Back to consultation"
           >
             <ChevronLeft className="h-4 w-4 text-slate-600" aria-hidden="true" />
-          </button>
+          </Button>
         )}
         <span
           className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-100 shrink-0"
@@ -214,16 +216,18 @@ export default function InjuryCoachCard() {
             AI
           </span>
         )}
-        <button
+        <Button
           id="injuryHistoryBtn_aiPage"
           type="button"
+          size="xs"
+          variant="ghost"
           onClick={showHistory ? () => setShowHistory(false) : openHistory}
           className="ml-auto flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100 px-2 py-1 rounded-md transition-colors"
           aria-label={showHistory ? 'Close history' : 'View consultation history'}
         >
           <History className="h-3.5 w-3.5" aria-hidden="true" />
           {!showHistory && 'History'}
-        </button>
+        </Button>
       </div>
 
       {!showHistory && (
@@ -335,17 +339,14 @@ export default function InjuryCoachCard() {
           {ROLES.map((role) => {
             const isSelected = selectedRole === role.id
             return (
-              <button
+              <Button
                 key={role.id}
                 id={role.cardId}
-                type="button"
+                variant="ghost"
+                fullWidth
                 aria-pressed={isSelected}
                 onClick={() => handleRoleSelect(role.id)}
-                className={`text-left rounded-lg px-3 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[44px] ${
-                  isSelected
-                    ? 'border-2 border-violet-400 bg-violet-50'
-                    : 'border border-slate-200 bg-white hover:bg-slate-50'
-                }`}
+                className={`text-left rounded-lg px-3 py-3 h-auto min-h-[44px] items-start flex-col ${isSelected ? 'border-2 border-violet-400 bg-violet-50' : 'border border-slate-200 bg-white hover:bg-slate-50'}`}
               >
                 <div className="flex items-center gap-2 mb-0.5">
                   <role.Icon
@@ -359,7 +360,7 @@ export default function InjuryCoachCard() {
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 pl-6">{role.description}</p>
-              </button>
+              </Button>
             )
           })}
         </div>
@@ -390,10 +391,12 @@ export default function InjuryCoachCard() {
             </p>
             <div className="flex flex-wrap gap-2" role="group" aria-label="Injury phase">
               {PHASES.map((p) => (
-                <button
+                <Button
                   key={p.id}
                   id={p.elementId}
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   aria-pressed={phase === p.id}
                   onClick={() => setPhase(phase === p.id ? null : p.id)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[36px] ${
@@ -403,7 +406,7 @@ export default function InjuryCoachCard() {
                   }`}
                 >
                   {p.label}
-                </button>
+                </Button>
               ))}
             </div>
             {phase && (
@@ -432,15 +435,16 @@ export default function InjuryCoachCard() {
                   {selectedActivity.avg_pace_sec_per_km &&
                     ` · ${fmtPace(selectedActivity.avg_pace_sec_per_km)}`}
                 </span>
-                <button
+                <Button
                   id="injuryActivityClearBtn_aiPage"
-                  type="button"
+                  variant="ghost"
+                  size="xs"
                   onClick={() => setSelectedActivity(null)}
                   className="shrink-0 text-slate-400 hover:text-slate-600"
                   aria-label="Clear selected activity"
                 >
                   <X className="h-3.5 w-3.5" aria-hidden="true" />
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="relative">
@@ -469,16 +473,17 @@ export default function InjuryCoachCard() {
                       <p className="px-3 py-3 text-xs text-slate-400">No activities found</p>
                     ) : (
                       activityList.map((a) => (
-                        <button
+                        <Button
                           key={a.id}
                           id={`injuryActivityItem_aiPage_${a.id}`}
-                          type="button"
+                          variant="ghost"
+                          fullWidth
                           onClick={() => {
                             setSelectedActivity(a)
                             setActivityOpen(false)
                             setActivitySearch('')
                           }}
-                          className="w-full text-left px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0"
+                          className="text-left px-3 py-2.5 h-auto items-start flex-col border-b border-slate-100 last:border-0"
                         >
                           {a.name && (
                             <p className="text-sm font-medium text-slate-700 truncate">{a.name}</p>
@@ -492,7 +497,7 @@ export default function InjuryCoachCard() {
                             {a.distance_m && ` · ${fmtDist(a.distance_m)}`}
                             {a.avg_pace_sec_per_km && ` · ${fmtPace(a.avg_pace_sec_per_km)}`}
                           </p>
-                        </button>
+                        </Button>
                       ))
                     )}
                   </div>
@@ -536,8 +541,9 @@ export default function InjuryCoachCard() {
               <Button
                 id="injurySubmitBtn_aiPage"
                 type="submit"
+                size="md"
                 disabled={!isQuestionValid || loading}
-                className="bg-violet-600 hover:bg-violet-700 text-white text-sm focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[44px] w-full sm:w-auto"
+                className="bg-violet-600 hover:bg-violet-700 text-white text-sm focus-visible:ring-2 focus-visible:ring-violet-200"
               >
                 {loading ? (
                   <>

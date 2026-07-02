@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { SearchX, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import Button from '@/components/base/Button/Button'
+import { Badge } from '@/components/base/Badge/Badge'
 import { cn } from '@/lib/utils'
 
 function getStatusClasses(status) {
@@ -51,7 +51,7 @@ export default function ProductHistoryTable({
           </p>
         </div>
         {hasActiveFilters && onClearFilters && (
-          <Button variant="outline" size="sm" onClick={onClearFilters}>
+          <Button variant="outline" size="base" onClick={onClearFilters}>
             Clear filters
           </Button>
         )}
@@ -151,27 +151,29 @@ export default function ProductHistoryTable({
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">
-          <button
+          <Button
+            variant="ghost"
             onClick={onPrev}
             disabled={page <= 1}
-            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
             aria-label="Previous page"
           >
             <ChevronLeft className="size-4" aria-hidden="true" />
             Prev
-          </button>
+          </Button>
           <span className="text-xs text-slate-400 text-center" aria-live="polite">
             Page {page} of {totalPages} · {total} records
           </span>
-          <button
+          <Button
+            variant="ghost"
             onClick={onNext}
             disabled={page >= totalPages}
-            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
             aria-label="Next page"
           >
             Next
             <ChevronRight className="size-4" aria-hidden="true" />
-          </button>
+          </Button>
         </div>
       )}
     </div>

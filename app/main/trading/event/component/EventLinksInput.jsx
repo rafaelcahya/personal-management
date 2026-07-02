@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PlusIcon, Trash2, LinkIcon } from 'lucide-react'
@@ -66,14 +66,15 @@ export default function EventLinksInput({ value = [], onChange, error }) {
                 <p className="text-xs font-medium text-slate-700 truncate">{entry.hyperlink}</p>
                 <p className="text-xs text-slate-400 truncate">{entry.link}</p>
               </div>
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="icon-sm"
                 onClick={() => handleRemove(i)}
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all shrink-0"
+                className="text-slate-400 hover:text-rose-500 hover:bg-rose-50 shrink-0"
                 aria-label="Remove link"
               >
                 <Trash2 className="size-3" />
-              </button>
+              </Button>
             </div>
           ))}
         </div>
@@ -118,7 +119,7 @@ export default function EventLinksInput({ value = [], onChange, error }) {
         <Button
           type="button"
           variant="outline"
-          size="sm"
+          size="base"
           onClick={handleAdd}
           id="addLinkBtn_eventPage"
           className="self-start text-violet-600 border-violet-200 hover:bg-violet-50 h-7 text-xs font-medium"

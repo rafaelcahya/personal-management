@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { DollarSign, BarChart2, AlertCircle, TrendingUp } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { cn } from '@/lib/utils'
 import AllocationChart from './components/AllocationChart'
 import PnLChart from './components/PnLChart'
@@ -75,7 +75,7 @@ function ErrorState({ onRetry }) {
         <p className="text-sm font-medium text-slate-700">Failed to load currency data</p>
         <p className="text-xs text-slate-500">Check your connection and try again</p>
       </div>
-      <Button variant="outline" size="sm" onClick={onRetry} className="min-w-11">
+      <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
         Try again
       </Button>
     </div>
@@ -334,9 +334,10 @@ export default function CurrencyDashboardPage() {
               {/* Filter controls */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 {FILTERS.map((f) => (
-                  <button
+                  <Button
                     key={f.label}
                     id={f.id}
+                    variant="ghost"
                     onClick={() => {
                       setActiveFilter(f.days)
                       setCustomStart('')
@@ -344,14 +345,14 @@ export default function CurrencyDashboardPage() {
                     }}
                     aria-pressed={activeFilter === f.days && !customStart}
                     className={cn(
-                      'px-3 py-1.5 rounded-full text-xs font-medium transition-colors min-w-11',
+                      'px-3 py-1.5 rounded-full text-xs font-medium min-w-11',
                       activeFilter === f.days && !customStart
-                        ? 'bg-violet-600 text-white'
+                        ? 'bg-violet-600 text-white hover:bg-violet-600'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     )}
                   >
                     {f.label}
-                  </button>
+                  </Button>
                 ))}
                 <div className="flex items-center gap-2 ml-auto">
                   <input

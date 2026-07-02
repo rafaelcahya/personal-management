@@ -12,7 +12,7 @@ import {
   MapPin,
   Mountain,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -262,8 +262,9 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
         <DialogFooter className="gap-2">
           <DialogClose asChild>
             <Button
-              className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+              className="text-violet-600 font-medium"
               type="button"
+              variant="secondary"
               disabled={saving}
             >
               Cancel

@@ -1,5 +1,6 @@
 'use client'
 
+import Button from '@/components/base/Button/Button'
 import {
   BarChart,
   Bar,
@@ -67,13 +68,9 @@ function StatusInfoTip({ content }) {
     <TooltipProvider delayDuration={200}>
       <UITooltip>
         <TooltipTrigger asChild>
-          <button
-            type="button"
-            className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-            aria-label="More information"
-          >
+          <Button variant="ghost" size="icon-xs" aria-label="More information">
             <Info className="size-3" aria-hidden="true" />
-          </button>
+          </Button>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-56 text-xs leading-relaxed">
           {content}

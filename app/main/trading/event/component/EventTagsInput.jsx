@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { X } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
 import { fetchEventTags } from '@/lib/api/event'
 
 const MAX_TAGS = 10
@@ -89,8 +90,9 @@ export default function EventTagsInput({ value = [], onChange, id }) {
             className="inline-flex items-center gap-1 bg-violet-100 text-violet-700 text-xs font-medium rounded-md px-2 py-0.5"
           >
             {tag}
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={(e) => {
                 e.stopPropagation()
                 removeTag(tag)
@@ -99,7 +101,7 @@ export default function EventTagsInput({ value = [], onChange, id }) {
               aria-label={`Remove tag ${tag}`}
             >
               <X className="size-3" />
-            </button>
+            </Button>
           </span>
         ))}
         {remaining > 0 && (
@@ -119,17 +121,18 @@ export default function EventTagsInput({ value = [], onChange, id }) {
       {showSuggestions && (
         <div className="border border-slate-200 rounded-md bg-white shadow-md z-10 overflow-hidden">
           {suggestions.map((tag) => (
-            <button
+            <Button
               key={tag}
-              type="button"
+              variant="ghost"
+              fullWidth
               onMouseDown={(e) => {
                 e.preventDefault()
                 addTag(tag)
               }}
-              className="w-full text-left px-3 py-1.5 text-sm hover:bg-violet-50 font-medium"
+              className="justify-start px-3 py-1.5 text-sm hover:bg-violet-50 font-medium"
             >
               {tag}
-            </button>
+            </Button>
           ))}
         </div>
       )}

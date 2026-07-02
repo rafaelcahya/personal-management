@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Trash2, Loader2 } from 'lucide-react'
 import { deleteTrade } from '@/lib/api/trade'
 import { toast } from 'sonner'

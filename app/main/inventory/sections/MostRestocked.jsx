@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { format } from 'date-fns'
 import { RefreshCw, AlertCircle } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 function TableSkeleton() {
@@ -166,7 +166,7 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
               <p className="text-xs text-slate-500">Check your connection and try again</p>
             </div>
             {onRetry && (
-              <Button variant="outline" size="sm" onClick={onRetry} className="min-w-11">
+              <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
                 Try again
               </Button>
             )}
@@ -179,12 +179,9 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
 
         {!loading && !error && items.length > 0 && (
           <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
-            <button
-              onClick={() => setModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium text-violet-700 border border-violet-200 hover:bg-violet-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 transition-colors"
-            >
+            <Button variant="ghost" onClick={() => setModalOpen(true)}>
               View All
-            </button>
+            </Button>
           </div>
         )}
       </section>

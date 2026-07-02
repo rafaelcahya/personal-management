@@ -243,12 +243,12 @@ export default function SessionProfileSection() {
               className="flex flex-col items-center gap-2 py-8 text-center"
             >
               <p className="text-xs text-red-500">{error}</p>
-              <button
+              <Button
                 onClick={load}
                 className="text-xs text-violet-600 underline hover:no-underline"
               >
                 Try again
-              </button>
+              </Button>
             </div>
           )}
 

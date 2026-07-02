@@ -8,7 +8,7 @@ import { fetchProductBrand } from '@/lib/api/productBrand'
 import ProductBrandFilterDropdown from './list/component/ProductBrandFilterDropdown'
 import PageHeader from '../../components/PageHeader'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Search, X, Tag, AlertCircle } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -27,14 +27,16 @@ function BrandSearchInput({ searchQuery, setSearchQuery }) {
         className="pl-8 pr-7 text-sm h-9 focus-visible:ring-violet-200 focus-visible:border-violet-500"
       />
       {searchQuery && (
-        <button
+        <Button
           onClick={() => setSearchQuery('')}
+          variant="ghost"
+          size="xs"
           aria-label="Clear search"
           id="clearSearchBtn_productBrandPage"
           className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
         >
           <X className="size-3.5" />
-        </button>
+        </Button>
       )}
     </div>
   )
@@ -148,7 +150,7 @@ export default function ProductBrandsPageClient() {
               <p className="text-sm font-medium text-slate-700">Failed to load brands</p>
               <p className="text-xs text-slate-500">Check your connection and try again</p>
             </div>
-            <Button variant="outline" size="sm" onClick={handleRefresh} className="min-w-11">
+            <Button variant="outline" size="base" onClick={handleRefresh} className="min-w-11">
               Try again
             </Button>
           </div>

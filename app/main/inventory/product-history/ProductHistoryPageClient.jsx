@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { History, Search, X, AlertCircle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/ui/skeleton'
 import ProductHistoryTable from './ProductHistoryTable'
 import ProductHistoryTableHeader from './component/ProductHistoryTableHeader'
@@ -26,14 +26,16 @@ function HistorySearchInput({ searchQuery, setSearchQuery }) {
         className="pl-8 pr-7 text-sm h-9 focus-visible:ring-violet-200 focus-visible:border-violet-500"
       />
       {searchQuery && (
-        <button
+        <Button
           onClick={() => setSearchQuery('')}
           aria-label="Clear search"
           id="clearSearchBtn_productHistoryPage"
+          variant="ghost"
+          size="xs"
           className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
         >
           <X className="size-3.5" />
-        </button>
+        </Button>
       )}
     </div>
   )
@@ -158,7 +160,7 @@ export default function ProductHistoryPageClient() {
             </div>
             <Button
               variant="outline"
-              size="sm"
+              size="base"
               onClick={() => setPage((p) => p)}
               className="min-w-11"
             >

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { AlertCircle, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import {
   Dialog,
   DialogClose,
@@ -239,8 +239,9 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
                   <DialogClose asChild>
                     <Button
                       type="button"
+                      variant="secondary"
                       id="cancelUpdateBrandBtn_productBrandPage"
-                      className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                      className="text-violet-600 font-medium"
                     >
                       Cancel
                     </Button>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import {
   Dialog,
   DialogClose,
@@ -184,7 +184,7 @@ export default function AddTrade({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild id="addNewTradeBtn_tradePage">
         <Button>
-          <PlusIcon />
+          <PlusIcon className="w-4" />
           <span>Add Trade</span>
         </Button>
       </DialogTrigger>
@@ -396,7 +396,8 @@ export default function AddTrade({
                 <DialogClose asChild>
                   <Button
                     type="button"
-                    className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                    variant="secondary"
+                    className="text-violet-600 font-medium"
                     id="cancelNewTradeBtn_tradePage"
                     disabled={loading}
                   >

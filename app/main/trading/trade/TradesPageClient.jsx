@@ -1,5 +1,6 @@
 'use client'
 
+import Button from '@/components/base/Button/Button'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { fetchTradeList, fetchTradeSummary } from '@/lib/api/trade'
 import PageHeader from '../../components/PageHeader'
@@ -186,15 +187,16 @@ export default function TradesPageClient({
               aria-label="Search trades by ticker"
             />
             {search && (
-              <button
+              <Button
                 id="tradeSearchClearBtn_tradePage"
-                type="button"
+                variant="ghost"
+                size="icon-xs"
                 onClick={() => setSearch('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 aria-label="Clear search"
               >
                 <X className="size-3.5" aria-hidden="true" />
-              </button>
+              </Button>
             )}
           </div>
         </div>

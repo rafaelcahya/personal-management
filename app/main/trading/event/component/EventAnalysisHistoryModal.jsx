@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronLeft, Sparkles, History } from 'lucide-react'
 import { fetchAnalysisHistory } from '@/lib/api/event'
@@ -30,11 +30,12 @@ function HistoryList({ history, onSelect }) {
         const eventNames = isMulti ? item.event_titles : item.event_title ? [item.event_title] : []
 
         return (
-          <button
+          <Button
             key={item.id}
-            type="button"
+            variant="ghost"
+            fullWidth
             onClick={() => onSelect(item)}
-            className="w-full text-left border border-slate-200 rounded-lg px-4 py-3 hover:bg-slate-50 hover:border-violet-200 transition-colors"
+            className="justify-start text-left border border-slate-200 rounded-lg px-4 py-3 hover:bg-slate-50 hover:border-violet-200 h-auto"
           >
             <div className="flex items-center justify-between gap-3 mb-1.5">
               <span
@@ -60,7 +61,7 @@ function HistoryList({ history, onSelect }) {
                 </p>
               ))}
             </div>
-          </button>
+          </Button>
         )
       })}
     </div>
@@ -179,7 +180,7 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
             {selected && (
               <Button
                 variant="ghost"
-                size="sm"
+                size="base"
                 onClick={() => setSelected(null)}
                 className="gap-1 text-xs text-slate-500"
               >
@@ -187,7 +188,7 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
               </Button>
             )}
           </div>
-          <Button variant="outline" size="sm" onClick={handleClose}>
+          <Button variant="outline" size="base" onClick={handleClose}>
             Close
           </Button>
         </div>

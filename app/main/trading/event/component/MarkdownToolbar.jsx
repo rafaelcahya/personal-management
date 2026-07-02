@@ -1,6 +1,7 @@
 'use client'
 
 import { Bold, Italic, Table, Heading2, List, ListOrdered, Link, Eye, EyeOff } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
 
 const TOOLS = [
   { icon: Bold, label: 'Bold', prefix: '**', suffix: '**', placeholder: 'bold text' },
@@ -103,39 +104,43 @@ export default function MarkdownToolbar({
         {TOOLS.map((tool) => {
           const Icon = tool.icon
           return (
-            <button
+            <Button
               key={tool.label}
-              type="button"
+              variant="ghost"
+              size="icon-sm"
               title={tool.label}
+              aria-label={tool.label}
               disabled={previewMode}
               onMouseDown={(e) => {
                 e.preventDefault()
                 applyFormat(tool)
               }}
-              className="p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+              className="text-slate-500 hover:text-slate-800 hover:bg-slate-200"
             >
               <Icon className="size-3.5" />
-            </button>
+            </Button>
           )
         })}
       </div>
 
       {onTogglePreview && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon-sm"
           title={previewMode ? 'Edit' : 'Preview'}
+          aria-label={previewMode ? 'Edit' : 'Preview'}
           onMouseDown={(e) => {
             e.preventDefault()
             onTogglePreview()
           }}
-          className={`p-1.5 rounded transition-colors ml-1 ${
+          className={`ml-1 ${
             previewMode
               ? 'text-violet-600 bg-violet-100 hover:bg-violet-200'
               : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200'
           }`}
         >
           {previewMode ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
-        </button>
+        </Button>
       )}
     </div>
   )

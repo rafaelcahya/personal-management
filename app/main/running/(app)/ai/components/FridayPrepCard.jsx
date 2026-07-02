@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp, CalendarClock, Clock, MapPin } from 'lucide-react'
 import { parseInline } from './utils'
+import Button from '@/components/base/Button/Button'
 
 function isStale(createdAt) {
   if (!createdAt) return false
@@ -103,7 +104,9 @@ export default function FridayPrepCard({ fridayPrep }) {
       className="rounded-xl border border-slate-200 bg-white overflow-hidden"
       aria-label="Weekend training plan"
     >
-      <button
+      <Button
+        variant="ghost"
+        size="xs"
         onClick={() => setExpanded((v) => !v)}
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-200"
         aria-expanded={expanded}
@@ -140,7 +143,7 @@ export default function FridayPrepCard({ fridayPrep }) {
             <ChevronDown className="h-4 w-4 text-slate-400" aria-hidden="true" />
           )}
         </div>
-      </button>
+      </Button>
 
       {!hasCurrentWeek && (
         <div className="px-4 pb-4 pt-1 border-t border-slate-100">

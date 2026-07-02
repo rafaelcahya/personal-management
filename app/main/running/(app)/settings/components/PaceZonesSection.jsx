@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Pencil, Timer } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -147,16 +147,17 @@ export default function PaceZonesSection() {
             className="flex rounded-lg overflow-hidden border border-slate-200 text-[11px] font-semibold w-fit"
           >
             {INPUT_MODES.map(({ id, label, icon: Icon }) => (
-              <button
+              <Button
                 key={id}
-                type="button"
+                variant="ghost"
+                size="xs"
                 id={`paceZonesMode_${id}_settingsPage`}
                 onClick={() => setMode(id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 transition-colors ${mode === id ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+                className={`rounded-none first:rounded-l-md last:rounded-r-md ${mode === id ? 'bg-violet-600 text-white hover:bg-violet-700' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
               >
                 <Icon className="size-3" aria-hidden="true" />
                 {label}
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -192,7 +193,7 @@ export default function PaceZonesSection() {
                 id="detectThresholdPaceBtn_settingsPage"
                 type="button"
                 variant="outline"
-                size="sm"
+                size="base"
                 disabled={detecting}
                 onClick={handleDetect}
                 className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50 w-fit"
@@ -292,7 +293,7 @@ export default function PaceZonesSection() {
               id="paceZonesSaveBtn_settingsPage"
               onClick={handleSave}
               disabled={saving}
-              size="sm"
+              size="base"
             >
               {saving ? 'Saving…' : 'Save'}
             </Button>

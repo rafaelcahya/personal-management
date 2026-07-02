@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Sparkles, Loader2, Clock, History, ChevronDown, ChevronUp } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Accordion, AccordionItem, AccordionContent } from '@/components/ui/accordion'
@@ -313,15 +313,17 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                   )}
                 </div>
                 {historyInsights.length > 1 && (
-                  <button
+                  <Button
                     id={`analyticsAiHistoryBtn_${sectionId}_analyticsPage`}
+                    variant="ghost"
+                    size="xs"
                     onClick={() => setHistoryOpen(true)}
                     aria-label="View analysis history"
                     className="flex items-center gap-1 text-xs text-slate-400 hover:text-violet-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
                   >
                     <History className="h-3.5 w-3.5" aria-hidden="true" />
                     History
-                  </button>
+                  </Button>
                 )}
               </div>
             )}
@@ -353,7 +355,7 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                   <Button
                     id={`analyticsAiRetryBtn_${sectionId}_analyticsPage`}
                     variant="ghost"
-                    size="sm"
+                    size="base"
                     className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal text-xs"
                     onClick={() => {
                       stopPolling()
@@ -379,7 +381,7 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                   )}
                   <Button
                     id={`analyticsAiGenerateBtn_${sectionId}_analyticsPage`}
-                    size="sm"
+                    size="base"
                     disabled={generating}
                     onClick={handleGenerate}
                     className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 focus-visible:ring-2 focus-visible:ring-violet-200"
@@ -440,7 +442,7 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                     <Button
                       id={`analyticsAiRefreshBtn_${sectionId}_analyticsPage`}
                       variant="ghost"
-                      size="sm"
+                      size="base"
                       disabled={generating || isPending}
                       onClick={handleGenerate}
                       className="text-violet-600 hover:text-violet-700 px-0 h-auto text-xs font-normal focus-visible:ring-2 focus-visible:ring-violet-200"
@@ -513,8 +515,10 @@ function HistoryItem({ insight }) {
 
   return (
     <div className="border border-slate-200 rounded-lg overflow-hidden">
-      <button
+      <Button
         onClick={() => setExpanded((v) => !v)}
+        variant="ghost"
+        size="xs"
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-200"
         aria-expanded={expanded}
       >
@@ -532,7 +536,7 @@ function HistoryItem({ insight }) {
         ) : (
           <ChevronDown className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />
         )}
-      </button>
+      </Button>
       {expanded && (
         <div className="px-4 pb-4 pt-1 border-t border-slate-100">
           <RoleInsight content={insight.content} />

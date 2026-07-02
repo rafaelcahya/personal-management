@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import {
   Dialog,
   DialogContent,
@@ -347,13 +347,7 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
                 <DeleteTrade trade={trade} onDeleted={onUpdated} onClose={onClose} />
 
                 <div className="flex gap-2 flex-1 justify-end">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onClose}
-                    disabled={loading}
-                    className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
-                  >
+                  <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>
                     Cancel
                   </Button>
                   <Button type="submit" disabled={loading}>

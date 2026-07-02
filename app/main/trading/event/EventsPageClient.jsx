@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { fetchEventList } from '@/lib/api/event'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Search, List, AlignLeft, CalendarX2, SearchX, Sparkles, X, History } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
@@ -144,32 +144,32 @@ export default function EventsPageClient() {
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
             {/* View toggle — left */}
             <div className="flex items-center border border-slate-200 rounded-md overflow-hidden shrink-0 self-start">
-              <button
+              <Button
                 id="listViewBtn_eventPage"
-                type="button"
+                variant="ghost"
                 onClick={() => setView('list')}
-                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 rounded-none ${
                   view === 'list'
-                    ? 'bg-violet-600 text-white'
+                    ? 'bg-violet-600 text-white hover:bg-violet-600'
                     : 'bg-white text-slate-600 hover:bg-slate-50'
                 }`}
               >
                 <List className="size-3.5" />
                 List
-              </button>
-              <button
+              </Button>
+              <Button
                 id="timelineViewBtn_eventPage"
-                type="button"
+                variant="ghost"
                 onClick={() => setView('timeline')}
-                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 rounded-none ${
                   view === 'timeline'
-                    ? 'bg-violet-600 text-white'
+                    ? 'bg-violet-600 text-white hover:bg-violet-600'
                     : 'bg-white text-slate-600 hover:bg-slate-50'
                 }`}
               >
                 <AlignLeft className="size-3.5" />
                 Timeline
-              </button>
+              </Button>
             </div>
 
             {/* Search + Filter + Add — right */}
@@ -201,7 +201,7 @@ export default function EventsPageClient() {
           <div className="flex justify-end">
             <Button
               variant="outline"
-              size="sm"
+              size="base"
               onClick={() => setHistoryModalOpen(true)}
               className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
             >
@@ -230,7 +230,7 @@ export default function EventsPageClient() {
                 {filter && (
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="base"
                     onClick={() => handleFilterChange(null)}
                     className="text-violet-600 border-violet-200 hover:bg-violet-50"
                   >
@@ -300,13 +300,16 @@ export default function EventsPageClient() {
           >
             <Sparkles className="size-3.5" /> Analyze Together
           </Button>
-          <button
+          <Button
             id="clearMultiSelectBtn_eventPage"
+            variant="ghost"
+            size="icon-sm"
             onClick={() => setSelectedEvents(new Map())}
-            className="rounded-full h-8 w-8 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
+            className="rounded-full text-slate-500 hover:bg-slate-100"
+            aria-label="Clear selection"
           >
             <X className="size-4" />
-          </button>
+          </Button>
         </div>
       )}
 

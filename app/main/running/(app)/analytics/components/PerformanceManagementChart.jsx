@@ -11,6 +11,7 @@ import {
   ReferenceLine,
   ResponsiveContainer,
 } from 'recharts'
+import Button from '@/components/base/Button/Button'
 import { fetchPmcSeries } from '@/lib/api/running'
 import EmptyState from './EmptyState'
 
@@ -71,10 +72,11 @@ export default function PerformanceManagementChart() {
         </p>
         <div className="flex items-center gap-1">
           {RANGE_OPTIONS.map((opt) => (
-            <button
+            <Button
               key={opt}
               id={`pmcRange${opt}Btn_analyticsPage`}
               type="button"
+              size="xs"
               aria-pressed={range === opt}
               onClick={() => setRange(opt)}
               className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
@@ -84,7 +86,7 @@ export default function PerformanceManagementChart() {
               }`}
             >
               {opt}d
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -99,12 +101,13 @@ export default function PerformanceManagementChart() {
       {!loading && error && (
         <div id="pmcChartError_analyticsPage" className="flex items-center gap-3 py-4">
           <p className="text-sm text-red-400">{error}</p>
-          <button
+          <Button
+            variant="ghost"
             onClick={() => load(range)}
             className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
           >
             Try again
-          </button>
+          </Button>
         </div>
       )}
 

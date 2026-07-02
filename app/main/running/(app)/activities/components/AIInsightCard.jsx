@@ -12,7 +12,7 @@ import {
   Activity,
   BarChart2,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { fetchActivityInsight, requestInsightGeneration } from '@/lib/api/running'
 
 const FOCUS_BUTTONS = [
@@ -161,7 +161,7 @@ function FocusButtons({ onSelect, generating, variant = 'primary', selected = nu
       {buttons.map(({ focus, label, icon: Icon }) => {
         const isSelected = selected === focus
         return (
-          <button
+          <Button
             key={focus}
             id={`aiInsightGenerateBtn_${focus}_activityDetailPage`}
             onClick={() => onSelect(focus)}
@@ -181,7 +181,7 @@ function FocusButtons({ onSelect, generating, variant = 'primary', selected = nu
               <Icon className="h-3 w-3" aria-hidden="true" />
             )}
             {label}
-          </button>
+          </Button>
         )
       })}
     </div>
@@ -366,7 +366,7 @@ export default function AIInsightCard({ activityId }) {
           <Button
             id="aiInsightRetry_activityDetailPage"
             variant="ghost"
-            size="sm"
+            size="base"
             className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal"
             onClick={() => {
               setInsight(undefined)
@@ -454,7 +454,7 @@ export default function AIInsightCard({ activityId }) {
               <p className="text-xs text-slate-400">This is taking longer than usual.</p>
               <Button
                 variant="ghost"
-                size="sm"
+                size="base"
                 className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal text-xs"
                 onClick={handleRefresh}
               >

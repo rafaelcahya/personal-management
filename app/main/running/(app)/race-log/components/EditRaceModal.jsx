@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, CalendarIcon, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -392,8 +392,9 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
         <DialogFooter className="gap-2">
           <DialogClose asChild>
             <Button
-              className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+              className="text-violet-600 font-medium"
               type="button"
+              variant="secondary"
               disabled={saving}
             >
               Cancel

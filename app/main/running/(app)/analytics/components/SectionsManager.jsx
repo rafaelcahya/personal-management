@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/sheet'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ANALYTICS_SECTIONS } from '../sections'
+import Button from '@/components/base/Button/Button'
 
 function scrollToSection(id, onClose) {
   const el = document.getElementById(id)
@@ -50,13 +51,15 @@ function SectionsContent({
           className="w-full pl-7 pr-7 py-1.5 text-xs border border-slate-200 rounded-md bg-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-violet-300 focus:border-violet-400"
         />
         {search && (
-          <button
+          <Button
+            variant="ghost"
+            size="xs"
             onClick={() => setSearch('')}
             className="absolute right-6 top-[22px] text-slate-400 hover:text-slate-600"
             aria-label="Clear search"
           >
             <X className="size-3" />
-          </button>
+          </Button>
         )}
       </div>
 
@@ -88,31 +91,35 @@ function SectionsContent({
               >
                 {section.label}
               </label>
-              <button
+              <Button
                 onClick={() => scrollToSection(section.id, onClose)}
                 className="shrink-0 p-0.5 rounded text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
                 aria-label={`Jump to ${section.label}`}
               >
                 <ArrowRight className="size-3" />
-              </button>
+              </Button>
             </div>
           )
         })}
       </div>
 
       <div className="flex items-center gap-2 px-3 py-2.5 border-t border-slate-100 mt-1">
-        <button
+        <Button
           onClick={showAll}
+          variant="ghost"
+          size="xs"
           className="flex-1 text-xs py-1 rounded-md text-slate-600 hover:bg-slate-100 transition-colors"
         >
           Show all
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={resetToDefault}
+          variant="ghost"
+          size="xs"
           className="flex-1 text-xs py-1 rounded-md text-slate-600 hover:bg-slate-100 transition-colors"
         >
           Reset to default
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -160,13 +167,14 @@ export default function SectionsManager({
     return (
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <button
+          <Button
             id="sectionsManager_analytics"
+            variant="ghost"
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500 hover:bg-slate-200 transition-colors"
             aria-label="Manage sections"
           >
             {triggerContent}
-          </button>
+          </Button>
         </SheetTrigger>
         <SheetContent
           side="bottom"
@@ -185,13 +193,14 @@ export default function SectionsManager({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
+        <Button
+          variant="ghost"
           id="sectionsManager_analytics"
           className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500 hover:bg-slate-200 transition-colors"
           aria-label="Manage sections"
         >
           {triggerContent}
-        </button>
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-0" align="end">
         <SectionsContent {...contentProps} />

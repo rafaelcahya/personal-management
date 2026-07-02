@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { AlertTriangle, CheckCircle2, AlertCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import {
   Dialog,
@@ -79,7 +79,7 @@ export default function DangerZoneSection() {
           <Button
             id="dangerZoneDeleteBtn_settingsPage"
             onClick={openDialog}
-            size="sm"
+            size="base"
             variant="outline"
             className="shrink-0 border-red-300 text-red-700 hover:bg-red-100 hover:text-red-800 focus-visible:ring-2 focus-visible:ring-red-300"
           >

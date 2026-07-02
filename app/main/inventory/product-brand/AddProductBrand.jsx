@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Input } from '@/components/ui/input'
 import {
   Dialog,
@@ -137,7 +137,8 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
               <DialogClose asChild>
                 <Button
                   type="button"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                  variant="secondary"
+                  className="text-violet-600 font-medium"
                   id="cancelNewProductBrandBtn_productBrandPage"
                 >
                   Cancel
