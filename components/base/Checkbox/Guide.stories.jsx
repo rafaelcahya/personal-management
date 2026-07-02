@@ -1,4 +1,4 @@
-import { Checkbox } from '@/components/ui/checkbox'
+import { Checkbox } from './Checkbox'
 import FieldContent from '../Field/FieldContent'
 import FieldLabel from '../Field/FieldLabel'
 import FieldError from '../Field/FieldError'
@@ -199,7 +199,7 @@ export const Docs = {
           </table>
         </div>
 
-        <Code>{`import { Checkbox } from '@/components/ui/checkbox'
+        <Code>{`import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 
 <Checkbox
   id="my-checkbox"

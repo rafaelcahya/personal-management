@@ -1,4 +1,4 @@
-import { Switch } from '@/components/ui/switch'
+import { Switch } from './Switch'
 import FieldContent from '../Field/FieldContent'
 import FieldLabel from '../Field/FieldLabel'
 import FieldDescription from '../Field/FieldDescription'
@@ -181,7 +181,7 @@ export const Docs = {
           </table>
         </div>
 
-        <Code>{`import { Switch } from '@/components/ui/switch'
+        <Code>{`import { Switch } from '@/components/base/Switch/Switch'
 
 <Switch
   id="my-switch"
