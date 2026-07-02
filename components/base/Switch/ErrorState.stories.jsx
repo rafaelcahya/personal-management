@@ -1,4 +1,4 @@
-import { Switch } from '@/components/ui/switch'
+import { Switch } from './Switch'
 import FieldContent from '../Field/FieldContent'
 import FieldLabel from '../Field/FieldLabel'
 import FieldError from '../Field/FieldError'

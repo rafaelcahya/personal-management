@@ -1,4 +1,4 @@
-import { Switch } from '@/components/ui/switch'
+import { Switch } from './Switch'
 import FieldDescription from '../Field/FieldDescription'
 
 /** @type {import('@storybook/nextjs').Meta} */

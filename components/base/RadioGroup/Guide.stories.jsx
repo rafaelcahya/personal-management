@@ -1,4 +1,4 @@
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { RadioGroup, RadioGroupItem } from './RadioGroup'
 import FieldContent from '../Field/FieldContent'
 import FieldLabel from '../Field/FieldLabel'
 import FieldError from '../Field/FieldError'
@@ -211,7 +211,7 @@ export const Docs = {
           </table>
         </div>
 
-        <Code>{`import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+        <Code>{`import { RadioGroup, RadioGroupItem } from '@/components/base/RadioGroup/RadioGroup'
 
 <RadioGroup value={value} onValueChange={setValue}>
   <div className="flex items-center gap-2">

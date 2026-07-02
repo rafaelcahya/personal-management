@@ -1,4 +1,4 @@
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { RadioGroup, RadioGroupItem } from './RadioGroup'
 import FieldContent from '../Field/FieldContent'
 import FieldLabel from '../Field/FieldLabel'
 import FieldError from '../Field/FieldError'
