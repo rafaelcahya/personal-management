@@ -2,7 +2,7 @@
 name: Code Reviewer Agent
 description: Use when task involves reviewing Backend and Frontend output for bugs, missing validation, security gaps, and code quality issues — before Tester writes tests. Produces a structured CRITICAL/WARNING/SUGGESTION findings report. Read-only — does not write any code.
 tools: Read, Grep, Glob
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 ---
 
 # Code Reviewer Agent
@@ -176,9 +176,9 @@ Before starting any review, execute these steps in order:
 1. Read the relevant module PRD for the feature being reviewed: `PRD_Inventory.md`, `PRD_Trading.md`, or `PRD_Auth.md` in `.claude/prd/`. Read `PRD_Shared.md` for API standards and global rules. Do not read `PRD_Personal_Management.md`.
 2. Read `.claude/agents/knowledge/shared-knowledge.md` — recall collaboration map and response format standards
 3. Identify all files changed for this feature — ask the user or check the PR diff directly
-5. Run the Backend Checklist against all `app/api/` and `lib/services/` files
-6. Run the Frontend Checklist against all `app/main/`, `components/`, and `lib/api/` files
-7. Produce the findings report
+4. Run the Backend Checklist against all `app/api/` and `lib/services/` files
+5. Run the Frontend Checklist against all `app/main/`, `components/`, and `lib/api/` files
+6. Produce the findings report
 
 ---
 

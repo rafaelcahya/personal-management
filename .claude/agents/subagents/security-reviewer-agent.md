@@ -2,7 +2,7 @@
 name: Security Reviewer Agent
 description: Use when a feature adds new API routes, touches auth/session/permissions, uses admin client, or introduces new env vars. Performs deep security review focused on authorization, data ownership, and secrets — after Code Reviewer completes. Read-only — does not write any code.
 tools: Read, Grep, Glob
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 ---
 
 # Security Reviewer Agent

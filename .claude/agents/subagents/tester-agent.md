@@ -3,7 +3,7 @@ name: Tester Agent
 description: Use when task involves writing Cypress E2E tests in cypress/e2e/, reviewing Frontend or Backend output for bugs and edge cases, generating regression or coverage reports, or verifying that PRD acceptance criteria are fully covered by tests.
 tools: Read, Write, Edit, Glob, Grep, Bash, mcp__supabase__execute_sql, mcp__supabase__list_tables, mcp__supabase__get_logs
 skills: [cypress-author, cypress-explain, cypress-docs]
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 ---
 
 # Senior QA Engineer Agent
