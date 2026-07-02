@@ -1622,6 +1622,187 @@ export const Docs = {
           </div>
         </SubSection>
       </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Field / FieldContent when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      You need an accessible form field with a label linked to its input via{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">htmlFor</code> /{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">id</code> automatically.
+                    </li>
+                    <li>
+                      You want inline validation — pass an{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">error</code> string and{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">FieldError</code> renders
+                      itself with{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">role="alert"</code>.
+                    </li>
+                    <li>
+                      You need prefix/suffix icons or text inside an input (currency, unit, search
+                      icon, password toggle).
+                    </li>
+                    <li>
+                      You are building a multi-column form layout and need consistent spacing via{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">FieldContainer</code> +{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">FieldGroup</code>.
+                    </li>
+                    <li>
+                      You need a horizontal settings-row layout (label left, control right) — use{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">
+                        orientation="horizontal"
+                      </code>
+                      .
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use{' '}
+                      <strong>
+                        a bare{' '}
+                        <code className="font-mono bg-gray-100 px-1 rounded">&lt;label&gt;</code> +{' '}
+                        <code className="font-mono bg-gray-100 px-1 rounded">&lt;input&gt;</code>
+                      </strong>{' '}
+                      when you need a completely custom one-off element outside the design system.
+                    </li>
+                    <li>
+                      Use{' '}
+                      <strong>
+                        shadcn/ui{' '}
+                        <code className="font-mono bg-gray-100 px-1 rounded">FormField</code>
+                      </strong>{' '}
+                      (react-hook-form integration) when you are already wiring up an RHF{' '}
+                      <code className="font-mono bg-gray-100 px-1 rounded">useForm</code> and want
+                      automatic controller binding — FieldContent is schema-agnostic and does not
+                      connect to RHF internally.
+                    </li>
+                    <li>
+                      Use{' '}
+                      <strong>
+                        a standalone{' '}
+                        <code className="font-mono bg-gray-100 px-1 rounded">FieldControl</code>{' '}
+                        only
+                      </strong>{' '}
+                      (no FieldContent wrapper) when you need a bare input row without a label,
+                      description, or error — e.g. an inline search bar in a toolbar.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always wrap inputs in{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">FieldContent</code> so
+                  label, description, and error are automatically linked via accessible IDs. Never
+                  hand-wire <code className="font-mono bg-green-100 px-1 rounded">htmlFor</code>,{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">aria-describedby</code>, or{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">aria-invalid</code> manually
+                  when using this system.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Pass <code className="font-mono bg-green-100 px-1 rounded">size</code> once on{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">FieldContent</code> and let
+                  context distribute it to{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">Input</code>,{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">FieldPrefix</code>, and{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">FieldSuffix</code>{' '}
+                  automatically. Avoid repeating the same size prop on every child.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use <code className="font-mono bg-green-100 px-1 rounded">FieldControl</code>{' '}
+                  whenever you add a{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">FieldPrefix</code> or{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">FieldSuffix</code>. The
+                  control wrapper handles absolute positioning and automatically adds the correct
+                  left/right padding to the input so text is never obscured by the affix.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't render <code className="font-mono bg-red-100 px-1 rounded">FieldError</code>{' '}
+                  outside of a{' '}
+                  <code className="font-mono bg-red-100 px-1 rounded">FieldContent</code> wrapper
+                  expecting it to show anything — it reads{' '}
+                  <code className="font-mono bg-red-100 px-1 rounded">error</code> from context and
+                  will silently render nothing when no context is present.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't place <code className="font-mono bg-red-100 px-1 rounded">FieldPrefix</code>{' '}
+                  or <code className="font-mono bg-red-100 px-1 rounded">FieldSuffix</code> directly
+                  inside <code className="font-mono bg-red-100 px-1 rounded">FieldContent</code>{' '}
+                  without a <code className="font-mono bg-red-100 px-1 rounded">FieldControl</code>{' '}
+                  wrapper — the affixes use absolute positioning relative to{' '}
+                  <code className="font-mono bg-red-100 px-1 rounded">FieldControl</code>, so they
+                  will misplace without it.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use{' '}
+                  <code className="font-mono bg-red-100 px-1 rounded">
+                    orientation="horizontal"
+                  </code>{' '}
+                  with a full-width text input — the horizontal layout is designed for compact
+                  controls like <code className="font-mono bg-red-100 px-1 rounded">Switch</code> or{' '}
+                  <code className="font-mono bg-red-100 px-1 rounded">Checkbox</code> in the right
+                  column. A wide input will overflow the grid and break the settings-row pattern.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
     </div>
   ),
 }

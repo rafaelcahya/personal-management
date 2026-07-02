@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './Table'
+import { Skeleton } from '../Skeleton/Skeleton'
 
 function SortIcon({ column, sortColumn, sortDirection }) {
   if (sortColumn !== column)
@@ -23,7 +24,7 @@ function SortIcon({ column, sortColumn, sortDirection }) {
 function SkeletonCell({ width }) {
   return (
     <TableCell>
-      <div className="h-4 rounded bg-gray-200 animate-pulse" style={{ width: width || '80%' }} />
+      <Skeleton className="h-4 rounded" style={{ width: width || '80%' }} />
     </TableCell>
   )
 }
@@ -299,7 +300,7 @@ export function DataTable({
                 <TableRow key={i}>
                   {selectable && (
                     <TableCell>
-                      <div className="size-4 rounded bg-gray-200 animate-pulse" />
+                      <Skeleton className="size-4 rounded" />
                     </TableCell>
                   )}
                   {expandable && <TableCell />}

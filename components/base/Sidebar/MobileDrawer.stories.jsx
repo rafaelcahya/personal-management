@@ -66,7 +66,7 @@ export const MobileDrawer = {
     <div className="flex flex-col gap-6 w-full">
       <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         On screens <code className="font-mono bg-gray-100 px-1 rounded text-xs">{'<='} 768px</code>,
-        the sidebar renders as a Radix Dialog drawer sliding in from the left.{' '}
+        the sidebar renders as a dialog drawer sliding in from the left.{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">SidebarOverlay</code> renders
         the backdrop — clicking it closes the drawer.{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">SidebarTrigger</code> shows a

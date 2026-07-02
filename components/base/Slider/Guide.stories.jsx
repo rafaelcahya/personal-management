@@ -101,8 +101,8 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A range input built on Radix UI. Supports single value and range (two thumbs), three
-          variants, six sizes, tooltips (props shortcut or{' '}
+          A range input. Supports single value and range (two thumbs), three variants, six sizes,
+          tooltips (props shortcut or{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">SliderTooltip</code>{' '}
           sub-component), start/end labels, tick marks, thumb connect behavior — all composable with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code>.
@@ -598,6 +598,138 @@ import { SliderStartLabel, SliderEndLabel, SliderMark } from '@/components/base/
   <FieldDescription>Cannot be changed after submission.</FieldDescription>
 </FieldContent>`}</Code>
         </SubSection>
+      </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Slider when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The value is continuous and the exact number is less important than the
+                      relative position (e.g. volume, brightness, confidence level)
+                    </li>
+                    <li>
+                      You want to let the user explore a range interactively by dragging rather than
+                      typing
+                    </li>
+                    <li>
+                      You need to select a range between two values, such as a price filter or date
+                      window
+                    </li>
+                    <li>
+                      The acceptable values span a bounded numeric range with a known min and max
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Input type=number</strong> when the user needs to enter a precise
+                      value (e.g. a dollar amount or exact quantity) — sliders make precision entry
+                      difficult
+                    </li>
+                    <li>
+                      Use <strong>Select</strong> when the options are a small set of named discrete
+                      steps (e.g. Low / Medium / High) rather than a continuous range
+                    </li>
+                    <li>
+                      Use <strong>Input type=number</strong> when the range is very large (e.g.
+                      0–10,000) and fine-grained precision matters — dragging a slider across
+                      thousands of values is error-prone
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always show the current value — use{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">showTooltip</code> or a
+                  visible readout near the slider so the user knows exactly what they have selected.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Anchor the scale with start/end labels or marks when the min and max values carry
+                  meaning (e.g. "0%" and "100%", or "Slow" and "Fast"). This makes the range
+                  immediately understandable without guessing.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Wrap in{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldContent</code> with a{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldLabel</code> and{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldDescription</code> to
+                  give context about what the slider controls and what the chosen value means.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use a slider when the user needs to enter a precise number. A slider with a
+                  range of 0–10,000 forces the user to drag to an exact pixel — use an Input
+                  type=number instead, or pair the slider with a numeric input for fine-tuning.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't omit the tooltip or value readout. A slider with no visible current value
+                  leaves the user guessing — they cannot confirm the selected number without an
+                  indicator.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use a slider for a small set of named choices (e.g. Small / Medium / Large).
+                  Discrete named options belong in a Select or radio group — a slider implies
+                  continuous values, which misleads users into thinking intermediate positions are
+                  valid.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </Section>
 
       {/* Props table */}

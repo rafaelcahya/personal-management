@@ -391,12 +391,7 @@ import { Plus } from 'lucide-react'
                   'false',
                   'Stretches the button to fill its container width',
                 ],
-                [
-                  'asChild',
-                  'boolean',
-                  'false',
-                  'Merge button props onto the single child element via Radix Slot',
-                ],
+                ['asChild', 'boolean', 'false', 'Merge button props onto the single child element'],
                 [
                   'as',
                   'React.ElementType',
@@ -547,7 +542,7 @@ import { Plus } from 'lucide-react'
         description="Button can render as any element. Use asChild for framework components like Next.js Link, or as for native HTML elements."
       >
         <SubSection
-          title="asChild — Radix Slot pattern"
+          title="asChild — component merging"
           description="Merges all button props (className, onClick, aria-*, ref) onto the single child element. Preferred for Next.js Link."
         >
           <Preview>
@@ -573,6 +568,63 @@ import { Plus } from 'lucide-react'
             </Button>
           </Preview>
         </SubSection>
+      </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Button when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The action triggers a mutation, form submit, or state change (Save, Delete,
+                      Confirm)
+                    </li>
+                    <li>
+                      The action needs a loading state to prevent double-submits during async
+                      operations
+                    </li>
+                    <li>
+                      The action requires a disabled or destructive state to communicate intent
+                      clearly
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>variant="link"</strong> when navigating to a route without
+                      triggering a data mutation
+                    </li>
+                    <li>
+                      Use <strong>icon-only Button (ghost or outline)</strong> when space is tight
+                      and the action is self-explanatory in a toolbar
+                    </li>
+                    <li>
+                      Use a native <strong>&lt;a&gt;</strong> tag (via <strong>asChild</strong> or{' '}
+                      <strong>as="a"</strong>) when linking to an external URL that needs standard
+                      anchor semantics
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </Section>
 
       {/* Dos & Don'ts */}

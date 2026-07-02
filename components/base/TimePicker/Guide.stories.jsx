@@ -250,7 +250,7 @@ export const Docs = {
                 [
                   'Popover',
                   '<div>',
-                  'Container for the scroll columns. Rendered via Radix UI Popover.',
+                  'Container for the scroll columns. Opens as a popover below the trigger.',
                 ],
                 [
                   'TimeScrollColumn',
@@ -503,6 +503,135 @@ export const Docs = {
     </FieldContent>
   )}
 />`}</Code>
+      </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use TimePicker when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      You need a dedicated time input with scrollable hour, minute, and/or second
+                      columns — e.g. scheduling a workout session start time or a trade alarm.
+                    </li>
+                    <li>
+                      You want to restrict time choices to specific intervals (e.g. every 15
+                      minutes) so users cannot type an arbitrary value.
+                    </li>
+                    <li>
+                      You need only a subset of fields — hour-only for a rough time slot, or
+                      minute-only for a duration picker.
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>{'<input type="time">'}</strong> when you need native mobile
+                      keyboard support or are building a simple, unstyled time field with no scroll
+                      UX requirement.
+                    </li>
+                    <li>
+                      Use <strong>DatePicker</strong> when you need to capture both a date and a
+                      time together — DatePicker supports a combined datetime mode and avoids
+                      managing two separate controlled values.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always pair TimePicker with <strong>FieldContent + FieldLabel</strong> inside a
+                  form so users get an accessible label, description, and error message. A bare
+                  TimePicker without a label is not accessible.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use <strong>minuteStep</strong> (e.g. 15 or 30) when the domain restricts valid
+                  times to fixed intervals — scheduling classes, trade alerts, or calendar slots.
+                  This removes invalid options rather than relying on validation after the fact.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Narrow the <strong>fields</strong> prop to only what the user needs. If you only
+                  need hours and minutes (e.g. session start time), use{' '}
+                  <code className="font-mono bg-green-100 px-1 rounded">
+                    fields={['hour', 'minute']}
+                  </code>{' '}
+                  — fewer columns means less cognitive load.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use TimePicker to capture a date-time together. It only outputs a time
+                  string (e.g. <code className="font-mono bg-red-100 px-1 rounded">"14:30"</code>).
+                  Use <strong>DatePicker</strong> or a separate date + time field pair instead.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't leave <strong>value</strong> as{' '}
+                  <code className="font-mono bg-red-100 px-1 rounded">undefined</code> — this makes
+                  TimePicker uncontrolled. Always initialize state with{' '}
+                  <code className="font-mono bg-red-100 px-1 rounded">null</code> and pass it as{' '}
+                  <code className="font-mono bg-red-100 px-1 rounded">value={'{null}'}</code> until
+                  the user picks a time.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't show all three columns (hour, minute, second) when seconds are not
+                  meaningful to the user — e.g. scheduling a meeting. The extra column adds noise.
+                  Omit <code className="font-mono bg-red-100 px-1 rounded">'second'</code> from the
+                  fields array.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </Section>
 
       {/* Props */}

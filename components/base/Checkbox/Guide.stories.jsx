@@ -1,4 +1,4 @@
-import { Checkbox } from '@/components/ui/checkbox'
+import { Checkbox } from './Checkbox'
 import FieldContent from '../Field/FieldContent'
 import FieldLabel from '../Field/FieldLabel'
 import FieldError from '../Field/FieldError'
@@ -70,8 +70,7 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A binary toggle for boolean values — checked, unchecked, or indeterminate. Built on Radix
-          UI. Pairs with{' '}
+          A binary toggle for boolean values — checked, unchecked, or indeterminate. Pairs with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
           accessible labels and error messages.
         </p>
@@ -200,7 +199,7 @@ export const Docs = {
           </table>
         </div>
 
-        <Code>{`import { Checkbox } from '@/components/ui/checkbox'
+        <Code>{`import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 
 <Checkbox
   id="my-checkbox"
@@ -362,7 +361,7 @@ export const Docs = {
       {/* react-hook-form */}
       <Section
         title="With react-hook-form"
-        description="Use Controller to integrate Checkbox — Radix's onCheckedChange returns a boolean, not a native event, so register() alone does not work."
+        description="Use Controller to integrate Checkbox — onCheckedChange returns a boolean, not a native event, so register() alone does not work."
       >
         <Code>{`import { Controller } from 'react-hook-form'
 
@@ -387,6 +386,130 @@ export const Docs = {
     </FieldContent>
   )}
 />`}</Code>
+      </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Checkbox when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The user must confirm agreement — e.g. "I accept the terms and conditions"
+                    </li>
+                    <li>
+                      Multiple independent options can each be selected or deselected (multi-select
+                      list)
+                    </li>
+                    <li>
+                      The boolean value is submitted as part of a form and takes effect only on
+                      submit
+                    </li>
+                    <li>
+                      A partial group selection needs to be represented with an indeterminate state
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Switch</strong> when toggling a setting that takes effect
+                      immediately — no form submit required (e.g. dark mode, notifications on/off)
+                    </li>
+                    <li>
+                      Use <strong>RadioGroup</strong> when only one option from a list can be active
+                      at a time (mutually exclusive choices)
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always pair every Checkbox with a visible, clickable label linked via{' '}
+                  <code className="font-mono">id</code> and{' '}
+                  <code className="font-mono">htmlFor</code>. A lone checkbox with no label is
+                  inaccessible to screen readers.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Wrap in <code className="font-mono">FieldContent</code> and add{' '}
+                  <code className="font-mono">FieldError</code> when the field is required — this
+                  surfaces validation errors in an accessible way tied to the same ID context.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use the <code className="font-mono">indeterminate</code> state for a "select all"
+                  parent checkbox when only some children are checked — it clearly communicates
+                  partial selection to the user.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use Checkbox for mutually exclusive choices. If only one option should be
+                  selected at a time, use <strong>RadioGroup</strong> instead — checkboxes imply
+                  independent, additive selection.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use Checkbox for settings that take effect the moment the user toggles them
+                  (e.g. enabling dark mode). Use <strong>Switch</strong> for immediate-effect
+                  toggles that don't require form submission.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use <code className="font-mono">register()</code> from react-hook-form
+                  directly on Checkbox — <code className="font-mono">onCheckedChange</code> returns
+                  a boolean, not a native event. Always use{' '}
+                  <code className="font-mono">Controller</code> to bridge the value correctly.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </Section>
 
       {/* Props */}

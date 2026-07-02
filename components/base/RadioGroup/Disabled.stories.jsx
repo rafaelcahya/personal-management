@@ -1,4 +1,4 @@
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { RadioGroup, RadioGroupItem } from './RadioGroup'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {

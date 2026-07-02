@@ -1,4 +1,4 @@
-import { Checkbox } from '@/components/ui/checkbox'
+import { Checkbox } from './Checkbox'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {

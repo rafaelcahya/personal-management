@@ -122,9 +122,8 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A composable navigation sidebar that supports collapsible desktop mode, mobile drawer (via{' '}
-          <code className="font-mono text-sm">@radix-ui/react-dialog</code>), nested items, and
-          icon-only mode with tooltips.
+          A composable navigation sidebar that supports collapsible desktop mode, mobile drawer,
+          nested items, and icon-only mode with tooltips.
         </p>
       </div>
 
@@ -226,7 +225,7 @@ export const Docs = {
                 [
                   'SidebarProvider',
                   'Context + Dialog Root',
-                  'Required root. Manages open/collapsed/isMobile state. Activates Radix Dialog on mobile.',
+                  'Required root. Manages open/collapsed/isMobile state. On mobile, renders as a dialog drawer.',
                 ],
                 [
                   'Sidebar',
@@ -739,6 +738,146 @@ export const Docs = {
             </table>
           </div>
         </SubSection>
+      </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Sidebar when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      The app has 5+ distinct pages or modules that users switch between frequently
+                    </li>
+                    <li>
+                      Navigation needs to persist across all pages and remain visible while content
+                      scrolls
+                    </li>
+                    <li>
+                      Items benefit from icons so they stay recognizable when the sidebar is
+                      collapsed to icon-only mode
+                    </li>
+                    <li>
+                      The layout is a dashboard or productivity tool where screen real estate is
+                      managed vertically
+                    </li>
+                    <li>You need nested navigation (parent items with collapsible sub-menus)</li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>NavMenu</strong> when navigation items are few (2–4) and a
+                      horizontal top bar fits the layout better
+                    </li>
+                    <li>
+                      Use <strong>Tabs</strong> when switching between views within a single page
+                      rather than navigating between pages
+                    </li>
+                    <li>
+                      Use <strong>Breadcrumbs</strong> when you only need to show the user's
+                      position in a hierarchy, not enable full navigation
+                    </li>
+                    <li>
+                      Use a simple <strong>dropdown menu</strong> when navigation is contextual and
+                      secondary (e.g. per-row actions in a table)
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always wrap everything inside{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">SidebarProvider</code>. It
+                  manages the open/collapsed state and mobile breakpoint detection — the sidebar
+                  will not function without it.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Include{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">SidebarOverlay</code> in
+                  your layout when supporting mobile. It renders the backdrop and handles
+                  tap-to-close — without it, mobile users have no way to dismiss the drawer.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always provide an{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">icon</code> for every{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">SidebarItem</code>. In
+                  collapsed mode only the icon is visible — items without icons become invisible and
+                  inaccessible to sighted users.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't place{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">SidebarSub</code> more than
+                  one level deep. The sidebar supports exactly one level of nesting — deeper nesting
+                  produces broken indentation and makes the collapsed tooltip unreadable.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't mark multiple items as{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">active</code> at the same
+                  time. Only the current page item should be active — setting multiple active items
+                  breaks the visual indication and the{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">aria-current="page"</code>{' '}
+                  semantics.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use the sidebar for in-page section switching (e.g. scrolling to an anchor).
+                  Use <strong>Tabs</strong> instead. The sidebar is a page-level navigator — routing
+                  users to different URLs or views, not scrolling within one page.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </Section>
     </div>
   ),

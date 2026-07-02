@@ -425,7 +425,7 @@ export const Docs = {
               <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">boolean</td>
               <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">false</td>
               <td className="py-2.5 text-xs text-gray-600">
-                Merges styles onto the child element via Radix Slot.
+                Merges badge styles onto the child element.
               </td>
             </tr>
             <tr>
@@ -491,6 +491,59 @@ export const Docs = {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* When to Use */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Badge when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      You need a short, non-interactive status label (e.g. Active, Draft, Error)
+                      next to an item in a list or table.
+                    </li>
+                    <li>
+                      You want to display a numeric count or notification indicator on an icon or
+                      nav item (e.g. "3 new", "12 unread").
+                    </li>
+                    <li>
+                      You need to decorate a card or heading with a category or metadata label that
+                      users read but do not click.
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Tag</strong> when the label is clickable and used to filter or
+                      navigate to a category.
+                    </li>
+                    <li>
+                      Use <strong>Spinner</strong> or <strong>Skeleton</strong> when the state you
+                      want to communicate is that content is still loading — not a settled status.
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 

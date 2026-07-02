@@ -84,8 +84,8 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          An accessible dropdown menu for selecting a single value from a list of options. Built on
-          Radix UI — keyboard navigable, screen-reader friendly, and fully composable. Combine with{' '}
+          An accessible dropdown menu for selecting a single value from a list of options. Keyboard
+          navigable, screen-reader friendly, and fully composable. Combine with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> and{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldLabel</code> for
           accessible form fields.
@@ -445,6 +445,129 @@ export const Docs = {
   </Select>
   <FieldError />
 </FieldContent>`}</Code>
+      </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Select when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>You have 5 or more options that would clutter the UI if shown inline</li>
+                    <li>Only one value can be selected at a time (single-choice)</li>
+                    <li>
+                      Options are well-known and don't need side-by-side comparison (e.g. category,
+                      status, timezone)
+                    </li>
+                    <li>
+                      Space is limited — a collapsed trigger fits better than expanded radio buttons
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>RadioGroup</strong> when there are 2–4 options and comparing them
+                      side-by-side helps the user decide (e.g. "Weekly / Monthly / Yearly")
+                    </li>
+                    <li>
+                      Use <strong>Command</strong> when the list is long (20+ items) and the user
+                      needs to type to filter down quickly (e.g. searching a country or stock
+                      ticker)
+                    </li>
+                    <li>
+                      Use <strong>Checkbox</strong> or a multi-select variant when the user must be
+                      able to pick more than one value
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always provide a descriptive placeholder such as "Select a category" — never leave
+                  SelectValue blank. The placeholder is the only hint the user gets before opening
+                  the dropdown.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Group related options with SelectGroup + SelectLabel when the list mixes distinct
+                  concepts (e.g. separating "Income" items from "Expense" items). Add
+                  SelectSeparator between groups for visual clarity.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Wrap Select inside FieldContent when used in a form. This wires up label
+                  association, error state, and size automatically — no manual variant or size prop
+                  needed on SelectTrigger.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use Select for binary choices like "Yes / No" or "Enable / Disable" — two
+                  options inside a hidden dropdown adds unnecessary clicks. Use a Toggle, Switch, or
+                  RadioGroup instead.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't mix unrelated items in a flat, ungrouped list when the options span multiple
+                  categories. A flat list of 15+ mixed items is hard to scan — group them or switch
+                  to Command with search.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't rely on SelectItem's children alone to convey the selected value when labels
+                  are ambiguous (e.g. "Option 1", "Option 2"). The value prop is internal — use
+                  clear, human-readable labels as children so the trigger displays something
+                  meaningful after selection.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </Section>
 
       {/* Props */}

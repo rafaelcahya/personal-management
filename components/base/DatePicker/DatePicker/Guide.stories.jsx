@@ -94,8 +94,7 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A popover calendar for selecting a single date. Built on Radix UI Popover + custom
-          calendar. Pairs with{' '}
+          A popover calendar for selecting a single date. Pairs with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
           accessible labels and error messages.
         </p>
@@ -676,6 +675,138 @@ export const Docs = {
     </FieldContent>
   )}
 />`}</Code>
+      </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use DatePicker when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      User needs to pick a single calendar date (trade date, race date, event date)
+                    </li>
+                    <li>The form requires a friendly visual calendar — not a raw text input</li>
+                    <li>
+                      You need to restrict selectable dates via a range (
+                      <code className="font-mono bg-gray-100 px-0.5 rounded">fromDate</code> /{' '}
+                      <code className="font-mono bg-gray-100 px-0.5 rounded">toDate</code>) or
+                      custom rules (
+                      <code className="font-mono bg-gray-100 px-0.5 rounded">disabledDates</code>)
+                    </li>
+                    <li>
+                      The field is part of a form that already uses FieldContent for labeling and
+                      error display
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Input type="date"</strong> when you need a minimal native browser
+                      date picker with no custom styling or calendar popover
+                    </li>
+                    <li>
+                      Use <strong>TimePicker</strong> when you need to collect a time value only
+                      (hours and minutes) rather than a calendar date
+                    </li>
+                    <li>
+                      Use a <strong>date range picker</strong> when the user needs to select a start
+                      and end date together (e.g. a reporting period)
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always wrap DatePicker in <strong>FieldContent</strong> inside a form so it gets
+                  an accessible label, description, and error message. Standalone usage is fine for
+                  filters, but form fields must use the full FieldContent composition.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use <strong>fromDate / toDate</strong> to constrain the calendar to a valid range
+                  when the domain has date boundaries — for example, limit a trade date to the
+                  current year, or a race date to upcoming events only.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use <strong>Controller</strong> from react-hook-form instead of{' '}
+                  <strong>register</strong>. DatePicker calls{' '}
+                  <code className="font-mono bg-green-100 px-0.5 rounded">
+                    onChange(Date | null)
+                  </code>{' '}
+                  — not a native input event — so register will not capture the value correctly.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't pass a raw date string as <strong>value</strong>. DatePicker expects a{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">Date</code> object or{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">null</code>. Passing a
+                  string (e.g. from an API response) will break the display — convert it first with{' '}
+                  <code className="font-mono bg-red-100 px-0.5 rounded">new Date(str)</code>.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use DatePicker for time-only fields. If the user only needs to enter hours
+                  and minutes, use <strong>TimePicker</strong> instead. Mixing date and time
+                  concerns in a single DatePicker creates a confusing UX.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't leave <strong>placeholder</strong> as the default "Pick a date" when context
+                  matters. Use a descriptive placeholder like "Select trade date" or "Race date" so
+                  the user understands what date is expected without reading the label.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </Section>
 
       {/* Props */}

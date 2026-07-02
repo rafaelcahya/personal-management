@@ -82,7 +82,7 @@ export const Docs = {
           </div>
           <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
             A popover-based color picker with HSV canvas, hue and alpha sliders, format switching,
-            and optional preset swatches. Built on Radix UI Popover. Pairs with{' '}
+            and optional preset swatches. Pairs with{' '}
             <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
             accessible labels and error messages.
           </p>
@@ -333,6 +333,126 @@ export const Docs = {
     </FieldContent>
   )}
 />`}</Code>
+        </Section>
+
+        {/* When to Use */}
+        <Section title="When to Use">
+          <div className="overflow-x-auto mb-4">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-gray-50">
+                  {['Use ColorPicker when…', 'Consider an alternative when…'].map((h) => (
+                    <th
+                      key={h}
+                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                    <ul className="flex flex-col gap-1.5">
+                      <li>
+                        The user needs to choose any arbitrary color, not just from a fixed set —
+                        e.g. brand color, chart series color, annotation color.
+                      </li>
+                      <li>
+                        You need the output in a specific format (hex, RGB, HSL) for direct use in
+                        CSS or an API.
+                      </li>
+                      <li>
+                        Opacity/alpha is part of the value — e.g. overlay colors, watermark tints.
+                      </li>
+                    </ul>
+                  </td>
+                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                    <ul className="flex flex-col gap-1.5">
+                      <li>
+                        Use <strong>a preset swatch group or radio group</strong> when the palette
+                        is fixed and controlled — e.g. theme selection with 5 brand colors. Fewer
+                        options reduces decision fatigue.
+                      </li>
+                      <li>
+                        Use <strong>a plain text input</strong> when the user already knows the
+                        exact hex code and precision entry is faster than visual picking.
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </Section>
+
+        {/* Dos & Don'ts */}
+        <Section title="Dos & Don'ts">
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                  ✓
+                </span>
+                <span className="text-sm font-semibold text-green-700">Do</span>
+              </div>
+              <div className="space-y-3">
+                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                  <p className="text-xs text-green-800">
+                    Always wrap ColorPicker in <strong>FieldContent + FieldLabel</strong> inside a
+                    form so users know what the color represents. A lone swatch with no label is
+                    ambiguous.
+                  </p>
+                </div>
+                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                  <p className="text-xs text-green-800">
+                    Provide <strong>preset swatches</strong> when the feature has a recommended
+                    palette (e.g. chart series colors, status badge colors). Presets speed up the
+                    common case without restricting free choice.
+                  </p>
+                </div>
+                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                  <p className="text-xs text-green-800">
+                    Enable <strong>withAlpha</strong> only when opacity is meaningful in context
+                    (e.g. overlay backgrounds, watermark tints). Leave it off for opaque colors like
+                    brand primaries to avoid accidental transparency.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                  ✕
+                </span>
+                <span className="text-sm font-semibold text-red-700">Don't</span>
+              </div>
+              <div className="space-y-3">
+                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                  <p className="text-xs text-red-800">
+                    Don't store the raw onChange value without accounting for the format. If format
+                    is <strong>"rgb"</strong>, the value is an object — serializing it as a string
+                    will break color restoration on next load.
+                  </p>
+                </div>
+                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                  <p className="text-xs text-red-800">
+                    Don't mix <strong>format="hex" withAlpha</strong> and expect a 6-digit hex — the
+                    output becomes an 8-digit hex string (e.g. <code>#7c3aedcc</code>). Make sure
+                    the consumer (CSS, API) supports the 8-digit form.
+                  </p>
+                </div>
+                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                  <p className="text-xs text-red-800">
+                    Don't place ColorPicker inside a scrollable popover or Sheet without testing —
+                    the picker's own popover may clip or misalign. Prefer rendering it in a full
+                    page or dialog where there is enough vertical space.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </Section>
 
         {/* Props */}

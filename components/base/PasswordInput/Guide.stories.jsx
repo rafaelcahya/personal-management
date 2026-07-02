@@ -524,6 +524,121 @@ const EXTENDED_RULES = [
           </div>
         </div>
       </Section>
+
+      {/* When to Use */}
+      <Section title="When to Use">
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                {['Use Password Input when…', 'Consider an alternative when…'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>The field collects a user password, passphrase, or secret token</li>
+                    <li>You want to give users the option to reveal what they typed</li>
+                    <li>
+                      You want to show real-time password strength feedback during sign-up or
+                      password change
+                    </li>
+                  </ul>
+                </td>
+                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
+                  <ul className="flex flex-col gap-1.5">
+                    <li>
+                      Use <strong>Input type="text"</strong> when the field is not a secret (e.g.
+                      username, email, search)
+                    </li>
+                    <li>
+                      Use a dedicated <strong>OTP / PIN input</strong> when collecting numeric codes
+                      — separate digit boxes give better UX for short codes
+                    </li>
+                    <li>
+                      Use <strong>Input</strong> with a custom <strong>FieldSuffix</strong> when you
+                      need non-toggle suffix content (e.g. copy button, unit label)
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      {/* Dos & Don'ts */}
+      <Section title="Dos & Don'ts">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                ✓
+              </span>
+              <span className="text-sm font-semibold text-green-700">Do</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Always wrap PasswordInput inside <strong>FieldContent</strong> for real forms —
+                  this wires up the accessible label, description, and error message automatically
+                  via context.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Enable <strong>strengthMeter</strong> on sign-up and change-password forms so
+                  users get real-time feedback and are guided toward stronger passwords.
+                </p>
+              </div>
+              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
+                <p className="text-xs text-green-800">
+                  Use <strong>Controller</strong> from react-hook-form and spread the field object —
+                  forwardRef ensures the ref lands on the underlying input element correctly.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                ✕
+              </span>
+              <span className="text-sm font-semibold text-red-700">Don't</span>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't use PasswordInput for non-secret fields like username, email, or search — it
+                  adds an unnecessary visibility toggle that confuses users.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't enable <strong>strengthMeter</strong> on login forms — strength feedback is
+                  only meaningful when the user is creating or changing a password, not when signing
+                  in.
+                </p>
+              </div>
+              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+                <p className="text-xs text-red-800">
+                  Don't pass <strong>type</strong> as a prop — PasswordInput manages type internally
+                  ("password" / "text") to handle the show/hide toggle. Overriding it will break the
+                  toggle behavior.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
     </div>
   ),
 }

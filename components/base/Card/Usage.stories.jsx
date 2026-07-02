@@ -21,7 +21,7 @@ import PageHeader from '@/app/main/components/PageHeader'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
-  title: 'Layout/Card/Usage',
+  title: 'Card/Usage',
 }
 
 export default meta
