@@ -77,8 +77,8 @@ export default function SummaryCards({ summary, lowStockCount, loading }) {
       {stats.map((stat, index) => {
         const Icon = stat.icon
         return (
-          <Card key={index} className="border border-slate-200/70 shadow-sm">
-            <CardContent className="px-4 py-3">
+          <Card key={index} className="border border-slate-200/70 shadow-sm py-3">
+            <CardContent className="px-4">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-medium text-slate-500">{stat.title}</p>
                 <div className={`p-1.5 rounded-lg ${stat.bgColor}`}>
