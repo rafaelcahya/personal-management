@@ -58,6 +58,8 @@ const preview = {
             'Rich Content',
             '*',
           ],
+          'HoverCard',
+          ['Docs', 'Basic', 'Positions', 'Rich Content', 'Controlled', '*'],
           'Toast',
           ['Docs', 'Basic', 'Variants', 'Positions', 'With Action', 'Animation', 'Controlled', '*'],
           'Sidebar',
