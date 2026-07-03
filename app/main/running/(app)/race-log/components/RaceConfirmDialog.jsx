@@ -13,7 +13,7 @@ import {
   Mountain,
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -24,7 +24,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog'
-import { Textarea } from '@/components/ui/textarea'
+import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
 import { createRaceLog } from '@/lib/api/running'
 import { getDistanceLabel, secsToHMS } from './raceLogUtils'

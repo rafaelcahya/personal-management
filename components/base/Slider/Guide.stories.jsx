@@ -559,13 +559,15 @@ import { SliderStartLabel, SliderEndLabel, SliderMark } from '@/components/base/
             <FieldContent size="base">
               <FieldLabel>Confidence level</FieldLabel>
               <Slider defaultValue={[70]} showTooltip tooltipFormat={(v) => `${v}%`} />
-              <FieldDescription>How confident are you in this estimate?</FieldDescription>
+              <FieldDescription className="text-xs text-slate-400">
+                How confident are you in this estimate?
+              </FieldDescription>
             </FieldContent>
           </Preview>
           <Code>{`<FieldContent size="base">
   <FieldLabel>Confidence level</FieldLabel>
   <Slider defaultValue={[70]} showTooltip tooltipFormat={(v) => \`\${v}%\`} />
-  <FieldDescription>How confident are you in this estimate?</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">How confident are you in this estimate?</FieldDescription>
 </FieldContent>`}</Code>
         </SubSection>
 
@@ -589,13 +591,15 @@ import { SliderStartLabel, SliderEndLabel, SliderMark } from '@/components/base/
             <FieldContent size="base" disabled>
               <FieldLabel>Budget allocation</FieldLabel>
               <Slider defaultValue={[60]} />
-              <FieldDescription>Cannot be changed after submission.</FieldDescription>
+              <FieldDescription className="text-xs text-slate-400">
+                Cannot be changed after submission.
+              </FieldDescription>
             </FieldContent>
           </Preview>
           <Code>{`<FieldContent size="base" disabled>
   <FieldLabel>Budget allocation</FieldLabel>
   <Slider defaultValue={[60]} />
-  <FieldDescription>Cannot be changed after submission.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Cannot be changed after submission.</FieldDescription>
 </FieldContent>`}</Code>
         </SubSection>
       </Section>

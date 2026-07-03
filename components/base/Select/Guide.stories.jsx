@@ -764,7 +764,9 @@ export const Docs = {
                     <SelectItem value="entertainment">Entertainment</SelectItem>
                   </SelectContent>
                 </Select>
-                <FieldDescription>Choose the category that best fits.</FieldDescription>
+                <FieldDescription className="text-xs text-slate-400">
+                  Choose the category that best fits.
+                </FieldDescription>
               </FieldContent>
             </FieldContainer>
           </Preview>
@@ -779,7 +781,7 @@ export const Docs = {
       <SelectItem value="transport">Transport</SelectItem>
     </SelectContent>
   </Select>
-  <FieldDescription>Choose the category that best fits.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Choose the category that best fits.</FieldDescription>
 </FieldContent>`}</Code>
         </SubSection>
 

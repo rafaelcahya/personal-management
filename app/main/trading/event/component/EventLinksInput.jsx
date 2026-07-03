@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'
 import { PlusIcon, Trash2, LinkIcon } from 'lucide-react'
 

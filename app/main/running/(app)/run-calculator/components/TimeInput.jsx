@@ -1,6 +1,6 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'
 
 export default function TimeInput({ hours, minutes, seconds, onChange, idPrefix }) {

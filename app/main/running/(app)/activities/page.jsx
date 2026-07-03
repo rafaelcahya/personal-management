@@ -23,14 +23,14 @@ import {
   Search,
   X,
 } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/base/Select/Select'
 import Button from '@/components/base/Button/Button'
 import { fetchActivities } from '@/lib/api/running'
 import { fmtDistance, fmtPace, fmtDuration } from '../dashboard/utils/format'

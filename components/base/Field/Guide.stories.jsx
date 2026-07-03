@@ -124,7 +124,9 @@ export const Docs = {
               </FieldPrefix>
               <Input placeholder="you@example.com" />
             </FieldControl>
-            <FieldDescription>We'll never share your email.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              We'll never share your email.
+            </FieldDescription>
           </FieldContent>
           <FieldContent size="base">
             <FieldLabel>Website</FieldLabel>
@@ -316,7 +318,7 @@ export const Docs = {
         <FieldPrefix>@</FieldPrefix>
         <Input placeholder="you@example.com" />
       </FieldControl>
-      <FieldDescription>We'll never share your email.</FieldDescription>
+      <FieldDescription className="text-xs text-slate-400">We'll never share your email.</FieldDescription>
       <FieldError />
     </FieldContent>
   </FieldGroup>
@@ -798,7 +800,9 @@ export const Docs = {
               <FieldControl>
                 <Input placeholder="you@example.com" />
               </FieldControl>
-              <FieldDescription>We'll never share your email.</FieldDescription>
+              <FieldDescription className="text-xs text-slate-400">
+                We'll never share your email.
+              </FieldDescription>
             </FieldContent>
           </Preview>
         </SubSection>
@@ -828,7 +832,9 @@ export const Docs = {
               <FieldControl>
                 <Input defaultValue="usr_abc123" />
               </FieldControl>
-              <FieldDescription>Auto-generated. Cannot be changed.</FieldDescription>
+              <FieldDescription className="text-xs text-slate-400">
+                Auto-generated. Cannot be changed.
+              </FieldDescription>
             </FieldContent>
           </Preview>
         </SubSection>
@@ -840,7 +846,9 @@ export const Docs = {
           <Preview>
             <FieldContent orientation="horizontal" size="base" required>
               <FieldLabel>Push notifications</FieldLabel>
-              <FieldDescription>Receive alerts for new messages and activity.</FieldDescription>
+              <FieldDescription className="text-xs text-slate-400">
+                Receive alerts for new messages and activity.
+              </FieldDescription>
               <FieldControl>
                 <Switch defaultChecked />
               </FieldControl>
@@ -848,7 +856,9 @@ export const Docs = {
 
             <FieldContent orientation="horizontal" size="base" disabled>
               <FieldLabel>SMS alerts</FieldLabel>
-              <FieldDescription>Not available in your region.</FieldDescription>
+              <FieldDescription className="text-xs text-slate-400">
+                Not available in your region.
+              </FieldDescription>
               <FieldControl>
                 <Switch disabled />
               </FieldControl>
@@ -861,7 +871,9 @@ export const Docs = {
               error="This field is required."
             >
               <FieldLabel>Data processing agreement</FieldLabel>
-              <FieldDescription>You must accept to continue.</FieldDescription>
+              <FieldDescription className="text-xs text-slate-400">
+                You must accept to continue.
+              </FieldDescription>
               <FieldControl>
                 <Switch />
               </FieldControl>
@@ -872,7 +884,7 @@ export const Docs = {
           <Code>{`{/* Basic */}
 <FieldContent orientation="horizontal" size="base" required>
   <FieldLabel>Push notifications</FieldLabel>
-  <FieldDescription>Receive alerts for new messages and activity.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Receive alerts for new messages and activity.</FieldDescription>
   <FieldControl>
     <Switch />
   </FieldControl>
@@ -881,7 +893,7 @@ export const Docs = {
 {/* With error */}
 <FieldContent orientation="horizontal" size="base" required error="This field is required.">
   <FieldLabel>Data processing agreement</FieldLabel>
-  <FieldDescription>You must accept to continue.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">You must accept to continue.</FieldDescription>
   <FieldControl>
     <Switch />
   </FieldControl>
@@ -891,7 +903,7 @@ export const Docs = {
 {/* Disabled */}
 <FieldContent orientation="horizontal" size="base" disabled>
   <FieldLabel>SMS alerts</FieldLabel>
-  <FieldDescription>Not available in your region.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Not available in your region.</FieldDescription>
   <FieldControl>
     <Switch />
   </FieldControl>
@@ -926,7 +938,9 @@ export const Docs = {
             <Preview>
               <FieldContent orientation="horizontal" size="base" required>
                 <FieldLabel>Accept terms</FieldLabel>
-                <FieldDescription>I agree to the Terms of Service.</FieldDescription>
+                <FieldDescription className="text-xs text-slate-400">
+                  I agree to the Terms of Service.
+                </FieldDescription>
                 <FieldControl>
                   <Checkbox />
                 </FieldControl>
@@ -935,7 +949,7 @@ export const Docs = {
             <Code>{`{/* Checkbox */}
 <FieldContent orientation="horizontal" size="base" required>
   <FieldLabel>Accept terms</FieldLabel>
-  <FieldDescription>I agree to the Terms of Service.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">I agree to the Terms of Service.</FieldDescription>
   <FieldControl>
     <Checkbox />
   </FieldControl>
@@ -970,7 +984,7 @@ export const Docs = {
                     <FieldLabel className={disabled ? 'cursor-not-allowed' : 'cursor-pointer'}>
                       {label}
                     </FieldLabel>
-                    <FieldDescription>{desc}</FieldDescription>
+                    <FieldDescription className="text-xs text-slate-400">{desc}</FieldDescription>
                     <FieldControl>
                       <Switch defaultChecked={checked} disabled={disabled} />
                     </FieldControl>
@@ -981,17 +995,17 @@ export const Docs = {
             <Code>{`<FieldContainer>
   <FieldContent orientation="horizontal" size="base">
     <FieldLabel>Push notifications</FieldLabel>
-    <FieldDescription>Receive alerts for new messages.</FieldDescription>
+    <FieldDescription className="text-xs text-slate-400">Receive alerts for new messages.</FieldDescription>
     <FieldControl><Switch defaultChecked /></FieldControl>
   </FieldContent>
   <FieldContent orientation="horizontal" size="base">
     <FieldLabel>Dark mode</FieldLabel>
-    <FieldDescription>Use a dark background across the app.</FieldDescription>
+    <FieldDescription className="text-xs text-slate-400">Use a dark background across the app.</FieldDescription>
     <FieldControl><Switch /></FieldControl>
   </FieldContent>
   <FieldContent orientation="horizontal" size="base" disabled>
     <FieldLabel>SMS alerts</FieldLabel>
-    <FieldDescription>Not available in your region.</FieldDescription>
+    <FieldDescription className="text-xs text-slate-400">Not available in your region.</FieldDescription>
     <FieldControl><Switch /></FieldControl>
   </FieldContent>
 </FieldContainer>`}</Code>

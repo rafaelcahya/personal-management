@@ -463,6 +463,7 @@ export default function Sidebar({ user }) {
           size="icon-xs"
           onClick={toggleCollapse}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           className="absolute -right-3 top-[4.25rem] rounded-full bg-white border border-slate-200 shadow-sm hover:bg-slate-50 z-10"
         >
           {collapsed ? (
@@ -480,6 +481,7 @@ export default function Sidebar({ user }) {
           variant="ghost"
           size="icon-sm"
           onClick={() => setMobileOpen(true)}
+          aria-label="Open navigation menu"
           className="rounded-lg hover:bg-slate-100"
         >
           <Menu className="size-5 text-slate-600" />
@@ -511,6 +513,7 @@ export default function Sidebar({ user }) {
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => setMobileOpen(false)}
+                aria-label="Close navigation menu"
                 className="rounded-lg hover:bg-slate-100"
               >
                 <X className="size-4 text-slate-500" />

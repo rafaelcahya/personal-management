@@ -14,7 +14,7 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import { fmtDistance } from '../dashboard/utils/format'
 import { fetchRaceLog, fetchUpcomingRaces } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'

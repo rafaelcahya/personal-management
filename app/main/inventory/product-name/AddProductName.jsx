@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import {
   Dialog,
   DialogClose,
@@ -15,15 +15,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Textarea } from '@/components/ui/textarea'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { productNameSchema } from '@/schemas/productName'
@@ -77,70 +72,59 @@ export default function AddProductName({ onAdded }) {
           </DialogDescription>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={handleSubmit(handleAddNewProductName)} className="space-y-4">
-            <FormField
-              control={control}
-              name="product_name"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">Product name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="e.g. Clear"
-                      id="productNameField"
-                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                        fieldState.error ? 'border-rose-500' : ''
-                      }`}
-                    />
-                  </FormControl>
-                  <FormMessage
-                    id="productNameField_errorMessage_productNamePage"
-                    className="font-medium"
-                  >
-                    {fieldState.error?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
+        <form onSubmit={handleSubmit(handleAddNewProductName)} className="space-y-4">
+          <Controller
+            control={control}
+            name="product_name"
+            render={({ field, fieldState }) => (
+              <FieldContent error={fieldState.error?.message}>
+                <FieldLabel className="font-medium">Product name</FieldLabel>
+                <Input
+                  {...field}
+                  placeholder="e.g. Clear"
+                  id="productNameField"
+                  className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                    fieldState.error ? 'border-rose-500' : ''
+                  }`}
+                />
+                <FieldError className="font-medium" />
+              </FieldContent>
+            )}
+          />
 
-            <FormField
-              control={control}
-              name="note"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">Notes</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Additional notes"
-                      id="noteField"
-                      className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+          <Controller
+            control={control}
+            name="note"
+            render={({ field, fieldState }) => (
+              <FieldContent error={fieldState.error?.message}>
+                <FieldLabel className="font-medium">Notes</FieldLabel>
+                <Textarea
+                  {...field}
+                  placeholder="Additional notes"
+                  id="noteField"
+                  className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
+                />
+              </FieldContent>
+            )}
+          />
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  className="text-violet-600  font-medium"
-                  id="cancelNewProductNameBtn_productNamePage"
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button type="submit" disabled={loading} id="submitNewProductNameBtn_productNamePage">
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Adding...' : 'Add Product Name'}
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="secondary"
+                className="text-violet-600  font-medium"
+                id="cancelNewProductNameBtn_productNamePage"
+              >
+                Cancel
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+            </DialogClose>
+            <Button type="submit" disabled={loading} id="submitNewProductNameBtn_productNamePage">
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? 'Adding...' : 'Add Product Name'}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

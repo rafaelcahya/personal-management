@@ -206,6 +206,7 @@ export default function EventDetailClient({ id }) {
                 id="editEventBtn_eventDetailPage"
                 variant="ghost"
                 size="icon"
+                aria-label="Edit event"
                 className="size-8 hover:bg-slate-100 focus-visible:ring-0 focus-visible:ring-offset-0"
                 onClick={() => setEditOpen(true)}
               >
@@ -215,6 +216,7 @@ export default function EventDetailClient({ id }) {
                 id="deleteEventBtn_eventDetailPage"
                 variant="ghost"
                 size="icon"
+                aria-label="Delete event"
                 className="size-8 hover:bg-red-50 focus-visible:ring-0 focus-visible:ring-offset-0"
                 onClick={() => setDeleteOpen(true)}
               >
@@ -229,6 +231,7 @@ export default function EventDetailClient({ id }) {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label="More options"
                     className="size-8 hover:bg-slate-100 focus-visible:ring-0 focus-visible:ring-offset-0"
                   >
                     <MoreHorizontal className="size-4 text-slate-500" />

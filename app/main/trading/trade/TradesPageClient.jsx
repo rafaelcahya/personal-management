@@ -12,7 +12,7 @@ import TradeErrorState from './list/component/TradeErrorState'
 import TradeEmptyState from './list/component/TradeEmptyState'
 import TradePagination from './list/component/TradePagination'
 import AddTrade from './AddTrade'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import { Search, X } from 'lucide-react'
 
 const DEFAULT_SORT_KEY = 'trade_date'

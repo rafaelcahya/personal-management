@@ -1,6 +1,6 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/base/Select/Select'
 
 export const DISTANCE_PRESETS = [
   { label: '1K', m: 1000 },

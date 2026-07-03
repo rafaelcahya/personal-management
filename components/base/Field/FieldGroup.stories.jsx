@@ -127,7 +127,9 @@ export const MixedLayout = {
             <FieldControl>
               <Input type="email" placeholder="john@example.com" />
             </FieldControl>
-            <FieldDescription>We'll never share your email.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              We'll never share your email.
+            </FieldDescription>
           </FieldContent>
 
           <FieldGroup cols={2}>

@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import {
   Dialog,
   DialogClose,
@@ -15,21 +15,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import FieldDescription from '@/components/base/Field/FieldDescription'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/base/Select/Select'
 import { updateProductDetails } from '@/lib/api/product'
 import { fetchProductBrand } from '@/lib/api/productBrand'
 import { fetchProductName } from '@/lib/api/productName'
@@ -119,170 +115,164 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
           </DialogDescription>
         </DialogHeader>
 
-        <Form {...form}>
-          <form
-            id="editProductForm_productListPage"
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col flex-1 min-h-0"
-          >
-            <div className="flex-1 overflow-y-auto space-y-5">
-              {/* Brand */}
-              <FormField
-                control={control}
-                name="brand_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Brand</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger
-                          id="brandSelect_editProductDialog"
-                          className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
-                        >
-                          <SelectValue placeholder="Select brand" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="max-h-60 overflow-y-auto">
-                        {brands.length === 0 ? (
-                          <div className="p-8 text-center text-sm text-muted-foreground">
-                            No active brands available
-                          </div>
-                        ) : (
-                          brands.map((b) => (
-                            <SelectItem key={b.id} value={b.id.toString()}>
-                              {b.brand}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-slate-400">Which brand is this from? 🏷️</p>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Product Name */}
-              <FormField
-                control={control}
-                name="product_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Product Name</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger
-                          id="nameSelect_editProductDialog"
-                          className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
-                        >
-                          <SelectValue placeholder="Select product name" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="max-h-60 overflow-y-auto">
-                        {productNames.length === 0 ? (
-                          <div className="p-8 text-center text-sm text-muted-foreground">
-                            No active product names available
-                          </div>
-                        ) : (
-                          productNames.map((n) => (
-                            <SelectItem key={n.id} value={n.id.toString()}>
-                              {n.product_name}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-slate-400">What's the product called? 📦</p>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Type */}
-              <FormField
-                control={control}
-                name="type"
-                rules={{ required: 'Type is required' }}
-                render={({ field, fieldState }) => (
-                  <FormItem>
-                    <FormLabel>Type</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="typeInput_editProductDialog"
-                        {...field}
-                        placeholder="e.g. Whitening, Hydrating, SPF 50"
-                        className={`font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500 ${
-                          fieldState.error ? 'border-rose-500' : ''
-                        }`}
-                      />
-                    </FormControl>
-                    <p className="text-xs text-slate-400">
-                      What kind is it? (serum, lotion, toner, etc.) 💡
-                    </p>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Status */}
-              <FormField
-                control={control}
-                name="product_status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger
-                          id="statusSelect_editProductDialog"
-                          className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-slate-400">
-                      Active products appear in your inventory, inactive ones are hidden from stock
-                      tracking. 🔄
-                    </p>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {serverError && (
-                <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
-                  <p className="text-sm font-semibold text-red-900 mb-1">
-                    ⚠️ Unable to update product
-                  </p>
-                  <p className="text-sm text-red-800">{serverError}</p>
-                </div>
+        <form
+          id="editProductForm_productListPage"
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col flex-1 min-h-0"
+        >
+          <div className="flex-1 overflow-y-auto space-y-5">
+            {/* Brand */}
+            <Controller
+              control={control}
+              name="brand_id"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel>Brand</FieldLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      id="brandSelect_editProductDialog"
+                      className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
+                    >
+                      <SelectValue placeholder="Select brand" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {brands.length === 0 ? (
+                        <div className="p-8 text-center text-sm text-muted-foreground">
+                          No active brands available
+                        </div>
+                      ) : (
+                        brands.map((b) => (
+                          <SelectItem key={b.id} value={b.id.toString()}>
+                            {b.brand}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription className="text-xs text-slate-400">
+                    Which brand is this from? 🏷️
+                  </FieldDescription>
+                  <FieldError />
+                </FieldContent>
               )}
-            </div>
+            />
 
-            <DialogFooter className="shrink-0 pt-4">
-              <DialogClose asChild>
-                <Button
-                  id="cancelBtn_editProductDialog"
-                  type="button"
-                  variant="secondary"
-                  className="text-violet-600 font-medium"
-                  disabled={loading}
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button id="saveBtn_editProductDialog" type="submit" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Saving...' : 'Save Changes'}
+            {/* Product Name */}
+            <Controller
+              control={control}
+              name="product_id"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel>Product Name</FieldLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      id="nameSelect_editProductDialog"
+                      className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
+                    >
+                      <SelectValue placeholder="Select product name" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {productNames.length === 0 ? (
+                        <div className="p-8 text-center text-sm text-muted-foreground">
+                          No active product names available
+                        </div>
+                      ) : (
+                        productNames.map((n) => (
+                          <SelectItem key={n.id} value={n.id.toString()}>
+                            {n.product_name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription className="text-xs text-slate-400">
+                    What's the product called? 📦
+                  </FieldDescription>
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
+
+            {/* Type */}
+            <Controller
+              control={control}
+              name="type"
+              rules={{ required: 'Type is required' }}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel>Type</FieldLabel>
+                  <Input
+                    id="typeInput_editProductDialog"
+                    {...field}
+                    placeholder="e.g. Whitening, Hydrating, SPF 50"
+                    className={`font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500 ${
+                      fieldState.error ? 'border-rose-500' : ''
+                    }`}
+                  />
+                  <FieldDescription className="text-xs text-slate-400">
+                    What kind is it? (serum, lotion, toner, etc.) 💡
+                  </FieldDescription>
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
+
+            {/* Status */}
+            <Controller
+              control={control}
+              name="product_status"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel>Status</FieldLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      id="statusSelect_editProductDialog"
+                      className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription className="text-xs text-slate-400">
+                    Active products appear in your inventory, inactive ones are hidden from stock
+                    tracking. 🔄
+                  </FieldDescription>
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
+
+            {serverError && (
+              <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
+                <p className="text-sm font-semibold text-red-900 mb-1">
+                  ⚠️ Unable to update product
+                </p>
+                <p className="text-sm text-red-800">{serverError}</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="shrink-0 pt-4">
+            <DialogClose asChild>
+              <Button
+                id="cancelBtn_editProductDialog"
+                type="button"
+                variant="secondary"
+                className="text-violet-600 font-medium"
+                disabled={loading}
+              >
+                Cancel
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+            </DialogClose>
+            <Button id="saveBtn_editProductDialog" type="submit" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

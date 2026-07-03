@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { History, Search, X, AlertCircle } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import ProductHistoryTable from './ProductHistoryTable'

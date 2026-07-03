@@ -51,7 +51,7 @@ export const WithLabel = {
                     >
                       {label}
                     </label>
-                    <FieldDescription>{desc}</FieldDescription>
+                    <FieldDescription className="text-xs text-slate-400">{desc}</FieldDescription>
                   </div>
                   <Switch
                     id={`${theme}-${id}`}
@@ -73,7 +73,7 @@ export const WithLabel = {
     <label htmlFor="notif" className="text-sm font-medium cursor-pointer select-none">
       Push notifications
     </label>
-    <FieldDescription>Receive alerts for new messages.</FieldDescription>
+    <FieldDescription className="text-xs text-slate-400">Receive alerts for new messages.</FieldDescription>
   </div>
   <Switch id="notif" theme="track" defaultChecked className="mt-0.5 shrink-0" />
 </div>`}</code>
