@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   Info,
   Link2,
+  Unlink,
   CalendarPlus,
   Pencil,
   Trash2,
@@ -81,6 +82,8 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
   const [positionPlace, setPositionPlace] = useState(race.position_place ?? '')
   const [positionMale, setPositionMale] = useState(race.position_male ?? '')
   const [linking, setLinking] = useState(false)
+  const [unlinking, setUnlinking] = useState(false)
+  const [unlinkConfirm, setUnlinkConfirm] = useState(false)
   const [completing, setCompleting] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
@@ -99,6 +102,24 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
       toast.error(err.message || 'Failed to link activity')
     } finally {
       setLinking(false)
+    }
+  }
+
+  async function handleUnlinkActivity() {
+    setUnlinking(true)
+    setUnlinkConfirm(false)
+    try {
+      const result = await updateUpcomingRace(race.id, { linked_activity_id: null })
+      onUpdated(result.data)
+      setFinishTimeStr('')
+      setPositionPlace('')
+      setPositionMale('')
+      setResultsOpen(false)
+      toast.success('Activity removed')
+    } catch (err) {
+      toast.error(err.message || 'Failed to remove activity')
+    } finally {
+      setUnlinking(false)
     }
   }
 
@@ -315,13 +336,13 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
         {/* Actions row */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           {/* Left actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button
               id="linkActivityBtn_raceLogPage"
               variant="secondary"
               size="base"
               onClick={() => setPickerOpen(true)}
-              disabled={linking}
+              disabled={linking || unlinking}
               className="flex items-center gap-1.5 text-xs md:min-h-9"
             >
               {linking ? (
@@ -331,6 +352,47 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
               )}
               {linked ? 'Change activity' : 'Link activity'}
             </Button>
+            {linked &&
+              (unlinkConfirm ? (
+                <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                  <span className="text-slate-500">Remove activity?</span>
+                  <Button
+                    id="unlinkActivityConfirmBtn_raceLogPage"
+                    variant="ghost"
+                    size="xs"
+                    onClick={handleUnlinkActivity}
+                    disabled={unlinking}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-auto px-1.5 py-0.5"
+                  >
+                    {unlinking ? (
+                      <Loader2 className="size-3 animate-spin" aria-hidden="true" />
+                    ) : (
+                      'Yes'
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => setUnlinkConfirm(false)}
+                    disabled={unlinking}
+                    className="h-auto px-1.5 py-0.5 text-slate-500"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  id="unlinkActivityBtn_raceLogPage"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setUnlinkConfirm(true)}
+                  disabled={linking}
+                  className="text-slate-400 hover:text-orange-600 hover:bg-orange-50"
+                  aria-label="Remove linked activity"
+                >
+                  <Unlink className="size-3.5" aria-hidden="true" />
+                </Button>
+              ))}
             <Button
               id="addToCalendarBtn_raceLogPage"
               variant="secondary"
