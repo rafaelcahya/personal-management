@@ -7,7 +7,7 @@ import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { RadioGroup, RadioGroupItem } from '@/components/base/RadioGroup/RadioGroup'
 import {
   formatPaceSec,
   formatDuration,
@@ -238,20 +238,20 @@ export default function RunCalculatorPage() {
               id="unitToggle_runCalculator"
               value={unit}
               onValueChange={handleUnitChange}
-              className="flex gap-4"
+              className="flex flex-row gap-4"
             >
-              <div className="flex items-center gap-1.5">
+              <FieldContent orientation="row">
                 <RadioGroupItem value="km" id="unitKm_runCalculator" />
                 <FieldLabel htmlFor="unitKm_runCalculator" className="cursor-pointer">
                   km
                 </FieldLabel>
-              </div>
-              <div className="flex items-center gap-1.5">
+              </FieldContent>
+              <FieldContent orientation="row">
                 <RadioGroupItem value="mi" id="unitMi_runCalculator" />
                 <FieldLabel htmlFor="unitMi_runCalculator" className="cursor-pointer">
                   mi
                 </FieldLabel>
-              </div>
+              </FieldContent>
             </RadioGroup>
           </div>
         </CardContent>

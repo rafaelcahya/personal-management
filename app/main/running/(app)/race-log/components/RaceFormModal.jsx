@@ -9,7 +9,7 @@ import { Calendar as CalendarPicker } from '@/components/ui/calendar'
 import { format, parseISO } from 'date-fns'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import {
   Dialog,
   DialogContent,

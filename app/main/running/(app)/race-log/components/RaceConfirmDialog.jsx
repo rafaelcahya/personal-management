@@ -14,8 +14,10 @@ import {
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import {
   Dialog,
   DialogContent,
@@ -118,22 +120,18 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           {/* Race name */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="confirmRaceTitle">
-              Race name <span className="text-red-500">*</span>
-            </Label>
+          <FieldContent error={errors.title?.message}>
+            <FieldLabel htmlFor="confirmRaceTitle" required>
+              Race name
+            </FieldLabel>
             <Input
               id="confirmRaceTitle"
               placeholder="e.g. Jakarta Marathon 2025"
               className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
               {...register('title', { required: 'Race name is required' })}
             />
-            {errors.title && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
+            <FieldError />
+          </FieldContent>
 
           {/* Activity data summary */}
           <div className="rounded-lg border border-slate-200 bg-slate-50 divide-y divide-slate-100">
@@ -188,27 +186,33 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
           </div>
 
           {/* DNF */}
-          <div className="flex items-center gap-2.5">
-            <Controller
-              name="did_not_finish"
-              control={control}
-              render={({ field }) => (
-                <Checkbox id="confirmDnf" checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
-            <Label htmlFor="confirmDnf" className="cursor-pointer select-none">
-              Did not finish (DNF)
-            </Label>
-          </div>
+          <FieldContent>
+            <div className="flex items-center gap-2.5">
+              <Controller
+                name="did_not_finish"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="confirmDnf"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+              <FieldLabel htmlFor="confirmDnf" className="cursor-pointer select-none">
+                Did not finish (DNF)
+              </FieldLabel>
+            </div>
+          </FieldContent>
 
           {/* Position */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="confirmPosPlace">Position (place)</Label>
-              <Controller
-                name="position_place"
-                control={control}
-                render={({ field }) => (
+            <Controller
+              name="position_place"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel htmlFor="confirmPosPlace">Position (place)</FieldLabel>
                   <Input
                     id="confirmPosPlace"
                     type="number"
@@ -217,15 +221,16 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
                   />
-                )}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="confirmPosMale">Position (male)</Label>
-              <Controller
-                name="position_male"
-                control={control}
-                render={({ field }) => (
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
+            <Controller
+              name="position_male"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel htmlFor="confirmPosMale">Position (male)</FieldLabel>
                   <Input
                     id="confirmPosMale"
                     type="number"
@@ -234,14 +239,15 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
                   />
-                )}
-              />
-            </div>
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
           </div>
 
           {/* Notes */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="confirmNotes">Notes</Label>
+          <FieldContent>
+            <FieldLabel htmlFor="confirmNotes">Notes</FieldLabel>
             <Textarea
               id="confirmNotes"
               placeholder="Weather, conditions, how you felt…"
@@ -249,7 +255,7 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
               rows={2}
               {...register('notes')}
             />
-          </div>
+          </FieldContent>
 
           {serverError && (
             <p className="text-xs text-red-600 flex items-center gap-1" role="alert">
