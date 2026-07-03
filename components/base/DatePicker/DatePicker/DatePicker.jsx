@@ -23,7 +23,7 @@ import {
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/base/Popover/Popover'
 import { useFieldContentContext } from '../../Field/FieldContent'
 import { triggerVariants, MonthGrid } from '../calendarParts'
 
@@ -72,6 +72,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
       <div className="p-3 w-[280px] select-none">
         <div className="flex items-center justify-between mb-2">
           <button
+            type="button"
             onClick={() => canPrevMonth && setViewDate(subMonths(viewDate, 1))}
             className={clsx(
               'size-7 rounded flex items-center justify-center transition-colors',
@@ -83,12 +84,14 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
 
           <div className="flex items-center gap-1">
             <button
+              type="button"
               onClick={() => setView('month')}
               className="hover:bg-gray-100 cursor-pointer rounded px-1.5 py-0.5 text-sm font-semibold transition-colors"
             >
               {format(viewDate, 'MMMM')}
             </button>
             <button
+              type="button"
               onClick={() => setView('year')}
               className="hover:bg-gray-100 cursor-pointer rounded px-1.5 py-0.5 text-sm font-semibold transition-colors"
             >
@@ -97,6 +100,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
           </div>
 
           <button
+            type="button"
             onClick={() => canNextMonth && setViewDate(addMonths(viewDate, 1))}
             className={clsx(
               'size-7 rounded flex items-center justify-center transition-colors',
@@ -127,6 +131,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
 
             return (
               <button
+                type="button"
                 key={i}
                 onClick={() => !disabled && onSelect(day)}
                 disabled={disabled}
@@ -161,6 +166,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
       <div className="p-3 w-[280px] select-none">
         <div className="flex items-center justify-between mb-3">
           <button
+            type="button"
             onClick={() => canPrevYear && setViewDate(setYear(viewDate, currentYear - 1))}
             className={clsx(
               'size-7 rounded flex items-center justify-center transition-colors',
@@ -171,6 +177,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
           </button>
 
           <button
+            type="button"
             onClick={() => setView('year')}
             className="hover:bg-gray-100 cursor-pointer rounded px-2 py-0.5 text-sm font-semibold transition-colors"
           >
@@ -178,6 +185,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
           </button>
 
           <button
+            type="button"
             onClick={() => canNextYear && setViewDate(setYear(viewDate, currentYear + 1))}
             className={clsx(
               'size-7 rounded flex items-center justify-center transition-colors',
@@ -219,6 +227,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
     <div className="p-3 w-[280px] select-none">
       <div className="flex items-center justify-between mb-3">
         <button
+          type="button"
           onClick={() => canPrevDecade && setViewDate(setYear(viewDate, rangeStart - 1))}
           className={clsx(
             'size-7 rounded flex items-center justify-center transition-colors',
@@ -233,6 +242,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
         </span>
 
         <button
+          type="button"
           onClick={() => canNextDecade && setViewDate(setYear(viewDate, rangeEnd + 1))}
           className={clsx(
             'size-7 rounded flex items-center justify-center transition-colors',

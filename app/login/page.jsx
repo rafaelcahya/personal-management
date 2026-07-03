@@ -74,7 +74,8 @@ function LoginContent() {
               id="googleSignInBtn_loginPage"
               onClick={handleGoogleLogin}
               disabled={loading}
-              className="w-full bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 shadow-sm"
+              variant="outline"
+              className="w-full"
               size="lg"
               aria-label="Sign in with Google"
             >

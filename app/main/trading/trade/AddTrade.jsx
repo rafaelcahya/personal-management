@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { format } from 'date-fns'
 import Button from '@/components/base/Button/Button'
 import {
   Dialog,
@@ -21,11 +20,9 @@ import FieldError from '@/components/base/Field/FieldError'
 import FieldDescription from '@/components/base/Field/FieldDescription'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Calendar } from '@/components/ui/calendar'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { toast } from 'sonner'
-import { Loader2, PlusIcon, CalendarIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Loader2, PlusIcon } from 'lucide-react'
 import { tradeSchema } from '@/schemas/trade'
 import { createTrade, fetchAllTradeOptions } from '@/lib/api/trade'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
@@ -210,37 +207,13 @@ export default function AddTrade({
                 control={control}
                 name="trade_date"
                 render={({ field, fieldState }) => (
-                  <FieldContent className="flex flex-col" error={fieldState.error?.message}>
+                  <FieldContent error={fieldState.error?.message}>
                     <FieldLabel className="font-medium">Trade Date</FieldLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          id="tradeDateField_tradePage"
-                          className={cn(
-                            'w-full pl-3 text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
-                            fieldState.error && 'border-rose-500',
-                            !field.value && 'text-slate-500'
-                          )}
-                        >
-                          {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto p-0"
-                        align="start"
-                        id="tradeDatePicker_tradePage"
-                      >
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <DatePicker
+                      id="tradeDateField_tradePage"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                     <FieldDescription className="text-xs text-slate-400">
                       When did you execute this trade? 📅
                     </FieldDescription>

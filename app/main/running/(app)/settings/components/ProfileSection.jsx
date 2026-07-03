@@ -4,16 +4,15 @@ import { useState, useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
-import { CalendarIcon, CheckCircle2, AlertCircle, User } from 'lucide-react'
+import { CheckCircle2, AlertCircle, User } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
 import FieldDescription from '@/components/base/Field/FieldDescription'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -163,44 +162,16 @@ export default function ProfileSection() {
                 <Controller
                   name="birth_date"
                   control={control}
-                  render={({ field }) => {
-                    const selected = field.value ? parseISO(field.value) : undefined
-                    return (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            id="birthDateInput_settingsPage"
-                            variant="outline"
-                            className="w-full justify-start text-sm font-medium text-left focus-visible:ring-violet-200 focus-visible:border-violet-600"
-                          >
-                            <CalendarIcon
-                              className="mr-2 h-4 w-4 shrink-0 text-slate-400"
-                              aria-hidden="true"
-                            />
-                            {selected ? (
-                              format(selected, 'dd MMM yyyy')
-                            ) : (
-                              <span className="text-slate-400">Pick a date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={selected}
-                            onSelect={(date) =>
-                              field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
-                            }
-                            captionLayout="dropdown"
-                            defaultMonth={selected ?? new Date(1990, 0, 1)}
-                            fromYear={1940}
-                            toYear={new Date().getFullYear() - 10}
-                            autoFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    )
-                  }}
+                  render={({ field }) => (
+                    <DatePicker
+                      id="birthDateInput_settingsPage"
+                      value={field.value ? parseISO(field.value) : null}
+                      onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                      fromDate={new Date(1940, 0, 1)}
+                      toDate={new Date(new Date().getFullYear() - 10, 11, 31)}
+                      placeholder="Pick a date"
+                    />
+                  )}
                 />
                 <FieldDescription>Used to calculate age-graded performance 🎂</FieldDescription>
                 <FieldError />

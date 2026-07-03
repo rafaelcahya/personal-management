@@ -4,12 +4,11 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
-import { CalendarIcon, Loader2, Plus } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Loader2, Plus } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
-import { Calendar } from '@/components/ui/calendar'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import {
   Dialog,
   DialogClose,
@@ -24,13 +23,11 @@ import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
 import FieldDescription from '@/components/base/Field/FieldDescription'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { createQuantityUpdate } from '@/lib/api/productQuantity'
 import { getLastPurchasePrice, getStockHistory } from '@/lib/api/product'
 
 export default function AddStockForm({ product, onAdded }) {
   const [open, setOpen] = useState(false)
-  const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [serverError, setServerError] = useState(null)
   const [lastPrice, setLastPrice] = useState(null)
@@ -225,41 +222,9 @@ export default function AddStockForm({ product, onAdded }) {
               control={control}
               name="purchase_date"
               render={({ field, fieldState }) => (
-                <FieldContent className="flex flex-col" error={fieldState.error?.message}>
+                <FieldContent error={fieldState.error?.message}>
                   <FieldLabel className="font-medium">Purchase Date</FieldLabel>
-                  <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className={cn(
-                          'w-full pl-3 text-left font-medium',
-                          fieldState.error && 'border-rose-500',
-                          !field.value && 'text-slate-500'
-                        )}
-                      >
-                        {field.value ? format(field.value, 'PPP') : 'Pick a date'}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                      onInteractOutside={(e) => e.preventDefault()}
-                      onPointerDownOutside={(e) => e.preventDefault()}
-                      onFocusOutside={(e) => e.preventDefault()}
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={(date) => {
-                          field.onChange(date)
-                          setDatePickerOpen(false)
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <DatePicker value={field.value} onChange={field.onChange} />
                   <FieldDescription className="text-xs text-slate-400">
                     When did you buy this? 📅
                   </FieldDescription>

@@ -23,12 +23,10 @@ import {
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
-import { cn } from '@/lib/utils'
 import {
   saveOnboardingBiometric,
   completeOnboarding,
@@ -223,45 +221,22 @@ function StepBiometrics({ onNext, defaultValues }) {
         <Controller
           control={form.control}
           name="birth_date"
-          render={({ field, fieldState }) => {
-            const selectedDate = field.value ? new Date(field.value + 'T00:00:00') : undefined
-            return (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="flex items-center gap-1.5 text-slate-700">
-                  <CalendarIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                  Birth date
-                </FieldLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="birthDateInput_onboarding"
-                      variant="outline"
-                      className={cn(
-                        'w-full justify-start text-left font-normal focus-visible:ring-violet-200 focus-visible:border-violet-600',
-                        !field.value && 'text-muted-foreground'
-                      )}
-                    >
-                      <CalendarIcon className="size-4 mr-2 text-slate-400" aria-hidden="true" />
-                      {field.value ? format(selectedDate, 'd MMM yyyy') : 'Select your birth date'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      captionLayout="dropdown"
-                      selected={selectedDate}
-                      onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                      disabled={(date) => date > new Date()}
-                      defaultMonth={selectedDate}
-                      fromYear={1930}
-                      toYear={new Date().getFullYear()}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FieldError />
-              </FieldContent>
-            )
-          }}
+          render={({ field, fieldState }) => (
+            <FieldContent error={fieldState.error?.message}>
+              <FieldLabel className="flex items-center gap-1.5 text-slate-700">
+                <CalendarIcon className="size-3.5 text-slate-400" aria-hidden="true" />
+                Birth date
+              </FieldLabel>
+              <DatePicker
+                id="birthDateInput_onboarding"
+                value={field.value ? new Date(field.value + 'T00:00:00') : null}
+                onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                fromDate={new Date(1930, 0, 1)}
+                toDate={new Date()}
+              />
+              <FieldError />
+            </FieldContent>
+          )}
         />
 
         {/* Height + Weight side by side */}

@@ -18,6 +18,7 @@ function useFloating(triggerRef, contentRef, open, side, align, sideOffset, posK
     top: 0,
     left: 0,
     zIndex: 9999,
+    pointerEvents: 'auto',
   })
 
   useEffect(() => {
@@ -63,6 +64,7 @@ function useFloating(triggerRef, contentRef, open, side, align, sideOffset, posK
       left: Math.max(EDGE, left),
       visibility: 'visible',
       zIndex: 9999,
+      pointerEvents: 'auto',
     })
   }, [open, posKey, side, align, sideOffset])
 
@@ -139,8 +141,8 @@ export function PopoverContent({
         setOpen(false)
       }
     }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    document.addEventListener('mousedown', handler, { capture: true })
+    return () => document.removeEventListener('mousedown', handler, { capture: true })
   }, [open])
 
   useEffect(() => {
@@ -161,10 +163,11 @@ export function PopoverContent({
     <div
       ref={contentRef}
       role="dialog"
+      data-popover-portal=""
       style={floatStyle}
       className={cn(
         'rounded-xl border border-slate-200 bg-white shadow-sm outline-none',
-        'animate-in fade-in-0 zoom-in-95',
+        'animate-in fade-in-0 zoom-in-95 pointer-events-auto',
         className
       )}
       {...props}
