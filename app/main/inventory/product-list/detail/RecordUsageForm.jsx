@@ -1,12 +1,9 @@
 import { useState, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { format } from 'date-fns'
-import { Loader2, CalendarIcon, AlertCircle } from 'lucide-react'
+import { Loader2, AlertCircle } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
@@ -17,7 +14,6 @@ import { adjustStock } from '@/lib/api/product'
 
 function RecordUsageForm({ product, onUpdated, onClose }) {
   const [serverError, setServerError] = useState(null)
-  const [datePickerOpen, setDatePickerOpen] = useState(false)
 
   const form = useForm({
     defaultValues: {
@@ -118,43 +114,14 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
         control={control}
         name="start_usage_date"
         render={({ field, fieldState }) => (
-          <FieldContent className="flex flex-col" error={fieldState.error?.message}>
+          <FieldContent error={fieldState.error?.message}>
             <FieldLabel className="font-medium">Start Date</FieldLabel>
-            <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  id="datePicker_recordUsageForm"
-                  type="button"
-                  variant="outline"
-                  className={cn(
-                    'w-full pl-3 text-left font-medium',
-                    fieldState.error && 'border-rose-500',
-                    !field.value && 'text-slate-500'
-                  )}
-                >
-                  {field.value ? format(field.value, 'PPP') : 'Pick a date'}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="w-auto p-0"
-                align="start"
-                onInteractOutside={(e) => e.preventDefault()}
-                onPointerDownOutside={(e) => e.preventDefault()}
-                onFocusOutside={(e) => e.preventDefault()}
-              >
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  onSelect={(date) => {
-                    field.onChange(date)
-                    setDatePickerOpen(false)
-                  }}
-                  disabled={(date) => date > new Date()}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePicker
+              id="datePicker_recordUsageForm"
+              value={field.value}
+              onChange={field.onChange}
+              toDate={new Date()}
+            />
             <FieldDescription className="text-xs text-slate-400">
               When did you open and start using this product?
             </FieldDescription>

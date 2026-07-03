@@ -27,15 +27,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Textarea from '@/components/base/Textarea/Textarea'
-import { Calendar } from '@/components/ui/calendar'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { toast } from 'sonner'
-import { Loader2, PlusIcon, CalendarIcon } from 'lucide-react'
+import { Loader2, PlusIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
-import { cn } from '@/lib/utils'
 import { eventSchema } from '@/schemas/event'
 import { createEvent } from '@/lib/api/event'
 import EventLinksInput from './component/EventLinksInput'
@@ -244,37 +242,13 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
               control={control}
               name="event_date"
               render={({ field, fieldState }) => (
-                <FieldContent className="flex flex-col" error={fieldState.error?.message}>
+                <FieldContent error={fieldState.error?.message}>
                   <FieldLabel className="font-medium">Date</FieldLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        id="eventDateField_eventPage"
-                        className={cn(
-                          'w-full pl-3 text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
-                          fieldState.error && 'border-rose-500',
-                          !field.value && 'text-slate-500'
-                        )}
-                      >
-                        {field.value ? format(field.value, 'd MMM yyyy') : <span>Pick a date</span>}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                      id="eventDatePicker_eventPage"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <DatePicker
+                    id="eventDateField_eventPage"
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                   <FieldError className="font-medium" />
                 </FieldContent>
               )}

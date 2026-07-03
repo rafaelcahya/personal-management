@@ -1,18 +1,15 @@
 'use client'
 
 import { useForm, Controller } from 'react-hook-form'
-import { format } from 'date-fns'
 import { toast } from 'sonner'
-import { Loader2, CalendarIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Loader2 } from 'lucide-react'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
 import FieldDescription from '@/components/base/Field/FieldDescription'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import { Calendar } from '@/components/ui/calendar'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { updateProductUsage } from '@/lib/api/productHistory'
 import { useState } from 'react'
 
@@ -117,35 +114,15 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
             control={control}
             name="end_usage_date"
             render={({ field, fieldState }) => (
-              <FieldContent className="flex flex-col" error={fieldState.error?.message}>
+              <FieldContent error={fieldState.error?.message}>
                 <FieldLabel className="text-xs font-medium">
                   End Usage Date <span className="text-red-500">*</span>
                 </FieldLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className={cn(
-                        'w-full pl-3 text-left font-medium justify-start',
-                        fieldState.error && 'border-rose-500',
-                        !field.value && 'text-slate-500'
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {field.value ? format(field.value, 'PPP') : 'Pick a date'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) => date < new Date(historyItem.start_usage_date)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DatePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  fromDate={new Date(historyItem.start_usage_date)}
+                />
                 <FieldDescription className="text-xs text-slate-400">
                   When did this run out?
                 </FieldDescription>

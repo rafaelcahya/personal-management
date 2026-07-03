@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { LayoutList, ArrowRight, Search, X } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/base/Popover/Popover'
 import {
   Sheet,
   SheetContent,

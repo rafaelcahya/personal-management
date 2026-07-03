@@ -3,11 +3,10 @@
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, CalendarIcon, Loader2 } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Calendar as CalendarPicker } from '@/components/ui/calendar'
+import { AlertTriangle, Loader2 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import Button from '@/components/base/Button/Button'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import Input from '@/components/base/Input/Input'
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import {
@@ -39,7 +38,6 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
   const [distanceMode, setDistanceMode] = useState('preset')
   const [saving, setSaving] = useState(false)
   const [serverError, setServerError] = useState(null)
-  const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [finishTimeStr, setFinishTimeStr] = useState('')
 
   const {
@@ -135,32 +133,11 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
             render={({ field, fieldState }) => (
               <FieldContent error={fieldState.error?.message}>
                 <FieldLabel required>Race date</FieldLabel>
-                <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="raceDate"
-                      variant="outline"
-                      className={`w-full justify-start text-left text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 ${!field.value ? 'text-slate-400' : 'text-slate-900'}`}
-                    >
-                      <CalendarIcon
-                        className="size-4 mr-2 shrink-0 text-slate-400"
-                        aria-hidden="true"
-                      />
-                      {field.value ? format(parseISO(field.value), 'd MMM yyyy') : 'Pick a date'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarPicker
-                      mode="single"
-                      selected={field.value ? parseISO(field.value) : undefined}
-                      onSelect={(date) => {
-                        field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
-                        setDatePickerOpen(false)
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DatePicker
+                  id="raceDate"
+                  value={field.value ? parseISO(field.value) : null}
+                  onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                />
                 <FieldDescription className="text-xs text-slate-400">
                   The date you actually ran the race 📅
                 </FieldDescription>
