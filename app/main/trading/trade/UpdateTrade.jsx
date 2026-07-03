@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import Button from '@/components/base/Button/Button'
@@ -13,17 +13,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import FieldDescription from '@/components/base/Field/FieldDescription'
+import Input from '@/components/base/Input/Input'
+import Textarea from '@/components/base/Textarea/Textarea'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { toast } from 'sonner'
@@ -197,167 +192,159 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
             <p className="text-sm text-slate-600">Loading form options...</p>
           </div>
         ) : (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-              <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-                {/* Trade Date */}
-                <FormField
-                  control={control}
-                  name="trade_date"
-                  render={({ field, fieldState }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="font-medium">Trade Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className={cn(
-                                'w-full pl-3 text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
-                                fieldState.error && 'border-rose-500',
-                                !field.value && 'text-slate-500'
-                              )}
-                            >
-                              {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage className="font-medium">{fieldState.error?.message}</FormMessage>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Ticker */}
-                <FormField
-                  control={control}
-                  name="ticker"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormLabel className="font-medium">Ticker</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="e.g., BBCA, GOTO"
-                          className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                            fieldState.error ? 'border-rose-500' : ''
-                          }`}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
+            <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+              {/* Trade Date */}
+              <Controller
+                control={control}
+                name="trade_date"
+                render={({ field, fieldState }) => (
+                  <FieldContent className="flex flex-col" error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Trade Date</FieldLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className={cn(
+                            'w-full pl-3 text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
+                            fieldState.error && 'border-rose-500',
+                            !field.value && 'text-slate-500'
+                          )}
+                        >
+                          {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
                         />
-                      </FormControl>
-                      <FormMessage className="font-medium">{fieldState.error?.message}</FormMessage>
-                    </FormItem>
-                  )}
+                      </PopoverContent>
+                    </Popover>
+                    <FieldError className="font-medium" />
+                  </FieldContent>
+                )}
+              />
+
+              {/* Ticker */}
+              <Controller
+                control={control}
+                name="ticker"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Ticker</FieldLabel>
+                    <Input
+                      {...field}
+                      placeholder="e.g., BBCA, GOTO"
+                      className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldError className="font-medium" />
+                  </FieldContent>
+                )}
+              />
+
+              {/* Margin & Proceeds Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CurrencyField
+                  control={control}
+                  name="margin"
+                  label="Margin (Capital)"
+                  placeholder="e.g., 1000000"
                 />
 
-                {/* Margin & Proceeds Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <CurrencyField
-                    control={control}
-                    name="margin"
-                    label="Margin (Capital)"
-                    placeholder="e.g., 1000000"
-                  />
-
-                  <CurrencyField
-                    control={control}
-                    name="proceeds"
-                    label="Proceeds (Return)"
-                    placeholder="e.g., 1200000"
-                  />
-                </div>
-
-                {/* Auto-calculated fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={control}
-                    name="realized_gain"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-medium">Realized Gain/Loss</FormLabel>
-                        <FormControl>
-                          <Input
-                            value={formatRupiah(field.value)}
-                            disabled
-                            className="font-medium bg-slate-50"
-                          />
-                        </FormControl>
-                        <FormDescription className="text-xs">Auto-calculated 🧮</FormDescription>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    name="return_percent"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-medium">Return %</FormLabel>
-                        <FormControl>
-                          <Input value={field.value} disabled className="font-medium bg-slate-50" />
-                        </FormControl>
-                        <FormDescription className="text-xs">Auto-calculated 📊</FormDescription>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Dynamic Select Fields */}
-                {SELECT_CONFIG.map(({ name, label, apiKey, displayField }) => (
-                  <DynamicSelectField
-                    key={name}
-                    control={control}
-                    name={name}
-                    label={label}
-                    options={options[apiKey]}
-                    loading={false}
-                    displayField={displayField}
-                  />
-                ))}
-
-                {/* Notes */}
-                <FormField
+                <CurrencyField
                   control={control}
-                  name="notes"
+                  name="proceeds"
+                  label="Proceeds (Return)"
+                  placeholder="e.g., 1200000"
+                />
+              </div>
+
+              {/* Auto-calculated fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Controller
+                  control={control}
+                  name="realized_gain"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-medium">Notes (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Trade insights, emotions, market conditions..."
-                          className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium min-h-[80px]"
-                        />
-                      </FormControl>
-                    </FormItem>
+                    <FieldContent>
+                      <FieldLabel className="font-medium">Realized Gain/Loss</FieldLabel>
+                      <Input
+                        value={formatRupiah(field.value)}
+                        disabled
+                        className="font-medium bg-slate-50"
+                      />
+                      <FieldDescription className="text-xs text-slate-400">
+                        Auto-calculated 🧮
+                      </FieldDescription>
+                    </FieldContent>
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="return_percent"
+                  render={({ field }) => (
+                    <FieldContent>
+                      <FieldLabel className="font-medium">Return %</FieldLabel>
+                      <Input value={field.value} disabled className="font-medium bg-slate-50" />
+                      <FieldDescription className="text-xs text-slate-400">
+                        Auto-calculated 📊
+                      </FieldDescription>
+                    </FieldContent>
                   )}
                 />
               </div>
 
-              <DialogFooter className="shrink-0 pt-4 flex-col sm:flex-row gap-2">
-                <DeleteTrade trade={trade} onDeleted={onUpdated} onClose={onClose} />
+              {/* Dynamic Select Fields */}
+              {SELECT_CONFIG.map(({ name, label, apiKey, displayField }) => (
+                <DynamicSelectField
+                  key={name}
+                  control={control}
+                  name={name}
+                  label={label}
+                  options={options[apiKey]}
+                  loading={false}
+                  displayField={displayField}
+                />
+              ))}
 
-                <div className="flex gap-2 flex-1 justify-end">
-                  <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={loading}>
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {loading ? 'Updating...' : 'Update Trade'}
-                  </Button>
-                </div>
-              </DialogFooter>
-            </form>
-          </Form>
+              {/* Notes */}
+              <Controller
+                control={control}
+                name="notes"
+                render={({ field }) => (
+                  <FieldContent>
+                    <FieldLabel className="font-medium">Notes (Optional)</FieldLabel>
+                    <Textarea
+                      {...field}
+                      placeholder="Trade insights, emotions, market conditions..."
+                      className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium min-h-[80px]"
+                    />
+                  </FieldContent>
+                )}
+              />
+            </div>
+
+            <DialogFooter className="shrink-0 pt-4 flex-col sm:flex-row gap-2">
+              <DeleteTrade trade={trade} onDeleted={onUpdated} onClose={onClose} />
+
+              <div className="flex gap-2 flex-1 justify-end">
+                <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {loading ? 'Updating...' : 'Update Trade'}
+                </Button>
+              </div>
+            </DialogFooter>
+          </form>
         )}
       </DialogContent>
     </Dialog>

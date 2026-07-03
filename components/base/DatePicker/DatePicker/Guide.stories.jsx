@@ -75,7 +75,9 @@ function FieldDemo({ error, description, label = 'Trade date', required = false,
     <FieldContent size="base" error={error}>
       <FieldLabel required={required}>{label}</FieldLabel>
       <DatePicker value={date} onChange={setDate} {...props} />
-      {description && <FieldDescription>{description}</FieldDescription>}
+      {description && (
+        <FieldDescription className="text-xs text-slate-400">{description}</FieldDescription>
+      )}
       {error && <FieldError />}
     </FieldContent>
   )
@@ -649,7 +651,7 @@ export const Docs = {
         <Code>{`<FieldContent size="base">
   <FieldLabel required>Trade date</FieldLabel>
   <DatePicker value={date} onChange={setDate} />
-  <FieldDescription>When did you execute this trade?</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">When did you execute this trade?</FieldDescription>
 </FieldContent>`}</Code>
       </Section>
 

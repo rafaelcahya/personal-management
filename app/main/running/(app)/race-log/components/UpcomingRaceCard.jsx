@@ -15,8 +15,9 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import Input from '@/components/base/Input/Input'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 import {
   Dialog,
   DialogContent,
@@ -262,10 +263,10 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
           </Button>
           {resultsOpen && (
             <div className="grid grid-cols-2 gap-3 px-3 pb-3 pt-2 border-t border-slate-200/70">
-              <div className="col-span-2 flex flex-col gap-1.5">
-                <Label htmlFor={`finishTime_${race.id}`} className="text-xs">
+              <FieldContent className="col-span-2">
+                <FieldLabel htmlFor={`finishTime_${race.id}`} className="text-xs">
                   Finish time (hh:mm:ss)
-                </Label>
+                </FieldLabel>
                 <Input
                   id={`finishTime_${race.id}`}
                   placeholder="00:45:30"
@@ -277,13 +278,12 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
                   }}
                   disabled={fieldsDisabled}
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Finish time"
                 />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor={`positionPlace_${race.id}`} className="text-xs">
+              </FieldContent>
+              <FieldContent>
+                <FieldLabel htmlFor={`positionPlace_${race.id}`} className="text-xs">
                   Position (overall)
-                </Label>
+                </FieldLabel>
                 <Input
                   id={`positionPlace_${race.id}`}
                   type="number"
@@ -292,13 +292,12 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
                   onChange={(e) => setPositionPlace(e.target.value)}
                   disabled={fieldsDisabled}
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Overall position"
                 />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor={`positionMale_${race.id}`} className="text-xs">
+              </FieldContent>
+              <FieldContent>
+                <FieldLabel htmlFor={`positionMale_${race.id}`} className="text-xs">
                   Position (male)
-                </Label>
+                </FieldLabel>
                 <Input
                   id={`positionMale_${race.id}`}
                   type="number"
@@ -307,9 +306,8 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
                   onChange={(e) => setPositionMale(e.target.value)}
                   disabled={fieldsDisabled}
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Male position"
                 />
-              </div>
+              </FieldContent>
             </div>
           )}
         </div>

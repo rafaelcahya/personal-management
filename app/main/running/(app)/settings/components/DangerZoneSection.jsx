@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { AlertTriangle, CheckCircle2, AlertCircle } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 import {
   Dialog,
   DialogContent,
@@ -115,13 +117,10 @@ export default function DangerZoneSection() {
               undone.
             </p>
 
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="dangerZoneConfirmInput_settingsPage"
-                className="text-sm font-medium text-slate-700"
-              >
+            <FieldContent>
+              <FieldLabel htmlFor="dangerZoneConfirmInput_settingsPage">
                 Type <span className="font-mono font-bold">DELETE</span> to confirm
-              </label>
+              </FieldLabel>
               <Input
                 id="dangerZoneConfirmInput_settingsPage"
                 value={confirmText}
@@ -131,7 +130,7 @@ export default function DangerZoneSection() {
                 disabled={deleting}
                 autoComplete="off"
               />
-            </div>
+            </FieldContent>
 
             {deleteError && (
               <div

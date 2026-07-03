@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { fetchEventList } from '@/lib/api/event'
 import { toast } from 'sonner'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Search, List, AlignLeft, CalendarX2, SearchX, Sparkles, X, History } from 'lucide-react'

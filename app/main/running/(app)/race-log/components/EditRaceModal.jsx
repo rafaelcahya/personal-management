@@ -5,17 +5,16 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, CalendarIcon, Loader2 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import Input from '@/components/base/Input/Input'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Textarea } from '@/components/ui/textarea'
+import Textarea from '@/components/base/Textarea/Textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/base/Select/Select'
 import {
   Dialog,
   DialogContent,
@@ -27,6 +26,9 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar as CalendarPicker } from '@/components/ui/calendar'
 import { format, parseISO } from 'date-fns'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
 import { toast } from 'sonner'
 import { updateRaceLog } from '@/lib/api/running'
 import { updateRaceLogSchema } from '@/schemas/raceLog'
@@ -136,31 +138,27 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="editRaceTitle">
-              Race name <span className="text-red-500">*</span>
-            </Label>
+          {/* Title */}
+          <FieldContent error={errors.title?.message}>
+            <FieldLabel htmlFor="editRaceTitle" required>
+              Race name
+            </FieldLabel>
             <Input
               id="editRaceTitle"
               placeholder="e.g. Jakarta Marathon 2025"
               className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
               {...register('title')}
             />
-            {errors.title && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
+            <FieldError />
+          </FieldContent>
 
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              Race date <span className="text-red-500">*</span>
-            </Label>
-            <Controller
-              name="race_date"
-              control={control}
-              render={({ field }) => (
+          {/* Race date */}
+          <Controller
+            name="race_date"
+            control={control}
+            render={({ field, fieldState }) => (
+              <FieldContent error={fieldState.error?.message}>
+                <FieldLabel required>Race date</FieldLabel>
                 <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -187,19 +185,14 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
                     />
                   </PopoverContent>
                 </Popover>
-              )}
-            />
-            {errors.race_date && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.race_date.message}
-              </p>
+                <FieldError />
+              </FieldContent>
             )}
-          </div>
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              Distance <span className="text-red-500">*</span>
-            </Label>
+          {/* Distance */}
+          <FieldContent error={errors.distance_m?.message}>
+            <FieldLabel required>Distance</FieldLabel>
             <Controller
               name="distance_m"
               control={control}
@@ -250,33 +243,33 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
                 )}
               />
             )}
-            {errors.distance_m && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.distance_m.message}
-              </p>
-            )}
-          </div>
+            <FieldError />
+          </FieldContent>
 
-          <div className="flex items-center gap-2.5">
-            <Controller
-              name="did_not_finish"
-              control={control}
-              render={({ field }) => (
-                <Checkbox id="editDnf" checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
-            <Label htmlFor="editDnf" className="cursor-pointer select-none">
-              Did not finish (DNF)
-            </Label>
-          </div>
-
-          {!dnf && (
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="editFinishTime">Finish time (HH:MM:SS)</Label>
+          {/* DNF checkbox */}
+          <FieldContent>
+            <div className="flex items-center gap-2.5">
               <Controller
-                name="finish_time_sec"
+                name="did_not_finish"
                 control={control}
                 render={({ field }) => (
+                  <Checkbox id="editDnf" checked={field.value} onCheckedChange={field.onChange} />
+                )}
+              />
+              <FieldLabel htmlFor="editDnf" className="cursor-pointer select-none">
+                Did not finish (DNF)
+              </FieldLabel>
+            </div>
+          </FieldContent>
+
+          {/* Finish time */}
+          {!dnf && (
+            <Controller
+              name="finish_time_sec"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel htmlFor="editFinishTime">Finish time (HH:MM:SS)</FieldLabel>
                   <Input
                     id="editFinishTime"
                     placeholder="e.g. 00:45:30"
@@ -289,23 +282,20 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
                       if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
                     }}
                   />
-                )}
-              />
-              {errors.finish_time_sec && (
-                <p className="text-xs text-red-600" role="alert">
-                  {errors.finish_time_sec.message}
-                </p>
+                  <FieldError />
+                </FieldContent>
               )}
-            </div>
+            />
           )}
 
+          {/* Stats grid */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="editAvgHr">Avg HR (bpm)</Label>
-              <Controller
-                name="avg_hr"
-                control={control}
-                render={({ field }) => (
+            <Controller
+              name="avg_hr"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel htmlFor="editAvgHr">Avg HR (bpm)</FieldLabel>
                   <Input
                     id="editAvgHr"
                     type="number"
@@ -314,15 +304,16 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
                   />
-                )}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="editElevation">Elevation gain (m)</Label>
-              <Controller
-                name="elevation_gain_m"
-                control={control}
-                render={({ field }) => (
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
+            <Controller
+              name="elevation_gain_m"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel htmlFor="editElevation">Elevation gain (m)</FieldLabel>
                   <Input
                     id="editElevation"
                     type="number"
@@ -331,15 +322,16 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
                   />
-                )}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="editPosPlace">Position (place)</Label>
-              <Controller
-                name="position_place"
-                control={control}
-                render={({ field }) => (
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
+            <Controller
+              name="position_place"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel htmlFor="editPosPlace">Position (place)</FieldLabel>
                   <Input
                     id="editPosPlace"
                     type="number"
@@ -348,15 +340,16 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
                   />
-                )}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="editPosMale">Position (male)</Label>
-              <Controller
-                name="position_male"
-                control={control}
-                render={({ field }) => (
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
+            <Controller
+              name="position_male"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel htmlFor="editPosMale">Position (male)</FieldLabel>
                   <Input
                     id="editPosMale"
                     type="number"
@@ -365,13 +358,15 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
                   />
-                )}
-              />
-            </div>
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="editNotes">Notes</Label>
+          {/* Notes */}
+          <FieldContent>
+            <FieldLabel htmlFor="editNotes">Notes</FieldLabel>
             <Textarea
               id="editNotes"
               placeholder="Weather, conditions, how you felt…"
@@ -379,7 +374,7 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
               rows={3}
               {...register('notes')}
             />
-          </div>
+          </FieldContent>
 
           {serverError && (
             <p className="text-xs text-red-600 flex items-center gap-1" role="alert">

@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Info, Heart } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import Input from '@/components/base/Input/Input'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldDescription from '@/components/base/Field/FieldDescription'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import {
   Select,
@@ -12,7 +14,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/base/Select/Select'
 import {
   Tooltip as UITooltip,
   TooltipContent as UITooltipContent,
@@ -186,10 +188,8 @@ export default function HrZonesSection() {
         <div className="px-5 py-5 flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4">
             {/* Max HR */}
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="maxHrInput_settingsPage" className="text-sm font-medium">
-                Max HR (bpm)
-              </Label>
+            <FieldContent>
+              <FieldLabel htmlFor="maxHrInput_settingsPage">Max HR (bpm)</FieldLabel>
               <div className="flex gap-2">
                 <Input
                   id="maxHrInput_settingsPage"
@@ -233,17 +233,15 @@ export default function HrZonesSection() {
                   Could not detect Max HR — please try again
                 </p>
               )}
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <FieldDescription className="leading-relaxed">
                 The highest heart rate your heart can reach during maximum effort. Used to calculate
                 HR training zones.
-              </p>
-            </div>
+              </FieldDescription>
+            </FieldContent>
 
             {/* Resting HR */}
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="restingHrInput_settingsPage" className="text-sm font-medium">
-                Resting HR (bpm)
-              </Label>
+            <FieldContent>
+              <FieldLabel htmlFor="restingHrInput_settingsPage">Resting HR (bpm)</FieldLabel>
               <Input
                 id="restingHrInput_settingsPage"
                 type="number"
@@ -254,17 +252,15 @@ export default function HrZonesSection() {
                 placeholder="e.g. 55"
                 className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
               />
-              <p className="text-xs text-slate-400">
+              <FieldDescription>
                 Your heart rate first thing in the morning — required for Karvonen method.
-              </p>
-            </div>
+              </FieldDescription>
+            </FieldContent>
 
             {/* Threshold HR */}
-            <div className="flex flex-col gap-1.5">
+            <FieldContent>
               <div className="flex items-center gap-1.5">
-                <Label htmlFor="thresholdHrInput_settingsPage" className="text-sm font-medium">
-                  Threshold HR (bpm)
-                </Label>
+                <FieldLabel htmlFor="thresholdHrInput_settingsPage">Threshold HR (bpm)</FieldLabel>
                 <UITooltipProvider delayDuration={0}>
                   <UITooltip>
                     <UITooltipTrigger asChild>
@@ -319,13 +315,11 @@ export default function HrZonesSection() {
                   Set Max HR first to use the auto-fill
                 </p>
               )}
-            </div>
+            </FieldContent>
 
             {/* Calculation Method */}
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="hrZonesMethodSelect_settingsPage" className="text-sm font-medium">
-                Calculation Method
-              </Label>
+            <FieldContent>
+              <FieldLabel htmlFor="hrZonesMethodSelect_settingsPage">Calculation Method</FieldLabel>
               <Select value={method} onValueChange={setMethod}>
                 <SelectTrigger
                   id="hrZonesMethodSelect_settingsPage"
@@ -350,7 +344,7 @@ export default function HrZonesSection() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </FieldContent>
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-1">

@@ -8,9 +8,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarPicker } from '@/components/ui/calendar'
 import { format, parseISO } from 'date-fns'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import Input from '@/components/base/Input/Input'
+import Textarea from '@/components/base/Textarea/Textarea'
 import {
   Dialog,
   DialogContent,
@@ -25,7 +24,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/base/Select/Select'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import FieldDescription from '@/components/base/Field/FieldDescription'
 import { toast } from 'sonner'
 import { createUpcomingRace, updateUpcomingRace } from '@/lib/api/running'
 import { createUpcomingRaceSchema, updateUpcomingRaceSchema } from '@/schemas/upcomingRace'
@@ -151,41 +154,35 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
           {/* Title */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="upcomingRaceTitle">
-              Race name <span className="text-red-500">*</span>
-            </Label>
+          <FieldContent error={errors.title?.message}>
+            <FieldLabel htmlFor="upcomingRaceTitle" required>
+              Race name
+            </FieldLabel>
             <Input
               id="upcomingRaceTitle"
               placeholder="e.g. Bali Marathon 2026"
               className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
               {...register('title')}
-              aria-describedby={errors.title ? 'upcomingRaceTitleError' : undefined}
             />
-            <p className="text-xs text-slate-400">Name it after the official race event 🏁</p>
-            {errors.title && (
-              <p id="upcomingRaceTitleError" className="text-xs text-red-600" role="alert">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
+            <FieldDescription className="text-xs text-slate-400">
+              Name it after the official race event 🏁
+            </FieldDescription>
+            <FieldError />
+          </FieldContent>
 
           {/* Race date */}
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              Race date <span className="text-red-500">*</span>
-            </Label>
-            <Controller
-              name="race_date"
-              control={control}
-              render={({ field }) => (
+          <Controller
+            name="race_date"
+            control={control}
+            render={({ field, fieldState }) => (
+              <FieldContent error={fieldState.error?.message}>
+                <FieldLabel required>Race date</FieldLabel>
                 <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       id="upcomingRaceDate"
                       variant="outline"
                       className={`w-full justify-start text-left text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 ${!field.value ? 'text-slate-400' : 'text-slate-900'}`}
-                      aria-describedby={errors.race_date ? 'upcomingRaceDateError' : undefined}
                     >
                       <CalendarIcon
                         className="size-4 mr-2 shrink-0 text-slate-400"
@@ -206,23 +203,25 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
                     />
                   </PopoverContent>
                 </Popover>
-              )}
-            />
-            <p className="text-xs text-slate-400">
-              The day of the race, not the racepack pickup date 📅
-            </p>
-            {errors.race_date && (
-              <p id="upcomingRaceDateError" className="text-xs text-red-600" role="alert">
-                {errors.race_date.message}
-              </p>
+                <FieldDescription className="text-xs text-slate-400">
+                  The day of the race, not the racepack pickup date 📅
+                </FieldDescription>
+                <FieldError />
+              </FieldContent>
             )}
-          </div>
+          />
 
           {/* Distance */}
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              Distance <span className="text-red-500">*</span>
-            </Label>
+          <FieldContent
+            error={
+              errors.distance_m
+                ? errors.distance_m.type === 'invalid_type'
+                  ? 'Distance is required'
+                  : errors.distance_m.message
+                : undefined
+            }
+          >
+            <FieldLabel required>Distance</FieldLabel>
             <Controller
               name="distance_m"
               control={control}
@@ -277,35 +276,29 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
                 )}
               />
             )}
-            <p className="text-xs text-slate-400">
+            <FieldDescription className="text-xs text-slate-400">
               Pick a preset or enter exact meters for custom races 📏
-            </p>
-            {errors.distance_m && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.distance_m.type === 'invalid_type'
-                  ? 'Distance is required'
-                  : errors.distance_m.message}
-              </p>
-            )}
-          </div>
+            </FieldDescription>
+            <FieldError />
+          </FieldContent>
 
           {/* Location (optional) */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="upcomingRaceLocation">Location</Label>
+          <FieldContent error={errors.location?.message}>
+            <FieldLabel htmlFor="upcomingRaceLocation">Location</FieldLabel>
             <Input
               id="upcomingRaceLocation"
               placeholder="e.g. Bali, Indonesia"
               className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
               {...register('location')}
             />
-            <p className="text-xs text-slate-400">
+            <FieldDescription className="text-xs text-slate-400">
               City or venue — helps you remember where you raced 📍
-            </p>
-          </div>
+            </FieldDescription>
+          </FieldContent>
 
           {/* Notes (optional) */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="upcomingRaceNotes">Notes</Label>
+          <FieldContent error={errors.notes?.message}>
+            <FieldLabel htmlFor="upcomingRaceNotes">Notes</FieldLabel>
             <Textarea
               id="upcomingRaceNotes"
               placeholder="Goals, target time, anything else…"
@@ -313,16 +306,16 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
               rows={3}
               {...register('notes')}
             />
-            <p className="text-xs text-slate-400">
+            <FieldDescription className="text-xs text-slate-400">
               Goals, pacing strategy, anything you want to remember 📝
-            </p>
-          </div>
+            </FieldDescription>
+          </FieldContent>
 
           {/* Target time (optional) */}
-          <div className="flex flex-col gap-1.5">
-            <Label>
+          <FieldContent>
+            <FieldLabel>
               Target time <span className="text-slate-400 font-normal text-xs">(optional)</span>
-            </Label>
+            </FieldLabel>
             <div className="flex items-center gap-2">
               <div className="flex flex-col gap-0.5 flex-1">
                 <Input
@@ -369,8 +362,10 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
                 <span className="text-[10px] text-slate-400 text-center">sec</span>
               </div>
             </div>
-            <p className="text-xs text-slate-400">Your goal finish time for this race ⏱️</p>
-          </div>
+            <FieldDescription className="text-xs text-slate-400">
+              Your goal finish time for this race ⏱️
+            </FieldDescription>
+          </FieldContent>
 
           {serverError && (
             <p className="text-xs text-red-600 flex items-center gap-1" role="alert">

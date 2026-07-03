@@ -1,20 +1,15 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import FieldDescription from '@/components/base/Field/FieldDescription'
 import { toast } from 'sonner'
 import { Info, Loader2, Settings, AlertCircle } from 'lucide-react'
 import { tradeSettingsSchema } from '@/schemas/tradeSettings'
@@ -135,185 +130,158 @@ export default function PerformConfig() {
       ) : fetchError ? (
         <SettingsErrorState onRetry={loadSettings} />
       ) : (
-        <Form {...form}>
-          <form id="settingsForm_settingsPage" onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className="px-5 py-5 space-y-5">
-              {/* Initial Margin */}
-              <FormField
+        <form id="settingsForm_settingsPage" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <div className="px-5 py-5 space-y-5">
+            {/* Initial Margin */}
+            <Controller
+              control={control}
+              name="initial_margin"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Initial Margin</FieldLabel>
+                  <Input
+                    id="initialMarginInput_settingsPage"
+                    type="text"
+                    placeholder="Rp 10.000.000"
+                    value={field.value ? `Rp ${Number(field.value).toLocaleString('id-ID')}` : ''}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/\D/g, '')
+                      field.onChange(raw)
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-describedby="initialMarginDesc_settingsPage"
+                    aria-invalid={!!fieldState.error}
+                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                      fieldState.error ? 'border-rose-500' : ''
+                    }`}
+                  />
+                  <FieldDescription id="initialMarginDesc_settingsPage">
+                    Starting capital for your trading account
+                  </FieldDescription>
+                  <FieldError id="initialMarginError_settingsPage" className="text-xs" />
+                </FieldContent>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* BI Risk Free Rate */}
+              <Controller
                 control={control}
-                name="initial_margin"
+                name="bi_risk_free_rate"
                 render={({ field, fieldState }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">Initial Margin</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="initialMarginInput_settingsPage"
-                        type="text"
-                        placeholder="Rp 10.000.000"
-                        value={
-                          field.value ? `Rp ${Number(field.value).toLocaleString('id-ID')}` : ''
-                        }
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(/\D/g, '')
-                          field.onChange(raw)
-                        }}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                        aria-describedby="initialMarginDesc_settingsPage"
-                        aria-invalid={!!fieldState.error}
-                        className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                          fieldState.error ? 'border-rose-500' : ''
-                        }`}
-                      />
-                    </FormControl>
-                    <FormDescription
-                      id="initialMarginDesc_settingsPage"
-                      className="text-xs text-slate-400"
-                    >
-                      Starting capital for your trading account
-                    </FormDescription>
-                    <FormMessage id="initialMarginError_settingsPage" className="text-xs" />
-                  </FormItem>
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="text-sm font-medium">BI Risk Free Rate</FieldLabel>
+                    <Input
+                      id="biRiskFreeRateInput_settingsPage"
+                      type="text"
+                      placeholder="6.5"
+                      value={field.value}
+                      onChange={(e) => {
+                        const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
+                        field.onChange(cleaned)
+                      }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      aria-describedby="biRiskFreeRateDesc_settingsPage"
+                      aria-invalid={!!fieldState.error}
+                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldDescription id="biRiskFreeRateDesc_settingsPage">
+                      Bank Indonesia reference rate (in %)
+                    </FieldDescription>
+                    <FieldError id="biRiskFreeRateError_settingsPage" className="text-xs" />
+                  </FieldContent>
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
-                {/* BI Risk Free Rate */}
-                <FormField
-                  control={control}
-                  name="bi_risk_free_rate"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">BI Risk Free Rate</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="biRiskFreeRateInput_settingsPage"
-                          type="text"
-                          placeholder="6.5"
-                          value={field.value}
-                          onChange={(e) => {
-                            const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
-                            field.onChange(cleaned)
-                          }}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                          aria-describedby="biRiskFreeRateDesc_settingsPage"
-                          aria-invalid={!!fieldState.error}
-                          className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                            fieldState.error ? 'border-rose-500' : ''
-                          }`}
-                        />
-                      </FormControl>
-                      <FormDescription
-                        id="biRiskFreeRateDesc_settingsPage"
-                        className="text-xs text-slate-400"
-                      >
-                        Bank Indonesia reference rate (in %)
-                      </FormDescription>
-                      <FormMessage id="biRiskFreeRateError_settingsPage" className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Personal Risk Free Rate */}
-                <FormField
-                  control={control}
-                  name="personal_risk_free_rate"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">Personal Risk Free Rate</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="personalRiskFreeRateInput_settingsPage"
-                          type="text"
-                          placeholder="8.0"
-                          value={field.value}
-                          onChange={(e) => {
-                            const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
-                            field.onChange(cleaned)
-                          }}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                          aria-describedby="personalRiskFreeRateDesc_settingsPage"
-                          aria-invalid={!!fieldState.error}
-                          className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                            fieldState.error ? 'border-rose-500' : ''
-                          }`}
-                        />
-                      </FormControl>
-                      <FormDescription
-                        id="personalRiskFreeRateDesc_settingsPage"
-                        className="text-xs text-slate-400"
-                      >
-                        Your personal target return rate (in %)
-                      </FormDescription>
-                      <FormMessage
-                        id="personalRiskFreeRateError_settingsPage"
-                        className="text-xs"
-                      />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Margin of Error */}
-              <FormField
+              {/* Personal Risk Free Rate */}
+              <Controller
                 control={control}
-                name="margin_of_error"
+                name="personal_risk_free_rate"
                 render={({ field, fieldState }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">Margin of Error</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="marginOfErrorInput_settingsPage"
-                        type="text"
-                        placeholder="10"
-                        value={field.value}
-                        onChange={(e) => {
-                          const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
-                          field.onChange(cleaned)
-                        }}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                        aria-describedby="marginOfErrorDesc_settingsPage"
-                        aria-invalid={!!fieldState.error}
-                        className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                          fieldState.error ? 'border-rose-500' : ''
-                        }`}
-                      />
-                    </FormControl>
-                    <FormDescription
-                      id="marginOfErrorDesc_settingsPage"
-                      className="text-xs text-slate-400"
-                    >
-                      Safety buffer for risk calculations (in %)
-                    </FormDescription>
-                    <FormMessage id="marginOfErrorError_settingsPage" className="text-xs" />
-                  </FormItem>
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="text-sm font-medium">Personal Risk Free Rate</FieldLabel>
+                    <Input
+                      id="personalRiskFreeRateInput_settingsPage"
+                      type="text"
+                      placeholder="8.0"
+                      value={field.value}
+                      onChange={(e) => {
+                        const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
+                        field.onChange(cleaned)
+                      }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      aria-describedby="personalRiskFreeRateDesc_settingsPage"
+                      aria-invalid={!!fieldState.error}
+                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldDescription id="personalRiskFreeRateDesc_settingsPage">
+                      Your personal target return rate (in %)
+                    </FieldDescription>
+                    <FieldError id="personalRiskFreeRateError_settingsPage" className="text-xs" />
+                  </FieldContent>
                 )}
               />
             </div>
 
-            {/* Footer */}
-            <div className="flex justify-end border-t border-slate-100 px-5 py-3 bg-slate-50">
-              <Button
-                type="submit"
-                id="saveSettingsBtn_settingsPage"
-                disabled={formState.isSubmitting}
-                className="bg-violet-600 hover:bg-violet-700"
-              >
-                {formState.isSubmitting && (
-                  <Loader2 className="size-4 mr-2 animate-spin" aria-hidden="true" />
-                )}
-                {formState.isSubmitting ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+            {/* Margin of Error */}
+            <Controller
+              control={control}
+              name="margin_of_error"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Margin of Error</FieldLabel>
+                  <Input
+                    id="marginOfErrorInput_settingsPage"
+                    type="text"
+                    placeholder="10"
+                    value={field.value}
+                    onChange={(e) => {
+                      const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
+                      field.onChange(cleaned)
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-describedby="marginOfErrorDesc_settingsPage"
+                    aria-invalid={!!fieldState.error}
+                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                      fieldState.error ? 'border-rose-500' : ''
+                    }`}
+                  />
+                  <FieldDescription id="marginOfErrorDesc_settingsPage">
+                    Safety buffer for risk calculations (in %)
+                  </FieldDescription>
+                  <FieldError id="marginOfErrorError_settingsPage" className="text-xs" />
+                </FieldContent>
+              )}
+            />
+          </div>
+
+          {/* Footer */}
+          <div className="flex justify-end border-t border-slate-100 px-5 py-3 bg-slate-50">
+            <Button
+              type="submit"
+              id="saveSettingsBtn_settingsPage"
+              disabled={formState.isSubmitting}
+              className="bg-violet-600 hover:bg-violet-700"
+            >
+              {formState.isSubmitting && (
+                <Loader2 className="size-4 mr-2 animate-spin" aria-hidden="true" />
+              )}
+              {formState.isSubmitting ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </div>
+        </form>
       )}
     </section>
   )

@@ -71,10 +71,10 @@ function ActionMenu({
           id="actionMenuTrigger_productListPage"
           variant="ghost"
           size="icon"
+          aria-label="Open menu"
           className="size-8 outline-none hover:bg-slate-200"
         >
           <MoreHorizontalIcon />
-          <span className="sr-only">Open menu</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

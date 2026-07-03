@@ -8,8 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarPicker } from '@/components/ui/calendar'
 import { format, parseISO } from 'date-fns'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import Input from '@/components/base/Input/Input'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
@@ -25,8 +24,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+} from '@/components/base/Select/Select'
+import Textarea from '@/components/base/Textarea/Textarea'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import FieldDescription from '@/components/base/Field/FieldDescription'
 import { toast } from 'sonner'
 import { createRaceLog } from '@/lib/api/running'
 import { createRaceLogSchema } from '@/schemas/raceLog'
@@ -109,41 +112,35 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
           {/* Title */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="raceTitle">
-              Race name <span className="text-red-500">*</span>
-            </Label>
+          <FieldContent error={errors.title?.message}>
+            <FieldLabel htmlFor="raceTitle" required>
+              Race name
+            </FieldLabel>
             <Input
               id="raceTitle"
               placeholder="e.g. Jakarta Marathon 2025"
               className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
               {...register('title')}
-              aria-describedby={errors.title ? 'raceTitleError' : undefined}
             />
-            <p className="text-xs text-slate-400">Name it after the official race event 🏁</p>
-            {errors.title && (
-              <p id="raceTitleError" className="text-xs text-red-600" role="alert">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
+            <FieldDescription className="text-xs text-slate-400">
+              Name it after the official race event 🏁
+            </FieldDescription>
+            <FieldError />
+          </FieldContent>
 
           {/* Race date */}
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              Race date <span className="text-red-500">*</span>
-            </Label>
-            <Controller
-              name="race_date"
-              control={control}
-              render={({ field }) => (
+          <Controller
+            name="race_date"
+            control={control}
+            render={({ field, fieldState }) => (
+              <FieldContent error={fieldState.error?.message}>
+                <FieldLabel required>Race date</FieldLabel>
                 <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       id="raceDate"
                       variant="outline"
                       className={`w-full justify-start text-left text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 ${!field.value ? 'text-slate-400' : 'text-slate-900'}`}
-                      aria-describedby={errors.race_date ? 'raceDateError' : undefined}
                     >
                       <CalendarIcon
                         className="size-4 mr-2 shrink-0 text-slate-400"
@@ -164,21 +161,17 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                     />
                   </PopoverContent>
                 </Popover>
-              )}
-            />
-            <p className="text-xs text-slate-400">The date you actually ran the race 📅</p>
-            {errors.race_date && (
-              <p id="raceDateError" className="text-xs text-red-600" role="alert">
-                {errors.race_date.message}
-              </p>
+                <FieldDescription className="text-xs text-slate-400">
+                  The date you actually ran the race 📅
+                </FieldDescription>
+                <FieldError />
+              </FieldContent>
             )}
-          </div>
+          />
 
           {/* Distance */}
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              Distance <span className="text-red-500">*</span>
-            </Label>
+          <FieldContent error={errors.distance_m?.message}>
+            <FieldLabel required>Distance</FieldLabel>
             <Controller
               name="distance_m"
               control={control}
@@ -233,20 +226,14 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                 )}
               />
             )}
-            <p className="text-xs text-slate-400">
+            <FieldDescription className="text-xs text-slate-400">
               Pick a preset or enter exact meters for custom races 📏
-            </p>
-            {errors.distance_m && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.distance_m.type === 'invalid_type'
-                  ? 'Distance is required'
-                  : errors.distance_m.message}
-              </p>
-            )}
-          </div>
+            </FieldDescription>
+            <FieldError />
+          </FieldContent>
 
           {/* DNF checkbox */}
-          <div className="flex flex-col gap-1.5">
+          <FieldContent>
             <div className="flex items-center gap-2.5">
               <Controller
                 name="did_not_finish"
@@ -255,23 +242,25 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                   <Checkbox id="dnf" checked={field.value} onCheckedChange={field.onChange} />
                 )}
               />
-              <Label htmlFor="dnf" className="cursor-pointer select-none">
+              <FieldLabel htmlFor="dnf" className="cursor-pointer select-none">
                 Did not finish (DNF)
-              </Label>
+              </FieldLabel>
             </div>
-            <p className="text-xs text-slate-400">Check this if you did not finish the race 🚫</p>
-          </div>
+            <FieldDescription className="text-xs text-slate-400">
+              Check this if you did not finish the race 🚫
+            </FieldDescription>
+          </FieldContent>
 
           {/* Finish time — hidden when DNF */}
           {!dnf && (
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="finishTime">
-                Finish time (HH:MM:SS) <span className="text-red-500">*</span>
-              </Label>
-              <Controller
-                name="finish_time_sec"
-                control={control}
-                render={({ field }) => (
+            <Controller
+              name="finish_time_sec"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel htmlFor="finishTime" required>
+                    Finish time (HH:MM:SS)
+                  </FieldLabel>
                   <Input
                     id="finishTime"
                     placeholder="e.g. 00:45:30"
@@ -283,27 +272,24 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                       field.onChange(secs ?? null)
                       if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
                     }}
-                    aria-describedby={errors.finish_time_sec ? 'finishTimeError' : undefined}
                   />
-                )}
-              />
-              <p className="text-xs text-slate-400">Your official chip or gun time (hh:mm:ss) ⏱️</p>
-              {errors.finish_time_sec && (
-                <p id="finishTimeError" className="text-xs text-red-600" role="alert">
-                  {errors.finish_time_sec.message}
-                </p>
+                  <FieldDescription className="text-xs text-slate-400">
+                    Your official chip or gun time (hh:mm:ss) ⏱️
+                  </FieldDescription>
+                  <FieldError />
+                </FieldContent>
               )}
-            </div>
+            />
           )}
 
           {/* Optional fields — 2 columns */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="posPlace">Position (place)</Label>
-              <Controller
-                name="position_place"
-                control={control}
-                render={({ field }) => (
+            <Controller
+              name="position_place"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel htmlFor="posPlace">Position (place)</FieldLabel>
                   <Input
                     id="posPlace"
                     type="number"
@@ -312,21 +298,19 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
                   />
-                )}
-              />
-              <p className="text-xs text-slate-400">Your overall finisher position 🥇</p>
-              {errors.position_place && (
-                <p className="text-xs text-red-600" role="alert">
-                  {errors.position_place.message}
-                </p>
+                  <FieldDescription className="text-xs text-slate-400">
+                    Your overall finisher position 🥇
+                  </FieldDescription>
+                  <FieldError />
+                </FieldContent>
               )}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="posMale">Position (male)</Label>
-              <Controller
-                name="position_male"
-                control={control}
-                render={({ field }) => (
+            />
+            <Controller
+              name="position_male"
+              control={control}
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel htmlFor="posMale">Position (male)</FieldLabel>
                   <Input
                     id="posMale"
                     type="number"
@@ -335,20 +319,18 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
                   />
-                )}
-              />
-              <p className="text-xs text-slate-400">Your position within the male category 👟</p>
-              {errors.position_male && (
-                <p className="text-xs text-red-600" role="alert">
-                  {errors.position_male.message}
-                </p>
+                  <FieldDescription className="text-xs text-slate-400">
+                    Your position within the male category 👟
+                  </FieldDescription>
+                  <FieldError />
+                </FieldContent>
               )}
-            </div>
+            />
           </div>
 
           {/* Notes */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="raceNotes">Notes</Label>
+          <FieldContent>
+            <FieldLabel htmlFor="raceNotes">Notes</FieldLabel>
             <Textarea
               id="raceNotes"
               placeholder="Weather, conditions, how you felt…"
@@ -356,8 +338,10 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
               rows={3}
               {...register('notes')}
             />
-            <p className="text-xs text-slate-400">Conditions, how you felt, lessons learned 📝</p>
-          </div>
+            <FieldDescription className="text-xs text-slate-400">
+              Conditions, how you felt, lessons learned 📝
+            </FieldDescription>
+          </FieldContent>
 
           {serverError && (
             <p className="text-xs text-red-600 flex items-center gap-1" role="alert">

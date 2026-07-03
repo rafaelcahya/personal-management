@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Pencil, Timer } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import Input from '@/components/base/Input/Input'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldDescription from '@/components/base/Field/FieldDescription'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { getUserProfile, updateUserProfile, detectThresholdPace } from '@/lib/api/running'
 
@@ -163,10 +165,10 @@ export default function PaceZonesSection() {
 
           {/* Manual mode */}
           {mode === 'manual' && (
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="thresholdPaceInput_settingsPage" className="text-sm font-medium">
+            <FieldContent>
+              <FieldLabel htmlFor="thresholdPaceInput_settingsPage">
                 Threshold Pace (min:sec /km)
-              </Label>
+              </FieldLabel>
               <Input
                 id="thresholdPaceInput_settingsPage"
                 type="text"
@@ -175,10 +177,10 @@ export default function PaceZonesSection() {
                 placeholder="e.g. 5:20"
                 className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 max-w-[120px]"
               />
-              <p className="text-xs text-slate-400">
+              <FieldDescription>
                 Your sustainable pace for ~60 min — the anchor for all 5 pace zones.
-              </p>
-            </div>
+              </FieldDescription>
+            </FieldContent>
           )}
 
           {/* From Activity mode */}
@@ -248,13 +250,10 @@ export default function PaceZonesSection() {
                   {detectError}
                 </div>
               )}
-              <div className="flex flex-col gap-1.5">
-                <Label
-                  htmlFor="thresholdPaceActivityInput_settingsPage"
-                  className="text-sm font-medium"
-                >
+              <FieldContent>
+                <FieldLabel htmlFor="thresholdPaceActivityInput_settingsPage">
                   Threshold Pace (min:sec /km)
-                </Label>
+                </FieldLabel>
                 <Input
                   id="thresholdPaceActivityInput_settingsPage"
                   type="text"
@@ -263,7 +262,7 @@ export default function PaceZonesSection() {
                   placeholder="e.g. 5:20"
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 max-w-[120px]"
                 />
-              </div>
+              </FieldContent>
             </div>
           )}
           <div className="flex items-center justify-end gap-3 pt-1">

@@ -64,7 +64,9 @@ function YearFieldDemo({ error, description, label = 'Year', required = false, .
     <FieldContent size="base" error={error}>
       <FieldLabel required={required}>{label}</FieldLabel>
       <YearPicker value={year} onChange={setYear} {...props} />
-      {description && <FieldDescription>{description}</FieldDescription>}
+      {description && (
+        <FieldDescription className="text-xs text-slate-400">{description}</FieldDescription>
+      )}
       {error && <FieldError />}
     </FieldContent>
   )
@@ -395,7 +397,7 @@ export const YearPickerDocs = {
         <Code>{`<FieldContent size="base">
   <FieldLabel required>Birth year</FieldLabel>
   <YearPicker value={year} onChange={setYear} />
-  <FieldDescription>The year you were born.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">The year you were born.</FieldDescription>
 </FieldContent>`}</Code>
       </Section>
 

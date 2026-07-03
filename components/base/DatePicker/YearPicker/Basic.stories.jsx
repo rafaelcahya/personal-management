@@ -23,7 +23,9 @@ function FieldDemo() {
     <FieldContent size="base">
       <FieldLabel required>Birth year</FieldLabel>
       <YearPicker value={year} onChange={setYear} />
-      <FieldDescription>The year you were born.</FieldDescription>
+      <FieldDescription className="text-xs text-slate-400">
+        The year you were born.
+      </FieldDescription>
     </FieldContent>
   )
 }
@@ -55,7 +57,7 @@ export const Basic = {
 <FieldContent size="base">
   <FieldLabel required>Birth year</FieldLabel>
   <YearPicker value={year} onChange={setYear} />
-  <FieldDescription>The year you were born.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">The year you were born.</FieldDescription>
 </FieldContent>`}</code>
       </pre>
     </div>

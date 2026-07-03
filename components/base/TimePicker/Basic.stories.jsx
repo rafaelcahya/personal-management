@@ -23,7 +23,9 @@ function FieldDemo() {
     <FieldContent size="base">
       <FieldLabel required>Start time</FieldLabel>
       <TimePicker value={time} onChange={setTime} />
-      <FieldDescription>When does the session start?</FieldDescription>
+      <FieldDescription className="text-xs text-slate-400">
+        When does the session start?
+      </FieldDescription>
     </FieldContent>
   )
 }
@@ -55,7 +57,7 @@ export const Basic = {
 <FieldContent size="base">
   <FieldLabel required>Start time</FieldLabel>
   <TimePicker value={time} onChange={setTime} />
-  <FieldDescription>When does the session start?</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">When does the session start?</FieldDescription>
 </FieldContent>`}</code>
       </pre>
     </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'
 import { X } from 'lucide-react'
 import Button from '@/components/base/Button/Button'

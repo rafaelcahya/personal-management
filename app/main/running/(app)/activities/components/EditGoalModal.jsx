@@ -13,16 +13,16 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import Button from '@/components/base/Button/Button'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import Textarea from '@/components/base/Textarea/Textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/base/Select/Select'
 import { toast } from 'sonner'
 import { updateGoal } from '@/lib/api/running'
 import { updateGoalSchema } from '@/schemas/raceLog'

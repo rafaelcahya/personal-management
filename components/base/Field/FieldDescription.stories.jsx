@@ -53,7 +53,9 @@ export const InContext = {
           <FieldControl>
             <Input placeholder="you@example.com" />
           </FieldControl>
-          <FieldDescription>Hint text — aria-describedby wired automatically.</FieldDescription>
+          <FieldDescription className="text-xs text-slate-400">
+            Hint text — aria-describedby wired automatically.
+          </FieldDescription>
         </FieldContent>
       </div>
 
@@ -61,7 +63,7 @@ export const InContext = {
         <code>{`<FieldContent size="base" required>
   <FieldLabel>Email</FieldLabel>
   <FieldControl><Input placeholder="you@example.com" /></FieldControl>
-  <FieldDescription>Hint text — aria-describedby wired automatically.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Hint text — aria-describedby wired automatically.</FieldDescription>
 </FieldContent>`}</code>
       </pre>
     </div>

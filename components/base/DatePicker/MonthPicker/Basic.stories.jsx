@@ -23,7 +23,9 @@ function FieldDemo() {
     <FieldContent size="base">
       <FieldLabel required>Birth month</FieldLabel>
       <MonthPicker value={month} onChange={setMonth} />
-      <FieldDescription>The month you were born in.</FieldDescription>
+      <FieldDescription className="text-xs text-slate-400">
+        The month you were born in.
+      </FieldDescription>
     </FieldContent>
   )
 }
@@ -57,7 +59,7 @@ export const Basic = {
 <FieldContent size="base">
   <FieldLabel required>Birth month</FieldLabel>
   <MonthPicker value={month} onChange={setMonth} />
-  <FieldDescription>The month you were born in.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">The month you were born in.</FieldDescription>
 </FieldContent>`}</code>
       </pre>
     </div>

@@ -29,7 +29,9 @@ export const Disabled = {
           <FieldControl>
             <Textarea rows={3} defaultValue="Disabled via FieldContent context." />
           </FieldControl>
-          <FieldDescription>This field cannot be edited.</FieldDescription>
+          <FieldDescription className="text-xs text-slate-400">
+            This field cannot be edited.
+          </FieldDescription>
         </FieldContent>
       </div>
 

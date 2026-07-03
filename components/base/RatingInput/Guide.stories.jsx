@@ -68,7 +68,9 @@ function FieldDemo({ label = 'Run effort', required = false, error, description,
     <FieldContent size="base" error={error}>
       <FieldLabel required={required}>{label}</FieldLabel>
       <RatingInput value={val} onChange={setVal} {...props} />
-      {description && <FieldDescription>{description}</FieldDescription>}
+      {description && (
+        <FieldDescription className="text-xs text-slate-400">{description}</FieldDescription>
+      )}
       {error && <FieldError />}
     </FieldContent>
   )
@@ -423,7 +425,7 @@ const [val, setVal] = useState(null)
         <Code>{`<FieldContent size="base">
   <FieldLabel required>Run effort (RPE)</FieldLabel>
   <RatingInput value={val} onChange={setVal} />
-  <FieldDescription>Rate your perceived exertion from 1–5.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Rate your perceived exertion from 1–5.</FieldDescription>
 </FieldContent>
 
 <FieldContent size="base" error="Please provide a rating.">
