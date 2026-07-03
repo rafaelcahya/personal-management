@@ -11,7 +11,7 @@ import {
   SheetTrigger,
   SheetFooter,
 } from '@/components/ui/sheet'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import { ANALYTICS_SECTIONS } from '../sections'
 import Button from '@/components/base/Button/Button'
 
@@ -92,6 +92,8 @@ function SectionsContent({
                 {section.label}
               </label>
               <Button
+                size="xs"
+                variant="ghost"
                 onClick={() => scrollToSection(section.id, onClose)}
                 className="shrink-0 p-0.5 rounded text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-colors"
                 aria-label={`Jump to ${section.label}`}

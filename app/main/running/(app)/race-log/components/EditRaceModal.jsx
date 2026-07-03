@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, CalendarIcon, Loader2 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import Textarea from '@/components/base/Textarea/Textarea'
 import {
   Select,
