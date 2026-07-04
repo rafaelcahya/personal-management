@@ -5,9 +5,8 @@ import { Info, ChevronDown, ChevronUp } from 'lucide-react'
 import {
   Tooltip as UITooltip,
   TooltipContent as UITooltipContent,
-  TooltipProvider as UITooltipProvider,
   TooltipTrigger as UITooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/components/base/Tooltip/Tooltip.jsx'
 import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import { updateActivity } from '@/lib/api/running'
@@ -89,28 +88,26 @@ export default function PerceivedEffortSection({
         <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
           Borg CR10
         </span>
-        <UITooltipProvider delayDuration={200}>
-          <UITooltip>
-            <UITooltipTrigger asChild>
-              <Button
-                id="rpeInfoTrigger_activityDetailPage"
-                variant="ghost"
-                size="icon-xs"
-                aria-label="About the Borg CR10 scale"
-                className="rounded-full text-slate-400 hover:text-slate-600"
-              >
-                <Info className="size-3.5" />
-              </Button>
-            </UITooltipTrigger>
-            <UITooltipContent
-              id="rpeInfoTooltip_activityDetailPage"
-              side="top"
-              className="max-w-72 text-xs leading-relaxed"
+        <UITooltip>
+          <UITooltipTrigger asChild>
+            <Button
+              id="rpeInfoTrigger_activityDetailPage"
+              variant="ghost"
+              size="icon-xs"
+              aria-label="About the Borg CR10 scale"
+              className="rounded-full text-slate-400 hover:text-slate-600"
             >
-              {BORG_CR10_COPY}
-            </UITooltipContent>
-          </UITooltip>
-        </UITooltipProvider>
+              <Info className="size-3.5" />
+            </Button>
+          </UITooltipTrigger>
+          <UITooltipContent
+            id="rpeInfoTooltip_activityDetailPage"
+            side="top"
+            className="max-w-72 text-xs leading-relaxed"
+          >
+            {BORG_CR10_COPY}
+          </UITooltipContent>
+        </UITooltip>
         {savedMsg && (
           <span
             id="rpeSavedMsg_activityDetailPage"
@@ -188,27 +185,25 @@ export default function PerceivedEffortSection({
 
       {/* Session Load */}
       {sessionLoad != null && (
-        <UITooltipProvider delayDuration={200}>
-          <UITooltip>
-            <UITooltipTrigger asChild>
-              <Button
-                id="rpeSessionLoad_activityDetailPage"
-                variant="ghost"
-                className="self-start px-3 py-1.5 h-auto bg-violet-50 rounded-lg cursor-help hover:bg-violet-100"
-              >
-                <span className="text-xs text-violet-700 font-semibold">{sessionLoad}</span>
-                <span className="text-xs text-violet-500">Session Load</span>
-              </Button>
-            </UITooltipTrigger>
-            <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
-              <p className="font-semibold mb-1">Session Load (Foster&apos;s method)</p>
-              <p>
-                RPE × moving time (min). Validated proxy for training load — r=0.90 vs HR-based
-                TRIMP.
-              </p>
-            </UITooltipContent>
-          </UITooltip>
-        </UITooltipProvider>
+        <UITooltip>
+          <UITooltipTrigger asChild>
+            <Button
+              id="rpeSessionLoad_activityDetailPage"
+              variant="ghost"
+              className="self-start px-3 py-1.5 h-auto bg-violet-50 rounded-lg cursor-help hover:bg-violet-100"
+            >
+              <span className="text-xs text-violet-700 font-semibold">{sessionLoad}</span>
+              <span className="text-xs text-violet-500">Session Load</span>
+            </Button>
+          </UITooltipTrigger>
+          <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+            <p className="font-semibold mb-1">Session Load (Foster&apos;s method)</p>
+            <p>
+              RPE × moving time (min). Validated proxy for training load — r=0.90 vs HR-based
+              TRIMP.
+            </p>
+          </UITooltipContent>
+        </UITooltip>
       )}
 
       {/* Expandable guide */}

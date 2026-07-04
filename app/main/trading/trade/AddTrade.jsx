@@ -5,15 +5,16 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@/components/base/Button/Button'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
@@ -173,23 +174,24 @@ export default function AddTrade({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild id="addNewTradeBtn_tradePage">
+    <Modal open={open} onOpenChange={setOpen}>
+      <ModalTrigger asChild id="addNewTradeBtn_tradePage">
         <Button>
           <PlusIcon className="w-4" />
           <span>Add Trade</span>
         </Button>
-      </DialogTrigger>
-      <DialogContent
-        className="sm:max-w-2xl flex flex-col max-h-[90vh]"
+      </ModalTrigger>
+      <ModalContent
+        className="sm:max-w-xl flex flex-col max-h-[90vh]"
         id="addNewTradeForm_tradePage"
+        variant="bordered" borderColor="border-slate-200"
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>📊 Add New Trade</DialogTitle>
-          <DialogDescription className="text-slate-600">
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>📊 Add New Trade</ModalTitle>
+          <ModalDescription className="text-slate-600">
             Record your trade details to track performance and learn from every position
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
         {optionsLoading ? (
           <div
@@ -201,7 +203,7 @@ export default function AddTrade({
           </div>
         ) : (
           <form onSubmit={handleSubmit(handleAddTrade)} className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+            <ModalBody className="space-y-4 pr-2">
               {/* Trade Date */}
               <Controller
                 control={control}
@@ -345,10 +347,10 @@ export default function AddTrade({
                   </FieldContent>
                 )}
               />
-            </div>
+            </ModalBody>
 
-            <DialogFooter className="shrink-0 pt-4">
-              <DialogClose asChild>
+            <ModalFooter className="shrink-0 pt-4">
+              <ModalClose asChild>
                 <Button
                   type="button"
                   variant="secondary"
@@ -358,15 +360,15 @@ export default function AddTrade({
                 >
                   Cancel
                 </Button>
-              </DialogClose>
+              </ModalClose>
               <Button type="submit" disabled={loading} id="submitNewTradeBtn_tradePage">
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading ? 'Adding...' : 'Add Trade'}
               </Button>
-            </DialogFooter>
+            </ModalFooter>
           </form>
         )}
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

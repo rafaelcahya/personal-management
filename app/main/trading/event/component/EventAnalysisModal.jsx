@@ -4,7 +4,13 @@ import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+} from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import Textarea from '@/components/base/Textarea/Textarea'
 import { Loader2, AlertTriangle, RefreshCw, Sparkles } from 'lucide-react'
@@ -117,18 +123,20 @@ export default function EventAnalysisModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent
+    <Modal open={open} onOpenChange={handleClose}>
+      <ModalContent
+        variant="bordered" borderColor="border-slate-200"
         id="eventAnalysisModal"
         className="w-[90vw] !max-w-4xl max-h-[85vh] flex flex-col overflow-hidden"
       >
-        <DialogHeader className="shrink-0">
-          <DialogTitle className="flex items-center gap-2 text-base">
+        <ModalHeader className="shrink-0">
+          <ModalTitle className="flex items-center gap-2 text-base">
             <Sparkles className="size-4 text-violet-500" />
             Analyze with AI
-          </DialogTitle>
-        </DialogHeader>
+          </ModalTitle>
+        </ModalHeader>
 
+        <ModalBody>
         <div className="flex-1 overflow-y-auto flex flex-col gap-4 pr-1">
           {/* Event summary — single */}
           {isSingle && event && status === 'idle' && (
@@ -315,7 +323,8 @@ export default function EventAnalysisModal({
             </Button>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   )
 }

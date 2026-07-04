@@ -7,15 +7,16 @@ import { format } from 'date-fns'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
@@ -121,28 +122,29 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Modal open={open} onOpenChange={handleOpenChange}>
       {!isControlled && (
-        <DialogTrigger asChild id="addNewEventBtn_eventPage">
+        <ModalTrigger asChild id="addNewEventBtn_eventPage">
           <Button>
             <PlusIcon className="w-4" />
             <span>Add Event</span>
           </Button>
-        </DialogTrigger>
+        </ModalTrigger>
       )}
-      <DialogContent
+      <ModalContent
+        variant="bordered" borderColor="border-slate-200"
         className="sm:max-w-3xl flex flex-col max-h-[90vh]"
         id="addNewEventForm_eventPage"
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>Add Market Event</DialogTitle>
-          <DialogDescription className="text-slate-600">
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>Add Market Event</ModalTitle>
+          <ModalDescription className="text-slate-600">
             Track events that may impact market movements
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
         <form onSubmit={handleSubmit(handleAddEvent)} className="flex flex-col flex-1 min-h-0">
-          <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+          <ModalBody className="flex-1 overflow-y-auto space-y-4">
             {/* Title */}
             <Controller
               control={control}
@@ -341,10 +343,10 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
                 />
               )}
             />
-          </div>
+          </ModalBody>
 
-          <DialogFooter className="shrink-0 pt-4">
-            <DialogClose asChild>
+          <ModalFooter className="shrink-0 pt-4">
+            <ModalClose asChild>
               <Button
                 type="button"
                 variant="secondary"
@@ -354,14 +356,14 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
               >
                 Cancel
               </Button>
-            </DialogClose>
+            </ModalClose>
             <Button type="submit" disabled={loading} id="submitNewEventBtn_eventPage">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? 'Creating...' : 'Create Event'}
             </Button>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

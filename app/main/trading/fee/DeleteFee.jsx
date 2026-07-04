@@ -2,16 +2,15 @@
 
 import { useState } from 'react'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Trash2, Loader2 } from 'lucide-react'
 import { deleteFee } from '@/lib/api/fee'
@@ -36,42 +35,47 @@ export default function DeleteFee({ fee, onDeleted, onClose, className }) {
   }
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
+    <Modal>
+      <ModalTrigger asChild>
         <Button
           variant="ghost"
           size="base"
-          className={`justify-start text-red-600 hover:text-red-600 hover:bg-red-50 font-medium${className ? ` ${className}` : ''}`}
+          className={`justify-center text-red-600 hover:text-red-600 hover:bg-red-50 font-medium${className ? ` ${className}` : ''}`}
         >
           <Trash2 className="h-4 w-4 mr-2" />
           Delete Fee
         </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Fee?</AlertDialogTitle>
-          <AlertDialogDescription className="text-slate-600">
+      </ModalTrigger>
+      <ModalContent showCloseButton={false}>
+        <ModalHeader>
+          <ModalTitle>Delete Fee?</ModalTitle>
+          <ModalDescription className="text-slate-600">
             This will remove the fee from your active list. You can still access deleted fees from
             your archived records if needed.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel
-            disabled={loading}
-            className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
-          >
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            disabled={loading}
-            className="bg-rose-600 hover:bg-rose-700 text-white font-medium"
-          >
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {loading ? 'Deleting...' : 'Delete'}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </ModalDescription>
+        </ModalHeader>
+        <ModalFooter>
+          <ModalClose asChild>
+            <Button
+              disabled={loading}
+              variant="ghost"
+              className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
+            >
+              Cancel
+            </Button>
+          </ModalClose>
+          <ModalClose asChild>
+            <Button
+              onClick={handleDelete}
+              disabled={loading}
+              variant="destructive"
+            >
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? 'Deleting...' : 'Delete'}
+            </Button>
+          </ModalClose>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

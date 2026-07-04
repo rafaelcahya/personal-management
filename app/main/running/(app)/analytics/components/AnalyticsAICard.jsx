@@ -289,7 +289,7 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
             <span className="flex items-center justify-center w-6 h-6 rounded-md bg-violet-100 shrink-0">
               <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-hidden="true" />
             </span>
-            <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex-1 truncate">
+            <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex-1 truncate pl-2">
               AI Recommendations
             </span>
             <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-medium shrink-0">

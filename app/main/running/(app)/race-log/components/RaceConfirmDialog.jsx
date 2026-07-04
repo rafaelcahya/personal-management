@@ -19,13 +19,14 @@ import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalContent,
+  ModalBody,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
 import { createRaceLog } from '@/lib/api/running'
@@ -112,12 +113,13 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
     : '—'
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent id="raceConfirmDialog" className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Confirm Race Entry</DialogTitle>
-        </DialogHeader>
+    <Modal open={open} onOpenChange={(v) => !v && onClose()}>
+      <ModalContent id="raceConfirmDialog" className="max-w-md" variant="bordered" borderColor="border-slate-200">
+        <ModalHeader>
+          <ModalTitle>Confirm Race Entry</ModalTitle>
+        </ModalHeader>
 
+        <ModalBody>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           {/* Race name */}
           <FieldContent error={errors.title?.message}>
@@ -264,9 +266,10 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
             </p>
           )}
         </form>
+        </ModalBody>
 
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
+        <ModalFooter className="gap-2">
+          <ModalClose asChild>
             <Button
               className="text-violet-600 font-medium"
               type="button"
@@ -275,7 +278,7 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
             >
               Cancel
             </Button>
-          </DialogClose>
+          </ModalClose>
           <Button
             id="raceConfirmSubmitBtn"
             onClick={handleSubmit(onSubmit)}
@@ -284,8 +287,8 @@ export default function RaceConfirmDialog({ open, onClose, activity, onSaved }) 
           >
             {saving ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Log race'}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

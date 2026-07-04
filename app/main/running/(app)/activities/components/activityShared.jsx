@@ -2,7 +2,7 @@
 
 import { Info } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/base/Tooltip/Tooltip.jsx'
 
 export function StatTile({
   id,
@@ -23,23 +23,21 @@ export function StatTile({
           {label}
         </span>
         {tooltip && (
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label={`Info about ${label}`}
-                  className="text-slate-300 hover:text-slate-500"
-                >
-                  <Info className="size-3.5" aria-hidden="true" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
-                {tooltip}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                aria-label={`Info about ${label}`}
+                className="text-slate-300 hover:text-slate-500"
+              >
+                <Info className="size-3.5" aria-hidden="true" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+              {tooltip}
+            </TooltipContent>
+          </Tooltip>
         )}
       </div>
       <div className="flex items-baseline gap-1">

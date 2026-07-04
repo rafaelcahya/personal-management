@@ -10,15 +10,16 @@ import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
@@ -97,8 +98,8 @@ export default function AddStockForm({ product, onAdded }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
+    <Modal open={open} onOpenChange={handleOpenChange}>
+      <ModalTrigger asChild>
         <Button
           variant="ghost"
           fullWidth
@@ -108,26 +109,27 @@ export default function AddStockForm({ product, onAdded }) {
           <Plus className="h-4 w-4 mr-2" />
           Add Stock
         </Button>
-      </DialogTrigger>
-      <DialogContent
+      </ModalTrigger>
+      <ModalContent
         className="sm:max-w-md flex flex-col max-h-[90vh]"
         id="addStockPopup"
+        variant="bordered" borderColor="border-slate-200"
         onPointerDownOutside={(e) => {
           if (e.target.closest('[data-radix-popper-content-wrapper]')) {
             e.preventDefault()
           }
         }}
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>📦 Add More Stock</DialogTitle>
-          <DialogDescription>
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>📦 Add More Stock</ModalTitle>
+          <ModalDescription>
             Restocking {product.brand} {product.type} {product.product}. Let's add it to your
             inventory and keep things organized! 🎯
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-          <div className="flex-1 overflow-y-auto space-y-5">
+          <ModalBody className="space-y-5">
             {/* Recent Purchases */}
             {(historyLoading || stockHistory.length > 0) && (
               <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-3">
@@ -263,10 +265,10 @@ export default function AddStockForm({ product, onAdded }) {
                 </div>
               </div>
             )}
-          </div>
+          </ModalBody>
 
-          <DialogFooter className="shrink-0 pt-4">
-            <DialogClose asChild>
+          <ModalFooter className="shrink-0 pt-4">
+            <ModalClose asChild>
               <Button
                 type="button"
                 variant="secondary"
@@ -276,14 +278,14 @@ export default function AddStockForm({ product, onAdded }) {
               >
                 Cancel
               </Button>
-            </DialogClose>
+            </ModalClose>
             <Button type="submit" disabled={loading} id="submitBtn-addStockPopup">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? 'Adding...' : 'Add Stock'}
             </Button>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

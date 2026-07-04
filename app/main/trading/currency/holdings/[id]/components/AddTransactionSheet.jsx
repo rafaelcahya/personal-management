@@ -9,14 +9,15 @@ import { format, parseISO } from 'date-fns'
 import { Loader2, Check, ChevronsUpDown, Search, ArrowLeftRight } from 'lucide-react'
 import { toast } from 'sonner'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalDescription,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
@@ -221,27 +222,29 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
   const { formState } = form
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <ModalContent
+        variant="bordered" borderColor="border-slate-200"
         ref={dialogRef}
         id="addTransactionModal_currencyDetailPage"
         className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
       >
-        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
-          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+        <ModalHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <ModalTitle className="flex items-center gap-2 text-base font-semibold">
             <ArrowLeftRight className="size-4 text-violet-500" />
             Add Transaction
-          </DialogTitle>
-          <DialogDescription className="text-xs text-slate-500">
+          </ModalTitle>
+          <ModalDescription className="text-xs text-slate-500">
             Record a buy or sell transaction
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
+          className="flex flex-col flex-1 min-h-0"
           noValidate
         >
+          <ModalBody className="flex flex-col gap-5 px-5 py-5">
           {/* Currency */}
           <Controller
             control={form.control}
@@ -666,8 +669,10 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
             )}
           />
 
-          <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
-            <DialogClose asChild>
+          </ModalBody>
+
+          <ModalFooter className="gap-2 pt-2 border-t border-slate-100">
+            <ModalClose asChild>
               <Button
                 type="button"
                 variant="secondary"
@@ -676,7 +681,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
               >
                 Cancel
               </Button>
-            </DialogClose>
+            </ModalClose>
             <Button
               id="submitBtn_addTransactionModal"
               type="submit"
@@ -689,9 +694,9 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                 'Add Transaction'
               )}
             </Button>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

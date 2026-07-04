@@ -5,14 +5,15 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@/components/base/Button/Button'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
@@ -71,23 +72,27 @@ export default function AddFee({ onAdded }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild id="addNewFeeBtn_feePage">
+    <Modal open={open} onOpenChange={handleOpenChange}>
+      <ModalTrigger asChild id="addNewFeeBtn_feePage">
         <Button>
           <PlusIcon className="w-4" />
           <span>Add Fee</span>
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]" id="addNewFeeForm_feePage">
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>💳 Add New Fee</DialogTitle>
-          <DialogDescription className="text-slate-600">
+      </ModalTrigger>
+      <ModalContent
+        className="sm:max-w-md flex flex-col max-h-[90vh]"
+        id="addNewFeeForm_feePage"
+        variant="bordered" borderColor="border-slate-200"
+      >
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>💳 Add New Fee</ModalTitle>
+          <ModalDescription className="text-slate-600">
             Log commissions and fees to keep your performance calculations accurate
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-          <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+          <ModalBody className="space-y-4 pr-2">
             {/* Fee Date & Fee Name Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Fee Date */}
@@ -158,9 +163,9 @@ export default function AddFee({ onAdded }) {
                 </FieldContent>
               )}
             />
-          </div>
+          </ModalBody>
 
-          <DialogFooter className="shrink-0 pt-4">
+          <ModalFooter className="shrink-0 pt-4">
             <Button
               type="button"
               variant="secondary"
@@ -174,9 +179,9 @@ export default function AddFee({ onAdded }) {
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? 'Adding...' : 'Add Fee'}
             </Button>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

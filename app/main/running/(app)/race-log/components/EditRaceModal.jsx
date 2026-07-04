@@ -17,13 +17,14 @@ import {
   SelectValue,
 } from '@/components/base/Select/Select'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import { format, parseISO } from 'date-fns'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
@@ -126,15 +127,17 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent
+    <Modal open={open} onOpenChange={(v) => !v && onClose()}>
+      <ModalContent
+        variant="bordered" borderColor="border-slate-200"
         id="editRaceModal_raceDetailPage"
-        className="max-w-lg max-h-[90vh] overflow-y-auto"
+        className="max-w-lg max-h-[90vh] flex flex-col"
       >
-        <DialogHeader>
-          <DialogTitle>Edit Race Entry</DialogTitle>
-        </DialogHeader>
+        <ModalHeader>
+          <ModalTitle>Edit Race Entry</ModalTitle>
+        </ModalHeader>
 
+        <ModalBody className="flex-1 overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
           {/* Title */}
           <FieldContent error={errors.title?.message}>
@@ -360,9 +363,10 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
             </p>
           )}
         </form>
+        </ModalBody>
 
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
+        <ModalFooter className="gap-2">
+          <ModalClose asChild>
             <Button
               className="text-violet-600 font-medium"
               type="button"
@@ -371,7 +375,7 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
             >
               Cancel
             </Button>
-          </DialogClose>
+          </ModalClose>
           <Button
             id="editRaceSaveBtn_raceDetailPage"
             onClick={handleSubmit(onSubmit)}
@@ -384,8 +388,8 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
               'Save changes'
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

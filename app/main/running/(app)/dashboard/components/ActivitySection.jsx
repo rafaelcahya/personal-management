@@ -26,7 +26,7 @@ import {
   Clock,
 } from 'lucide-react'
 import Card, { CardContent } from '@/components/base/Card/Card.jsx'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
 import { fetchCalendarActivities } from '@/lib/api/running'
 import { fmtDistance, fmtDuration, fmtPace, fmtDate } from '../utils/format'
 

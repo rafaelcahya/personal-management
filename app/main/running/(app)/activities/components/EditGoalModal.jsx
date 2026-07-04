@@ -5,13 +5,14 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'
@@ -99,12 +100,17 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent id="editGoalModal_activityDetailPage" className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit race goal</DialogTitle>
-        </DialogHeader>
+    <Modal open={open} onOpenChange={(v) => !v && onClose()}>
+      <ModalContent
+        variant="bordered" borderColor="border-slate-200"
+        id="editGoalModal_activityDetailPage"
+        className="max-w-md flex flex-col max-h-[90vh]"
+      >
+        <ModalHeader>
+          <ModalTitle>Edit race goal</ModalTitle>
+        </ModalHeader>
 
+        <ModalBody className="flex-1 overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 py-1">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="goalTitle">Race title</Label>
@@ -195,9 +201,10 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
             </p>
           )}
         </form>
+        </ModalBody>
 
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
+        <ModalFooter className="gap-2">
+          <ModalClose asChild>
             <Button
               className="text-violet-600 font-medium"
               type="button"
@@ -206,7 +213,7 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
             >
               Cancel
             </Button>
-          </DialogClose>
+          </ModalClose>
           <Button
             id="editGoalSaveBtn_activityDetailPage"
             onClick={handleSubmit(onSubmit)}
@@ -215,8 +222,8 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
           >
             {saving ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Save'}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

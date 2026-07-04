@@ -25,7 +25,6 @@ export default function LogRow({ item, onUpdate }) {
       <tr
         className={cn(
           'border-b border-slate-50 cursor-pointer transition-colors',
-          isOpen && 'bg-violet-50/75',
           isActive && !isOpen && 'hover:bg-violet-50/75',
           !isActive && !isOpen && 'hover:bg-slate-50'
         )}
@@ -40,13 +39,13 @@ export default function LogRow({ item, onUpdate }) {
             )}
           </div>
         </td>
-        <td className="px-5 py-3.5 font-mono text-slate-700">
+        <td className="px-5 py-3.5 font-mono text-slate-700 whitespace-nowrap">
           {item.start_usage_date ? format(new Date(item.start_usage_date), 'dd MMM yyyy') : '-'}
         </td>
-        <td className="px-5 py-3.5 font-mono text-slate-700">
+        <td className="px-5 py-3.5 font-mono text-slate-700 whitespace-nowrap">
           {item.end_usage_date ? format(new Date(item.end_usage_date), 'dd MMM yyyy') : '-'}
         </td>
-        <td id="logRowDuration_usageLogTable" className="px-5 py-3.5">
+        <td id="logRowDuration_usageLogTable" className="px-5 py-3.5 whitespace-nowrap">
           <span
             className={cn('font-medium text-sm', isActive ? 'text-violet-600' : 'text-slate-600')}
           >
@@ -58,7 +57,7 @@ export default function LogRow({ item, onUpdate }) {
             </span>
           )}
         </td>
-        <td className="px-5 py-3.5">
+        <td className="px-5 py-3.5 whitespace-nowrap">
           <span
             className={cn(
               'px-2 py-0.5 rounded-md text-xs font-semibold capitalize',
@@ -69,7 +68,7 @@ export default function LogRow({ item, onUpdate }) {
           </span>
         </td>
         <td className="px-5 py-3.5 text-right font-mono">
-          <div className="flex flex-col items-end gap-0.5">
+          <div className="flex flex-col items-end gap-0.5 whitespace-nowrap">
             <span className="text-slate-700">{item.quantity}</span>
             {item.remaining_quantity && (
               <span className="text-xs text-slate-400">{item.remaining_quantity} left</span>
@@ -79,7 +78,7 @@ export default function LogRow({ item, onUpdate }) {
       </tr>
 
       {isOpen && (
-        <tr className="bg-violet-50/50">
+        <tr>
           <td colSpan={6} className="px-5 py-4">
             {item.note && (
               <div className="mb-4 p-3 bg-white rounded-lg border border-slate-200">

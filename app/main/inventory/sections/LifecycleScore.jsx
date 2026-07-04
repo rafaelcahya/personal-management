@@ -2,7 +2,13 @@
 
 import { useState } from 'react'
 import { Trophy, AlertCircle } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+} from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
@@ -252,19 +258,24 @@ export default function LifecycleScore({ items, loading, error, onRetry }) {
         )}
       </section>
 
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0">
-          <DialogHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
-            <DialogTitle className="text-base font-semibold text-slate-800">
+      <Modal open={modalOpen} onOpenChange={setModalOpen}>
+        <ModalContent
+          variant="bordered" borderColor="border-slate-200"
+          className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
+        >
+          <ModalHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
+            <ModalTitle className="text-base font-semibold text-slate-800">
               All Products — Lifecycle Score
-            </DialogTitle>
+            </ModalTitle>
             <p className="text-xs text-slate-400">Sorted by highest score</p>
-          </DialogHeader>
-          <div className="overflow-y-auto flex-1">
-            <ScoreTable items={items} />
-          </div>
-        </DialogContent>
-      </Dialog>
+          </ModalHeader>
+          <ModalBody>
+            <div className="overflow-y-auto flex-1">
+              <ScoreTable items={items} />
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   )
 }

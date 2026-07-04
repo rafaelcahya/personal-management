@@ -8,14 +8,15 @@ import { toast } from 'sonner'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@/components/base/Modal/Modal.jsx'
 import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
@@ -100,109 +101,115 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
   if (!productBrand) return null
 
   return (
-    <Dialog open={!!productBrand} onOpenChange={onClose}>
-      <DialogContent id="updateBrandDialog_productBrandPage" className="sm:max-w-md">
-        <DialogHeader className="text-left">
-          <DialogTitle>✏️ Update Product Brand</DialogTitle>
-          <DialogDescription className="text-slate-foreground">
+    <Modal open={!!productBrand} onOpenChange={onClose}>
+      <ModalContent
+        id="updateBrandDialog_productBrandPage"
+        className="sm:max-w-md"
+        variant="bordered" borderColor="border-slate-200"
+      >
+        <ModalHeader className="text-left">
+          <ModalTitle>✏️ Update Product Brand</ModalTitle>
+          <ModalDescription className="text-slate-foreground">
             Edit brand details including name, status, and notes.
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
-        <form onSubmit={handleSubmit(handleUpdate)} className="space-y-4">
-          {/* Brand Name */}
-          <Controller
-            control={control}
-            name="brand"
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="font-medium">Brand Name</FieldLabel>
-                <Input
-                  {...field}
-                  id="brandNameInput_updateBrandDialog"
-                  placeholder="e.g. Clear"
-                  className={cn(
-                    'text-sm font-medium capitalize focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                    fieldState.error && 'border-red-500 focus-visible:ring-red-500'
-                  )}
-                />
-                <FieldError />
-              </FieldContent>
-            )}
-          />
+        <form onSubmit={handleSubmit(handleUpdate)} className="flex flex-col flex-1 min-h-0">
+          <ModalBody className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
+            {/* Brand Name */}
+            <Controller
+              control={control}
+              name="brand"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="font-medium">Brand Name</FieldLabel>
+                  <Input
+                    {...field}
+                    id="brandNameInput_updateBrandDialog"
+                    placeholder="e.g. Clear"
+                    className={cn(
+                      'text-sm font-medium capitalize focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                      fieldState.error && 'border-red-500 focus-visible:ring-red-500'
+                    )}
+                  />
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
 
-          {/* Status Select */}
-          <Controller
-            control={control}
-            name="brand_status"
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="font-medium">Status</FieldLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger id="statusSelect_updateBrandDialog" className="w-full">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full" />
-                        <span>Active</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="inactive">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                        <span>Inactive</span>
-                      </div>
-                    </SelectItem>
-                    {isDeleted && (
-                      <SelectItem value="deleted" className="text-red-600 hover:bg-red-50">
+            {/* Status Select */}
+            <Controller
+              control={control}
+              name="brand_status"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="font-medium">Status</FieldLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger id="statusSelect_updateBrandDialog" className="w-full">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                          <span>Deleted</span>
+                          <div className="w-3 h-3 bg-green-500 rounded-full" />
+                          <span>Active</span>
                         </div>
                       </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-                <FieldError />
-              </FieldContent>
-            )}
-          />
+                      <SelectItem value="inactive">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-yellow-500 rounded-full" />
+                          <span>Inactive</span>
+                        </div>
+                      </SelectItem>
+                      {isDeleted && (
+                        <SelectItem value="deleted" className="text-red-600 hover:bg-red-50">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                            <span>Deleted</span>
+                          </div>
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
 
-          {/* Notes */}
-          <Controller
-            control={control}
-            name="note"
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="font-medium">Note</FieldLabel>
-                <Textarea
-                  {...field}
-                  id="noteInput_updateBrandDialog"
-                  placeholder="Additional notes about this brand..."
-                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-vertical min-h-[80px]"
-                  rows={3}
-                />
-              </FieldContent>
-            )}
-          />
+            {/* Notes */}
+            <Controller
+              control={control}
+              name="note"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="font-medium">Note</FieldLabel>
+                  <Textarea
+                    {...field}
+                    id="noteInput_updateBrandDialog"
+                    placeholder="Additional notes about this brand..."
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-vertical min-h-[80px]"
+                    rows={3}
+                  />
+                </FieldContent>
+              )}
+            />
 
-          {isInUse && !isDeleted && (
-            <div
-              id="brandInUseWarning_updateBrandDialog"
-              className="rounded-md border border-rose-300 bg-rose-50 dark:bg-rose-500/10 dark:border-rose-500/30 p-3"
-            >
-              <div className="flex items-start gap-2">
-                <AlertCircle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
-                <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
-                  Brand is by {productBrand.product_count} product(s) and cannot be deleted.
-                </p>
+            {isInUse && !isDeleted && (
+              <div
+                id="brandInUseWarning_updateBrandDialog"
+                className="rounded-md border border-rose-300 bg-rose-50 dark:bg-rose-500/10 dark:border-rose-500/30 p-3"
+              >
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
+                  <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
+                    Brand is by {productBrand.product_count} product(s) and cannot be deleted.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </ModalBody>
 
-          <DialogFooter>
+          <ModalFooter>
             <div className="flex flex-col gap-2 w-full">
               <div className="flex gap-2">
                 <div className="flex-1">
@@ -228,7 +235,7 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
                   )}
                 </div>
                 <div className="flex-1">
-                  <DialogClose asChild>
+                  <ModalClose asChild>
                     <Button
                       type="button"
                       variant="secondary"
@@ -237,7 +244,7 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
                     >
                       Cancel
                     </Button>
-                  </DialogClose>
+                  </ModalClose>
                 </div>
               </div>
               <Button
@@ -250,9 +257,9 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
                 {loading ? 'Updating...' : 'Update Product Brand'}
               </Button>
             </div>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

@@ -2,7 +2,7 @@
 
 import { Heart, Info } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/base/Tooltip/Tooltip.jsx'
 import { fmtPace, fmtDuration } from '../../dashboard/utils/format'
 import { SectionLabel } from './activityShared'
 
@@ -76,27 +76,25 @@ export default function SplitsTable({ splits }) {
             {cardiacDrift} bpm
           </span>
           <span className="text-xs text-slate-300">(split 1 → last split)</span>
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon-xs" aria-label="Cardiac drift information">
-                  <Info className="size-3.5" aria-hidden="true" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
-                <p className="font-semibold mb-1">What is Cardiac Drift?</p>
-                <p>
-                  HR increase from your first split to your last split at the same pace — a sign of
-                  fatigue or dehydration.
-                </p>
-                <p className="mt-1.5 text-slate-300">
-                  <span className="text-green-400 font-medium">0–5 bpm</span> Good ·{' '}
-                  <span className="text-amber-400 font-medium">6–10</span> Moderate ·{' '}
-                  <span className="text-red-400 font-medium">&gt;10</span> High
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon-xs" aria-label="Cardiac drift information">
+                <Info className="size-3.5" aria-hidden="true" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+              <p className="font-semibold mb-1">What is Cardiac Drift?</p>
+              <p>
+                HR increase from your first split to your last split at the same pace — a sign of
+                fatigue or dehydration.
+              </p>
+              <p className="mt-1.5 text-slate-300">
+                <span className="text-green-400 font-medium">0–5 bpm</span> Good ·{' '}
+                <span className="text-amber-400 font-medium">6–10</span> Moderate ·{' '}
+                <span className="text-red-400 font-medium">&gt;10</span> High
+              </p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       )}
     </div>

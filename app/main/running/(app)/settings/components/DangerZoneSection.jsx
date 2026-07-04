@@ -7,12 +7,13 @@ import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalContent,
+  ModalBody,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+} from '@/components/base/Modal/Modal.jsx'
 import { deleteAllActivities } from '@/lib/api/running'
 
 export default function DangerZoneSection() {
@@ -101,17 +102,18 @@ export default function DangerZoneSection() {
         )}
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={closeDialog}>
-        <DialogContent
+      <Modal open={dialogOpen} onOpenChange={closeDialog}>
+        <ModalContent
           id="dangerZoneDialog_settingsPage"
           className="w-full max-w-md"
           aria-describedby="danger-zone-description"
+          variant="bordered" borderColor="border-slate-200"
         >
-          <DialogHeader>
-            <DialogTitle className="text-red-700">Delete all activity data?</DialogTitle>
-          </DialogHeader>
+          <ModalHeader>
+            <ModalTitle className="text-red-700">Delete all activity data?</ModalTitle>
+          </ModalHeader>
 
-          <div className="flex flex-col gap-4 py-2">
+          <ModalBody className="flex flex-col gap-4">
             <p id="danger-zone-description" className="text-sm text-slate-600">
               This will permanently delete all your running activity data. This action cannot be
               undone.
@@ -143,9 +145,9 @@ export default function DangerZoneSection() {
                 {deleteError}
               </div>
             )}
-          </div>
+          </ModalBody>
 
-          <DialogFooter>
+          <ModalFooter>
             <Button variant="ghost" onClick={closeDialog} disabled={deleting}>
               Cancel
             </Button>
@@ -157,9 +159,9 @@ export default function DangerZoneSection() {
             >
               {deleting ? 'Deleting…' : 'Delete All Data'}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </section>
   )
 }

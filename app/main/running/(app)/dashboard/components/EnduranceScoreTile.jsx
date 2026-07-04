@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Button from '@/components/base/Button/Button'
 import { Gauge, Info } from 'lucide-react'
 import Card, { CardContent } from '@/components/base/Card/Card.jsx'
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
 
 const TOOLTIP_TEXT =
   'Composite score (0–100) from three signals: VO₂max fitness (40%), 28-day training load (30%), and longest run in the last 8 weeks (30%). Requires at least 4 qualifying runs with HR + VO₂max data.'
@@ -71,23 +71,21 @@ export default function EnduranceScoreTile({ enduranceScore, viewTrendHref }) {
                 </div>
               )}
             </div>
-            <TooltipProvider delayDuration={0}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    aria-label="About Endurance Score"
-                    className="text-slate-300 hover:text-slate-500 shrink-0"
-                  >
-                    <Info className="size-4" aria-hidden="true" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-72 text-xs leading-relaxed">
-                  {TOOLTIP_TEXT}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label="About Endurance Score"
+                  className="text-slate-300 hover:text-slate-500 shrink-0"
+                >
+                  <Info className="size-4" aria-hidden="true" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-72 text-xs leading-relaxed">
+                {TOOLTIP_TEXT}
+              </TooltipContent>
+            </Tooltip>
           </div>
         </CardContent>
       </Card>

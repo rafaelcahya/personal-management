@@ -10,13 +10,14 @@ import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import Input from '@/components/base/Input/Input'
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import {
   Select,
   SelectContent,
@@ -102,12 +103,17 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent id="raceLogFormModal" className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Log a Race</DialogTitle>
-        </DialogHeader>
+    <Modal open={open} onOpenChange={(v) => !v && onClose()}>
+      <ModalContent
+        variant="bordered" borderColor="border-slate-200"
+        id="raceLogFormModal"
+        className="max-w-lg max-h-[90vh] flex flex-col"
+      >
+        <ModalHeader>
+          <ModalTitle>Log a Race</ModalTitle>
+        </ModalHeader>
 
+        <ModalBody className="flex-1 overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
           {/* Title */}
           <FieldContent error={errors.title?.message}>
@@ -327,9 +333,10 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
             </p>
           )}
         </form>
+        </ModalBody>
 
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
+        <ModalFooter className="gap-2">
+          <ModalClose asChild>
             <Button
               className="text-violet-600 font-medium"
               type="button"
@@ -338,7 +345,7 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
             >
               Cancel
             </Button>
-          </DialogClose>
+          </ModalClose>
           <Button
             id="raceLogSaveBtn"
             onClick={handleSubmit(onSubmit)}
@@ -347,8 +354,8 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
           >
             {saving ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Log race'}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

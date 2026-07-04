@@ -1,7 +1,10 @@
 'use client'
+import { createContext, useContext } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+const ModalVariantContext = createContext({ variant: 'default', borderColor: undefined })
 
 const sizeClasses = {
   sm: 'max-w-sm',
@@ -89,47 +92,68 @@ function ModalContent({
   showCloseButton = true,
   closeOnOverlayClick = true,
   overlayOpacity = 50,
+  variant = 'default',
+  borderColor,
   ...props
 }) {
   const resolvedDuration = resolveDuration(duration)
   return (
-    <DialogPrimitive.Portal>
-      <ModalOverlay opacity={overlayOpacity} />
-      {/* pointer-events-none so backdrop clicks pass through to the overlay */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-        <DialogPrimitive.Content
-          style={animation !== 'none' ? { animationDuration: `${resolvedDuration}ms` } : undefined}
-          onOpenAutoFocus={(e) => e.preventDefault()}
-          onInteractOutside={(e) => {
-            if (!closeOnOverlayClick) e.preventDefault()
-          }}
-          className={cn(
-            'pointer-events-auto relative',
-            'w-full bg-background border shadow-xl',
-            'flex flex-col gap-4 p-6 overflow-y-auto',
-            animation !== 'none' && 'data-[state=open]:animate-in data-[state=closed]:animate-out',
-            ...animationClasses[animation],
-            sizeClasses[size],
-            radiusClasses[radius],
-            className
-          )}
-          {...props}
-        >
-          {showCloseButton && (
-            <DialogPrimitive.Close className="absolute top-4 right-4 z-10 flex items-center justify-center w-7 h-7 rounded-md opacity-60 hover:opacity-100 hover:bg-accent transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-              <X size={15} />
-              <span className="sr-only">Close</span>
-            </DialogPrimitive.Close>
-          )}
-          {children}
-        </DialogPrimitive.Content>
-      </div>
-    </DialogPrimitive.Portal>
+    <ModalVariantContext.Provider value={{ variant, borderColor }}>
+      <DialogPrimitive.Portal>
+        <ModalOverlay opacity={overlayOpacity} />
+        {/* pointer-events-none so backdrop clicks pass through to the overlay */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          <DialogPrimitive.Content
+            style={animation !== 'none' ? { animationDuration: `${resolvedDuration}ms` } : undefined}
+            onOpenAutoFocus={(e) => e.preventDefault()}
+            onInteractOutside={(e) => {
+              if (!closeOnOverlayClick) e.preventDefault()
+            }}
+            className={cn(
+              'pointer-events-auto relative',
+              'w-full bg-background border shadow-xl',
+              'flex flex-col',
+              variant === 'default' && 'gap-4 p-6 overflow-y-auto',
+              variant === 'bordered' && 'gap-0 p-0 overflow-hidden',
+              animation !== 'none' && 'data-[state=open]:animate-in data-[state=closed]:animate-out',
+              ...animationClasses[animation],
+              sizeClasses[size],
+              radiusClasses[radius],
+              className
+            )}
+            {...props}
+          >
+            {showCloseButton && (
+              <DialogPrimitive.Close className="absolute top-4 right-4 z-10 flex items-center justify-center w-7 h-7 rounded-md opacity-60 hover:opacity-100 hover:bg-accent transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+                <X size={15} />
+                <span className="sr-only">Close</span>
+              </DialogPrimitive.Close>
+            )}
+            {children}
+          </DialogPrimitive.Content>
+        </div>
+      </DialogPrimitive.Portal>
+    </ModalVariantContext.Provider>
   )
 }
 
 function ModalHeader({ className, ...props }) {
-  return <div className={cn('flex flex-col gap-1.5', className)} {...props} />
+  const { variant, borderColor } = useContext(ModalVariantContext)
+  return (
+    <div
+      className={cn(
+        'flex flex-col gap-1.5',
+        variant === 'bordered' && 'px-6 py-4 border-b shrink-0',
+        variant === 'bordered' && borderColor,
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function ModalBody({ className, ...props }) {
+  return <div className={cn('flex-1 overflow-y-auto px-6 py-4', className)} {...props} />
 }
 
 function ModalTitle({ className, ...props }) {
@@ -151,9 +175,15 @@ function ModalDescription({ className, ...props }) {
 }
 
 function ModalFooter({ className, ...props }) {
+  const { variant, borderColor } = useContext(ModalVariantContext)
   return (
     <div
-      className={cn('flex flex-col-reverse gap-2 sm:flex-row sm:justify-end', className)}
+      className={cn(
+        'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
+        variant === 'bordered' && 'px-6 py-4 border-t shrink-0',
+        variant === 'bordered' && borderColor,
+        className
+      )}
       {...props}
     />
   )
@@ -164,6 +194,7 @@ export {
   ModalTrigger,
   ModalContent,
   ModalHeader,
+  ModalBody,
   ModalTitle,
   ModalDescription,
   ModalFooter,

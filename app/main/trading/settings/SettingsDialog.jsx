@@ -6,14 +6,15 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+} from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
@@ -80,16 +81,17 @@ export default function SettingsDialog({ open, onOpenChange, onUpdated }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md" id="settingsDialogForm">
-        <DialogHeader>
-          <DialogTitle>Performance Configuration</DialogTitle>
-          <DialogDescription className="text-slate-600">
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <ModalContent variant="bordered" borderColor="border-slate-200" className="sm:max-w-md" id="settingsDialogForm">
+        <ModalHeader>
+          <ModalTitle>Performance Configuration</ModalTitle>
+          <ModalDescription className="text-slate-600">
             Configure trading metrics parameters for accurate performance analysis and risk
             management.
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
+        <ModalBody>
         {fetchLoading ? (
           <div className="flex flex-col items-center justify-center py-8 gap-3">
             <Loader2 className="size-8 animate-spin text-violet-600" />
@@ -213,8 +215,8 @@ export default function SettingsDialog({ open, onOpenChange, onUpdated }) {
               )}
             />
 
-            <DialogFooter>
-              <DialogClose asChild>
+            <ModalFooter>
+              <ModalClose asChild>
                 <Button
                   type="button"
                   className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
@@ -223,7 +225,7 @@ export default function SettingsDialog({ open, onOpenChange, onUpdated }) {
                 >
                   Cancel
                 </Button>
-              </DialogClose>
+              </ModalClose>
               <Button
                 type="submit"
                 disabled={loading}
@@ -233,10 +235,11 @@ export default function SettingsDialog({ open, onOpenChange, onUpdated }) {
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading ? 'Saving...' : 'Save Changes'}
               </Button>
-            </DialogFooter>
+            </ModalFooter>
           </form>
         )}
-      </DialogContent>
-    </Dialog>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   )
 }

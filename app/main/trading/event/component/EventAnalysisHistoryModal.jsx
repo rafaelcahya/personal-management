@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+} from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import {
   SelectCard,
@@ -143,15 +149,19 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="w-[90vw] !max-w-3xl max-h-[85vh] flex flex-col overflow-hidden">
-        <DialogHeader className="shrink-0">
-          <DialogTitle className="flex items-center gap-2 text-base">
+    <Modal open={open} onOpenChange={handleClose}>
+      <ModalContent
+        variant="bordered" borderColor="border-slate-200"
+        className="w-[90vw] !max-w-3xl max-h-[85vh] flex flex-col overflow-hidden"
+      >
+        <ModalHeader className="shrink-0">
+          <ModalTitle className="flex items-center gap-2 text-base">
             <History className="size-4 text-violet-500" />
             {selected ? 'Analysis Detail' : 'AI Analysis History'}
-          </DialogTitle>
-        </DialogHeader>
+          </ModalTitle>
+        </ModalHeader>
 
+        <ModalBody>
         <div ref={scrollRef} className="flex-1 overflow-y-auto pr-1">
           {loading && (
             <div className="flex flex-col gap-2">
@@ -197,7 +207,8 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
             Close
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   )
 }

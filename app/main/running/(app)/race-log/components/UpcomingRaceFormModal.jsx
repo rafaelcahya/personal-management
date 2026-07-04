@@ -10,13 +10,14 @@ import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import {
   Select,
   SelectContent,
@@ -141,15 +142,17 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent
+    <Modal open={open} onOpenChange={(v) => !v && onClose()}>
+      <ModalContent
+        variant="bordered" borderColor="border-slate-200"
         id="upcomingRaceFormModal_raceLogPage"
-        className="max-w-lg max-h-[90vh] overflow-y-auto"
+        className="max-w-lg max-h-[90vh] flex flex-col"
       >
-        <DialogHeader>
-          <DialogTitle>{isEdit ? 'Edit Upcoming Race' : 'Add Upcoming Race'}</DialogTitle>
-        </DialogHeader>
+        <ModalHeader>
+          <ModalTitle>{isEdit ? 'Edit Upcoming Race' : 'Add Upcoming Race'}</ModalTitle>
+        </ModalHeader>
 
+        <ModalBody className="flex-1 overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
           {/* Title */}
           <FieldContent error={errors.title?.message}>
@@ -351,9 +354,10 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
             </p>
           )}
         </form>
+        </ModalBody>
 
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
+        <ModalFooter className="gap-2">
+          <ModalClose asChild>
             <Button
               className="text-violet-600 font-medium"
               type="button"
@@ -362,7 +366,7 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
             >
               Cancel
             </Button>
-          </DialogClose>
+          </ModalClose>
           <Button
             id="upcomingRaceSaveBtn_raceLogPage"
             onClick={handleSubmit(onSubmit)}
@@ -377,8 +381,8 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
               'Add race'
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, Loader2, Search } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+} from '@/components/base/Modal/Modal.jsx'
 import {
   Table,
   TableBody,
@@ -55,15 +61,17 @@ export default function ActivityPickerDialog({ open, onClose, onSelect, currentA
   const totalPages = Math.max(1, Math.ceil(total / PICKER_LIMIT))
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent
+    <Modal open={open} onOpenChange={(v) => !v && onClose()}>
+      <ModalContent
+        variant="bordered" borderColor="border-slate-200"
         id="activityPickerDialog"
         className="max-w-2xl flex flex-col gap-0 p-0 max-h-[80vh]"
       >
-        <DialogHeader className="px-5 pt-5 pb-3 shrink-0">
-          <DialogTitle>Select Activity</DialogTitle>
-        </DialogHeader>
+        <ModalHeader className="px-5 pt-5 pb-3 shrink-0">
+          <ModalTitle>Select Activity</ModalTitle>
+        </ModalHeader>
 
+        <ModalBody className="flex-1 min-h-0 flex flex-col p-0 gap-0">
         {/* Search */}
         <div className="px-5 pb-3 shrink-0">
           <div className="relative">
@@ -185,7 +193,8 @@ export default function ActivityPickerDialog({ open, onClose, onSelect, currentA
             <ChevronRight className="size-3.5" aria-hidden="true" />
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   )
 }

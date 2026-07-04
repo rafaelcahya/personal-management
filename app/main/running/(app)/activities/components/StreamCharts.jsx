@@ -23,9 +23,8 @@ import { AlertCircle, Activity, Info } from 'lucide-react'
 import {
   Tooltip as UITooltip,
   TooltipContent as UITooltipContent,
-  TooltipProvider as UITooltipProvider,
   TooltipTrigger as UITooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/components/base/Tooltip/Tooltip.jsx'
 import { fetchActivityStreams } from '@/lib/api/running'
 
 function SectionLabel({ children }) {
@@ -202,34 +201,32 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
             {isSpeed ? 'Speed' : 'Pace'}
           </p>
-          <UITooltipProvider delayDuration={0}>
-            <UITooltip>
-              <UITooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  id="paceSpeedInfo_activityDetailPage"
-                  className="text-slate-300 hover:text-slate-500"
-                  aria-label="Pace and speed chart info"
-                >
-                  <Info className="size-3.5" aria-hidden="true" />
-                </Button>
-              </UITooltipTrigger>
-              <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
-                <p className="font-semibold mb-1">Pace vs Speed</p>
-                <p>
-                  <span className="text-violet-300 font-medium">Pace (min/km)</span> — standard
-                  runner metric. Y-axis is inverted: lower = faster. Best for reading effort in
-                  familiar terms.
-                </p>
-                <p className="mt-1">
-                  <span className="text-violet-300 font-medium">Speed (km/h)</span> — normal Y-axis:
-                  higher = faster. Better for spotting acceleration and deceleration patterns at a
-                  glance.
-                </p>
-              </UITooltipContent>
-            </UITooltip>
-          </UITooltipProvider>
+          <UITooltip>
+            <UITooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                id="paceSpeedInfo_activityDetailPage"
+                className="text-slate-300 hover:text-slate-500"
+                aria-label="Pace and speed chart info"
+              >
+                <Info className="size-3.5" aria-hidden="true" />
+              </Button>
+            </UITooltipTrigger>
+            <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+              <p className="font-semibold mb-1">Pace vs Speed</p>
+              <p>
+                <span className="text-violet-300 font-medium">Pace (min/km)</span> — standard
+                runner metric. Y-axis is inverted: lower = faster. Best for reading effort in
+                familiar terms.
+              </p>
+              <p className="mt-1">
+                <span className="text-violet-300 font-medium">Speed (km/h)</span> — normal Y-axis:
+                higher = faster. Better for spotting acceleration and deceleration patterns at a
+                glance.
+              </p>
+            </UITooltipContent>
+          </UITooltip>
         </div>
         <Tabs
           id="paceSpeedToggle_activityDetailPage"
@@ -795,28 +792,26 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
     <div>
       <div className="flex items-center gap-2 mb-1">
         <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Cadence</p>
-        <UITooltipProvider delayDuration={200}>
-          <UITooltip>
-            <UITooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                id={`cadenceInfoTrigger_${pagePrefix}`}
-                className="text-slate-300 hover:text-slate-500"
-                aria-label="Cadence info: about the 180 spm target"
-              >
-                <Info className="size-3.5" aria-hidden="true" />
-              </Button>
-            </UITooltipTrigger>
-            <UITooltipContent
-              side="top"
-              className="max-w-72 text-xs leading-relaxed"
-              id={`cadenceInfoTooltip_${pagePrefix}`}
+        <UITooltip>
+          <UITooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              id={`cadenceInfoTrigger_${pagePrefix}`}
+              className="text-slate-300 hover:text-slate-500"
+              aria-label="Cadence info: about the 180 spm target"
             >
-              {CADENCE_INFO}
-            </UITooltipContent>
-          </UITooltip>
-        </UITooltipProvider>
+              <Info className="size-3.5" aria-hidden="true" />
+            </Button>
+          </UITooltipTrigger>
+          <UITooltipContent
+            side="top"
+            className="max-w-72 text-xs leading-relaxed"
+            id={`cadenceInfoTooltip_${pagePrefix}`}
+          >
+            {CADENCE_INFO}
+          </UITooltipContent>
+        </UITooltip>
         {stabilityScore != null && (
           <span
             id={`cadenceStabilityScore_${pagePrefix}`}

@@ -2,7 +2,13 @@
 
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+} from '@/components/base/Modal/Modal.jsx'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import Button from '@/components/base/Button/Button'
 
@@ -102,19 +108,24 @@ export default function MonthlySpendByType({ items, loading }) {
         )}
       </div>
 
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-w-md w-full max-h-[85vh] flex flex-col p-0 gap-0">
-          <DialogHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
-            <DialogTitle className="text-base font-semibold text-slate-800">
+      <Modal open={modalOpen} onOpenChange={setModalOpen}>
+        <ModalContent
+          variant="bordered" borderColor="border-slate-200"
+          className="max-w-md w-full max-h-[85vh] flex flex-col p-0 gap-0"
+        >
+          <ModalHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
+            <ModalTitle className="text-base font-semibold text-slate-800">
               Monthly Spend by Type
-            </DialogTitle>
+            </ModalTitle>
             <p className="text-xs text-slate-400">All categories across the last 6 months</p>
-          </DialogHeader>
-          <div className="overflow-y-auto flex-1 px-5 py-3">
-            <SpendList items={items} />
-          </div>
-        </DialogContent>
-      </Dialog>
+          </ModalHeader>
+          <ModalBody>
+            <div className="overflow-y-auto flex-1 px-5 py-3">
+              <SpendList items={items} />
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   )
 }
