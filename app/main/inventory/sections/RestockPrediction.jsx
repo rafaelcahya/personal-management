@@ -94,7 +94,9 @@ function PredictionTable({ items }) {
       >
         <TableHeader>
           <TableRow>
-            <TableHead className="w-8">No</TableHead>
+            <TableHead className="w-8" align="center">
+              No
+            </TableHead>
             <TableHead>Product</TableHead>
             <TableHead align="right">Qty</TableHead>
             <TableHead>Est. Empty</TableHead>
@@ -104,7 +106,9 @@ function PredictionTable({ items }) {
         <TableBody>
           {items.map((item, index) => (
             <TableRow key={item.id} clickable>
-              <TableCell className="text-slate-500 text-xs">{index + 1}</TableCell>
+              <TableCell className="text-slate-500 text-xs" align="center">
+                {index + 1}
+              </TableCell>
               <TableCell>
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">

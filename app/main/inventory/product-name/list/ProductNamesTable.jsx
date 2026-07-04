@@ -178,7 +178,9 @@ export default function ProductNamesTable({
                   aria-label="Select all product names"
                 />
               </TableHead>
-              <TableHead className="w-[30px]">#</TableHead>
+              <TableHead className="w-[30px]" align="center">
+                #
+              </TableHead>
               <TableHead>Name</TableHead>
               <TableHead className="w-[120px]">Status</TableHead>
               <TableHead className="w-[100px]" align="right">
@@ -201,7 +203,7 @@ export default function ProductNamesTable({
                     aria-label={`Select ${productName.product_name}`}
                   />
                 </TableCell>
-                <TableCell className="font-mono text-slate-700 w-[30px]" align="right">
+                <TableCell className="font-mono text-slate-700 w-[30px]" align="center">
                   {(page - 1) * 15 + index + 1}
                 </TableCell>
                 <TableCell className="font-semibold text-slate-900">

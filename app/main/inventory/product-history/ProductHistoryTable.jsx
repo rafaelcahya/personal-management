@@ -76,7 +76,9 @@ export default function ProductHistoryTable({
       >
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[40px]">#</TableHead>
+            <TableHead className="w-[30px]" align="center">
+              #
+            </TableHead>
             <TableHead>Product</TableHead>
             <TableHead className="w-[100px]">Status</TableHead>
             <TableHead className="w-[80px]" align="right">
@@ -90,7 +92,7 @@ export default function ProductHistoryTable({
         <TableBody>
           {histories.map((history, index) => (
             <TableRow key={history.id} clickable>
-              <TableCell className="font-mono text-slate-700 w-[40px]" align="right">
+              <TableCell className="font-mono text-slate-700 w-[30px]" align="center">
                 {(page - 1) * 15 + index + 1}
               </TableCell>
               <TableCell className="w-[250px]">

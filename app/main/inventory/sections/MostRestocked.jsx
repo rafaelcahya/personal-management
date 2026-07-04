@@ -61,7 +61,9 @@ function RestockTable({ items }) {
       >
         <TableHeader>
           <TableRow>
-            <TableHead className="w-8">No</TableHead>
+            <TableHead className="w-8" align="center">
+              No
+            </TableHead>
             <TableHead>Product</TableHead>
             <TableHead>Last Restock</TableHead>
             <TableHead>Restocks</TableHead>
@@ -70,7 +72,9 @@ function RestockTable({ items }) {
         <TableBody>
           {items.map((item, index) => (
             <TableRow key={item.id}>
-              <TableCell className="text-slate-500 text-xs">{index + 1}</TableCell>
+              <TableCell className="text-slate-500 text-xs" align="center">
+                {index + 1}
+              </TableCell>
               <TableCell>
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
                 <div className="flex flex-col items-start gap-1.5 mt-0.5">

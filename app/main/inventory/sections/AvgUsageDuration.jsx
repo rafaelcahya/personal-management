@@ -70,7 +70,9 @@ function DurationTable({ data }) {
       >
         <TableHeader>
           <TableRow>
-            <TableHead className="w-8">No</TableHead>
+            <TableHead className="w-8" align="center">
+              No
+            </TableHead>
             <TableHead>Product</TableHead>
             <TableHead>Average Duration</TableHead>
           </TableRow>
@@ -78,7 +80,9 @@ function DurationTable({ data }) {
         <TableBody>
           {data.map((item, index) => (
             <TableRow key={item.product_list_id}>
-              <TableCell className="text-slate-500 text-xs">{index + 1}</TableCell>
+              <TableCell className="text-slate-500 text-xs" align="center">
+                {index + 1}
+              </TableCell>
               <TableCell>
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
