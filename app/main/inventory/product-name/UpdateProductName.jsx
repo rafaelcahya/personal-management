@@ -200,47 +200,53 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
             </div>
           )}
 
-          <DialogFooter className="gap-2">
-            <div className="flex justify-between w-full">
-              {isDeleted ? (
-                <Button
-                  type="button"
-                  id="restoreProductNameBtn_productNamePage"
-                  onClick={handleRestore}
-                  disabled={restoring}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  {restoring && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {restoring ? 'Restoring...' : 'Restore Product Name'}
-                </Button>
-              ) : (
-                <DeleteProductName
-                  productName={productName}
-                  onDeleted={onUpdated}
-                  onClose={onClose}
-                  disabled={isInUse}
-                />
-              )}
-              <div className="space-x-2">
-                <DialogClose asChild>
-                  <Button
-                    id="cancelUpdateProductNameBtn_productNamePage"
-                    type="button"
-                    variant="secondary"
-                    className="text-violet-600 font-medium"
-                  >
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button
-                  id="submitUpdateProductNameBtn_productNamePage"
-                  type="submit"
-                  disabled={loading || isDeleted}
-                >
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {loading ? 'Updating...' : 'Update Product Name'}
-                </Button>
+          <DialogFooter>
+            <div className="flex flex-col gap-2 w-full">
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  {isDeleted ? (
+                    <Button
+                      type="button"
+                      id="restoreProductNameBtn_productNamePage"
+                      onClick={handleRestore}
+                      disabled={restoring}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      {restoring && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {restoring ? 'Restoring...' : 'Restore Product Name'}
+                    </Button>
+                  ) : (
+                    <DeleteProductName
+                      productName={productName}
+                      onDeleted={onUpdated}
+                      onClose={onClose}
+                      disabled={isInUse}
+                      className="w-full"
+                    />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <DialogClose asChild>
+                    <Button
+                      id="cancelUpdateProductNameBtn_productNamePage"
+                      type="button"
+                      variant="secondary"
+                      className="w-full text-violet-600 font-medium"
+                    >
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                </div>
               </div>
+              <Button
+                id="submitUpdateProductNameBtn_productNamePage"
+                type="submit"
+                disabled={loading || isDeleted}
+                className="w-full"
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {loading ? 'Updating...' : 'Update Product Name'}
+              </Button>
             </div>
           </DialogFooter>
         </form>

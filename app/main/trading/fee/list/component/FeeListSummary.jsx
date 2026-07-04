@@ -1,14 +1,16 @@
-'use client'
+﻿'use client'
 
-import { useState, useMemo } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import Button from '@/components/base/Button/Button'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { DollarSign, Receipt, ChevronDown, ChevronUp } from 'lucide-react'
+import { useMemo } from 'react'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/base/Accordion/Accordion.jsx'
+import { DollarSign, Receipt } from 'lucide-react'
 
 export default function FeeListSummary({ feeCount, totalFee }) {
-  const [isOpen, setIsOpen] = useState(false)
-
   const stats = [
     {
       id: 'totalTransactionsSummary_feePage',
@@ -56,44 +58,34 @@ export default function FeeListSummary({ feeCount, totalFee }) {
         })}
       </div>
 
-      {/* Mobile View - Collapsible */}
-      <Collapsible
-        id="feeSummaryCollapsible_feePage"
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        className="sm:hidden w-full"
-      >
-        <Card className="py-2">
-          <CardContent className="px-0">
-            {/* Header - Always Visible */}
-            <CollapsibleTrigger asChild>
-              <Button
-                id="feeSummaryCollapsibleTrigger_feePage"
-                variant="ghost"
-                className="w-full flex items-center justify-between bg-white"
+      {/* Mobile View - Accordion */}
+      <Card id="feeSummaryCollapsible_feePage" className="sm:hidden py-0 overflow-hidden">
+        <Accordion type="single" collapsible>
+          <AccordionItem value="fee-summary" className="border-0">
+            <AccordionTrigger
+              id="feeSummaryCollapsibleTrigger_feePage"
+              className="px-4 py-3 items-center hover:no-underline hover:bg-slate-50 focus-visible:ring-violet-200 focus-visible:ring-inset"
+            >
+              <div
+                id="feeSummaryCollapsibleDefault_feePage"
+                className="flex items-center gap-3 min-w-0 flex-1"
               >
-                <div id="feeSummaryCollapsibleDefault_feePage" className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-red-50">
-                    <DollarSign className="size-4 text-red-600" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-semibold">Fee Summary</p>
-                    <p className="text-xs font-medium text-red-600">
-                      Total: Rp {totalFee.toLocaleString('id-ID')}
-                    </p>
-                  </div>
+                <div className="p-2 rounded-lg bg-red-50 shrink-0">
+                  <DollarSign className="size-4 text-red-600" />
                 </div>
-                {isOpen ? (
-                  <ChevronUp className="size-5 text-slate-400" />
-                ) : (
-                  <ChevronDown className="size-5 text-slate-400" />
-                )}
-              </Button>
-            </CollapsibleTrigger>
-
-            {/* Collapsible Content */}
-            <CollapsibleContent id="feeSummaryCollapsibleContent_feePage" className="px-4 pt-2">
-              <div className="pt-2 grid grid-cols-2 gap-3">
+                <div className="text-left min-w-0">
+                  <p className="text-sm font-semibold truncate">Fee Summary</p>
+                  <p className="text-xs font-medium text-red-600 truncate">
+                    Total: Rp {totalFee.toLocaleString('id-ID')}
+                  </p>
+                </div>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent
+              id="feeSummaryCollapsibleContent_feePage"
+              className="px-4 pb-4 pt-2 border-t border-slate-100"
+            >
+              <div className="grid grid-cols-2 gap-3">
                 {stats.map((stat, index) => {
                   const Icon = stat.icon
                   return (
@@ -113,10 +105,10 @@ export default function FeeListSummary({ feeCount, totalFee }) {
                   )
                 })}
               </div>
-            </CollapsibleContent>
-          </CardContent>
-        </Card>
-      </Collapsible>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </Card>
     </>
   )
 }

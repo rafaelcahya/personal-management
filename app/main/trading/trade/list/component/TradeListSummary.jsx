@@ -1,7 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import Button from '@/components/base/Button/Button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { TrendingUp, TrendingDown, Activity, Target, ChevronDown, ChevronUp } from 'lucide-react'

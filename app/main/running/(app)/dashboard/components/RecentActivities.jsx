@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import {
@@ -19,7 +19,7 @@ import {
   Gauge,
   Clock,
 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { fmtDistance, fmtDuration, fmtPace, fmtDate } from '../utils/format'
 
 const ACTIVITY_CONFIG = {

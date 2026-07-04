@@ -5,6 +5,7 @@ import { fetchEventList } from '@/lib/api/event'
 import { toast } from 'sonner'
 import Input from '@/components/base/Input/Input'
 import Button from '@/components/base/Button/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Search, List, AlignLeft, CalendarX2, SearchX, Sparkles, X, History } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
@@ -143,34 +144,16 @@ export default function EventsPageClient() {
         <div className="px-5 py-3 border-b border-slate-100 flex flex-col gap-3">
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
             {/* View toggle — left */}
-            <div className="flex items-center border border-slate-200 rounded-md overflow-hidden shrink-0 self-start">
-              <Button
-                id="listViewBtn_eventPage"
-                variant="ghost"
-                onClick={() => setView('list')}
-                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 rounded-none ${
-                  view === 'list'
-                    ? 'bg-violet-600 text-white hover:bg-violet-600'
-                    : 'bg-white text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <List className="size-3.5" />
-                List
-              </Button>
-              <Button
-                id="timelineViewBtn_eventPage"
-                variant="ghost"
-                onClick={() => setView('timeline')}
-                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 rounded-none ${
-                  view === 'timeline'
-                    ? 'bg-violet-600 text-white hover:bg-violet-600'
-                    : 'bg-white text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <AlignLeft className="size-3.5" />
-                Timeline
-              </Button>
-            </div>
+            <Tabs value={view} onValueChange={setView} className="shrink-0 self-start">
+              <TabsList variant="pill" size="sm">
+                <TabsTrigger id="listViewBtn_eventPage" value="list" icon={List}>
+                  List
+                </TabsTrigger>
+                <TabsTrigger id="timelineViewBtn_eventPage" value="timeline" icon={AlignLeft}>
+                  Timeline
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
             {/* Search + Filter + Add — right */}
             <div className="flex items-center gap-2 flex-wrap">

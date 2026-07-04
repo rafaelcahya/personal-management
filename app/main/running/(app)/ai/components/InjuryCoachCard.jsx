@@ -357,13 +357,13 @@ export default function InjuryCoachCard() {
                     className={`h-4 w-4 shrink-0 ${isSelected ? 'text-violet-600' : 'text-slate-400'}`}
                     aria-hidden="true"
                   />
-                  <span
-                    className={`text-sm font-semibold ${isSelected ? 'text-violet-700' : 'text-slate-700'}`}
+                  <p
+                    className={`text-sm font-semibold whitespace-normal ${isSelected ? 'text-violet-700' : 'text-slate-700'}`}
                   >
                     {role.label}
-                  </span>
+                  </p>
                 </div>
-                <p className="text-xs text-slate-400 pl-6">{role.description}</p>
+                <p className="text-xs text-slate-400 pl-6 whitespace-normal">{role.description}</p>
               </Button>
             )
           })}

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { Thermometer } from 'lucide-react'
@@ -14,7 +14,7 @@ import {
   ReferenceArea,
   Cell,
 } from 'recharts'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { fetchTemperatureEfficiency } from '@/lib/api/running'
 
 const MORNING_COLOR = '#f59e0b'

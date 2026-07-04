@@ -150,14 +150,25 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
             />
           </div>
 
-          <DialogFooter className="shrink-0 pt-4 flex-col sm:flex-row gap-2">
-            <DeleteFee fee={fee} onDeleted={onUpdated} onClose={onClose} />
-
-            <div className="flex gap-2 flex-1 justify-end">
-              <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
+          <DialogFooter className="shrink-0 pt-4">
+            <div className="flex flex-col gap-2 w-full">
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <DeleteFee fee={fee} onDeleted={onUpdated} onClose={onClose} className="w-full" />
+                </div>
+                <div className="flex-1">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={onClose}
+                    disabled={loading}
+                    className="w-full"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+              <Button type="submit" disabled={loading} className="w-full">
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading ? 'Updating...' : 'Update Fee'}
               </Button>

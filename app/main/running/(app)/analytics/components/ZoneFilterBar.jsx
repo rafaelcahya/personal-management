@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import { format } from 'date-fns'
-import { CalendarIcon, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -10,8 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Calendar } from '@/components/ui/calendar'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import Button from '@/components/base/Button/Button'
 import { cn } from '@/lib/utils'
 
@@ -42,44 +40,27 @@ function toDate(str) {
 }
 
 function DatePickerButton({ id, label, value, onChange, maxDate, minDate }) {
-  const [open, setOpen] = useState(false)
   const date = toDate(value)
+  const fromDate = minDate ? toDate(minDate) : undefined
+  const upperBound = maxDate ? toDate(maxDate) : new Date()
+  const toBound = upperBound < new Date() ? upperBound : new Date()
 
   return (
     <div className="flex items-center gap-0.5">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            id={id}
-            variant="outline"
-            size="base"
-            className={cn(
-              'h-8 gap-1.5 text-xs font-medium border-slate-200',
-              value ? 'text-slate-700 pr-1' : 'text-slate-400'
-            )}
-          >
-            <CalendarIcon className="size-3 shrink-0 text-slate-400" />
-            {value ? format(date, 'd MMM yyyy') : label}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={(d) => {
-              onChange(d ? format(d, 'yyyy-MM-dd') : null)
-              setOpen(false)
-            }}
-            disabled={(d) => {
-              if (d > new Date()) return true
-              if (minDate && d < toDate(minDate)) return true
-              if (maxDate && d > toDate(maxDate)) return true
-              return false
-            }}
-            initialFocus
-          />
-        </PopoverContent>
-      </Popover>
+      <DatePicker
+        id={id}
+        value={date}
+        onChange={(d) => onChange(d ? format(d, 'yyyy-MM-dd') : null)}
+        placeholder={label}
+        displayFormat="d MMM yyyy"
+        size="sm"
+        fromDate={fromDate}
+        toDate={toBound}
+        className={cn(
+          'h-8 gap-1.5 border-slate-200',
+          value ? 'text-slate-700 pr-1' : 'text-slate-400'
+        )}
+      />
       {value && (
         <Button
           variant="ghost"

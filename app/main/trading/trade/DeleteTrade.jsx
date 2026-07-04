@@ -17,7 +17,7 @@ import { Trash2, Loader2 } from 'lucide-react'
 import { deleteTrade } from '@/lib/api/trade'
 import { toast } from 'sonner'
 
-export default function DeleteTrade({ trade, onDeleted, onClose }) {
+export default function DeleteTrade({ trade, onDeleted, onClose, className }) {
   const [loading, setLoading] = useState(false)
 
   const handleDelete = async () => {
@@ -40,7 +40,7 @@ export default function DeleteTrade({ trade, onDeleted, onClose }) {
         <Button
           type="button"
           variant="ghost"
-          className="text-red-600 hover:text-red-600 hover:bg-red-50"
+          className={`text-red-600 hover:text-red-600 hover:bg-red-50${className ? ` ${className}` : ''}`}
         >
           <Trash2 className="h-4 w-4" />
           Delete

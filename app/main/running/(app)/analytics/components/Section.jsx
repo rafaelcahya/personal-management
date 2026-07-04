@@ -1,4 +1,4 @@
-import { Card, CardContent } from '@/components/ui/card'
+﻿import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 
 export default function Section({ id, title, description, icon: Icon, children }) {
   return (

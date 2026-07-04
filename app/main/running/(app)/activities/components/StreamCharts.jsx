@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import Button from '@/components/base/Button/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import {
   AreaChart,
   Area,
@@ -230,29 +231,21 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
             </UITooltip>
           </UITooltipProvider>
         </div>
-        <div
+        <Tabs
           id="paceSpeedToggle_activityDetailPage"
-          className="flex rounded-lg overflow-hidden border border-slate-200 text-[10px] font-semibold"
+          value={mode}
+          onValueChange={setMode}
+          className="shrink-0 self-start"
         >
-          <Button
-            variant="ghost"
-            size="xs"
-            id="paceTab_activityDetailPage"
-            onClick={() => setMode('pace')}
-            className={`px-2.5 py-1 rounded-none ${!isSpeed ? 'bg-violet-600 text-white hover:bg-violet-600' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
-          >
-            Pace
-          </Button>
-          <Button
-            variant="ghost"
-            size="xs"
-            id="speedTab_activityDetailPage"
-            onClick={() => setMode('speed')}
-            className={`px-2.5 py-1 rounded-none ${isSpeed ? 'bg-violet-600 text-white hover:bg-violet-600' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
-          >
-            Speed
-          </Button>
-        </div>
+          <TabsList variant="pill" size="sm">
+            <TabsTrigger id="paceTab_activityDetailPage" value="pace">
+              Pace
+            </TabsTrigger>
+            <TabsTrigger id="speedTab_activityDetailPage" value="speed">
+              Speed
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
       <div className="h-[180px] sm:h-[225px] outline-none" id="streamChartPace_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">

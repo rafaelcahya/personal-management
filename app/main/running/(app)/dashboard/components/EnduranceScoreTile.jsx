@@ -1,9 +1,9 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import Button from '@/components/base/Button/Button'
 import { Gauge, Info } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
 
 const TOOLTIP_TEXT =

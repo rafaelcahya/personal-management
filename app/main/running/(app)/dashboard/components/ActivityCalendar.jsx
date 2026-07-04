@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import Button from '@/components/base/Button/Button'
@@ -11,7 +11,7 @@ import {
   Activity,
   CalendarDays,
 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { fetchCalendarActivities } from '@/lib/api/running'
 

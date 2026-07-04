@@ -1,6 +1,6 @@
-'use client'
+﻿'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { Separator } from '@/components/base/Separator/Separator'
 import {
   Wallet,

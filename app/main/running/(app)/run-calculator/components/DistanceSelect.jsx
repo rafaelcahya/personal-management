@@ -42,7 +42,7 @@ export default function DistanceSelect({
       <Select value={preset} onValueChange={onPresetChange}>
         <SelectTrigger
           id={selectId}
-          className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
+          className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 w-max"
         >
           <SelectValue placeholder="Select distance" />
         </SelectTrigger>

@@ -1,6 +1,6 @@
-'use client'
+﻿'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { Trophy, Footprints, Clock, Mountain, Star, CalendarDays } from 'lucide-react'
 
 function formatDistance(m) {

@@ -6,6 +6,11 @@ import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import Button from '@/components/base/Button/Button'
+import {
+  SelectCard,
+  SelectCardTitle,
+  SelectCardDescription,
+} from '@/components/base/SelectCard/SelectCard'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { ChevronLeft, Sparkles, History } from 'lucide-react'
 import { fetchAnalysisHistory } from '@/lib/api/event'
@@ -30,38 +35,38 @@ function HistoryList({ history, onSelect }) {
         const eventNames = isMulti ? item.event_titles : item.event_title ? [item.event_title] : []
 
         return (
-          <Button
+          <SelectCard
             key={item.id}
-            variant="ghost"
-            fullWidth
-            onClick={() => onSelect(item)}
-            className="justify-start text-left border border-slate-200 rounded-lg px-4 py-3 hover:bg-slate-50 hover:border-violet-200 h-auto"
+            value={item.id}
+            layout="horizontal"
+            indicator="border"
+            onSelect={() => onSelect(item)}
           >
-            <div className="flex items-center justify-between gap-3 mb-1.5">
-              <span
-                className={`text-xs font-semibold px-1.5 py-0.5 rounded shrink-0 ${
-                  isMulti ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-600'
-                }`}
-              >
-                {isMulti ? `Multi · ${item.event_titles.length} events` : 'Single'}
-              </span>
-              <span className="text-xs text-slate-400 shrink-0">
-                {formatTimestamp(item.generated_at)}
-              </span>
-            </div>
+            <div className="flex-1 flex flex-col gap-2 min-w-0">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-xs font-semibold px-1.5 py-0.5 rounded shrink-0 ${
+                    isMulti ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  {isMulti ? `Multi · ${item.event_titles.length} events` : 'Single'}
+                </span>
+                <span className="text-xs text-slate-400 shrink-0">
+                  {formatTimestamp(item.generated_at)}
+                </span>
+              </div>
 
-            {/* Event names — full, not truncated */}
-            <div className="flex flex-col gap-0.5">
-              {eventNames.length === 0 && (
-                <p className="text-sm text-slate-400 italic">Unknown event</p>
+              {eventNames.length === 0 ? (
+                <SelectCardDescription className="italic">Unknown event</SelectCardDescription>
+              ) : (
+                <div className="flex flex-col gap-0.5">
+                  {eventNames.map((name, i) => (
+                    <SelectCardTitle key={i}>{name}</SelectCardTitle>
+                  ))}
+                </div>
               )}
-              {eventNames.map((name, i) => (
-                <p key={i} className="text-sm font-medium text-slate-800 leading-snug">
-                  {name}
-                </p>
-              ))}
             </div>
-          </Button>
+          </SelectCard>
         )
       })}
     </div>

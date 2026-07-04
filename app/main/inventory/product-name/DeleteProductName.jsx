@@ -14,7 +14,13 @@ import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import { deleteProductName } from '@/lib/api/productName'
 
-export default function DeleteProductName({ productName, onDeleted, onClose, disabled = false }) {
+export default function DeleteProductName({
+  productName,
+  onDeleted,
+  onClose,
+  disabled = false,
+  className,
+}) {
   const [loading, setLoading] = useState(false)
 
   const handleDelete = async () => {
@@ -37,7 +43,7 @@ export default function DeleteProductName({ productName, onDeleted, onClose, dis
         <Button
           id="deleteProductNameBtn_productNamePage"
           disabled={disabled}
-          className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500 disabled:opacity-40 disabled:cursor-not-allowed"
+          className={`bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500 disabled:opacity-40 disabled:cursor-not-allowed${className ? ` ${className}` : ''}`}
         >
           Delete
         </Button>

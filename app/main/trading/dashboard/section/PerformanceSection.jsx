@@ -1,6 +1,6 @@
 'use client'
 
-import { Card } from '@/components/ui/card'
+import Card from '@/components/base/Card/Card.jsx'
 import {
   Target,
   Shield,

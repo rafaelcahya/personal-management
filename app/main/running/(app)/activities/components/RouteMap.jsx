@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Button from '@/components/base/Button/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import { Maximize2, X } from 'lucide-react'
 import polyline from '@mapbox/polyline'
 
@@ -310,39 +311,21 @@ function LeafletMap({
 
 function StyleToggle({ mapStyle, onStyleChange }) {
   return (
-    <div
+    <Tabs
       id="mapStyleToggle_activityDetailPage"
-      className="flex rounded-lg overflow-hidden border border-slate-200 shadow-sm"
+      value={mapStyle}
+      onValueChange={onStyleChange}
+      className="shrink-0 self-start"
     >
-      <Button
-        id="mapStyleMap_activityDetailPage"
-        variant="ghost"
-        size="xs"
-        onClick={() => onStyleChange('map')}
-        aria-pressed={mapStyle === 'map'}
-        className={`px-2.5 py-1 text-xs font-medium rounded-none ${
-          mapStyle === 'map'
-            ? 'bg-white text-slate-800 hover:bg-white'
-            : 'bg-slate-50 text-slate-500 hover:bg-white'
-        }`}
-      >
-        Map
-      </Button>
-      <Button
-        id="mapStyleSatellite_activityDetailPage"
-        variant="ghost"
-        size="xs"
-        onClick={() => onStyleChange('satellite')}
-        aria-pressed={mapStyle === 'satellite'}
-        className={`px-2.5 py-1 text-xs font-medium rounded-none ${
-          mapStyle === 'satellite'
-            ? 'bg-white text-slate-800 hover:bg-white'
-            : 'bg-slate-50 text-slate-500 hover:bg-white'
-        }`}
-      >
-        Satellite
-      </Button>
-    </div>
+      <TabsList variant="pill" size="sm">
+        <TabsTrigger id="mapStyleMap_activityDetailPage" value="map">
+          Map
+        </TabsTrigger>
+        <TabsTrigger id="mapStyleSatellite_activityDetailPage" value="satellite">
+          Satellite
+        </TabsTrigger>
+      </TabsList>
+    </Tabs>
   )
 }
 

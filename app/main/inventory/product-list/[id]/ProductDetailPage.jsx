@@ -9,7 +9,7 @@ import PageHeader from '@/app/main/components/PageHeader'
 import ProductUsageLog from '@/app/main/inventory/product-list/detail/ProductUsageLog'
 import { Badge } from '@/components/base/Badge/Badge'
 import Button from '@/components/base/Button/Button'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 
 // ----------------------------------------------------------------
