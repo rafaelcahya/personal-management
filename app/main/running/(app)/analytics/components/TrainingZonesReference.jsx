@@ -2,6 +2,14 @@
 
 import { MapPin } from 'lucide-react'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 const ZONE_COLORS = [
   'bg-blue-100 text-blue-700',
@@ -92,71 +100,56 @@ export default function TrainingZonesReference({ data, loading, error, onRetry }
             )}
 
             {(data.hr_configured || data.pace_configured) && (
-              <div className="overflow-x-auto">
-                <table
+              <>
+                <Table
                   id="trainingZonesTable_analyticsPage"
-                  className="min-w-full text-sm"
+                  className="min-w-full"
                   aria-label="Training zones reference"
                 >
-                  <thead>
-                    <tr className="border-b border-slate-100">
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-24">
-                        Zone
-                      </th>
-                      {data.hr_configured && (
-                        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                          HR Range
-                        </th>
-                      )}
-                      {data.pace_configured && (
-                        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                          Pace Range
-                        </th>
-                      )}
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap hidden sm:table-cell">
-                        Guidance
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-24">Zone</TableHead>
+                      {data.hr_configured && <TableHead>HR Range</TableHead>}
+                      {data.pace_configured && <TableHead>Pace Range</TableHead>}
+                      <TableHead className="hidden sm:table-cell">Guidance</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {data.zones?.map((z, i) => (
-                      <tr
-                        key={z.zone}
-                        className="border-b border-slate-50 hover:bg-slate-50 transition-colors align-top"
-                      >
-                        <td className="px-5 py-3.5">
+                      <TableRow key={z.zone} className="align-top">
+                        <TableCell>
                           <span
                             className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold ${ZONE_COLORS[i]}`}
                           >
                             {z.zone}
                             <span className="font-normal">{z.name}</span>
                           </span>
-                        </td>
+                        </TableCell>
                         {data.hr_configured && (
-                          <td className="px-5 py-3.5 font-mono text-slate-700 whitespace-nowrap">
+                          <TableCell className="font-mono text-slate-700 whitespace-nowrap">
                             {z.hr ? (
                               <HrRange min={z.hr.min} max={z.hr.max} />
                             ) : (
                               <span className="text-slate-400">—</span>
                             )}
-                          </td>
+                          </TableCell>
                         )}
                         {data.pace_configured && (
-                          <td className="px-5 py-3.5 font-mono text-slate-700 whitespace-nowrap">
+                          <TableCell className="font-mono text-slate-700 whitespace-nowrap">
                             {z.pace ? (
                               <PaceRange min={z.pace.min} max={z.pace.max} />
                             ) : (
                               <span className="text-slate-400">—</span>
                             )}
-                          </td>
+                          </TableCell>
                         )}
-                        <td className="px-5 py-3.5 text-slate-500 text-xs leading-relaxed hidden sm:table-cell">
+                        <TableCell className="text-slate-500 text-xs leading-relaxed hidden sm:table-cell">
                           {z.guidance}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
 
                 {(!data.hr_configured || !data.pace_configured) && (
                   <p className="mt-3 px-5 text-xs text-slate-400">
@@ -167,7 +160,7 @@ export default function TrainingZonesReference({ data, loading, error, onRetry }
                         : 'Pace range not shown — set threshold pace in Settings.'}
                   </p>
                 )}
-              </div>
+              </>
             )}
           </>
         )}

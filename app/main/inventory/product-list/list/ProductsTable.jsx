@@ -29,6 +29,14 @@ import AddStockForm from '../detail/AddStockForm'
 import StockAdjustment from '../detail/StockAdjustment'
 import DeleteProductDialog from './component/DeleteProductDialog'
 import EditProductSheet from './component/EditProductSheet'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 const LOW_STOCK_THRESHOLD = 5
 
@@ -289,53 +297,49 @@ export default function ProductsTable({
       </div>
 
       {/* ── Desktop Table (sm+) ── */}
-      <div className="hidden sm:block overflow-x-auto flex-1">
-        <table
-          id="desktopTable_productListPage"
-          className="min-w-full text-sm"
-          aria-label="Products"
-        >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th
-                className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[35%] cursor-pointer select-none"
+      <div className="hidden sm:block flex-1">
+        <Table id="desktopTable_productListPage" className="min-w-full" aria-label="Products">
+          <TableHeader>
+            <TableRow>
+              <TableHead
+                className="w-[35%] cursor-pointer select-none"
                 onClick={() => handleSort('product')}
               >
                 Product <SortIcon column="product" sort={sort} />
-              </th>
-              <th
-                className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[12%] cursor-pointer select-none"
+              </TableHead>
+              <TableHead
+                className="w-[12%] cursor-pointer select-none"
+                align="right"
                 onClick={() => handleSort('quantity')}
               >
                 Quantity <SortIcon column="quantity" sort={sort} />
-              </th>
-              <th
-                className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[15%] cursor-pointer select-none"
+              </TableHead>
+              <TableHead
+                className="w-[15%] cursor-pointer select-none"
+                align="right"
                 onClick={() => handleSort('in_use')}
               >
                 In Use <SortIcon column="in_use" sort={sort} />
-              </th>
-              <th
-                className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[13%] cursor-pointer select-none"
+              </TableHead>
+              <TableHead
+                className="w-[13%] cursor-pointer select-none"
+                align="center"
                 onClick={() => handleSort('usage_date')}
               >
                 Usage Date <SortIcon column="usage_date" sort={sort} />
-              </th>
-              <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[13%]">
+              </TableHead>
+              <TableHead className="w-[13%]" align="center">
                 Status
-              </th>
-              <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[12%]">
+              </TableHead>
+              <TableHead className="w-[12%]" align="center">
                 <span className="sr-only">Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {products.map((product) => (
-              <tr
-                key={product.id}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 w-[35%]">
+              <TableRow key={product.id}>
+                <TableCell className="w-[35%]">
                   <div className="flex items-center gap-3">
                     <StarIcon
                       className={`size-4 flex-shrink-0 ${
@@ -372,8 +376,8 @@ export default function ProductsTable({
                       </div>
                     </div>
                   </div>
-                </td>
-                <td className="px-5 py-3.5 text-right w-[12%]">
+                </TableCell>
+                <TableCell className="w-[12%]" align="right">
                   <QuantityBadge quantity={product.quantity} />
                   {restockPredictions[product.id] &&
                     product.quantity > 0 &&
@@ -388,14 +392,17 @@ export default function ProductsTable({
                         </p>
                       )
                     })()}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono font-medium tabular-nums text-slate-700 w-[15%]">
+                </TableCell>
+                <TableCell
+                  className="font-mono font-medium tabular-nums text-slate-700 w-[15%]"
+                  align="right"
+                >
                   {product.usage_quantity}
-                </td>
-                <td className="px-5 py-3.5 text-center text-slate-700 w-[13%]">
+                </TableCell>
+                <TableCell className="text-slate-700 w-[13%]" align="center">
                   {product.usage_date ? format(new Date(product.usage_date), 'dd MMM yyyy') : '—'}
-                </td>
-                <td className="px-5 py-3.5 text-center w-[13%]">
+                </TableCell>
+                <TableCell className="w-[13%]" align="center">
                   <Badge
                     className={`${
                       product.product_status === 'active'
@@ -405,14 +412,14 @@ export default function ProductsTable({
                   >
                     {product.product_status}
                   </Badge>
-                </td>
-                <td className="px-5 py-3.5 text-center w-[12%]">
+                </TableCell>
+                <TableCell className="w-[12%]" align="center">
                   <ActionMenu product={product} {...sharedActionProps} />
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
 
         {totalPages > 1 && (
           <div

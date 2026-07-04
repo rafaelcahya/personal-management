@@ -10,6 +10,14 @@ import ProductBrandUpdate from '../UpdateProductBrand'
 import { updateProductBrand } from '@/lib/api/productBrand'
 import { ChevronLeft, ChevronRight, Pencil, X } from 'lucide-react'
 import { toast } from 'sonner'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 export default function ProductBrandsTable({
   brands = [],
@@ -138,72 +146,63 @@ export default function ProductBrandsTable({
         </div>
       ) : (
         <div className="flex-1 overflow-x-auto">
-          <table
+          <Table
             id="productBrandsTable_productBrandPage"
-            className="min-w-full text-sm"
+            className="min-w-full"
             aria-label="Product brands"
           >
-            <thead>
-              <tr className="border-b border-slate-100">
-                <th
-                  className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[40px]"
-                  onClick={(e) => e.stopPropagation()}
-                >
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[40px]" onClick={(e) => e.stopPropagation()}>
                   <Checkbox
                     id="selectAllBrands_productBrandPage"
                     checked={allSelected ? true : someSelected ? 'indeterminate' : false}
                     onCheckedChange={handleSelectAll}
                     aria-label="Select all brands"
                   />
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[30px]">
-                  #
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Brand
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[120px]">
-                  Status
-                </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[100px]">
+                </TableHead>
+                <TableHead className="w-[30px]">#</TableHead>
+                <TableHead>Brand</TableHead>
+                <TableHead className="w-[120px]">Status</TableHead>
+                <TableHead className="w-[100px]" align="right">
                   Products
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Notes
-                </th>
-                <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[60px]">
+                </TableHead>
+                <TableHead>Notes</TableHead>
+                <TableHead className="w-[60px]" align="center">
                   <span className="sr-only">Action</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {brands.map((productBrand, index) => (
-                <tr
+                <TableRow
                   key={productBrand.id}
                   data-testid={`brandRow_${productBrand.id}_productBrandPage`}
-                  className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors"
+                  clickable
                   onClick={() => setSelectedBrand(productBrand)}
                 >
-                  <td className="px-5 py-3.5 w-[40px]" onClick={(e) => e.stopPropagation()}>
+                  <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
                     <Checkbox
                       data-testid={`brandCheckbox_${productBrand.id}_productBrandPage`}
                       checked={selectedIds.includes(productBrand.id)}
                       onCheckedChange={(checked) => handleSelectOne(productBrand.id, checked)}
                       aria-label={`Select ${productBrand.brand}`}
                     />
-                  </td>
-                  <td className="px-5 py-3.5 text-right font-mono text-slate-700 w-[30px]">
+                  </TableCell>
+                  <TableCell className="font-mono text-slate-700 w-[30px]" align="right">
                     {(page - 1) * 15 + index + 1}
-                  </td>
-                  <td className="px-5 py-3.5 font-semibold text-slate-900">{productBrand.brand}</td>
-                  <td className="px-5 py-3.5 w-[120px]">
+                  </TableCell>
+                  <TableCell className="font-semibold text-slate-900">
+                    {productBrand.brand}
+                  </TableCell>
+                  <TableCell className="w-[120px]">
                     <Badge
                       className={cn('capitalize', getStatusClasses(productBrand.brand_status))}
                     >
                       {productBrand.brand_status}
                     </Badge>
-                  </td>
-                  <td className="px-5 py-3.5 text-right font-mono text-slate-700 w-[100px]">
+                  </TableCell>
+                  <TableCell className="font-mono text-slate-700 w-[100px]" align="right">
                     {productBrand.product_count > 0 ? (
                       <Badge
                         data-testid={`productCountBadge_${productBrand.id}_productBrandPage`}
@@ -223,14 +222,11 @@ export default function ProductBrandsTable({
                         {productBrand.product_count}
                       </Badge>
                     )}
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate">
+                  </TableCell>
+                  <TableCell className="text-slate-500 max-w-xs truncate">
                     {productBrand.note || '—'}
-                  </td>
-                  <td
-                    className="px-5 py-3.5 text-center w-[60px]"
-                    onClick={(e) => e.stopPropagation()}
-                  >
+                  </TableCell>
+                  <TableCell className="text-center w-[60px]" onClick={(e) => e.stopPropagation()}>
                     <Button
                       type="button"
                       variant="ghost"
@@ -244,11 +240,11 @@ export default function ProductBrandsTable({
                     >
                       <Pencil className="size-3.5" />
                     </Button>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">

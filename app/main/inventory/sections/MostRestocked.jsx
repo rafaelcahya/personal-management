@@ -9,9 +9,18 @@ import {
   ModalHeader,
   ModalTitle,
   ModalBody,
+  ModalDescription,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 function TableSkeleton() {
   return (
@@ -44,61 +53,49 @@ function RestockTable({ items }) {
   return (
     <>
       {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table
-          id="mostRestockedTable_inventoryPage"
-          className="min-w-full text-sm"
-          aria-label="Most restocked products"
-        >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-8">
-                No
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Product
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Last Restock
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Restocks
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, index) => (
-              <tr
-                key={item.id}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 text-slate-500 text-xs">{index + 1}</td>
-                <td className="px-5 py-3.5">
-                  <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                  <div className="flex flex-col items-start gap-1.5 mt-0.5">
-                    <p className="font-semibold text-slate-900">{item.product}</p>
-                    {item.type && (
-                      <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                        {item.type}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-5 py-3.5 text-right text-slate-700">
-                  {item.last_restock_date
-                    ? format(new Date(item.last_restock_date), 'dd MMM yyyy')
-                    : '—'}
-                </td>
-                <td className="px-5 py-3.5 text-right">
-                  <span className="bg-violet-100 text-violet-700 border border-violet-200 rounded-full px-2 py-0.5 text-xs font-medium">
-                    {item.restock_count}×
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        wrapperClassName="hidden md:block"
+        id="mostRestockedTable_inventoryPage"
+        className="min-w-full"
+        aria-label="Most restocked products"
+      >
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-8">No</TableHead>
+            <TableHead>Product</TableHead>
+            <TableHead>Last Restock</TableHead>
+            <TableHead>Restocks</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((item, index) => (
+            <TableRow key={item.id}>
+              <TableCell className="text-slate-500 text-xs">{index + 1}</TableCell>
+              <TableCell>
+                <p className="text-xs text-slate-400">{item.brand || '—'}</p>
+                <div className="flex flex-col items-start gap-1.5 mt-0.5">
+                  <p className="font-semibold text-slate-900">{item.product}</p>
+                  {item.type && (
+                    <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
+                      {item.type}
+                    </span>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell className="text-slate-700">
+                {item.last_restock_date
+                  ? format(new Date(item.last_restock_date), 'dd MMM yyyy')
+                  : '—'}
+              </TableCell>
+              <TableCell>
+                <span className="bg-violet-100 text-violet-700 border border-violet-200 rounded-full px-2 py-0.5 text-xs font-medium">
+                  {item.restock_count}×
+                </span>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       {/* Mobile cards */}
       <div className="md:hidden space-y-2 px-2 py-2">
@@ -202,12 +199,12 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
             <ModalTitle className="text-base font-semibold text-slate-800">
               All Products — Restock History
             </ModalTitle>
-            <p className="text-xs text-slate-400">Sorted by most restocked</p>
+            <ModalDescription className="text-xs text-slate-400">
+              Sorted by most restocked
+            </ModalDescription>
           </ModalHeader>
-          <ModalBody>
-            <div className="overflow-y-auto flex-1">
-              <RestockTable items={items} />
-            </div>
+          <ModalBody className="overflow-y-auto flex-1 px-2">
+            <RestockTable items={items} />
           </ModalBody>
         </ModalContent>
       </Modal>

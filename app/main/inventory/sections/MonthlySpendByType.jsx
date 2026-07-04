@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { format } from 'date-fns'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   Modal,
   ModalContent,
@@ -17,44 +18,101 @@ function thisMonthTotal(items) {
   return items.filter((i) => i.month === thisMonth).reduce((sum, i) => sum + i.total_spent, 0)
 }
 
-function SpendList({ items }) {
+function groupByMonth(items) {
   const grouped = items.reduce((acc, item) => {
     if (!acc[item.month]) acc[item.month] = []
     acc[item.month].push(item)
     return acc
   }, {})
   const months = Object.keys(grouped).sort((a, b) => b.localeCompare(a))
+  return { grouped, months }
+}
 
+function MonthBlock({ month, items }) {
   return (
     <div>
-      {months.map((month) => (
-        <div key={month}>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide py-2 border-b border-slate-100 mt-3 first:mt-0">
-            {format(new Date(month + '-01'), 'MMMM yyyy')}
-          </p>
-          {grouped[month].map((item, idx) => (
-            <div
-              key={idx}
-              className="flex justify-between items-center py-2 border-b border-slate-50 last:border-0"
-            >
-              <div className="min-w-0">
-                <p className="text-xs text-slate-400 truncate">{item.brand || '—'}</p>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 mt-0.5">
-                  <p className="font-medium text-slate-700 text-sm truncate">{item.product}</p>
-                  {item.type && (
-                    <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                      {item.type}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <span className="font-semibold text-violet-700 text-sm shrink-0 ml-3">
-                {formatRupiah(item.total_spent)}
-              </span>
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide py-2 border-b border-slate-100">
+        {format(new Date(month + '-01'), 'MMMM yyyy')}
+      </p>
+      {items.map((item, idx) => (
+        <div
+          key={idx}
+          className="flex justify-between items-center py-2 border-b border-slate-50 last:border-0"
+        >
+          <div className="min-w-0">
+            <p className="text-xs text-slate-400 truncate">{item.brand || '—'}</p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 mt-0.5">
+              <p className="font-medium text-slate-700 text-sm truncate">{item.product}</p>
+              {item.type && (
+                <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
+                  {item.type}
+                </span>
+              )}
             </div>
-          ))}
+          </div>
+          <span className="font-semibold text-violet-700 text-sm shrink-0 ml-3">
+            {formatRupiah(item.total_spent)}
+          </span>
         </div>
       ))}
+    </div>
+  )
+}
+
+function SpendList({ items }) {
+  const { grouped, months } = groupByMonth(items)
+  return (
+    <div className="flex flex-col gap-4">
+      {months.map((month) => (
+        <MonthBlock key={month} month={month} items={grouped[month]} />
+      ))}
+    </div>
+  )
+}
+
+const MONTHS_PER_PAGE = 2
+
+function PaginatedSpendList({ items }) {
+  const [page, setPage] = useState(0)
+  const { grouped, months } = useMemo(() => groupByMonth(items), [items])
+  const totalPages = Math.ceil(months.length / MONTHS_PER_PAGE)
+  const pageMonths = months.slice(page * MONTHS_PER_PAGE, (page + 1) * MONTHS_PER_PAGE)
+
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-4">
+        {pageMonths.map((month) => (
+          <MonthBlock key={month} month={month} items={grouped[month]} />
+        ))}
+      </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-4 mt-2 border-t border-slate-100">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => p - 1)}
+            disabled={page === 0}
+            className="flex items-center gap-1"
+          >
+            <ChevronLeft className="size-3.5" />
+            Prev
+          </Button>
+          <span className="text-xs text-slate-500">
+            {page + 1} / {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page === totalPages - 1}
+            className="flex items-center gap-1"
+          >
+            Next
+            <ChevronRight className="size-3.5" />
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
@@ -121,8 +179,8 @@ export default function MonthlySpendByType({ items, loading }) {
             <p className="text-xs text-slate-400">All categories across the last 6 months</p>
           </ModalHeader>
           <ModalBody>
-            <div className="overflow-y-auto flex-1 px-5 py-3">
-              <SpendList items={items} />
+            <div className="py-3 px-1">
+              <PaginatedSpendList items={items} />
             </div>
           </ModalBody>
         </ModalContent>

@@ -11,6 +11,14 @@ import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import { updateActivity } from '@/lib/api/running'
 import { RPE_LEVELS } from '@/lib/constants/running/rpe'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 const BORG_CR10_COPY =
   'The Borg CR10 is a 1–10 perceived effort scale developed by Swedish psychologist Gunnar Borg. Unlike his original 6–20 scale (designed so RPE × 10 ≈ heart rate bpm), CR10 is a general effort scale that maps naturally to training zones — no heart rate estimation needed. It is the de facto standard in modern endurance apps.'
@@ -226,50 +234,45 @@ export default function PerceivedEffortSection({
       </Button>
 
       {guideExpanded && (
-        <div
+        <Table
           id="rpeGuideTable_activityDetailPage"
-          className="overflow-x-auto rounded-lg border border-slate-100"
+          wrapperClassName="overflow-x-auto rounded-lg border border-slate-100"
+          className="min-w-full text-xs"
+          aria-label="RPE guide reference"
         >
-          <table className="min-w-full text-xs" aria-label="RPE guide reference">
-            <thead>
-              <tr className="border-b border-slate-100">
-                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  RPE
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Label
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Breathing / Talk test
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Zone
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Typical use
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {RPE_LEVELS.map((level) => (
-                <tr
-                  key={level.value}
-                  className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-                >
-                  <td className="px-3 py-2.5 font-semibold" style={{ color: level.bg }}>
-                    {level.value}
-                  </td>
-                  <td className="px-3 py-2.5 font-semibold text-slate-900 whitespace-nowrap">
-                    {level.label}
-                  </td>
-                  <td className="px-3 py-2.5 text-slate-500">{level.breathing}</td>
-                  <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{level.zone}</td>
-                  <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{level.use}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="px-3 py-2.5 font-semibold text-slate-500">RPE</TableHead>
+              <TableHead className="px-3 py-2.5 font-semibold text-slate-500">Label</TableHead>
+              <TableHead className="px-3 py-2.5 font-semibold text-slate-500">
+                Breathing / Talk test
+              </TableHead>
+              <TableHead className="px-3 py-2.5 font-semibold text-slate-500">Zone</TableHead>
+              <TableHead className="px-3 py-2.5 font-semibold text-slate-500">
+                Typical use
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {RPE_LEVELS.map((level) => (
+              <TableRow key={level.value}>
+                <TableCell className="px-3 py-2.5 font-semibold" style={{ color: level.bg }}>
+                  {level.value}
+                </TableCell>
+                <TableCell className="px-3 py-2.5 font-semibold text-slate-900 whitespace-nowrap">
+                  {level.label}
+                </TableCell>
+                <TableCell className="px-3 py-2.5 text-slate-500">{level.breathing}</TableCell>
+                <TableCell className="px-3 py-2.5 text-slate-500 whitespace-nowrap">
+                  {level.zone}
+                </TableCell>
+                <TableCell className="px-3 py-2.5 text-slate-500 whitespace-nowrap">
+                  {level.use}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   )

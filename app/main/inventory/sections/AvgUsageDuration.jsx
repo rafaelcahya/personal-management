@@ -8,9 +8,18 @@ import {
   ModalHeader,
   ModalTitle,
   ModalBody,
+  ModalDescription,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 function DurationBadge({ days }) {
   let cls = 'bg-green-100 text-green-700 border-green-200'
@@ -53,51 +62,41 @@ function DurationTable({ data }) {
   return (
     <>
       {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table
-          id="avgUsageDurationTable_inventoryPage"
-          className="min-w-full text-sm"
-          aria-label="Average usage duration per product"
-        >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-8">
-                No
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Product
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Average Duration
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item, index) => (
-              <tr
-                key={item.product_list_id}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 text-slate-500 text-xs">{index + 1}</td>
-                <td className="px-5 py-3.5">
-                  <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <p className="font-semibold text-slate-900">{item.product}</p>
-                    {item.type && (
-                      <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                        {item.type}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-5 py-3.5 text-right">
-                  <DurationBadge days={item.avg_days} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        wrapperClassName="hidden md:block"
+        id="avgUsageDurationTable_inventoryPage"
+        className="min-w-full"
+        aria-label="Average usage duration per product"
+      >
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-8">No</TableHead>
+            <TableHead>Product</TableHead>
+            <TableHead>Average Duration</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((item, index) => (
+            <TableRow key={item.product_list_id}>
+              <TableCell className="text-slate-500 text-xs">{index + 1}</TableCell>
+              <TableCell>
+                <p className="text-xs text-slate-400">{item.brand || '—'}</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <p className="font-semibold text-slate-900">{item.product}</p>
+                  {item.type && (
+                    <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
+                      {item.type}
+                    </span>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell>
+                <DurationBadge days={item.avg_days} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       {/* Mobile cards */}
       <div className="md:hidden space-y-2 px-2 py-2">
@@ -193,12 +192,12 @@ export default function AvgUsageDuration({ items, loading, error, onRetry }) {
             <ModalTitle className="text-base font-semibold text-slate-800 text-left">
               All Products — Average Usage Duration
             </ModalTitle>
-            <p className="text-xs text-slate-400">Sorted by longest average duration</p>
+            <ModalDescription className="text-xs text-slate-400">
+              Sorted by longest average duration
+            </ModalDescription>
           </ModalHeader>
-          <ModalBody>
-            <div className="overflow-y-auto flex-1">
-              <DurationTable data={items} />
-            </div>
+          <ModalBody className="overflow-y-auto flex-1 px-2">
+            <DurationTable data={items} />
           </ModalBody>
         </ModalContent>
       </Modal>

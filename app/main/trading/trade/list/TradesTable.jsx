@@ -3,18 +3,24 @@
 import { useState } from 'react'
 import { ArrowUp, ArrowDown } from 'lucide-react'
 import UpdateTrade from '../UpdateTrade'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 const profitLossColor = (value) =>
   value < 0 ? 'text-destructive-subtle-foreground' : 'text-success-subtle-foreground'
 
-const TH_BASE =
-  'px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap'
-
 function SortableHead({ column, label, sortKey, align = 'left' }) {
   const isActive = sortKey === column.key
   return (
-    <th
-      className={`${TH_BASE} text-${align} cursor-pointer select-none hover:text-slate-700 transition-colors`}
+    <TableHead
+      className="cursor-pointer select-none hover:text-slate-700 transition-colors"
+      align={align}
       onClick={() => column.onSort(sortKey)}
       aria-sort={isActive ? (column.direction === 'asc' ? 'ascending' : 'descending') : 'none'}
     >
@@ -30,7 +36,7 @@ function SortableHead({ column, label, sortKey, align = 'left' }) {
           <span className="size-3.5 shrink-0" aria-hidden="true" />
         )}
       </span>
-    </th>
+    </TableHead>
   )
 }
 
@@ -41,57 +47,61 @@ export default function TradesTable({ trades, sortKey, sortDir, onSort, onRefres
 
   return (
     <>
-      <div id="tradeTable_tradePage" className="overflow-x-auto flex-1">
-        <table className="min-w-full text-sm" aria-label="Trades">
-          <thead>
-            <tr className="border-b border-slate-100">
-              <SortableHead column={sortColumn} label="Date" sortKey="trade_date" />
-              <th className={`${TH_BASE} text-left`}>Ticker</th>
-              <th className={`${TH_BASE} text-right`}>Margin</th>
-              <th className={`${TH_BASE} text-right`}>Proceeds</th>
-              <SortableHead column={sortColumn} label="Return %" sortKey="return_percent" />
-              <SortableHead column={sortColumn} label="P/L" sortKey="realized_gain" align="right" />
-              <th className={`${TH_BASE} text-left`}>Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {trades.map((trade) => (
-              <tr
-                key={trade.id}
-                id="tradeTableRow_tradePage"
-                className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors"
-                onClick={() => setSelectedTrade(trade)}
+      <Table
+        id="tradeTable_tradePage"
+        wrapperClassName="overflow-x-auto flex-1"
+        className="min-w-full"
+        aria-label="Trades"
+      >
+        <TableHeader>
+          <TableRow>
+            <SortableHead column={sortColumn} label="Date" sortKey="trade_date" />
+            <TableHead>Ticker</TableHead>
+            <TableHead align="right">Margin</TableHead>
+            <TableHead align="right">Proceeds</TableHead>
+            <SortableHead column={sortColumn} label="Return %" sortKey="return_percent" />
+            <SortableHead column={sortColumn} label="P/L" sortKey="realized_gain" align="right" />
+            <TableHead>Type</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {trades.map((trade) => (
+            <TableRow
+              key={trade.id}
+              id="tradeTableRow_tradePage"
+              clickable
+              onClick={() => setSelectedTrade(trade)}
+            >
+              <TableCell className="text-slate-700">
+                {new Date(trade.trade_date).toLocaleDateString('id-ID', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </TableCell>
+              <TableCell className="font-bold uppercase text-violet-600">{trade.ticker}</TableCell>
+              <TableCell className="font-mono text-slate-700" align="right">
+                Rp {Number(trade.margin).toLocaleString('id-ID')}
+              </TableCell>
+              <TableCell className="font-mono text-slate-700" align="right">
+                Rp {Number(trade.proceeds).toLocaleString('id-ID')}
+              </TableCell>
+              <TableCell
+                className={`font-semibold ${profitLossColor(parseFloat(trade.return_percent))}`}
               >
-                <td className="px-5 py-3.5 text-slate-700">
-                  {new Date(trade.trade_date).toLocaleDateString('id-ID', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </td>
-                <td className="px-5 py-3.5 font-bold uppercase text-violet-600">{trade.ticker}</td>
-                <td className="px-5 py-3.5 text-right font-mono text-slate-700">
-                  Rp {Number(trade.margin).toLocaleString('id-ID')}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono text-slate-700">
-                  Rp {Number(trade.proceeds).toLocaleString('id-ID')}
-                </td>
-                <td
-                  className={`px-5 py-3.5 font-semibold ${profitLossColor(parseFloat(trade.return_percent))}`}
-                >
-                  {trade.return_percent}
-                </td>
-                <td
-                  className={`px-5 py-3.5 text-right font-mono font-semibold ${profitLossColor(Number(trade.realized_gain))}`}
-                >
-                  Rp {Number(trade.realized_gain).toLocaleString('id-ID')}
-                </td>
-                <td className="px-5 py-3.5 text-slate-700">{trade.stock_type_option}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                {trade.return_percent}
+              </TableCell>
+              <TableCell
+                className={`font-mono font-semibold ${profitLossColor(Number(trade.realized_gain))}`}
+                align="right"
+              >
+                Rp {Number(trade.realized_gain).toLocaleString('id-ID')}
+              </TableCell>
+              <TableCell className="text-slate-700">{trade.stock_type_option}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       {selectedTrade && (
         <UpdateTrade

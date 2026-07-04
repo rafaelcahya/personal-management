@@ -110,10 +110,8 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
             </ModalTitle>
             <p className="text-xs text-slate-400">Sorted by highest cost per use</p>
           </ModalHeader>
-          <ModalBody>
-            <div className="overflow-y-auto flex-1">
-              {all.length === 0 ? <EmptyState /> : <ProductTable products={all} />}
-            </div>
+          <ModalBody className="overflow-y-auto flex-1 px-2">
+            {all.length === 0 ? <EmptyState /> : <ProductTable products={all} />}
           </ModalBody>
         </ModalContent>
       </Modal>
