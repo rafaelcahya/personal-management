@@ -176,7 +176,11 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
 
   return (
     <Modal open={!!trade} onOpenChange={onClose}>
-      <ModalContent className="sm:max-w-xl flex flex-col max-h-[90vh]" variant="bordered" borderColor="border-slate-200">
+      <ModalContent
+        className="sm:max-w-xl flex flex-col max-h-[90vh]"
+        variant="bordered"
+        borderColor="border-slate-200"
+      >
         <ModalHeader className="text-left shrink-0">
           <ModalTitle>✏️ Update Trade</ModalTitle>
           <ModalDescription className="text-slate-600">

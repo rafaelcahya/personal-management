@@ -132,7 +132,8 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
         </ModalTrigger>
       )}
       <ModalContent
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
         className="sm:max-w-3xl flex flex-col max-h-[90vh]"
         id="addNewEventForm_eventPage"
       >

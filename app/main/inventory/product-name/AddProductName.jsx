@@ -67,7 +67,8 @@ export default function AddProductName({ onAdded }) {
       <ModalContent
         className="sm:max-w-md"
         id="addNewProductNameForm_productNamePage"
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
       >
         <ModalHeader>
           <ModalTitle>Add New Product Name</ModalTitle>
@@ -77,7 +78,10 @@ export default function AddProductName({ onAdded }) {
           </ModalDescription>
         </ModalHeader>
 
-        <form onSubmit={handleSubmit(handleAddNewProductName)} className="flex flex-col flex-1 min-h-0">
+        <form
+          onSubmit={handleSubmit(handleAddNewProductName)}
+          className="flex flex-col flex-1 min-h-0"
+        >
           <ModalBody className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
             <Controller
               control={control}

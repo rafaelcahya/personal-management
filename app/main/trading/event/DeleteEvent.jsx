@@ -59,11 +59,7 @@ export default function DeleteEvent({ event, onDeleted, onClose, redirectTo, ope
               </Button>
             </ModalClose>
             <ModalClose asChild>
-              <Button
-                onClick={handleDelete}
-                disabled={loading}
-                variant="destructive"
-              >
+              <Button onClick={handleDelete} disabled={loading} variant="destructive">
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading ? 'Deleting...' : 'Delete'}
               </Button>
@@ -104,11 +100,7 @@ export default function DeleteEvent({ event, onDeleted, onClose, redirectTo, ope
             </Button>
           </ModalClose>
           <ModalClose asChild>
-            <Button
-              onClick={handleDelete}
-              disabled={loading}
-              variant="destructive"
-            >
+            <Button onClick={handleDelete} disabled={loading} variant="destructive">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? 'Deleting...' : 'Delete'}
             </Button>

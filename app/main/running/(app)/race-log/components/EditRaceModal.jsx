@@ -129,7 +129,8 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
   return (
     <Modal open={open} onOpenChange={(v) => !v && onClose()}>
       <ModalContent
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
         id="editRaceModal_raceDetailPage"
         className="max-w-lg max-h-[90vh] flex flex-col"
       >
@@ -138,231 +139,241 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
         </ModalHeader>
 
         <ModalBody className="flex-1 overflow-y-auto">
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
-          {/* Title */}
-          <FieldContent error={errors.title?.message}>
-            <FieldLabel htmlFor="editRaceTitle" required>
-              Race name
-            </FieldLabel>
-            <Input
-              id="editRaceTitle"
-              placeholder="e.g. Jakarta Marathon 2025"
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-              {...register('title')}
-            />
-            <FieldError />
-          </FieldContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
+            {/* Title */}
+            <FieldContent error={errors.title?.message}>
+              <FieldLabel htmlFor="editRaceTitle" required>
+                Race name
+              </FieldLabel>
+              <Input
+                id="editRaceTitle"
+                placeholder="e.g. Jakarta Marathon 2025"
+                className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                {...register('title')}
+              />
+              <FieldError />
+            </FieldContent>
 
-          {/* Race date */}
-          <Controller
-            name="race_date"
-            control={control}
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel required>Race date</FieldLabel>
-                <DatePicker
-                  id="editRaceDate"
-                  value={field.value ? parseISO(field.value) : null}
-                  onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                />
-                <FieldError />
-              </FieldContent>
-            )}
-          />
-
-          {/* Distance */}
-          <FieldContent error={errors.distance_m?.message}>
-            <FieldLabel required>Distance</FieldLabel>
+            {/* Race date */}
             <Controller
-              name="distance_m"
+              name="race_date"
               control={control}
-              render={({ field }) => (
-                <Select
-                  value={
-                    distanceMode === 'custom'
-                      ? 'custom'
-                      : field.value != null
-                        ? String(field.value)
-                        : ''
-                  }
-                  onValueChange={(v) => {
-                    if (v === 'custom') {
-                      setDistanceMode('custom')
-                      field.onChange(null)
-                    } else {
-                      setDistanceMode('preset')
-                      field.onChange(Number(v))
-                    }
-                  }}
-                >
-                  <SelectTrigger className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500">
-                    <SelectValue placeholder="Select distance…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DISTANCE_PRESETS.map((p) => (
-                      <SelectItem key={String(p.value)} value={String(p.value)}>
-                        {p.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel required>Race date</FieldLabel>
+                  <DatePicker
+                    id="editRaceDate"
+                    value={field.value ? parseISO(field.value) : null}
+                    onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                  />
+                  <FieldError />
+                </FieldContent>
               )}
             />
-            {distanceMode === 'custom' && (
+
+            {/* Distance */}
+            <FieldContent error={errors.distance_m?.message}>
+              <FieldLabel required>Distance</FieldLabel>
               <Controller
                 name="distance_m"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    type="number"
-                    placeholder="Distance in meters"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
+                  <Select
+                    value={
+                      distanceMode === 'custom'
+                        ? 'custom'
+                        : field.value != null
+                          ? String(field.value)
+                          : ''
+                    }
+                    onValueChange={(v) => {
+                      if (v === 'custom') {
+                        setDistanceMode('custom')
+                        field.onChange(null)
+                      } else {
+                        setDistanceMode('preset')
+                        field.onChange(Number(v))
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500">
+                      <SelectValue placeholder="Select distance…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DISTANCE_PRESETS.map((p) => (
+                        <SelectItem key={String(p.value)} value={String(p.value)}>
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {distanceMode === 'custom' && (
+                <Controller
+                  name="distance_m"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      type="number"
+                      placeholder="Distance in meters"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? Number(e.target.value) : null)
+                      }
+                    />
+                  )}
+                />
+              )}
+              <FieldError />
+            </FieldContent>
+
+            {/* DNF checkbox */}
+            <FieldContent>
+              <div className="flex items-center gap-2.5">
+                <Controller
+                  name="did_not_finish"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox id="editDnf" checked={field.value} onCheckedChange={field.onChange} />
+                  )}
+                />
+                <FieldLabel htmlFor="editDnf" className="cursor-pointer select-none">
+                  Did not finish (DNF)
+                </FieldLabel>
+              </div>
+            </FieldContent>
+
+            {/* Finish time */}
+            {!dnf && (
+              <Controller
+                name="finish_time_sec"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel htmlFor="editFinishTime">Finish time (HH:MM:SS)</FieldLabel>
+                    <Input
+                      id="editFinishTime"
+                      placeholder="e.g. 00:45:30"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={finishTimeStr}
+                      onChange={(e) => setFinishTimeStr(e.target.value)}
+                      onBlur={() => {
+                        const secs = hmsToSecs(finishTimeStr)
+                        field.onChange(secs ?? null)
+                        if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
+                      }}
+                    />
+                    <FieldError />
+                  </FieldContent>
                 )}
               />
             )}
-            <FieldError />
-          </FieldContent>
 
-          {/* DNF checkbox */}
-          <FieldContent>
-            <div className="flex items-center gap-2.5">
+            {/* Stats grid */}
+            <div className="grid grid-cols-2 gap-4">
               <Controller
-                name="did_not_finish"
+                name="avg_hr"
                 control={control}
-                render={({ field }) => (
-                  <Checkbox id="editDnf" checked={field.value} onCheckedChange={field.onChange} />
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel htmlFor="editAvgHr">Avg HR (bpm)</FieldLabel>
+                    <Input
+                      id="editAvgHr"
+                      type="number"
+                      placeholder="e.g. 165"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? Number(e.target.value) : null)
+                      }
+                    />
+                    <FieldError />
+                  </FieldContent>
                 )}
               />
-              <FieldLabel htmlFor="editDnf" className="cursor-pointer select-none">
-                Did not finish (DNF)
-              </FieldLabel>
+              <Controller
+                name="elevation_gain_m"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel htmlFor="editElevation">Elevation gain (m)</FieldLabel>
+                    <Input
+                      id="editElevation"
+                      type="number"
+                      placeholder="e.g. 250"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? Number(e.target.value) : null)
+                      }
+                    />
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
+              <Controller
+                name="position_place"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel htmlFor="editPosPlace">Position (place)</FieldLabel>
+                    <Input
+                      id="editPosPlace"
+                      type="number"
+                      placeholder="e.g. 42"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? Number(e.target.value) : null)
+                      }
+                    />
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
+              <Controller
+                name="position_male"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel htmlFor="editPosMale">Position (male)</FieldLabel>
+                    <Input
+                      id="editPosMale"
+                      type="number"
+                      placeholder="e.g. 8"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? Number(e.target.value) : null)
+                      }
+                    />
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
             </div>
-          </FieldContent>
 
-          {/* Finish time */}
-          {!dnf && (
-            <Controller
-              name="finish_time_sec"
-              control={control}
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel htmlFor="editFinishTime">Finish time (HH:MM:SS)</FieldLabel>
-                  <Input
-                    id="editFinishTime"
-                    placeholder="e.g. 00:45:30"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={finishTimeStr}
-                    onChange={(e) => setFinishTimeStr(e.target.value)}
-                    onBlur={() => {
-                      const secs = hmsToSecs(finishTimeStr)
-                      field.onChange(secs ?? null)
-                      if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
-                    }}
-                  />
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
-          )}
+            {/* Notes */}
+            <FieldContent>
+              <FieldLabel htmlFor="editNotes">Notes</FieldLabel>
+              <Textarea
+                id="editNotes"
+                placeholder="Weather, conditions, how you felt…"
+                className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                rows={3}
+                {...register('notes')}
+              />
+            </FieldContent>
 
-          {/* Stats grid */}
-          <div className="grid grid-cols-2 gap-4">
-            <Controller
-              name="avg_hr"
-              control={control}
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel htmlFor="editAvgHr">Avg HR (bpm)</FieldLabel>
-                  <Input
-                    id="editAvgHr"
-                    type="number"
-                    placeholder="e.g. 165"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
-            <Controller
-              name="elevation_gain_m"
-              control={control}
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel htmlFor="editElevation">Elevation gain (m)</FieldLabel>
-                  <Input
-                    id="editElevation"
-                    type="number"
-                    placeholder="e.g. 250"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
-            <Controller
-              name="position_place"
-              control={control}
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel htmlFor="editPosPlace">Position (place)</FieldLabel>
-                  <Input
-                    id="editPosPlace"
-                    type="number"
-                    placeholder="e.g. 42"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
-            <Controller
-              name="position_male"
-              control={control}
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel htmlFor="editPosMale">Position (male)</FieldLabel>
-                  <Input
-                    id="editPosMale"
-                    type="number"
-                    placeholder="e.g. 8"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
-          </div>
-
-          {/* Notes */}
-          <FieldContent>
-            <FieldLabel htmlFor="editNotes">Notes</FieldLabel>
-            <Textarea
-              id="editNotes"
-              placeholder="Weather, conditions, how you felt…"
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-              rows={3}
-              {...register('notes')}
-            />
-          </FieldContent>
-
-          {serverError && (
-            <p className="text-xs text-red-600 flex items-center gap-1" role="alert">
-              <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
-              {serverError}
-            </p>
-          )}
-        </form>
+            {serverError && (
+              <p className="text-xs text-red-600 flex items-center gap-1" role="alert">
+                <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
+                {serverError}
+              </p>
+            )}
+          </form>
         </ModalBody>
 
         <ModalFooter className="gap-2">

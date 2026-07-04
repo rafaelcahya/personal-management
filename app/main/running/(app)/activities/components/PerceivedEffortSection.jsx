@@ -199,8 +199,7 @@ export default function PerceivedEffortSection({
           <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
             <p className="font-semibold mb-1">Session Load (Foster&apos;s method)</p>
             <p>
-              RPE × moving time (min). Validated proxy for training load — r=0.90 vs HR-based
-              TRIMP.
+              RPE × moving time (min). Validated proxy for training load — r=0.90 vs HR-based TRIMP.
             </p>
           </UITooltipContent>
         </UITooltip>

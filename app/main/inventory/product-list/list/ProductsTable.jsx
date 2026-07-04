@@ -474,7 +474,8 @@ export default function ProductsTable({
         }}
       >
         <ModalContent
-          variant="bordered" borderColor="border-slate-200"
+          variant="bordered"
+          borderColor="border-slate-200"
           id="imagePreviewDialog_productListPage"
           className="max-w-lg p-2"
         >

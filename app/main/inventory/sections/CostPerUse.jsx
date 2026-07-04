@@ -100,7 +100,8 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
 
       <Modal open={modalOpen} onOpenChange={setModalOpen}>
         <ModalContent
-          variant="bordered" borderColor="border-slate-200"
+          variant="bordered"
+          borderColor="border-slate-200"
           className="w-[calc(100vw-2rem)] md:w-full md:max-w-5xl max-h-[85vh] flex flex-col p-0 gap-0"
         >
           <ModalHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">

@@ -62,10 +62,7 @@ export default function DeleteProductDialog({ product, onDeleted }) {
         </ModalHeader>
         <ModalFooter>
           <ModalClose asChild>
-            <Button
-              disabled={loading}
-              variant="secondary"
-            >
+            <Button disabled={loading} variant="secondary">
               Cancel
             </Button>
           </ModalClose>

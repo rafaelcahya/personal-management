@@ -110,7 +110,8 @@ export default function MonthlySpendByType({ items, loading }) {
 
       <Modal open={modalOpen} onOpenChange={setModalOpen}>
         <ModalContent
-          variant="bordered" borderColor="border-slate-200"
+          variant="bordered"
+          borderColor="border-slate-200"
           className="max-w-md w-full max-h-[85vh] flex flex-col p-0 gap-0"
         >
           <ModalHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">

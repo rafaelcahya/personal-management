@@ -274,12 +274,12 @@ export default function HrZonesSection() {
                   <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
                     <p className="font-semibold mb-1">Threshold HR (LTHR)</p>
                     <p>
-                      Your heart rate at lactate threshold — the hardest effort you can sustain
-                      for ~60 minutes. Used by the Lactate Threshold zone method.
+                      Your heart rate at lactate threshold — the hardest effort you can sustain for
+                      ~60 minutes. Used by the Lactate Threshold zone method.
                     </p>
                     <p className="mt-1">
-                      A common estimate is <span className="font-medium">85% of Max HR</span>, but
-                      a 30-min all-out time trial gives more accurate results.
+                      A common estimate is <span className="font-medium">85% of Max HR</span>, but a
+                      30-min all-out time trial gives more accurate results.
                     </p>
                   </UITooltipContent>
                 </UITooltip>

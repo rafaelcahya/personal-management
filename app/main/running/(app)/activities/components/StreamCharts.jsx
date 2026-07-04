@@ -216,9 +216,9 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
             <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
               <p className="font-semibold mb-1">Pace vs Speed</p>
               <p>
-                <span className="text-violet-300 font-medium">Pace (min/km)</span> — standard
-                runner metric. Y-axis is inverted: lower = faster. Best for reading effort in
-                familiar terms.
+                <span className="text-violet-300 font-medium">Pace (min/km)</span> — standard runner
+                metric. Y-axis is inverted: lower = faster. Best for reading effort in familiar
+                terms.
               </p>
               <p className="mt-1">
                 <span className="text-violet-300 font-medium">Speed (km/h)</span> — normal Y-axis:

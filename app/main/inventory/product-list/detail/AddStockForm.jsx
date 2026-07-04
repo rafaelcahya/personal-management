@@ -113,7 +113,8 @@ export default function AddStockForm({ product, onAdded }) {
       <ModalContent
         className="sm:max-w-md flex flex-col max-h-[90vh]"
         id="addStockPopup"
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
         onPointerDownOutside={(e) => {
           if (e.target.closest('[data-radix-popper-content-wrapper]')) {
             e.preventDefault()

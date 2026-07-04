@@ -82,7 +82,12 @@ export default function SettingsDialog({ open, onOpenChange, onUpdated }) {
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent variant="bordered" borderColor="border-slate-200" className="sm:max-w-md" id="settingsDialogForm">
+      <ModalContent
+        variant="bordered"
+        borderColor="border-slate-200"
+        className="sm:max-w-md"
+        id="settingsDialogForm"
+      >
         <ModalHeader>
           <ModalTitle>Performance Configuration</ModalTitle>
           <ModalDescription className="text-slate-600">
@@ -92,152 +97,152 @@ export default function SettingsDialog({ open, onOpenChange, onUpdated }) {
         </ModalHeader>
 
         <ModalBody>
-        {fetchLoading ? (
-          <div className="flex flex-col items-center justify-center py-8 gap-3">
-            <Loader2 className="size-8 animate-spin text-violet-600" />
-            <p className="text-sm text-slate-600">Loading settings...</p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit(handleUpdateSettings)} className="space-y-4">
-            {/* Initial Margin */}
-            <Controller
-              control={control}
-              name="initial_margin"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Initial Margin</FieldLabel>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder="Rp 10.000.000"
-                    id="initialMarginField"
-                    value={field.value ? `Rp ${Number(field.value).toLocaleString('id-ID')}` : ''}
-                    onChange={(e) => {
-                      const raw = e.target.value.replace(/\D/g, '')
-                      field.onChange(raw)
-                    }}
-                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                      fieldState.error ? 'border-rose-500' : ''
-                    }`}
-                  />
-                  <FieldDescription className="text-xs text-slate-400">
-                    Starting capital for your trading account
-                  </FieldDescription>
-                  <FieldError className="font-medium" />
-                </FieldContent>
-              )}
-            />
+          {fetchLoading ? (
+            <div className="flex flex-col items-center justify-center py-8 gap-3">
+              <Loader2 className="size-8 animate-spin text-violet-600" />
+              <p className="text-sm text-slate-600">Loading settings...</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit(handleUpdateSettings)} className="space-y-4">
+              {/* Initial Margin */}
+              <Controller
+                control={control}
+                name="initial_margin"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Initial Margin</FieldLabel>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder="Rp 10.000.000"
+                      id="initialMarginField"
+                      value={field.value ? `Rp ${Number(field.value).toLocaleString('id-ID')}` : ''}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/\D/g, '')
+                        field.onChange(raw)
+                      }}
+                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      Starting capital for your trading account
+                    </FieldDescription>
+                    <FieldError className="font-medium" />
+                  </FieldContent>
+                )}
+              />
 
-            {/* BI Risk Free Rate */}
-            <Controller
-              control={control}
-              name="bi_risk_free_rate"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium flex items-center gap-1.5">
-                    BI Risk Free Rate
-                    <Info className="size-3.5 text-slate-400" />
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder="6.5"
-                    id="biRiskFreeRateField"
-                    onChange={(e) => {
-                      const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
-                      field.onChange(cleaned)
-                    }}
-                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                      fieldState.error ? 'border-rose-500' : ''
-                    }`}
-                  />
-                  <FieldDescription className="text-xs text-slate-400">
-                    Bank Indonesia reference rate (in %)
-                  </FieldDescription>
-                  <FieldError className="font-medium" />
-                </FieldContent>
-              )}
-            />
+              {/* BI Risk Free Rate */}
+              <Controller
+                control={control}
+                name="bi_risk_free_rate"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium flex items-center gap-1.5">
+                      BI Risk Free Rate
+                      <Info className="size-3.5 text-slate-400" />
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder="6.5"
+                      id="biRiskFreeRateField"
+                      onChange={(e) => {
+                        const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
+                        field.onChange(cleaned)
+                      }}
+                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      Bank Indonesia reference rate (in %)
+                    </FieldDescription>
+                    <FieldError className="font-medium" />
+                  </FieldContent>
+                )}
+              />
 
-            {/* Personal Risk Free Rate */}
-            <Controller
-              control={control}
-              name="personal_risk_free_rate"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Personal Risk Free Rate</FieldLabel>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder="8.0"
-                    id="personalRiskFreeRateField"
-                    onChange={(e) => {
-                      const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
-                      field.onChange(cleaned)
-                    }}
-                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                      fieldState.error ? 'border-rose-500' : ''
-                    }`}
-                  />
-                  <FieldDescription className="text-xs text-slate-400">
-                    Your personal target return rate (in %)
-                  </FieldDescription>
-                  <FieldError className="font-medium" />
-                </FieldContent>
-              )}
-            />
+              {/* Personal Risk Free Rate */}
+              <Controller
+                control={control}
+                name="personal_risk_free_rate"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Personal Risk Free Rate</FieldLabel>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder="8.0"
+                      id="personalRiskFreeRateField"
+                      onChange={(e) => {
+                        const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
+                        field.onChange(cleaned)
+                      }}
+                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      Your personal target return rate (in %)
+                    </FieldDescription>
+                    <FieldError className="font-medium" />
+                  </FieldContent>
+                )}
+              />
 
-            {/* Margin of Error */}
-            <Controller
-              control={control}
-              name="margin_of_error"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Margin of Error</FieldLabel>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder="10"
-                    id="marginOfErrorField"
-                    onChange={(e) => {
-                      const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
-                      field.onChange(cleaned)
-                    }}
-                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                      fieldState.error ? 'border-rose-500' : ''
-                    }`}
-                  />
-                  <FieldDescription className="text-xs text-slate-400">
-                    Safety buffer for risk calculations (in %)
-                  </FieldDescription>
-                  <FieldError className="font-medium" />
-                </FieldContent>
-              )}
-            />
+              {/* Margin of Error */}
+              <Controller
+                control={control}
+                name="margin_of_error"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Margin of Error</FieldLabel>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder="10"
+                      id="marginOfErrorField"
+                      onChange={(e) => {
+                        const cleaned = e.target.value.replace(/[^0-9.,]/g, '')
+                        field.onChange(cleaned)
+                      }}
+                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      Safety buffer for risk calculations (in %)
+                    </FieldDescription>
+                    <FieldError className="font-medium" />
+                  </FieldContent>
+                )}
+              />
 
-            <ModalFooter>
-              <ModalClose asChild>
+              <ModalFooter>
+                <ModalClose asChild>
+                  <Button
+                    type="button"
+                    className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
+                    id="cancelSettingsBtn"
+                    disabled={loading}
+                  >
+                    Cancel
+                  </Button>
+                </ModalClose>
                 <Button
-                  type="button"
-                  className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
-                  id="cancelSettingsBtn"
+                  type="submit"
                   disabled={loading}
+                  id="submitSettingsBtn"
+                  className="bg-violet-600 hover:bg-violet-700"
                 >
-                  Cancel
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {loading ? 'Saving...' : 'Save Changes'}
                 </Button>
-              </ModalClose>
-              <Button
-                type="submit"
-                disabled={loading}
-                id="submitSettingsBtn"
-                className="bg-violet-600 hover:bg-violet-700"
-              >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </ModalFooter>
-          </form>
-        )}
+              </ModalFooter>
+            </form>
+          )}
         </ModalBody>
       </ModalContent>
     </Modal>

@@ -107,7 +107,8 @@ export default function DangerZoneSection() {
           id="dangerZoneDialog_settingsPage"
           className="w-full max-w-md"
           aria-describedby="danger-zone-description"
-          variant="bordered" borderColor="border-slate-200"
+          variant="bordered"
+          borderColor="border-slate-200"
         >
           <ModalHeader>
             <ModalTitle className="text-red-700">Delete all activity data?</ModalTitle>

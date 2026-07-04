@@ -105,7 +105,8 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
       <ModalContent
         id="updateProductNameDialog_productNamePage"
         className="sm:max-w-md"
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
       >
         <ModalHeader>
           <ModalTitle>Update Product Name</ModalTitle>
@@ -199,8 +200,8 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
                 <div className="flex items-start gap-2">
                   <AlertCircle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
                   <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
-                    Product name is still used by {productName.product_count} product(s) and cannot be
-                    deleted.
+                    Product name is still used by {productName.product_count} product(s) and cannot
+                    be deleted.
                   </p>
                 </div>
               </div>

@@ -105,7 +105,8 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
       <ModalContent
         id="updateBrandDialog_productBrandPage"
         className="sm:max-w-md"
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
       >
         <ModalHeader className="text-left">
           <ModalTitle>✏️ Update Product Brand</ModalTitle>

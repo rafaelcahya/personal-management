@@ -291,7 +291,11 @@ export default function RaceDetailPage() {
                 disabled={deleting}
                 className="bg-red-600 hover:bg-red-700 focus-visible:ring-red-500"
               >
-                {deleting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Delete'}
+                {deleting ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  'Delete'
+                )}
               </Button>
             </ModalClose>
           </ModalFooter>

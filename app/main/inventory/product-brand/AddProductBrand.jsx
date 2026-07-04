@@ -74,7 +74,8 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
       <ModalContent
         className="w-full sm:w-md"
         id={`addNewProductBrandForm_${context}_productBrandPage`}
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
       >
         <ModalHeader className="text-left">
           <ModalTitle>🏷️ Add New Product Brand</ModalTitle>
@@ -84,7 +85,10 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
           </ModalDescription>
         </ModalHeader>
 
-        <form onSubmit={handleSubmit(handleAddNewProductBrand)} className="flex flex-col flex-1 min-h-0">
+        <form
+          onSubmit={handleSubmit(handleAddNewProductBrand)}
+          className="flex flex-col flex-1 min-h-0"
+        >
           <ModalBody className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
             <Controller
               control={control}

@@ -75,7 +75,11 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
 
   return (
     <Modal open={!!fee} onOpenChange={onClose}>
-      <ModalContent className="sm:max-w-md flex flex-col max-h-[90vh]" variant="bordered" borderColor="border-slate-200">
+      <ModalContent
+        className="sm:max-w-md flex flex-col max-h-[90vh]"
+        variant="bordered"
+        borderColor="border-slate-200"
+      >
         <ModalHeader className="text-left shrink-0">
           <ModalTitle>✏️ Update Fee</ModalTitle>
           <ModalDescription className="text-slate-600">

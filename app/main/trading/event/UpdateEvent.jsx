@@ -119,7 +119,11 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
 
   return (
     <Modal open={!!event} onOpenChange={onClose}>
-      <ModalContent variant="bordered" borderColor="border-slate-200" className="sm:max-w-3xl flex flex-col max-h-[90vh]">
+      <ModalContent
+        variant="bordered"
+        borderColor="border-slate-200"
+        className="sm:max-w-3xl flex flex-col max-h-[90vh]"
+      >
         <ModalHeader className="text-left shrink-0">
           <ModalTitle>Update Event</ModalTitle>
           <ModalDescription className="text-slate-600">Modify event details</ModalDescription>

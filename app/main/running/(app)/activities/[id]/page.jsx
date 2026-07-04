@@ -737,20 +737,17 @@ export default function ActivityDetailPage() {
                                   side="top"
                                   className="max-w-64 text-xs leading-relaxed"
                                 >
-                                  <p className="font-semibold mb-1">
-                                    What is Aerobic Decoupling?
-                                  </p>
+                                  <p className="font-semibold mb-1">What is Aerobic Decoupling?</p>
                                   <p>
                                     How much your pace-to-HR ratio drifts in the second half vs.
                                     first half — a sign of aerobic fatigue or insufficient base.
                                   </p>
                                   <p className="mt-1.5 text-slate-400">
-                                    <span className="text-green-400 font-medium">&lt; 5%</span>{' '}
-                                    Good ·{' '}
-                                    <span className="text-amber-400 font-medium">5–10%</span>{' '}
+                                    <span className="text-green-400 font-medium">&lt; 5%</span> Good
+                                    · <span className="text-amber-400 font-medium">5–10%</span>{' '}
                                     Moderate ·{' '}
-                                    <span className="text-red-400 font-medium">&gt; 10%</span>{' '}
-                                    High drift
+                                    <span className="text-red-400 font-medium">&gt; 10%</span> High
+                                    drift
                                   </p>
                                 </TooltipContent>
                               </Tooltip>

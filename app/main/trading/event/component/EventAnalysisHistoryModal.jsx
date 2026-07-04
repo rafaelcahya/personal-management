@@ -151,7 +151,8 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
   return (
     <Modal open={open} onOpenChange={handleClose}>
       <ModalContent
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
         className="w-[90vw] !max-w-3xl max-h-[85vh] flex flex-col overflow-hidden"
       >
         <ModalHeader className="shrink-0">
@@ -162,51 +163,51 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
         </ModalHeader>
 
         <ModalBody>
-        <div ref={scrollRef} className="flex-1 overflow-y-auto pr-1">
-          {loading && (
-            <div className="flex flex-col gap-2">
-              {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-20 w-full rounded-lg" />
-              ))}
-            </div>
-          )}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto pr-1">
+            {loading && (
+              <div className="flex flex-col gap-2">
+                {[...Array(3)].map((_, i) => (
+                  <Skeleton key={i} className="h-20 w-full rounded-lg" />
+                ))}
+              </div>
+            )}
 
-          {!loading && error && <p className="text-sm text-red-600 text-center py-8">{error}</p>}
+            {!loading && error && <p className="text-sm text-red-600 text-center py-8">{error}</p>}
 
-          {!loading && !error && history.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 gap-2 text-slate-400">
-              <Sparkles className="size-8" />
-              <p className="text-sm font-medium">No analyses yet</p>
-              <p className="text-xs">Run an AI analysis on any event to see it here.</p>
-            </div>
-          )}
+            {!loading && !error && history.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 gap-2 text-slate-400">
+                <Sparkles className="size-8" />
+                <p className="text-sm font-medium">No analyses yet</p>
+                <p className="text-xs">Run an AI analysis on any event to see it here.</p>
+              </div>
+            )}
 
-          {!loading && !error && !selected && history.length > 0 && (
-            <HistoryList history={history} onSelect={setSelected} />
-          )}
+            {!loading && !error && !selected && history.length > 0 && (
+              <HistoryList history={history} onSelect={setSelected} />
+            )}
 
-          {!loading && !error && selected && (
-            <HistoryDetail item={selected} onBack={() => setSelected(null)} />
-          )}
-        </div>
-
-        <div className="shrink-0 flex items-center justify-between pt-3 border-t border-slate-100">
-          <div>
-            {selected && (
-              <Button
-                variant="ghost"
-                size="base"
-                onClick={() => setSelected(null)}
-                className="gap-1 text-xs text-slate-500"
-              >
-                <ChevronLeft className="size-3.5" /> Back
-              </Button>
+            {!loading && !error && selected && (
+              <HistoryDetail item={selected} onBack={() => setSelected(null)} />
             )}
           </div>
-          <Button variant="outline" size="base" onClick={handleClose}>
-            Close
-          </Button>
-        </div>
+
+          <div className="shrink-0 flex items-center justify-between pt-3 border-t border-slate-100">
+            <div>
+              {selected && (
+                <Button
+                  variant="ghost"
+                  size="base"
+                  onClick={() => setSelected(null)}
+                  className="gap-1 text-xs text-slate-500"
+                >
+                  <ChevronLeft className="size-3.5" /> Back
+                </Button>
+              )}
+            </div>
+            <Button variant="outline" size="base" onClick={handleClose}>
+              Close
+            </Button>
+          </div>
         </ModalBody>
       </ModalContent>
     </Modal>

@@ -50,7 +50,8 @@ export default function ProductBrandDelete({
       <ModalContent
         id="deleteBrandConfirmDialog_productBrandPage"
         showCloseButton={false}
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
       >
         <ModalHeader>
           <ModalTitle className="font-semibold">Delete Product Brand</ModalTitle>

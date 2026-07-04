@@ -224,7 +224,8 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
         ref={dialogRef}
         id="addTransactionModal_currencyDetailPage"
         className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
@@ -245,133 +246,170 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
           noValidate
         >
           <ModalBody className="flex flex-col gap-5 px-5 py-5">
-          {/* Currency */}
-          <Controller
-            control={form.control}
-            name="currency"
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="text-sm font-medium">Currency</FieldLabel>
-                <Button
-                  ref={triggerRef}
-                  id="currencySelect_addTransactionModal"
-                  variant="outline"
-                  aria-expanded={currencyDropdownOpen}
-                  aria-haspopup="listbox"
-                  onClick={openDropdown}
-                  className={cn(
-                    'justify-between w-full h-9 px-3 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
-                    fieldState.error ? 'border-rose-500' : '',
-                    !field.value && 'text-muted-foreground'
-                  )}
-                >
-                  {field.value ? (
-                    <span className="flex items-center gap-2">
-                      <span>{field.value}</span>
-                      <span className="text-slate-400 font-normal">
-                        — {currencyMap[field.value]?.name || ''}
-                      </span>
-                    </span>
-                  ) : (
-                    'Select currency...'
-                  )}
-                  <ChevronsUpDown className="size-4 text-slate-400 shrink-0" aria-hidden="true" />
-                </Button>
-
-                <FieldDescription className="flex flex-col gap-0.5">
-                  <span className="text-slate-400">
-                    The foreign currency you are buying or selling 💱
-                  </span>
-                  {watchedCurrency && currentRate !== null && (
-                    <span className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-violet-600 font-semibold font-mono">
-                        1 {watchedCurrency} = Rp{' '}
-                        {new Intl.NumberFormat('id-ID').format(currentRate)}
-                      </span>
-                      {rateFetchedAt && (
-                        <span className="text-slate-400">
-                          as of{' '}
-                          {new Intl.DateTimeFormat('id-ID', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          }).format(new Date(rateFetchedAt))}
+            {/* Currency */}
+            <Controller
+              control={form.control}
+              name="currency"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Currency</FieldLabel>
+                  <Button
+                    ref={triggerRef}
+                    id="currencySelect_addTransactionModal"
+                    variant="outline"
+                    aria-expanded={currencyDropdownOpen}
+                    aria-haspopup="listbox"
+                    onClick={openDropdown}
+                    className={cn(
+                      'justify-between w-full h-9 px-3 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
+                      fieldState.error ? 'border-rose-500' : '',
+                      !field.value && 'text-muted-foreground'
+                    )}
+                  >
+                    {field.value ? (
+                      <span className="flex items-center gap-2">
+                        <span>{field.value}</span>
+                        <span className="text-slate-400 font-normal">
+                          — {currencyMap[field.value]?.name || ''}
                         </span>
-                      )}
+                      </span>
+                    ) : (
+                      'Select currency...'
+                    )}
+                    <ChevronsUpDown className="size-4 text-slate-400 shrink-0" aria-hidden="true" />
+                  </Button>
+
+                  <FieldDescription className="flex flex-col gap-0.5">
+                    <span className="text-slate-400">
+                      The foreign currency you are buying or selling 💱
                     </span>
-                  )}
-                  <span className="text-slate-400">
-                    Rates sourced from central banks via Frankfurter 🏦
-                  </span>
-                </FieldDescription>
-                {currencyDropdownOpen &&
-                  dialogRef.current &&
-                  createPortal(
-                    <div
-                      ref={dropdownRef}
-                      style={{
-                        position: 'absolute',
-                        top: dropdownPos.top,
-                        left: dropdownPos.left,
-                        width: Math.max(dropdownPos.width, 288),
-                        zIndex: 9999,
-                      }}
-                      className="bg-white border border-slate-200 rounded-md shadow-lg overflow-hidden"
-                    >
-                      <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100">
-                        <Search className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />
-                        <input
-                          type="text"
-                          placeholder="Search currencies..."
-                          value={currencySearch}
-                          onChange={(e) => setCurrencySearch(e.target.value)}
-                          autoFocus
-                          className="flex-1 text-sm outline-none bg-transparent placeholder:text-slate-400"
-                          aria-label="Search currencies"
-                        />
-                      </div>
-
+                    {watchedCurrency && currentRate !== null && (
+                      <span className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-violet-600 font-semibold font-mono">
+                          1 {watchedCurrency} = Rp{' '}
+                          {new Intl.NumberFormat('id-ID').format(currentRate)}
+                        </span>
+                        {rateFetchedAt && (
+                          <span className="text-slate-400">
+                            as of{' '}
+                            {new Intl.DateTimeFormat('id-ID', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }).format(new Date(rateFetchedAt))}
+                          </span>
+                        )}
+                      </span>
+                    )}
+                    <span className="text-slate-400">
+                      Rates sourced from central banks via Frankfurter 🏦
+                    </span>
+                  </FieldDescription>
+                  {currencyDropdownOpen &&
+                    dialogRef.current &&
+                    createPortal(
                       <div
-                        style={{ height: dropdownPos.listHeight ?? 240, overflowY: 'scroll' }}
-                        role="listbox"
-                        aria-label="Currency options"
+                        ref={dropdownRef}
+                        style={{
+                          position: 'absolute',
+                          top: dropdownPos.top,
+                          left: dropdownPos.left,
+                          width: Math.max(dropdownPos.width, 288),
+                          zIndex: 9999,
+                        }}
+                        className="bg-white border border-slate-200 rounded-md shadow-lg overflow-hidden"
                       >
-                        {currenciesLoading && (
-                          <div className="flex items-center justify-center py-6 gap-2 text-slate-400 text-sm">
-                            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                            Loading currencies...
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100">
+                          <Search className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />
+                          <input
+                            type="text"
+                            placeholder="Search currencies..."
+                            value={currencySearch}
+                            onChange={(e) => setCurrencySearch(e.target.value)}
+                            autoFocus
+                            className="flex-1 text-sm outline-none bg-transparent placeholder:text-slate-400"
+                            aria-label="Search currencies"
+                          />
+                        </div>
 
-                        {!currenciesLoading && currenciesError && (
-                          <div className="flex flex-col items-center gap-2 py-6 text-sm text-slate-500">
-                            <p>Failed to load currencies.</p>
-                            <Button
-                              variant="link"
-                              size="sm"
-                              className="text-violet-600 text-xs h-auto p-0"
-                              onClick={() => {
-                                setCurrenciesError(false)
-                                setCurrenciesLoading(true)
-                                getForexCurrencies()
-                                  .then(setCurrencyMap)
-                                  .catch(() => setCurrenciesError(true))
-                                  .finally(() => setCurrenciesLoading(false))
-                              }}
-                            >
-                              Try again
-                            </Button>
-                          </div>
-                        )}
+                        <div
+                          style={{ height: dropdownPos.listHeight ?? 240, overflowY: 'scroll' }}
+                          role="listbox"
+                          aria-label="Currency options"
+                        >
+                          {currenciesLoading && (
+                            <div className="flex items-center justify-center py-6 gap-2 text-slate-400 text-sm">
+                              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                              Loading currencies...
+                            </div>
+                          )}
 
-                        {!currenciesLoading && !currencySearch && (
-                          <>
+                          {!currenciesLoading && currenciesError && (
+                            <div className="flex flex-col items-center gap-2 py-6 text-sm text-slate-500">
+                              <p>Failed to load currencies.</p>
+                              <Button
+                                variant="link"
+                                size="sm"
+                                className="text-violet-600 text-xs h-auto p-0"
+                                onClick={() => {
+                                  setCurrenciesError(false)
+                                  setCurrenciesLoading(true)
+                                  getForexCurrencies()
+                                    .then(setCurrencyMap)
+                                    .catch(() => setCurrenciesError(true))
+                                    .finally(() => setCurrenciesLoading(false))
+                                }}
+                              >
+                                Try again
+                              </Button>
+                            </div>
+                          )}
+
+                          {!currenciesLoading && !currencySearch && (
+                            <>
+                              <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                                Popular
+                              </p>
+                              {PINNED_CURRENCIES.map((c) => (
+                                <Button
+                                  key={c}
+                                  variant="ghost"
+                                  fullWidth
+                                  role="option"
+                                  aria-selected={field.value === c}
+                                  onClick={() => selectCurrency(c, field.onChange)}
+                                  className="justify-start gap-2 px-3 py-2 text-sm hover:bg-slate-50 rounded-none"
+                                >
+                                  <Check
+                                    className={cn(
+                                      'size-3.5 shrink-0',
+                                      field.value === c ? 'text-violet-600' : 'opacity-0'
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                  <span className="font-medium">{c}</span>
+                                  <span className="text-slate-400 text-xs truncate">
+                                    {currencyMap[c]?.name}
+                                  </span>
+                                </Button>
+                              ))}
+                              <div className="mx-3 my-1 border-t border-slate-100" />
+                              <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                                All currencies
+                              </p>
+                            </>
+                          )}
+
+                          {!currenciesLoading && currencySearch && (
                             <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                              Popular
+                              Results
                             </p>
-                            {PINNED_CURRENCIES.map((c) => (
+                          )}
+
+                          {!currenciesLoading &&
+                            filteredCurrencies.map((c) => (
                               <Button
                                 key={c}
                                 variant="ghost"
@@ -379,7 +417,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                 role="option"
                                 aria-selected={field.value === c}
                                 onClick={() => selectCurrency(c, field.onChange)}
-                                className="justify-start gap-2 px-3 py-2 text-sm hover:bg-slate-50 rounded-none"
+                                className="justify-start gap-2 px-3 py-2 text-sm hover:bg-slate-50"
                               >
                                 <Check
                                   className={cn(
@@ -394,281 +432,246 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                 </span>
                               </Button>
                             ))}
-                            <div className="mx-3 my-1 border-t border-slate-100" />
-                            <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                              All currencies
-                            </p>
-                          </>
-                        )}
 
-                        {!currenciesLoading && currencySearch && (
-                          <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                            Results
-                          </p>
-                        )}
-
-                        {!currenciesLoading &&
-                          filteredCurrencies.map((c) => (
-                            <Button
-                              key={c}
-                              variant="ghost"
-                              fullWidth
-                              role="option"
-                              aria-selected={field.value === c}
-                              onClick={() => selectCurrency(c, field.onChange)}
-                              className="justify-start gap-2 px-3 py-2 text-sm hover:bg-slate-50"
-                            >
-                              <Check
-                                className={cn(
-                                  'size-3.5 shrink-0',
-                                  field.value === c ? 'text-violet-600' : 'opacity-0'
-                                )}
-                                aria-hidden="true"
-                              />
-                              <span className="font-medium">{c}</span>
-                              <span className="text-slate-400 text-xs truncate">
-                                {currencyMap[c]?.name}
-                              </span>
-                            </Button>
-                          ))}
-
-                        {!currenciesLoading &&
-                          filteredCurrencies.length === 0 &&
-                          currencySearch && (
-                            <p className="px-3 py-4 text-sm text-slate-400 text-center">
-                              No results
-                            </p>
-                          )}
-                      </div>
-                    </div>,
-                    dialogRef.current
-                  )}
-                <FieldError className="text-xs" />
-              </FieldContent>
-            )}
-          />
-
-          {/* Type toggle */}
-          <Controller
-            control={form.control}
-            name="type"
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="text-sm font-medium">Type</FieldLabel>
-                <Tabs
-                  id="typeToggle_addTransactionModal"
-                  value={field.value}
-                  onValueChange={field.onChange}
-                >
-                  <TabsList variant="pill" size="sm" className="w-full">
-                    <TabsTrigger value="buy" className="flex-1 capitalize justify-center">
-                      Buy
-                    </TabsTrigger>
-                    <TabsTrigger value="sell" className="flex-1 capitalize justify-center">
-                      Sell
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-                <FieldDescription className="text-xs text-slate-400">
-                  Buy to add holdings, sell to reduce them 📊
-                </FieldDescription>
-                <FieldError className="text-xs" />
-              </FieldContent>
-            )}
-          />
-
-          {/* Date */}
-          <Controller
-            control={form.control}
-            name="transacted_at"
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="text-sm font-medium">Date</FieldLabel>
-                <DatePicker
-                  id="dateInput_addTransactionModal"
-                  value={field.value ? parseISO(field.value) : null}
-                  onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                  displayFormat="PPP"
-                  placeholder="Pick a date"
-                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
-                />
-                <FieldDescription className="text-xs text-slate-400">
-                  When did you execute this transaction? 📅
-                </FieldDescription>
-                <FieldError className="text-xs" />
-              </FieldContent>
-            )}
-          />
-
-          {/* Amount (IDR) */}
-          <Controller
-            control={form.control}
-            name="idr_amount"
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="text-sm font-medium">Amount (IDR)</FieldLabel>
-                <Input
-                  id="amountInput_addTransactionModal"
-                  type="text"
-                  placeholder="Rp 10.000.000"
-                  value={
-                    field.value
-                      ? `Rp ${Number(field.value.replace(/\D/g, '')).toLocaleString('id-ID')}`
-                      : ''
-                  }
-                  onChange={(e) => {
-                    const raw = e.target.value.replace(/\D/g, '')
-                    field.onChange(raw)
-                  }}
-                  onBlur={field.onBlur}
-                  name={field.name}
-                  ref={field.ref}
-                  aria-invalid={!!fieldState.error}
-                  className={cn(
-                    'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                    fieldState.error && 'border-rose-500'
-                  )}
-                />
-                <FieldDescription className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-slate-400">
-                    Total IDR you spent (buy) or received (sell) 💵
-                  </span>
-                  {subtotal !== null && watchedCurrency && (
-                    <span className="text-violet-600 font-semibold font-mono">
-                      ={' '}
-                      {new Intl.NumberFormat('en', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
-                      }).format(subtotal)}{' '}
-                      {watchedCurrency}
-                    </span>
-                  )}
-                </FieldDescription>
-                <FieldError className="text-xs" />
-              </FieldContent>
-            )}
-          />
-
-          {/* Units */}
-          <Controller
-            control={form.control}
-            name="foreign_amount"
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="text-sm font-medium">
-                  Units {watchedCurrency ? `(${watchedCurrency})` : ''}{' '}
-                  <span className="text-slate-400 font-normal">(optional)</span>
-                </FieldLabel>
-                <Input
-                  id="unitsInput_addTransactionModal"
-                  type="text"
-                  placeholder="e.g. 100.50"
-                  value={field.value}
-                  onChange={(e) => {
-                    const cleaned = e.target.value.replace(/[^0-9.]/g, '')
-                    field.onChange(cleaned)
-                  }}
-                  onBlur={field.onBlur}
-                  name={field.name}
-                  ref={field.ref}
-                  aria-invalid={!!fieldState.error}
-                  className={cn(
-                    'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                    fieldState.error && 'border-rose-500'
-                  )}
-                />
-                <FieldDescription className="text-xs text-slate-400">
-                  How many units you bought or sold — fill this if you don&apos;t know the rate 💡
-                </FieldDescription>
-                <FieldError className="text-xs" />
-              </FieldContent>
-            )}
-          />
-
-          {/* Rate */}
-          <Controller
-            control={form.control}
-            name="rate"
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="text-sm font-medium">
-                  Rate (IDR per 1 unit){' '}
-                  <span className="text-slate-400 font-normal">(optional)</span>
-                </FieldLabel>
-                <Input
-                  id="rateInput_addTransactionModal"
-                  type="text"
-                  placeholder="15.500"
-                  value={field.value}
-                  onChange={(e) => {
-                    const cleaned = e.target.value.replace(/[^0-9.]/g, '')
-                    field.onChange(cleaned)
-                  }}
-                  onBlur={field.onBlur}
-                  name={field.name}
-                  ref={field.ref}
-                  aria-invalid={!!fieldState.error}
-                  className={cn(
-                    'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                    fieldState.error && 'border-rose-500'
-                  )}
-                />
-                <FieldDescription className="text-xs text-slate-400">
-                  IDR value per 1 unit of the currency (e.g. 16,000 for 1 USD) 🔢
-                </FieldDescription>
-                <FieldError className="text-xs" />
-              </FieldContent>
-            )}
-          />
-
-          {/* Subtotal display */}
-          {computed !== null && (
-            <div
-              className="bg-slate-50 rounded-md p-3 text-sm flex flex-col gap-0.5"
-              aria-live="polite"
-            >
-              <div>
-                <span className="text-slate-500">= </span>
-                <span className="font-semibold font-mono text-slate-800">
-                  {new Intl.NumberFormat('en', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 6,
-                  }).format(computed.units)}
-                </span>
-                {watchedCurrency && <span className="text-slate-500 ml-1">{watchedCurrency}</span>}
-              </div>
-              {watchedForeignAmount && !watchedRate && (
-                <div className="text-xs text-slate-400">
-                  implied rate: Rp{' '}
-                  {new Intl.NumberFormat('id-ID').format(Math.round(computed.impliedRate))} per unit
-                </div>
+                          {!currenciesLoading &&
+                            filteredCurrencies.length === 0 &&
+                            currencySearch && (
+                              <p className="px-3 py-4 text-sm text-slate-400 text-center">
+                                No results
+                              </p>
+                            )}
+                        </div>
+                      </div>,
+                      dialogRef.current
+                    )}
+                  <FieldError className="text-xs" />
+                </FieldContent>
               )}
-            </div>
-          )}
+            />
 
-          {/* Notes */}
-          <Controller
-            control={form.control}
-            name="notes"
-            render={({ field, fieldState }) => (
-              <FieldContent error={fieldState.error?.message}>
-                <FieldLabel className="text-sm font-medium">Notes (optional)</FieldLabel>
-                <Textarea
-                  id="notesInput_addTransactionModal"
-                  placeholder="Any notes about this transaction..."
-                  rows={3}
-                  {...field}
-                  aria-invalid={!!fieldState.error}
-                  className={cn(
-                    'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none',
-                    fieldState.error && 'border-rose-500'
+            {/* Type toggle */}
+            <Controller
+              control={form.control}
+              name="type"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Type</FieldLabel>
+                  <Tabs
+                    id="typeToggle_addTransactionModal"
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <TabsList variant="pill" size="sm" className="w-full">
+                      <TabsTrigger value="buy" className="flex-1 capitalize justify-center">
+                        Buy
+                      </TabsTrigger>
+                      <TabsTrigger value="sell" className="flex-1 capitalize justify-center">
+                        Sell
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                  <FieldDescription className="text-xs text-slate-400">
+                    Buy to add holdings, sell to reduce them 📊
+                  </FieldDescription>
+                  <FieldError className="text-xs" />
+                </FieldContent>
+              )}
+            />
+
+            {/* Date */}
+            <Controller
+              control={form.control}
+              name="transacted_at"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Date</FieldLabel>
+                  <DatePicker
+                    id="dateInput_addTransactionModal"
+                    value={field.value ? parseISO(field.value) : null}
+                    onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                    displayFormat="PPP"
+                    placeholder="Pick a date"
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
+                  />
+                  <FieldDescription className="text-xs text-slate-400">
+                    When did you execute this transaction? 📅
+                  </FieldDescription>
+                  <FieldError className="text-xs" />
+                </FieldContent>
+              )}
+            />
+
+            {/* Amount (IDR) */}
+            <Controller
+              control={form.control}
+              name="idr_amount"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Amount (IDR)</FieldLabel>
+                  <Input
+                    id="amountInput_addTransactionModal"
+                    type="text"
+                    placeholder="Rp 10.000.000"
+                    value={
+                      field.value
+                        ? `Rp ${Number(field.value.replace(/\D/g, '')).toLocaleString('id-ID')}`
+                        : ''
+                    }
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/\D/g, '')
+                      field.onChange(raw)
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-invalid={!!fieldState.error}
+                    className={cn(
+                      'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                      fieldState.error && 'border-rose-500'
+                    )}
+                  />
+                  <FieldDescription className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-slate-400">
+                      Total IDR you spent (buy) or received (sell) 💵
+                    </span>
+                    {subtotal !== null && watchedCurrency && (
+                      <span className="text-violet-600 font-semibold font-mono">
+                        ={' '}
+                        {new Intl.NumberFormat('en', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        }).format(subtotal)}{' '}
+                        {watchedCurrency}
+                      </span>
+                    )}
+                  </FieldDescription>
+                  <FieldError className="text-xs" />
+                </FieldContent>
+              )}
+            />
+
+            {/* Units */}
+            <Controller
+              control={form.control}
+              name="foreign_amount"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">
+                    Units {watchedCurrency ? `(${watchedCurrency})` : ''}{' '}
+                    <span className="text-slate-400 font-normal">(optional)</span>
+                  </FieldLabel>
+                  <Input
+                    id="unitsInput_addTransactionModal"
+                    type="text"
+                    placeholder="e.g. 100.50"
+                    value={field.value}
+                    onChange={(e) => {
+                      const cleaned = e.target.value.replace(/[^0-9.]/g, '')
+                      field.onChange(cleaned)
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-invalid={!!fieldState.error}
+                    className={cn(
+                      'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                      fieldState.error && 'border-rose-500'
+                    )}
+                  />
+                  <FieldDescription className="text-xs text-slate-400">
+                    How many units you bought or sold — fill this if you don&apos;t know the rate 💡
+                  </FieldDescription>
+                  <FieldError className="text-xs" />
+                </FieldContent>
+              )}
+            />
+
+            {/* Rate */}
+            <Controller
+              control={form.control}
+              name="rate"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">
+                    Rate (IDR per 1 unit){' '}
+                    <span className="text-slate-400 font-normal">(optional)</span>
+                  </FieldLabel>
+                  <Input
+                    id="rateInput_addTransactionModal"
+                    type="text"
+                    placeholder="15.500"
+                    value={field.value}
+                    onChange={(e) => {
+                      const cleaned = e.target.value.replace(/[^0-9.]/g, '')
+                      field.onChange(cleaned)
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-invalid={!!fieldState.error}
+                    className={cn(
+                      'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                      fieldState.error && 'border-rose-500'
+                    )}
+                  />
+                  <FieldDescription className="text-xs text-slate-400">
+                    IDR value per 1 unit of the currency (e.g. 16,000 for 1 USD) 🔢
+                  </FieldDescription>
+                  <FieldError className="text-xs" />
+                </FieldContent>
+              )}
+            />
+
+            {/* Subtotal display */}
+            {computed !== null && (
+              <div
+                className="bg-slate-50 rounded-md p-3 text-sm flex flex-col gap-0.5"
+                aria-live="polite"
+              >
+                <div>
+                  <span className="text-slate-500">= </span>
+                  <span className="font-semibold font-mono text-slate-800">
+                    {new Intl.NumberFormat('en', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                    }).format(computed.units)}
+                  </span>
+                  {watchedCurrency && (
+                    <span className="text-slate-500 ml-1">{watchedCurrency}</span>
                   )}
-                />
-                <FieldError className="text-xs" />
-              </FieldContent>
+                </div>
+                {watchedForeignAmount && !watchedRate && (
+                  <div className="text-xs text-slate-400">
+                    implied rate: Rp{' '}
+                    {new Intl.NumberFormat('id-ID').format(Math.round(computed.impliedRate))} per
+                    unit
+                  </div>
+                )}
+              </div>
             )}
-          />
 
+            {/* Notes */}
+            <Controller
+              control={form.control}
+              name="notes"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Notes (optional)</FieldLabel>
+                  <Textarea
+                    id="notesInput_addTransactionModal"
+                    placeholder="Any notes about this transaction..."
+                    rows={3}
+                    {...field}
+                    aria-invalid={!!fieldState.error}
+                    className={cn(
+                      'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none',
+                      fieldState.error && 'border-rose-500'
+                    )}
+                  />
+                  <FieldError className="text-xs" />
+                </FieldContent>
+              )}
+            />
           </ModalBody>
 
           <ModalFooter className="gap-2 pt-2 border-t border-slate-100">

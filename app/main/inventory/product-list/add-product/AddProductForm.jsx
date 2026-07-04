@@ -160,7 +160,8 @@ export default function AddProductForm({ onAdded }) {
       <ModalContent
         className="sm:max-w-md flex flex-col max-h-[90vh]"
         id="addNewProductForm_productPage"
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
       >
         <ModalHeader className="text-left shrink-0">
           <ModalTitle>🛍️ Add New Product</ModalTitle>

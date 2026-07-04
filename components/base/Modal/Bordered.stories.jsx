@@ -76,7 +76,9 @@ export const Bordered = {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-gray-400">bordered — with scrollable body (long content)</span>
+          <span className="text-xs text-gray-400">
+            bordered — with scrollable body (long content)
+          </span>
           <div>
             <Modal>
               <ModalTrigger asChild>
@@ -90,9 +92,7 @@ export const Bordered = {
               <ModalContent variant="bordered" className="max-h-[80vh]">
                 <ModalHeader>
                   <ModalTitle>Terms & Conditions</ModalTitle>
-                  <ModalDescription>
-                    Please read the full terms before proceeding.
-                  </ModalDescription>
+                  <ModalDescription>Please read the full terms before proceeding.</ModalDescription>
                 </ModalHeader>
                 <ModalBody>
                   {Array.from({ length: 10 }).map((_, i) => (
@@ -164,10 +164,26 @@ export const Bordered = {
 
           <div className="flex flex-wrap gap-3">
             {[
-              { label: 'violet-200 (default)', color: 'border-violet-200', btn: 'border-violet-300 text-violet-700 hover:bg-violet-50' },
-              { label: 'blue-200', color: 'border-blue-200', btn: 'border-blue-300 text-blue-700 hover:bg-blue-50' },
-              { label: 'red-200', color: 'border-red-200', btn: 'border-red-300 text-red-700 hover:bg-red-50' },
-              { label: 'slate-200', color: 'border-slate-200', btn: 'border-slate-300 text-slate-700 hover:bg-slate-50' },
+              {
+                label: 'violet-200 (default)',
+                color: 'border-violet-200',
+                btn: 'border-violet-300 text-violet-700 hover:bg-violet-50',
+              },
+              {
+                label: 'blue-200',
+                color: 'border-blue-200',
+                btn: 'border-blue-300 text-blue-700 hover:bg-blue-50',
+              },
+              {
+                label: 'red-200',
+                color: 'border-red-200',
+                btn: 'border-red-300 text-red-700 hover:bg-red-50',
+              },
+              {
+                label: 'slate-200',
+                color: 'border-slate-200',
+                btn: 'border-slate-300 text-slate-700 hover:bg-slate-50',
+              },
             ].map(({ label, color, btn }) => (
               <div key={color} className="flex flex-col gap-1">
                 <span className="text-xs text-gray-400">{label}</span>
@@ -187,7 +203,8 @@ export const Bordered = {
                     </ModalHeader>
                     <ModalBody>
                       <p className="text-sm text-muted-foreground">
-                        The header and footer borders use the <code className="text-xs bg-gray-100 px-1 rounded">{color}</code> class.
+                        The header and footer borders use the{' '}
+                        <code className="text-xs bg-gray-100 px-1 rounded">{color}</code> class.
                       </p>
                     </ModalBody>
                     <ModalFooter>

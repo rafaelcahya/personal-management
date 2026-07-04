@@ -104,7 +104,9 @@ function ModalContent({
         {/* pointer-events-none so backdrop clicks pass through to the overlay */}
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
           <DialogPrimitive.Content
-            style={animation !== 'none' ? { animationDuration: `${resolvedDuration}ms` } : undefined}
+            style={
+              animation !== 'none' ? { animationDuration: `${resolvedDuration}ms` } : undefined
+            }
             onOpenAutoFocus={(e) => e.preventDefault()}
             onInteractOutside={(e) => {
               if (!closeOnOverlayClick) e.preventDefault()
@@ -115,7 +117,8 @@ function ModalContent({
               'flex flex-col',
               variant === 'default' && 'gap-4 p-6 overflow-y-auto',
               variant === 'bordered' && 'gap-0 p-0 overflow-hidden',
-              animation !== 'none' && 'data-[state=open]:animate-in data-[state=closed]:animate-out',
+              animation !== 'none' &&
+                'data-[state=open]:animate-in data-[state=closed]:animate-out',
               ...animationClasses[animation],
               sizeClasses[size],
               radiusClasses[radius],

@@ -184,7 +184,8 @@ export default function AddTrade({
       <ModalContent
         className="sm:max-w-xl flex flex-col max-h-[90vh]"
         id="addNewTradeForm_tradePage"
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
       >
         <ModalHeader className="text-left shrink-0">
           <ModalTitle>📊 Add New Trade</ModalTitle>

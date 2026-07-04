@@ -52,7 +52,8 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
       <ModalContent
         id="stockAdjustmentDialog_productListPage"
         className="sm:max-w-2xl flex flex-col max-h-[90vh]"
-        variant="bordered" borderColor="border-slate-200"
+        variant="bordered"
+        borderColor="border-slate-200"
         onPointerDownOutside={(e) => {
           if (e.target.closest('[data-radix-popper-content-wrapper]')) {
             e.preventDefault()
