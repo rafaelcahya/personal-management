@@ -36,6 +36,14 @@ import { fetchActivities } from '@/lib/api/running'
 import { fmtDistance, fmtPace, fmtDuration } from '../dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 
 // ─── activity config ──────────────────────────────────────────────────────────
@@ -381,185 +389,173 @@ function ActivitiesInner() {
         )}
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-[640px] w-full text-sm" aria-label="Activities">
-            <thead>
-              <tr className="border-b border-slate-100">
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[40%]">
-                  Activity
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Date
-                </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Dist
-                </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Pace
-                </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Time
-                </th>
-                <th
-                  className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap"
-                  title="Average heart rate"
-                >
-                  HR
-                </th>
-                <th
-                  className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap"
-                  title="Elevation gain"
-                >
-                  Elev
-                </th>
-              </tr>
-            </thead>
+        <Table
+          wrapperClassName="overflow-x-auto"
+          className="min-w-[640px] w-full"
+          aria-label="Activities"
+        >
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[40%]">Activity</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead align="right">Dist</TableHead>
+              <TableHead align="right">Pace</TableHead>
+              <TableHead align="right">Time</TableHead>
+              <TableHead align="right" title="Average heart rate">
+                HR
+              </TableHead>
+              <TableHead align="right" title="Elevation gain">
+                Elev
+              </TableHead>
+            </TableRow>
+          </TableHeader>
 
-            <tbody id="activitiesList">
-              {/* Loading */}
-              {loading && (
-                <tr>
-                  <td colSpan={7} className="p-0">
-                    <div
-                      id="activitiesLoadingSkeleton"
-                      aria-busy="true"
-                      aria-label="Loading activities"
-                    >
-                      <table className="min-w-[640px] w-full">
-                        <tbody>
-                          <TableSkeletonRows rows={8} metricWidths={[60, 56, 48, 52, 40, 44]} />
-                        </tbody>
-                      </table>
-                    </div>
-                  </td>
-                </tr>
-              )}
+          <TableBody id="activitiesList">
+            {/* Loading */}
+            {loading && (
+              <TableRow>
+                <TableCell colSpan={7} className="p-0">
+                  <div
+                    id="activitiesLoadingSkeleton"
+                    aria-busy="true"
+                    aria-label="Loading activities"
+                  >
+                    <Table className="min-w-[640px] w-full">
+                      <TableBody>
+                        <TableSkeletonRows rows={8} metricWidths={[60, 56, 48, 52, 40, 44]} />
+                      </TableBody>
+                    </Table>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
 
-              {/* Empty */}
-              {!loading && !error && activities.length === 0 && (
-                <tr>
-                  <td colSpan={7}>
-                    <div className="flex flex-col items-center justify-center py-16 gap-3">
-                      <Activity className="size-10 text-slate-200" aria-hidden="true" />
-                      <p className="text-sm text-slate-500">
-                        {hasFilters ? 'No activities match your filters.' : 'No activities yet.'}
-                      </p>
-                      {hasFilters && (
-                        <Button variant="ghost" size="base" onClick={clearFilters}>
-                          Clear filters
-                        </Button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              )}
+            {/* Empty */}
+            {!loading && !error && activities.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7}>
+                  <div className="flex flex-col items-center justify-center py-16 gap-3">
+                    <Activity className="size-10 text-slate-200" aria-hidden="true" />
+                    <p className="text-sm text-slate-500">
+                      {hasFilters ? 'No activities match your filters.' : 'No activities yet.'}
+                    </p>
+                    {hasFilters && (
+                      <Button variant="ghost" size="base" onClick={clearFilters}>
+                        Clear filters
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
 
-              {/* Rows */}
-              {!loading &&
-                !error &&
-                activities.map((a) => {
-                  const cfg = getActivityCfg(a)
-                  const Icon = cfg.icon
-                  const dist =
-                    a.distance_m && a.distance_m > 0 ? `${fmtDistance(a.distance_m)} km` : null
-                  const pace = a.avg_pace_sec_per_km ? `${fmtPace(a.avg_pace_sec_per_km)}/km` : null
-                  const dur = a.moving_time_sec ?? a.duration_sec
-                  const elev =
-                    a.elevation_gain_m && a.elevation_gain_m > 0
-                      ? `↑ ${Math.round(a.elevation_gain_m)} m`
-                      : null
-                  const workoutBadge = a.workout_type != null ? WORKOUT_BADGE[a.workout_type] : null
-                  const name = a.name || cfg.label || a.activity_type
+            {/* Rows */}
+            {!loading &&
+              !error &&
+              activities.map((a) => {
+                const cfg = getActivityCfg(a)
+                const Icon = cfg.icon
+                const dist =
+                  a.distance_m && a.distance_m > 0 ? `${fmtDistance(a.distance_m)} km` : null
+                const pace = a.avg_pace_sec_per_km ? `${fmtPace(a.avg_pace_sec_per_km)}/km` : null
+                const dur = a.moving_time_sec ?? a.duration_sec
+                const elev =
+                  a.elevation_gain_m && a.elevation_gain_m > 0
+                    ? `↑ ${Math.round(a.elevation_gain_m)} m`
+                    : null
+                const workoutBadge = a.workout_type != null ? WORKOUT_BADGE[a.workout_type] : null
+                const name = a.name || cfg.label || a.activity_type
 
-                  return (
-                    <tr
-                      key={a.id}
-                      className="border-b border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors"
-                      onClick={() => router.push(`/main/running/activities/${a.id}`)}
-                    >
-                      {/* Activity */}
-                      <td className="px-5 py-3.5 w-[40%]">
-                        <div className="flex items-center gap-3">
-                          <span
-                            className={`flex size-8 items-center justify-center rounded-full shrink-0 ${cfg.bg}`}
-                          >
-                            <Icon className={`size-4 ${cfg.color}`} aria-hidden="true" />
-                          </span>
-                          <div className="flex flex-col min-w-0">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              {workoutBadge}
-                              <span className="text-sm font-medium text-slate-700 truncate">
-                                {name}
-                              </span>
-                              {a.pr_count > 0 && (
-                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0">
-                                  <Trophy className="size-3" aria-hidden="true" />
-                                  {a.pr_count} PR
-                                </span>
-                              )}
-                              {(a.top_best_efforts ?? []).map((e) =>
-                                e.pr_rank === 1 ? (
-                                  <span
-                                    key={e.name}
-                                    id={`pbRankChip_${e.name.replace(/\s/g, '')}_activitiesPage`}
-                                    className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0"
-                                  >
-                                    <Trophy className="size-3" aria-hidden="true" />
-                                    #1 {e.name}
-                                  </span>
-                                ) : (
-                                  <span
-                                    key={e.name}
-                                    id={`pbRankChip_${e.name.replace(/\s/g, '')}_activitiesPage`}
-                                    className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold leading-none shrink-0"
-                                  >
-                                    #{e.pr_rank} {e.name}
-                                  </span>
-                                )
-                              )}
-                            </div>
-                            <span className="text-xs text-slate-400">
-                              {cfg.label ?? a.activity_type}
+                return (
+                  <TableRow
+                    key={a.id}
+                    clickable
+                    onClick={() => router.push(`/main/running/activities/${a.id}`)}
+                  >
+                    <TableCell className="w-[40%]">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`flex size-8 items-center justify-center rounded-full shrink-0 ${cfg.bg}`}
+                        >
+                          <Icon className={`size-4 ${cfg.color}`} aria-hidden="true" />
+                        </span>
+                        <div className="flex flex-col min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {workoutBadge}
+                            <span className="text-sm font-medium text-slate-700 truncate">
+                              {name}
                             </span>
+                            {a.pr_count > 0 && (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0">
+                                <Trophy className="size-3" aria-hidden="true" />
+                                {a.pr_count} PR
+                              </span>
+                            )}
+                            {(a.top_best_efforts ?? []).map((e) =>
+                              e.pr_rank === 1 ? (
+                                <span
+                                  key={e.name}
+                                  id={`pbRankChip_${e.name.replace(/\s/g, '')}_activitiesPage`}
+                                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0"
+                                >
+                                  <Trophy className="size-3" aria-hidden="true" />
+                                  #1 {e.name}
+                                </span>
+                              ) : (
+                                <span
+                                  key={e.name}
+                                  id={`pbRankChip_${e.name.replace(/\s/g, '')}_activitiesPage`}
+                                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold leading-none shrink-0"
+                                >
+                                  #{e.pr_rank} {e.name}
+                                </span>
+                              )
+                            )}
                           </div>
+                          <span className="text-xs text-slate-400">
+                            {cfg.label ?? a.activity_type}
+                          </span>
                         </div>
-                      </td>
-
-                      {/* Date */}
-                      <td className="px-5 py-3.5 text-sm text-slate-600 whitespace-nowrap">
-                        {fmtShortDate(a.started_at)}
-                      </td>
-
-                      {/* Distance */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
-                        {dist ?? NULL_CELL}
-                      </td>
-
-                      {/* Pace */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
-                        {pace ?? NULL_CELL}
-                      </td>
-
-                      {/* Duration */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
-                        {dur != null ? fmtDuration(dur) : NULL_CELL}
-                      </td>
-
-                      {/* HR */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
-                        {a.avg_hr ? `${a.avg_hr} bpm` : NULL_CELL}
-                      </td>
-
-                      {/* Elev */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
-                        {elev ?? NULL_CELL}
-                      </td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </table>
-        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-slate-600 whitespace-nowrap">
+                      {fmtShortDate(a.started_at)}
+                    </TableCell>
+                    <TableCell
+                      className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
+                      align="right"
+                    >
+                      {dist ?? NULL_CELL}
+                    </TableCell>
+                    <TableCell
+                      className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
+                      align="right"
+                    >
+                      {pace ?? NULL_CELL}
+                    </TableCell>
+                    <TableCell
+                      className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
+                      align="right"
+                    >
+                      {dur != null ? fmtDuration(dur) : NULL_CELL}
+                    </TableCell>
+                    <TableCell
+                      className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
+                      align="right"
+                    >
+                      {a.avg_hr ? `${a.avg_hr} bpm` : NULL_CELL}
+                    </TableCell>
+                    <TableCell
+                      className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
+                      align="right"
+                    >
+                      {elev ?? NULL_CELL}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+          </TableBody>
+        </Table>
 
         {/* Pagination */}
         {!loading && !error && totalPages > 1 && (

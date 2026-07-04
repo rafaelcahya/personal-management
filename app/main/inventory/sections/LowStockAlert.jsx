@@ -8,9 +8,18 @@ import {
   ModalHeader,
   ModalTitle,
   ModalBody,
+  ModalDescription,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 import StatusBadge from '../components/StatusBadge'
 
 function StockBadge({ quantity }) {
@@ -59,57 +68,45 @@ function LowStockTable({ items }) {
   return (
     <>
       {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table
-          id="lowStockAlertTable_inventoryPage"
-          className="min-w-full text-sm"
-          aria-label="Low stock alerts"
-        >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-8">
-                No
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Product
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Status
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Stock
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, index) => (
-              <tr
-                key={item.id}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 text-slate-500 text-xs">{index + 1}</td>
-                <td className="px-5 py-3.5">
-                  <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                  <div className="flex flex-col items-start gap-1.5 mt-0.5">
-                    <p className="font-semibold text-slate-900">{item.product}</p>
-                    {item.type && (
-                      <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                        {item.type}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-5 py-3.5 text-right">
-                  <StatusBadge status={item.product_status} />
-                </td>
-                <td className="px-5 py-3.5 text-right">
-                  <StockBadge quantity={item.quantity} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        wrapperClassName="hidden md:block"
+        id="lowStockAlertTable_inventoryPage"
+        className="min-w-full"
+        aria-label="Low stock alerts"
+      >
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-8">No</TableHead>
+            <TableHead>Product</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Stock</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((item, index) => (
+            <TableRow key={item.id}>
+              <TableCell className="text-slate-500 text-xs">{index + 1}</TableCell>
+              <TableCell>
+                <p className="text-xs text-slate-400">{item.brand || '—'}</p>
+                <div className="flex flex-col items-start gap-1.5 mt-0.5">
+                  <p className="font-semibold text-slate-900">{item.product}</p>
+                  {item.type && (
+                    <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
+                      {item.type}
+                    </span>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell>
+                <StatusBadge status={item.product_status} />
+              </TableCell>
+              <TableCell>
+                <StockBadge quantity={item.quantity} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       {/* Mobile cards */}
       <div className="md:hidden space-y-2 px-2 py-2">
@@ -206,12 +203,12 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
             <ModalTitle className="text-base font-semibold text-slate-800">
               All Low Stock Products
             </ModalTitle>
-            <p className="text-xs text-slate-400">Sorted by lowest stock first</p>
+            <ModalDescription className="text-xs text-slate-400">
+              Sorted by lowest stock first
+            </ModalDescription>
           </ModalHeader>
-          <ModalBody>
-            <div className="overflow-y-auto flex-1">
-              <LowStockTable items={items} />
-            </div>
+          <ModalBody className="overflow-y-auto flex-1 px-2">
+            <LowStockTable items={items} />
           </ModalBody>
         </ModalContent>
       </Modal>

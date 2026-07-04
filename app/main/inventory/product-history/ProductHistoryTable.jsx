@@ -5,6 +5,14 @@ import { SearchX, ChevronLeft, ChevronRight } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { Badge } from '@/components/base/Badge/Badge'
 import { cn } from '@/lib/utils'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 function getStatusClasses(status) {
   switch (status) {
@@ -61,46 +69,31 @@ export default function ProductHistoryTable({
 
   return (
     <div className="flex-1 overflow-x-auto">
-      <table
+      <Table
         id="productHistoryTable_productHistoryPage"
-        className="min-w-full text-sm"
+        className="min-w-full"
         aria-label="Product history"
       >
-        <thead>
-          <tr className="border-b border-slate-100">
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[40px]">
-              #
-            </th>
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-              Product
-            </th>
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[100px]">
-              Status
-            </th>
-            <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[80px]">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[40px]">#</TableHead>
+            <TableHead>Product</TableHead>
+            <TableHead className="w-[100px]">Status</TableHead>
+            <TableHead className="w-[80px]" align="right">
               Qty
-            </th>
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[130px]">
-              Start Date
-            </th>
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[130px]">
-              End Date
-            </th>
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-              Note
-            </th>
-          </tr>
-        </thead>
-        <tbody>
+            </TableHead>
+            <TableHead className="w-[130px]">Start Date</TableHead>
+            <TableHead className="w-[130px]">End Date</TableHead>
+            <TableHead>Note</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {histories.map((history, index) => (
-            <tr
-              key={history.id}
-              className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-            >
-              <td className="px-5 py-3.5 text-right font-mono text-slate-700 w-[40px]">
+            <TableRow key={history.id} clickable>
+              <TableCell className="font-mono text-slate-700 w-[40px]" align="right">
                 {(page - 1) * 15 + index + 1}
-              </td>
-              <td className="px-5 py-3.5 w-[250px]">
+              </TableCell>
+              <TableCell className="w-[250px]">
                 <div className="min-w-0">
                   <p className="text-xs text-slate-400 truncate leading-tight">
                     {history.brand || '—'}
@@ -126,28 +119,28 @@ export default function ProductHistoryTable({
                     )}
                   </div>
                 </div>
-              </td>
-              <td className="px-5 py-3.5 w-[100px]">
+              </TableCell>
+              <TableCell className="w-[100px]">
                 <Badge className={cn('capitalize', getStatusClasses(history.status))}>
                   {history.status}
                 </Badge>
-              </td>
-              <td className="px-5 py-3.5 text-right font-mono text-slate-700 w-[80px]">
+              </TableCell>
+              <TableCell className="font-mono text-slate-700 w-[80px]" align="right">
                 {history.quantity}
-              </td>
-              <td className="px-5 py-3.5 text-slate-700 w-[130px]">
+              </TableCell>
+              <TableCell className="text-slate-700 w-[130px]">
                 {formatDate(history.start_usage_date)}
-              </td>
-              <td className="px-5 py-3.5 text-slate-700 w-[130px]">
+              </TableCell>
+              <TableCell className="text-slate-700 w-[130px]">
                 {formatDate(history.end_usage_date)}
-              </td>
-              <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate">
+              </TableCell>
+              <TableCell className="text-slate-500 max-w-xs truncate">
                 {history.note || '—'}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">

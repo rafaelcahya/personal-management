@@ -7,6 +7,14 @@ import {
   RACE_DISTANCES,
   MI_TO_KM,
 } from '@/lib/running/pace'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 export default function RaceProjectionTable({ refTimeSec, refDistM, unit }) {
   if (!refTimeSec || !refDistM || refTimeSec <= 0 || refDistM <= 0) return null
@@ -34,37 +42,26 @@ export default function RaceProjectionTable({ refTimeSec, refDistM, unit }) {
       <p className="text-[11px] text-slate-400">
         Estimated via Riegel formula — accuracy decreases for distances far from your reference.
       </p>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm" aria-label="Race time projections">
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Race
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Finish Time
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Avg Pace
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr
-                key={row.label}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 font-semibold text-slate-900">{row.label}</td>
-                <td className="px-5 py-3.5 font-mono text-slate-700">
-                  {formatDuration(row.projSec)}
-                </td>
-                <td className="px-5 py-3.5 font-mono text-slate-500">{row.paceDisplay}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table className="min-w-full" aria-label="Race time projections">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Race</TableHead>
+            <TableHead>Finish Time</TableHead>
+            <TableHead>Avg Pace</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow key={row.label}>
+              <TableCell className="font-semibold text-slate-900">{row.label}</TableCell>
+              <TableCell className="font-mono text-slate-700">
+                {formatDuration(row.projSec)}
+              </TableCell>
+              <TableCell className="font-mono text-slate-500">{row.paceDisplay}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }

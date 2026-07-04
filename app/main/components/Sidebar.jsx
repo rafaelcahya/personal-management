@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Button from '@/components/base/Button/Button'
+import { SidebarHeader, SidebarContent, SidebarFooter } from '@/components/base/Sidebar/Sidebar.jsx'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -203,7 +204,7 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
 
 function SidebarNav({ collapsed, onNavClick }) {
   return (
-    <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-0.5">
+    <nav className="px-3 py-2 space-y-0.5">
       {!collapsed && (
         <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3 pt-3 pb-1.5">
           Inventory
@@ -287,61 +288,59 @@ function UserSection({ collapsed, user, mobile = false }) {
   const initials = name.charAt(0).toUpperCase()
 
   return (
-    <div className="border-t border-slate-100 p-3" ref={ref}>
-      <div className="relative">
-        {open && (
-          <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-10">
-            {!collapsed && (
-              <div className="px-3 py-2.5 border-b border-slate-100">
-                <p className="text-sm font-medium text-slate-700 truncate">{name}</p>
-                <p
-                  id={mobile ? 'userMenuEmail_mobile' : 'userMenuEmail_landingPage'}
-                  className="text-xs text-slate-400 truncate"
-                >
-                  {email}
-                </p>
-              </div>
-            )}
-            <Button
-              id={mobile ? 'userMenuSignOut_mobile' : 'logoutBtn'}
-              variant="ghost"
-              fullWidth
-              onClick={handleLogout}
-              disabled={loading}
-              aria-label="Sign out from application"
-              className="justify-start gap-2.5 px-3 py-2.5 text-slate-600 hover:bg-slate-50"
-            >
-              {loading ? (
-                <Loader2 className="size-4 animate-spin text-slate-400 shrink-0" />
-              ) : (
-                <LogOut className="size-4 text-slate-400 shrink-0" />
-              )}
-              {loading ? 'Signing out...' : 'Sign out'}
-            </Button>
-          </div>
-        )}
-        <Button
-          id={mobile ? 'userMenuTrigger_mobile' : 'userMenuTrigger_landingPage'}
-          variant="ghost"
-          fullWidth
-          aria-label="User menu"
-          onClick={() => setOpen(!open)}
-          className={cn(
-            'justify-start gap-2.5 rounded-xl p-2 hover:bg-slate-50',
-            collapsed && 'justify-center'
-          )}
-        >
-          <div className="size-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0 text-violet-700 font-semibold text-sm">
-            {initials}
-          </div>
+    <div className="relative border-slate-100 p-3" ref={ref}>
+      {open && (
+        <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-10">
           {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-700 truncate">{name}</p>
-              <p className="text-xs text-slate-400 truncate">{email}</p>
+            <div className="px-3 py-2.5 border-b border-slate-100">
+              <p className="text-sm font-medium text-slate-700 truncate text-left w-fit">{name}</p>
+              <p
+                id={mobile ? 'userMenuEmail_mobile' : 'userMenuEmail_landingPage'}
+                className="text-xs text-slate-400 truncate text-left w-fit"
+              >
+                {email}
+              </p>
             </div>
           )}
-        </Button>
-      </div>
+          <Button
+            id={mobile ? 'userMenuSignOut_mobile' : 'logoutBtn'}
+            variant="ghost"
+            fullWidth
+            onClick={handleLogout}
+            disabled={loading}
+            aria-label="Sign out from application"
+            className="justify-start gap-2.5 px-3 py-5 text-slate-600 hover:bg-slate-50"
+          >
+            {loading ? (
+              <Loader2 className="size-4 animate-spin text-slate-400 shrink-0" />
+            ) : (
+              <LogOut className="size-4 text-slate-400 shrink-0" />
+            )}
+            {loading ? 'Signing out...' : 'Sign out'}
+          </Button>
+        </div>
+      )}
+      <Button
+        id={mobile ? 'userMenuTrigger_mobile' : 'userMenuTrigger_landingPage'}
+        variant="ghost"
+        fullWidth
+        aria-label="User menu"
+        onClick={() => setOpen(!open)}
+        className={cn(
+          'justify-start gap-2.5 rounded-xl p-2 hover:bg-slate-50 active:bg-slate-50',
+          collapsed && 'justify-center'
+        )}
+      >
+        <div className="size-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0 text-violet-700 font-semibold text-sm">
+          {initials}
+        </div>
+        {!collapsed && (
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-slate-700 truncate text-left w-fit">{name}</p>
+            <p className="text-xs text-slate-400 truncate text-left w-fit">{email}</p>
+          </div>
+        )}
+      </Button>
     </div>
   )
 }
@@ -426,11 +425,8 @@ export default function Sidebar({ user }) {
         )}
       >
         {/* Logo */}
-        <div
-          className={cn(
-            'flex items-center gap-3 px-4 py-4 border-b border-slate-100 shrink-0',
-            collapsed && 'justify-center px-0'
-          )}
+        <SidebarHeader
+          className={cn('gap-3 px-4 py-4 border-slate-100', collapsed && 'justify-center px-0')}
         >
           <div className="size-8 bg-violet-600 rounded-lg flex items-center justify-center shrink-0">
             <Package2 className="size-4 text-white" />
@@ -440,9 +436,11 @@ export default function Sidebar({ user }) {
               Personal Management
             </span>
           )}
-        </div>
+        </SidebarHeader>
 
-        <SidebarNav collapsed={collapsed} />
+        <SidebarContent className="py-0">
+          <SidebarNav collapsed={collapsed} />
+        </SidebarContent>
         {!collapsed && (
           <div className="px-4 pb-1">
             <p id="appVersion_sidebar" className="text-[10px] text-slate-400">
@@ -498,7 +496,7 @@ export default function Sidebar({ user }) {
             onClick={() => setMobileOpen(false)}
           />
           <aside className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col">
-            <div className="flex items-center justify-between px-4 h-14 border-b border-slate-100 shrink-0">
+            <SidebarHeader className="justify-between h-14 border-slate-100 gap-2 px-4">
               <div className="flex items-center gap-2">
                 <div className="size-7 bg-violet-600 rounded-lg flex items-center justify-center">
                   <Package2 className="size-4 text-white" />
@@ -514,14 +512,18 @@ export default function Sidebar({ user }) {
               >
                 <X className="size-4 text-slate-500" />
               </Button>
-            </div>
-            <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
-            <div className="px-4 pb-1">
-              <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400">
-                v{packageJson.version}
-              </p>
-            </div>
-            <UserSection collapsed={false} user={user} mobile={true} />
+            </SidebarHeader>
+            <SidebarContent className="py-0">
+              <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
+            </SidebarContent>
+            <SidebarFooter>
+              <div className="px-4 pb-1">
+                <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400">
+                  v{packageJson.version}
+                </p>
+              </div>
+              <UserSection collapsed={false} user={user} mobile={true} />
+            </SidebarFooter>
           </aside>
         </>
       )}

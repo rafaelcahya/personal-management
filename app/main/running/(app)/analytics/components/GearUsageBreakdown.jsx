@@ -2,6 +2,14 @@
 
 import { useState } from 'react'
 import EmptyState from './EmptyState'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 function fmtTime(sec) {
   if (!sec || sec <= 0) return '—'
@@ -51,60 +59,53 @@ export default function GearUsageBreakdown({ gear, error }) {
 
   return (
     <div id="gearUsageBreakdown_analyticsPage" className="flex flex-col gap-3">
-      <div className="overflow-x-auto">
-        <table
-          id="gearUsageTable_analyticsPage"
-          className="min-w-full text-sm"
-          aria-label="Gear usage breakdown"
-        >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Gear
-              </th>
-              <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Activities
-              </th>
-              <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Time
-              </th>
-              <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Distance
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {visible.map((g) => (
-              <tr
-                key={g.id}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-3 py-3.5">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="font-semibold text-slate-900 leading-tight">
-                      {gearDisplayName(g)}
+      <Table
+        id="gearUsageTable_analyticsPage"
+        className="min-w-full"
+        aria-label="Gear usage breakdown"
+      >
+        <TableHeader>
+          <TableRow>
+            <TableHead className="px-3 py-3 font-semibold text-slate-500">Gear</TableHead>
+            <TableHead className="px-3 py-3 font-semibold text-slate-500" align="right">
+              Activities
+            </TableHead>
+            <TableHead className="px-3 py-3 font-semibold text-slate-500" align="right">
+              Time
+            </TableHead>
+            <TableHead className="px-3 py-3 font-semibold text-slate-500" align="right">
+              Distance
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {visible.map((g) => (
+            <TableRow key={g.id}>
+              <TableCell className="px-3 py-3.5">
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-semibold text-slate-900 leading-tight">
+                    {gearDisplayName(g)}
+                  </span>
+                  {g.retired && (
+                    <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full w-fit">
+                      Retired
                     </span>
-                    {g.retired && (
-                      <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full w-fit">
-                        Retired
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-3 py-3.5 text-right font-mono text-slate-700">
-                  {g.total_activities}
-                </td>
-                <td className="px-3 py-3.5 text-right font-mono text-slate-700">
-                  {fmtTime(g.total_moving_time_sec)}
-                </td>
-                <td className="px-3 py-3.5 text-right font-mono text-slate-700">
-                  {fmtDistKm(g.total_distance_m)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell className="px-3 py-3.5 font-mono text-slate-700" align="right">
+                {g.total_activities}
+              </TableCell>
+              <TableCell className="px-3 py-3.5 font-mono text-slate-700" align="right">
+                {fmtTime(g.total_moving_time_sec)}
+              </TableCell>
+              <TableCell className="px-3 py-3.5 font-mono text-slate-700" align="right">
+                {fmtDistKm(g.total_distance_m)}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       {hasRetired && (
         <RetiredToggle showRetired={showRetired} onToggle={() => setShowRetired((v) => !v)} />

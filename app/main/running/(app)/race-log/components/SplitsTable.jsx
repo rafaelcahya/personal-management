@@ -1,9 +1,14 @@
 import { Heart } from 'lucide-react'
 import { SectionLabel } from './activityShared'
 import { fmtPace, fmtDuration } from '../../dashboard/utils/format'
-
-const TH =
-  'px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 export default function SplitsTable({ splits }) {
   if (splits.length === 0) return null
@@ -18,49 +23,44 @@ export default function SplitsTable({ splits }) {
   return (
     <div>
       <SectionLabel>Splits (per km)</SectionLabel>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm" aria-label="Splits">
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className={`${TH} text-left w-10`}>#</th>
-              <th className={`${TH} text-right`}>Dist</th>
-              <th className={`${TH} text-right`}>Pace</th>
-              <th className={`${TH} text-right`}>Time</th>
-              {hasSplitsHr && <th className={`${TH} text-right`}>HR</th>}
-              <th className={`${TH} text-right`}>Elev</th>
-            </tr>
-          </thead>
-          <tbody>
-            {splits.map((s) => (
-              <tr
-                key={s.id ?? s.split_number}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 text-xs text-slate-400 font-medium">{s.split_number}</td>
-                <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                  {s.distance_m ? `${(s.distance_m / 1000).toFixed(2)} km` : '—'}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                  {s.pace_sec_per_km ? `${fmtPace(s.pace_sec_per_km)}/km` : '—'}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                  {s.duration_sec ? fmtDuration(s.duration_sec) : '—'}
-                </td>
-                {hasSplitsHr && (
-                  <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                    {s.avg_hr ? `${s.avg_hr}` : '—'}
-                  </td>
-                )}
-                <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                  {s.elevation_gain_m != null
-                    ? `${s.elevation_gain_m > 0 ? '+' : ''}${Math.round(s.elevation_gain_m)} m`
-                    : '—'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table className="min-w-full" aria-label="Splits">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-10">#</TableHead>
+            <TableHead align="right">Dist</TableHead>
+            <TableHead align="right">Pace</TableHead>
+            <TableHead align="right">Time</TableHead>
+            {hasSplitsHr && <TableHead align="right">HR</TableHead>}
+            <TableHead align="right">Elev</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {splits.map((s) => (
+            <TableRow key={s.id ?? s.split_number}>
+              <TableCell className="text-xs text-slate-400 font-medium">{s.split_number}</TableCell>
+              <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                {s.distance_m ? `${(s.distance_m / 1000).toFixed(2)} km` : '—'}
+              </TableCell>
+              <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                {s.pace_sec_per_km ? `${fmtPace(s.pace_sec_per_km)}/km` : '—'}
+              </TableCell>
+              <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                {s.duration_sec ? fmtDuration(s.duration_sec) : '—'}
+              </TableCell>
+              {hasSplitsHr && (
+                <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                  {s.avg_hr ? `${s.avg_hr}` : '—'}
+                </TableCell>
+              )}
+              <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                {s.elevation_gain_m != null
+                  ? `${s.elevation_gain_m > 0 ? '+' : ''}${Math.round(s.elevation_gain_m)} m`
+                  : '—'}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
       {cardiacDrift !== null && (
         <div className="flex items-center gap-2 mt-2 px-1">
           <Heart className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />

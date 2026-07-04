@@ -1,5 +1,12 @@
 import { AlertCircle } from 'lucide-react'
 import LogRow from './LogRow'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+} from '@/components/base/Table/Table.jsx'
 
 export default function ProductUsageLog({ log, onUpdate }) {
   if (!log || log.length === 0) {
@@ -19,40 +26,27 @@ export default function ProductUsageLog({ log, onUpdate }) {
       id="usageLog_productListPage"
       className="overflow-x-auto rounded-xl border border-slate-200"
     >
-      <table
+      <Table
         id="usageLogTable_productListPage"
-        className="min-w-full text-sm"
+        className="min-w-full"
         aria-label="Product usage log"
       >
-        <thead>
-          <tr className="border-b border-slate-100">
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-8" />
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-              Start Date
-            </th>
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-              End Date
-            </th>
-            <th
-              id="durationCol_usageLogTable"
-              className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap"
-            >
-              Duration
-            </th>
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-              Status
-            </th>
-            <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-              Qty
-            </th>
-          </tr>
-        </thead>
-        <tbody>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-8" />
+            <TableHead>Start Date</TableHead>
+            <TableHead>End Date</TableHead>
+            <TableHead id="durationCol_usageLogTable">Duration</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead align="right">Qty</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {log.map((item) => (
             <LogRow key={item.id} item={item} onUpdate={onUpdate} />
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   )
 }

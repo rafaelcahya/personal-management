@@ -11,6 +11,14 @@ import { Badge } from '@/components/base/Badge/Badge'
 import Button from '@/components/base/Button/Button'
 import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 // ----------------------------------------------------------------
 // Stat card component
@@ -61,50 +69,32 @@ function PurchaseHistorySection({ history }) {
   const sorted = [...history].sort((a, b) => new Date(b.purchase_date) - new Date(a.purchase_date))
 
   return (
-    <div className="overflow-x-auto">
-      <table
-        id="purchaseTable_productDetailPage"
-        className="min-w-full text-sm"
-        aria-label="Purchase history"
-      >
-        <thead>
-          <tr className="border-b border-slate-100">
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-              Date
-            </th>
-            <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-              Qty Added
-            </th>
-            <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-              Price
-            </th>
-            <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-              Note
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((h, idx) => (
-            <tr
-              key={h.id ?? idx}
-              id="purchaseRow_productDetailPage"
-              className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-            >
-              <td className="px-5 py-3.5 text-slate-700 whitespace-nowrap">
-                {h.purchase_date ? format(new Date(h.purchase_date), 'd MMM yyyy') : '—'}
-              </td>
-              <td className="px-5 py-3.5 text-right font-mono text-slate-700">
-                {h.quantity_added ?? '—'}
-              </td>
-              <td className="px-5 py-3.5 text-right font-mono text-slate-700 whitespace-nowrap">
-                {h.price != null ? `Rp ${Number(h.price).toLocaleString('id-ID')}` : '—'}
-              </td>
-              <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate">{h.note || '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table id="purchaseTable_productDetailPage" aria-label="Purchase history">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Date</TableHead>
+          <TableHead align="right">Qty Added</TableHead>
+          <TableHead align="right">Price</TableHead>
+          <TableHead>Note</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {sorted.map((h, idx) => (
+          <TableRow key={h.id ?? idx} id="purchaseRow_productDetailPage" clickable>
+            <TableCell className="text-slate-700 whitespace-nowrap">
+              {h.purchase_date ? format(new Date(h.purchase_date), 'd MMM yyyy') : '—'}
+            </TableCell>
+            <TableCell className="font-mono text-slate-700" align="right">
+              {h.quantity_added ?? '—'}
+            </TableCell>
+            <TableCell className="font-mono text-slate-700 whitespace-nowrap" align="right">
+              {h.price != null ? `Rp ${Number(h.price).toLocaleString('id-ID')}` : '—'}
+            </TableCell>
+            <TableCell className="text-slate-500 max-w-xs truncate">{h.note || '—'}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
 

@@ -1,9 +1,9 @@
 'use client'
 import { cn } from '@/lib/utils'
 
-export function Table({ children, className, ...props }) {
+export function Table({ children, className, wrapperClassName, ...props }) {
   return (
-    <div className="w-full overflow-auto">
+    <div className={cn('w-full overflow-auto', wrapperClassName)}>
       <table className={cn('w-full caption-bottom text-sm', className)} {...props}>
         {children}
       </table>
