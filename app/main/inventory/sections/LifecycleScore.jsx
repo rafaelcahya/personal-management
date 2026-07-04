@@ -108,7 +108,9 @@ function ScoreTable({ items }) {
       >
         <TableHeader>
           <TableRow>
-            <TableHead className="w-8">No</TableHead>
+            <TableHead className="w-8" align="center">
+              No
+            </TableHead>
             <TableHead>Product</TableHead>
             <TableHead align="right">Cost/Use</TableHead>
             <TableHead>Avg Duration</TableHead>
@@ -119,7 +121,9 @@ function ScoreTable({ items }) {
         <TableBody>
           {items.map((item, index) => (
             <TableRow key={item.id}>
-              <TableCell className="text-slate-500 text-xs">{index + 1}</TableCell>
+              <TableCell className="text-slate-500 text-xs" align="center">
+                {index + 1}
+              </TableCell>
               <TableCell>
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
                 <div className="flex flex-col gap-1.5 mt-0.5">
