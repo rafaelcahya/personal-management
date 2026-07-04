@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/components/ui/alert-dialog'
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import { deleteProductBrand } from '@/lib/api/productBrand'
@@ -38,8 +37,8 @@ export default function ProductBrandDelete({
   }
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
+    <Modal>
+      <ModalTrigger asChild>
         <Button
           id="deleteBrandTriggerBtn_productBrandPage"
           disabled={disabled}
@@ -47,31 +46,41 @@ export default function ProductBrandDelete({
         >
           Delete
         </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent id="deleteBrandConfirmDialog_productBrandPage">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="font-semibold">Delete Product Brand</AlertDialogTitle>
-          <AlertDialogDescription className="text-slate-foreground">
+      </ModalTrigger>
+      <ModalContent
+        id="deleteBrandConfirmDialog_productBrandPage"
+        showCloseButton={false}
+        variant="bordered"
+        borderColor="border-slate-200"
+      >
+        <ModalHeader>
+          <ModalTitle className="font-semibold">Delete Product Brand</ModalTitle>
+          <ModalDescription className="text-slate-foreground">
             Are you sure you want to delete this product brand? This action cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel
-            id="cancelDeleteBrandBtn_productBrandPage"
-            className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
-          >
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction
-            id="confirmDeleteBrandBtn_productBrandPage"
-            onClick={handleDelete}
-            disabled={loading}
-            className="bg-rose-600 hover:bg-rose-700 dark:text-white"
-          >
-            {loading ? 'Deleting...' : 'Delete'}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </ModalDescription>
+        </ModalHeader>
+        <ModalFooter>
+          <ModalClose asChild>
+            <Button
+              id="cancelDeleteBrandBtn_productBrandPage"
+              variant="ghost"
+              className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
+            >
+              Cancel
+            </Button>
+          </ModalClose>
+          <ModalClose asChild>
+            <Button
+              id="confirmDeleteBrandBtn_productBrandPage"
+              onClick={handleDelete}
+              disabled={loading}
+              className="bg-rose-600 hover:bg-rose-700 dark:text-white"
+            >
+              {loading ? 'Deleting...' : 'Delete'}
+            </Button>
+          </ModalClose>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

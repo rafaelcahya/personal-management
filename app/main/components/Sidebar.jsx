@@ -32,7 +32,7 @@ import {
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import packageJson from '@/package.json'
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
 
 const INVENTORY_ITEMS = [
   {
@@ -128,12 +128,10 @@ function NavItem({ item, collapsed, onClick }) {
   if (!collapsed) return link
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <Tooltip>
-        <TooltipTrigger asChild>{link}</TooltipTrigger>
-        <TooltipContent side="right">{item.tooltip ?? item.name}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>{link}</TooltipTrigger>
+      <TooltipContent side="right">{item.tooltip ?? item.name}</TooltipContent>
+    </Tooltip>
   )
 }
 
@@ -162,12 +160,10 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
       </Button>
     )
     return (
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-          <TooltipContent side="right">{label}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+        <TooltipContent side="right">{label}</TooltipContent>
+      </Tooltip>
     )
   }
 

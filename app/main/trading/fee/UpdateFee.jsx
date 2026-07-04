@@ -5,13 +5,14 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@/components/base/Button/Button'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
@@ -73,17 +74,21 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
   if (!fee) return null
 
   return (
-    <Dialog open={!!fee} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>✏️ Update Fee</DialogTitle>
-          <DialogDescription className="text-slate-600">
+    <Modal open={!!fee} onOpenChange={onClose}>
+      <ModalContent
+        className="sm:max-w-md flex flex-col max-h-[90vh]"
+        variant="bordered"
+        borderColor="border-slate-200"
+      >
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>✏️ Update Fee</ModalTitle>
+          <ModalDescription className="text-slate-600">
             Adjust your fee details to keep your records accurate and reliable
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-          <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+          <ModalBody className="space-y-4 pr-2">
             {/* Fee Date & Fee Name Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Fee Date */}
@@ -148,9 +153,9 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                 </FieldContent>
               )}
             />
-          </div>
+          </ModalBody>
 
-          <DialogFooter className="shrink-0 pt-4">
+          <ModalFooter className="shrink-0 pt-4">
             <div className="flex flex-col gap-2 w-full">
               <div className="flex gap-2">
                 <div className="flex-1">
@@ -173,9 +178,9 @@ export default function UpdateFee({ fee, onClose, onUpdated }) {
                 {loading ? 'Updating...' : 'Update Fee'}
               </Button>
             </div>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

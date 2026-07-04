@@ -5,13 +5,14 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@/components/base/Button/Button'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
@@ -174,14 +175,18 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
   if (!trade) return null
 
   return (
-    <Dialog open={!!trade} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl flex flex-col max-h-[90vh]">
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>✏️ Update Trade</DialogTitle>
-          <DialogDescription className="text-slate-600">
+    <Modal open={!!trade} onOpenChange={onClose}>
+      <ModalContent
+        className="sm:max-w-xl flex flex-col max-h-[90vh]"
+        variant="bordered"
+        borderColor="border-slate-200"
+      >
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>✏️ Update Trade</ModalTitle>
+          <ModalDescription className="text-slate-600">
             Adjust your trade details to keep your journal accurate and insightful
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
         {optionsLoading ? (
           <div className="flex flex-col items-center justify-center py-12 gap-3">
@@ -190,7 +195,7 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
           </div>
         ) : (
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+            <ModalBody className="space-y-4 pr-2">
               {/* Trade Date */}
               <Controller
                 control={control}
@@ -303,9 +308,9 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
                   </FieldContent>
                 )}
               />
-            </div>
+            </ModalBody>
 
-            <DialogFooter className="shrink-0 pt-4">
+            <ModalFooter className="shrink-0 pt-4">
               <div className="flex flex-col gap-2 w-full">
                 <div className="flex gap-2">
                   <div className="flex-1">
@@ -333,10 +338,10 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
                   {loading ? 'Updating...' : 'Update Trade'}
                 </Button>
               </div>
-            </DialogFooter>
+            </ModalFooter>
           </form>
         )}
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

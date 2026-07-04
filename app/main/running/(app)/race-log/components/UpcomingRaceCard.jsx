@@ -20,13 +20,14 @@ import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import { toast } from 'sonner'
 import { updateUpcomingRace, deleteUpcomingRace, createRaceLog } from '@/lib/api/running'
 import { getDistanceLabel, hmsToSecs, secsToHMS, secsToHMSInput, formatDate } from './raceLogUtils'
@@ -339,7 +340,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
           <div className="flex items-center gap-2 flex-wrap">
             <Button
               id="linkActivityBtn_raceLogPage"
-              variant="secondary"
+              variant="ghost"
               size="base"
               onClick={() => setPickerOpen(true)}
               disabled={linking || unlinking}
@@ -395,7 +396,7 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
               ))}
             <Button
               id="addToCalendarBtn_raceLogPage"
-              variant="secondary"
+              variant="ghost"
               size="base"
               onClick={handleAddToCalendar}
               className="flex items-center gap-1.5 text-xs md:min-h-9"
@@ -462,21 +463,23 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
         race={race}
       />
 
-      <Dialog open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Delete upcoming race?</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-slate-600">
-            This will remove <span className="font-medium">{race.title}</span> from your upcoming
-            races. This action cannot be undone.
-          </p>
-          <DialogFooter className="gap-2">
-            <DialogClose asChild>
+      <Modal open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
+        <ModalContent variant="bordered" borderColor="border-slate-200" className="max-w-sm">
+          <ModalHeader>
+            <ModalTitle>Delete upcoming race?</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p className="text-sm text-slate-600">
+              This will remove <span className="font-medium">{race.title}</span> from your upcoming
+              races. This action cannot be undone.
+            </p>
+          </ModalBody>
+          <ModalFooter className="gap-2">
+            <ModalClose asChild>
               <Button variant="outline" type="button" disabled={deleting}>
                 Cancel
               </Button>
-            </DialogClose>
+            </ModalClose>
             <Button
               id="deleteUpcomingRaceConfirmBtn_raceLogPage"
               variant="destructive"
@@ -485,9 +488,9 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
             >
               {deleting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Delete'}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }

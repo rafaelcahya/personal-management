@@ -13,6 +13,13 @@ import {
 } from 'recharts'
 import { format } from 'date-fns'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/base/Select/Select'
 
 function CustomTooltip({ active, payload }) {
   if (!active || !payload?.length) return null
@@ -54,19 +61,23 @@ function CustomTooltip({ active, payload }) {
 
 function ProductSelector({ items, selectedId, onChange }) {
   return (
-    <select
-      value={selectedId ?? ''}
-      onChange={(e) => onChange(Number(e.target.value))}
-      className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-600 focus:outline-none focus:ring-1 focus:ring-violet-300 bg-white w-full"
+    <Select
+      value={selectedId != null ? String(selectedId) : ''}
+      onValueChange={(val) => onChange(Number(val))}
     >
-      {items.map((item) => (
-        <option key={item.product_list_id} value={item.product_list_id}>
-          {item.brand ? `${item.brand} · ` : ''}
-          {item.product}
-          {item.type ? ` (${item.type})` : ''}
-        </option>
-      ))}
-    </select>
+      <SelectTrigger className="text-xs h-8 w-full">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent className="max-h-48 overflow-y-auto">
+        {items.map((item) => (
+          <SelectItem key={item.product_list_id} value={String(item.product_list_id)}>
+            {item.brand ? `${item.brand} · ` : ''}
+            {item.product}
+            {item.type ? ` (${item.type})` : ''}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
 

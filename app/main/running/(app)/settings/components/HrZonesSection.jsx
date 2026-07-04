@@ -18,9 +18,8 @@ import {
 import {
   Tooltip as UITooltip,
   TooltipContent as UITooltipContent,
-  TooltipProvider as UITooltipProvider,
   TooltipTrigger as UITooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/components/base/Tooltip/Tooltip.jsx'
 import { getHrZones, updateHrZones, detectMaxHr } from '@/lib/api/running'
 
 const METHOD_OPTIONS = [
@@ -261,31 +260,29 @@ export default function HrZonesSection() {
             <FieldContent>
               <div className="flex items-center gap-1.5">
                 <FieldLabel htmlFor="thresholdHrInput_settingsPage">Threshold HR (bpm)</FieldLabel>
-                <UITooltipProvider delayDuration={0}>
-                  <UITooltip>
-                    <UITooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon-xs"
-                        aria-label="What is Threshold HR?"
-                        className="text-slate-300 hover:text-slate-500"
-                      >
-                        <Info className="size-3.5" aria-hidden="true" />
-                      </Button>
-                    </UITooltipTrigger>
-                    <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
-                      <p className="font-semibold mb-1">Threshold HR (LTHR)</p>
-                      <p>
-                        Your heart rate at lactate threshold — the hardest effort you can sustain
-                        for ~60 minutes. Used by the Lactate Threshold zone method.
-                      </p>
-                      <p className="mt-1">
-                        A common estimate is <span className="font-medium">85% of Max HR</span>, but
-                        a 30-min all-out time trial gives more accurate results.
-                      </p>
-                    </UITooltipContent>
-                  </UITooltip>
-                </UITooltipProvider>
+                <UITooltip>
+                  <UITooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      aria-label="What is Threshold HR?"
+                      className="text-slate-300 hover:text-slate-500"
+                    >
+                      <Info className="size-3.5" aria-hidden="true" />
+                    </Button>
+                  </UITooltipTrigger>
+                  <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+                    <p className="font-semibold mb-1">Threshold HR (LTHR)</p>
+                    <p>
+                      Your heart rate at lactate threshold — the hardest effort you can sustain for
+                      ~60 minutes. Used by the Lactate Threshold zone method.
+                    </p>
+                    <p className="mt-1">
+                      A common estimate is <span className="font-medium">85% of Max HR</span>, but a
+                      30-min all-out time trial gives more accurate results.
+                    </p>
+                  </UITooltipContent>
+                </UITooltip>
               </div>
               <div className="flex gap-2">
                 <Input

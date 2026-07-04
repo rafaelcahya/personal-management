@@ -25,7 +25,7 @@ import {
   BarChart2,
   Mountain,
 } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/base/Tooltip/Tooltip.jsx'
 import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import {
@@ -537,7 +537,7 @@ export default function ActivityDetailPage() {
                                       Speed per heartbeat — a measure of running economy. Higher =
                                       more efficient at the same effort.
                                     </p>
-                                    <p className="mt-1.5 text-slate-300">
+                                    <p className="mt-1.5 text-slate-400">
                                       Typical:{' '}
                                       <span className="text-amber-400 font-medium">
                                         0.012–0.016
@@ -590,7 +590,7 @@ export default function ActivityDetailPage() {
                                   Elevation gain per kilometer — how hilly this run was. Formula:
                                   elevation gain ÷ distance (km).
                                 </p>
-                                <p className="mt-1.5 text-slate-300">
+                                <p className="mt-1.5 text-slate-400">
                                   <span className="text-slate-400 font-medium">&lt; 5</span> Flat ·{' '}
                                   <span className="text-blue-400 font-medium">5–15</span> Rolling ·{' '}
                                   <span className="text-green-400 font-medium">15–30</span> Hilly ·{' '}
@@ -715,47 +715,42 @@ export default function ActivityDetailPage() {
                                     }
                                   : { color: 'text-red-700', bg: 'bg-red-50', label: 'High drift' }
                             return (
-                              <TooltipProvider delayDuration={200}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div
-                                      id="aeroDrift_activityDetailPage"
-                                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium cursor-help ${bg} ${color}`}
-                                    >
-                                      <Heart className="size-4 shrink-0" aria-hidden="true" />
-                                      <span>
-                                        Decouple {val > 0 ? '+' : ''}
-                                        {val}%
-                                      </span>
-                                      <span
-                                        className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${bg}`}
-                                      >
-                                        {label}
-                                      </span>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent
-                                    side="top"
-                                    className="max-w-64 text-xs leading-relaxed"
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div
+                                    id="aeroDrift_activityDetailPage"
+                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium cursor-help ${bg} ${color}`}
                                   >
-                                    <p className="font-semibold mb-1">
-                                      What is Aerobic Decoupling?
-                                    </p>
-                                    <p>
-                                      How much your pace-to-HR ratio drifts in the second half vs.
-                                      first half — a sign of aerobic fatigue or insufficient base.
-                                    </p>
-                                    <p className="mt-1.5 text-slate-300">
-                                      <span className="text-green-400 font-medium">&lt; 5%</span>{' '}
-                                      Good ·{' '}
-                                      <span className="text-amber-400 font-medium">5–10%</span>{' '}
-                                      Moderate ·{' '}
-                                      <span className="text-red-400 font-medium">&gt; 10%</span>{' '}
-                                      High drift
-                                    </p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                                    <Heart className="size-4 shrink-0" aria-hidden="true" />
+                                    <span>
+                                      Decouple {val > 0 ? '+' : ''}
+                                      {val}%
+                                    </span>
+                                    <span
+                                      className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${bg}`}
+                                    >
+                                      {label}
+                                    </span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent
+                                  side="top"
+                                  className="max-w-64 text-xs leading-relaxed"
+                                >
+                                  <p className="font-semibold mb-1">What is Aerobic Decoupling?</p>
+                                  <p>
+                                    How much your pace-to-HR ratio drifts in the second half vs.
+                                    first half — a sign of aerobic fatigue or insufficient base.
+                                  </p>
+                                  <p className="mt-1.5 text-slate-400">
+                                    <span className="text-green-400 font-medium">&lt; 5%</span> Good
+                                    · <span className="text-amber-400 font-medium">5–10%</span>{' '}
+                                    Moderate ·{' '}
+                                    <span className="text-red-400 font-medium">&gt; 10%</span> High
+                                    drift
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
                             )
                           })()}
                       </div>
@@ -894,7 +889,7 @@ export default function ActivityDetailPage() {
                           <span className="text-sm text-slate-400 italic flex-1">Add notes…</span>
                         )}
                         <Pencil
-                          className="size-3.5 text-slate-300 group-hover:text-slate-400 shrink-0 mt-0.5 transition-colors"
+                          className="size-3.5 text-slate-400 group-hover:text-slate-400 shrink-0 mt-0.5 transition-colors"
                           aria-hidden="true"
                         />
                       </Button>

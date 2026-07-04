@@ -10,15 +10,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 
 function formatIDR(amount) {
   return new Intl.NumberFormat('id-ID', {
@@ -154,31 +153,37 @@ export default function TransactionTable({ transactions, onDelete, currency }) {
         </table>
       </div>
 
-      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete transaction?</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Modal open={dialogOpen} onOpenChange={setDialogOpen}>
+        <ModalContent showCloseButton={false} variant="bordered" borderColor="border-slate-200">
+          <ModalHeader>
+            <ModalTitle>Delete transaction?</ModalTitle>
+            <ModalDescription>
               This will hide the transaction. Data is kept for audit purposes.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteTarget(null)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white"
-              onClick={() => {
-                if (deleteTarget) {
-                  onDelete?.(deleteTarget.id)
-                  setDeleteTarget(null)
-                  setDialogOpen(false)
-                }
-              }}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </ModalDescription>
+          </ModalHeader>
+          <ModalFooter>
+            <ModalClose asChild>
+              <Button variant="ghost" onClick={() => setDeleteTarget(null)}>
+                Cancel
+              </Button>
+            </ModalClose>
+            <ModalClose asChild>
+              <Button
+                className="bg-red-600 hover:bg-red-700 text-white"
+                onClick={() => {
+                  if (deleteTarget) {
+                    onDelete?.(deleteTarget.id)
+                    setDeleteTarget(null)
+                    setDialogOpen(false)
+                  }
+                }}
+              >
+                Delete
+              </Button>
+            </ModalClose>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }

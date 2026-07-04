@@ -5,13 +5,14 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'
@@ -99,105 +100,114 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent id="editGoalModal_activityDetailPage" className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit race goal</DialogTitle>
-        </DialogHeader>
+    <Modal open={open} onOpenChange={(v) => !v && onClose()}>
+      <ModalContent
+        variant="bordered"
+        borderColor="border-slate-200"
+        id="editGoalModal_activityDetailPage"
+        className="max-w-md flex flex-col max-h-[90vh]"
+      >
+        <ModalHeader>
+          <ModalTitle>Edit race goal</ModalTitle>
+        </ModalHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 py-1">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="goalTitle">Race title</Label>
-            <Input id="goalTitle" placeholder="e.g. Bali Marathon 2026" {...register('title')} />
-          </div>
+        <ModalBody className="flex-1 overflow-y-auto">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 py-1">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="goalTitle">Race title</Label>
+              <Input id="goalTitle" placeholder="e.g. Bali Marathon 2026" {...register('title')} />
+            </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label>Target distance</Label>
-            <Controller
-              name="target_distance_m"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  value={
-                    distanceMode === 'custom'
-                      ? 'custom'
-                      : field.value != null
-                        ? String(field.value)
-                        : ''
-                  }
-                  onValueChange={(v) => {
-                    if (v === 'custom') {
-                      setDistanceMode('custom')
-                      field.onChange(null)
-                    } else {
-                      setDistanceMode('preset')
-                      field.onChange(Number(v))
-                    }
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select distance…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DISTANCE_PRESETS.map((p) => (
-                      <SelectItem key={String(p.value)} value={String(p.value)}>
-                        {p.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {distanceMode === 'custom' && (
+            <div className="flex flex-col gap-1.5">
+              <Label>Target distance</Label>
               <Controller
                 name="target_distance_m"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    type="number"
-                    placeholder="Distance in meters"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
+                  <Select
+                    value={
+                      distanceMode === 'custom'
+                        ? 'custom'
+                        : field.value != null
+                          ? String(field.value)
+                          : ''
+                    }
+                    onValueChange={(v) => {
+                      if (v === 'custom') {
+                        setDistanceMode('custom')
+                        field.onChange(null)
+                      } else {
+                        setDistanceMode('preset')
+                        field.onChange(Number(v))
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select distance…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DISTANCE_PRESETS.map((p) => (
+                        <SelectItem key={String(p.value)} value={String(p.value)}>
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 )}
               />
-            )}
-            {errors.target_distance_m && (
+              {distanceMode === 'custom' && (
+                <Controller
+                  name="target_distance_m"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      type="number"
+                      placeholder="Distance in meters"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? Number(e.target.value) : null)
+                      }
+                    />
+                  )}
+                />
+              )}
+              {errors.target_distance_m && (
+                <p className="text-xs text-red-600" role="alert">
+                  {errors.target_distance_m.message}
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="goalDate">Target date</Label>
+              <Input id="goalDate" type="date" {...register('target_date')} />
+              {errors.target_date && (
+                <p className="text-xs text-red-600" role="alert">
+                  {errors.target_date.message}
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="goalDescription">Notes / description</Label>
+              <Textarea
+                id="goalDescription"
+                placeholder="Training goals, race context…"
+                rows={3}
+                {...register('description')}
+              />
+            </div>
+
+            {serverError && (
               <p className="text-xs text-red-600" role="alert">
-                {errors.target_distance_m.message}
+                {serverError}
               </p>
             )}
-          </div>
+          </form>
+        </ModalBody>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="goalDate">Target date</Label>
-            <Input id="goalDate" type="date" {...register('target_date')} />
-            {errors.target_date && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.target_date.message}
-              </p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="goalDescription">Notes / description</Label>
-            <Textarea
-              id="goalDescription"
-              placeholder="Training goals, race context…"
-              rows={3}
-              {...register('description')}
-            />
-          </div>
-
-          {serverError && (
-            <p className="text-xs text-red-600" role="alert">
-              {serverError}
-            </p>
-          )}
-        </form>
-
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
+        <ModalFooter className="gap-2">
+          <ModalClose asChild>
             <Button
               className="text-violet-600 font-medium"
               type="button"
@@ -206,7 +216,7 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
             >
               Cancel
             </Button>
-          </DialogClose>
+          </ModalClose>
           <Button
             id="editGoalSaveBtn_activityDetailPage"
             onClick={handleSubmit(onSubmit)}
@@ -215,8 +225,8 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
           >
             {saving ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Save'}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

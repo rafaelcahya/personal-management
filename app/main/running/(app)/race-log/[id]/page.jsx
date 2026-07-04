@@ -5,15 +5,14 @@ import { useParams, useRouter } from 'next/navigation'
 import { ChevronLeft, Trash2, Loader2, AlertTriangle } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import { toast } from 'sonner'
 import {
   fetchRaceLogEntry,
@@ -267,32 +266,41 @@ export default function RaceDetailPage() {
         onSaved={(updated) => setEntry(updated)}
       />
 
-      <AlertDialog open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this race entry?</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Modal open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
+        <ModalContent showCloseButton={false} variant="bordered" borderColor="border-slate-200">
+          <ModalHeader>
+            <ModalTitle>Delete this race entry?</ModalTitle>
+            <ModalDescription>
               <strong>{entry?.title}</strong> will be permanently deleted. This cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              disabled={deleting}
-              className="text-violet-600 hover:text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium border-none"
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              id="deleteRaceConfirmBtn_raceDetailPage"
-              onClick={handleDelete}
-              disabled={deleting}
-              className="bg-red-600 hover:bg-red-700 focus-visible:ring-red-500"
-            >
-              {deleting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Delete'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </ModalDescription>
+          </ModalHeader>
+          <ModalFooter>
+            <ModalClose asChild>
+              <Button
+                disabled={deleting}
+                variant="ghost"
+                className="text-violet-600 hover:text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium border-none"
+              >
+                Cancel
+              </Button>
+            </ModalClose>
+            <ModalClose asChild>
+              <Button
+                id="deleteRaceConfirmBtn_raceDetailPage"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="bg-red-600 hover:bg-red-700 focus-visible:ring-red-500"
+              >
+                {deleting ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  'Delete'
+                )}
+              </Button>
+            </ModalClose>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   )
 }

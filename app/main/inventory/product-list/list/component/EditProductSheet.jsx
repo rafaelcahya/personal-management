@@ -7,14 +7,15 @@ import { Loader2 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
@@ -100,27 +101,29 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent
+    <Modal open={open} onOpenChange={handleOpenChange}>
+      <ModalContent
         id="editProductDialog_productListPage"
         className="sm:max-w-md flex flex-col max-h-[90vh]"
+        variant="bordered"
+        borderColor="border-slate-200"
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>✏️ Edit Product</DialogTitle>
-          <DialogDescription>
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>✏️ Edit Product</ModalTitle>
+          <ModalDescription>
             Update details for{' '}
             <span className="font-medium text-slate-700">
               {product?.brand} {product?.type} {product?.product}
             </span>
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
         <form
           id="editProductForm_productListPage"
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col flex-1 min-h-0"
         >
-          <div className="flex-1 overflow-y-auto space-y-5">
+          <ModalBody className="space-y-5">
             {/* Brand */}
             <Controller
               control={control}
@@ -253,10 +256,10 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
                 <p className="text-sm text-red-800">{serverError}</p>
               </div>
             )}
-          </div>
+          </ModalBody>
 
-          <DialogFooter className="shrink-0 pt-4">
-            <DialogClose asChild>
+          <ModalFooter className="shrink-0 pt-4">
+            <ModalClose asChild>
               <Button
                 id="cancelBtn_editProductDialog"
                 type="button"
@@ -266,14 +269,14 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
               >
                 Cancel
               </Button>
-            </DialogClose>
+            </ModalClose>
             <Button id="saveBtn_editProductDialog" type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? 'Saving...' : 'Save Changes'}
             </Button>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

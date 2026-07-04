@@ -7,13 +7,14 @@ import { format } from 'date-fns'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
@@ -117,15 +118,19 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
   if (!event) return null
 
   return (
-    <Dialog open={!!event} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl flex flex-col max-h-[90vh]">
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>Update Event</DialogTitle>
-          <DialogDescription className="text-slate-600">Modify event details</DialogDescription>
-        </DialogHeader>
+    <Modal open={!!event} onOpenChange={onClose}>
+      <ModalContent
+        variant="bordered"
+        borderColor="border-slate-200"
+        className="sm:max-w-3xl flex flex-col max-h-[90vh]"
+      >
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>Update Event</ModalTitle>
+          <ModalDescription className="text-slate-600">Modify event details</ModalDescription>
+        </ModalHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-          <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+          <ModalBody className="flex-1 overflow-y-auto space-y-4">
             {/* Title */}
             <Controller
               control={control}
@@ -324,9 +329,9 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                 />
               )}
             />
-          </div>
+          </ModalBody>
 
-          <DialogFooter className="shrink-0 pt-4 flex-col sm:flex-row gap-2">
+          <ModalFooter className="shrink-0 pt-4 flex-col sm:flex-row gap-2">
             <div className="flex gap-2 flex-1 justify-end">
               <Button
                 type="button"
@@ -343,9 +348,9 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
                 {loading ? 'Updating...' : 'Update Event'}
               </Button>
             </div>
-          </DialogFooter>
+          </ModalFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

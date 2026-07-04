@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+} from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import {
   SelectCard,
@@ -143,61 +149,67 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="w-[90vw] !max-w-3xl max-h-[85vh] flex flex-col overflow-hidden">
-        <DialogHeader className="shrink-0">
-          <DialogTitle className="flex items-center gap-2 text-base">
+    <Modal open={open} onOpenChange={handleClose}>
+      <ModalContent
+        variant="bordered"
+        borderColor="border-slate-200"
+        className="w-[90vw] !max-w-3xl max-h-[85vh] flex flex-col overflow-hidden"
+      >
+        <ModalHeader className="shrink-0">
+          <ModalTitle className="flex items-center gap-2 text-base">
             <History className="size-4 text-violet-500" />
             {selected ? 'Analysis Detail' : 'AI Analysis History'}
-          </DialogTitle>
-        </DialogHeader>
+          </ModalTitle>
+        </ModalHeader>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto pr-1">
-          {loading && (
-            <div className="flex flex-col gap-2">
-              {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-20 w-full rounded-lg" />
-              ))}
-            </div>
-          )}
+        <ModalBody>
+          <div ref={scrollRef} className="flex-1 overflow-y-auto pr-1">
+            {loading && (
+              <div className="flex flex-col gap-2">
+                {[...Array(3)].map((_, i) => (
+                  <Skeleton key={i} className="h-20 w-full rounded-lg" />
+                ))}
+              </div>
+            )}
 
-          {!loading && error && <p className="text-sm text-red-600 text-center py-8">{error}</p>}
+            {!loading && error && <p className="text-sm text-red-600 text-center py-8">{error}</p>}
 
-          {!loading && !error && history.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 gap-2 text-slate-400">
-              <Sparkles className="size-8" />
-              <p className="text-sm font-medium">No analyses yet</p>
-              <p className="text-xs">Run an AI analysis on any event to see it here.</p>
-            </div>
-          )}
+            {!loading && !error && history.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 gap-2 text-slate-400">
+                <Sparkles className="size-8" />
+                <p className="text-sm font-medium">No analyses yet</p>
+                <p className="text-xs">Run an AI analysis on any event to see it here.</p>
+              </div>
+            )}
 
-          {!loading && !error && !selected && history.length > 0 && (
-            <HistoryList history={history} onSelect={setSelected} />
-          )}
+            {!loading && !error && !selected && history.length > 0 && (
+              <HistoryList history={history} onSelect={setSelected} />
+            )}
 
-          {!loading && !error && selected && (
-            <HistoryDetail item={selected} onBack={() => setSelected(null)} />
-          )}
-        </div>
-
-        <div className="shrink-0 flex items-center justify-between pt-3 border-t border-slate-100">
-          <div>
-            {selected && (
-              <Button
-                variant="ghost"
-                size="base"
-                onClick={() => setSelected(null)}
-                className="gap-1 text-xs text-slate-500"
-              >
-                <ChevronLeft className="size-3.5" /> Back
-              </Button>
+            {!loading && !error && selected && (
+              <HistoryDetail item={selected} onBack={() => setSelected(null)} />
             )}
           </div>
-          <Button variant="outline" size="base" onClick={handleClose}>
-            Close
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+
+          <div className="shrink-0 flex items-center justify-between pt-3 border-t border-slate-100">
+            <div>
+              {selected && (
+                <Button
+                  variant="ghost"
+                  size="base"
+                  onClick={() => setSelected(null)}
+                  className="gap-1 text-xs text-slate-500"
+                >
+                  <ChevronLeft className="size-3.5" /> Back
+                </Button>
+              )}
+            </div>
+            <Button variant="outline" size="base" onClick={handleClose}>
+              Close
+            </Button>
+          </div>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Modal, ModalContent, ModalBody } from '@/components/base/Modal/Modal.jsx'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -467,22 +467,29 @@ export default function ProductsTable({
         onUpdated={onRefresh}
       />
 
-      <Dialog
+      <Modal
         open={!!previewImg}
         onOpenChange={(open) => {
           if (!open) setPreviewImg(null)
         }}
       >
-        <DialogContent id="imagePreviewDialog_productListPage" className="max-w-lg p-2">
-          {previewImg && (
-            <img
-              src={previewImg}
-              alt="Product preview"
-              className="w-full rounded object-contain max-h-[80vh]"
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+        <ModalContent
+          variant="bordered"
+          borderColor="border-slate-200"
+          id="imagePreviewDialog_productListPage"
+          className="max-w-lg p-2"
+        >
+          <ModalBody>
+            {previewImg && (
+              <img
+                src={previewImg}
+                alt="Product preview"
+                className="w-full rounded object-contain max-h-[80vh]"
+              />
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   )
 }
