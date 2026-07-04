@@ -1,10 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Footprints, Pencil, Check, X, AlertTriangle, Loader2 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'

@@ -27,7 +27,8 @@ function AccordionItem({ className, ...props }) {
   return (
     <AccordionItemUI
       className={cn(
-        variant === 'card' && 'border-b-0 rounded-xl border shadow-sm overflow-hidden bg-card',
+        variant === 'card' &&
+          'border-b-0 rounded-xl border shadow-sm overflow-hidden bg-card w-full',
         className
       )}
       {...props}
@@ -37,13 +38,21 @@ function AccordionItem({ className, ...props }) {
 
 function AccordionTrigger({ className, ...props }) {
   const variant = useContext(AccordionVariantContext)
-  return <AccordionTriggerUI className={cn(variant === 'card' && 'px-6', className)} {...props} />
+  return (
+    <AccordionTriggerUI
+      className={cn('px-4', variant === 'card' && 'px-6', className)}
+      {...props}
+    />
+  )
 }
 
 function AccordionContent({ className, ...props }) {
   const variant = useContext(AccordionVariantContext)
   return (
-    <AccordionContentUI className={cn(variant === 'card' && 'px-6 pb-6', className)} {...props} />
+    <AccordionContentUI
+      className={cn('px-4', variant === 'card' && 'px-6 pb-6', className)}
+      {...props}
+    />
   )
 }
 

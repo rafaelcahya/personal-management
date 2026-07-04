@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Pencil, Timer } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
@@ -144,24 +145,25 @@ export default function PaceZonesSection() {
       ) : (
         <div className="px-5 py-5 flex flex-col gap-4">
           {/* Mode tabs */}
-          <div
+          <Tabs
             id="paceZonesModeToggle_settingsPage"
-            className="flex rounded-lg overflow-hidden border border-slate-200 text-[11px] font-semibold w-fit"
+            value={mode}
+            onValueChange={setMode}
+            className="shrink-0 self-start"
           >
-            {INPUT_MODES.map(({ id, label, icon: Icon }) => (
-              <Button
-                key={id}
-                variant="ghost"
-                size="xs"
-                id={`paceZonesMode_${id}_settingsPage`}
-                onClick={() => setMode(id)}
-                className={`rounded-none first:rounded-l-md last:rounded-r-md ${mode === id ? 'bg-violet-600 text-white hover:bg-violet-700' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
-              >
-                <Icon className="size-3" aria-hidden="true" />
-                {label}
-              </Button>
-            ))}
-          </div>
+            <TabsList variant="pill" size="sm">
+              {INPUT_MODES.map(({ id, label, icon: Icon }) => (
+                <TabsTrigger
+                  key={id}
+                  id={`paceZonesMode_${id}_settingsPage`}
+                  value={id}
+                  icon={Icon}
+                >
+                  {label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
 
           {/* Manual mode */}
           {mode === 'manual' && (

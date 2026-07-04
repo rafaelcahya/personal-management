@@ -1,8 +1,8 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { Heart, Gauge, Activity, Package, BarChart2 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { fetchZoneAnalytics, fetchGearAnalytics, fetchActivityTypes } from '@/lib/api/running'
 import ZoneFilterBar from './ZoneFilterBar'
 import HrZoneBreakdown from './HrZoneBreakdown'

@@ -2,11 +2,11 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { Timer, AlertTriangle } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/base/Tabs/Tabs.jsx'
 import { RadioGroup, RadioGroupItem } from '@/components/base/RadioGroup/RadioGroup'
 import {
   formatPaceSec,
@@ -260,13 +260,17 @@ export default function RunCalculatorPage() {
       {/* Calculator */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full">
-          <TabsTrigger id="tabPace_runCalculator" value="pace" className="flex-1">
+          <TabsTrigger id="tabPace_runCalculator" value="pace" className="flex-1 justify-center">
             Pace Mode
           </TabsTrigger>
-          <TabsTrigger id="tabProjection_runCalculator" value="projection" className="flex-1">
+          <TabsTrigger
+            id="tabProjection_runCalculator"
+            value="projection"
+            className="flex-1 justify-center"
+          >
             Projection Mode
           </TabsTrigger>
-          <TabsTrigger id="tabSteps_runCalculator" value="steps" className="flex-1">
+          <TabsTrigger id="tabSteps_runCalculator" value="steps" className="flex-1 justify-center">
             Steps → Distance
           </TabsTrigger>
         </TabsList>

@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import { getProductLogByProductListId } from '@/lib/api/productHistory'
 import ProductSummary from './ProductSummary'
 import ProductUsageLog from './ProductUsageLog'
@@ -69,8 +69,8 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
             {/* Product Summary */}
             <ProductSummary product={product} />
 
-            <Tabs defaultValue="recordNewUsage" className="w-full sm:w-2/3 space-y-5">
-              <TabsList className="bg-violet-50/75 w-full h-full grid grid-cols-2">
+            <Tabs defaultValue="recordNewUsage" className="w-full sm:w-2/3 gap-5">
+              <TabsList className="bg-violet-50/75 inline-flex" variant="pill">
                 <TabsTrigger value="recordNewUsage" id="recordNewUsageTab" className="text-sm py-2">
                   Record Usage
                 </TabsTrigger>

@@ -1,9 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import Button from '@/components/base/Button/Button'
 import { Activity, Timer, Footprints, Zap, CalendarRange } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { format, startOfWeek, subWeeks, addDays } from 'date-fns'
 import { fmtDistance, fmtDuration, fmtPace } from '../utils/format'
 import { fetchWeeklyStatsForWeek } from '@/lib/api/running'

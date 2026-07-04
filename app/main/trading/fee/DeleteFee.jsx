@@ -17,7 +17,7 @@ import { Trash2, Loader2 } from 'lucide-react'
 import { deleteFee } from '@/lib/api/fee'
 import { toast } from 'sonner'
 
-export default function DeleteFee({ fee, onDeleted, onClose }) {
+export default function DeleteFee({ fee, onDeleted, onClose, className }) {
   const [loading, setLoading] = useState(false)
 
   const handleDelete = async () => {
@@ -41,7 +41,7 @@ export default function DeleteFee({ fee, onDeleted, onClose }) {
         <Button
           variant="ghost"
           size="base"
-          className="justify-start text-red-600 hover:text-red-600 hover:bg-red-50 font-medium"
+          className={`justify-start text-red-600 hover:text-red-600 hover:bg-red-50 font-medium${className ? ` ${className}` : ''}`}
         >
           <Trash2 className="h-4 w-4 mr-2" />
           Delete Fee

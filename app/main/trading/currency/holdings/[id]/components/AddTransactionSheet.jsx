@@ -6,7 +6,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format, parseISO } from 'date-fns'
-import { Loader2, Check, ChevronsUpDown, Search, CalendarIcon, ArrowLeftRight } from 'lucide-react'
+import { Loader2, Check, ChevronsUpDown, Search, ArrowLeftRight } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -18,13 +18,14 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import Button from '@/components/base/Button/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
 import FieldDescription from '@/components/base/Field/FieldDescription'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
-import { Calendar } from '@/components/ui/calendar'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { cn } from '@/lib/utils'
 import {
   createCurrencyInvestment,
@@ -67,10 +68,6 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
   const triggerRef = useRef(null)
   const dialogRef = useRef(null)
   const dropdownRef = useRef(null)
-  const dateTriggerRef = useRef(null)
-  const calendarRef = useRef(null)
-  const [calendarOpen, setCalendarOpen] = useState(false)
-  const [calendarPos, setCalendarPos] = useState({ top: 0, left: 0 })
 
   useEffect(() => {
     if (!currencyDropdownOpen) return
@@ -96,29 +93,6 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
     }
     setCurrencyDropdownOpen(true)
     setCurrencySearch('')
-  }
-
-  useEffect(() => {
-    if (!calendarOpen) return
-    function handleOutside(e) {
-      if (!dateTriggerRef.current?.contains(e.target) && !calendarRef.current?.contains(e.target)) {
-        setCalendarOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleOutside)
-    return () => document.removeEventListener('mousedown', handleOutside)
-  }, [calendarOpen])
-
-  function openCalendar() {
-    const triggerRect = dateTriggerRef.current?.getBoundingClientRect()
-    const dialogRect = dialogRef.current?.getBoundingClientRect()
-    if (triggerRect && dialogRect) {
-      setCalendarPos({
-        top: triggerRect.bottom - dialogRect.top + 4,
-        left: triggerRect.left - dialogRect.left,
-      })
-    }
-    setCalendarOpen(true)
   }
 
   function selectCurrency(code, onChange) {
@@ -302,7 +276,9 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                 </Button>
 
                 <FieldDescription className="flex flex-col gap-0.5">
-                  <span>The foreign currency you are buying or selling 💱</span>
+                  <span className="text-slate-400">
+                    The foreign currency you are buying or selling 💱
+                  </span>
                   {watchedCurrency && currentRate !== null && (
                     <span className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-violet-600 font-semibold font-mono">
@@ -476,29 +452,20 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
             render={({ field, fieldState }) => (
               <FieldContent error={fieldState.error?.message}>
                 <FieldLabel className="text-sm font-medium">Type</FieldLabel>
-                <div
+                <Tabs
                   id="typeToggle_addTransactionModal"
-                  role="group"
-                  aria-label="Transaction type"
-                  className="flex rounded-lg border border-slate-200 overflow-hidden"
+                  value={field.value}
+                  onValueChange={field.onChange}
                 >
-                  {['buy', 'sell'].map((t) => (
-                    <Button
-                      key={t}
-                      variant="ghost"
-                      aria-pressed={field.value === t}
-                      onClick={() => field.onChange(t)}
-                      className={cn(
-                        'flex-1 py-2 text-sm font-medium capitalize rounded-none',
-                        field.value === t
-                          ? 'bg-violet-600 text-white hover:bg-violet-600'
-                          : 'text-slate-600 hover:bg-slate-50'
-                      )}
-                    >
-                      {t}
-                    </Button>
-                  ))}
-                </div>
+                  <TabsList variant="pill" size="sm" className="w-full">
+                    <TabsTrigger value="buy" className="flex-1 capitalize justify-center">
+                      Buy
+                    </TabsTrigger>
+                    <TabsTrigger value="sell" className="flex-1 capitalize justify-center">
+                      Sell
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
                 <FieldDescription className="text-xs text-slate-400">
                   Buy to add holdings, sell to reduce them 📊
                 </FieldDescription>
@@ -514,50 +481,17 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
             render={({ field, fieldState }) => (
               <FieldContent error={fieldState.error?.message}>
                 <FieldLabel className="text-sm font-medium">Date</FieldLabel>
-                <Button
-                  ref={dateTriggerRef}
+                <DatePicker
                   id="dateInput_addTransactionModal"
-                  type="button"
-                  variant="outline"
-                  onClick={openCalendar}
-                  aria-invalid={!!fieldState.error}
-                  className={cn(
-                    'w-full justify-start text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
-                    fieldState.error && 'border-rose-500',
-                    !field.value && 'text-slate-500'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 size-4 opacity-50" />
-                  {field.value ? format(parseISO(field.value), 'PPP') : 'Pick a date'}
-                </Button>
+                  value={field.value ? parseISO(field.value) : null}
+                  onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                  displayFormat="PPP"
+                  placeholder="Pick a date"
+                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
+                />
                 <FieldDescription className="text-xs text-slate-400">
                   When did you execute this transaction? 📅
                 </FieldDescription>
-                {calendarOpen &&
-                  dialogRef.current &&
-                  createPortal(
-                    <div
-                      ref={calendarRef}
-                      style={{
-                        position: 'absolute',
-                        top: calendarPos.top,
-                        left: calendarPos.left,
-                        zIndex: 9999,
-                      }}
-                      className="bg-white border border-slate-200 rounded-md shadow-lg p-0"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={field.value ? parseISO(field.value) : undefined}
-                        onSelect={(date) => {
-                          field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
-                          setCalendarOpen(false)
-                        }}
-                        initialFocus
-                      />
-                    </div>,
-                    dialogRef.current
-                  )}
                 <FieldError className="text-xs" />
               </FieldContent>
             )}
@@ -593,7 +527,9 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                   )}
                 />
                 <FieldDescription className="flex items-center gap-1.5 flex-wrap">
-                  <span>Total IDR you spent (buy) or received (sell) 💵</span>
+                  <span className="text-slate-400">
+                    Total IDR you spent (buy) or received (sell) 💵
+                  </span>
                   {subtotal !== null && watchedCurrency && (
                     <span className="text-violet-600 font-semibold font-mono">
                       ={' '}

@@ -4,7 +4,12 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Button from '@/components/base/Button/Button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import { Loader2, LayoutDashboard } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -63,7 +68,7 @@ function LoginContent() {
         </div>
 
         <Card className="w-full">
-          <CardHeader>
+          <CardHeader className="flex-col">
             <CardTitle>Welcome back</CardTitle>
             <CardDescription>
               Your trading journal and inventory — all in one place. Sign in to continue.

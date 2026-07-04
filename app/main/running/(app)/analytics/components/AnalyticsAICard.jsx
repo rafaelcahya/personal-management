@@ -1,12 +1,16 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { Sparkles, Loader2, Clock, History, ChevronDown, ChevronUp } from 'lucide-react'
+import { Sparkles, Loader2, Clock, History } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Accordion, AccordionItem, AccordionContent } from '@/components/ui/accordion'
-import { Accordion as AccordionPrimitive } from 'radix-ui'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/base/Accordion/Accordion.jsx'
 import { fetchAnalyticsInsight, generateAnalyticsInsight } from '@/lib/api/running'
 
 const POLL_INTERVAL_MS = 8000
@@ -281,53 +285,47 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
     >
       <Accordion type="single" collapsible>
         <AccordionItem value="item" className="border-0">
-          <AccordionPrimitive.Header className="flex flex-col w-full">
-            <AccordionPrimitive.Trigger className="flex items-center gap-2 py-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded [&[data-state=open]>.accordion-chevron]:rotate-180">
-              <span className="flex items-center justify-center w-6 h-6 rounded-md bg-violet-100 shrink-0">
-                <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-hidden="true" />
-              </span>
-              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex-1 truncate">
-                AI Recommendations
-              </span>
-              <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-medium shrink-0">
-                BETA
-              </span>
-              <ChevronDown
-                className="accordion-chevron size-4 shrink-0 text-slate-400 transition-transform duration-200"
-                aria-hidden="true"
-              />
-            </AccordionPrimitive.Trigger>
-            {((stale && isValidInsight) || historyInsights.length > 1) && (
-              <div className="flex items-center justify-between pb-1">
-                <div>
-                  {stale && isValidInsight && (
-                    <div
-                      id={`analyticsAiStalenessBadge_${sectionId}_analyticsPage`}
-                      className="inline-flex items-center gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-700 px-2 py-1 rounded-full"
-                      role="status"
-                      aria-label="Recommendations may be outdated — new activity data is available"
-                    >
-                      <Clock className="h-3 w-3" aria-hidden="true" />
-                      Outdated — newer activity data available
-                    </div>
-                  )}
-                </div>
-                {historyInsights.length > 1 && (
-                  <Button
-                    id={`analyticsAiHistoryBtn_${sectionId}_analyticsPage`}
-                    variant="ghost"
-                    size="xs"
-                    onClick={() => setHistoryOpen(true)}
-                    aria-label="View analysis history"
-                    className="flex items-center gap-1 text-xs text-slate-400 hover:text-violet-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
+          <AccordionTrigger className="px-0 py-2 gap-2 items-center hover:no-underline focus-visible:ring-violet-200 rounded">
+            <span className="flex items-center justify-center w-6 h-6 rounded-md bg-violet-100 shrink-0">
+              <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-hidden="true" />
+            </span>
+            <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex-1 truncate">
+              AI Recommendations
+            </span>
+            <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-medium shrink-0">
+              BETA
+            </span>
+          </AccordionTrigger>
+          {((stale && isValidInsight) || historyInsights.length > 1) && (
+            <div className="flex items-center justify-between pb-1">
+              <div>
+                {stale && isValidInsight && (
+                  <div
+                    id={`analyticsAiStalenessBadge_${sectionId}_analyticsPage`}
+                    className="inline-flex items-center gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-700 px-2 py-1 rounded-full"
+                    role="status"
+                    aria-label="Recommendations may be outdated — new activity data is available"
                   >
-                    <History className="h-3.5 w-3.5" aria-hidden="true" />
-                    History
-                  </Button>
+                    <Clock className="h-3 w-3" aria-hidden="true" />
+                    Outdated — newer activity data available
+                  </div>
                 )}
               </div>
-            )}
-          </AccordionPrimitive.Header>
+              {historyInsights.length > 1 && (
+                <Button
+                  id={`analyticsAiHistoryBtn_${sectionId}_analyticsPage`}
+                  variant="ghost"
+                  size="xs"
+                  onClick={() => setHistoryOpen(true)}
+                  aria-label="View analysis history"
+                  className="flex items-center gap-1 text-xs text-slate-400 hover:text-violet-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
+                >
+                  <History className="h-3.5 w-3.5" aria-hidden="true" />
+                  History
+                </Button>
+              )}
+            </div>
+          )}
 
           <AccordionContent className="pb-0">
             <div className="space-y-3 pt-1">
@@ -511,37 +509,24 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
 }
 
 function HistoryItem({ insight }) {
-  const [expanded, setExpanded] = useState(false)
-
   return (
-    <div className="border border-slate-200 rounded-lg overflow-hidden">
-      <Button
-        onClick={() => setExpanded((v) => !v)}
-        variant="ghost"
-        size="xs"
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-200"
-        aria-expanded={expanded}
-      >
-        <p className="text-xs text-slate-500">
-          {new Date(insight.created_at).toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
-        </p>
-        {expanded ? (
-          <ChevronUp className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />
-        ) : (
-          <ChevronDown className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />
-        )}
-      </Button>
-      {expanded && (
-        <div className="px-4 pb-4 pt-1 border-t border-slate-100">
+    <Accordion type="single" collapsible>
+      <AccordionItem value="history" className="border border-slate-200 rounded-lg overflow-hidden">
+        <AccordionTrigger className="px-4 py-3 items-center hover:no-underline hover:bg-slate-50 focus-visible:ring-violet-200 focus-visible:ring-inset">
+          <p className="text-xs text-slate-500 truncate">
+            {new Date(insight.created_at).toLocaleString('en-US', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </p>
+        </AccordionTrigger>
+        <AccordionContent className="px-4 pb-4 pt-1 border-t border-slate-100">
           <RoleInsight content={insight.content} />
-        </div>
-      )}
-    </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   )
 }

@@ -14,6 +14,7 @@ import {
   LabelList,
   ResponsiveContainer,
 } from 'recharts'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import Button from '@/components/base/Button/Button'
 import { fmtPace, fmtDuration } from '../../dashboard/utils/format'
 import { SectionLabel } from './activityShared'
@@ -161,58 +162,29 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
     <div id={`splitsSection_${pagePrefix}`}>
       <div className="flex items-center justify-between mb-2">
         <SectionLabel>Splits (per km)</SectionLabel>
-        <div className="flex items-center gap-1">
-          <Button
-            id={`splitsViewBarBtn_${pagePrefix}`}
-            variant="ghost"
-            size="xs"
-            aria-pressed={view === 'bar'}
-            onClick={() => setView('bar')}
-            className={`text-xs px-2 py-1 ${
-              view === 'bar'
-                ? 'bg-slate-800 text-white hover:bg-slate-800'
-                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-            }`}
-          >
-            Bar
-          </Button>
-          <Button
-            id={`splitsViewTableBtn_${pagePrefix}`}
-            variant="ghost"
-            size="xs"
-            aria-pressed={view === 'table'}
-            onClick={() => setView('table')}
-            className={`text-xs px-2 py-1 ${
-              view === 'table'
-                ? 'bg-slate-800 text-white hover:bg-slate-800'
-                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-            }`}
-          >
-            Table
-          </Button>
-        </div>
+        <Tabs value={view} onValueChange={setView} className="shrink-0 self-start">
+          <TabsList variant="pill" size="sm">
+            <TabsTrigger id={`splitsViewBarBtn_${pagePrefix}`} value="bar">
+              Bar
+            </TabsTrigger>
+            <TabsTrigger id={`splitsViewTableBtn_${pagePrefix}`} value="table">
+              Table
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       {view === 'bar' && (
         <>
-          <div className="flex flex-wrap gap-1 mb-3">
-            {availableMetrics.map((m) => (
-              <Button
-                key={m}
-                size="sm"
-                id={`splitsMetric${m}_${pagePrefix}`}
-                type="button"
-                onClick={() => setMetric(m)}
-                className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                  metric === m
-                    ? 'bg-violet-600 text-white border-violet-600'
-                    : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                {m}
-              </Button>
-            ))}
-          </div>
+          <Tabs value={metric} onValueChange={setMetric} className="self-start mb-3 w-max">
+            <TabsList variant="pill" size="sm">
+              {availableMetrics.map((m) => (
+                <TabsTrigger key={m} id={`splitsMetric${m}_${pagePrefix}`} value={m}>
+                  {m}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
 
           {strategyLabel && (
             <div className="flex items-center gap-2 mb-3">

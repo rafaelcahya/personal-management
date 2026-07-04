@@ -887,7 +887,9 @@ export default function ActivityDetailPage() {
                           aria-hidden="true"
                         />
                         {activity.notes ? (
-                          <span className="text-sm text-slate-600 flex-1">{activity.notes}</span>
+                          <span className="text-sm text-slate-600 flex-1 text-left">
+                            {activity.notes}
+                          </span>
                         ) : (
                           <span className="text-sm text-slate-400 italic flex-1">Add notes…</span>
                         )}
