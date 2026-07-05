@@ -110,7 +110,7 @@ export default function StravaSection() {
             {stravaStatus && !stravaStatus.connected && (
               <div
                 id="stravaDisconnectedState_settings"
-                className="flex flex-col sm:flex-row items-start sm:items-center gap-4"
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
               >
                 <div>
                   <p className="text-sm font-medium text-slate-800">Not connected</p>

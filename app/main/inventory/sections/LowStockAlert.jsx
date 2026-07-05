@@ -13,6 +13,8 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalBody,
   ModalDescription,
@@ -120,7 +122,7 @@ function LowStockTable({ items }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 px-2 py-2">
+      <div className="md:hidden space-y-2 py-2">
         {items.map((item, index) => (
           <div
             key={item.id}
@@ -208,20 +210,14 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
           borderColor="border-slate-200"
           className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
         >
-          <ModalHeader>
-            <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-              <AlertTriangle className="size-4 text-violet-600" aria-hidden="true" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <ModalTitle className="text-base font-semibold text-slate-800">
-                All Low Stock Products
-              </ModalTitle>
-              <ModalDescription className="text-xs text-slate-400">
-                Sorted by lowest stock first
-              </ModalDescription>
-            </div>
+          <ModalHeader layout="beside" padding={{ x: 4 }}>
+            <ModalIcon icon={AlertTriangle} />
+            <ModalHeaderContent>
+              <ModalTitle>All Low Stock Products</ModalTitle>
+              <ModalDescription>Sorted by lowest stock first</ModalDescription>
+            </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody className="overflow-y-auto flex-1 px-2">
+          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
             <LowStockTable items={items} />
           </ModalBody>
         </ModalContent>

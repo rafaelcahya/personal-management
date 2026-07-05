@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Pencil } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import {
@@ -14,6 +14,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
@@ -108,14 +110,17 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader className="text-left shrink-0">
-          <ModalTitle>✏️ Edit Product</ModalTitle>
-          <ModalDescription>
-            Update details for{' '}
-            <span className="font-medium text-slate-700">
-              {product?.brand} {product?.type} {product?.product}
-            </span>
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={Pencil} />
+          <ModalHeaderContent>
+            <ModalTitle>Edit Product</ModalTitle>
+            <ModalDescription>
+              Update details for{' '}
+              <span className="font-medium text-violet-700">
+                {product?.brand} {product?.type} {product?.product}
+              </span>
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form
@@ -123,7 +128,7 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col flex-1 min-h-0"
         >
-          <ModalBody className="space-y-5">
+          <ModalBody className="space-y-5" padding={{ x: 4 }}>
             {/* Brand */}
             <Controller
               control={control}

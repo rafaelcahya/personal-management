@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useContext } from 'react'
+import { createElement, createContext, useContext } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -23,6 +23,41 @@ const radiusClasses = {
   lg: 'rounded-xl',
   xl: 'rounded-2xl',
   full: 'rounded-3xl',
+}
+
+const pxClasses = {
+  0: 'px-0',
+  1: 'px-1',
+  2: 'px-2',
+  3: 'px-3',
+  4: 'px-4',
+  5: 'px-5',
+  6: 'px-6',
+  7: 'px-7',
+  8: 'px-8',
+  10: 'px-10',
+  12: 'px-12',
+}
+const pyClasses = {
+  0: 'py-0',
+  1: 'py-1',
+  2: 'py-2',
+  3: 'py-3',
+  4: 'py-4',
+  5: 'py-5',
+  6: 'py-6',
+  7: 'py-7',
+  8: 'py-8',
+  10: 'py-10',
+  12: 'py-12',
+}
+
+function resolvePadding(padding) {
+  if (!padding) return []
+  return [
+    padding.x != null ? pxClasses[padding.x] : null,
+    padding.y != null ? pyClasses[padding.y] : null,
+  ].filter(Boolean)
 }
 
 const durationPresets = {
@@ -140,14 +175,31 @@ function ModalContent({
   )
 }
 
-function ModalHeader({ className, ...props }) {
+function ModalIcon({ icon, className, iconClassName }) {
+  return (
+    <div
+      className={cn(
+        'flex items-center justify-center size-9 rounded-lg shrink-0 bg-violet-50',
+        className
+      )}
+    >
+      {createElement(icon, {
+        className: cn('size-4 text-violet-600', iconClassName),
+        'aria-hidden': 'true',
+      })}
+    </div>
+  )
+}
+
+function ModalHeader({ className, layout = 'default', padding, ...props }) {
   const { variant, borderColor } = useContext(ModalVariantContext)
   return (
     <div
       className={cn(
-        'flex flex-col gap-1.5',
+        layout === 'beside' ? 'flex flex-row items-center gap-3' : 'flex flex-col gap-1.5',
         variant === 'bordered' && 'px-6 py-4 border-b shrink-0',
         variant === 'bordered' && borderColor,
+        ...resolvePadding(padding),
         className
       )}
       {...props}
@@ -155,14 +207,23 @@ function ModalHeader({ className, ...props }) {
   )
 }
 
-function ModalBody({ className, ...props }) {
-  return <div className={cn('flex-1 overflow-y-auto px-6 py-4', className)} {...props} />
+function ModalHeaderContent({ className, ...props }) {
+  return <div className={cn('flex flex-col gap-0.5 min-w-0 flex-1', className)} {...props} />
+}
+
+function ModalBody({ className, padding, ...props }) {
+  return (
+    <div
+      className={cn('flex-1 overflow-y-auto px-6 py-4', ...resolvePadding(padding), className)}
+      {...props}
+    />
+  )
 }
 
 function ModalTitle({ className, ...props }) {
   return (
     <DialogPrimitive.Title
-      className={cn('text-lg font-semibold leading-none text-foreground', className)}
+      className={cn('text-base font-semibold text-slate-800', className)}
       {...props}
     />
   )
@@ -170,10 +231,7 @@ function ModalTitle({ className, ...props }) {
 
 function ModalDescription({ className, ...props }) {
   return (
-    <DialogPrimitive.Description
-      className={cn('text-sm text-muted-foreground', className)}
-      {...props}
-    />
+    <DialogPrimitive.Description className={cn('text-xs text-slate-500', className)} {...props} />
   )
 }
 
@@ -197,6 +255,8 @@ export {
   ModalTrigger,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalBody,
   ModalTitle,
   ModalDescription,

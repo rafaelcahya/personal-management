@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, Loader2 } from 'lucide-react'
+import { AlertTriangle, CalendarCheck, Loader2 } from 'lucide-react'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { format, parseISO } from 'date-fns'
 import Button from '@/components/base/Button/Button'
@@ -13,7 +13,10 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  ModalDescription,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalFooter,
   ModalClose,
@@ -149,11 +152,19 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
         id="upcomingRaceFormModal_raceLogPage"
         className="max-w-lg max-h-[90vh] flex flex-col"
       >
-        <ModalHeader>
-          <ModalTitle>{isEdit ? 'Edit Upcoming Race' : 'Add Upcoming Race'}</ModalTitle>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={CalendarCheck} />
+          <ModalHeaderContent>
+            <ModalTitle>{isEdit ? 'Edit Upcoming Race' : 'Add Upcoming Race'}</ModalTitle>
+            <ModalDescription>
+              {isEdit
+                ? 'Update your upcoming race details'
+                : 'Plan and add an upcoming race to your schedule'}
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
-        <ModalBody className="flex-1 overflow-y-auto">
+        <ModalBody className="flex-1 overflow-y-auto" padding={{ x: 4 }}>
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
             {/* Title */}
             <FieldContent error={errors.title?.message}>

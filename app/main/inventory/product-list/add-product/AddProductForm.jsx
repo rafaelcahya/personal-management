@@ -15,6 +15,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalTrigger,
 } from '@/components/base/Modal/Modal.jsx'
@@ -31,7 +33,7 @@ import {
 } from '@/components/base/Select/Select'
 import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
-import { Loader2, PlusIcon } from 'lucide-react'
+import { Loader2, Package, PlusIcon } from 'lucide-react'
 import { productSchema } from '@/schemas/product'
 import { createProduct } from '@/lib/api/product'
 import { fetchProductBrand } from '@/lib/api/productBrand'
@@ -163,13 +165,18 @@ export default function AddProductForm({ onAdded }) {
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader className="text-left shrink-0">
-          <ModalTitle>🛍️ Add New Product</ModalTitle>
-          <ModalDescription>Got a new item? Let's add it to your inventory!</ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={Package} />
+          <ModalHeaderContent>
+            <ModalTitle>Add New Product</ModalTitle>
+            <ModalDescription>
+              Got a new item? Let&apos;s add it to your inventory!
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody className="space-y-4">
+          <ModalBody className="space-y-4" padding={{ x: 4 }}>
             {/* Image Upload */}
             <FieldContent>
               <FieldLabel className="font-medium">Product Image</FieldLabel>

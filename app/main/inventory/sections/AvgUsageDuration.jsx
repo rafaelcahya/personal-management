@@ -13,7 +13,10 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
+  ModalDescription,
   ModalBody,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
@@ -109,7 +112,7 @@ function DurationTable({ data }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 px-2 py-2">
+      <div className="md:hidden space-y-2 py-2">
         {data.map((item, index) => (
           <div
             key={item.product_list_id}
@@ -194,18 +197,14 @@ export default function AvgUsageDuration({ items, loading, error, onRetry }) {
           borderColor="border-slate-200"
           className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
         >
-          <ModalHeader>
-            <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-              <Timer className="size-4 text-violet-600" aria-hidden="true" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <ModalTitle className="text-base font-semibold text-slate-800">
-                All Products — Average Usage Duration
-              </ModalTitle>
-              <p className="text-xs text-slate-400">Sorted by longest average duration</p>
-            </div>
+          <ModalHeader layout="beside" padding={{ x: 4 }}>
+            <ModalIcon icon={Timer} />
+            <ModalHeaderContent>
+              <ModalTitle>All Products — Average Usage Duration</ModalTitle>
+              <ModalDescription>Sorted by longest average duration</ModalDescription>
+            </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody className="overflow-y-auto flex-1 px-2">
+          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
             <DurationTable data={items} />
           </ModalBody>
         </ModalContent>

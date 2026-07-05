@@ -14,6 +14,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalTrigger,
 } from '@/components/base/Modal/Modal.jsx'
@@ -31,7 +33,7 @@ import {
 import Textarea from '@/components/base/Textarea/Textarea'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { toast } from 'sonner'
-import { Loader2, PlusIcon } from 'lucide-react'
+import { CalendarDays, Loader2, PlusIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
@@ -137,15 +139,16 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
         className="sm:max-w-3xl flex flex-col max-h-[90vh]"
         id="addNewEventForm_eventPage"
       >
-        <ModalHeader className="text-left shrink-0">
-          <ModalTitle>Add Market Event</ModalTitle>
-          <ModalDescription className="text-slate-600">
-            Track events that may impact market movements
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={CalendarDays} />
+          <ModalHeaderContent>
+            <ModalTitle>Add Market Event</ModalTitle>
+            <ModalDescription>Track events that may impact market movements</ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form onSubmit={handleSubmit(handleAddEvent)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody className="flex-1 overflow-y-auto space-y-4">
+          <ModalBody className="flex-1 overflow-y-auto space-y-4" padding={{ x: 4 }}>
             {/* Title */}
             <Controller
               control={control}

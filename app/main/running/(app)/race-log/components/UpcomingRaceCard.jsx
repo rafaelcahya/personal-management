@@ -36,6 +36,7 @@ import {
   ModalTitle,
   ModalFooter,
   ModalClose,
+  ModalDescription,
 } from '@/components/base/Modal/Modal.jsx'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -483,19 +484,17 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
       />
 
       <Modal open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
-        <ModalContent variant="bordered" borderColor="border-slate-200" className="max-w-sm">
+        <ModalContent className="max-w-md">
           <ModalHeader>
             <ModalTitle>Delete upcoming race?</ModalTitle>
+            <ModalDescription className="text-sm">
+              This will remove <span className="text-violet-700">{race.title}</span> from your
+              upcoming races. This action cannot be undone.
+            </ModalDescription>
           </ModalHeader>
-          <ModalBody>
-            <p className="text-sm text-slate-600">
-              This will remove <span className="font-medium">{race.title}</span> from your upcoming
-              races. This action cannot be undone.
-            </p>
-          </ModalBody>
           <ModalFooter className="gap-2">
             <ModalClose asChild>
-              <Button variant="outline" type="button" disabled={deleting}>
+              <Button variant="secondary" type="button" disabled={deleting}>
                 Cancel
               </Button>
             </ModalClose>
