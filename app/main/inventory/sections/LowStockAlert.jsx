@@ -2,9 +2,24 @@
 
 import { useState } from 'react'
 import { AlertTriangle, AlertCircle } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+  ModalDescription,
+} from '@/components/base/Modal/Modal.jsx'
+import Button from '@/components/base/Button/Button'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 import StatusBadge from '../components/StatusBadge'
 
 function StockBadge({ quantity }) {
@@ -53,57 +68,49 @@ function LowStockTable({ items }) {
   return (
     <>
       {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table
-          id="lowStockAlertTable_inventoryPage"
-          className="min-w-full text-sm"
-          aria-label="Low stock alerts"
-        >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-8">
-                No
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Product
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Status
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Stock
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, index) => (
-              <tr
-                key={item.id}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 text-slate-500 text-xs">{index + 1}</td>
-                <td className="px-5 py-3.5">
-                  <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                  <div className="flex flex-col items-start gap-1.5 mt-0.5">
-                    <p className="font-semibold text-slate-900">{item.product}</p>
-                    {item.type && (
-                      <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                        {item.type}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-5 py-3.5 text-right">
-                  <StatusBadge status={item.product_status} />
-                </td>
-                <td className="px-5 py-3.5 text-right">
-                  <StockBadge quantity={item.quantity} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        wrapperClassName="hidden md:block"
+        id="lowStockAlertTable_inventoryPage"
+        className="min-w-full"
+        aria-label="Low stock alerts"
+      >
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-8" align="center">
+              No
+            </TableHead>
+            <TableHead>Product</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Stock</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((item, index) => (
+            <TableRow key={item.id}>
+              <TableCell className="text-slate-500 text-xs" align="center">
+                {index + 1}
+              </TableCell>
+              <TableCell>
+                <p className="text-xs text-slate-400">{item.brand || '—'}</p>
+                <div className="flex flex-col items-start gap-1.5 mt-0.5">
+                  <p className="font-semibold text-slate-900">{item.product}</p>
+                  {item.type && (
+                    <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
+                      {item.type}
+                    </span>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell>
+                <StatusBadge status={item.product_status} />
+              </TableCell>
+              <TableCell>
+                <StockBadge quantity={item.quantity} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       {/* Mobile cards */}
       <div className="md:hidden space-y-2 px-2 py-2">
@@ -170,7 +177,7 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
               <p className="text-xs text-slate-500">Check your connection and try again</p>
             </div>
             {onRetry && (
-              <Button variant="outline" size="sm" onClick={onRetry} className="min-w-11">
+              <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
                 Try again
               </Button>
             )}
@@ -183,29 +190,32 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
 
         {!loading && !error && items.length > 0 && (
           <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
-            <button
-              onClick={() => setModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium text-violet-700 border border-violet-200 hover:bg-violet-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 transition-colors"
-            >
+            <Button variant="ghost" onClick={() => setModalOpen(true)}>
               View All
-            </button>
+            </Button>
           </div>
         )}
       </section>
 
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0">
-          <DialogHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
-            <DialogTitle className="text-base font-semibold text-slate-800">
+      <Modal open={modalOpen} onOpenChange={setModalOpen}>
+        <ModalContent
+          variant="bordered"
+          borderColor="border-slate-200"
+          className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
+        >
+          <ModalHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
+            <ModalTitle className="text-base font-semibold text-slate-800">
               All Low Stock Products
-            </DialogTitle>
-            <p className="text-xs text-slate-400">Sorted by lowest stock first</p>
-          </DialogHeader>
-          <div className="overflow-y-auto flex-1">
+            </ModalTitle>
+            <ModalDescription className="text-xs text-slate-400">
+              Sorted by lowest stock first
+            </ModalDescription>
+          </ModalHeader>
+          <ModalBody className="overflow-y-auto flex-1 px-2">
             <LowStockTable items={items} />
-          </div>
-        </DialogContent>
-      </Dialog>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   )
 }

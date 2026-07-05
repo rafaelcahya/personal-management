@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import Button from '@/components/base/Button/Button'
+import { SidebarHeader, SidebarContent, SidebarFooter } from '@/components/base/Sidebar/Sidebar.jsx'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -31,7 +33,7 @@ import {
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import packageJson from '@/package.json'
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
 
 const INVENTORY_ITEMS = [
   {
@@ -127,12 +129,10 @@ function NavItem({ item, collapsed, onClick }) {
   if (!collapsed) return link
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <Tooltip>
-        <TooltipTrigger asChild>{link}</TooltipTrigger>
-        <TooltipContent side="right">{item.tooltip ?? item.name}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>{link}</TooltipTrigger>
+      <TooltipContent side="right">{item.tooltip ?? item.name}</TooltipContent>
+    </Tooltip>
   )
 }
 
@@ -147,34 +147,36 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
 
   if (collapsed) {
     const trigger = (
-      <button
+      <Button
+        variant="ghost"
+        fullWidth
         className={cn(
-          'flex items-center justify-center px-2 py-2.5 w-full rounded-lg text-sm font-medium transition-colors',
+          'justify-center px-2 py-2.5 rounded-lg',
           isActive
             ? 'bg-violet-50 text-violet-700'
             : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
         )}
       >
         <Icon className={cn('size-4 shrink-0', isActive ? 'text-violet-600' : 'text-slate-400')} />
-      </button>
+      </Button>
     )
     return (
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-          <TooltipContent side="right">{label}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+        <TooltipContent side="right">{label}</TooltipContent>
+      </Tooltip>
     )
   }
 
   return (
     <div>
-      <button
+      <Button
         id={id}
+        variant="ghost"
+        fullWidth
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
-          'flex items-center gap-3 rounded-lg text-sm font-medium transition-colors w-full px-3 py-2',
+          'justify-start gap-3 rounded-lg px-3 py-2',
           isActive
             ? 'bg-violet-50 text-violet-700'
             : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
@@ -188,7 +190,7 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
             open ? 'rotate-180' : ''
           )}
         />
-      </button>
+      </Button>
       {open && (
         <div className="ml-4 pl-3 border-l border-slate-100 mt-0.5 space-y-0.5">
           {subitems.map((item) => (
@@ -202,7 +204,7 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
 
 function SidebarNav({ collapsed, onNavClick }) {
   return (
-    <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-0.5">
+    <nav className="px-3 py-2 space-y-0.5">
       {!collapsed && (
         <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3 pt-3 pb-1.5">
           Inventory
@@ -286,57 +288,59 @@ function UserSection({ collapsed, user, mobile = false }) {
   const initials = name.charAt(0).toUpperCase()
 
   return (
-    <div className="border-t border-slate-100 p-3" ref={ref}>
-      <div className="relative">
-        {open && (
-          <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-10">
-            {!collapsed && (
-              <div className="px-3 py-2.5 border-b border-slate-100">
-                <p className="text-sm font-medium text-slate-700 truncate">{name}</p>
-                <p
-                  id={mobile ? 'userMenuEmail_mobile' : 'userMenuEmail_landingPage'}
-                  className="text-xs text-slate-400 truncate"
-                >
-                  {email}
-                </p>
-              </div>
-            )}
-            <button
-              id={mobile ? 'userMenuSignOut_mobile' : 'logoutBtn'}
-              onClick={handleLogout}
-              disabled={loading}
-              aria-label="Sign out from application"
-              className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-60"
-            >
-              {loading ? (
-                <Loader2 className="size-4 animate-spin text-slate-400 shrink-0" />
-              ) : (
-                <LogOut className="size-4 text-slate-400 shrink-0" />
-              )}
-              {loading ? 'Signing out...' : 'Sign out'}
-            </button>
-          </div>
-        )}
-        <button
-          id={mobile ? 'userMenuTrigger_mobile' : 'userMenuTrigger_landingPage'}
-          aria-label="User menu"
-          onClick={() => setOpen(!open)}
-          className={cn(
-            'flex items-center gap-2.5 w-full rounded-xl p-2 hover:bg-slate-50 transition-colors text-left',
-            collapsed && 'justify-center'
-          )}
-        >
-          <div className="size-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0 text-violet-700 font-semibold text-sm">
-            {initials}
-          </div>
+    <div className="relative border-slate-100 p-3" ref={ref}>
+      {open && (
+        <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-10">
           {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-700 truncate">{name}</p>
-              <p className="text-xs text-slate-400 truncate">{email}</p>
+            <div className="px-3 py-2.5 border-b border-slate-100">
+              <p className="text-sm font-medium text-slate-700 truncate text-left w-fit">{name}</p>
+              <p
+                id={mobile ? 'userMenuEmail_mobile' : 'userMenuEmail_landingPage'}
+                className="text-xs text-slate-400 truncate text-left w-fit"
+              >
+                {email}
+              </p>
             </div>
           )}
-        </button>
-      </div>
+          <Button
+            id={mobile ? 'userMenuSignOut_mobile' : 'logoutBtn'}
+            variant="ghost"
+            fullWidth
+            onClick={handleLogout}
+            disabled={loading}
+            aria-label="Sign out from application"
+            className="justify-start gap-2.5 px-3 py-5 text-slate-600 hover:bg-slate-50"
+          >
+            {loading ? (
+              <Loader2 className="size-4 animate-spin text-slate-400 shrink-0" />
+            ) : (
+              <LogOut className="size-4 text-slate-400 shrink-0" />
+            )}
+            {loading ? 'Signing out...' : 'Sign out'}
+          </Button>
+        </div>
+      )}
+      <Button
+        id={mobile ? 'userMenuTrigger_mobile' : 'userMenuTrigger_landingPage'}
+        variant="ghost"
+        fullWidth
+        aria-label="User menu"
+        onClick={() => setOpen(!open)}
+        className={cn(
+          'justify-start gap-2.5 rounded-xl p-2 hover:bg-slate-50 active:bg-slate-50',
+          collapsed && 'justify-center'
+        )}
+      >
+        <div className="size-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0 text-violet-700 font-semibold text-sm">
+          {initials}
+        </div>
+        {!collapsed && (
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-slate-700 truncate text-left w-fit">{name}</p>
+            <p className="text-xs text-slate-400 truncate text-left w-fit">{email}</p>
+          </div>
+        )}
+      </Button>
     </div>
   )
 }
@@ -421,11 +425,8 @@ export default function Sidebar({ user }) {
         )}
       >
         {/* Logo */}
-        <div
-          className={cn(
-            'flex items-center gap-3 px-4 py-4 border-b border-slate-100 shrink-0',
-            collapsed && 'justify-center px-0'
-          )}
+        <SidebarHeader
+          className={cn('gap-3 px-4 py-4 border-slate-100', collapsed && 'justify-center px-0')}
         >
           <div className="size-8 bg-violet-600 rounded-lg flex items-center justify-center shrink-0">
             <Package2 className="size-4 text-white" />
@@ -435,9 +436,11 @@ export default function Sidebar({ user }) {
               Personal Management
             </span>
           )}
-        </div>
+        </SidebarHeader>
 
-        <SidebarNav collapsed={collapsed} />
+        <SidebarContent className="py-0">
+          <SidebarNav collapsed={collapsed} />
+        </SidebarContent>
         {!collapsed && (
           <div className="px-4 pb-1">
             <p id="appVersion_sidebar" className="text-[10px] text-slate-400">
@@ -448,29 +451,35 @@ export default function Sidebar({ user }) {
         <UserSection collapsed={collapsed} user={user} />
 
         {/* Collapse toggle */}
-        <button
+        <Button
           id="sidebarCollapseBtn_sidebar"
+          variant="ghost"
+          size="icon-xs"
           onClick={toggleCollapse}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="absolute -right-3 top-[4.25rem] size-6 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:bg-slate-50 z-10 transition-colors"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className="absolute -right-3 top-[4.25rem] rounded-full bg-white border border-slate-200 shadow-sm hover:bg-slate-50 z-10"
         >
           {collapsed ? (
             <PanelLeftOpen className="size-3 text-slate-500" />
           ) : (
             <PanelLeftClose className="size-3 text-slate-500" />
           )}
-        </button>
+        </Button>
       </aside>
 
       {/* ── Mobile top bar ── */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-white border-b border-slate-200 flex items-center px-4 gap-3">
-        <button
+        <Button
           id="mobileMenuTrigger"
+          variant="ghost"
+          size="icon-sm"
           onClick={() => setMobileOpen(true)}
-          className="size-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors"
+          aria-label="Open navigation menu"
+          className="rounded-lg hover:bg-slate-100"
         >
           <Menu className="size-5 text-slate-600" />
-        </button>
+        </Button>
         <div className="flex items-center gap-2">
           <div className="size-6 bg-violet-600 rounded-md flex items-center justify-center">
             <Package2 className="size-3.5 text-white" />
@@ -487,27 +496,34 @@ export default function Sidebar({ user }) {
             onClick={() => setMobileOpen(false)}
           />
           <aside className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col">
-            <div className="flex items-center justify-between px-4 h-14 border-b border-slate-100 shrink-0">
+            <SidebarHeader className="justify-between h-14 border-slate-100 gap-2 px-4">
               <div className="flex items-center gap-2">
                 <div className="size-7 bg-violet-600 rounded-lg flex items-center justify-center">
                   <Package2 className="size-4 text-white" />
                 </div>
                 <span className="font-semibold text-slate-800 text-sm">Personal Management</span>
               </div>
-              <button
+              <Button
+                variant="ghost"
+                size="icon-sm"
                 onClick={() => setMobileOpen(false)}
-                className="size-8 flex items-center justify-center rounded-lg hover:bg-slate-100"
+                aria-label="Close navigation menu"
+                className="rounded-lg hover:bg-slate-100"
               >
                 <X className="size-4 text-slate-500" />
-              </button>
-            </div>
-            <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
-            <div className="px-4 pb-1">
-              <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400">
-                v{packageJson.version}
-              </p>
-            </div>
-            <UserSection collapsed={false} user={user} mobile={true} />
+              </Button>
+            </SidebarHeader>
+            <SidebarContent className="py-0">
+              <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
+            </SidebarContent>
+            <SidebarFooter>
+              <div className="px-4 pb-1">
+                <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400">
+                  v{packageJson.version}
+                </p>
+              </div>
+              <UserSection collapsed={false} user={user} mobile={true} />
+            </SidebarFooter>
           </aside>
         </>
       )}

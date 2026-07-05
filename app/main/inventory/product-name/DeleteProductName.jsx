@@ -1,20 +1,25 @@
 import { useState } from 'react'
 import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
+import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import { deleteProductName } from '@/lib/api/productName'
 
-export default function DeleteProductName({ productName, onDeleted, onClose, disabled = false }) {
+export default function DeleteProductName({
+  productName,
+  onDeleted,
+  onClose,
+  disabled = false,
+  className,
+}) {
   const [loading, setLoading] = useState(false)
 
   const handleDelete = async () => {
@@ -32,37 +37,44 @@ export default function DeleteProductName({ productName, onDeleted, onClose, dis
   }
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
+    <Modal>
+      <ModalTrigger asChild>
         <Button
           id="deleteProductNameBtn_productNamePage"
           disabled={disabled}
-          className="bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500 disabled:opacity-40 disabled:cursor-not-allowed"
+          className={`bg-transparent hover:bg-rose-100 dark:hover:bg-rose-500/5 text-rose-500 disabled:opacity-40 disabled:cursor-not-allowed${className ? ` ${className}` : ''}`}
         >
           Delete
         </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="font-semibold">Delete Product Name</AlertDialogTitle>
-          <AlertDialogDescription className="text-slate-foreground">
+      </ModalTrigger>
+      <ModalContent showCloseButton={false} variant="bordered" borderColor="border-slate-200">
+        <ModalHeader>
+          <ModalTitle className="font-semibold">Delete Product Name</ModalTitle>
+          <ModalDescription className="text-slate-foreground">
             Are you sure you want to delete this product name? This action cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none">
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction
-            id="deleteProductNameConfirmBtn_productNamePage"
-            onClick={handleDelete}
-            disabled={loading}
-            className="bg-rose-600 hover:bg-rose-700 dark:text-white"
-          >
-            {loading ? 'Deleting...' : 'Delete'}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </ModalDescription>
+        </ModalHeader>
+        <ModalFooter>
+          <ModalClose asChild>
+            <Button
+              variant="ghost"
+              className="bg-transparent hover:bg-secondary/80 text-secondary-foreground hover:text-secondary-foreground border-none"
+            >
+              Cancel
+            </Button>
+          </ModalClose>
+          <ModalClose asChild>
+            <Button
+              id="deleteProductNameConfirmBtn_productNamePage"
+              onClick={handleDelete}
+              disabled={loading}
+              className="bg-rose-600 hover:bg-rose-700 dark:text-white"
+            >
+              {loading ? 'Deleting...' : 'Delete'}
+            </Button>
+          </ModalClose>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

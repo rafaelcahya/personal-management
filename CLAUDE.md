@@ -34,17 +34,17 @@ Personal productivity web app for one user, two domains: **Inventory Management*
 
 This project uses 8 specialized agents + 1 orchestrator. Each agent has isolated tools, its own memory, and a defined output scope.
 
-| Agent             | File                         | Role                                                      | Model      |
-| ----------------- | ---------------------------- | --------------------------------------------------------- | ---------- |
-| Orchestrator      | `orchestrator-agent.md`      | Coordinates multi-agent workflows                         | sonnet-4-6 |
-| PM                | `pm-agent.md`                | Requirements, PRD, prioritization                         | sonnet-4-6 |
-| Researcher        | `researcher-agent.md`        | Product, UX, library, security research — peer of PM      | opus-4-7   |
-| UI/UX             | `uiux-agent.md`              | Design decisions, component specs                         | sonnet-4-6 |
-| Backend           | `backend-agent.md`           | API routes, services, DB schema                           | sonnet-4-6 |
-| Frontend          | `frontend-agent.md`          | JSX components, UI states, API integration                | sonnet-4-6 |
-| Code Reviewer     | `code-reviewer-agent.md`     | CRITICAL/WARNING/SUGGESTION code review — read-only       | sonnet-4-6 |
-| Security Reviewer | `security-reviewer-agent.md` | IDOR, ownership, secrets, XSS security review — read-only | sonnet-4-6 |
-| Tester            | `tester-agent.md`            | Cypress tests, QA reports                                 | sonnet-4-6 |
+| Agent             | File                         | Role                                                      | Model    |
+| ----------------- | ---------------------------- | --------------------------------------------------------- | -------- |
+| Orchestrator      | `orchestrator-agent.md`      | Coordinates multi-agent workflows                         | sonnet-5 |
+| PM                | `pm-agent.md`                | Requirements, PRD, prioritization                         | sonnet-5 |
+| Researcher        | `researcher-agent.md`        | Product, UX, library, security research — peer of PM      | sonnet-5 |
+| UI/UX             | `uiux-agent.md`              | Design decisions, component specs                         | sonnet-5 |
+| Backend           | `backend-agent.md`           | API routes, services, DB schema                           | sonnet-5 |
+| Frontend          | `frontend-agent.md`          | JSX components, UI states, API integration                | sonnet-5 |
+| Code Reviewer     | `code-reviewer-agent.md`     | CRITICAL/WARNING/SUGGESTION code review — read-only       | sonnet-5 |
+| Security Reviewer | `security-reviewer-agent.md` | IDOR, ownership, secrets, XSS security review — read-only | sonnet-5 |
+| Tester            | `tester-agent.md`            | Cypress tests, QA reports                                 | sonnet-5 |
 
 All agent files are in `.claude/agents/subagents/`.
 

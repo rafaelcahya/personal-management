@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Info, Bell } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Switch } from '@/components/ui/switch'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import { Switch } from '@/components/base/Switch/Switch'
 import { getUserSettings, updateUserSettings, savePushSubscription } from '@/lib/api/running'
 
 const TOGGLES = [

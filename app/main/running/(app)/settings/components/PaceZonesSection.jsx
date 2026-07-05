@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Pencil, Timer } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'
+import Button from '@/components/base/Button/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
+import Input from '@/components/base/Input/Input'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldDescription from '@/components/base/Field/FieldDescription'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { getUserProfile, updateUserProfile, detectThresholdPace } from '@/lib/api/running'
 
 const INPUT_MODES = [
@@ -142,30 +145,32 @@ export default function PaceZonesSection() {
       ) : (
         <div className="px-5 py-5 flex flex-col gap-4">
           {/* Mode tabs */}
-          <div
+          <Tabs
             id="paceZonesModeToggle_settingsPage"
-            className="flex rounded-lg overflow-hidden border border-slate-200 text-[11px] font-semibold w-fit"
+            value={mode}
+            onValueChange={setMode}
+            className="shrink-0 self-start"
           >
-            {INPUT_MODES.map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                type="button"
-                id={`paceZonesMode_${id}_settingsPage`}
-                onClick={() => setMode(id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 transition-colors ${mode === id ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
-              >
-                <Icon className="size-3" aria-hidden="true" />
-                {label}
-              </button>
-            ))}
-          </div>
+            <TabsList variant="pill" size="sm">
+              {INPUT_MODES.map(({ id, label, icon: Icon }) => (
+                <TabsTrigger
+                  key={id}
+                  id={`paceZonesMode_${id}_settingsPage`}
+                  value={id}
+                  icon={Icon}
+                >
+                  {label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
 
           {/* Manual mode */}
           {mode === 'manual' && (
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="thresholdPaceInput_settingsPage" className="text-sm font-medium">
+            <FieldContent>
+              <FieldLabel htmlFor="thresholdPaceInput_settingsPage">
                 Threshold Pace (min:sec /km)
-              </Label>
+              </FieldLabel>
               <Input
                 id="thresholdPaceInput_settingsPage"
                 type="text"
@@ -174,10 +179,10 @@ export default function PaceZonesSection() {
                 placeholder="e.g. 5:20"
                 className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 max-w-[120px]"
               />
-              <p className="text-xs text-slate-400">
+              <FieldDescription>
                 Your sustainable pace for ~60 min — the anchor for all 5 pace zones.
-              </p>
-            </div>
+              </FieldDescription>
+            </FieldContent>
           )}
 
           {/* From Activity mode */}
@@ -192,7 +197,7 @@ export default function PaceZonesSection() {
                 id="detectThresholdPaceBtn_settingsPage"
                 type="button"
                 variant="outline"
-                size="sm"
+                size="base"
                 disabled={detecting}
                 onClick={handleDetect}
                 className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50 w-fit"
@@ -247,13 +252,10 @@ export default function PaceZonesSection() {
                   {detectError}
                 </div>
               )}
-              <div className="flex flex-col gap-1.5">
-                <Label
-                  htmlFor="thresholdPaceActivityInput_settingsPage"
-                  className="text-sm font-medium"
-                >
+              <FieldContent>
+                <FieldLabel htmlFor="thresholdPaceActivityInput_settingsPage">
                   Threshold Pace (min:sec /km)
-                </Label>
+                </FieldLabel>
                 <Input
                   id="thresholdPaceActivityInput_settingsPage"
                   type="text"
@@ -262,7 +264,7 @@ export default function PaceZonesSection() {
                   placeholder="e.g. 5:20"
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 max-w-[120px]"
                 />
-              </div>
+              </FieldContent>
             </div>
           )}
           <div className="flex items-center justify-end gap-3 pt-1">
@@ -292,7 +294,7 @@ export default function PaceZonesSection() {
               id="paceZonesSaveBtn_settingsPage"
               onClick={handleSave}
               disabled={saving}
-              size="sm"
+              size="base"
             >
               {saving ? 'Saving…' : 'Save'}
             </Button>

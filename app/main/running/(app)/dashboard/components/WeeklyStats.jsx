@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
+import Button from '@/components/base/Button/Button'
 import { Activity, Timer, Footprints, Zap, CalendarRange } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { format, startOfWeek, subWeeks, addDays } from 'date-fns'
 import { fmtDistance, fmtDuration, fmtPace } from '../utils/format'
 import { fetchWeeklyStatsForWeek } from '@/lib/api/running'
@@ -178,152 +179,96 @@ export default function WeeklyStats({ data, activityType = null }) {
   ]
 
   return (
-    <section id="weeklyStatsCard" aria-label="Weekly stats">
-      <Card className="border border-slate-200/70 shadow-sm py-5 gap-4">
-        <CardContent className="px-5">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-2">
-                <CalendarRange className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-                <h3 className="text-sm font-semibold text-slate-700">{weekTitle}</h3>
-              </div>
-              <div
-                id="weeklyStatsWeekFilter_dashboardPage"
-                className="flex items-center gap-1 flex-wrap"
-                role="group"
-                aria-label="Select week"
-              >
-                {WEEK_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    id={`weeklyStatsWeekBtn_${opt.value === 0 ? 'current' : `W${opt.value}`}_dashboardPage`}
-                    onClick={() => handleWeekSelect(opt.value)}
-                    disabled={loadingWeek}
-                    aria-pressed={selectedWeek === opt.value}
-                    className={`px-2 py-0.5 rounded text-xs font-medium transition-colors disabled:opacity-50 ${
-                      selectedWeek === opt.value
-                        ? 'bg-violet-600 text-white'
-                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+    <Card
+      id="weeklyStatsCard"
+      aria-label="Weekly stats"
+      className="border border-slate-200/70 shadow-sm pb-4 gap-4"
+    >
+      <CardContent className="px-5">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <CalendarRange className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <h3 className="text-sm font-semibold text-slate-700">{weekTitle}</h3>
             </div>
-            <p className="text-xs text-slate-400">
-              Distance, duration, sessions, and pace compared to {vsLabel}.
-            </p>
+            <div
+              id="weeklyStatsWeekFilter_dashboardPage"
+              className="flex items-center gap-1 flex-wrap"
+              role="group"
+              aria-label="Select week"
+            >
+              {WEEK_OPTIONS.map((opt) => (
+                <Button
+                  key={opt.value}
+                  id={`weeklyStatsWeekBtn_${opt.value === 0 ? 'current' : `W${opt.value}`}_dashboardPage`}
+                  variant="ghost"
+                  size="xs"
+                  onClick={() => handleWeekSelect(opt.value)}
+                  disabled={loadingWeek}
+                  aria-pressed={selectedWeek === opt.value}
+                  className={
+                    selectedWeek === opt.value
+                      ? 'bg-violet-600 text-white hover:bg-violet-700'
+                      : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                  }
+                >
+                  {opt.label}
+                </Button>
+              ))}
+            </div>
           </div>
-        </CardContent>
-        <div
-          className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 transition-opacity duration-150 ${loadingWeek ? 'opacity-50' : ''}`}
-          aria-busy={loadingWeek}
-        >
-          {statTiles.map((t, i) => {
-            const Icon = t.icon
-            const border =
-              i === 0
+          <p className="text-xs text-slate-400">
+            Distance, duration, sessions, and pace compared to {vsLabel}.
+          </p>
+        </div>
+      </CardContent>
+      <div
+        className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 transition-opacity duration-150 ${loadingWeek ? 'opacity-50' : ''}`}
+        aria-busy={loadingWeek}
+      >
+        {statTiles.map((t, i) => {
+          const Icon = t.icon
+          const border =
+            i === 0
+              ? 'border-b md:border-b-0 md:border-r border-slate-200'
+              : i === 1
                 ? 'border-b md:border-b-0 md:border-r border-slate-200'
-                : i === 1
-                  ? 'border-b md:border-b-0 md:border-r border-slate-200'
-                  : 'border-b md:border-b-0 lg:border-r border-slate-200'
-            return (
-              <div key={t.label} className={`px-4 py-3 ${border}`}>
-                <div className="flex items-center gap-1.5 mb-2">
-                  <div className={`p-1 rounded-md ${t.iconBg}`}>
-                    <Icon className={`size-3 ${t.iconColor}`} aria-hidden="true" />
-                  </div>
-                  <span className="text-xs font-medium text-slate-500">{t.label}</span>
-                </div>
-                <p className="text-xl font-semibold text-slate-800 tabular-nums">{t.value}</p>
-                <div className="mt-1.5" aria-label={`${t.label} vs ${vsLabel}`}>
-                  <span className={`text-xs font-medium ${t.delta.color}`}>{t.delta.label}</span>
-                  <p className="text-xs text-slate-400 mt-0.5 leading-tight">{t.delta.desc}</p>
-                </div>
-              </div>
-            )
-          })}
-
-          {/* Avg Pace combined — mobile + tablet only (hidden on desktop) */}
-          <div
-            className="md:col-span-3 lg:hidden md:border-t border-slate-200 px-4 py-3"
-            aria-label={`Avg Pace vs ${vsLabel}: ${paceDeltaDesc}`}
-          >
-            <div className="flex items-center gap-1.5 mb-2">
-              <div className="p-1 rounded-md bg-orange-50">
-                <Zap className="size-3 text-orange-600" aria-hidden="true" />
-              </div>
-              <span className="text-xs font-medium text-slate-500">Avg Pace</span>
-            </div>
-            {hasMovingPace ? (
-              <div className="flex items-start gap-6">
-                <div className="min-w-0">
-                  <p className="text-xl font-semibold text-slate-800 tabular-nums">
-                    {fmtPace(current.avg_moving_pace_sec_per_km)} /km
-                  </p>
-                  <p className="text-xs text-slate-400 mt-0.5">moving</p>
-                  <span className={`text-xs font-medium ${movingPaceD.color}`}>
-                    {movingPaceD.label}
-                  </span>
-                  {movingPaceD.desc && (
-                    <p className="text-xs text-slate-400 mt-0.5 leading-tight">
-                      {movingPaceD.desc}
-                    </p>
-                  )}
-                </div>
-                <div className="border-l border-slate-200 pl-6 min-w-0">
-                  <p className="text-xl font-semibold text-slate-800 tabular-nums">
-                    {current.avg_pace_sec_per_km != null
-                      ? `${fmtPace(current.avg_pace_sec_per_km)} /km`
-                      : '—'}
-                  </p>
-                  <p className="text-xs text-slate-400 mt-0.5">elapsed</p>
-                  <span className={`text-xs font-medium ${elapsedPaceD.color}`}>
-                    {elapsedPaceD.label}
-                  </span>
-                  {elapsedPaceD.desc && (
-                    <p className="text-xs text-slate-400 mt-0.5 leading-tight">
-                      {elapsedPaceD.desc}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div>
-                <p className="text-xl font-semibold text-slate-800 tabular-nums">
-                  {current.avg_pace_sec_per_km != null
-                    ? `${fmtPace(current.avg_pace_sec_per_km)} /km`
-                    : '—'}
-                </p>
-                <p className="text-xs text-slate-400 mt-0.5">elapsed</p>
-                <div className="mt-1.5">
-                  <span className={`text-xs font-medium ${elapsedPaceD.color}`}>
-                    {elapsedPaceD.label}
-                  </span>
-                  {elapsedPaceD.desc && (
-                    <p className="text-xs text-slate-400 mt-0.5 leading-tight">
-                      {elapsedPaceD.desc}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Moving Pace — desktop only, 4th col */}
-          {hasMovingPace && (
-            <div className="hidden lg:block border-r border-slate-200 px-4 py-3">
+                : 'border-b md:border-b-0 lg:border-r border-slate-200'
+          return (
+            <div key={t.label} className={`px-4 py-3 ${border}`}>
               <div className="flex items-center gap-1.5 mb-2">
-                <div className="p-1 rounded-md bg-orange-50">
-                  <Zap className="size-3 text-orange-600" aria-hidden="true" />
+                <div className={`p-1 rounded-md ${t.iconBg}`}>
+                  <Icon className={`size-3 ${t.iconColor}`} aria-hidden="true" />
                 </div>
-                <span className="text-xs font-medium text-slate-500">Moving Pace</span>
+                <span className="text-xs font-medium text-slate-500">{t.label}</span>
               </div>
-              <p className="text-xl font-semibold text-slate-800 tabular-nums">
-                {fmtPace(current.avg_moving_pace_sec_per_km)} /km
-              </p>
-              <div className="mt-1.5">
+              <p className="text-xl font-semibold text-slate-800 tabular-nums">{t.value}</p>
+              <div className="mt-1.5" aria-label={`${t.label} vs ${vsLabel}`}>
+                <span className={`text-xs font-medium ${t.delta.color}`}>{t.delta.label}</span>
+                <p className="text-xs text-slate-400 mt-0.5 leading-tight">{t.delta.desc}</p>
+              </div>
+            </div>
+          )
+        })}
+
+        {/* Avg Pace combined — mobile + tablet only (hidden on desktop) */}
+        <div
+          className="md:col-span-3 lg:hidden md:border-t border-slate-200 px-4 py-3"
+          aria-label={`Avg Pace vs ${vsLabel}: ${paceDeltaDesc}`}
+        >
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="p-1 rounded-md bg-orange-50">
+              <Zap className="size-3 text-orange-600" aria-hidden="true" />
+            </div>
+            <span className="text-xs font-medium text-slate-500">Avg Pace</span>
+          </div>
+          {hasMovingPace ? (
+            <div className="flex items-start gap-6">
+              <div className="min-w-0">
+                <p className="text-xl font-semibold text-slate-800 tabular-nums">
+                  {fmtPace(current.avg_moving_pace_sec_per_km)} /km
+                </p>
+                <p className="text-xs text-slate-400 mt-0.5">moving</p>
                 <span className={`text-xs font-medium ${movingPaceD.color}`}>
                   {movingPaceD.label}
                 </span>
@@ -331,33 +276,87 @@ export default function WeeklyStats({ data, activityType = null }) {
                   <p className="text-xs text-slate-400 mt-0.5 leading-tight">{movingPaceD.desc}</p>
                 )}
               </div>
+              <div className="border-l border-slate-200 pl-6 min-w-0">
+                <p className="text-xl font-semibold text-slate-800 tabular-nums">
+                  {current.avg_pace_sec_per_km != null
+                    ? `${fmtPace(current.avg_pace_sec_per_km)} /km`
+                    : '—'}
+                </p>
+                <p className="text-xs text-slate-400 mt-0.5">elapsed</p>
+                <span className={`text-xs font-medium ${elapsedPaceD.color}`}>
+                  {elapsedPaceD.label}
+                </span>
+                {elapsedPaceD.desc && (
+                  <p className="text-xs text-slate-400 mt-0.5 leading-tight">{elapsedPaceD.desc}</p>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p className="text-xl font-semibold text-slate-800 tabular-nums">
+                {current.avg_pace_sec_per_km != null
+                  ? `${fmtPace(current.avg_pace_sec_per_km)} /km`
+                  : '—'}
+              </p>
+              <p className="text-xs text-slate-400 mt-0.5">elapsed</p>
+              <div className="mt-1.5">
+                <span className={`text-xs font-medium ${elapsedPaceD.color}`}>
+                  {elapsedPaceD.label}
+                </span>
+                {elapsedPaceD.desc && (
+                  <p className="text-xs text-slate-400 mt-0.5 leading-tight">{elapsedPaceD.desc}</p>
+                )}
+              </div>
             </div>
           )}
+        </div>
 
-          {/* Elapsed Pace — desktop only, 5th col (spans 2 if no moving pace) */}
-          <div className={`hidden lg:block px-4 py-3 ${!hasMovingPace ? 'lg:col-span-2' : ''}`}>
+        {/* Moving Pace — desktop only, 4th col */}
+        {hasMovingPace && (
+          <div className="hidden lg:block border-r border-slate-200 px-4 py-3">
             <div className="flex items-center gap-1.5 mb-2">
               <div className="p-1 rounded-md bg-orange-50">
                 <Zap className="size-3 text-orange-600" aria-hidden="true" />
               </div>
-              <span className="text-xs font-medium text-slate-500">Elapsed Pace</span>
+              <span className="text-xs font-medium text-slate-500">Moving Pace</span>
             </div>
             <p className="text-xl font-semibold text-slate-800 tabular-nums">
-              {current.avg_pace_sec_per_km != null
-                ? `${fmtPace(current.avg_pace_sec_per_km)} /km`
-                : '—'}
+              {fmtPace(current.avg_moving_pace_sec_per_km)} /km
             </p>
             <div className="mt-1.5">
-              <span className={`text-xs font-medium ${elapsedPaceD.color}`}>
-                {elapsedPaceD.label}
+              <span className={`text-xs font-medium ${movingPaceD.color}`}>
+                {movingPaceD.label}
               </span>
-              {elapsedPaceD.desc && (
-                <p className="text-xs text-slate-400 mt-0.5 leading-tight">{elapsedPaceD.desc}</p>
+              {movingPaceD.desc && (
+                <p className="text-xs text-slate-400 mt-0.5 leading-tight">{movingPaceD.desc}</p>
               )}
             </div>
           </div>
+        )}
+
+        {/* Elapsed Pace — desktop only, 5th col (spans 2 if no moving pace) */}
+        <div className={`hidden lg:block px-4 py-3 ${!hasMovingPace ? 'lg:col-span-2' : ''}`}>
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="p-1 rounded-md bg-orange-50">
+              <Zap className="size-3 text-orange-600" aria-hidden="true" />
+            </div>
+            <span className="text-xs font-medium text-slate-500">Elapsed Pace</span>
+          </div>
+          <p className="text-xl font-semibold text-slate-800 tabular-nums">
+            {current.avg_pace_sec_per_km != null
+              ? `${fmtPace(current.avg_pace_sec_per_km)} /km`
+              : '—'}
+          </p>
+          <div className="mt-1.5">
+            <span className={`text-xs font-medium ${elapsedPaceD.color}`}>
+              {elapsedPaceD.label}
+            </span>
+            {elapsedPaceD.desc && (
+              <p className="text-xs text-slate-400 mt-0.5 leading-tight">{elapsedPaceD.desc}</p>
+            )}
+          </div>
         </div>
-      </Card>
-    </section>
+      </div>
+    </Card>
   )
 }

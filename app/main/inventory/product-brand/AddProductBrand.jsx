@@ -1,29 +1,25 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Textarea } from '@/components/ui/textarea'
+  Modal,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from '@/components/base/Modal/Modal.jsx'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { productBrandSchema } from '@/schemas/productBrand'
@@ -71,90 +67,83 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild id={`addNewProductBrandBtn_${context}_productBrandPage`}>
+    <Modal open={open} onOpenChange={handleOpenChange}>
+      <ModalTrigger asChild id={`addNewProductBrandBtn_${context}_productBrandPage`}>
         <Button>Add Product Brand</Button>
-      </DialogTrigger>
-      <DialogContent
+      </ModalTrigger>
+      <ModalContent
         className="w-full sm:w-md"
         id={`addNewProductBrandForm_${context}_productBrandPage`}
+        variant="bordered"
+        borderColor="border-slate-200"
       >
-        <DialogHeader className="text-left">
-          <DialogTitle>🏷️ Add New Product Brand</DialogTitle>
-          <DialogDescription className="text-slate-foreground">
+        <ModalHeader className="text-left">
+          <ModalTitle>🏷️ Add New Product Brand</ModalTitle>
+          <ModalDescription className="text-slate-foreground">
             Create a new product brand to organize your inventory — keep stock levels accurate and
             operations smooth.
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
-        <Form {...form}>
-          <form onSubmit={handleSubmit(handleAddNewProductBrand)} className="space-y-4">
-            <FormField
+        <form
+          onSubmit={handleSubmit(handleAddNewProductBrand)}
+          className="flex flex-col flex-1 min-h-0"
+        >
+          <ModalBody className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
+            <Controller
               control={control}
               name="brand"
               render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">Product brand</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="e.g. Clear"
-                      id="brandNameInput_addBrandDialog"
-                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                        fieldState.error ? 'border-rose-500' : ''
-                      }`}
-                    />
-                  </FormControl>
-                  <FormMessage
-                    id="brandField_errorMessage_productBrandPage"
-                    className="font-medium"
-                  >
-                    {fieldState.error?.message}
-                  </FormMessage>
-                </FormItem>
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="font-medium">Product brand</FieldLabel>
+                  <Input
+                    {...field}
+                    placeholder="e.g. Clear"
+                    id="brandNameInput_addBrandDialog"
+                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                      fieldState.error ? 'border-rose-500' : ''
+                    }`}
+                  />
+                  <FieldError className="font-medium" />
+                </FieldContent>
               )}
             />
 
-            <FormField
+            <Controller
               control={control}
               name="note"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">Notes</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Additional notes"
-                      id="noteInput_addBrandDialog"
-                      className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
-                    />
-                  </FormControl>
-                </FormItem>
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="font-medium">Notes</FieldLabel>
+                  <Textarea
+                    {...field}
+                    placeholder="Additional notes"
+                    id="noteInput_addBrandDialog"
+                    className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
+                  />
+                </FieldContent>
               )}
             />
+          </ModalBody>
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
-                  id="cancelNewProductBrandBtn_productBrandPage"
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
+          <ModalFooter>
+            <ModalClose asChild>
               <Button
-                type="submit"
-                disabled={loading}
-                id="submitNewProductBrandBtn_productBrandPage"
+                type="button"
+                variant="secondary"
+                className="text-violet-600 font-medium"
+                id="cancelNewProductBrandBtn_productBrandPage"
               >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Adding...' : 'Add Product Brand'}
+                Cancel
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+            </ModalClose>
+            <Button type="submit" disabled={loading} id="submitNewProductBrandBtn_productBrandPage">
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? 'Adding...' : 'Add Product Brand'}
+            </Button>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </Modal>
   )
 }

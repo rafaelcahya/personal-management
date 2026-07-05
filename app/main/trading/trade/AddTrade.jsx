@@ -1,36 +1,29 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { format } from 'date-fns'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Calendar } from '@/components/ui/calendar'
+  Modal,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from '@/components/base/Modal/Modal.jsx'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import FieldDescription from '@/components/base/Field/FieldDescription'
+import Input from '@/components/base/Input/Input'
+import Textarea from '@/components/base/Textarea/Textarea'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { toast } from 'sonner'
-import { Loader2, PlusIcon, CalendarIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Loader2, PlusIcon } from 'lucide-react'
 import { tradeSchema } from '@/schemas/trade'
 import { createTrade, fetchAllTradeOptions } from '@/lib/api/trade'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
@@ -181,23 +174,25 @@ export default function AddTrade({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild id="addNewTradeBtn_tradePage">
+    <Modal open={open} onOpenChange={setOpen}>
+      <ModalTrigger asChild id="addNewTradeBtn_tradePage">
         <Button>
-          <PlusIcon />
+          <PlusIcon className="w-4" />
           <span>Add Trade</span>
         </Button>
-      </DialogTrigger>
-      <DialogContent
-        className="sm:max-w-2xl flex flex-col max-h-[90vh]"
+      </ModalTrigger>
+      <ModalContent
+        className="sm:max-w-xl flex flex-col max-h-[60vh]"
         id="addNewTradeForm_tradePage"
+        variant="bordered"
+        borderColor="border-slate-200"
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>📊 Add New Trade</DialogTitle>
-          <DialogDescription className="text-slate-600">
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>📊 Add New Trade</ModalTitle>
+          <ModalDescription className="text-slate-600">
             Record your trade details to track performance and learn from every position
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
         {optionsLoading ? (
           <div
@@ -208,155 +203,121 @@ export default function AddTrade({
             <p className="text-sm text-slate-600">Loading form options...</p>
           </div>
         ) : (
-          <Form {...form}>
-            <form onSubmit={handleSubmit(handleAddTrade)} className="flex flex-col flex-1 min-h-0">
-              <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-                {/* Trade Date */}
-                <FormField
+          <form onSubmit={handleSubmit(handleAddTrade)} className="flex flex-col flex-1 min-h-0">
+            <ModalBody className="space-y-4 pr-2">
+              {/* Trade Date */}
+              <Controller
+                control={control}
+                name="trade_date"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Trade Date</FieldLabel>
+                    <DatePicker
+                      id="tradeDateField_tradePage"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      When did you execute this trade? 📅
+                    </FieldDescription>
+                    <FieldError
+                      id="tradeDateField_errorMessage_tradePage"
+                      className="font-medium"
+                    />
+                  </FieldContent>
+                )}
+              />
+
+              {/* Ticker */}
+              <Controller
+                control={control}
+                name="ticker"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Ticker</FieldLabel>
+                    <Input
+                      {...field}
+                      placeholder="e.g., BBCA, GOTO"
+                      id="tickerField_tradePage"
+                      className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      Stock symbol you traded 🏷️
+                    </FieldDescription>
+                    <FieldError id="tickerField_errorMessage_tradePage" className="font-medium" />
+                  </FieldContent>
+                )}
+              />
+
+              {/* Margin & Proceeds Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CurrencyField
                   control={control}
-                  name="trade_date"
-                  render={({ field, fieldState }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="font-medium">Trade Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              id="tradeDateField_tradePage"
-                              className={cn(
-                                'w-full pl-3 text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
-                                fieldState.error && 'border-rose-500',
-                                !field.value && 'text-slate-500'
-                              )}
-                            >
-                              {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto p-0"
-                          align="start"
-                          id="tradeDatePicker_tradePage"
-                        >
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormDescription className="text-xs">
-                        When did you execute this trade? 📅
-                      </FormDescription>
-                      <FormMessage
-                        id="tradeDateField_errorMessage_tradePage"
-                        className="font-medium"
-                      >
-                        {fieldState.error?.message}
-                      </FormMessage>
-                    </FormItem>
+                  idField="marginField_tradePage"
+                  message="marginField_errorMessage_tradePage"
+                  name="margin"
+                  label="Margin (Capital)"
+                  placeholder="e.g., 1000000"
+                  description="Total capital deployed 💰"
+                />
+
+                <CurrencyField
+                  control={control}
+                  idField="proceedsField_tradePage"
+                  message="proceedsField_errorMessage_tradePage"
+                  name="proceeds"
+                  label="Proceeds (Return)"
+                  placeholder="e.g., 1200000"
+                  description="Total amount received 💵"
+                />
+              </div>
+
+              {/* Auto-calculated fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Controller
+                  control={control}
+                  name="realized_gain"
+                  render={({ field }) => (
+                    <FieldContent>
+                      <FieldLabel className="font-medium">Realized Gain/Loss</FieldLabel>
+                      <Input
+                        value={formatRupiah(field.value)}
+                        id="realizedGainValue_realizedGainField_tradePage"
+                        disabled
+                        className="font-medium bg-slate-50"
+                      />
+                      <FieldDescription className="text-xs text-slate-400">
+                        Auto-calculated 🧮
+                      </FieldDescription>
+                    </FieldContent>
                   )}
                 />
 
-                {/* Ticker */}
-                <FormField
+                <Controller
                   control={control}
-                  name="ticker"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormLabel className="font-medium">Ticker</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="e.g., BBCA, GOTO"
-                          id="tickerField_tradePage"
-                          className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                            fieldState.error ? 'border-rose-500' : ''
-                          }`}
-                        />
-                      </FormControl>
-                      <FormDescription className="text-xs">
-                        Stock symbol you traded 🏷️
-                      </FormDescription>
-                      <FormMessage id="tickerField_errorMessage_tradePage" className="font-medium">
-                        {fieldState.error?.message}
-                      </FormMessage>
-                    </FormItem>
+                  name="return_percent"
+                  render={({ field }) => (
+                    <FieldContent>
+                      <FieldLabel className="font-medium">Return %</FieldLabel>
+                      <Input
+                        value={field.value}
+                        disabled
+                        id="returnPercentValue_returnPercentField_tradePage"
+                        className="font-medium bg-slate-50"
+                      />
+                      <FieldDescription className="text-xs text-slate-400">
+                        Auto-calculated 📊
+                      </FieldDescription>
+                    </FieldContent>
                   )}
                 />
+              </div>
 
-                {/* Margin & Proceeds Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <CurrencyField
-                    control={control}
-                    idField="marginField_tradePage"
-                    message="marginField_errorMessage_tradePage"
-                    name="margin"
-                    label="Margin (Capital)"
-                    placeholder="e.g., 1000000"
-                    description="Total capital deployed 💰"
-                  />
-
-                  <CurrencyField
-                    control={control}
-                    idField="proceedsField_tradePage"
-                    message="proceedsField_errorMessage_tradePage"
-                    name="proceeds"
-                    label="Proceeds (Return)"
-                    placeholder="e.g., 1200000"
-                    description="Total amount received 💵"
-                  />
-                </div>
-
-                {/* Auto-calculated fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={control}
-                    id="realizedGainField_tradePage"
-                    name="realized_gain"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-medium">Realized Gain/Loss</FormLabel>
-                        <FormControl>
-                          <Input
-                            value={formatRupiah(field.value)}
-                            id="realizedGainValue_realizedGainField_tradePage"
-                            disabled
-                            className="font-medium bg-slate-50"
-                          />
-                        </FormControl>
-                        <FormDescription className="text-xs">Auto-calculated 🧮</FormDescription>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    id="returnPercentField_tradePage"
-                    name="return_percent"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-medium">Return %</FormLabel>
-                        <FormControl>
-                          <Input
-                            value={field.value}
-                            disabled
-                            id="returnPercentValue_returnPercentField_tradePage"
-                            className="font-medium bg-slate-50"
-                          />
-                        </FormControl>
-                        <FormDescription className="text-xs">Auto-calculated 📊</FormDescription>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Dynamic Select Fields */}
-                {SELECT_CONFIG.map(({ name, label, apiKey, displayField, placeholder }) => (
+              {/* Dynamic Select Fields */}
+              {SELECT_CONFIG.slice(0, 1).map(
+                ({ name, label, apiKey, displayField, placeholder }) => (
                   <DynamicSelectField
                     key={name}
                     control={control}
@@ -367,51 +328,78 @@ export default function AddTrade({
                     displayField={displayField}
                     placeholder={placeholder}
                   />
-                ))}
-
-                {/* Notes */}
-                <FormField
-                  control={control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-medium">Notes (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Trade insights, emotions, market conditions..."
-                          id="notesField_tradePage"
-                          className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium min-h-[80px]"
-                        />
-                      </FormControl>
-                      <FormDescription className="text-xs">
-                        Document your thought process 📝
-                      </FormDescription>
-                    </FormItem>
-                  )}
-                />
+                )
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                {SELECT_CONFIG.slice(1, 3).map(
+                  ({ name, label, apiKey, displayField, placeholder }) => (
+                    <DynamicSelectField
+                      key={name}
+                      control={control}
+                      name={name}
+                      label={label}
+                      options={options[apiKey]}
+                      loading={false}
+                      displayField={displayField}
+                      placeholder={placeholder}
+                    />
+                  )
+                )}
               </div>
+              {SELECT_CONFIG.slice(3).map(({ name, label, apiKey, displayField, placeholder }) => (
+                <DynamicSelectField
+                  key={name}
+                  control={control}
+                  name={name}
+                  label={label}
+                  options={options[apiKey]}
+                  loading={false}
+                  displayField={displayField}
+                  placeholder={placeholder}
+                />
+              ))}
 
-              <DialogFooter className="shrink-0 pt-4">
-                <DialogClose asChild>
-                  <Button
-                    type="button"
-                    className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
-                    id="cancelNewTradeBtn_tradePage"
-                    disabled={loading}
-                  >
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button type="submit" disabled={loading} id="submitNewTradeBtn_tradePage">
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {loading ? 'Adding...' : 'Add Trade'}
+              {/* Notes */}
+              <Controller
+                control={control}
+                name="notes"
+                render={({ field }) => (
+                  <FieldContent>
+                    <FieldLabel className="font-medium">Notes (Optional)</FieldLabel>
+                    <Textarea
+                      {...field}
+                      placeholder="Trade insights, emotions, market conditions..."
+                      id="notesField_tradePage"
+                      className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium min-h-[80px]"
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      Document your thought process 📝
+                    </FieldDescription>
+                  </FieldContent>
+                )}
+              />
+            </ModalBody>
+
+            <ModalFooter className="shrink-0 pt-4">
+              <ModalClose asChild>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="text-violet-600 font-medium"
+                  id="cancelNewTradeBtn_tradePage"
+                  disabled={loading}
+                >
+                  Cancel
                 </Button>
-              </DialogFooter>
-            </form>
-          </Form>
+              </ModalClose>
+              <Button type="submit" disabled={loading} id="submitNewTradeBtn_tradePage">
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {loading ? 'Adding...' : 'Add Trade'}
+              </Button>
+            </ModalFooter>
+          </form>
         )}
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </Modal>
   )
 }

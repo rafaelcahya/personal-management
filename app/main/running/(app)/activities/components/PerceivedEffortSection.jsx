@@ -5,12 +5,20 @@ import { Info, ChevronDown, ChevronUp } from 'lucide-react'
 import {
   Tooltip as UITooltip,
   TooltipContent as UITooltipContent,
-  TooltipProvider as UITooltipProvider,
   TooltipTrigger as UITooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/components/base/Tooltip/Tooltip.jsx'
+import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import { updateActivity } from '@/lib/api/running'
 import { RPE_LEVELS } from '@/lib/constants/running/rpe'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 const BORG_CR10_COPY =
   'The Borg CR10 is a 1–10 perceived effort scale developed by Swedish psychologist Gunnar Borg. Unlike his original 6–20 scale (designed so RPE × 10 ≈ heart rate bpm), CR10 is a general effort scale that maps naturally to training zones — no heart rate estimation needed. It is the de facto standard in modern endurance apps.'
@@ -88,26 +96,26 @@ export default function PerceivedEffortSection({
         <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
           Borg CR10
         </span>
-        <UITooltipProvider delayDuration={200}>
-          <UITooltip>
-            <UITooltipTrigger asChild>
-              <button
-                id="rpeInfoTrigger_activityDetailPage"
-                aria-label="About the Borg CR10 scale"
-                className="flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
-              >
-                <Info className="size-3.5 text-slate-400 hover:text-slate-600 transition-colors" />
-              </button>
-            </UITooltipTrigger>
-            <UITooltipContent
-              id="rpeInfoTooltip_activityDetailPage"
-              side="top"
-              className="max-w-72 text-xs leading-relaxed"
+        <UITooltip>
+          <UITooltipTrigger asChild>
+            <Button
+              id="rpeInfoTrigger_activityDetailPage"
+              variant="ghost"
+              size="icon-xs"
+              aria-label="About the Borg CR10 scale"
+              className="rounded-full text-slate-400 hover:text-slate-600"
             >
-              {BORG_CR10_COPY}
-            </UITooltipContent>
-          </UITooltip>
-        </UITooltipProvider>
+              <Info className="size-3.5" />
+            </Button>
+          </UITooltipTrigger>
+          <UITooltipContent
+            id="rpeInfoTooltip_activityDetailPage"
+            side="top"
+            className="max-w-72 text-xs leading-relaxed"
+          >
+            {BORG_CR10_COPY}
+          </UITooltipContent>
+        </UITooltip>
         {savedMsg && (
           <span
             id="rpeSavedMsg_activityDetailPage"
@@ -134,7 +142,7 @@ export default function PerceivedEffortSection({
         {RPE_LEVELS.map((level, idx) => {
           const selected = rpe === level.value
           return (
-            <button
+            <Button
               key={level.value}
               id={`rpePicker_${level.value}_activityDetailPage`}
               ref={(el) => (pillsRef.current[idx] = el)}
@@ -160,7 +168,7 @@ export default function PerceivedEffortSection({
                 ${selected ? '' : 'bg-white border-slate-200 text-slate-500'}`}
             >
               {level.value}
-            </button>
+            </Button>
           )
         })}
       </div>
@@ -185,33 +193,32 @@ export default function PerceivedEffortSection({
 
       {/* Session Load */}
       {sessionLoad != null && (
-        <UITooltipProvider delayDuration={200}>
-          <UITooltip>
-            <UITooltipTrigger asChild>
-              <button
-                id="rpeSessionLoad_activityDetailPage"
-                className="inline-flex items-center gap-1.5 self-start px-3 py-1.5 bg-violet-50 rounded-lg cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
-              >
-                <span className="text-xs text-violet-700 font-semibold">{sessionLoad}</span>
-                <span className="text-xs text-violet-500">Session Load</span>
-              </button>
-            </UITooltipTrigger>
-            <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
-              <p className="font-semibold mb-1">Session Load (Foster&apos;s method)</p>
-              <p>
-                RPE × moving time (min). Validated proxy for training load — r=0.90 vs HR-based
-                TRIMP.
-              </p>
-            </UITooltipContent>
-          </UITooltip>
-        </UITooltipProvider>
+        <UITooltip>
+          <UITooltipTrigger asChild>
+            <Button
+              id="rpeSessionLoad_activityDetailPage"
+              variant="ghost"
+              className="self-start px-3 py-1.5 h-auto bg-violet-50 rounded-lg cursor-help hover:bg-violet-100"
+            >
+              <span className="text-xs text-violet-700 font-semibold">{sessionLoad}</span>
+              <span className="text-xs text-violet-500">Session Load</span>
+            </Button>
+          </UITooltipTrigger>
+          <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+            <p className="font-semibold mb-1">Session Load (Foster&apos;s method)</p>
+            <p>
+              RPE × moving time (min). Validated proxy for training load — r=0.90 vs HR-based TRIMP.
+            </p>
+          </UITooltipContent>
+        </UITooltip>
       )}
 
       {/* Expandable guide */}
-      <button
+      <Button
         id="rpeGuideToggle_activityDetailPage"
+        variant="ghost"
         onClick={() => setGuideExpanded((v) => !v)}
-        className="flex items-center gap-1 self-start text-xs text-slate-400 hover:text-slate-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+        className="self-start text-xs text-slate-400 hover:text-slate-600"
       >
         {guideExpanded ? (
           <>
@@ -224,53 +231,48 @@ export default function PerceivedEffortSection({
             Show full guide
           </>
         )}
-      </button>
+      </Button>
 
       {guideExpanded && (
-        <div
+        <Table
           id="rpeGuideTable_activityDetailPage"
-          className="overflow-x-auto rounded-lg border border-slate-100"
+          wrapperClassName="overflow-x-auto rounded-lg border border-slate-100"
+          className="min-w-full text-xs"
+          aria-label="RPE guide reference"
         >
-          <table className="min-w-full text-xs" aria-label="RPE guide reference">
-            <thead>
-              <tr className="border-b border-slate-100">
-                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  RPE
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Label
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Breathing / Talk test
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Zone
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Typical use
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {RPE_LEVELS.map((level) => (
-                <tr
-                  key={level.value}
-                  className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-                >
-                  <td className="px-3 py-2.5 font-semibold" style={{ color: level.bg }}>
-                    {level.value}
-                  </td>
-                  <td className="px-3 py-2.5 font-semibold text-slate-900 whitespace-nowrap">
-                    {level.label}
-                  </td>
-                  <td className="px-3 py-2.5 text-slate-500">{level.breathing}</td>
-                  <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{level.zone}</td>
-                  <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{level.use}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="px-3 py-2.5 font-semibold text-slate-500">RPE</TableHead>
+              <TableHead className="px-3 py-2.5 font-semibold text-slate-500">Label</TableHead>
+              <TableHead className="px-3 py-2.5 font-semibold text-slate-500">
+                Breathing / Talk test
+              </TableHead>
+              <TableHead className="px-3 py-2.5 font-semibold text-slate-500">Zone</TableHead>
+              <TableHead className="px-3 py-2.5 font-semibold text-slate-500">
+                Typical use
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {RPE_LEVELS.map((level) => (
+              <TableRow key={level.value}>
+                <TableCell className="px-3 py-2.5 font-semibold" style={{ color: level.bg }}>
+                  {level.value}
+                </TableCell>
+                <TableCell className="px-3 py-2.5 font-semibold text-slate-900 whitespace-nowrap">
+                  {level.label}
+                </TableCell>
+                <TableCell className="px-3 py-2.5 text-slate-500">{level.breathing}</TableCell>
+                <TableCell className="px-3 py-2.5 text-slate-500 whitespace-nowrap">
+                  {level.zone}
+                </TableCell>
+                <TableCell className="px-3 py-2.5 text-slate-500 whitespace-nowrap">
+                  {level.use}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   )

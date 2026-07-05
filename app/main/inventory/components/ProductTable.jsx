@@ -1,73 +1,77 @@
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import StatusBadge from './StatusBadge'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 export default function ProductTable({ products }) {
   return (
     <>
       {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table
-          id="productTable_productListPage"
-          className="min-w-full text-sm"
-          aria-label="Product cost per use"
-        >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-8">
-                No
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Product
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Total Spent
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Total Units
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Cost/Use
-              </th>
-              <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((item, index) => (
-              <tr
-                key={item.id}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 text-slate-500 text-xs">{index + 1}</td>
-                <td className="px-5 py-3.5">
-                  <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <p className="font-semibold text-slate-900">{item.product}</p>
-                    {item.type && (
-                      <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                        {item.type}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono text-slate-700">
-                  {item.total_spent != null ? formatRupiah(item.total_spent) : '—'}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono text-slate-700">
-                  {item.total_units ?? '—'}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono font-semibold text-violet-700">
-                  {item.cost_per_use != null ? formatRupiah(item.cost_per_use) : '—'}
-                </td>
-                <td className="px-5 py-3.5 text-center">
-                  <StatusBadge status={item.product_status} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        wrapperClassName="hidden md:block"
+        id="productTable_productListPage"
+        className="min-w-full"
+        aria-label="Product cost per use"
+      >
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-8" align="center">
+              No
+            </TableHead>
+            <TableHead className="text-slate-500">Product</TableHead>
+            <TableHead className="text-slate-500" align="right">
+              Total Spent
+            </TableHead>
+            <TableHead className="text-slate-500" align="right">
+              Total Units
+            </TableHead>
+            <TableHead className="text-slate-500" align="right">
+              Cost/Use
+            </TableHead>
+            <TableHead className="text-slate-500" align="center">
+              Status
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {products.map((item, index) => (
+            <TableRow key={item.id} clickable>
+              <TableCell className="text-slate-500 text-xs" align="center">
+                {index + 1}
+              </TableCell>
+              <TableCell>
+                <p className="text-xs text-slate-400">{item.brand || '—'}</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <p className="font-semibold text-slate-900">{item.product}</p>
+                  {item.type && (
+                    <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
+                      {item.type}
+                    </span>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell className="font-mono text-slate-700" align="right">
+                {item.total_spent != null ? formatRupiah(item.total_spent) : '—'}
+              </TableCell>
+              <TableCell className="font-mono text-slate-700" align="right">
+                {item.total_units ?? '—'}
+              </TableCell>
+              <TableCell className="font-mono font-semibold text-violet-700" align="right">
+                {item.cost_per_use != null ? formatRupiah(item.cost_per_use) : '—'}
+              </TableCell>
+              <TableCell align="center">
+                <StatusBadge status={item.product_status} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       {/* Mobile cards */}
       <div className="md:hidden space-y-2 px-2 py-2">

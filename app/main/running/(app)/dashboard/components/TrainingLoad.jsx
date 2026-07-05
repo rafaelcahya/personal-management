@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Button from '@/components/base/Button/Button'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
 import {
   TrendingUp,
   TrendingDown,
@@ -26,7 +27,7 @@ const ACWR_STATUS = {
       <>
         <p className="font-semibold mb-1">No Training Data</p>
         <p>Not enough activity history to calculate your training load ratio yet.</p>
-        <p className="mt-1.5 text-slate-300">
+        <p className="mt-1.5 text-slate-400">
           Log at least a few runs over 2–4 weeks to see your ACWR.
         </p>
       </>
@@ -40,7 +41,7 @@ const ACWR_STATUS = {
       <>
         <p className="font-semibold mb-1">Rest Week</p>
         <p>You have training history but no activities recorded this week.</p>
-        <p className="mt-1.5 text-slate-300">
+        <p className="mt-1.5 text-slate-400">
           Intentional rest is part of the plan — your chronic load is still building fitness.
         </p>
       </>
@@ -54,7 +55,7 @@ const ACWR_STATUS = {
       <>
         <p className="font-semibold mb-1">Low Load (ACWR ≤ 0.8)</p>
         <p>Your current week load is well below your 28-day baseline.</p>
-        <p className="mt-1.5 text-slate-300">
+        <p className="mt-1.5 text-slate-400">
           Safe to gradually add volume or intensity — aim for 5–10% increase per week.
         </p>
       </>
@@ -70,7 +71,7 @@ const ACWR_STATUS = {
         <p>
           You&apos;re training in the ideal zone — enough stimulus to improve without overloading.
         </p>
-        <p className="mt-1.5 text-slate-300">
+        <p className="mt-1.5 text-slate-400">
           Keep this up. This is where fitness gains happen safely.
         </p>
       </>
@@ -84,7 +85,7 @@ const ACWR_STATUS = {
       <>
         <p className="font-semibold mb-1">Caution Zone (ACWR 1.3–1.5)</p>
         <p>Your load is noticeably above your baseline. Injury risk begins to rise here.</p>
-        <p className="mt-1.5 text-slate-300">
+        <p className="mt-1.5 text-slate-400">
           Avoid adding intensity. Stick to easy volume or active recovery this week.
         </p>
       </>
@@ -98,7 +99,7 @@ const ACWR_STATUS = {
       <>
         <p className="font-semibold mb-1">High Risk (ACWR &gt; 1.5)</p>
         <p>Load is too high relative to your baseline. Injury risk is significantly elevated.</p>
-        <p className="mt-1.5 text-slate-300">
+        <p className="mt-1.5 text-slate-400">
           Prioritize rest or very easy sessions before any hard effort.
         </p>
       </>
@@ -114,7 +115,7 @@ const TRAINING_STATUS = {
       <>
         <p className="font-semibold mb-1">Productive</p>
         <p>Your training is working — VO2max is trending upward at a healthy load level.</p>
-        <p className="mt-1.5 text-slate-300">Keep the current structure. Fitness is building.</p>
+        <p className="mt-1.5 text-slate-400">Keep the current structure. Fitness is building.</p>
       </>
     ),
   },
@@ -127,7 +128,7 @@ const TRAINING_STATUS = {
         <p>
           You&apos;re sustaining your current fitness level without significant gains or losses.
         </p>
-        <p className="mt-1.5 text-slate-300">
+        <p className="mt-1.5 text-slate-400">
           Add a quality session or increase volume slightly to stimulate improvement.
         </p>
       </>
@@ -140,7 +141,7 @@ const TRAINING_STATUS = {
       <>
         <p className="font-semibold mb-1">Peaking</p>
         <p>Load is tapering while VO2max is rising — a sign of a successful taper before a race.</p>
-        <p className="mt-1.5 text-slate-300">Stay fresh. Your fitness is at its highest point.</p>
+        <p className="mt-1.5 text-slate-400">Stay fresh. Your fitness is at its highest point.</p>
       </>
     ),
   },
@@ -154,7 +155,7 @@ const TRAINING_STATUS = {
           Training load is too high relative to your baseline. Risk of injury and burnout is
           elevated.
         </p>
-        <p className="mt-1.5 text-slate-300">
+        <p className="mt-1.5 text-slate-400">
           Reduce volume or intensity for at least one week before adding load again.
         </p>
       </>
@@ -170,7 +171,7 @@ const TRAINING_STATUS = {
           You&apos;re training consistently but VO2max is declining — effort is not converting to
           fitness.
         </p>
-        <p className="mt-1.5 text-slate-300">
+        <p className="mt-1.5 text-slate-400">
           Review training quality. Consider more structured workouts or additional recovery.
         </p>
       </>
@@ -183,7 +184,7 @@ const TRAINING_STATUS = {
       <>
         <p className="font-semibold mb-1">Detraining</p>
         <p>Training load is low and VO2max is not rising — fitness may be slowly declining.</p>
-        <p className="mt-1.5 text-slate-300">
+        <p className="mt-1.5 text-slate-400">
           Gradually increase volume to rebuild your aerobic base.
         </p>
       </>
@@ -211,7 +212,7 @@ const TIPS = {
         Ratio of your last 7 days of load vs your 28-day average. A value of 1.0 means you&apos;re
         training at your usual baseline.
       </p>
-      <p className="mt-1.5 text-slate-300">
+      <p className="mt-1.5 text-slate-400">
         <span className="text-blue-400 font-medium">≤ 0.8</span> Low ·{' '}
         <span className="text-green-400 font-medium">0.8–1.3</span> Optimal ·{' '}
         <span className="text-amber-400 font-medium">1.3–1.5</span> Caution ·{' '}
@@ -226,7 +227,7 @@ const TIPS = {
         Total effort points this week, based on Strava Relative Effort — a combination of duration
         and heart rate intensity.
       </p>
-      <p className="mt-1.5 text-slate-300">
+      <p className="mt-1.5 text-slate-400">
         Harder sessions score higher. An easy 5K scores less than a tempo run of the same distance.
       </p>
     </>
@@ -238,7 +239,7 @@ const TIPS = {
         Your average daily training load over the last 7 days. Reflects how tired or fresh your body
         is right now.
       </p>
-      <p className="mt-1.5 text-slate-300">
+      <p className="mt-1.5 text-slate-400">
         High acute load = more fatigue. Low acute load = fresher, but possibly detraining.
       </p>
     </>
@@ -250,7 +251,7 @@ const TIPS = {
         Your average daily training load over the last 28 days. Reflects the fitness base
         you&apos;ve built up over time.
       </p>
-      <p className="mt-1.5 text-slate-300">
+      <p className="mt-1.5 text-slate-400">
         A high chronic load means your body is conditioned to handle more work.
       </p>
     </>
@@ -262,7 +263,7 @@ const TIPS = {
         Chronic load minus acute load — how fresh or fatigued you are right now. Same concept as
         TrainingPeaks&apos; &quot;Form&quot; or Garmin&apos;s Training Effect Balance.
       </p>
-      <p className="mt-1.5 text-slate-300">
+      <p className="mt-1.5 text-slate-400">
         <span className="text-green-400 font-medium">&gt; 0</span> Fresh ·{' '}
         <span className="text-amber-400 font-medium">-5 to 0</span> Neutral ·{' '}
         <span className="text-red-400 font-medium">&lt; -5</span> Fatigued
@@ -273,22 +274,21 @@ const TIPS = {
 
 function InfoTip({ content }) {
   return (
-    <TooltipProvider delayDuration={200}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            type="button"
-            className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-            aria-label="More information"
-          >
-            <Info className="size-3.5" aria-hidden="true" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
-          {content}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          aria-label="More information"
+          className="text-slate-300 hover:text-slate-500"
+        >
+          <Info className="size-3.5" aria-hidden="true" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+        {content}
+      </TooltipContent>
+    </Tooltip>
   )
 }
 

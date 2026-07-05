@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { BarChart2, TrendingUp, TrendingDown, Minus, AlertCircle, Plus } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import Button from '@/components/base/Button/Button'
 import AddTransactionSheet from './[id]/components/AddTransactionSheet'
 import {
   getCurrencyInvestments,
@@ -12,6 +12,14 @@ import {
   getCurrencyHoldings,
 } from '@/lib/api/currencyInvestments'
 import PageHeader from '@/app/main/components/PageHeader'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 function formatIDR(amount) {
   return new Intl.NumberFormat('id-ID', {
@@ -72,7 +80,7 @@ function EmptyState({ onAdd }) {
         <p className="text-sm font-medium text-slate-700">No currency holdings yet</p>
         <p className="text-xs text-slate-500">Add your first investment to get started</p>
       </div>
-      <Button size="sm" onClick={onAdd} className="bg-violet-600 hover:bg-violet-700 min-w-11">
+      <Button size="base" onClick={onAdd} className="bg-violet-600 hover:bg-violet-700 min-w-11">
         <Plus className="size-4 mr-1.5" aria-hidden="true" />
         Add Investment
       </Button>
@@ -92,7 +100,7 @@ function ErrorState({ onRetry }) {
         <p className="text-sm font-medium text-slate-700">Failed to load holdings</p>
         <p className="text-xs text-slate-500">Check your connection and try again</p>
       </div>
-      <Button variant="outline" size="sm" onClick={onRetry} className="min-w-11">
+      <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
         Try again
       </Button>
     </div>
@@ -200,7 +208,7 @@ export default function HoldingsPage() {
           </div>
           <Button
             id="addInvestmentBtn_holdingsPage"
-            size="sm"
+            size="base"
             onClick={() => setSheetOpen(true)}
             className="bg-violet-600 hover:bg-violet-700 shrink-0 min-w-11"
           >
@@ -218,86 +226,87 @@ export default function HoldingsPage() {
         ) : holdings.length === 0 ? (
           <EmptyState onAdd={() => setSheetOpen(true)} />
         ) : (
-          <div className="overflow-x-auto">
-            <table
-              id="holdingsTable_holdingsPage"
-              className="min-w-full text-sm"
-              aria-label="Currency holdings"
-            >
-              <thead>
-                <tr className="border-b border-slate-100">
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                    Currency
-                  </th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap hidden sm:table-cell">
-                    Total Invested
-                  </th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap hidden sm:table-cell">
-                    Avg Buy Rate
-                  </th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                    Current Rate
-                  </th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                    % Change
-                  </th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap hidden sm:table-cell">
-                    Current Value
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {holdings.map((row) => (
-                  <tr
-                    key={row.currency}
-                    id={`holdingsTableRow_${row.currency}_holdingsPage`}
-                    onClick={() =>
+          <Table
+            id="holdingsTable_holdingsPage"
+            className="min-w-full"
+            aria-label="Currency holdings"
+          >
+            <TableHeader>
+              <TableRow>
+                <TableHead>Currency</TableHead>
+                <TableHead className="hidden sm:table-cell" align="right">
+                  Total Invested
+                </TableHead>
+                <TableHead className="hidden sm:table-cell" align="right">
+                  Avg Buy Rate
+                </TableHead>
+                <TableHead align="right">Current Rate</TableHead>
+                <TableHead align="right">% Change</TableHead>
+                <TableHead className="hidden sm:table-cell" align="right">
+                  Current Value
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {holdings.map((row) => (
+                <TableRow
+                  key={row.currency}
+                  id={`holdingsTableRow_${row.currency}_holdingsPage`}
+                  clickable
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`View ${row.currency} details`}
+                  onClick={() =>
+                    router.push(
+                      `/main/trading/currency/holdings/${holdingIds[row.currency] ?? row.currency}`
+                    )
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
                       router.push(
                         `/main/trading/currency/holdings/${holdingIds[row.currency] ?? row.currency}`
                       )
                     }
-                    className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors"
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`View ${row.currency} details`}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        router.push(
-                          `/main/trading/currency/holdings/${holdingIds[row.currency] ?? row.currency}`
-                        )
-                      }
-                    }}
+                  }}
+                >
+                  <TableCell className="font-semibold text-slate-900">{row.currency}</TableCell>
+                  <TableCell
+                    className="font-mono text-slate-700 hidden sm:table-cell"
+                    align="right"
                   >
-                    <td className="px-5 py-3.5 font-semibold text-slate-900">{row.currency}</td>
-                    <td className="px-5 py-3.5 text-right font-mono text-slate-700 hidden sm:table-cell">
-                      {formatIDR(row.totalInvested)}
-                    </td>
-                    <td className="px-5 py-3.5 text-right font-mono text-slate-700 hidden sm:table-cell">
-                      {row.avgBuyRate > 0
-                        ? new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(
-                            row.avgBuyRate
-                          )
-                        : '—'}
-                    </td>
-                    <td className="px-5 py-3.5 text-right font-mono text-slate-700">
-                      {row.currentRate > 0
-                        ? new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(
-                            row.currentRate
-                          )
-                        : '—'}
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <PctChange pct={row.pctChange} />
-                    </td>
-                    <td className="px-5 py-3.5 text-right font-mono text-slate-700 hidden sm:table-cell">
-                      {formatIDR(row.currentValue)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    {formatIDR(row.totalInvested)}
+                  </TableCell>
+                  <TableCell
+                    className="font-mono text-slate-700 hidden sm:table-cell"
+                    align="right"
+                  >
+                    {row.avgBuyRate > 0
+                      ? new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(
+                          row.avgBuyRate
+                        )
+                      : '—'}
+                  </TableCell>
+                  <TableCell className="font-mono text-slate-700" align="right">
+                    {row.currentRate > 0
+                      ? new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(
+                          row.currentRate
+                        )
+                      : '—'}
+                  </TableCell>
+                  <TableCell align="right">
+                    <PctChange pct={row.pctChange} />
+                  </TableCell>
+                  <TableCell
+                    className="font-mono text-slate-700 hidden sm:table-cell"
+                    align="right"
+                  >
+                    {formatIDR(row.currentValue)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </section>
 

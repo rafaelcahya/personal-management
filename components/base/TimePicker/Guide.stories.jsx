@@ -65,7 +65,9 @@ function FieldDemo({ error, description, label = 'Start time', required = false,
     <FieldContent size="base" error={error}>
       <FieldLabel required={required}>{label}</FieldLabel>
       <TimePicker value={time} onChange={setTime} {...props} />
-      {description && <FieldDescription>{description}</FieldDescription>}
+      {description && (
+        <FieldDescription className="text-xs text-slate-400">{description}</FieldDescription>
+      )}
       {error && <FieldError />}
     </FieldContent>
   )
@@ -477,7 +479,7 @@ export const Docs = {
         <Code>{`<FieldContent size="base">
   <FieldLabel required>Start time</FieldLabel>
   <TimePicker value={time} onChange={setTime} />
-  <FieldDescription>When does the session start?</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">When does the session start?</FieldDescription>
 </FieldContent>`}</Code>
       </Section>
 

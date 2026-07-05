@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import Button from '@/components/base/Button/Button'
 import {
   ExternalLink,
   FilePenLine,
@@ -174,7 +174,7 @@ export default function EventDetailClient({ id }) {
   const AnalyzeButton = ({ className = '' }) => (
     <Button
       id="analyzeEventBtn_eventDetailPage"
-      size="sm"
+      size="base"
       onClick={() => setAnalysisModalOpen(true)}
       className={`gap-1.5 bg-violet-600 hover:bg-violet-700 text-white ${className}`}
     >
@@ -206,6 +206,7 @@ export default function EventDetailClient({ id }) {
                 id="editEventBtn_eventDetailPage"
                 variant="ghost"
                 size="icon"
+                aria-label="Edit event"
                 className="size-8 hover:bg-slate-100 focus-visible:ring-0 focus-visible:ring-offset-0"
                 onClick={() => setEditOpen(true)}
               >
@@ -215,6 +216,7 @@ export default function EventDetailClient({ id }) {
                 id="deleteEventBtn_eventDetailPage"
                 variant="ghost"
                 size="icon"
+                aria-label="Delete event"
                 className="size-8 hover:bg-red-50 focus-visible:ring-0 focus-visible:ring-offset-0"
                 onClick={() => setDeleteOpen(true)}
               >
@@ -229,6 +231,7 @@ export default function EventDetailClient({ id }) {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label="More options"
                     className="size-8 hover:bg-slate-100 focus-visible:ring-0 focus-visible:ring-offset-0"
                   >
                     <MoreHorizontal className="size-4 text-slate-500" />
@@ -359,7 +362,7 @@ export default function EventDetailClient({ id }) {
                     <Button
                       id="refreshAnalysisBtn_eventDetailPage"
                       variant="outline"
-                      size="sm"
+                      size="base"
                       onClick={() => setAnalysisModalOpen(true)}
                       className="h-7 gap-1.5 text-xs"
                     >

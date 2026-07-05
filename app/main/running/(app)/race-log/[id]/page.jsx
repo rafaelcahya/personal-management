@@ -3,17 +3,16 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ChevronLeft, Trash2, Loader2, AlertTriangle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import { toast } from 'sonner'
 import {
   fetchRaceLogEntry,
@@ -160,13 +159,15 @@ export default function RaceDetailPage() {
     <div id="raceDetailPage" className="flex flex-col gap-3 sm:gap-5">
       {/* Back + breadcrumb */}
       <div className="flex items-center gap-3">
-        <button
+        <Button
+          variant="ghost"
+          size="icon-sm"
           onClick={() => router.back()}
-          className="flex items-center justify-center size-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition-colors shrink-0"
+          className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 shrink-0"
           aria-label="Go back"
         >
           <ChevronLeft className="size-4" />
-        </button>
+        </Button>
         <PageHeader
           title={entry?.title ?? 'Race Detail'}
           breadcrumbs={[
@@ -186,12 +187,9 @@ export default function RaceDetailPage() {
         >
           <AlertTriangle className="size-8" aria-hidden="true" />
           <span>{error}</span>
-          <button
-            onClick={() => window.location.reload()}
-            className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-          >
+          <Button variant="link" size="sm" onClick={() => window.location.reload()}>
             Try again
-          </button>
+          </Button>
         </div>
       )}
 
@@ -249,7 +247,7 @@ export default function RaceDetailPage() {
               <Button
                 id="deleteRaceBtn_raceDetailPage"
                 variant="outline"
-                size="sm"
+                size="base"
                 onClick={() => setDeleteOpen(true)}
                 className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
               >
@@ -268,32 +266,41 @@ export default function RaceDetailPage() {
         onSaved={(updated) => setEntry(updated)}
       />
 
-      <AlertDialog open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this race entry?</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Modal open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
+        <ModalContent showCloseButton={false} variant="bordered" borderColor="border-slate-200">
+          <ModalHeader>
+            <ModalTitle>Delete this race entry?</ModalTitle>
+            <ModalDescription>
               <strong>{entry?.title}</strong> will be permanently deleted. This cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              disabled={deleting}
-              className="text-violet-600 hover:text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium border-none"
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              id="deleteRaceConfirmBtn_raceDetailPage"
-              onClick={handleDelete}
-              disabled={deleting}
-              className="bg-red-600 hover:bg-red-700 focus-visible:ring-red-500"
-            >
-              {deleting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Delete'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </ModalDescription>
+          </ModalHeader>
+          <ModalFooter>
+            <ModalClose asChild>
+              <Button
+                disabled={deleting}
+                variant="ghost"
+                className="text-violet-600 hover:text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium border-none"
+              >
+                Cancel
+              </Button>
+            </ModalClose>
+            <ModalClose asChild>
+              <Button
+                id="deleteRaceConfirmBtn_raceDetailPage"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="bg-red-600 hover:bg-red-700 focus-visible:ring-red-500"
+              >
+                {deleting ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  'Delete'
+                )}
+              </Button>
+            </ModalClose>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   )
 }

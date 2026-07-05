@@ -16,6 +16,30 @@ import {
   ComboTag,
 } from './comboParts'
 
+// ─── IsolatedScroll ───────────────────────────────────────────────────────────
+// Stops wheel/touch events from bubbling to document so react-remove-scroll
+// (used by Radix Dialog) cannot preventDefault them when inside a Portal.
+
+function IsolatedScroll({ className, children }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const stop = (e) => e.stopPropagation()
+    el.addEventListener('wheel', stop, { passive: false })
+    el.addEventListener('touchmove', stop, { passive: false })
+    return () => {
+      el.removeEventListener('wheel', stop)
+      el.removeEventListener('touchmove', stop)
+    }
+  }, [])
+  return (
+    <div ref={ref} className={className}>
+      {children}
+    </div>
+  )
+}
+
 // ─── Combobox ─────────────────────────────────────────────────────────────────
 
 const DEFAULT_CREATE_LABEL = (val) => `Create "${val}"`
@@ -191,7 +215,7 @@ export default function Combobox({
   // ── Shared: option list ──────────────────────────────────────────────────────
 
   const renderOptions = () => (
-    <div className="max-h-60 overflow-y-auto p-1">
+    <>
       {loading && (
         <div className="flex justify-center py-5">
           <Loader2 className="size-4 animate-spin text-slate-400" />
@@ -228,7 +252,7 @@ export default function Combobox({
           {createLabel(query.trim())}
         </button>
       )}
-    </div>
+    </>
   )
 
   // ── Size + variant styles ────────────────────────────────────────────────────
@@ -321,7 +345,9 @@ export default function Combobox({
           align={align}
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          {renderOptions()}
+          <IsolatedScroll className="max-h-[var(--radix-popover-content-available-height,240px)] overflow-y-auto p-1">
+            {renderOptions()}
+          </IsolatedScroll>
         </PopoverContent>
       </Popover>
     )
@@ -371,7 +397,7 @@ export default function Combobox({
                 <span className="text-muted-foreground">{placeholder}</span>
               )
             ) : (
-              <span className={value ? 'text-foreground' : 'text-muted-foreground'}>
+              <span className={`truncate ${value ? 'text-foreground' : 'text-muted-foreground'}`}>
                 {value?.label ?? placeholder}
               </span>
             )}
@@ -380,8 +406,11 @@ export default function Combobox({
         </div>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align={align}>
-        <div className="p-2 border-b border-slate-100">
+      <PopoverContent
+        className="w-[var(--radix-popover-trigger-width)] p-0 max-h-[var(--radix-popover-content-available-height,300px)] flex flex-col overflow-hidden"
+        align={align}
+      >
+        <div className="shrink-0 p-2 border-b border-slate-100">
           <input
             ref={inputRef}
             value={query}
@@ -392,7 +421,9 @@ export default function Combobox({
             autoFocus
           />
         </div>
-        {renderOptions()}
+        <IsolatedScroll className="flex-1 min-h-0 overflow-y-auto p-1">
+          {renderOptions()}
+        </IsolatedScroll>
       </PopoverContent>
     </Popover>
   )

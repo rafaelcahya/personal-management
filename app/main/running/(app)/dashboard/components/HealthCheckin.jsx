@@ -1,8 +1,8 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Button from '@/components/base/Button/Button'
 import { HeartPulse } from 'lucide-react'
 
 const HEALTH_LABELS = {
@@ -67,7 +67,10 @@ export default function HealthCheckin({ data }) {
                 </p>
               </div>
               <Link href="/main/running/settings" className="shrink-0">
-                <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white min-w-11">
+                <Button
+                  size="base"
+                  className="bg-violet-600 hover:bg-violet-700 text-white min-w-11"
+                >
                   Log today's health
                 </Button>
               </Link>

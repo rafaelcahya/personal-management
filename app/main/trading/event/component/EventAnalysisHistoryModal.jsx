@@ -4,9 +4,20 @@ import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+} from '@/components/base/Modal/Modal.jsx'
+import Button from '@/components/base/Button/Button'
+import {
+  SelectCard,
+  SelectCardTitle,
+  SelectCardDescription,
+} from '@/components/base/SelectCard/SelectCard'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { ChevronLeft, Sparkles, History } from 'lucide-react'
 import { fetchAnalysisHistory } from '@/lib/api/event'
 
@@ -30,37 +41,38 @@ function HistoryList({ history, onSelect }) {
         const eventNames = isMulti ? item.event_titles : item.event_title ? [item.event_title] : []
 
         return (
-          <button
+          <SelectCard
             key={item.id}
-            type="button"
-            onClick={() => onSelect(item)}
-            className="w-full text-left border border-slate-200 rounded-lg px-4 py-3 hover:bg-slate-50 hover:border-violet-200 transition-colors"
+            value={item.id}
+            layout="horizontal"
+            indicator="border"
+            onSelect={() => onSelect(item)}
           >
-            <div className="flex items-center justify-between gap-3 mb-1.5">
-              <span
-                className={`text-xs font-semibold px-1.5 py-0.5 rounded shrink-0 ${
-                  isMulti ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-600'
-                }`}
-              >
-                {isMulti ? `Multi · ${item.event_titles.length} events` : 'Single'}
-              </span>
-              <span className="text-xs text-slate-400 shrink-0">
-                {formatTimestamp(item.generated_at)}
-              </span>
-            </div>
+            <div className="flex-1 flex flex-col gap-2 min-w-0">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-xs font-semibold px-1.5 py-0.5 rounded shrink-0 ${
+                    isMulti ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  {isMulti ? `Multi · ${item.event_titles.length} events` : 'Single'}
+                </span>
+                <span className="text-xs text-slate-400 shrink-0">
+                  {formatTimestamp(item.generated_at)}
+                </span>
+              </div>
 
-            {/* Event names — full, not truncated */}
-            <div className="flex flex-col gap-0.5">
-              {eventNames.length === 0 && (
-                <p className="text-sm text-slate-400 italic">Unknown event</p>
+              {eventNames.length === 0 ? (
+                <SelectCardDescription className="italic">Unknown event</SelectCardDescription>
+              ) : (
+                <div className="flex flex-col gap-0.5">
+                  {eventNames.map((name, i) => (
+                    <SelectCardTitle key={i}>{name}</SelectCardTitle>
+                  ))}
+                </div>
               )}
-              {eventNames.map((name, i) => (
-                <p key={i} className="text-sm font-medium text-slate-800 leading-snug">
-                  {name}
-                </p>
-              ))}
             </div>
-          </button>
+          </SelectCard>
         )
       })}
     </div>
@@ -137,61 +149,67 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="w-[90vw] !max-w-3xl max-h-[85vh] flex flex-col overflow-hidden">
-        <DialogHeader className="shrink-0">
-          <DialogTitle className="flex items-center gap-2 text-base">
+    <Modal open={open} onOpenChange={handleClose}>
+      <ModalContent
+        variant="bordered"
+        borderColor="border-slate-200"
+        className="w-[90vw] !max-w-3xl max-h-[85vh] flex flex-col overflow-hidden"
+      >
+        <ModalHeader className="shrink-0">
+          <ModalTitle className="flex items-center gap-2 text-base">
             <History className="size-4 text-violet-500" />
             {selected ? 'Analysis Detail' : 'AI Analysis History'}
-          </DialogTitle>
-        </DialogHeader>
+          </ModalTitle>
+        </ModalHeader>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto pr-1">
-          {loading && (
-            <div className="flex flex-col gap-2">
-              {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-20 w-full rounded-lg" />
-              ))}
-            </div>
-          )}
+        <ModalBody>
+          <div ref={scrollRef} className="flex-1 overflow-y-auto pr-1">
+            {loading && (
+              <div className="flex flex-col gap-2">
+                {[...Array(3)].map((_, i) => (
+                  <Skeleton key={i} className="h-20 w-full rounded-lg" />
+                ))}
+              </div>
+            )}
 
-          {!loading && error && <p className="text-sm text-red-600 text-center py-8">{error}</p>}
+            {!loading && error && <p className="text-sm text-red-600 text-center py-8">{error}</p>}
 
-          {!loading && !error && history.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 gap-2 text-slate-400">
-              <Sparkles className="size-8" />
-              <p className="text-sm font-medium">No analyses yet</p>
-              <p className="text-xs">Run an AI analysis on any event to see it here.</p>
-            </div>
-          )}
+            {!loading && !error && history.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 gap-2 text-slate-400">
+                <Sparkles className="size-8" />
+                <p className="text-sm font-medium">No analyses yet</p>
+                <p className="text-xs">Run an AI analysis on any event to see it here.</p>
+              </div>
+            )}
 
-          {!loading && !error && !selected && history.length > 0 && (
-            <HistoryList history={history} onSelect={setSelected} />
-          )}
+            {!loading && !error && !selected && history.length > 0 && (
+              <HistoryList history={history} onSelect={setSelected} />
+            )}
 
-          {!loading && !error && selected && (
-            <HistoryDetail item={selected} onBack={() => setSelected(null)} />
-          )}
-        </div>
-
-        <div className="shrink-0 flex items-center justify-between pt-3 border-t border-slate-100">
-          <div>
-            {selected && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelected(null)}
-                className="gap-1 text-xs text-slate-500"
-              >
-                <ChevronLeft className="size-3.5" /> Back
-              </Button>
+            {!loading && !error && selected && (
+              <HistoryDetail item={selected} onBack={() => setSelected(null)} />
             )}
           </div>
-          <Button variant="outline" size="sm" onClick={handleClose}>
-            Close
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+
+          <div className="shrink-0 flex items-center justify-between pt-3 border-t border-slate-100">
+            <div>
+              {selected && (
+                <Button
+                  variant="ghost"
+                  size="base"
+                  onClick={() => setSelected(null)}
+                  className="gap-1 text-xs text-slate-500"
+                >
+                  <ChevronLeft className="size-3.5" /> Back
+                </Button>
+              )}
+            </div>
+            <Button variant="outline" size="base" onClick={handleClose}>
+              Close
+            </Button>
+          </div>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   )
 }

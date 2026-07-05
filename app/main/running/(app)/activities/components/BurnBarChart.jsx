@@ -13,6 +13,7 @@ import {
 } from 'recharts'
 import { fmtPace } from '../../dashboard/utils/format'
 import { SectionLabel } from './activityShared'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 
 const ON_PACE_THRESHOLD_SEC = 3
 const TYPICAL_HR_THRESHOLD_BPM = 2
@@ -76,34 +77,16 @@ export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage
       <div className="flex items-center justify-between mb-2">
         <SectionLabel>Burn Bar — vs Your Average</SectionLabel>
         {hasHr && (
-          <div className="flex items-center gap-1">
-            <button
-              id={`burnBarPaceBtn_${pagePrefix}`}
-              type="button"
-              aria-pressed={view === 'pace'}
-              onClick={() => setView('pace')}
-              className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                view === 'pace'
-                  ? 'bg-violet-600 text-white border-violet-600'
-                  : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
-              }`}
-            >
-              Pace
-            </button>
-            <button
-              id={`burnBarHrBtn_${pagePrefix}`}
-              type="button"
-              aria-pressed={view === 'hr'}
-              onClick={() => setView('hr')}
-              className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                view === 'hr'
-                  ? 'bg-violet-600 text-white border-violet-600'
-                  : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
-              }`}
-            >
-              HR
-            </button>
-          </div>
+          <Tabs value={view} onValueChange={setView} className="shrink-0 self-start">
+            <TabsList variant="pill" size="sm">
+              <TabsTrigger id={`burnBarPaceBtn_${pagePrefix}`} value="pace">
+                Pace
+              </TabsTrigger>
+              <TabsTrigger id={`burnBarHrBtn_${pagePrefix}`} value="hr">
+                HR
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         )}
       </div>
 

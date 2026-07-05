@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Sparkles, Loader2, RefreshCw, Send, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { fetchDailyInsight, generateDailyInsight, generateFollowUp } from '@/lib/api/running'
 import { renderMarkdown, parseInline, parseQuickTags, stripQuickTags } from './utils'
 
@@ -185,7 +185,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
           <p className="text-sm text-slate-400">Could not load today&apos;s insight.</p>
           <Button
             variant="ghost"
-            size="sm"
+            size="base"
             className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal text-xs"
             onClick={() => {
               setLoadError(false)
@@ -211,7 +211,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
           )}
           <Button
             id="dailyInsightGenerateBtn_aiCoachPage"
-            size="sm"
+            size="base"
             disabled={generating}
             onClick={() => handleGenerate(false)}
             className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 focus-visible:ring-2 focus-visible:ring-violet-200"
@@ -257,8 +257,10 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
           {tags.length > 0 && (
             <div id="dailyInsightTags_aiCoachPage" className="flex flex-wrap gap-1.5">
               {tags.map((tag, i) => (
-                <button
+                <Button
                   key={i}
+                  variant="ghost"
+                  size="xs"
                   onClick={() => handleTagClick(tag)}
                   disabled={followUpLoading}
                   className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
@@ -268,7 +270,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
                   }`}
                 >
                   {tag}
-                </button>
+                </Button>
               ))}
             </div>
           )}
@@ -287,7 +289,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
             />
             <Button
               id="dailyInsightAskBtn_aiCoachPage"
-              size="sm"
+              size="base"
               disabled={!freeText.trim() || followUpLoading}
               onClick={handleFreeTextSubmit}
               className="bg-violet-600 hover:bg-violet-700 text-white h-8 px-3 focus-visible:ring-2 focus-visible:ring-violet-200"
@@ -311,7 +313,9 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
                   &ldquo;{followUpQuestion}&rdquo;
                 </p>
                 {!followUpLoading && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="xs"
                     onClick={() => {
                       setFollowUpQuestion(null)
                       setFollowUpContent(null)
@@ -322,7 +326,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
                     aria-label="Clear follow-up"
                   >
                     <X className="h-3 w-3" />
-                  </button>
+                  </Button>
                 )}
               </div>
 
@@ -384,7 +388,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
             <Button
               id="dailyInsightRegenerateBtn_aiCoachPage"
               variant="ghost"
-              size="sm"
+              size="base"
               disabled={generating || isPending}
               onClick={() => handleGenerate(true)}
               className="text-violet-600 hover:text-violet-700 px-0 h-auto text-xs font-normal focus-visible:ring-2 focus-visible:ring-violet-200"
@@ -424,7 +428,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
           )}
           <Button
             id="dailyInsightGenerateFromStaleBtn_aiCoachPage"
-            size="sm"
+            size="base"
             disabled={generating}
             onClick={() => handleGenerate(false)}
             className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 focus-visible:ring-2 focus-visible:ring-violet-200"

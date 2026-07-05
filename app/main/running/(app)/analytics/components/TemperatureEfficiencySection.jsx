@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { Thermometer } from 'lucide-react'
@@ -14,7 +14,7 @@ import {
   ReferenceArea,
   Cell,
 } from 'recharts'
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { fetchTemperatureEfficiency } from '@/lib/api/running'
 
 const MORNING_COLOR = '#f59e0b'
@@ -284,12 +284,12 @@ export default function TemperatureEfficiencySection() {
               className="flex flex-col items-center gap-2 py-8 text-center"
             >
               <p className="text-xs text-red-500">{error}</p>
-              <button
+              <Button
                 onClick={load}
                 className="text-xs text-violet-600 underline hover:no-underline"
               >
                 Try again
-              </button>
+              </Button>
             </div>
           )}
 

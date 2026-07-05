@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format } from 'date-fns'
@@ -21,19 +21,12 @@ import {
   LoaderIcon,
   InfoIcon,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { cn } from '@/lib/utils'
+import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
 import {
   saveOnboardingBiometric,
   completeOnboarding,
@@ -223,259 +216,222 @@ function StepBiometrics({ onNext, defaultValues }) {
         </p>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="space-y-5">
-          {/* Birth date */}
-          <FormField
+      <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="space-y-5">
+        {/* Birth date */}
+        <Controller
+          control={form.control}
+          name="birth_date"
+          render={({ field, fieldState }) => (
+            <FieldContent error={fieldState.error?.message}>
+              <FieldLabel className="flex items-center gap-1.5 text-slate-700">
+                <CalendarIcon className="size-3.5 text-slate-400" aria-hidden="true" />
+                Birth date
+              </FieldLabel>
+              <DatePicker
+                id="birthDateInput_onboarding"
+                value={field.value ? new Date(field.value + 'T00:00:00') : null}
+                onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                fromDate={new Date(1930, 0, 1)}
+                toDate={new Date()}
+              />
+              <FieldError />
+            </FieldContent>
+          )}
+        />
+
+        {/* Height + Weight side by side */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Controller
             control={form.control}
-            name="birth_date"
-            render={({ field }) => {
-              const selectedDate = field.value ? new Date(field.value + 'T00:00:00') : undefined
-              return (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-1.5 text-slate-700">
-                    <CalendarIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                    Birth date
-                  </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          id="birthDateInput_onboarding"
-                          variant="outline"
-                          className={cn(
-                            'w-full justify-start text-left font-normal focus-visible:ring-violet-200 focus-visible:border-violet-600',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          <CalendarIcon className="size-4 mr-2 text-slate-400" aria-hidden="true" />
-                          {field.value
-                            ? format(selectedDate, 'd MMM yyyy')
-                            : 'Select your birth date'}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        captionLayout="dropdown"
-                        selected={selectedDate}
-                        onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                        disabled={(date) => date > new Date()}
-                        defaultMonth={selectedDate}
-                        fromYear={1930}
-                        toYear={new Date().getFullYear()}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )
-            }}
+            name="height_cm"
+            render={({ field, fieldState }) => (
+              <FieldContent error={fieldState.error?.message}>
+                <FieldLabel className="flex items-center gap-1.5 text-slate-700">
+                  <RulerIcon className="size-3.5 text-slate-400" aria-hidden="true" />
+                  Height (cm)
+                </FieldLabel>
+                <Input
+                  id="heightInput_onboarding"
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="170"
+                  min={100}
+                  max={250}
+                  className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  {...field}
+                />
+                <FieldError />
+              </FieldContent>
+            )}
           />
 
-          {/* Height + Weight side by side */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="height_cm"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-1.5 text-slate-700">
-                    <RulerIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                    Height (cm)
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      id="heightInput_onboarding"
-                      type="number"
-                      inputMode="decimal"
-                      placeholder="170"
-                      min={100}
-                      max={250}
-                      className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Controller
+            control={form.control}
+            name="weight_kg"
+            render={({ field, fieldState }) => (
+              <FieldContent error={fieldState.error?.message}>
+                <FieldLabel className="flex items-center gap-1.5 text-slate-700">
+                  <WeightIcon className="size-3.5 text-slate-400" aria-hidden="true" />
+                  Weight (kg)
+                </FieldLabel>
+                <Input
+                  id="weightInput_onboarding"
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="65"
+                  min={30}
+                  max={300}
+                  className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  {...field}
+                />
+                <FieldError />
+              </FieldContent>
+            )}
+          />
+        </div>
 
-            <FormField
-              control={form.control}
-              name="weight_kg"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-1.5 text-slate-700">
-                    <WeightIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                    Weight (kg)
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      id="weightInput_onboarding"
-                      type="number"
-                      inputMode="decimal"
-                      placeholder="65"
-                      min={30}
-                      max={300}
-                      className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Resting HR */}
+        <Controller
+          control={form.control}
+          name="resting_hr_baseline"
+          render={({ field, fieldState }) => (
+            <FieldContent error={fieldState.error?.message}>
+              <FieldLabel className="flex items-center gap-1.5 text-slate-700">
+                <HeartPulseIcon className="size-3.5 text-slate-400" aria-hidden="true" />
+                Resting heart rate (bpm)
+              </FieldLabel>
+              <Input
+                id="restingHrInput_onboarding"
+                type="number"
+                inputMode="numeric"
+                placeholder="55"
+                min={30}
+                max={120}
+                className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                {...field}
+              />
+              <FieldError />
+            </FieldContent>
+          )}
+        />
+
+        {/* Max HR — formula vs manual */}
+        <div className="space-y-3">
+          <span className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+            <ZapIcon className="size-3.5 text-slate-400" aria-hidden="true" />
+            Max heart rate (bpm)
+          </span>
+
+          {/* Mode toggle */}
+          <div role="radiogroup" aria-label="Max heart rate method" className="flex gap-3">
+            {[
+              { value: 'formula', label: 'Use formula (220 − age)' },
+              { value: 'manual', label: 'Enter manually' },
+            ].map((option) => (
+              <label
+                key={option.value}
+                className={[
+                  'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm cursor-pointer transition-all',
+                  maxHrMode === option.value
+                    ? 'border-violet-500 bg-violet-50 text-violet-700'
+                    : 'border-slate-200 text-slate-600 hover:border-slate-300',
+                ].join(' ')}
+              >
+                <input
+                  id={
+                    option.value === 'formula'
+                      ? 'maxHrFormulaRadio_onboarding'
+                      : 'maxHrManualRadio_onboarding'
+                  }
+                  type="radio"
+                  className="accent-violet-600"
+                  value={option.value}
+                  checked={maxHrMode === option.value}
+                  onChange={() => form.setValue('max_hr_mode', option.value)}
+                  aria-label={option.label}
+                />
+                {option.label}
+              </label>
+            ))}
           </div>
 
-          {/* Resting HR */}
-          <FormField
-            control={form.control}
-            name="resting_hr_baseline"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-1.5 text-slate-700">
-                  <HeartPulseIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-                  Resting heart rate (bpm)
-                </FormLabel>
-                <FormControl>
+          {/* Formula preview */}
+          {maxHrMode === 'formula' && (
+            <div
+              id="maxHrFormulaPreview_onboarding"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-violet-50 border border-violet-200 text-sm text-violet-700"
+              aria-live="polite"
+            >
+              <HeartPulseIcon className="size-4 shrink-0" aria-hidden="true" />
+              {formulaMaxHr !== null ? (
+                <span>
+                  Estimated max HR: <strong>{formulaMaxHr} bpm</strong>
+                </span>
+              ) : (
+                <span className="text-slate-500">Enter your birth date to see the estimate</span>
+              )}
+            </div>
+          )}
+
+          {/* Manual input */}
+          {maxHrMode === 'manual' && (
+            <Controller
+              control={form.control}
+              name="max_hr"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="sr-only">Max heart rate</FieldLabel>
                   <Input
-                    id="restingHrInput_onboarding"
+                    id="maxHrManualInput_onboarding"
                     type="number"
                     inputMode="numeric"
-                    placeholder="55"
-                    min={30}
-                    max={120}
+                    placeholder="185"
+                    min={100}
+                    max={250}
+                    aria-label="Max heart rate in bpm"
                     className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                     {...field}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Max HR — formula vs manual */}
-          <div className="space-y-3">
-            <span className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
-              <ZapIcon className="size-3.5 text-slate-400" aria-hidden="true" />
-              Max heart rate (bpm)
-            </span>
-
-            {/* Mode toggle */}
-            <div role="radiogroup" aria-label="Max heart rate method" className="flex gap-3">
-              {[
-                { value: 'formula', label: 'Use formula (220 − age)' },
-                { value: 'manual', label: 'Enter manually' },
-              ].map((option) => (
-                <label
-                  key={option.value}
-                  className={[
-                    'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm cursor-pointer transition-all',
-                    maxHrMode === option.value
-                      ? 'border-violet-500 bg-violet-50 text-violet-700'
-                      : 'border-slate-200 text-slate-600 hover:border-slate-300',
-                  ].join(' ')}
-                >
-                  <input
-                    id={
-                      option.value === 'formula'
-                        ? 'maxHrFormulaRadio_onboarding'
-                        : 'maxHrManualRadio_onboarding'
-                    }
-                    type="radio"
-                    className="accent-violet-600"
-                    value={option.value}
-                    checked={maxHrMode === option.value}
-                    onChange={() => form.setValue('max_hr_mode', option.value)}
-                    aria-label={option.label}
-                  />
-                  {option.label}
-                </label>
-              ))}
-            </div>
-
-            {/* Formula preview */}
-            {maxHrMode === 'formula' && (
-              <div
-                id="maxHrFormulaPreview_onboarding"
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-violet-50 border border-violet-200 text-sm text-violet-700"
-                aria-live="polite"
-              >
-                <HeartPulseIcon className="size-4 shrink-0" aria-hidden="true" />
-                {formulaMaxHr !== null ? (
-                  <span>
-                    Estimated max HR: <strong>{formulaMaxHr} bpm</strong>
-                  </span>
-                ) : (
-                  <span className="text-slate-500">Enter your birth date to see the estimate</span>
-                )}
-              </div>
-            )}
-
-            {/* Manual input */}
-            {maxHrMode === 'manual' && (
-              <FormField
-                control={form.control}
-                name="max_hr"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="sr-only">Max heart rate</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="maxHrManualInput_onboarding"
-                        type="number"
-                        inputMode="numeric"
-                        placeholder="185"
-                        min={100}
-                        max={250}
-                        aria-label="Max heart rate in bpm"
-                        className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-          </div>
-
-          {/* Root error */}
-          {form.formState.errors.root && (
-            <p
-              id="rootError_onboarding"
-              role="alert"
-              aria-live="assertive"
-              className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"
-            >
-              {form.formState.errors.root.message}
-            </p>
-          )}
-
-          <div className="pt-2">
-            <Button
-              id="continueBtn_onboarding"
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white"
-            >
-              {isSubmitting ? (
-                <>
-                  <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />
-                  Saving…
-                </>
-              ) : (
-                <>
-                  Continue
-                  <ArrowRightIcon className="size-4" aria-hidden="true" />
-                </>
+                  <FieldError />
+                </FieldContent>
               )}
-            </Button>
-          </div>
-        </form>
-      </Form>
+            />
+          )}
+        </div>
+
+        {/* Root error */}
+        {form.formState.errors.root && (
+          <p
+            id="rootError_onboarding"
+            role="alert"
+            aria-live="assertive"
+            className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"
+          >
+            {form.formState.errors.root.message}
+          </p>
+        )}
+
+        <div className="pt-2">
+          <Button
+            id="continueBtn_onboarding"
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-violet-600 hover:bg-violet-700 text-white"
+          >
+            {isSubmitting ? (
+              <>
+                <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />
+                Saving…
+              </>
+            ) : (
+              <>
+                Continue
+                <ArrowRightIcon className="size-4" aria-hidden="true" />
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
     </div>
   )
 }
@@ -708,16 +664,17 @@ export default function OnboardingPage() {
 
         {/* Back navigation for steps 2 only (step 3 is final) */}
         {step === 2 && (
-          <button
+          <Button
             id="backBtn_onboarding"
-            type="button"
+            variant="ghost"
+            size="sm"
             onClick={goBack}
-            className="mt-4 flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
+            className="mt-4 text-slate-400 hover:text-slate-600"
             aria-label="Go back to previous step"
           >
             <ArrowLeftIcon className="size-3.5" aria-hidden="true" />
             Back
-          </button>
+          </Button>
         )}
       </div>
 

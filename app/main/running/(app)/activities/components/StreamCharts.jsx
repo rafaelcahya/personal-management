@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState, useCallback, useMemo } from 'react'
+import Button from '@/components/base/Button/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import {
   AreaChart,
   Area,
@@ -21,9 +23,8 @@ import { AlertCircle, Activity, Info } from 'lucide-react'
 import {
   Tooltip as UITooltip,
   TooltipContent as UITooltipContent,
-  TooltipProvider as UITooltipProvider,
   TooltipTrigger as UITooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/components/base/Tooltip/Tooltip.jsx'
 import { fetchActivityStreams } from '@/lib/api/running'
 
 function SectionLabel({ children }) {
@@ -200,55 +201,48 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
             {isSpeed ? 'Speed' : 'Pace'}
           </p>
-          <UITooltipProvider delayDuration={0}>
-            <UITooltip>
-              <UITooltipTrigger asChild>
-                <button
-                  type="button"
-                  id="paceSpeedInfo_activityDetailPage"
-                  className="text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-                  aria-label="Pace and speed chart info"
-                >
-                  <Info className="size-3.5" aria-hidden="true" />
-                </button>
-              </UITooltipTrigger>
-              <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
-                <p className="font-semibold mb-1">Pace vs Speed</p>
-                <p>
-                  <span className="text-violet-300 font-medium">Pace (min/km)</span> — standard
-                  runner metric. Y-axis is inverted: lower = faster. Best for reading effort in
-                  familiar terms.
-                </p>
-                <p className="mt-1">
-                  <span className="text-violet-300 font-medium">Speed (km/h)</span> — normal Y-axis:
-                  higher = faster. Better for spotting acceleration and deceleration patterns at a
-                  glance.
-                </p>
-              </UITooltipContent>
-            </UITooltip>
-          </UITooltipProvider>
+          <UITooltip>
+            <UITooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                id="paceSpeedInfo_activityDetailPage"
+                className="text-slate-300 hover:text-slate-500"
+                aria-label="Pace and speed chart info"
+              >
+                <Info className="size-3.5" aria-hidden="true" />
+              </Button>
+            </UITooltipTrigger>
+            <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+              <p className="font-semibold mb-1">Pace vs Speed</p>
+              <p>
+                <span className="text-violet-300 font-medium">Pace (min/km)</span> — standard runner
+                metric. Y-axis is inverted: lower = faster. Best for reading effort in familiar
+                terms.
+              </p>
+              <p className="mt-1">
+                <span className="text-violet-300 font-medium">Speed (km/h)</span> — normal Y-axis:
+                higher = faster. Better for spotting acceleration and deceleration patterns at a
+                glance.
+              </p>
+            </UITooltipContent>
+          </UITooltip>
         </div>
-        <div
+        <Tabs
           id="paceSpeedToggle_activityDetailPage"
-          className="flex rounded-lg overflow-hidden border border-slate-200 text-[10px] font-semibold"
+          value={mode}
+          onValueChange={setMode}
+          className="shrink-0 self-start"
         >
-          <button
-            type="button"
-            id="paceTab_activityDetailPage"
-            onClick={() => setMode('pace')}
-            className={`px-2.5 py-1 transition-colors ${!isSpeed ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
-          >
-            Pace
-          </button>
-          <button
-            type="button"
-            id="speedTab_activityDetailPage"
-            onClick={() => setMode('speed')}
-            className={`px-2.5 py-1 transition-colors ${isSpeed ? 'bg-violet-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
-          >
-            Speed
-          </button>
-        </div>
+          <TabsList variant="pill" size="sm">
+            <TabsTrigger id="paceTab_activityDetailPage" value="pace">
+              Pace
+            </TabsTrigger>
+            <TabsTrigger id="speedTab_activityDetailPage" value="speed">
+              Speed
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
       <div className="h-[180px] sm:h-[225px] outline-none" id="streamChartPace_activityDetailPage">
         <ResponsiveContainer width="100%" height="100%">
@@ -798,26 +792,26 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
     <div>
       <div className="flex items-center gap-2 mb-1">
         <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Cadence</p>
-        <UITooltipProvider delayDuration={200}>
-          <UITooltip>
-            <UITooltipTrigger asChild>
-              <button
-                id={`cadenceInfoTrigger_${pagePrefix}`}
-                className="text-slate-300 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-                aria-label="Cadence info: about the 180 spm target"
-              >
-                <Info className="size-3.5" aria-hidden="true" />
-              </button>
-            </UITooltipTrigger>
-            <UITooltipContent
-              side="top"
-              className="max-w-72 text-xs leading-relaxed"
-              id={`cadenceInfoTooltip_${pagePrefix}`}
+        <UITooltip>
+          <UITooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              id={`cadenceInfoTrigger_${pagePrefix}`}
+              className="text-slate-300 hover:text-slate-500"
+              aria-label="Cadence info: about the 180 spm target"
             >
-              {CADENCE_INFO}
-            </UITooltipContent>
-          </UITooltip>
-        </UITooltipProvider>
+              <Info className="size-3.5" aria-hidden="true" />
+            </Button>
+          </UITooltipTrigger>
+          <UITooltipContent
+            side="top"
+            className="max-w-72 text-xs leading-relaxed"
+            id={`cadenceInfoTooltip_${pagePrefix}`}
+          >
+            {CADENCE_INFO}
+          </UITooltipContent>
+        </UITooltip>
         {stabilityScore != null && (
           <span
             id={`cadenceStabilityScore_${pagePrefix}`}
@@ -1057,13 +1051,14 @@ export default function StreamCharts({
       >
         <AlertCircle className="size-4 text-red-400 shrink-0" aria-hidden="true" />
         <span>Could not load stream data.</span>
-        <button
+        <Button
+          variant="ghost"
           id="streamChartsRetry_activityDetailPage"
           onClick={load}
           className="ml-auto text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
         >
           Try again
-        </button>
+        </Button>
       </div>
     )
   }

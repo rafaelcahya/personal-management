@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { format, differenceInDays } from 'date-fns'
 import UsageCompletionForm from './UsageCompletionForm'
+import { TableRow, TableCell } from '@/components/base/Table/Table.jsx'
 
 function getDuration(startDate, endDate) {
   const start = new Date(startDate)
@@ -22,16 +23,15 @@ export default function LogRow({ item, onUpdate }) {
 
   return (
     <>
-      <tr
+      <TableRow
         className={cn(
           'border-b border-slate-50 cursor-pointer transition-colors',
-          isOpen && 'bg-violet-50/75',
           isActive && !isOpen && 'hover:bg-violet-50/75',
           !isActive && !isOpen && 'hover:bg-slate-50'
         )}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <td className="px-5 py-3.5 w-8">
+        <TableCell className="w-8">
           <div className="flex items-center">
             {isOpen ? (
               <ChevronDown className="h-4 w-4 text-slate-500" />
@@ -39,14 +39,14 @@ export default function LogRow({ item, onUpdate }) {
               <ChevronRight className="h-4 w-4 text-slate-500" />
             )}
           </div>
-        </td>
-        <td className="px-5 py-3.5 font-mono text-slate-700">
+        </TableCell>
+        <TableCell className="font-mono text-slate-700 whitespace-nowrap">
           {item.start_usage_date ? format(new Date(item.start_usage_date), 'dd MMM yyyy') : '-'}
-        </td>
-        <td className="px-5 py-3.5 font-mono text-slate-700">
+        </TableCell>
+        <TableCell className="font-mono text-slate-700 whitespace-nowrap">
           {item.end_usage_date ? format(new Date(item.end_usage_date), 'dd MMM yyyy') : '-'}
-        </td>
-        <td id="logRowDuration_usageLogTable" className="px-5 py-3.5">
+        </TableCell>
+        <TableCell id="logRowDuration_usageLogTable" className="whitespace-nowrap">
           <span
             className={cn('font-medium text-sm', isActive ? 'text-violet-600' : 'text-slate-600')}
           >
@@ -57,8 +57,8 @@ export default function LogRow({ item, onUpdate }) {
               (ongoing)
             </span>
           )}
-        </td>
-        <td className="px-5 py-3.5">
+        </TableCell>
+        <TableCell className="whitespace-nowrap">
           <span
             className={cn(
               'px-2 py-0.5 rounded-md text-xs font-semibold capitalize',
@@ -67,20 +67,20 @@ export default function LogRow({ item, onUpdate }) {
           >
             {item.status}
           </span>
-        </td>
-        <td className="px-5 py-3.5 text-right font-mono">
-          <div className="flex flex-col items-end gap-0.5">
+        </TableCell>
+        <TableCell className="text-right font-mono">
+          <div className="flex flex-col items-end gap-0.5 whitespace-nowrap">
             <span className="text-slate-700">{item.quantity}</span>
             {item.remaining_quantity && (
               <span className="text-xs text-slate-400">{item.remaining_quantity} left</span>
             )}
           </div>
-        </td>
-      </tr>
+        </TableCell>
+      </TableRow>
 
       {isOpen && (
-        <tr className="bg-violet-50/50">
-          <td colSpan={6} className="px-5 py-4">
+        <TableRow>
+          <TableCell colSpan={6} className="px-5 py-4">
             {item.note && (
               <div className="mb-4 p-3 bg-white rounded-lg border border-slate-200">
                 <p className="text-xs font-medium text-slate-500 mb-1">Note</p>
@@ -92,8 +92,8 @@ export default function LogRow({ item, onUpdate }) {
               onUpdate={onUpdate}
               onCancel={() => setIsOpen(false)}
             />
-          </td>
-        </tr>
+          </TableCell>
+        </TableRow>
       )}
     </>
   )

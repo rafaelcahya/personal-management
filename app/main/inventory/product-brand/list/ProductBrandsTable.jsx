@@ -3,13 +3,21 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/base/Badge/Badge'
+import Button from '@/components/base/Button/Button'
+import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import ProductBrandUpdate from '../UpdateProductBrand'
 import { updateProductBrand } from '@/lib/api/productBrand'
 import { ChevronLeft, ChevronRight, Pencil, X } from 'lucide-react'
 import { toast } from 'sonner'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 export default function ProductBrandsTable({
   brands = [],
@@ -95,7 +103,7 @@ export default function ProductBrandsTable({
           <span className="text-sm font-medium text-violet-700">{selectedIds.length} selected</span>
           <div className="flex items-center gap-2 ml-auto">
             <Button
-              size="sm"
+              size="base"
               variant="outline"
               id="bulkSetActiveBtn_productBrandPage"
               className="h-7 text-xs border-green-300 text-green-700 hover:bg-green-50"
@@ -105,7 +113,7 @@ export default function ProductBrandsTable({
               Set Active
             </Button>
             <Button
-              size="sm"
+              size="base"
               variant="outline"
               id="bulkSetInactiveBtn_productBrandPage"
               className="h-7 text-xs border-orange-300 text-orange-700 hover:bg-orange-50"
@@ -115,7 +123,7 @@ export default function ProductBrandsTable({
               Set Inactive
             </Button>
             <Button
-              size="sm"
+              size="base"
               variant="ghost"
               id="bulkDeselectAllBtn_productBrandPage"
               className="h-7 text-xs text-slate-500 hover:text-slate-700"
@@ -138,72 +146,65 @@ export default function ProductBrandsTable({
         </div>
       ) : (
         <div className="flex-1 overflow-x-auto">
-          <table
+          <Table
             id="productBrandsTable_productBrandPage"
-            className="min-w-full text-sm"
+            className="min-w-full"
             aria-label="Product brands"
           >
-            <thead>
-              <tr className="border-b border-slate-100">
-                <th
-                  className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[40px]"
-                  onClick={(e) => e.stopPropagation()}
-                >
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[40px]" onClick={(e) => e.stopPropagation()}>
                   <Checkbox
                     id="selectAllBrands_productBrandPage"
                     checked={allSelected ? true : someSelected ? 'indeterminate' : false}
                     onCheckedChange={handleSelectAll}
                     aria-label="Select all brands"
                   />
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[30px]">
+                </TableHead>
+                <TableHead className="w-[30px]" align="center">
                   #
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Brand
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[120px]">
-                  Status
-                </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[100px]">
+                </TableHead>
+                <TableHead>Brand</TableHead>
+                <TableHead className="w-[120px]">Status</TableHead>
+                <TableHead className="w-[100px]" align="right">
                   Products
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Notes
-                </th>
-                <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[60px]">
+                </TableHead>
+                <TableHead>Notes</TableHead>
+                <TableHead className="w-[60px]" align="center">
                   <span className="sr-only">Action</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {brands.map((productBrand, index) => (
-                <tr
+                <TableRow
                   key={productBrand.id}
                   data-testid={`brandRow_${productBrand.id}_productBrandPage`}
-                  className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors"
+                  clickable
                   onClick={() => setSelectedBrand(productBrand)}
                 >
-                  <td className="px-5 py-3.5 w-[40px]" onClick={(e) => e.stopPropagation()}>
+                  <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
                     <Checkbox
                       data-testid={`brandCheckbox_${productBrand.id}_productBrandPage`}
                       checked={selectedIds.includes(productBrand.id)}
                       onCheckedChange={(checked) => handleSelectOne(productBrand.id, checked)}
                       aria-label={`Select ${productBrand.brand}`}
                     />
-                  </td>
-                  <td className="px-5 py-3.5 text-right font-mono text-slate-700 w-[30px]">
+                  </TableCell>
+                  <TableCell className="font-mono text-slate-700 w-[30px]" align="center">
                     {(page - 1) * 15 + index + 1}
-                  </td>
-                  <td className="px-5 py-3.5 font-semibold text-slate-900">{productBrand.brand}</td>
-                  <td className="px-5 py-3.5 w-[120px]">
+                  </TableCell>
+                  <TableCell className="font-semibold text-slate-900">
+                    {productBrand.brand}
+                  </TableCell>
+                  <TableCell className="w-[120px]">
                     <Badge
                       className={cn('capitalize', getStatusClasses(productBrand.brand_status))}
                     >
                       {productBrand.brand_status}
                     </Badge>
-                  </td>
-                  <td className="px-5 py-3.5 text-right font-mono text-slate-700 w-[100px]">
+                  </TableCell>
+                  <TableCell className="font-mono text-slate-700 w-[100px]" align="right">
                     {productBrand.product_count > 0 ? (
                       <Badge
                         data-testid={`productCountBadge_${productBrand.id}_productBrandPage`}
@@ -223,16 +224,14 @@ export default function ProductBrandsTable({
                         {productBrand.product_count}
                       </Badge>
                     )}
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate">
+                  </TableCell>
+                  <TableCell className="text-slate-500 max-w-xs truncate">
                     {productBrand.note || '—'}
-                  </td>
-                  <td
-                    className="px-5 py-3.5 text-center w-[60px]"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
+                  </TableCell>
+                  <TableCell className="text-center w-[60px]" onClick={(e) => e.stopPropagation()}>
+                    <Button
                       type="button"
+                      variant="ghost"
                       data-testid={`editBrandBtn_${productBrand.id}_productBrandPage`}
                       aria-label={`Edit ${productBrand.brand}`}
                       onClick={(e) => {
@@ -242,16 +241,16 @@ export default function ProductBrandsTable({
                       className="inline-flex items-center justify-center rounded-md p-1.5 text-violet-500 hover:bg-violet-100 transition-colors min-h-[32px] min-w-[32px]"
                     >
                       <Pencil className="size-3.5" />
-                    </button>
-                  </td>
-                </tr>
+                    </Button>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">
-              <button
+              <Button
                 onClick={onPrev}
                 disabled={page <= 1}
                 className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
@@ -259,11 +258,11 @@ export default function ProductBrandsTable({
               >
                 <ChevronLeft className="size-4" aria-hidden="true" />
                 Prev
-              </button>
+              </Button>
               <span className="text-xs text-slate-400 text-center" aria-live="polite">
                 Page {page} of {totalPages} · {total} records
               </span>
-              <button
+              <Button
                 onClick={onNext}
                 disabled={page >= totalPages}
                 className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
@@ -271,7 +270,7 @@ export default function ProductBrandsTable({
               >
                 Next
                 <ChevronRight className="size-4" aria-hidden="true" />
-              </button>
+              </Button>
             </div>
           )}
         </div>

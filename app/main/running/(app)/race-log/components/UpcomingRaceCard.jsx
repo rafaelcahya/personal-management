@@ -8,23 +8,26 @@ import {
   AlertTriangle,
   Info,
   Link2,
+  Unlink,
   CalendarPlus,
   Pencil,
   Trash2,
   Loader2,
   ChevronDown,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import { toast } from 'sonner'
 import { updateUpcomingRace, deleteUpcomingRace, createRaceLog } from '@/lib/api/running'
 import { getDistanceLabel, hmsToSecs, secsToHMS, secsToHMSInput, formatDate } from './raceLogUtils'
@@ -80,6 +83,8 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
   const [positionPlace, setPositionPlace] = useState(race.position_place ?? '')
   const [positionMale, setPositionMale] = useState(race.position_male ?? '')
   const [linking, setLinking] = useState(false)
+  const [unlinking, setUnlinking] = useState(false)
+  const [unlinkConfirm, setUnlinkConfirm] = useState(false)
   const [completing, setCompleting] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
@@ -98,6 +103,24 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
       toast.error(err.message || 'Failed to link activity')
     } finally {
       setLinking(false)
+    }
+  }
+
+  async function handleUnlinkActivity() {
+    setUnlinking(true)
+    setUnlinkConfirm(false)
+    try {
+      const result = await updateUpcomingRace(race.id, { linked_activity_id: null })
+      onUpdated(result.data)
+      setFinishTimeStr('')
+      setPositionPlace('')
+      setPositionMale('')
+      setResultsOpen(false)
+      toast.success('Activity removed')
+    } catch (err) {
+      toast.error(err.message || 'Failed to remove activity')
+    } finally {
+      setUnlinking(false)
     }
   }
 
@@ -246,11 +269,12 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
 
         {/* Manual result fields — collapsible */}
         <div className="border border-slate-200/70 rounded-lg overflow-hidden">
-          <button
+          <Button
             id={`resultsToggle_${race.id}_raceLogPage`}
-            type="button"
+            variant="ghost"
+            fullWidth
             onClick={() => setResultsOpen((v) => !v)}
-            className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50 transition-colors"
+            className="justify-between px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50"
             aria-expanded={resultsOpen}
           >
             <span>Log result</span>
@@ -258,13 +282,13 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
               className={`size-3.5 transition-transform duration-200 ${resultsOpen ? 'rotate-180' : ''}`}
               aria-hidden="true"
             />
-          </button>
+          </Button>
           {resultsOpen && (
             <div className="grid grid-cols-2 gap-3 px-3 pb-3 pt-2 border-t border-slate-200/70">
-              <div className="col-span-2 flex flex-col gap-1.5">
-                <Label htmlFor={`finishTime_${race.id}`} className="text-xs">
+              <FieldContent className="col-span-2">
+                <FieldLabel htmlFor={`finishTime_${race.id}`} className="text-xs">
                   Finish time (hh:mm:ss)
-                </Label>
+                </FieldLabel>
                 <Input
                   id={`finishTime_${race.id}`}
                   placeholder="00:45:30"
@@ -276,13 +300,12 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
                   }}
                   disabled={fieldsDisabled}
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Finish time"
                 />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor={`positionPlace_${race.id}`} className="text-xs">
+              </FieldContent>
+              <FieldContent>
+                <FieldLabel htmlFor={`positionPlace_${race.id}`} className="text-xs">
                   Position (overall)
-                </Label>
+                </FieldLabel>
                 <Input
                   id={`positionPlace_${race.id}`}
                   type="number"
@@ -291,13 +314,12 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
                   onChange={(e) => setPositionPlace(e.target.value)}
                   disabled={fieldsDisabled}
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Overall position"
                 />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor={`positionMale_${race.id}`} className="text-xs">
+              </FieldContent>
+              <FieldContent>
+                <FieldLabel htmlFor={`positionMale_${race.id}`} className="text-xs">
                   Position (male)
-                </Label>
+                </FieldLabel>
                 <Input
                   id={`positionMale_${race.id}`}
                   type="number"
@@ -306,9 +328,8 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
                   onChange={(e) => setPositionMale(e.target.value)}
                   disabled={fieldsDisabled}
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Male position"
                 />
-              </div>
+              </FieldContent>
             </div>
           )}
         </div>
@@ -316,13 +337,13 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
         {/* Actions row */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           {/* Left actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button
               id="linkActivityBtn_raceLogPage"
-              variant="outline"
-              size="sm"
+              variant="ghost"
+              size="base"
               onClick={() => setPickerOpen(true)}
-              disabled={linking}
+              disabled={linking || unlinking}
               className="flex items-center gap-1.5 text-xs md:min-h-9"
             >
               {linking ? (
@@ -332,10 +353,51 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
               )}
               {linked ? 'Change activity' : 'Link activity'}
             </Button>
+            {linked &&
+              (unlinkConfirm ? (
+                <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                  <span className="text-slate-500">Remove activity?</span>
+                  <Button
+                    id="unlinkActivityConfirmBtn_raceLogPage"
+                    variant="ghost"
+                    size="xs"
+                    onClick={handleUnlinkActivity}
+                    disabled={unlinking}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-auto px-1.5 py-0.5"
+                  >
+                    {unlinking ? (
+                      <Loader2 className="size-3 animate-spin" aria-hidden="true" />
+                    ) : (
+                      'Yes'
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => setUnlinkConfirm(false)}
+                    disabled={unlinking}
+                    className="h-auto px-1.5 py-0.5 text-slate-500"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  id="unlinkActivityBtn_raceLogPage"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setUnlinkConfirm(true)}
+                  disabled={linking}
+                  className="text-slate-400 hover:text-orange-600 hover:bg-orange-50"
+                  aria-label="Remove linked activity"
+                >
+                  <Unlink className="size-3.5" aria-hidden="true" />
+                </Button>
+              ))}
             <Button
               id="addToCalendarBtn_raceLogPage"
-              variant="outline"
-              size="sm"
+              variant="ghost"
+              size="base"
               onClick={handleAddToCalendar}
               className="flex items-center gap-1.5 text-xs md:min-h-9"
             >
@@ -346,17 +408,19 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
 
           {/* Right actions */}
           <div className="flex items-center gap-2">
-            <button
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={() => setEditOpen(true)}
-              className="flex items-center justify-center size-8 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors min-w-11 md:min-h-8 md:min-w-8"
+              className="text-slate-400 hover:text-slate-700"
               aria-label="Edit upcoming race"
             >
               <Pencil className="size-3.5" aria-hidden="true" />
-            </button>
+            </Button>
             {linked && (
               <Button
                 id="saveAsCompletedBtn_raceLogPage"
-                size="sm"
+                size="base"
                 onClick={handleSaveAsCompleted}
                 disabled={completing}
                 className="flex items-center gap-1.5 text-xs md:min-h-9"
@@ -368,14 +432,16 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
                 )}
               </Button>
             )}
-            <button
+            <Button
               id="deleteUpcomingRaceBtn_raceLogPage"
+              variant="ghost"
+              size="icon-sm"
               onClick={() => setDeleteOpen(true)}
-              className="flex items-center justify-center size-8 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors min-w-11 md:min-h-8 md:min-w-8"
+              className="text-slate-400 hover:text-red-600 hover:bg-red-50"
               aria-label="Delete upcoming race"
             >
               <Trash2 className="size-3.5" aria-hidden="true" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -397,21 +463,23 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
         race={race}
       />
 
-      <Dialog open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Delete upcoming race?</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-slate-600">
-            This will remove <span className="font-medium">{race.title}</span> from your upcoming
-            races. This action cannot be undone.
-          </p>
-          <DialogFooter className="gap-2">
-            <DialogClose asChild>
+      <Modal open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
+        <ModalContent variant="bordered" borderColor="border-slate-200" className="max-w-sm">
+          <ModalHeader>
+            <ModalTitle>Delete upcoming race?</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p className="text-sm text-slate-600">
+              This will remove <span className="font-medium">{race.title}</span> from your upcoming
+              races. This action cannot be undone.
+            </p>
+          </ModalBody>
+          <ModalFooter className="gap-2">
+            <ModalClose asChild>
               <Button variant="outline" type="button" disabled={deleting}>
                 Cancel
               </Button>
-            </DialogClose>
+            </ModalClose>
             <Button
               id="deleteUpcomingRaceConfirmBtn_raceLogPage"
               variant="destructive"
@@ -420,9 +488,9 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
             >
               {deleting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Delete'}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }

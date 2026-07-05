@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Button from '@/components/base/Button/Button'
 import {
   Footprints,
   Bike,
@@ -182,33 +183,29 @@ export default function RunningDashboardPage() {
             {availableTypes.length > 0 && (
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs text-slate-400 font-medium">Filter:</span>
-                <button
+                <Button
+                  variant="ghost"
+                  size="xs"
                   onClick={() => handleTypeSelect(null)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                    activeType === null
-                      ? 'bg-slate-800 text-white'
-                      : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                  }`}
+                  className={`rounded-full ${activeType === null ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
                 >
                   All
-                </button>
+                </Button>
                 {availableTypes.map((type) => {
                   const cfg = getConfig(type)
                   const Icon = cfg.icon
                   const isActive = activeType === type
                   return (
-                    <button
+                    <Button
                       key={type}
+                      variant="ghost"
+                      size="xs"
                       onClick={() => handleTypeSelect(type)}
-                      className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                        isActive
-                          ? `${cfg.bg} ${cfg.color} ring-1 ring-current`
-                          : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                      }`}
+                      className={`rounded-full ${isActive ? `${cfg.bg} ${cfg.color} ring-1 ring-current` : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
                     >
                       <Icon className="size-3" aria-hidden="true" />
                       {cfg.label ?? type}
-                    </button>
+                    </Button>
                   )
                 })}
               </div>
@@ -240,18 +237,20 @@ export default function RunningDashboardPage() {
                         : 'Already up to date'}
                     </span>
                   )}
-                  <button
+                  <Button
                     id="syncBtn_dashboard"
+                    variant="ghost"
+                    size="xs"
                     onClick={runSync}
                     disabled={syncing}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500 hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                    className="text-slate-500 hover:bg-slate-200"
                   >
                     <RefreshCw
                       className={`size-3 ${syncing ? 'animate-spin' : ''}`}
                       aria-hidden="true"
                     />
                     {syncing ? 'Syncing…' : 'Sync'}
-                  </button>
+                  </Button>
                 </div>
               </div>
 

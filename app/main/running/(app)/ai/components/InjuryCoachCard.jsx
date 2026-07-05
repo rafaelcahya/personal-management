@@ -14,7 +14,11 @@ import {
   History,
   ChevronLeft,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
+import Textarea from '@/components/base/Textarea/Textarea'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 import { getInjuryCoachInsight, fetchActivities, fetchInjuryCoachHistory } from '@/lib/api/running'
 import { renderMarkdown } from './utils'
 
@@ -190,15 +194,17 @@ export default function InjuryCoachCard() {
     >
       <div className="flex items-center gap-2">
         {showHistory && (
-          <button
+          <Button
             id="injuryHistoryBackBtn_aiPage"
             type="button"
+            size="xs"
+            variant="ghost"
             onClick={() => setShowHistory(false)}
             className="flex items-center justify-center w-6 h-6 rounded-md hover:bg-slate-100 transition-colors shrink-0"
             aria-label="Back to consultation"
           >
             <ChevronLeft className="h-4 w-4 text-slate-600" aria-hidden="true" />
-          </button>
+          </Button>
         )}
         <span
           className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-100 shrink-0"
@@ -214,16 +220,18 @@ export default function InjuryCoachCard() {
             AI
           </span>
         )}
-        <button
+        <Button
           id="injuryHistoryBtn_aiPage"
           type="button"
+          size="xs"
+          variant="ghost"
           onClick={showHistory ? () => setShowHistory(false) : openHistory}
           className="ml-auto flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100 px-2 py-1 rounded-md transition-colors"
           aria-label={showHistory ? 'Close history' : 'View consultation history'}
         >
           <History className="h-3.5 w-3.5" aria-hidden="true" />
           {!showHistory && 'History'}
-        </button>
+        </Button>
       </div>
 
       {!showHistory && (
@@ -335,31 +343,28 @@ export default function InjuryCoachCard() {
           {ROLES.map((role) => {
             const isSelected = selectedRole === role.id
             return (
-              <button
+              <Button
                 key={role.id}
                 id={role.cardId}
-                type="button"
+                variant="ghost"
+                fullWidth
                 aria-pressed={isSelected}
                 onClick={() => handleRoleSelect(role.id)}
-                className={`text-left rounded-lg px-3 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[44px] ${
-                  isSelected
-                    ? 'border-2 border-violet-400 bg-violet-50'
-                    : 'border border-slate-200 bg-white hover:bg-slate-50'
-                }`}
+                className={`text-left rounded-lg px-3 py-3 h-auto min-h-[44px] items-start flex-col ${isSelected ? 'border-2 border-violet-400 bg-violet-50' : 'border border-slate-200 bg-white hover:bg-slate-50'}`}
               >
                 <div className="flex items-center gap-2 mb-0.5">
                   <role.Icon
                     className={`h-4 w-4 shrink-0 ${isSelected ? 'text-violet-600' : 'text-slate-400'}`}
                     aria-hidden="true"
                   />
-                  <span
-                    className={`text-sm font-semibold ${isSelected ? 'text-violet-700' : 'text-slate-700'}`}
+                  <p
+                    className={`text-sm font-semibold whitespace-normal ${isSelected ? 'text-violet-700' : 'text-slate-700'}`}
                   >
                     {role.label}
-                  </span>
+                  </p>
                 </div>
-                <p className="text-xs text-slate-400 pl-6">{role.description}</p>
-              </button>
+                <p className="text-xs text-slate-400 pl-6 whitespace-normal">{role.description}</p>
+              </Button>
             )
           })}
         </div>
@@ -367,33 +372,32 @@ export default function InjuryCoachCard() {
 
       {!showHistory && selectedRole && (
         <form onSubmit={handleSubmit} className="space-y-3" noValidate>
-          <div className="space-y-1">
-            <label
-              htmlFor="injuryBodyPartInput_aiPage"
-              className="text-sm font-medium text-slate-600"
-            >
+          <FieldContent>
+            <FieldLabel htmlFor="injuryBodyPartInput_aiPage">
               Body part <span className="text-xs text-slate-400 font-normal">(optional)</span>
-            </label>
-            <input
+            </FieldLabel>
+            <Input
               id="injuryBodyPartInput_aiPage"
               type="text"
               value={bodyPart}
               onChange={(e) => setBodyPart(e.target.value)}
               placeholder="e.g. left knee, right Achilles, lower back"
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
             />
-          </div>
+          </FieldContent>
 
-          <div className="space-y-1.5">
-            <p className="text-sm font-medium text-slate-600">
+          <FieldContent>
+            <FieldLabel>
               Injury phase <span className="text-xs text-slate-400 font-normal">(optional)</span>
-            </p>
+            </FieldLabel>
             <div className="flex flex-wrap gap-2" role="group" aria-label="Injury phase">
               {PHASES.map((p) => (
-                <button
+                <Button
                   key={p.id}
                   id={p.elementId}
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   aria-pressed={phase === p.id}
                   onClick={() => setPhase(phase === p.id ? null : p.id)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[36px] ${
@@ -403,7 +407,7 @@ export default function InjuryCoachCard() {
                   }`}
                 >
                   {p.label}
-                </button>
+                </Button>
               ))}
             </div>
             {phase && (
@@ -411,104 +415,105 @@ export default function InjuryCoachCard() {
                 {PHASES.find((p2) => p2.id === phase)?.guide}
               </p>
             )}
-          </div>
+          </FieldContent>
 
-          <div className="space-y-1" ref={pickerRef}>
-            <p className="text-sm font-medium text-slate-600">
-              Activity <span className="text-xs text-slate-400 font-normal">(optional)</span>
-            </p>
-            {selectedActivity ? (
-              <div className="flex items-center gap-2 rounded-md border border-violet-300 bg-violet-50 px-3 py-2">
-                <span
-                  id="injuryActivitySelectedPill_aiPage"
-                  className="text-sm font-medium text-violet-700 flex-1 min-w-0 truncate"
-                >
-                  {new Date(selectedActivity.started_at).toLocaleDateString('en-GB', {
-                    day: 'numeric',
-                    month: 'short',
-                  })}
-                  {' · '}
-                  {fmtDist(selectedActivity.distance_m) ?? '—'}
-                  {selectedActivity.avg_pace_sec_per_km &&
-                    ` · ${fmtPace(selectedActivity.avg_pace_sec_per_km)}`}
-                </span>
-                <button
-                  id="injuryActivityClearBtn_aiPage"
-                  type="button"
-                  onClick={() => setSelectedActivity(null)}
-                  className="shrink-0 text-slate-400 hover:text-slate-600"
-                  aria-label="Clear selected activity"
-                >
-                  <X className="h-3.5 w-3.5" aria-hidden="true" />
-                </button>
-              </div>
-            ) : (
-              <div className="relative">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
-                  <input
-                    id="injuryActivitySearch_aiPage"
-                    type="text"
-                    value={activitySearch}
-                    onChange={(e) => setActivitySearch(e.target.value)}
-                    onFocus={() => setActivityOpen(true)}
-                    placeholder="Search by date or distance..."
-                    className="w-full rounded-md border border-slate-200 pl-8 pr-3 py-2 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                  />
-                </div>
-                {activityOpen && (
-                  <div
-                    id="injuryActivityList_aiPage"
-                    className="absolute z-50 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-md max-h-48 overflow-y-auto"
+          <div ref={pickerRef}>
+            <FieldContent>
+              <FieldLabel htmlFor="injuryActivitySearch_aiPage">
+                Activity <span className="text-xs text-slate-400 font-normal">(optional)</span>
+              </FieldLabel>
+              {selectedActivity ? (
+                <div className="flex items-center gap-2 rounded-md border border-violet-300 bg-violet-50 px-3 py-2">
+                  <span
+                    id="injuryActivitySelectedPill_aiPage"
+                    className="text-sm font-medium text-violet-700 flex-1 min-w-0 truncate"
                   >
-                    {activityLoading ? (
-                      <div className="flex items-center justify-center py-4">
-                        <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
-                      </div>
-                    ) : activityList.length === 0 ? (
-                      <p className="px-3 py-3 text-xs text-slate-400">No activities found</p>
-                    ) : (
-                      activityList.map((a) => (
-                        <button
-                          key={a.id}
-                          id={`injuryActivityItem_aiPage_${a.id}`}
-                          type="button"
-                          onClick={() => {
-                            setSelectedActivity(a)
-                            setActivityOpen(false)
-                            setActivitySearch('')
-                          }}
-                          className="w-full text-left px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0"
-                        >
-                          {a.name && (
-                            <p className="text-sm font-medium text-slate-700 truncate">{a.name}</p>
-                          )}
-                          <p className="text-xs text-slate-400 mt-0.5">
-                            {new Date(a.started_at).toLocaleDateString('en-GB', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                            })}
-                            {a.distance_m && ` · ${fmtDist(a.distance_m)}`}
-                            {a.avg_pace_sec_per_km && ` · ${fmtPace(a.avg_pace_sec_per_km)}`}
-                          </p>
-                        </button>
-                      ))
-                    )}
+                    {new Date(selectedActivity.started_at).toLocaleDateString('en-GB', {
+                      day: 'numeric',
+                      month: 'short',
+                    })}
+                    {' · '}
+                    {fmtDist(selectedActivity.distance_m) ?? '—'}
+                    {selectedActivity.avg_pace_sec_per_km &&
+                      ` · ${fmtPace(selectedActivity.avg_pace_sec_per_km)}`}
+                  </span>
+                  <Button
+                    id="injuryActivityClearBtn_aiPage"
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => setSelectedActivity(null)}
+                    className="shrink-0 text-slate-400 hover:text-slate-600"
+                    aria-label="Clear selected activity"
+                  >
+                    <X className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+                    <input
+                      id="injuryActivitySearch_aiPage"
+                      type="text"
+                      value={activitySearch}
+                      onChange={(e) => setActivitySearch(e.target.value)}
+                      onFocus={() => setActivityOpen(true)}
+                      placeholder="Search by date or distance..."
+                      className="w-full rounded-md border border-slate-200 pl-8 pr-3 py-2 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                    />
                   </div>
-                )}
-              </div>
-            )}
+                  {activityOpen && (
+                    <div
+                      id="injuryActivityList_aiPage"
+                      className="absolute z-50 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-md max-h-48 overflow-y-auto"
+                    >
+                      {activityLoading ? (
+                        <div className="flex items-center justify-center py-4">
+                          <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                        </div>
+                      ) : activityList.length === 0 ? (
+                        <p className="px-3 py-3 text-xs text-slate-400">No activities found</p>
+                      ) : (
+                        activityList.map((a) => (
+                          <Button
+                            key={a.id}
+                            id={`injuryActivityItem_aiPage_${a.id}`}
+                            variant="ghost"
+                            fullWidth
+                            onClick={() => {
+                              setSelectedActivity(a)
+                              setActivityOpen(false)
+                              setActivitySearch('')
+                            }}
+                            className="text-left px-3 py-2.5 h-auto items-start flex-col border-b border-slate-100 last:border-0"
+                          >
+                            {a.name && (
+                              <p className="text-sm font-medium text-slate-700 truncate">
+                                {a.name}
+                              </p>
+                            )}
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              {new Date(a.started_at).toLocaleDateString('en-GB', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                              })}
+                              {a.distance_m && ` · ${fmtDist(a.distance_m)}`}
+                              {a.avg_pace_sec_per_km && ` · ${fmtPace(a.avg_pace_sec_per_km)}`}
+                            </p>
+                          </Button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </FieldContent>
           </div>
 
-          <div className="space-y-1">
-            <label
-              htmlFor="injuryQuestionInput_aiPage"
-              className="text-sm font-medium text-slate-600"
-            >
-              Your question
-            </label>
-            <textarea
+          <FieldContent>
+            <FieldLabel htmlFor="injuryQuestionInput_aiPage">Your question</FieldLabel>
+            <Textarea
               id="injuryQuestionInput_aiPage"
               value={question}
               onChange={handleQuestionChange}
@@ -516,9 +521,9 @@ export default function InjuryCoachCard() {
               rows={3}
               required
               minLength={10}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none"
+              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none"
             />
-          </div>
+          </FieldContent>
 
           {emergencyBlock ? (
             <div
@@ -536,8 +541,9 @@ export default function InjuryCoachCard() {
               <Button
                 id="injurySubmitBtn_aiPage"
                 type="submit"
+                size="md"
                 disabled={!isQuestionValid || loading}
-                className="bg-violet-600 hover:bg-violet-700 text-white text-sm focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[44px] w-full sm:w-auto"
+                className="bg-violet-600 hover:bg-violet-700 text-white text-sm focus-visible:ring-2 focus-visible:ring-violet-200"
               >
                 {loading ? (
                   <>

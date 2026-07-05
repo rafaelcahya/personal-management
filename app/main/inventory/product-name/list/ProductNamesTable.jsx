@@ -3,13 +3,21 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/base/Badge/Badge'
+import Button from '@/components/base/Button/Button'
+import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import { bulkUpdateProductNameStatus } from '@/lib/api/productName'
 import ProductNameUpdate from '../UpdateProductName'
 import { ChevronLeft, ChevronRight, Pencil, SearchX, X } from 'lucide-react'
 import { toast } from 'sonner'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 export default function ProductNamesTable({
   names = [],
@@ -102,7 +110,7 @@ export default function ProductNamesTable({
           <p className="text-sm font-semibold text-slate-600">No results found</p>
           <p className="text-xs text-slate-400">{emptySubtext}</p>
         </div>
-        <Button variant="outline" size="sm" onClick={handleClearAll} className="text-xs h-8">
+        <Button variant="outline" size="base" onClick={handleClearAll} className="text-xs h-8">
           {clearLabel}
         </Button>
       </div>
@@ -120,7 +128,7 @@ export default function ProductNamesTable({
           <span className="text-sm font-medium text-violet-700">{selectedIds.length} selected</span>
           <div className="flex items-center gap-2 ml-auto">
             <Button
-              size="sm"
+              size="base"
               variant="outline"
               id="bulkSetActiveBtn_productNamePage"
               className="h-7 text-xs border-green-300 text-green-700 hover:bg-green-50"
@@ -130,7 +138,7 @@ export default function ProductNamesTable({
               Set Active
             </Button>
             <Button
-              size="sm"
+              size="base"
               variant="outline"
               id="bulkSetInactiveBtn_productNamePage"
               className="h-7 text-xs border-orange-300 text-orange-700 hover:bg-orange-50"
@@ -140,7 +148,7 @@ export default function ProductNamesTable({
               Set Inactive
             </Button>
             <Button
-              size="sm"
+              size="base"
               variant="ghost"
               id="bulkDeselectAllBtn_productNamePage"
               className="h-7 text-xs text-slate-500 hover:text-slate-700"
@@ -155,79 +163,69 @@ export default function ProductNamesTable({
       )}
 
       <div className="flex-1 overflow-x-auto">
-        <table
+        <Table
           id="productNamesTable_productNamePage"
-          className="min-w-full text-sm"
+          className="min-w-full"
           aria-label="Product names"
         >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th
-                className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[40px]"
-                onClick={(e) => e.stopPropagation()}
-              >
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[40px]" onClick={(e) => e.stopPropagation()}>
                 <Checkbox
                   id="selectAllNames_productNamePage"
                   checked={allSelected ? true : someSelected ? 'indeterminate' : false}
                   onCheckedChange={handleSelectAll}
                   aria-label="Select all product names"
                 />
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[30px]">
+              </TableHead>
+              <TableHead className="w-[30px]" align="center">
                 #
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Name
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[120px]">
-                Status
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[100px]">
+              </TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead className="w-[120px]">Status</TableHead>
+              <TableHead className="w-[100px]" align="right">
                 Products
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Notes
-              </th>
-              <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[60px]">
+              </TableHead>
+              <TableHead>Notes</TableHead>
+              <TableHead className="w-[60px]" align="center">
                 <span className="sr-only">Action</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {names.map((productName, index) => (
-              <tr
-                key={productName.id}
-                className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors"
-                onClick={() => setSelectedName(productName)}
-              >
-                <td className="px-5 py-3.5 w-[40px]" onClick={(e) => e.stopPropagation()}>
+              <TableRow key={productName.id} clickable onClick={() => setSelectedName(productName)}>
+                <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
                   <Checkbox
                     id={`nameCheckbox_${productName.id}_productNamePage`}
                     checked={selectedIds.includes(productName.id)}
                     onCheckedChange={(checked) => handleSelectOne(productName.id, checked)}
                     aria-label={`Select ${productName.product_name}`}
                   />
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono text-slate-700 w-[30px]">
+                </TableCell>
+                <TableCell className="font-mono text-slate-700 w-[30px]" align="center">
                   {(page - 1) * 15 + index + 1}
-                </td>
-                <td className="px-5 py-3.5 font-semibold text-slate-900">
+                </TableCell>
+                <TableCell className="font-semibold text-slate-900">
                   {productName.product_name}
-                </td>
-                <td className="px-5 py-3.5 w-[120px]">
+                </TableCell>
+                <TableCell className="w-[120px]">
                   <Badge
                     className={cn('capitalize', getStatusClasses(productName.product_name_status))}
                   >
                     {productName.product_name_status}
                   </Badge>
-                </td>
-                <td
-                  className="px-5 py-3.5 text-right font-mono text-slate-700 w-[100px]"
+                </TableCell>
+                <TableCell
+                  className="font-mono text-slate-700 w-[100px]"
+                  align="right"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {productName.product_count > 0 ? (
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="xs"
                       id={`productCountBadge_${productName.id}_productNamePage`}
                       aria-label={`View ${productName.product_count} product(s) for ${productName.product_name}`}
                       onClick={() =>
@@ -235,25 +233,24 @@ export default function ProductNamesTable({
                           `/main/inventory/product-list?name=${encodeURIComponent(productName.product_name)}`
                         )
                       }
-                      className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1 rounded"
+                      className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1 rounded hover:bg-transparent"
                     >
                       <Badge className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200 cursor-pointer">
                         {productName.product_count}
                       </Badge>
-                    </button>
+                    </Button>
                   ) : (
                     <Badge className="bg-slate-100 text-slate-500 border-slate-200">0</Badge>
                   )}
-                </td>
-                <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate">
+                </TableCell>
+                <TableCell className="text-slate-500 max-w-xs truncate">
                   {productName.note || '—'}
-                </td>
-                <td
-                  className="px-5 py-3.5 text-center w-[60px]"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
+                </TableCell>
+                <TableCell className="text-center w-[60px]" onClick={(e) => e.stopPropagation()}>
+                  <Button
                     type="button"
+                    size="xs"
+                    variant="ghost"
                     id={`editProductNameBtn_${productName.id}_productNamePage`}
                     aria-label={`Edit ${productName.product_name}`}
                     onClick={(e) => {
@@ -263,12 +260,12 @@ export default function ProductNamesTable({
                     className="inline-flex items-center justify-center rounded-md p-1.5 text-violet-500 hover:bg-violet-100 transition-colors min-h-[32px] min-w-[32px]"
                   >
                     <Pencil className="size-3.5" />
-                  </button>
-                </td>
-              </tr>
+                  </Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {/* Pagination footer */}
@@ -283,7 +280,7 @@ export default function ProductNamesTable({
           <div className="flex items-center gap-1">
             <Button
               variant="outline"
-              size="sm"
+              size="base"
               id="prevPageBtn_productNamePage"
               className="h-7 px-2 text-xs"
               onClick={onPrev}
@@ -293,7 +290,7 @@ export default function ProductNamesTable({
             </Button>
             <Button
               variant="outline"
-              size="sm"
+              size="base"
               id="nextPageBtn_productNamePage"
               className="h-7 px-2 text-xs"
               onClick={onNext}

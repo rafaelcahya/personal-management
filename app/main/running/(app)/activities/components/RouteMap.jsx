@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Button from '@/components/base/Button/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import { Maximize2, X } from 'lucide-react'
 import polyline from '@mapbox/polyline'
 
@@ -309,35 +311,21 @@ function LeafletMap({
 
 function StyleToggle({ mapStyle, onStyleChange }) {
   return (
-    <div
+    <Tabs
       id="mapStyleToggle_activityDetailPage"
-      className="flex rounded-lg overflow-hidden border border-slate-200 shadow-sm"
+      value={mapStyle}
+      onValueChange={onStyleChange}
+      className="shrink-0 self-start"
     >
-      <button
-        id="mapStyleMap_activityDetailPage"
-        onClick={() => onStyleChange('map')}
-        aria-pressed={mapStyle === 'map'}
-        className={`px-2.5 py-1 text-xs font-medium transition-colors ${
-          mapStyle === 'map'
-            ? 'bg-white text-slate-800'
-            : 'bg-slate-50 text-slate-500 hover:bg-white'
-        }`}
-      >
-        Map
-      </button>
-      <button
-        id="mapStyleSatellite_activityDetailPage"
-        onClick={() => onStyleChange('satellite')}
-        aria-pressed={mapStyle === 'satellite'}
-        className={`px-2.5 py-1 text-xs font-medium transition-colors ${
-          mapStyle === 'satellite'
-            ? 'bg-white text-slate-800'
-            : 'bg-slate-50 text-slate-500 hover:bg-white'
-        }`}
-      >
-        Satellite
-      </button>
-    </div>
+      <TabsList variant="pill" size="sm">
+        <TabsTrigger id="mapStyleMap_activityDetailPage" value="map">
+          Map
+        </TabsTrigger>
+        <TabsTrigger id="mapStyleSatellite_activityDetailPage" value="satellite">
+          Satellite
+        </TabsTrigger>
+      </TabsList>
+    </Tabs>
   )
 }
 
@@ -395,13 +383,14 @@ export default function RouteMap({
             streams={streams}
             pagePrefix={pagePrefix}
           />
-          <button
+          <Button
             onClick={() => setExpanded(true)}
+            variant="ghost"
             className="absolute top-2 right-2 z-[1000] bg-white/90 hover:bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm transition-colors"
             aria-label="Expand map"
           >
             <Maximize2 className="size-4 text-slate-600" aria-hidden="true" />
-          </button>
+          </Button>
         </div>
         <div className="flex items-center justify-start px-1 pt-1.5">
           <StyleToggle mapStyle={mapStyle} onStyleChange={setMapStyle} />
@@ -437,13 +426,15 @@ export default function RouteMap({
                 streams={streams}
                 pagePrefix={pagePrefix}
               />
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setExpanded(false)}
                 className="absolute top-3 right-3 z-[1000] bg-white/90 hover:bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm transition-colors"
                 aria-label="Close map"
               >
                 <X className="size-4 text-slate-600" aria-hidden="true" />
-              </button>
+              </Button>
             </div>
             <div className="bg-white flex items-center px-3 py-2">
               <StyleToggle mapStyle={mapStyle} onStyleChange={setMapStyle} />

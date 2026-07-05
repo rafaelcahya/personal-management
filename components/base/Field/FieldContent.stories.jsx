@@ -33,7 +33,9 @@ export const Default = {
           <FieldControl>
             <Input placeholder="you@example.com" />
           </FieldControl>
-          <FieldDescription>We'll never share your email.</FieldDescription>
+          <FieldDescription className="text-xs text-slate-400">
+            We'll never share your email.
+          </FieldDescription>
         </FieldContent>
       </div>
 
@@ -41,7 +43,7 @@ export const Default = {
         <code>{`<FieldContent size="base">
   <FieldLabel>Email</FieldLabel>
   <FieldControl><Input placeholder="you@example.com" /></FieldControl>
-  <FieldDescription>We'll never share your email.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">We'll never share your email.</FieldDescription>
 </FieldContent>`}</code>
       </pre>
     </div>
@@ -65,7 +67,9 @@ export const Required = {
           <FieldControl>
             <Input placeholder="you@example.com" />
           </FieldControl>
-          <FieldDescription>Required — FieldLabel shows red *</FieldDescription>
+          <FieldDescription className="text-xs text-slate-400">
+            Required — FieldLabel shows red *
+          </FieldDescription>
         </FieldContent>
       </div>
 
@@ -130,7 +134,9 @@ export const Disabled = {
           <FieldControl>
             <Input defaultValue="usr_abc123" />
           </FieldControl>
-          <FieldDescription>Auto-generated. Cannot be changed.</FieldDescription>
+          <FieldDescription className="text-xs text-slate-400">
+            Auto-generated. Cannot be changed.
+          </FieldDescription>
         </FieldContent>
       </div>
 
@@ -138,7 +144,7 @@ export const Disabled = {
         <code>{`<FieldContent size="base" disabled>
   <FieldLabel>User ID</FieldLabel>
   <FieldControl><Input defaultValue="usr_abc123" /></FieldControl>
-  <FieldDescription>Auto-generated. Cannot be changed.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Auto-generated. Cannot be changed.</FieldDescription>
 </FieldContent>`}</code>
       </pre>
     </div>
@@ -168,7 +174,9 @@ export const Orientation = {
             <FieldControl>
               <Input placeholder="you@example.com" />
             </FieldControl>
-            <FieldDescription>We'll never share your email.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              We'll never share your email.
+            </FieldDescription>
           </FieldContent>
 
           <FieldContent orientation="vertical" size="base" disabled>
@@ -176,7 +184,9 @@ export const Orientation = {
             <FieldControl>
               <Input defaultValue="usr_abc123" />
             </FieldControl>
-            <FieldDescription>Auto-generated. Cannot be changed.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              Auto-generated. Cannot be changed.
+            </FieldDescription>
           </FieldContent>
 
           <FieldContent
@@ -199,7 +209,7 @@ export const Orientation = {
 <FieldContent orientation="vertical" size="base" required>
   <FieldLabel>Email</FieldLabel>
   <FieldControl><Input placeholder="you@example.com" /></FieldControl>
-  <FieldDescription>We'll never share your email.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">We'll never share your email.</FieldDescription>
 </FieldContent>`}</code>
       </pre>
 
@@ -209,7 +219,9 @@ export const Orientation = {
         <div className="flex flex-col gap-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <FieldContent orientation="horizontal" size="base" required>
             <FieldLabel>Push notifications</FieldLabel>
-            <FieldDescription>Receive alerts for new messages and activity.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              Receive alerts for new messages and activity.
+            </FieldDescription>
             <FieldControl>
               <Switch defaultChecked />
             </FieldControl>
@@ -217,7 +229,9 @@ export const Orientation = {
 
           <FieldContent orientation="horizontal" size="base" disabled>
             <FieldLabel>SMS alerts</FieldLabel>
-            <FieldDescription>Not available in your region.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              Not available in your region.
+            </FieldDescription>
             <FieldControl>
               <Switch disabled />
             </FieldControl>
@@ -230,7 +244,9 @@ export const Orientation = {
             error="You must accept to continue."
           >
             <FieldLabel>Data processing agreement</FieldLabel>
-            <FieldDescription>Required to use this service.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              Required to use this service.
+            </FieldDescription>
             <FieldControl>
               <Switch />
             </FieldControl>
@@ -242,21 +258,21 @@ export const Orientation = {
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`<FieldContent orientation="horizontal" size="base" required>
   <FieldLabel>Push notifications</FieldLabel>
-  <FieldDescription>Receive alerts for new messages and activity.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Receive alerts for new messages and activity.</FieldDescription>
   <FieldControl><Switch defaultChecked /></FieldControl>
 </FieldContent>
 
 {/* Disabled */}
 <FieldContent orientation="horizontal" size="base" disabled>
   <FieldLabel>SMS alerts</FieldLabel>
-  <FieldDescription>Not available in your region.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Not available in your region.</FieldDescription>
   <FieldControl><Switch disabled /></FieldControl>
 </FieldContent>
 
 {/* Error */}
 <FieldContent orientation="horizontal" size="base" required error="You must accept to continue.">
   <FieldLabel>Data processing agreement</FieldLabel>
-  <FieldDescription>Required to use this service.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Required to use this service.</FieldDescription>
   <FieldControl><Switch /></FieldControl>
   <FieldError />
 </FieldContent>`}</code>
@@ -268,7 +284,9 @@ export const Orientation = {
         <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <FieldContent orientation="horizontal" size="base" required>
             <FieldLabel>Display name</FieldLabel>
-            <FieldDescription>Shown publicly on your profile.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              Shown publicly on your profile.
+            </FieldDescription>
             <FieldControl>
               <Input placeholder="Cahya" className="w-48" />
             </FieldControl>
@@ -276,7 +294,9 @@ export const Orientation = {
 
           <FieldContent orientation="horizontal" size="base">
             <FieldLabel>Website</FieldLabel>
-            <FieldDescription>Your personal or company site.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              Your personal or company site.
+            </FieldDescription>
             <FieldControl>
               <FieldPrefix>
                 <Globe className="size-4" />
@@ -287,7 +307,9 @@ export const Orientation = {
 
           <FieldContent orientation="horizontal" size="base" disabled>
             <FieldLabel>User ID</FieldLabel>
-            <FieldDescription>Auto-generated. Cannot be changed.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              Auto-generated. Cannot be changed.
+            </FieldDescription>
             <FieldControl>
               <Input defaultValue="usr_abc123" className="w-48" />
             </FieldControl>
@@ -300,7 +322,9 @@ export const Orientation = {
             error="Must be at least 3 characters."
           >
             <FieldLabel>Username</FieldLabel>
-            <FieldDescription>Used to log in to your account.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              Used to log in to your account.
+            </FieldDescription>
             <FieldControl>
               <Input defaultValue="ab" className="w-48" />
             </FieldControl>
@@ -312,7 +336,7 @@ export const Orientation = {
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`<FieldContent orientation="horizontal" size="base" required>
   <FieldLabel>Display name</FieldLabel>
-  <FieldDescription>Shown publicly on your profile.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Shown publicly on your profile.</FieldDescription>
   <FieldControl>
     <Input placeholder="Cahya" className="w-48" />
   </FieldControl>
@@ -321,7 +345,7 @@ export const Orientation = {
 {/* With icon prefix */}
 <FieldContent orientation="horizontal" size="base">
   <FieldLabel>Website</FieldLabel>
-  <FieldDescription>Your personal or company site.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Your personal or company site.</FieldDescription>
   <FieldControl>
     <FieldPrefix><Globe className="size-4" /></FieldPrefix>
     <Input placeholder="yoursite.com" className="w-48" />
@@ -331,7 +355,7 @@ export const Orientation = {
 {/* Error */}
 <FieldContent orientation="horizontal" size="base" required error="Must be at least 3 characters.">
   <FieldLabel>Username</FieldLabel>
-  <FieldDescription>Used to log in to your account.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Used to log in to your account.</FieldDescription>
   <FieldControl>
     <Input defaultValue="ab" className="w-48" />
   </FieldControl>
@@ -347,14 +371,18 @@ export const Orientation = {
         <div className="flex flex-col gap-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <FieldContent orientation="horizontal" size="base" required>
             <FieldLabel>Accept terms</FieldLabel>
-            <FieldDescription>I agree to the Terms of Service and Privacy Policy.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              I agree to the Terms of Service and Privacy Policy.
+            </FieldDescription>
             <FieldControl>
               <Checkbox />
             </FieldControl>
           </FieldContent>
           <FieldContent orientation="horizontal" size="base">
             <FieldLabel>Dark mode</FieldLabel>
-            <FieldDescription>Use a dark background across the app.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              Use a dark background across the app.
+            </FieldDescription>
             <FieldControl>
               <Switch />
             </FieldControl>
@@ -388,7 +416,7 @@ export const Orientation = {
                 <FieldLabel className={disabled ? 'cursor-not-allowed' : 'cursor-pointer'}>
                   {label}
                 </FieldLabel>
-                <FieldDescription>{desc}</FieldDescription>
+                <FieldDescription className="text-xs text-slate-400">{desc}</FieldDescription>
                 <FieldControl>
                   <Switch defaultChecked={checked} disabled={disabled} />
                 </FieldControl>
@@ -404,7 +432,7 @@ export const Orientation = {
     <div key={label} className="px-4 py-3">
       <FieldContent orientation="horizontal" size="base" disabled={disabled}>
         <FieldLabel>{label}</FieldLabel>
-        <FieldDescription>{desc}</FieldDescription>
+        <FieldDescription className="text-xs text-slate-400">{desc}</FieldDescription>
         <FieldControl>
           <Switch defaultChecked={checked} disabled={disabled} />
         </FieldControl>

@@ -2,11 +2,12 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { Timer, AlertTriangle } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Input from '@/components/base/Input/Input'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/base/Tabs/Tabs.jsx'
+import { RadioGroup, RadioGroupItem } from '@/components/base/RadioGroup/RadioGroup'
 import {
   formatPaceSec,
   formatDuration,
@@ -232,31 +233,25 @@ export default function RunCalculatorPage() {
       <Card className="border border-slate-200/70 py-0">
         <CardContent className="px-4 py-3">
           <div className="flex items-center gap-3">
-            <Label className="text-sm font-medium text-slate-600 shrink-0">Unit</Label>
+            <FieldLabel className="text-slate-600 shrink-0">Unit</FieldLabel>
             <RadioGroup
               id="unitToggle_runCalculator"
               value={unit}
               onValueChange={handleUnitChange}
-              className="flex gap-4"
+              className="flex flex-row gap-4"
             >
-              <div className="flex items-center gap-1.5">
+              <FieldContent orientation="row">
                 <RadioGroupItem value="km" id="unitKm_runCalculator" />
-                <Label
-                  htmlFor="unitKm_runCalculator"
-                  className="text-sm font-medium cursor-pointer"
-                >
+                <FieldLabel htmlFor="unitKm_runCalculator" className="cursor-pointer">
                   km
-                </Label>
-              </div>
-              <div className="flex items-center gap-1.5">
+                </FieldLabel>
+              </FieldContent>
+              <FieldContent orientation="row">
                 <RadioGroupItem value="mi" id="unitMi_runCalculator" />
-                <Label
-                  htmlFor="unitMi_runCalculator"
-                  className="text-sm font-medium cursor-pointer"
-                >
+                <FieldLabel htmlFor="unitMi_runCalculator" className="cursor-pointer">
                   mi
-                </Label>
-              </div>
+                </FieldLabel>
+              </FieldContent>
             </RadioGroup>
           </div>
         </CardContent>
@@ -265,13 +260,17 @@ export default function RunCalculatorPage() {
       {/* Calculator */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full">
-          <TabsTrigger id="tabPace_runCalculator" value="pace" className="flex-1">
+          <TabsTrigger id="tabPace_runCalculator" value="pace" className="flex-1 justify-center">
             Pace Mode
           </TabsTrigger>
-          <TabsTrigger id="tabProjection_runCalculator" value="projection" className="flex-1">
+          <TabsTrigger
+            id="tabProjection_runCalculator"
+            value="projection"
+            className="flex-1 justify-center"
+          >
             Projection Mode
           </TabsTrigger>
-          <TabsTrigger id="tabSteps_runCalculator" value="steps" className="flex-1">
+          <TabsTrigger id="tabSteps_runCalculator" value="steps" className="flex-1 justify-center">
             Steps → Distance
           </TabsTrigger>
         </TabsList>
@@ -368,8 +367,8 @@ export default function RunCalculatorPage() {
               <p className="text-xs text-slate-500">Enter a pace to estimate time or distance.</p>
 
               {/* Pace input */}
-              <div className="flex flex-col gap-1.5">
-                <Label className="text-sm font-medium">Pace (per {unit})</Label>
+              <FieldContent>
+                <FieldLabel>Pace (per {unit})</FieldLabel>
                 <div className="flex items-center gap-1.5">
                   <div className="flex flex-col items-center gap-0.5">
                     <Input
@@ -403,7 +402,7 @@ export default function RunCalculatorPage() {
                     {`${projPaceSec}s → +${Math.floor(parseInt(projPaceSec, 10) / 60)}m ${parseInt(projPaceSec, 10) % 60}s will be added to minutes`}
                   </p>
                 )}
-              </div>
+              </FieldContent>
 
               {/* Sub-mode toggle */}
               <RadioGroup
@@ -414,21 +413,15 @@ export default function RunCalculatorPage() {
               >
                 <div className="flex items-center gap-1.5">
                   <RadioGroupItem value="distance" id="projModeDistance_runCalculator" />
-                  <Label
-                    htmlFor="projModeDistance_runCalculator"
-                    className="text-sm font-medium cursor-pointer"
-                  >
+                  <FieldLabel htmlFor="projModeDistance_runCalculator" className="cursor-pointer">
                     I have a distance → find time
-                  </Label>
+                  </FieldLabel>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <RadioGroupItem value="time" id="projModeTime_runCalculator" />
-                  <Label
-                    htmlFor="projModeTime_runCalculator"
-                    className="text-sm font-medium cursor-pointer"
-                  >
+                  <FieldLabel htmlFor="projModeTime_runCalculator" className="cursor-pointer">
                     I have a time → find distance
-                  </Label>
+                  </FieldLabel>
                 </div>
               </RadioGroup>
 
@@ -513,10 +506,8 @@ export default function RunCalculatorPage() {
                 Enter your step count to estimate the distance covered.
               </p>
 
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="stepsCount_runCalculator" className="text-sm font-medium">
-                  Steps
-                </Label>
+              <FieldContent>
+                <FieldLabel htmlFor="stepsCount_runCalculator">Steps</FieldLabel>
                 <Input
                   id="stepsCount_runCalculator"
                   type="number"
@@ -530,7 +521,7 @@ export default function RunCalculatorPage() {
                   placeholder="e.g. 6500"
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                 />
-              </div>
+              </FieldContent>
 
               {stepsCalc.invalid && (
                 <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-lg">

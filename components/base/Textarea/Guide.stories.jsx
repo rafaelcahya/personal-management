@@ -85,7 +85,9 @@ export const Docs = {
           <FieldContent size="base" required>
             <FieldLabel>Notes</FieldLabel>
             <Textarea rows={4} placeholder="Write something..." />
-            <FieldDescription>Max 500 characters.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              Max 500 characters.
+            </FieldDescription>
           </FieldContent>
         </Preview>
       </Section>
@@ -193,7 +195,7 @@ export const Docs = {
         <Code>{`<FieldContent size="base" required error={errors.notes?.message}>
   <FieldLabel>Notes</FieldLabel>
   <Textarea placeholder="Write something..." rows={4} />
-  <FieldDescription>Max 500 characters.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Max 500 characters.</FieldDescription>
   <FieldError />
 </FieldContent>`}</Code>
       </Section>
@@ -447,7 +449,7 @@ export const Docs = {
           <Code>{`<FieldContent size="base" required>
   <FieldLabel>Notes</FieldLabel>
   <Textarea rows={4} placeholder="Write something..." />
-  <FieldDescription>Max 500 characters.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Max 500 characters.</FieldDescription>
 </FieldContent>`}</Code>
         </SubSection>
 

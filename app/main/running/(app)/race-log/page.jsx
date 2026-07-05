@@ -13,12 +13,20 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
 import { fmtDistance } from '../dashboard/utils/format'
 import { fetchRaceLog, fetchUpcomingRaces } from '@/lib/api/running'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 import RaceFormModal from './components/RaceFormModal'
 import UpcomingRaceFormModal from './components/UpcomingRaceFormModal'
@@ -26,9 +34,6 @@ import { getDistanceLabel, secsToHMS, secsToMMSS, formatDate } from './component
 import UpcomingRacesSection from './components/UpcomingRacesSection'
 
 const LIMIT = 15
-
-const TH =
-  'px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap'
 
 const DISTANCE_BUCKETS = [
   { key: '5k', label: '5K' },
@@ -154,7 +159,7 @@ export default function RaceLogPage() {
           <Button
             id="addRaceBtn"
             onClick={() => setFormOpen(true)}
-            size="sm"
+            size="base"
             className="flex items-center gap-1.5"
             aria-label="Log race"
           >
@@ -164,8 +169,7 @@ export default function RaceLogPage() {
           <Button
             id="addUpcomingRaceBtn_raceLogPage"
             onClick={() => setAddUpcomingOpen(true)}
-            size="sm"
-            variant="outline"
+            size="base"
             className="flex items-center gap-1.5"
             aria-label="Add upcoming race"
           >
@@ -209,7 +213,7 @@ export default function RaceLogPage() {
         >
           <AlertTriangle className="size-8 text-red-400" aria-hidden="true" />
           <p className="text-sm text-slate-600">{error}</p>
-          <Button variant="outline" size="sm" onClick={load}>
+          <Button variant="outline" size="base" onClick={load}>
             Try again
           </Button>
         </div>
@@ -230,7 +234,11 @@ export default function RaceLogPage() {
               Every race you finish deserves to be remembered.
             </p>
           </div>
-          <Button onClick={() => setFormOpen(true)} size="sm" className="flex items-center gap-1.5">
+          <Button
+            onClick={() => setFormOpen(true)}
+            size="base"
+            className="flex items-center gap-1.5"
+          >
             <Flag className="size-4" aria-hidden="true" />
             Log your first race
           </Button>
@@ -269,7 +277,9 @@ export default function RaceLogPage() {
                 className="pl-8 pr-8 h-8 text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600"
               />
               {searchInput && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
                   onClick={() => {
                     setSearchInput('')
                     setSearch('')
@@ -279,200 +289,197 @@ export default function RaceLogPage() {
                   aria-label="Clear search"
                 >
                   <X className="size-3.5" aria-hidden="true" />
-                </button>
+                </Button>
               )}
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <button
+              <Button
                 id="raceFilterChip_all"
+                variant="ghost"
+                size="xs"
                 aria-pressed={!activeDistance}
                 onClick={() => setActiveDistance(null)}
-                className={`flex items-center rounded-full px-3 py-1 text-xs font-medium border whitespace-nowrap transition-colors ${
-                  !activeDistance
-                    ? 'border-violet-300 bg-violet-100 text-violet-700'
-                    : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'
-                }`}
+                className={`rounded-full border whitespace-nowrap ${!activeDistance ? 'border-violet-300 bg-violet-100 text-violet-700' : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'}`}
               >
                 All
-              </button>
+              </Button>
               {DISTANCE_BUCKETS.map((b) => (
-                <button
+                <Button
                   key={b.key}
                   id={`raceFilterChip_${b.key}`}
+                  variant="ghost"
+                  size="xs"
                   aria-pressed={activeDistance === b.key}
                   onClick={() => setActiveDistance(activeDistance === b.key ? null : b.key)}
-                  className={`flex items-center rounded-full px-3 py-1 text-xs font-medium border whitespace-nowrap transition-colors ${
-                    activeDistance === b.key
-                      ? 'border-violet-300 bg-violet-100 text-violet-700'
-                      : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'
-                  }`}
+                  className={`rounded-full border whitespace-nowrap ${activeDistance === b.key ? 'border-violet-300 bg-violet-100 text-violet-700' : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'}`}
                 >
                   {b.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           {/* Table area */}
-          <div id="raceLogList" className="overflow-x-auto flex-1">
-            <table className="min-w-[700px] w-full text-sm" aria-label="Race log">
-              <thead>
-                <tr className="border-b border-slate-100">
-                  <th className={`${TH} text-left w-[32%]`}>Race</th>
-                  <th className={`${TH} text-left`}>Date</th>
-                  <th className={`${TH} text-right`}>Dist</th>
-                  <th className={`${TH} text-right`}>Time</th>
-                  <th className={`${TH} text-right`}>Pace</th>
-                  <th className={`${TH} text-right`}>Place</th>
-                  <th className={`${TH} text-right`}>Male</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading && (
-                  <tr>
-                    <td colSpan={7} className="p-0">
-                      <div id="raceLogLoadingSkeleton">
-                        <table className="min-w-[700px] w-full">
-                          <tbody>
-                            <TableSkeletonRows
-                              rows={5}
-                              metricWidths={[48, 52, 44, 48, 40, 32, 32]}
-                            />
-                          </tbody>
-                        </table>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-                {!loading && entries.length === 0 && (
-                  <tr>
-                    <td colSpan={7}>
-                      <div className="flex flex-col items-center justify-center py-12 gap-2">
-                        <p className="text-sm text-slate-500">No races match your filters.</p>
-                        <button
-                          onClick={() => {
-                            setSearchInput('')
-                            setSearch('')
-                            setActiveDistance(null)
-                            setPage(1)
-                          }}
-                          className="text-xs text-violet-600 hover:underline"
-                        >
-                          Clear filters
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-                {!loading &&
-                  entries.map((entry) => {
-                    const pace = entry.avg_pace_sec_per_km
-                      ? secsToMMSS(entry.avg_pace_sec_per_km)
-                      : entry.finish_time_sec && entry.distance_m
-                        ? secsToMMSS(Math.round((entry.finish_time_sec / entry.distance_m) * 1000))
-                        : null
-                    return (
-                      <tr
-                        key={entry.id}
-                        id={`raceLogCard_${entry.id}`}
-                        className="border-b border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors"
-                        onClick={() => router.push(`/main/running/race-log/${entry.id}`)}
+          <Table
+            id="raceLogList"
+            wrapperClassName="overflow-x-auto flex-1"
+            className="min-w-[700px] w-full"
+            aria-label="Race log"
+          >
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[32%]">Race</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead align="right">Dist</TableHead>
+                <TableHead align="right">Time</TableHead>
+                <TableHead align="right">Pace</TableHead>
+                <TableHead align="right">Place</TableHead>
+                <TableHead align="right">Male</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading && (
+                <TableRow>
+                  <TableCell colSpan={7} className="p-0">
+                    <div id="raceLogLoadingSkeleton">
+                      <Table className="min-w-[700px] w-full">
+                        <TableBody>
+                          <TableSkeletonRows rows={5} metricWidths={[48, 52, 44, 48, 40, 32, 32]} />
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!loading && entries.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7}>
+                    <div className="flex flex-col items-center justify-center py-12 gap-2">
+                      <p className="text-sm text-slate-500">No races match your filters.</p>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        onClick={() => {
+                          setSearchInput('')
+                          setSearch('')
+                          setActiveDistance(null)
+                          setPage(1)
+                        }}
                       >
-                        <td className="px-5 py-3.5 w-[32%]">
-                          <div className="flex items-center gap-3">
-                            <span className="flex size-8 items-center justify-center rounded-full shrink-0 bg-violet-50">
-                              <Trophy className="size-4 text-violet-500" aria-hidden="true" />
-                            </span>
-                            <div className="flex flex-col min-w-0">
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="text-sm font-medium text-slate-700 truncate">
-                                  {entry.title}
-                                </span>
-                                {entry.did_not_finish && (
-                                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700 shrink-0">
-                                    DNF
-                                  </span>
-                                )}
-                                {(entry.top_best_efforts ?? []).map((e) =>
-                                  e.pr_rank === 1 ? (
-                                    <span
-                                      key={e.name}
-                                      id={`pbRankChip_${e.name.replace(/\s/g, '')}_raceLogPage`}
-                                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0"
-                                    >
-                                      <Trophy className="size-3" aria-hidden="true" />
-                                      #1 {e.name}
-                                    </span>
-                                  ) : (
-                                    <span
-                                      key={e.name}
-                                      id={`pbRankChip_${e.name.replace(/\s/g, '')}_raceLogPage`}
-                                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold leading-none shrink-0"
-                                    >
-                                      #{e.pr_rank} {e.name}
-                                    </span>
-                                  )
-                                )}
-                              </div>
-                              <span className="text-xs text-slate-400">
-                                {getDistanceLabel(entry.distance_m)}
+                        Clear filters
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!loading &&
+                entries.map((entry) => {
+                  const pace = entry.avg_pace_sec_per_km
+                    ? secsToMMSS(entry.avg_pace_sec_per_km)
+                    : entry.finish_time_sec && entry.distance_m
+                      ? secsToMMSS(Math.round((entry.finish_time_sec / entry.distance_m) * 1000))
+                      : null
+                  return (
+                    <TableRow
+                      key={entry.id}
+                      id={`raceLogCard_${entry.id}`}
+                      clickable
+                      onClick={() => router.push(`/main/running/race-log/${entry.id}`)}
+                    >
+                      <TableCell className="w-[32%]">
+                        <div className="flex items-center gap-3">
+                          <span className="flex size-8 items-center justify-center rounded-full shrink-0 bg-violet-50">
+                            <Trophy className="size-4 text-violet-500" aria-hidden="true" />
+                          </span>
+                          <div className="flex flex-col min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-sm font-medium text-slate-700 truncate">
+                                {entry.title}
                               </span>
+                              {entry.did_not_finish && (
+                                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700 shrink-0">
+                                  DNF
+                                </span>
+                              )}
+                              {(entry.top_best_efforts ?? []).map((e) =>
+                                e.pr_rank === 1 ? (
+                                  <span
+                                    key={e.name}
+                                    id={`pbRankChip_${e.name.replace(/\s/g, '')}_raceLogPage`}
+                                    className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0"
+                                  >
+                                    <Trophy className="size-3" aria-hidden="true" />
+                                    #1 {e.name}
+                                  </span>
+                                ) : (
+                                  <span
+                                    key={e.name}
+                                    id={`pbRankChip_${e.name.replace(/\s/g, '')}_raceLogPage`}
+                                    className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold leading-none shrink-0"
+                                  >
+                                    #{e.pr_rank} {e.name}
+                                  </span>
+                                )
+                              )}
                             </div>
+                            <span className="text-xs text-slate-400">
+                              {getDistanceLabel(entry.distance_m)}
+                            </span>
                           </div>
-                        </td>
-                        <td className="px-5 py-3.5 text-sm text-slate-600 whitespace-nowrap">
-                          {formatDate(entry.race_date)}
-                        </td>
-                        <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                          {entry.distance_m ? `${fmtDistance(entry.distance_m)} km` : '—'}
-                        </td>
-                        <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                          {!entry.did_not_finish && entry.finish_time_sec
-                            ? secsToHMS(entry.finish_time_sec)
-                            : '—'}
-                        </td>
-                        <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                          {pace ?? '—'}
-                        </td>
-                        <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                          {entry.position_place != null ? `#${entry.position_place}` : '—'}
-                        </td>
-                        <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                          {entry.position_male != null ? `#${entry.position_male}` : '—'}
-                        </td>
-                      </tr>
-                    )
-                  })}
-              </tbody>
-            </table>
-          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-slate-600 whitespace-nowrap">
+                        {formatDate(entry.race_date)}
+                      </TableCell>
+                      <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                        {entry.distance_m ? `${fmtDistance(entry.distance_m)} km` : '—'}
+                      </TableCell>
+                      <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                        {!entry.did_not_finish && entry.finish_time_sec
+                          ? secsToHMS(entry.finish_time_sec)
+                          : '—'}
+                      </TableCell>
+                      <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                        {pace ?? '—'}
+                      </TableCell>
+                      <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                        {entry.position_place != null ? `#${entry.position_place}` : '—'}
+                      </TableCell>
+                      <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                        {entry.position_male != null ? `#${entry.position_male}` : '—'}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+            </TableBody>
+          </Table>
 
           {totalPages > 1 && (
             <div
               className="flex items-center justify-between px-5 pt-2 mt-2"
               aria-label="Pagination"
             >
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setPage((p) => p - 1)}
                 disabled={page <= 1}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
                 aria-label="Previous page"
               >
                 <ChevronLeft className="size-4" aria-hidden="true" />
                 Prev
-              </button>
+              </Button>
               <span className="text-xs text-slate-400 text-center" aria-live="polite">
                 Page {page} of {totalPages} · {total} records
               </span>
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= totalPages}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
                 aria-label="Next page"
               >
                 Next
                 <ChevronRight className="size-4" aria-hidden="true" />
-              </button>
+              </Button>
             </div>
           )}
         </div>

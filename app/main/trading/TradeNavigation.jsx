@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation'
 import { LayoutDashboard, Receipt, Calendar, TrendingUp, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import Button from '@/components/base/Button/Button'
 
 const navigationItems = [
   {
@@ -51,19 +52,20 @@ export default function TradeNavigation() {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
 
           return (
-            <button
+            <Button
               key={item.value}
+              variant="ghost"
               onClick={() => router.push(item.href)}
               className={cn(
                 'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center focus:outline-none',
                 isActive
-                  ? 'bg-white text-violet-700 shadow-sm'
+                  ? 'bg-white text-violet-700 shadow-sm hover:bg-white'
                   : 'text-slate-500 hover:text-slate-700 hover:bg-white/60'
               )}
             >
               <Icon className={cn('size-4', isActive ? 'text-violet-600' : 'text-slate-400')} />
               <span>{item.name}</span>
-            </button>
+            </Button>
           )
         })}
       </div>
@@ -75,19 +77,20 @@ export default function TradeNavigation() {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
 
           return (
-            <button
+            <Button
               key={item.value}
+              variant="ghost"
               onClick={() => router.push(item.href)}
               className={cn(
                 'flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all duration-200 focus:outline-none',
                 isActive
-                  ? 'bg-violet-600 text-white'
+                  ? 'bg-violet-600 text-white hover:bg-violet-600'
                   : 'bg-slate-100 text-slate-600 hover:bg-violet-50 hover:text-violet-700'
               )}
             >
               <Icon className="size-4" />
               <span>{item.name}</span>
-            </button>
+            </Button>
           )
         })}
       </div>

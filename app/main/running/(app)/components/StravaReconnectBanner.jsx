@@ -1,7 +1,7 @@
 'use client'
 
 import { AlertTriangle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { redirectToStravaConnect } from '@/lib/api/running'
 
 export default function StravaReconnectBanner({ needsReconnect }) {
@@ -23,7 +23,7 @@ export default function StravaReconnectBanner({ needsReconnect }) {
         </div>
         <Button
           id="stravaReconnectBtn"
-          size="sm"
+          size="base"
           onClick={redirectToStravaConnect}
           className="bg-amber-600 hover:bg-amber-700 text-white shrink-0 min-w-11 focus-visible:ring-2 focus-visible:ring-amber-300"
         >

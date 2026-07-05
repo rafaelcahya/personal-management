@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { AlertTriangle, CheckCircle2, ChevronDown, ChevronUp, History } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { acknowledgeInsight, fetchAcknowledgedAnomalyInsights } from '@/lib/api/running'
@@ -66,9 +66,11 @@ function AnomalyHistoryItem({ insight }) {
 
   return (
     <div className="border border-slate-200 rounded-lg overflow-hidden">
-      <button
+      <Button
         onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-200"
+        variant="ghost"
+        size="xs"
+        className="w-full flex items-center justify-between px-4 py-3 text-left"
         aria-expanded={expanded}
       >
         <div className="flex flex-col gap-0.5 min-w-0">
@@ -90,7 +92,7 @@ function AnomalyHistoryItem({ insight }) {
         ) : (
           <ChevronDown className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />
         )}
-      </button>
+      </Button>
       {expanded && (
         <div className="px-4 pb-4 pt-1 border-t border-slate-100">
           <p className="text-sm text-slate-700 leading-relaxed">
@@ -181,7 +183,7 @@ function AnomalyCard({ insight, onAcknowledged, dimmed = false }) {
             </p>
           )}
           <Button
-            size="sm"
+            size="base"
             variant="outline"
             disabled={acknowledging}
             onClick={handleAcknowledge}
@@ -294,15 +296,17 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
         </span>
       )}
       {!historyLoading && !historyError && history !== null && history.length > 0 && (
-        <button
+        <Button
           id="anomalyHistoryBtn_aiCoachPage"
+          variant="ghost"
+          size="xs"
           onClick={() => setHistorySheetOpen(true)}
           aria-label="View acknowledged anomaly alert history"
-          className="mt-3 flex items-center gap-1 text-xs text-slate-400 hover:text-amber-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+          className="mt-3 flex items-center gap-1 text-xs text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
         >
           <History className="h-3.5 w-3.5" aria-hidden="true" />
           History
-        </button>
+        </Button>
       )}
 
       <Sheet open={historySheetOpen} onOpenChange={setHistorySheetOpen}>
@@ -327,7 +331,7 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
                   <p className="text-sm text-slate-400">Could not load history.</p>
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="base"
                     className="text-amber-600 hover:text-amber-700 px-0 h-auto font-normal text-xs"
                     onClick={loadHistory}
                   >
@@ -359,7 +363,7 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
                 <div className="flex items-center justify-between pt-2">
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="base"
                     disabled={page === 1}
                     onClick={() => setPage((p) => p - 1)}
                     aria-label="Previous page of anomaly history"
@@ -372,7 +376,7 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
                   </p>
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="base"
                     disabled={page === totalPages}
                     onClick={() => setPage((p) => p + 1)}
                     aria-label="Next page of anomaly history"

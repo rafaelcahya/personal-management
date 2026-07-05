@@ -111,7 +111,9 @@ export const Docs = {
               </FieldPrefix>
               <Input placeholder="you@example.com" />
             </FieldControl>
-            <FieldDescription>We'll never share your email.</FieldDescription>
+            <FieldDescription className="text-xs text-slate-400">
+              We'll never share your email.
+            </FieldDescription>
           </FieldContent>
           <FieldContent size="base">
             <FieldLabel>Website</FieldLabel>
@@ -268,7 +270,7 @@ export const Docs = {
     <Input placeholder="you@example.com" />
     <FieldSuffix>.com</FieldSuffix>
   </FieldControl>
-  <FieldDescription>We'll never share your email.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">We'll never share your email.</FieldDescription>
   <FieldError />
 </FieldContent>`}</Code>
       </Section>
@@ -422,7 +424,7 @@ export const Docs = {
   <FieldControl>
     <Input type="email" placeholder="you@example.com" />
   </FieldControl>
-  <FieldDescription>We'll never share your email.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">We'll never share your email.</FieldDescription>
 </FieldContent>`}</Code>
         </SubSection>
 

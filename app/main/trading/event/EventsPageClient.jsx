@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { fetchEventList } from '@/lib/api/event'
 import { toast } from 'sonner'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import Input from '@/components/base/Input/Input'
+import Button from '@/components/base/Button/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Search, List, AlignLeft, CalendarX2, SearchX, Sparkles, X, History } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
 import EventTableHeader from './component/EventTableHeader'
@@ -143,34 +144,16 @@ export default function EventsPageClient() {
         <div className="px-5 py-3 border-b border-slate-100 flex flex-col gap-3">
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
             {/* View toggle — left */}
-            <div className="flex items-center border border-slate-200 rounded-md overflow-hidden shrink-0 self-start">
-              <button
-                id="listViewBtn_eventPage"
-                type="button"
-                onClick={() => setView('list')}
-                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                  view === 'list'
-                    ? 'bg-violet-600 text-white'
-                    : 'bg-white text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <List className="size-3.5" />
-                List
-              </button>
-              <button
-                id="timelineViewBtn_eventPage"
-                type="button"
-                onClick={() => setView('timeline')}
-                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                  view === 'timeline'
-                    ? 'bg-violet-600 text-white'
-                    : 'bg-white text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <AlignLeft className="size-3.5" />
-                Timeline
-              </button>
-            </div>
+            <Tabs value={view} onValueChange={setView} className="shrink-0 self-start">
+              <TabsList variant="pill" size="sm">
+                <TabsTrigger id="listViewBtn_eventPage" value="list" icon={List}>
+                  List
+                </TabsTrigger>
+                <TabsTrigger id="timelineViewBtn_eventPage" value="timeline" icon={AlignLeft}>
+                  Timeline
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
             {/* Search + Filter + Add — right */}
             <div className="flex items-center gap-2 flex-wrap">
@@ -201,7 +184,7 @@ export default function EventsPageClient() {
           <div className="flex justify-end">
             <Button
               variant="outline"
-              size="sm"
+              size="base"
               onClick={() => setHistoryModalOpen(true)}
               className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
             >
@@ -230,7 +213,7 @@ export default function EventsPageClient() {
                 {filter && (
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="base"
                     onClick={() => handleFilterChange(null)}
                     className="text-violet-600 border-violet-200 hover:bg-violet-50"
                   >
@@ -300,13 +283,16 @@ export default function EventsPageClient() {
           >
             <Sparkles className="size-3.5" /> Analyze Together
           </Button>
-          <button
+          <Button
             id="clearMultiSelectBtn_eventPage"
+            variant="ghost"
+            size="icon-sm"
             onClick={() => setSelectedEvents(new Map())}
-            className="rounded-full h-8 w-8 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
+            className="rounded-full text-slate-500 hover:bg-slate-100"
+            aria-label="Clear selection"
           >
             <X className="size-4" />
-          </button>
+          </Button>
         </div>
       )}
 

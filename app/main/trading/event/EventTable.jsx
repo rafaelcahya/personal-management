@@ -2,10 +2,18 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/base/Badge/Badge'
 import UpdateEvent from './UpdateEvent'
 import ImpactBadge from './component/ImpactBadge'
 import EventCardList from './component/EventCardList'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 function formatEventDate(dateStr) {
   if (!dateStr) return '—'
@@ -37,101 +45,93 @@ export default function EventTable({ events, onRefresh, selectedIds = new Set(),
       </div>
 
       {/* Desktop table — lg and above */}
-      <div className="hidden lg:block overflow-x-auto">
-        <table className="min-w-full text-sm" aria-label="Events">
-          <thead>
-            <tr className="border-b border-slate-100">
-              {onToggle && (
-                <th className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-10" />
-              )}
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Event
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[130px]">
-                Impact
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[140px]">
-                Date
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.length === 0 ? (
-              <tr>
-                <td colSpan={onToggle ? 4 : 3} className="px-5 py-8 text-center text-slate-500">
-                  No events found.
-                </td>
-              </tr>
-            ) : (
-              events.map((event) => {
-                const linkCount = Array.isArray(event.links) ? event.links.length : 0
-                const isSelected = selectedIds.has(event.id)
-                return (
-                  <tr
-                    key={event.id}
-                    className={`border-b border-slate-50 cursor-pointer transition-colors ${isSelected ? 'bg-violet-50' : 'hover:bg-slate-50'}`}
-                    onClick={() => router.push(`/main/trading/event/${event.id}`)}
-                  >
-                    {onToggle && (
-                      <td
-                        className="px-5 py-3.5 w-10"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          onToggle(event.id, event)
-                        }}
-                      >
-                        <input
-                          id={`multiSelectCheckbox_${event.id}_eventPage`}
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => onToggle(event.id, event)}
-                          onClick={(e) => e.stopPropagation()}
-                          className="size-4 rounded accent-violet-600 cursor-pointer"
-                        />
-                      </td>
-                    )}
-                    <td className="px-5 py-3.5 whitespace-normal">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-semibold text-sm text-slate-800">
-                            {event.title || '—'}
-                          </p>
-                          {linkCount > 0 && (
-                            <Badge
-                              variant="secondary"
-                              className="text-xs font-medium px-1.5 py-0 h-4 shrink-0"
-                            >
-                              {linkCount} link{linkCount > 1 ? 's' : ''}
-                            </Badge>
-                          )}
-                        </div>
-                        {Array.isArray(event.tags) && event.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1.5">
-                            {event.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="bg-violet-100 text-violet-700 text-xs font-medium rounded-md px-2 py-0.5"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
+      <Table wrapperClassName="hidden lg:block" className="min-w-full" aria-label="Events">
+        <TableHeader>
+          <TableRow>
+            {onToggle && <TableHead className="w-10" />}
+            <TableHead>Event</TableHead>
+            <TableHead className="w-[130px]">Impact</TableHead>
+            <TableHead className="w-[140px]">Date</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {events.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={onToggle ? 4 : 3}
+                className="px-5 py-8 text-center text-slate-500"
+              >
+                No events found.
+              </TableCell>
+            </TableRow>
+          ) : (
+            events.map((event) => {
+              const linkCount = Array.isArray(event.links) ? event.links.length : 0
+              const isSelected = selectedIds.has(event.id)
+              return (
+                <TableRow
+                  key={event.id}
+                  selected={isSelected}
+                  clickable
+                  onClick={() => router.push(`/main/trading/event/${event.id}`)}
+                >
+                  {onToggle && (
+                    <TableCell
+                      className="w-10"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onToggle(event.id, event)
+                      }}
+                    >
+                      <input
+                        id={`multiSelectCheckbox_${event.id}_eventPage`}
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onToggle(event.id, event)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="size-4 rounded accent-violet-600 cursor-pointer"
+                      />
+                    </TableCell>
+                  )}
+                  <TableCell className="whitespace-normal">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-semibold text-sm text-slate-800">{event.title || '—'}</p>
+                        {linkCount > 0 && (
+                          <Badge
+                            variant="secondary"
+                            className="text-xs font-medium px-1.5 py-0 h-4 shrink-0"
+                          >
+                            {linkCount} link{linkCount > 1 ? 's' : ''}
+                          </Badge>
                         )}
                       </div>
-                    </td>
-                    <td className="px-5 py-3.5 w-[130px]">
-                      <ImpactBadge value={event.impact_direction} />
-                    </td>
-                    <td className="px-5 py-3.5 text-slate-700 w-[140px]">
-                      <p className="font-medium text-sm">{formatEventDate(event.event_date)}</p>
-                    </td>
-                  </tr>
-                )
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                      {Array.isArray(event.tags) && event.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {event.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="bg-violet-100 text-violet-700 text-xs font-medium rounded-md px-2 py-0.5"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="w-[130px]">
+                    <ImpactBadge value={event.impact_direction} />
+                  </TableCell>
+                  <TableCell className="text-slate-700 w-[140px]">
+                    <p className="font-medium text-sm">{formatEventDate(event.event_date)}</p>
+                  </TableCell>
+                </TableRow>
+              )
+            })
+          )}
+        </TableBody>
+      </Table>
 
       {selectedEvent && (
         <UpdateEvent

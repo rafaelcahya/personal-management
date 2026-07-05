@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Modal, ModalContent, ModalBody } from '@/components/base/Modal/Modal.jsx'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,8 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/base/Badge/Badge'
+import Button from '@/components/base/Button/Button'
 import {
   ArrowDown,
   ArrowUp,
@@ -29,6 +29,14 @@ import AddStockForm from '../detail/AddStockForm'
 import StockAdjustment from '../detail/StockAdjustment'
 import DeleteProductDialog from './component/DeleteProductDialog'
 import EditProductSheet from './component/EditProductSheet'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 const LOW_STOCK_THRESHOLD = 5
 
@@ -71,10 +79,10 @@ function ActionMenu({
           id="actionMenuTrigger_productListPage"
           variant="ghost"
           size="icon"
+          aria-label="Open menu"
           className="size-8 outline-none hover:bg-slate-200"
         >
           <MoreHorizontalIcon />
-          <span className="sr-only">Open menu</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -205,12 +213,14 @@ export default function ProductsTable({
                   }`}
                 />
                 {product.product_image && (
-                  <button
+                  <Button
+                    size="xs"
+                    variant="ghost"
                     onClick={(e) => {
                       e.stopPropagation()
                       setPreviewImg(product.product_image)
                     }}
-                    className="shrink-0"
+                    className="shrink-0 hover:bg-transparent"
                     aria-label="View product image"
                   >
                     <img
@@ -218,7 +228,7 @@ export default function ProductsTable({
                       alt={product.product}
                       className="size-8 rounded object-cover border border-slate-200"
                     />
-                  </button>
+                  </Button>
                 )}
                 <div className="min-w-0">
                   <p className="text-xs text-slate-400 truncate leading-tight">{product.brand}</p>
@@ -287,53 +297,49 @@ export default function ProductsTable({
       </div>
 
       {/* ── Desktop Table (sm+) ── */}
-      <div className="hidden sm:block overflow-x-auto flex-1">
-        <table
-          id="desktopTable_productListPage"
-          className="min-w-full text-sm"
-          aria-label="Products"
-        >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th
-                className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[35%] cursor-pointer select-none"
+      <div className="hidden sm:block flex-1">
+        <Table id="desktopTable_productListPage" className="min-w-full" aria-label="Products">
+          <TableHeader>
+            <TableRow>
+              <TableHead
+                className="w-[35%] cursor-pointer select-none"
                 onClick={() => handleSort('product')}
               >
                 Product <SortIcon column="product" sort={sort} />
-              </th>
-              <th
-                className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[12%] cursor-pointer select-none"
+              </TableHead>
+              <TableHead
+                className="w-[12%] cursor-pointer select-none"
+                align="right"
                 onClick={() => handleSort('quantity')}
               >
                 Quantity <SortIcon column="quantity" sort={sort} />
-              </th>
-              <th
-                className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[15%] cursor-pointer select-none"
+              </TableHead>
+              <TableHead
+                className="w-[15%] cursor-pointer select-none"
+                align="right"
                 onClick={() => handleSort('in_use')}
               >
                 In Use <SortIcon column="in_use" sort={sort} />
-              </th>
-              <th
-                className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[13%] cursor-pointer select-none"
+              </TableHead>
+              <TableHead
+                className="w-[13%] cursor-pointer select-none"
+                align="center"
                 onClick={() => handleSort('usage_date')}
               >
                 Usage Date <SortIcon column="usage_date" sort={sort} />
-              </th>
-              <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[13%]">
+              </TableHead>
+              <TableHead className="w-[13%]" align="center">
                 Status
-              </th>
-              <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[12%]">
+              </TableHead>
+              <TableHead className="w-[12%]" align="center">
                 <span className="sr-only">Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {products.map((product) => (
-              <tr
-                key={product.id}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 w-[35%]">
+              <TableRow key={product.id}>
+                <TableCell className="w-[35%]">
                   <div className="flex items-center gap-3">
                     <StarIcon
                       className={`size-4 flex-shrink-0 ${
@@ -341,12 +347,14 @@ export default function ProductsTable({
                       }`}
                     />
                     {product.product_image && (
-                      <button
+                      <Button
+                        size="xs"
+                        variant="ghost"
                         onClick={(e) => {
                           e.stopPropagation()
                           setPreviewImg(product.product_image)
                         }}
-                        className="shrink-0"
+                        className="shrink-0 hover:bg-transparent"
                         aria-label="View product image"
                       >
                         <img
@@ -354,7 +362,7 @@ export default function ProductsTable({
                           alt={product.product}
                           className="size-8 rounded object-cover border border-slate-200"
                         />
-                      </button>
+                      </Button>
                     )}
                     <div className="min-w-0">
                       <p className="text-xs text-slate-400 truncate">{product.brand}</p>
@@ -368,8 +376,8 @@ export default function ProductsTable({
                       </div>
                     </div>
                   </div>
-                </td>
-                <td className="px-5 py-3.5 text-right w-[12%]">
+                </TableCell>
+                <TableCell className="w-[12%]" align="right">
                   <QuantityBadge quantity={product.quantity} />
                   {restockPredictions[product.id] &&
                     product.quantity > 0 &&
@@ -384,14 +392,17 @@ export default function ProductsTable({
                         </p>
                       )
                     })()}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono font-medium tabular-nums text-slate-700 w-[15%]">
+                </TableCell>
+                <TableCell
+                  className="font-mono font-medium tabular-nums text-slate-700 w-[15%]"
+                  align="right"
+                >
                   {product.usage_quantity}
-                </td>
-                <td className="px-5 py-3.5 text-center text-slate-700 w-[13%]">
+                </TableCell>
+                <TableCell className="text-slate-700 w-[13%]" align="center">
                   {product.usage_date ? format(new Date(product.usage_date), 'dd MMM yyyy') : '—'}
-                </td>
-                <td className="px-5 py-3.5 text-center w-[13%]">
+                </TableCell>
+                <TableCell className="w-[13%]" align="center">
                   <Badge
                     className={`${
                       product.product_status === 'active'
@@ -401,14 +412,14 @@ export default function ProductsTable({
                   >
                     {product.product_status}
                   </Badge>
-                </td>
-                <td className="px-5 py-3.5 text-center w-[12%]">
+                </TableCell>
+                <TableCell className="w-[12%]" align="center">
                   <ActionMenu product={product} {...sharedActionProps} />
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
 
         {totalPages > 1 && (
           <div
@@ -416,27 +427,29 @@ export default function ProductsTable({
             className="flex items-center justify-between px-5 pt-2 mt-2"
             aria-label="Pagination"
           >
-            <button
+            <Button
+              variant="ghost"
               onClick={onPrev}
               disabled={page <= 1}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
               aria-label="Previous page"
             >
               <ChevronLeft className="size-4" aria-hidden="true" />
               Prev
-            </button>
+            </Button>
             <span className="text-xs text-slate-400 text-center" aria-live="polite">
               Page {page} of {totalPages} · {total} records
             </span>
-            <button
+            <Button
+              variant="ghost"
               onClick={onNext}
               disabled={page >= totalPages}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
               aria-label="Next page"
             >
               Next
               <ChevronRight className="size-4" aria-hidden="true" />
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -461,22 +474,29 @@ export default function ProductsTable({
         onUpdated={onRefresh}
       />
 
-      <Dialog
+      <Modal
         open={!!previewImg}
         onOpenChange={(open) => {
           if (!open) setPreviewImg(null)
         }}
       >
-        <DialogContent id="imagePreviewDialog_productListPage" className="max-w-lg p-2">
-          {previewImg && (
-            <img
-              src={previewImg}
-              alt="Product preview"
-              className="w-full rounded object-contain max-h-[80vh]"
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+        <ModalContent
+          variant="bordered"
+          borderColor="border-slate-200"
+          id="imagePreviewDialog_productListPage"
+          className="max-w-lg p-2"
+        >
+          <ModalBody>
+            {previewImg && (
+              <img
+                src={previewImg}
+                alt="Product preview"
+                className="w-full rounded object-contain max-h-[80vh]"
+              />
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   )
 }

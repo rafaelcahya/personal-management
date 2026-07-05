@@ -1,6 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
+import Button from '@/components/base/Button/Button'
 import {
   LineChart,
   Line,
@@ -12,8 +13,8 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts'
-import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { TrendingUp } from 'lucide-react'
 import { fetchPerformanceTrends } from '@/lib/api/running'
 
@@ -435,18 +436,16 @@ function PaceChart({ data }) {
         {activeBrackets.map((b) => {
           const isOn = selected.has(b.key)
           return (
-            <button
+            <Button
               key={b.key}
+              variant="ghost"
+              size="xs"
               onClick={() => toggleBracket(b.key)}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
-                isOn
-                  ? 'text-white border-transparent'
-                  : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
-              }`}
+              className={`rounded-full border ${isOn ? 'text-white border-transparent' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}
               style={isOn ? { background: b.color, borderColor: b.color } : {}}
             >
               {b.label}
-            </button>
+            </Button>
           )
         })}
         <span className="text-xs text-slate-400 ml-auto">lower = faster</span>

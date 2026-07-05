@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { MoreHorizontal, Trash2 } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,15 +10,22 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 function formatIDR(amount) {
   return new Intl.NumberFormat('id-ID', {
@@ -62,120 +70,111 @@ export default function TransactionTable({ transactions, onDelete, currency }) {
 
   return (
     <>
-      <div className="overflow-x-auto">
-        <table
-          id="transactionTable_currencyDetailPage"
-          className="min-w-full text-sm"
-          aria-label={`${currency} transactions`}
-        >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Date
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Type
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                IDR Amount
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Rate
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Qty
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap hidden sm:table-cell">
-                Notes
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-10">
-                <span className="sr-only">Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((tx) => (
-              <tr
-                key={tx.id}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 text-slate-700 whitespace-nowrap">
-                  {formatDate(tx.transacted_at)}
-                </td>
-                <td className="px-5 py-3.5">
-                  <TypeBadge type={tx.type} />
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono text-slate-700">
-                  {formatIDR(tx.idr_amount)}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono text-slate-700">
-                  {new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(tx.rate)}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono text-slate-700">
-                  {new Intl.NumberFormat('en', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 6,
-                  }).format(tx.foreign_amount)}
-                </td>
-                <td className="px-5 py-3.5 text-slate-500 hidden sm:table-cell max-w-xs truncate">
-                  {tx.notes || '—'}
-                </td>
-                <td className="px-5 py-3.5 text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        id={`deleteTransactionBtn_${tx.id}_currencyDetailPage`}
-                        aria-label={`Actions for transaction ${tx.id}`}
-                        className="flex items-center justify-center size-7 rounded-md hover:bg-slate-100 transition-colors"
-                      >
-                        <MoreHorizontal className="size-4 text-slate-400" aria-hidden="true" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        className="text-red-600 focus:text-red-600 focus:bg-red-50 gap-2"
-                        onClick={() => {
-                          setDeleteTarget(tx)
-                          setDialogOpen(true)
-                        }}
-                      >
-                        <Trash2 className="size-4" aria-hidden="true" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        id="transactionTable_currencyDetailPage"
+        className="min-w-full"
+        aria-label={`${currency} transactions`}
+      >
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead align="right">IDR Amount</TableHead>
+            <TableHead align="right">Rate</TableHead>
+            <TableHead align="right">Qty</TableHead>
+            <TableHead className="hidden sm:table-cell">Notes</TableHead>
+            <TableHead className="w-10" align="right">
+              <span className="sr-only">Actions</span>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {transactions.map((tx) => (
+            <TableRow key={tx.id}>
+              <TableCell className="text-slate-700 whitespace-nowrap">
+                {formatDate(tx.transacted_at)}
+              </TableCell>
+              <TableCell>
+                <TypeBadge type={tx.type} />
+              </TableCell>
+              <TableCell className="font-mono text-slate-700" align="right">
+                {formatIDR(tx.idr_amount)}
+              </TableCell>
+              <TableCell className="font-mono text-slate-700" align="right">
+                {new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(tx.rate)}
+              </TableCell>
+              <TableCell className="font-mono text-slate-700" align="right">
+                {new Intl.NumberFormat('en', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+                }).format(tx.foreign_amount)}
+              </TableCell>
+              <TableCell className="text-slate-500 hidden sm:table-cell max-w-xs truncate">
+                {tx.notes || '—'}
+              </TableCell>
+              <TableCell align="right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      id={`deleteTransactionBtn_${tx.id}_currencyDetailPage`}
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label={`Actions for transaction ${tx.id}`}
+                      className="hover:bg-slate-100"
+                    >
+                      <MoreHorizontal className="size-4 text-slate-400" aria-hidden="true" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      className="text-red-600 focus:text-red-600 focus:bg-red-50 gap-2"
+                      onClick={() => {
+                        setDeleteTarget(tx)
+                        setDialogOpen(true)
+                      }}
+                    >
+                      <Trash2 className="size-4" aria-hidden="true" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
-      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete transaction?</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Modal open={dialogOpen} onOpenChange={setDialogOpen}>
+        <ModalContent showCloseButton={false} variant="bordered" borderColor="border-slate-200">
+          <ModalHeader>
+            <ModalTitle>Delete transaction?</ModalTitle>
+            <ModalDescription>
               This will hide the transaction. Data is kept for audit purposes.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteTarget(null)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white"
-              onClick={() => {
-                if (deleteTarget) {
-                  onDelete?.(deleteTarget.id)
-                  setDeleteTarget(null)
-                  setDialogOpen(false)
-                }
-              }}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </ModalDescription>
+          </ModalHeader>
+          <ModalFooter>
+            <ModalClose asChild>
+              <Button variant="ghost" onClick={() => setDeleteTarget(null)}>
+                Cancel
+              </Button>
+            </ModalClose>
+            <ModalClose asChild>
+              <Button
+                className="bg-red-600 hover:bg-red-700 text-white"
+                onClick={() => {
+                  if (deleteTarget) {
+                    onDelete?.(deleteTarget.id)
+                    setDeleteTarget(null)
+                    setDialogOpen(false)
+                  }
+                }}
+              >
+                Delete
+              </Button>
+            </ModalClose>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }

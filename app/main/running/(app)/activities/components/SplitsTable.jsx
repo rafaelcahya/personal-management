@@ -1,12 +1,18 @@
 'use client'
 
 import { Heart, Info } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import Button from '@/components/base/Button/Button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/base/Tooltip/Tooltip.jsx'
 import { fmtPace, fmtDuration } from '../../dashboard/utils/format'
 import { SectionLabel } from './activityShared'
-
-const TH =
-  'px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 export default function SplitsTable({ splits }) {
   if (!splits || splits.length === 0) return null
@@ -21,49 +27,44 @@ export default function SplitsTable({ splits }) {
   return (
     <div>
       <SectionLabel>Splits (per km)</SectionLabel>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm" aria-label="Splits">
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className={`${TH} text-left w-10`}>#</th>
-              <th className={`${TH} text-right`}>Dist</th>
-              <th className={`${TH} text-right`}>Pace</th>
-              <th className={`${TH} text-right`}>Time</th>
-              {hasSplitsHr && <th className={`${TH} text-right`}>HR</th>}
-              <th className={`${TH} text-right`}>Elev</th>
-            </tr>
-          </thead>
-          <tbody>
-            {splits.map((s) => (
-              <tr
-                key={s.id ?? s.split_number}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 text-xs text-slate-400 font-medium">{s.split_number}</td>
-                <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                  {s.distance_m ? `${(s.distance_m / 1000).toFixed(2)} km` : '—'}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                  {s.pace_sec_per_km ? `${fmtPace(s.pace_sec_per_km)}/km` : '—'}
-                </td>
-                <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                  {s.duration_sec ? fmtDuration(s.duration_sec) : '—'}
-                </td>
-                {hasSplitsHr && (
-                  <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                    {s.avg_hr ? `${s.avg_hr}` : '—'}
-                  </td>
-                )}
-                <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700">
-                  {s.elevation_gain_m != null
-                    ? `${s.elevation_gain_m > 0 ? '+' : ''}${Math.round(s.elevation_gain_m)} m`
-                    : '—'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table className="min-w-full" aria-label="Splits">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-10">#</TableHead>
+            <TableHead align="right">Dist</TableHead>
+            <TableHead align="right">Pace</TableHead>
+            <TableHead align="right">Time</TableHead>
+            {hasSplitsHr && <TableHead align="right">HR</TableHead>}
+            <TableHead align="right">Elev</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {splits.map((s) => (
+            <TableRow key={s.id ?? s.split_number}>
+              <TableCell className="text-xs text-slate-400 font-medium">{s.split_number}</TableCell>
+              <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                {s.distance_m ? `${(s.distance_m / 1000).toFixed(2)} km` : '—'}
+              </TableCell>
+              <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                {s.pace_sec_per_km ? `${fmtPace(s.pace_sec_per_km)}/km` : '—'}
+              </TableCell>
+              <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                {s.duration_sec ? fmtDuration(s.duration_sec) : '—'}
+              </TableCell>
+              {hasSplitsHr && (
+                <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                  {s.avg_hr ? `${s.avg_hr}` : '—'}
+                </TableCell>
+              )}
+              <TableCell className="font-mono tabular-nums text-slate-700" align="right">
+                {s.elevation_gain_m != null
+                  ? `${s.elevation_gain_m > 0 ? '+' : ''}${Math.round(s.elevation_gain_m)} m`
+                  : '—'}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
       {cardiacDrift !== null && (
         <div id="cardiacDrift_activityDetailPage" className="flex items-center gap-2 mt-2 px-1">
           <Heart className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />
@@ -75,31 +76,25 @@ export default function SplitsTable({ splits }) {
             {cardiacDrift} bpm
           </span>
           <span className="text-xs text-slate-300">(split 1 → last split)</span>
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="flex items-center justify-center text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-                  aria-label="Cardiac drift information"
-                >
-                  <Info className="size-3.5" aria-hidden="true" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
-                <p className="font-semibold mb-1">What is Cardiac Drift?</p>
-                <p>
-                  HR increase from your first split to your last split at the same pace — a sign of
-                  fatigue or dehydration.
-                </p>
-                <p className="mt-1.5 text-slate-300">
-                  <span className="text-green-400 font-medium">0–5 bpm</span> Good ·{' '}
-                  <span className="text-amber-400 font-medium">6–10</span> Moderate ·{' '}
-                  <span className="text-red-400 font-medium">&gt;10</span> High
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon-xs" aria-label="Cardiac drift information">
+                <Info className="size-3.5" aria-hidden="true" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+              <p className="font-semibold mb-1">What is Cardiac Drift?</p>
+              <p>
+                HR increase from your first split to your last split at the same pace — a sign of
+                fatigue or dehydration.
+              </p>
+              <p className="mt-1.5 text-slate-300">
+                <span className="text-green-400 font-medium">0–5 bpm</span> Good ·{' '}
+                <span className="text-amber-400 font-medium">6–10</span> Moderate ·{' '}
+                <span className="text-red-400 font-medium">&gt;10</span> High
+              </p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       )}
     </div>

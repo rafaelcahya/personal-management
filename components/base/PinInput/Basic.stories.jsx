@@ -43,7 +43,9 @@ function RHFDemo() {
               />
             )}
           />
-          <FieldDescription>Enter the 6-digit code from your authenticator app.</FieldDescription>
+          <FieldDescription className="text-xs text-slate-400">
+            Enter the 6-digit code from your authenticator app.
+          </FieldDescription>
         </FieldContent>
         <button
           type="submit"

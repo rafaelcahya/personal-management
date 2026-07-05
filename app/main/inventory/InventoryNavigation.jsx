@@ -1,5 +1,6 @@
 'use client'
 
+import Button from '@/components/base/Button/Button'
 import { useRouter, usePathname } from 'next/navigation'
 import {
   LayoutDashboardIcon,
@@ -40,13 +41,6 @@ const navigationItems = [
     href: '/main/inventory/product-name',
     icon: TypeIcon,
   },
-  {
-    name: 'Product History',
-    description: 'Stock history log',
-    value: 'product-history',
-    href: '/main/inventory/product-history',
-    icon: HistoryIcon,
-  },
 ]
 
 export default function InventoryNavigation() {
@@ -63,11 +57,12 @@ export default function InventoryNavigation() {
           const isActive = pathname === item.href
 
           return (
-            <button
+            <Button
               key={item.value}
+              variant="ghost"
               onClick={() => router.push(item.href)}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center focus:outline-none',
+                'flex-1 justify-center rounded-lg',
                 isActive
                   ? 'bg-white text-violet-700 shadow-sm'
                   : 'text-slate-500 hover:text-slate-700 hover:bg-white/60'
@@ -75,7 +70,7 @@ export default function InventoryNavigation() {
             >
               <Icon className={cn('size-4', isActive ? 'text-violet-600' : 'text-slate-400')} />
               <span>{item.name}</span>
-            </button>
+            </Button>
           )
         })}
       </div>
@@ -87,19 +82,21 @@ export default function InventoryNavigation() {
           const isActive = pathname === item.href
 
           return (
-            <button
+            <Button
               key={item.value}
+              variant="ghost"
+              size="xs"
               onClick={() => router.push(item.href)}
               className={cn(
-                'flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all duration-200 focus:outline-none',
+                'rounded-lg whitespace-nowrap flex-shrink-0',
                 isActive
-                  ? 'bg-violet-600 text-white'
+                  ? 'bg-violet-600 text-white hover:bg-violet-700'
                   : 'bg-slate-100 text-slate-600 hover:bg-violet-50 hover:text-violet-700'
               )}
             >
               <Icon className="size-4" />
               <span>{item.name}</span>
-            </button>
+            </Button>
           )
         })}
       </div>

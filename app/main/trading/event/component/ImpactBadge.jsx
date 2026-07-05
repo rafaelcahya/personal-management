@@ -1,6 +1,6 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/base/Badge/Badge'
 import { TrendingUp, TrendingDown } from 'lucide-react'
 
 export default function ImpactBadge({ value, className = '' }) {

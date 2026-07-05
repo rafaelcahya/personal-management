@@ -1,6 +1,6 @@
-'use client'
+﻿'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { Shield, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 
 function StatCell({ label, value, sub, valueClassName, chip }) {

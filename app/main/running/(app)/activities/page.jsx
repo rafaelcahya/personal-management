@@ -23,19 +23,27 @@ import {
   Search,
   X,
 } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
+} from '@/components/base/Select/Select'
+import Button from '@/components/base/Button/Button'
 import { fetchActivities } from '@/lib/api/running'
 import { fmtDistance, fmtPace, fmtDuration } from '../dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 
 // ─── activity config ──────────────────────────────────────────────────────────
@@ -129,18 +137,20 @@ const WORKOUT_BADGE = {
 
 function TypeChip({ type, label, icon: Icon, active, onClick }) {
   return (
-    <button
+    <Button
       onClick={onClick}
       aria-pressed={active}
-      className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium border whitespace-nowrap transition-colors ${
+      variant="outline"
+      size="xs"
+      className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors ${
         active
           ? 'border-violet-300 bg-violet-100 text-violet-700'
-          : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'
+          : 'border-slate-200 bg-white text-slate-500'
       }`}
     >
       {Icon && <Icon className="size-3" aria-hidden="true" />}
       {label}
-    </button>
+    </Button>
   )
 }
 
@@ -270,8 +280,10 @@ function ActivitiesInner() {
               className="pl-8 pr-8 h-8 text-sm focus-visible:ring-violet-200 focus-visible:border-violet-600"
             />
             {searchInput && (
-              <button
+              <Button
                 id="activitiesSearchClear_activitiesPage"
+                variant="ghost"
+                size="xs"
                 onClick={() => {
                   setSearchInput('')
                   setSearch('')
@@ -280,7 +292,7 @@ function ActivitiesInner() {
                 aria-label="Clear search"
               >
                 <X className="size-3.5" aria-hidden="true" />
-              </button>
+              </Button>
             )}
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -362,7 +374,8 @@ function ActivitiesInner() {
             <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
             <span>
               {error}{' '}
-              <button
+              <Button
+                variant="ghost"
                 className="underline font-medium"
                 onClick={() => {
                   setError(null)
@@ -370,216 +383,206 @@ function ActivitiesInner() {
                 }}
               >
                 Try again
-              </button>
+              </Button>
             </span>
           </div>
         )}
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-[640px] w-full text-sm" aria-label="Activities">
-            <thead>
-              <tr className="border-b border-slate-100">
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap w-[40%]">
-                  Activity
-                </th>
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Date
-                </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Dist
-                </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Pace
-                </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                  Time
-                </th>
-                <th
-                  className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap"
-                  title="Average heart rate"
-                >
-                  HR
-                </th>
-                <th
-                  className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap"
-                  title="Elevation gain"
-                >
-                  Elev
-                </th>
-              </tr>
-            </thead>
+        <Table
+          wrapperClassName="overflow-x-auto"
+          className="min-w-[640px] w-full"
+          aria-label="Activities"
+        >
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[40%]">Activity</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead align="right">Dist</TableHead>
+              <TableHead align="right">Pace</TableHead>
+              <TableHead align="right">Time</TableHead>
+              <TableHead align="right" title="Average heart rate">
+                HR
+              </TableHead>
+              <TableHead align="right" title="Elevation gain">
+                Elev
+              </TableHead>
+            </TableRow>
+          </TableHeader>
 
-            <tbody id="activitiesList">
-              {/* Loading */}
-              {loading && (
-                <tr>
-                  <td colSpan={7} className="p-0">
-                    <div
-                      id="activitiesLoadingSkeleton"
-                      aria-busy="true"
-                      aria-label="Loading activities"
-                    >
-                      <table className="min-w-[640px] w-full">
-                        <tbody>
-                          <TableSkeletonRows rows={8} metricWidths={[60, 56, 48, 52, 40, 44]} />
-                        </tbody>
-                      </table>
-                    </div>
-                  </td>
-                </tr>
-              )}
+          <TableBody id="activitiesList">
+            {/* Loading */}
+            {loading && (
+              <TableRow>
+                <TableCell colSpan={7} className="p-0">
+                  <div
+                    id="activitiesLoadingSkeleton"
+                    aria-busy="true"
+                    aria-label="Loading activities"
+                  >
+                    <Table className="min-w-[640px] w-full">
+                      <TableBody>
+                        <TableSkeletonRows rows={8} metricWidths={[60, 56, 48, 52, 40, 44]} />
+                      </TableBody>
+                    </Table>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
 
-              {/* Empty */}
-              {!loading && !error && activities.length === 0 && (
-                <tr>
-                  <td colSpan={7}>
-                    <div className="flex flex-col items-center justify-center py-16 gap-3">
-                      <Activity className="size-10 text-slate-200" aria-hidden="true" />
-                      <p className="text-sm text-slate-500">
-                        {hasFilters ? 'No activities match your filters.' : 'No activities yet.'}
-                      </p>
-                      {hasFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
-                          Clear filters
-                        </Button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              )}
+            {/* Empty */}
+            {!loading && !error && activities.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7}>
+                  <div className="flex flex-col items-center justify-center py-16 gap-3">
+                    <Activity className="size-10 text-slate-200" aria-hidden="true" />
+                    <p className="text-sm text-slate-500">
+                      {hasFilters ? 'No activities match your filters.' : 'No activities yet.'}
+                    </p>
+                    {hasFilters && (
+                      <Button variant="ghost" size="base" onClick={clearFilters}>
+                        Clear filters
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
 
-              {/* Rows */}
-              {!loading &&
-                !error &&
-                activities.map((a) => {
-                  const cfg = getActivityCfg(a)
-                  const Icon = cfg.icon
-                  const dist =
-                    a.distance_m && a.distance_m > 0 ? `${fmtDistance(a.distance_m)} km` : null
-                  const pace = a.avg_pace_sec_per_km ? `${fmtPace(a.avg_pace_sec_per_km)}/km` : null
-                  const dur = a.moving_time_sec ?? a.duration_sec
-                  const elev =
-                    a.elevation_gain_m && a.elevation_gain_m > 0
-                      ? `↑ ${Math.round(a.elevation_gain_m)} m`
-                      : null
-                  const workoutBadge = a.workout_type != null ? WORKOUT_BADGE[a.workout_type] : null
-                  const name = a.name || cfg.label || a.activity_type
+            {/* Rows */}
+            {!loading &&
+              !error &&
+              activities.map((a) => {
+                const cfg = getActivityCfg(a)
+                const Icon = cfg.icon
+                const dist =
+                  a.distance_m && a.distance_m > 0 ? `${fmtDistance(a.distance_m)} km` : null
+                const pace = a.avg_pace_sec_per_km ? `${fmtPace(a.avg_pace_sec_per_km)}/km` : null
+                const dur = a.moving_time_sec ?? a.duration_sec
+                const elev =
+                  a.elevation_gain_m && a.elevation_gain_m > 0
+                    ? `↑ ${Math.round(a.elevation_gain_m)} m`
+                    : null
+                const workoutBadge = a.workout_type != null ? WORKOUT_BADGE[a.workout_type] : null
+                const name = a.name || cfg.label || a.activity_type
 
-                  return (
-                    <tr
-                      key={a.id}
-                      className="border-b border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors"
-                      onClick={() => router.push(`/main/running/activities/${a.id}`)}
-                    >
-                      {/* Activity */}
-                      <td className="px-5 py-3.5 w-[40%]">
-                        <div className="flex items-center gap-3">
-                          <span
-                            className={`flex size-8 items-center justify-center rounded-full shrink-0 ${cfg.bg}`}
-                          >
-                            <Icon className={`size-4 ${cfg.color}`} aria-hidden="true" />
-                          </span>
-                          <div className="flex flex-col min-w-0">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              {workoutBadge}
-                              <span className="text-sm font-medium text-slate-700 truncate">
-                                {name}
-                              </span>
-                              {a.pr_count > 0 && (
-                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0">
-                                  <Trophy className="size-3" aria-hidden="true" />
-                                  {a.pr_count} PR
-                                </span>
-                              )}
-                              {(a.top_best_efforts ?? []).map((e) =>
-                                e.pr_rank === 1 ? (
-                                  <span
-                                    key={e.name}
-                                    id={`pbRankChip_${e.name.replace(/\s/g, '')}_activitiesPage`}
-                                    className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0"
-                                  >
-                                    <Trophy className="size-3" aria-hidden="true" />
-                                    #1 {e.name}
-                                  </span>
-                                ) : (
-                                  <span
-                                    key={e.name}
-                                    id={`pbRankChip_${e.name.replace(/\s/g, '')}_activitiesPage`}
-                                    className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold leading-none shrink-0"
-                                  >
-                                    #{e.pr_rank} {e.name}
-                                  </span>
-                                )
-                              )}
-                            </div>
-                            <span className="text-xs text-slate-400">
-                              {cfg.label ?? a.activity_type}
+                return (
+                  <TableRow
+                    key={a.id}
+                    clickable
+                    onClick={() => router.push(`/main/running/activities/${a.id}`)}
+                  >
+                    <TableCell className="w-[40%]">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`flex size-8 items-center justify-center rounded-full shrink-0 ${cfg.bg}`}
+                        >
+                          <Icon className={`size-4 ${cfg.color}`} aria-hidden="true" />
+                        </span>
+                        <div className="flex flex-col min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {workoutBadge}
+                            <span className="text-sm font-medium text-slate-700 truncate">
+                              {name}
                             </span>
+                            {a.pr_count > 0 && (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0">
+                                <Trophy className="size-3" aria-hidden="true" />
+                                {a.pr_count} PR
+                              </span>
+                            )}
+                            {(a.top_best_efforts ?? []).map((e) =>
+                              e.pr_rank === 1 ? (
+                                <span
+                                  key={e.name}
+                                  id={`pbRankChip_${e.name.replace(/\s/g, '')}_activitiesPage`}
+                                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0"
+                                >
+                                  <Trophy className="size-3" aria-hidden="true" />
+                                  #1 {e.name}
+                                </span>
+                              ) : (
+                                <span
+                                  key={e.name}
+                                  id={`pbRankChip_${e.name.replace(/\s/g, '')}_activitiesPage`}
+                                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold leading-none shrink-0"
+                                >
+                                  #{e.pr_rank} {e.name}
+                                </span>
+                              )
+                            )}
                           </div>
+                          <span className="text-xs text-slate-400">
+                            {cfg.label ?? a.activity_type}
+                          </span>
                         </div>
-                      </td>
-
-                      {/* Date */}
-                      <td className="px-5 py-3.5 text-sm text-slate-600 whitespace-nowrap">
-                        {fmtShortDate(a.started_at)}
-                      </td>
-
-                      {/* Distance */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
-                        {dist ?? NULL_CELL}
-                      </td>
-
-                      {/* Pace */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
-                        {pace ?? NULL_CELL}
-                      </td>
-
-                      {/* Duration */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
-                        {dur != null ? fmtDuration(dur) : NULL_CELL}
-                      </td>
-
-                      {/* HR */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
-                        {a.avg_hr ? `${a.avg_hr} bpm` : NULL_CELL}
-                      </td>
-
-                      {/* Elev */}
-                      <td className="px-5 py-3.5 text-right font-mono tabular-nums text-slate-700 whitespace-nowrap">
-                        {elev ?? NULL_CELL}
-                      </td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </table>
-        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-slate-600 whitespace-nowrap">
+                      {fmtShortDate(a.started_at)}
+                    </TableCell>
+                    <TableCell
+                      className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
+                      align="right"
+                    >
+                      {dist ?? NULL_CELL}
+                    </TableCell>
+                    <TableCell
+                      className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
+                      align="right"
+                    >
+                      {pace ?? NULL_CELL}
+                    </TableCell>
+                    <TableCell
+                      className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
+                      align="right"
+                    >
+                      {dur != null ? fmtDuration(dur) : NULL_CELL}
+                    </TableCell>
+                    <TableCell
+                      className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
+                      align="right"
+                    >
+                      {a.avg_hr ? `${a.avg_hr} bpm` : NULL_CELL}
+                    </TableCell>
+                    <TableCell
+                      className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
+                      align="right"
+                    >
+                      {elev ?? NULL_CELL}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+          </TableBody>
+        </Table>
 
         {/* Pagination */}
         {!loading && !error && totalPages > 1 && (
           <div className="flex items-center justify-between px-5 pt-2 mt-2" aria-label="Pagination">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => router.push(buildUrl(searchParams, { page: page - 1 }))}
               disabled={page <= 1}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
               aria-label="Previous page"
             >
               <ChevronLeft className="size-4" aria-hidden="true" />
               Prev
-            </button>
+            </Button>
             <span className="text-xs text-slate-400 text-center" aria-live="polite">
               Page {page} of {totalPages} · {total} activities
             </span>
-            <button
+            <Button
+              variant="ghost"
               onClick={() => router.push(buildUrl(searchParams, { page: page + 1 }))}
               disabled={page >= totalPages}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
+              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
               aria-label="Next page"
             >
               Next
               <ChevronRight className="size-4" aria-hidden="true" />
-            </button>
+            </Button>
           </div>
         )}
       </div>

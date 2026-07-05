@@ -116,7 +116,9 @@ function FieldDemo({ error, description, label = 'Favourite fruit', required = f
     <FieldContent size="base" error={error}>
       <FieldLabel required={required}>{label}</FieldLabel>
       <Combobox value={val} onChange={setVal} options={FRUITS} {...props} />
-      {description && <FieldDescription>{description}</FieldDescription>}
+      {description && (
+        <FieldDescription className="text-xs text-slate-400">{description}</FieldDescription>
+      )}
       {error && <FieldError />}
     </FieldContent>
   )
@@ -616,7 +618,7 @@ const options = [
         <Code>{`<FieldContent size="base">
   <FieldLabel required>Favourite fruit</FieldLabel>
   <Combobox value={val} onChange={setVal} options={options} />
-  <FieldDescription>Type to filter.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Type to filter.</FieldDescription>
 </FieldContent>`}</Code>
       </Section>
 

@@ -335,7 +335,7 @@ export const Docs = {
                 <label htmlFor={id} className="text-sm font-medium cursor-pointer select-none">
                   {label}
                 </label>
-                <FieldDescription>{desc}</FieldDescription>
+                <FieldDescription className="text-xs text-slate-400">{desc}</FieldDescription>
               </div>
               <Switch id={id} defaultChecked={checked} className="mt-0.5 shrink-0" />
             </div>
@@ -346,7 +346,7 @@ export const Docs = {
     <label htmlFor="notif" className="text-sm font-medium cursor-pointer select-none">
       Push notifications
     </label>
-    <FieldDescription>Receive alerts for new messages and activity.</FieldDescription>
+    <FieldDescription className="text-xs text-slate-400">Receive alerts for new messages and activity.</FieldDescription>
   </div>
   <Switch id="notif" defaultChecked className="mt-0.5 shrink-0" />
 </div>`}</Code>

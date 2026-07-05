@@ -56,7 +56,9 @@ const FieldContent = ({
           clsx(
             orientation === 'horizontal'
               ? "[grid-template-areas:'label_control'_'desc_control'_'error_error'] grid grid-cols-[1fr_auto] items-start gap-x-6 gap-y-0.5"
-              : 'flex flex-col gap-1.5',
+              : orientation === 'row'
+                ? 'flex flex-row items-center gap-1.5'
+                : 'flex flex-col gap-1.5',
             className
           )
         )}

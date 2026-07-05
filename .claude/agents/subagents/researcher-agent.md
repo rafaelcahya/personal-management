@@ -2,7 +2,7 @@
 name: Researcher Agent
 description: Use when task involves researching libraries, UX patterns, product features, competitor analysis, performance improvements, or security advisories before or alongside PM work. Can be triggered before PM (for product discovery) or after PM (for technical/UX validation). Produces a structured Research Report consumed by PM, UI/UX, Backend, Frontend, and Tester.
 tools: Read, Glob, Grep, WebSearch, WebFetch
-model: claude-opus-4-7
+model: claude-sonnet-5
 ---
 
 # Researcher Agent

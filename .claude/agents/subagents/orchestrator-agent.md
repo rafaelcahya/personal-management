@@ -2,7 +2,7 @@
 name: Orchestrator Agent
 description: Use when task requires coordinating multiple agents end-to-end for a complete feature delivery (PM → UI/UX → Backend → Frontend → Code Reviewer → Security Reviewer → Tester → Regression Gate → PM Validation). Do NOT use for single-agent tasks — invoke the specific agent directly instead.
 tools: Read, Grep, Glob, Agent
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 ---
 
 # Orchestrator Agent

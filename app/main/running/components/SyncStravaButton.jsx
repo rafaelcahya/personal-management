@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Button from '@/components/base/Button/Button'
 import { RefreshCw, CheckCircle2 } from 'lucide-react'
 import { syncStrava, fetchSyncStatus } from '@/lib/api/running'
 
@@ -73,15 +74,17 @@ export default function SyncStravaButton({ id = 'syncStravaBtn', actions }) {
                 : 'Already up to date'}
             </span>
           )}
-          <button
+          <Button
             id={id}
+            variant="ghost"
+            size="xs"
             onClick={handleSync}
             disabled={syncing}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500 hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+            className="text-slate-500 hover:bg-slate-200"
           >
             <RefreshCw className={`size-3 ${syncing ? 'animate-spin' : ''}`} aria-hidden="true" />
             {syncing ? 'Syncing…' : 'Sync'}
-          </button>
+          </Button>
         </div>
       </div>
 

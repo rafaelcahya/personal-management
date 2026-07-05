@@ -1,30 +1,26 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Textarea } from '@/components/ui/textarea'
+  Modal,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@/components/base/Modal/Modal.jsx'
+import Input from '@/components/base/Input/Input'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import Textarea from '@/components/base/Textarea/Textarea'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import {
   Select,
@@ -32,7 +28,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/base/Select/Select'
 
 import { productNameSchema } from '@/schemas/productName'
 import { updateProductName } from '@/lib/api/productName'
@@ -105,53 +101,52 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
   if (!productName) return null
 
   return (
-    <Dialog open={!!productName} onOpenChange={onClose}>
-      <DialogContent id="updateProductNameDialog_productNamePage" className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Update Product Name</DialogTitle>
-          <DialogDescription className="text-slate-foreground">
+    <Modal open={!!productName} onOpenChange={onClose}>
+      <ModalContent
+        id="updateProductNameDialog_productNamePage"
+        className="sm:max-w-md"
+        variant="bordered"
+        borderColor="border-slate-200"
+      >
+        <ModalHeader>
+          <ModalTitle>Update Product Name</ModalTitle>
+          <ModalDescription className="text-slate-foreground">
             Edit name details including name, status, and notes.
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
-        <Form {...form}>
-          <form onSubmit={handleSubmit(handleUpdate)} className="space-y-4">
-            <FormField
+        <form onSubmit={handleSubmit(handleUpdate)} className="flex flex-col flex-1 min-h-0">
+          <ModalBody className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
+            <Controller
               control={control}
               name="product_name"
               render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">Product Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="e.g. Clear"
-                      className={cn(
-                        'text-sm font-medium capitalize focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                        fieldState.error && 'border-red-500 focus-visible:ring-red-500'
-                      )}
-                    />
-                  </FormControl>
-                  <FormMessage id="productNameField_errorMessage_updateDialog">
-                    {fieldState.error?.message}
-                  </FormMessage>
-                </FormItem>
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="font-medium">Product Name</FieldLabel>
+                  <Input
+                    {...field}
+                    placeholder="e.g. Clear"
+                    className={cn(
+                      'text-sm font-medium capitalize focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                      fieldState.error && 'border-red-500 focus-visible:ring-red-500'
+                    )}
+                  />
+                  <FieldError />
+                </FieldContent>
               )}
             />
 
             {/* Status Select */}
-            <FormField
+            <Controller
               control={control}
               name="product_name_status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">Status</FormLabel>
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="font-medium">Status</FieldLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                    </FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="active">
                         <div className="flex items-center gap-2">
@@ -175,27 +170,25 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
                       )}
                     </SelectContent>
                   </Select>
-                  <FormMessage>{form.formState.errors.product_name_status?.message}</FormMessage>
-                </FormItem>
+                  <FieldError />
+                </FieldContent>
               )}
             />
 
             {/* Notes */}
-            <FormField
+            <Controller
               control={control}
               name="note"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-medium">Note</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Additional notes about this brand..."
-                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-vertical min-h-[80px]"
-                      rows={3}
-                    />
-                  </FormControl>
-                </FormItem>
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="font-medium">Note</FieldLabel>
+                  <Textarea
+                    {...field}
+                    placeholder="Additional notes about this brand..."
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-vertical min-h-[80px]"
+                    rows={3}
+                  />
+                </FieldContent>
               )}
             />
 
@@ -213,52 +206,59 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
                 </div>
               </div>
             )}
+          </ModalBody>
 
-            <DialogFooter className="gap-2">
-              <div className="flex justify-between w-full">
-                {isDeleted ? (
-                  <Button
-                    type="button"
-                    id="restoreProductNameBtn_productNamePage"
-                    onClick={handleRestore}
-                    disabled={restoring}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    {restoring && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {restoring ? 'Restoring...' : 'Restore Product Name'}
-                  </Button>
-                ) : (
-                  <DeleteProductName
-                    productName={productName}
-                    onDeleted={onUpdated}
-                    onClose={onClose}
-                    disabled={isInUse}
-                  />
-                )}
-                <div className="space-x-2">
-                  <DialogClose asChild>
+          <ModalFooter>
+            <div className="flex flex-col gap-2 w-full">
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  {isDeleted ? (
+                    <Button
+                      type="button"
+                      id="restoreProductNameBtn_productNamePage"
+                      onClick={handleRestore}
+                      disabled={restoring}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      {restoring && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {restoring ? 'Restoring...' : 'Restore Product Name'}
+                    </Button>
+                  ) : (
+                    <DeleteProductName
+                      productName={productName}
+                      onDeleted={onUpdated}
+                      onClose={onClose}
+                      disabled={isInUse}
+                      className="w-full"
+                    />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <ModalClose asChild>
                     <Button
                       id="cancelUpdateProductNameBtn_productNamePage"
                       type="button"
-                      className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+                      variant="secondary"
+                      className="w-full text-violet-600 font-medium"
                     >
                       Cancel
                     </Button>
-                  </DialogClose>
-                  <Button
-                    id="submitUpdateProductNameBtn_productNamePage"
-                    type="submit"
-                    disabled={loading || isDeleted}
-                  >
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {loading ? 'Updating...' : 'Update Product Name'}
-                  </Button>
+                  </ModalClose>
                 </div>
               </div>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+              <Button
+                id="submitUpdateProductNameBtn_productNamePage"
+                type="submit"
+                disabled={loading || isDeleted}
+                className="w-full"
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {loading ? 'Updating...' : 'Update Product Name'}
+              </Button>
+            </div>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </Modal>
   )
 }

@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
+import Button from '@/components/base/Button/Button'
 import { Brain, Info } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
+import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
 
 const TOOLTIP_TEXT =
   'Fitness Age compares your estimated VO₂max against population norms from the NTNU study (Nes et al. 2011). A lower Fitness Age means your cardiovascular fitness is above average for your chronological age.'
@@ -85,22 +86,21 @@ export default function FitnessAgeTile({ fitnessAge, viewTrendHref }) {
                 </div>
               )}
             </div>
-            <TooltipProvider delayDuration={0}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    className="text-slate-300 hover:text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
-                    aria-label="About Fitness Age"
-                  >
-                    <Info className="size-4" aria-hidden="true" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-72 text-xs leading-relaxed">
-                  {TOOLTIP_TEXT}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label="About Fitness Age"
+                  className="text-slate-300 hover:text-slate-500 shrink-0"
+                >
+                  <Info className="size-4" aria-hidden="true" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-72 text-xs leading-relaxed">
+                {TOOLTIP_TEXT}
+              </TooltipContent>
+            </Tooltip>
           </div>
         </CardContent>
       </Card>

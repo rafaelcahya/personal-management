@@ -1,8 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronDown, ChevronUp, CalendarClock, Clock, MapPin } from 'lucide-react'
+import { CalendarClock, Clock, MapPin } from 'lucide-react'
 import { parseInline } from './utils'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/base/Accordion/Accordion.jsx'
 
 function isStale(createdAt) {
   if (!createdAt) return false
@@ -91,8 +96,6 @@ function SessionBlock({ session, day }) {
 }
 
 export default function FridayPrepCard({ fridayPrep }) {
-  const [expanded, setExpanded] = useState(false)
-
   const hasCurrentWeek = fridayPrep && isCurrentWeek(fridayPrep)
   const parsed = hasCurrentWeek ? parseContent(fridayPrep.content) : null
   const stale = hasCurrentWeek ? isStale(fridayPrep.created_at) : false
@@ -103,86 +106,73 @@ export default function FridayPrepCard({ fridayPrep }) {
       className="rounded-xl border border-slate-200 bg-white overflow-hidden"
       aria-label="Weekend training plan"
     >
-      <button
-        onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-200"
-        aria-expanded={expanded}
-        aria-controls="fridayPrepCardBody_aiCoachPage"
-      >
-        <div className="flex items-center gap-2 min-w-0">
-          <CalendarClock className="h-4 w-4 text-violet-500 shrink-0" aria-hidden="true" />
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-700">Weekend Training Plan</p>
-            {!expanded && hasCurrentWeek && parsed?.weekend_plan?.summary && (
-              <p className="text-xs text-slate-400 truncate max-w-xs mt-0.5">
-                {parsed.weekend_plan.summary}
-              </p>
-            )}
-            {!hasCurrentWeek && (
-              <p className="text-xs text-slate-400 mt-0.5">Generated every Friday at 3 PM</p>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-2 shrink-0 ml-2">
-          {stale && <span className="text-xs text-amber-500 hidden sm:block">Last week</span>}
-          {hasCurrentWeek && fridayPrep.created_at && (
-            <p className="text-xs text-slate-400 hidden sm:block">
-              {new Date(fridayPrep.created_at).toLocaleDateString('en-US', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-              })}
-            </p>
-          )}
-          {expanded ? (
-            <ChevronUp className="h-4 w-4 text-slate-400" aria-hidden="true" />
-          ) : (
-            <ChevronDown className="h-4 w-4 text-slate-400" aria-hidden="true" />
-          )}
-        </div>
-      </button>
-
-      {!hasCurrentWeek && (
-        <div className="px-4 pb-4 pt-1 border-t border-slate-100">
-          <p className="text-sm text-slate-400">
-            No weekend plan yet. Plans are generated automatically every Friday at 3 PM.
-          </p>
-        </div>
-      )}
-
-      {expanded && hasCurrentWeek && (
-        <div
-          id="fridayPrepCardBody_aiCoachPage"
-          className="px-4 pb-5 pt-3 border-t border-slate-100 flex flex-col gap-5"
-        >
-          {stale && (
-            <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
-              This plan was generated last week — a fresh plan will appear next Friday.
-            </p>
-          )}
-
-          {parsed ? (
-            <>
-              <DualRoleBlock section={parsed.weekend_plan} label="Weekend Overview" />
-
-              <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  Sessions
+      <Accordion type="single" collapsible>
+        <AccordionItem value="friday-prep" className="border-0">
+          <AccordionTrigger className="px-4 py-3 items-center hover:no-underline hover:bg-slate-50 focus-visible:ring-violet-200 focus-visible:ring-inset">
+            <div className="flex items-center gap-2 flex-1">
+              <CalendarClock className="h-4 w-4 text-violet-500 shrink-0" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-semibold text-slate-700 truncate">
+                  Weekend Training Plan
                 </p>
-                <SessionBlock session={parsed.saturday} day="Saturday" />
-                <SessionBlock session={parsed.sunday} day="Sunday" />
+                {hasCurrentWeek && parsed?.weekend_plan?.summary && (
+                  <p className="text-xs text-slate-400 line-clamp-2 truncate mt-0.5 whitespace-normal">
+                    {parsed.weekend_plan.summary}
+                  </p>
+                )}
+                {!hasCurrentWeek && (
+                  <p className="text-xs text-slate-400 truncate mt-0.5">
+                    Generated every Friday at 3 PM
+                  </p>
+                )}
               </div>
-
-              <DualRoleBlock section={parsed.load_check} label="Load Check" />
-              <DualRoleBlock section={parsed.readiness} label="Readiness" />
-            </>
-          ) : (
-            <p className="text-sm text-slate-400">
-              Could not parse this week&apos;s plan. A new one will be generated next Friday.
-            </p>
-          )}
-        </div>
-      )}
+            </div>
+            <div className="flex items-center gap-2 shrink-0 ml-2 mr-2">
+              {stale && <span className="text-xs text-amber-500 hidden sm:block">Last week</span>}
+              {hasCurrentWeek && fridayPrep.created_at && (
+                <p className="text-xs text-slate-400 hidden sm:block">
+                  {new Date(fridayPrep.created_at).toLocaleDateString('en-US', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </p>
+              )}
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4 pb-5 pt-3 border-t border-slate-100">
+            <div id="fridayPrepCardBody_aiCoachPage" className="flex flex-col gap-5">
+              {!hasCurrentWeek ? (
+                <p className="text-sm text-slate-400">
+                  No weekend plan yet. Plans are generated automatically every Friday at 3 PM.
+                </p>
+              ) : parsed ? (
+                <>
+                  {stale && (
+                    <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+                      This plan was generated last week — a fresh plan will appear next Friday.
+                    </p>
+                  )}
+                  <DualRoleBlock section={parsed.weekend_plan} label="Weekend Overview" />
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      Sessions
+                    </p>
+                    <SessionBlock session={parsed.saturday} day="Saturday" />
+                    <SessionBlock session={parsed.sunday} day="Sunday" />
+                  </div>
+                  <DualRoleBlock section={parsed.load_check} label="Load Check" />
+                  <DualRoleBlock section={parsed.readiness} label="Readiness" />
+                </>
+              ) : (
+                <p className="text-sm text-slate-400">
+                  Could not parse this week&apos;s plan. A new one will be generated next Friday.
+                </p>
+              )}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </section>
   )
 }

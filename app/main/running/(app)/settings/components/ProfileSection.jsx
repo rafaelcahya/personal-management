@@ -4,20 +4,22 @@ import { useState, useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
-import { CalendarIcon, CheckCircle2, AlertCircle, User } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { CheckCircle2, AlertCircle, User } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import FieldDescription from '@/components/base/Field/FieldDescription'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/base/Select/Select'
 import { getUserProfile, updateUserProfile } from '@/lib/api/running'
 import { profileSchema } from '@/schemas/runningProfile'
 
@@ -143,78 +145,40 @@ export default function ProfileSection() {
         <div className="px-5 py-5">
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="displayNameInput_settingsPage" className="text-sm font-medium">
-                  Display Name
-                </Label>
+              <FieldContent error={errors.display_name?.message}>
+                <FieldLabel htmlFor="displayNameInput_settingsPage">Display Name</FieldLabel>
                 <Input
                   id="displayNameInput_settingsPage"
                   {...register('display_name')}
                   placeholder="Your name"
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                 />
-                <p className="text-xs text-slate-400">How your name appears across the app 👤</p>
-                {errors.display_name && (
-                  <p className="text-xs text-red-600">{errors.display_name.message}</p>
-                )}
-              </div>
+                <FieldDescription>How your name appears across the app 👤</FieldDescription>
+                <FieldError />
+              </FieldContent>
 
-              <div className="flex flex-col gap-1.5">
-                <Label className="text-sm font-medium">Date of Birth</Label>
+              <FieldContent error={errors.birth_date?.message}>
+                <FieldLabel>Date of Birth</FieldLabel>
                 <Controller
                   name="birth_date"
                   control={control}
-                  render={({ field }) => {
-                    const selected = field.value ? parseISO(field.value) : undefined
-                    return (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            id="birthDateInput_settingsPage"
-                            variant="outline"
-                            className="w-full justify-start text-sm font-medium text-left focus-visible:ring-violet-200 focus-visible:border-violet-600"
-                          >
-                            <CalendarIcon
-                              className="mr-2 h-4 w-4 shrink-0 text-slate-400"
-                              aria-hidden="true"
-                            />
-                            {selected ? (
-                              format(selected, 'dd MMM yyyy')
-                            ) : (
-                              <span className="text-slate-400">Pick a date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={selected}
-                            onSelect={(date) =>
-                              field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
-                            }
-                            captionLayout="dropdown"
-                            defaultMonth={selected ?? new Date(1990, 0, 1)}
-                            fromYear={1940}
-                            toYear={new Date().getFullYear() - 10}
-                            autoFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    )
-                  }}
+                  render={({ field }) => (
+                    <DatePicker
+                      id="birthDateInput_settingsPage"
+                      value={field.value ? parseISO(field.value) : null}
+                      onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                      fromDate={new Date(1940, 0, 1)}
+                      toDate={new Date(new Date().getFullYear() - 10, 11, 31)}
+                      placeholder="Pick a date"
+                    />
+                  )}
                 />
-                <p className="text-xs text-slate-400">
-                  Used to calculate age-graded performance 🎂
-                </p>
-                {errors.birth_date && (
-                  <p className="text-xs text-red-600">{errors.birth_date.message}</p>
-                )}
-              </div>
+                <FieldDescription>Used to calculate age-graded performance 🎂</FieldDescription>
+                <FieldError />
+              </FieldContent>
 
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="heightInput_settingsPage" className="text-sm font-medium">
-                  Height (cm)
-                </Label>
+              <FieldContent error={errors.height_cm?.message}>
+                <FieldLabel htmlFor="heightInput_settingsPage">Height (cm)</FieldLabel>
                 <Input
                   id="heightInput_settingsPage"
                   type="number"
@@ -226,16 +190,12 @@ export default function ProfileSection() {
                   placeholder="e.g. 170"
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                 />
-                <p className="text-xs text-slate-400">Used for stride and pace estimations 📐</p>
-                {errors.height_cm && (
-                  <p className="text-xs text-red-600">{errors.height_cm.message}</p>
-                )}
-              </div>
+                <FieldDescription>Used for stride and pace estimations 📐</FieldDescription>
+                <FieldError />
+              </FieldContent>
 
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="weightInput_settingsPage" className="text-sm font-medium">
-                  Weight (kg)
-                </Label>
+              <FieldContent error={errors.weight_kg?.message}>
+                <FieldLabel htmlFor="weightInput_settingsPage">Weight (kg)</FieldLabel>
                 <Input
                   id="weightInput_settingsPage"
                   type="number"
@@ -248,16 +208,12 @@ export default function ProfileSection() {
                   placeholder="e.g. 65"
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                 />
-                <p className="text-xs text-slate-400">
-                  Helps estimate running economy and VO₂max ⚖️
-                </p>
-                {errors.weight_kg && (
-                  <p className="text-xs text-red-600">{errors.weight_kg.message}</p>
-                )}
-              </div>
+                <FieldDescription>Helps estimate running economy and VO₂max ⚖️</FieldDescription>
+                <FieldError />
+              </FieldContent>
 
-              <div className="flex flex-col gap-1.5">
-                <Label className="text-sm font-medium">Sex</Label>
+              <FieldContent>
+                <FieldLabel>Sex</FieldLabel>
                 <Controller
                   name="sex"
                   control={control}
@@ -277,10 +233,10 @@ export default function ProfileSection() {
                     </Select>
                   )}
                 />
-                <p className="text-xs text-slate-400">
+                <FieldDescription>
                   Used for age-graded performance and category comparisons 🧬
-                </p>
-              </div>
+                </FieldDescription>
+              </FieldContent>
             </div>
 
             {/* BMI chip — spans full width below the grid */}
@@ -340,45 +296,49 @@ export default function ProfileSection() {
                   {!hasWeight && !hasHeight ? (
                     <>
                       Fill in your{' '}
-                      <button
-                        type="button"
+                      <Button
+                        variant="link"
+                        size="sm"
                         onClick={() => weightRef.current?.focus()}
-                        className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        className="px-0 h-auto text-violet-500"
                       >
                         weight
-                      </button>{' '}
+                      </Button>{' '}
                       and{' '}
-                      <button
-                        type="button"
+                      <Button
+                        variant="link"
+                        size="sm"
                         onClick={() => heightRef.current?.focus()}
-                        className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        className="px-0 h-auto text-violet-500"
                       >
                         height
-                      </button>{' '}
+                      </Button>{' '}
                       to calculate BMI
                     </>
                   ) : !hasWeight ? (
                     <>
                       Fill in your{' '}
-                      <button
-                        type="button"
+                      <Button
+                        variant="link"
+                        size="sm"
                         onClick={() => weightRef.current?.focus()}
-                        className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        className="px-0 h-auto text-violet-500"
                       >
                         weight
-                      </button>{' '}
+                      </Button>{' '}
                       to calculate BMI
                     </>
                   ) : (
                     <>
                       Fill in your{' '}
-                      <button
-                        type="button"
+                      <Button
+                        variant="link"
+                        size="sm"
                         onClick={() => heightRef.current?.focus()}
-                        className="text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                        className="px-0 h-auto text-violet-500"
                       >
                         height
-                      </button>{' '}
+                      </Button>{' '}
                       to calculate BMI
                     </>
                   )}
@@ -413,7 +373,7 @@ export default function ProfileSection() {
                   {saveError}
                 </div>
               )}
-              <Button id="profileSaveBtn_settingsPage" type="submit" disabled={saving} size="sm">
+              <Button id="profileSaveBtn_settingsPage" type="submit" disabled={saving} size="base">
                 {saving ? 'Saving…' : 'Save'}
               </Button>
             </div>

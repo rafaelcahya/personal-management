@@ -1,7 +1,7 @@
 'use client'
 
 import { AlertCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 
 export default function FeeErrorState({ onRetry }) {
   return (
@@ -14,7 +14,7 @@ export default function FeeErrorState({ onRetry }) {
       <Button
         id="feeRetryBtn_feePage"
         variant="outline"
-        size="sm"
+        size="base"
         onClick={onRetry}
         className="text-violet-600 border-violet-200 hover:bg-violet-50"
       >

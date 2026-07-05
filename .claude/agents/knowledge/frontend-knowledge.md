@@ -172,7 +172,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { addInventoryItemSchema } from '@/schemas/inventory'
 import { createInventoryItem } from '@/lib/api/inventory'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import Input from '@/components/base/Input/Input'
 import {
   Form,
   FormControl,

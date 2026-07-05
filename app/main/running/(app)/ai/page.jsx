@@ -121,12 +121,13 @@ export default function AICoachPage() {
           className="flex flex-col items-center justify-center py-16 gap-3 text-center"
         >
           <p className="text-sm text-red-500">{error}</p>
-          <button
+          <Button
+            variant="ghost"
             onClick={() => window.location.reload()}
             className="text-xs text-violet-600 underline hover:no-underline"
           >
             Try again
-          </button>
+          </Button>
         </div>
       )}
 

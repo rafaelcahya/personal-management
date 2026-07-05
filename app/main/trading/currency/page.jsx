@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { DollarSign, BarChart2, AlertCircle, TrendingUp } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import Button from '@/components/base/Button/Button'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { cn } from '@/lib/utils'
 import AllocationChart from './components/AllocationChart'
 import PnLChart from './components/PnLChart'
@@ -75,7 +76,7 @@ function ErrorState({ onRetry }) {
         <p className="text-sm font-medium text-slate-700">Failed to load currency data</p>
         <p className="text-xs text-slate-500">Check your connection and try again</p>
       </div>
-      <Button variant="outline" size="sm" onClick={onRetry} className="min-w-11">
+      <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
         Try again
       </Button>
     </div>
@@ -99,8 +100,8 @@ export default function CurrencyDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [activeFilter, setActiveFilter] = useState(30)
-  const [customStart, setCustomStart] = useState('')
-  const [customEnd, setCustomEnd] = useState('')
+  const [customStart, setCustomStart] = useState(null)
+  const [customEnd, setCustomEnd] = useState(null)
 
   const loadData = useCallback(async () => {
     try {
@@ -127,12 +128,12 @@ export default function CurrencyDashboardPage() {
   }, [loadData])
 
   const fromDate = useMemo(() => {
-    if (customStart) return customStart
+    if (customStart) return customStart.toISOString().slice(0, 10)
     return dateStr(activeFilter)
   }, [customStart, activeFilter])
 
   const toDate = useMemo(() => {
-    if (customEnd) return customEnd
+    if (customEnd) return customEnd.toISOString().slice(0, 10)
     return new Date().toISOString().slice(0, 10)
   }, [customEnd])
 
@@ -334,40 +335,43 @@ export default function CurrencyDashboardPage() {
               {/* Filter controls */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 {FILTERS.map((f) => (
-                  <button
+                  <Button
                     key={f.label}
                     id={f.id}
+                    variant="ghost"
                     onClick={() => {
                       setActiveFilter(f.days)
-                      setCustomStart('')
-                      setCustomEnd('')
+                      setCustomStart(null)
+                      setCustomEnd(null)
                     }}
                     aria-pressed={activeFilter === f.days && !customStart}
                     className={cn(
-                      'px-3 py-1.5 rounded-full text-xs font-medium transition-colors min-w-11',
+                      'px-3 py-1.5 rounded-full text-xs font-medium min-w-11',
                       activeFilter === f.days && !customStart
-                        ? 'bg-violet-600 text-white'
+                        ? 'bg-violet-600 text-white hover:bg-violet-600'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     )}
                   >
                     {f.label}
-                  </button>
+                  </Button>
                 ))}
                 <div className="flex items-center gap-2 ml-auto">
-                  <input
-                    type="date"
-                    aria-label="Chart start date"
+                  <DatePicker
                     value={customStart}
-                    onChange={(e) => setCustomStart(e.target.value)}
-                    className="text-xs border border-slate-200 rounded-md px-2 py-1.5 text-slate-700 focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 outline-none"
+                    onChange={setCustomStart}
+                    placeholder="Start date"
+                    displayFormat="d MMM yyyy"
+                    toDate={customEnd ?? undefined}
+                    className="text-xs h-8 min-w-[110px]"
                   />
                   <span className="text-xs text-slate-400">–</span>
-                  <input
-                    type="date"
-                    aria-label="Chart end date"
+                  <DatePicker
                     value={customEnd}
-                    onChange={(e) => setCustomEnd(e.target.value)}
-                    className="text-xs border border-slate-200 rounded-md px-2 py-1.5 text-slate-700 focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 outline-none"
+                    onChange={setCustomEnd}
+                    placeholder="End date"
+                    displayFormat="d MMM yyyy"
+                    fromDate={customStart ?? undefined}
+                    className="text-xs h-8 min-w-[110px]"
                   />
                 </div>
               </div>

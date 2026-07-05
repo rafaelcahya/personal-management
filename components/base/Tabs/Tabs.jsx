@@ -11,6 +11,18 @@ const useTabs = () => useContext(TabsCtx)
 const ListCtx = createContext(null)
 const useList = () => useContext(ListCtx)
 
+const triggerSizes = {
+  sm: 'px-2.5 py-1 text-xs',
+  base: 'px-3 py-2 text-sm',
+  lg: 'px-4 py-2.5 text-sm',
+}
+
+const iconSizes = {
+  sm: 'size-3.5',
+  base: 'size-4',
+  lg: 'size-4',
+}
+
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 
 export function Tabs({
@@ -50,7 +62,7 @@ export function Tabs({
 
 // ─── TabsList ─────────────────────────────────────────────────────────────────
 
-export function TabsList({ children, variant = 'underline', className, ...props }) {
+export function TabsList({ children, variant = 'underline', size = 'base', className, ...props }) {
   const { activeValue, setActiveValue, orientation } = useTabs()
   const listRef = useRef(null)
   const [indicatorStyle, setIndicatorStyle] = useState({})
@@ -117,7 +129,7 @@ export function TabsList({ children, variant = 'underline', className, ...props 
   }
 
   return (
-    <ListCtx.Provider value={{ variant }}>
+    <ListCtx.Provider value={{ variant, size }}>
       <div
         ref={listRef}
         role="tablist"
@@ -162,7 +174,7 @@ export function TabsTrigger({
   ...props
 }) {
   const { activeValue, setActiveValue } = useTabs()
-  const { variant } = useList()
+  const { variant, size } = useList()
   const isActive = activeValue === value
 
   return (
@@ -176,7 +188,8 @@ export function TabsTrigger({
       disabled={disabled}
       onClick={() => setActiveValue(value)}
       className={cn(
-        'relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors outline-none',
+        'relative inline-flex items-center gap-1.5 font-medium transition-colors outline-none',
+        triggerSizes[size] ?? triggerSizes.base,
         'focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-1 rounded-md',
         // underline
         variant === 'underline' && isActive && 'text-violet-700',
@@ -190,7 +203,7 @@ export function TabsTrigger({
       )}
       {...props}
     >
-      {Icon && <Icon className="size-4 shrink-0" />}
+      {Icon && <Icon className={cn(iconSizes[size] ?? iconSizes.base, 'shrink-0')} />}
       {children}
     </button>
   )

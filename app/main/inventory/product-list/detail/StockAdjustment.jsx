@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalDescription,
+  ModalHeader,
+  ModalTitle,
+} from '@/components/base/Modal/Modal.jsx'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import { getProductLogByProductListId } from '@/lib/api/productHistory'
 import ProductSummary from './ProductSummary'
 import ProductUsageLog from './ProductUsageLog'
@@ -47,37 +48,43 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
   if (!product) return null
 
   return (
-    <Dialog open={!!product} onOpenChange={onClose}>
-      <DialogContent
+    <Modal open={!!product} onOpenChange={onClose}>
+      <ModalContent
         id="stockAdjustmentDialog_productListPage"
-        className="sm:max-w-3xl flex flex-col max-h-[90vh]"
+        className="sm:max-w-2xl flex flex-col max-h-[90vh]"
+        variant="bordered"
+        borderColor="border-slate-200"
         onPointerDownOutside={(e) => {
           if (e.target.closest('[data-radix-popper-content-wrapper]')) {
             e.preventDefault()
           }
         }}
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>Track Product Usage</DialogTitle>
-          <DialogDescription className="text-slate-foreground">
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>Track Product Usage</ModalTitle>
+          <ModalDescription className="text-slate-foreground">
             Record when you start using a product and mark it as depleted when finished.
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="flex flex-col sm:flex-row gap-5 w-full">
+        <ModalBody>
+          <div className="flex flex-col gap-5 w-full">
             {/* Product Summary */}
             <ProductSummary product={product} />
 
-            <Tabs defaultValue="recordNewUsage" className="w-full sm:w-2/3 space-y-5">
-              <TabsList className="bg-violet-50/75 w-full h-full grid grid-cols-2">
-                <TabsTrigger value="recordNewUsage" id="recordNewUsageTab" className="text-sm py-2">
+            <Tabs defaultValue="recordNewUsage" className="w-full gap-5">
+              <TabsList className="flex w-full" variant="pill">
+                <TabsTrigger
+                  value="recordNewUsage"
+                  id="recordNewUsageTab"
+                  className="text-sm flex-1 justify-center"
+                >
                   Record Usage
                 </TabsTrigger>
                 <TabsTrigger
                   value="productUsageLog"
                   id="productUsageLogTab"
-                  className="text-sm py-2"
+                  className="text-sm flex-1 justify-center"
                 >
                   Usage Log
                 </TabsTrigger>
@@ -113,8 +120,8 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
               </TabsContent>
             </Tabs>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   )
 }

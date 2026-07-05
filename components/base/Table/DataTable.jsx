@@ -29,9 +29,10 @@ function SkeletonCell({ width }) {
   )
 }
 
-function PrevButton({ disabled, onClick }) {
+export function PrevButton({ disabled, onClick, id }) {
   return (
     <button
+      id={id}
       onClick={onClick}
       disabled={disabled}
       className="flex items-center justify-center size-7 rounded border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -42,9 +43,10 @@ function PrevButton({ disabled, onClick }) {
   )
 }
 
-function NextButton({ disabled, onClick }) {
+export function NextButton({ disabled, onClick, id }) {
   return (
     <button
+      id={id}
       onClick={onClick}
       disabled={disabled}
       className="flex items-center justify-center size-7 rounded border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"

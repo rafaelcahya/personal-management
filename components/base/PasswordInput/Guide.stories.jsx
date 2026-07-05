@@ -80,7 +80,9 @@ function StrengthDemo({ meterVariant = 'bars' }) {
         strengthMeter
         meterVariant={meterVariant}
       />
-      <FieldDescription>Use 12+ characters with uppercase, numbers, and symbols.</FieldDescription>
+      <FieldDescription className="text-xs text-slate-400">
+        Use 12+ characters with uppercase, numbers, and symbols.
+      </FieldDescription>
     </FieldContent>
   )
 }
@@ -219,7 +221,7 @@ export const Docs = {
         <Code>{`<FieldContent size="base" required error={errors.password?.message}>
   <FieldLabel>Password</FieldLabel>
   <PasswordInput placeholder="Enter password" strengthMeter />
-  <FieldDescription>Use 12+ characters with symbols.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Use 12+ characters with symbols.</FieldDescription>
   <FieldError />
 </FieldContent>`}</Code>
       </Section>
@@ -241,13 +243,15 @@ export const Docs = {
             <FieldContent size="base" required>
               <FieldLabel>Password</FieldLabel>
               <PasswordInput placeholder="Enter password" />
-              <FieldDescription>Must be at least 8 characters.</FieldDescription>
+              <FieldDescription className="text-xs text-slate-400">
+                Must be at least 8 characters.
+              </FieldDescription>
             </FieldContent>
           </Preview>
           <Code>{`<FieldContent size="base" required>
   <FieldLabel>Password</FieldLabel>
   <PasswordInput placeholder="Enter password" />
-  <FieldDescription>Must be at least 8 characters.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">Must be at least 8 characters.</FieldDescription>
 </FieldContent>`}</Code>
         </SubSection>
 

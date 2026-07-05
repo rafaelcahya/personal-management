@@ -64,7 +64,9 @@ function MonthFieldDemo({ error, description, label = 'Birth month', required = 
     <FieldContent size="base" error={error}>
       <FieldLabel required={required}>{label}</FieldLabel>
       <MonthPicker value={month} onChange={setMonth} {...props} />
-      {description && <FieldDescription>{description}</FieldDescription>}
+      {description && (
+        <FieldDescription className="text-xs text-slate-400">{description}</FieldDescription>
+      )}
       {error && <FieldError />}
     </FieldContent>
   )
@@ -398,7 +400,7 @@ const [month, setMonth] = useState(null)  // e.g. "June"
         <Code>{`<FieldContent size="base">
   <FieldLabel required>Birth month</FieldLabel>
   <MonthPicker value={month} onChange={setMonth} />
-  <FieldDescription>The month you were born in.</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">The month you were born in.</FieldDescription>
 </FieldContent>`}</Code>
       </Section>
 

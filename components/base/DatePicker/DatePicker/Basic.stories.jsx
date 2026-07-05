@@ -23,7 +23,9 @@ function FieldDemo() {
     <FieldContent size="base">
       <FieldLabel required>Trade date</FieldLabel>
       <DatePicker value={date} onChange={setDate} />
-      <FieldDescription>When did you execute this trade?</FieldDescription>
+      <FieldDescription className="text-xs text-slate-400">
+        When did you execute this trade?
+      </FieldDescription>
     </FieldContent>
   )
 }
@@ -58,7 +60,7 @@ export const Basic = {
 <FieldContent size="base">
   <FieldLabel required>Trade date</FieldLabel>
   <DatePicker value={date} onChange={setDate} />
-  <FieldDescription>When did you execute this trade?</FieldDescription>
+  <FieldDescription className="text-xs text-slate-400">When did you execute this trade?</FieldDescription>
 </FieldContent>`}</code>
       </pre>
     </div>

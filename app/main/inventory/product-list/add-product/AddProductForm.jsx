@@ -1,36 +1,35 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
+import AttachmentGroup from '@/components/base/Attachment/AttachmentGroup'
+import Attachment from '@/components/base/Attachment/Attachment'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+  Modal,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from '@/components/base/Modal/Modal.jsx'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import FieldDescription from '@/components/base/Field/FieldDescription'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+} from '@/components/base/Select/Select'
+import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
 import { Loader2, PlusIcon } from 'lucide-react'
 import { productSchema } from '@/schemas/product'
@@ -43,13 +42,12 @@ export default function AddProductForm({ onAdded }) {
   const [productBrands, setProductBrands] = useState([])
   const [productNames, setProductNames] = useState([])
   const [loading, setLoading] = useState(false)
-  const [imagePreview, setImagePreview] = useState(null)
+  const [imageAttachment, setImageAttachment] = useState(null)
   const [serverError, setServerError] = useState(null)
 
   const form = useForm({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      image: null,
       product_brand: '',
       product_name: '',
       type: '',
@@ -57,21 +55,19 @@ export default function AddProductForm({ onAdded }) {
     },
   })
 
-  const { watch, control, reset } = form
-  const image = watch('image')
+  const { control, reset } = form
 
-  useEffect(() => {
-    if (image && image[0]) {
-      const file = image[0]
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result)
-      }
-      reader.readAsDataURL(file)
-    } else {
-      setImagePreview(null)
-    }
-  }, [image])
+  const handleImageAdd = (files) => {
+    const file = files[0]
+    if (!file) return
+    if (imageAttachment?.objectUrl) URL.revokeObjectURL(imageAttachment.objectUrl)
+    setImageAttachment({ file, objectUrl: URL.createObjectURL(file) })
+  }
+
+  const handleImageRemove = () => {
+    if (imageAttachment?.objectUrl) URL.revokeObjectURL(imageAttachment.objectUrl)
+    setImageAttachment(null)
+  }
 
   const loadProductBrands = async () => {
     try {
@@ -111,13 +107,12 @@ export default function AddProductForm({ onAdded }) {
     try {
       let imageBase64 = ''
 
-      if (values.image && values.image[0]) {
-        const file = values.image[0]
+      if (imageAttachment?.file) {
         imageBase64 = await new Promise((resolve, reject) => {
           const reader = new FileReader()
           reader.onloadend = () => resolve(reader.result)
           reader.onerror = reject
-          reader.readAsDataURL(file)
+          reader.readAsDataURL(imageAttachment.file)
         })
       }
 
@@ -135,7 +130,7 @@ export default function AddProductForm({ onAdded }) {
       toast.success('Product added successfully!')
       setOpen(false)
       reset()
-      setImagePreview(null)
+      handleImageRemove()
       onAdded?.()
     } catch (err) {
       console.error('Submit error:', err)
@@ -150,226 +145,214 @@ export default function AddProductForm({ onAdded }) {
     if (!isOpen) {
       setServerError(null)
       reset()
-      setImagePreview(null)
+      handleImageRemove()
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild id="addNewProductBtn_productPage">
+    <Modal open={open} onOpenChange={handleOpenChange}>
+      <ModalTrigger asChild id="addNewProductBtn_productPage">
         <Button>
-          <PlusIcon />
+          <PlusIcon className="w-4" />
           <span>Add Product</span>
         </Button>
-      </DialogTrigger>
-      <DialogContent
+      </ModalTrigger>
+      <ModalContent
         className="sm:max-w-md flex flex-col max-h-[90vh]"
         id="addNewProductForm_productPage"
+        variant="bordered"
+        borderColor="border-slate-200"
       >
-        <DialogHeader className="text-left shrink-0">
-          <DialogTitle>🛍️ Add New Product</DialogTitle>
-          <DialogDescription>Got a new item? Let's add it to your inventory!</DialogDescription>
-        </DialogHeader>
+        <ModalHeader className="text-left shrink-0">
+          <ModalTitle>🛍️ Add New Product</ModalTitle>
+          <ModalDescription>Got a new item? Let's add it to your inventory!</ModalDescription>
+        </ModalHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 overflow-y-auto space-y-4">
-              {/* Image Upload */}
-              <FormField
-                control={control}
-                name="image"
-                render={({ field, fieldState }) => (
-                  <FormItem>
-                    <FormLabel className="font-medium">Product Image</FormLabel>
-                    <FormControl className="cursor-pointer">
-                      <Input
-                        id="productImageField_productPage"
-                        type="file"
-                        accept="image/*"
-                        className="text-sm font-medium"
-                        onChange={(e) => {
-                          const files = e.target.files
-                          field.onChange(files)
-                        }}
-                      />
-                    </FormControl>
-                    {imagePreview && (
-                      <div className="mt-2">
-                        <img
-                          id="imagePreview_productPage"
-                          src={imagePreview}
-                          alt="Preview"
-                          className="w-24 h-24 object-cover rounded-md border"
-                        />
-                      </div>
-                    )}
-                    <FormMessage id="productImageField_errorMessage_productPage">
-                      {fieldState.error?.message}
-                    </FormMessage>
-                    <p className="text-xs text-slate-400">
-                      Add a photo to easily identify this product later 🖼️
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
+          <ModalBody className="space-y-4">
+            {/* Image Upload */}
+            <FieldContent>
+              <FieldLabel className="font-medium">Product Image</FieldLabel>
+              <AttachmentGroup
+                id="productImageField_productPage"
+                trigger="dropzone"
+                accept="image/*"
+                multiple={false}
+                maxFiles={1}
+                showTriggerAlways={false}
+                onFilesAdd={handleImageAdd}
+              >
+                {imageAttachment && (
+                  <Attachment
+                    file={{
+                      name: imageAttachment.file.name,
+                      size: imageAttachment.file.size,
+                      type: imageAttachment.file.type,
+                      url: imageAttachment.objectUrl,
+                    }}
+                    status="idle"
+                    onRemove={handleImageRemove}
+                  />
+                )}
+              </AttachmentGroup>
+              <FieldDescription className="text-xs text-slate-400">
+                Add a photo to easily identify this product later 🖼️
+              </FieldDescription>
+            </FieldContent>
+
+            {/* Product Brand */}
+            <Controller
+              control={form.control}
+              name="product_brand"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel>Product brand</FieldLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      className="min-w-full font-medium"
+                      id="productBrandField_productPage"
+                    >
+                      <SelectValue placeholder="Select brand" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {productBrands?.length === 0 ? (
+                        <div className="p-8 text-center text-muted-foreground">
+                          No active product brands available
+                        </div>
+                      ) : (
+                        productBrands?.map((productBrand) => (
+                          <SelectItem key={productBrand.id} value={productBrand.id.toString()}>
+                            {productBrand.brand}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription className="text-xs text-slate-400">
+                    Which brand is this from? 🏷️
+                  </FieldDescription>
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
+
+            {/* Product Name */}
+            <Controller
+              control={control}
+              name="product_name"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel>Product name</FieldLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      className="min-w-full font-medium"
+                      id="productNameField_productPage"
+                    >
+                      <SelectValue placeholder="Select name" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {productNames?.length === 0 ? (
+                        <div className="p-8 text-center text-muted-foreground">
+                          No active product names available
+                        </div>
+                      ) : (
+                        productNames?.map((productName) => (
+                          <SelectItem key={productName.id} value={productName.id.toString()}>
+                            {productName.product_name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription className="text-xs text-slate-400">
+                    What's the product called? 📦
+                  </FieldDescription>
+                  <FieldError />
+                </FieldContent>
+              )}
+            />
+
+            {/* Type */}
+            <Controller
+              control={control}
+              name="type"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="font-medium">Type</FieldLabel>
+                  <Input
+                    {...field}
+                    id="typeField_productPage"
+                    placeholder="e.g. Whitening, Hydrating, SPF 50"
+                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                      fieldState.error ? 'border-rose-500' : ''
+                    }`}
+                  />
+                  <FieldDescription className="text-xs text-slate-400">
+                    What kind is it? (serum, lotion, toner, etc.) 💡
+                  </FieldDescription>
+                  <FieldError className="font-medium" />
+                </FieldContent>
+              )}
+            />
+
+            {/* Notes */}
+            <Controller
+              control={control}
+              name="note"
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="font-medium">Notes</FieldLabel>
+                  <Textarea
+                    {...field}
+                    id="noteField_productPage"
+                    value={field.value || ''}
+                    placeholder="Additional details or reminders..."
+                    className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
+                  />
+                  <FieldDescription className="text-xs text-slate-400">
+                    Optional notes about this product 📝
+                  </FieldDescription>
+                </FieldContent>
+              )}
+            />
+
+            {/* Server Error Display */}
+            {serverError && (
+              <div
+                id="serverError_productPage"
+                className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200"
+              >
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-red-900 mb-1">
+                      ⚠️ Unable to Add Product
                     </p>
-                  </FormItem>
-                )}
-              />
-
-              {/* Product Brand */}
-              <FormField
-                control={form.control}
-                name="product_brand"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Product brand</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger
-                          className="min-w-full font-medium"
-                          id="productBrandField_productPage"
-                        >
-                          <SelectValue placeholder="Select brand" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="max-h-60 overflow-y-auto">
-                        {productBrands?.length === 0 ? (
-                          <div className="p-8 text-center text-muted-foreground">
-                            No active product brands available
-                          </div>
-                        ) : (
-                          productBrands?.map((productBrand) => (
-                            <SelectItem key={productBrand.id} value={productBrand.id.toString()}>
-                              {productBrand.brand}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-slate-400">Which brand is this from? 🏷️</p>
-                    <FormMessage id="productBrandField_errorMessage_productPage" />
-                  </FormItem>
-                )}
-              />
-
-              {/* Product Name */}
-              <FormField
-                control={control}
-                name="product_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Product name</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger
-                          className="min-w-full font-medium"
-                          id="productNameField_productPage"
-                        >
-                          <SelectValue placeholder="Select name" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="max-h-60 overflow-y-auto">
-                        {productNames?.length === 0 ? (
-                          <div className="p-8 text-center text-muted-foreground">
-                            No active product names available
-                          </div>
-                        ) : (
-                          productNames?.map((productName) => (
-                            <SelectItem key={productName.id} value={productName.id.toString()}>
-                              {productName.product_name}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-slate-400">What's the product called? 📦</p>
-                    <FormMessage id="productNameField_errorMessage_productPage" />
-                  </FormItem>
-                )}
-              />
-
-              {/* Type */}
-              <FormField
-                control={control}
-                name="type"
-                render={({ field, fieldState }) => (
-                  <FormItem>
-                    <FormLabel className="font-medium">Type</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        id="typeField_productPage"
-                        placeholder="e.g. Whitening, Hydrating, SPF 50"
-                        className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                          fieldState.error ? 'border-rose-500' : ''
-                        }`}
-                      />
-                    </FormControl>
-                    <p className="text-xs text-slate-400">
-                      What kind is it? (serum, lotion, toner, etc.) 💡
-                    </p>
-                    <FormMessage className="font-medium" id="typeField_errorMessage_productPage">
-                      {fieldState.error?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              {/* Notes */}
-              <FormField
-                control={control}
-                name="note"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-medium">Notes</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        id="noteField_productPage"
-                        value={field.value || ''}
-                        placeholder="Additional details or reminders..."
-                        className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
-                      />
-                    </FormControl>
-                    <p className="text-xs text-slate-400">Optional notes about this product 📝</p>
-                  </FormItem>
-                )}
-              />
-
-              {/* Server Error Display */}
-              {serverError && (
-                <div
-                  id="serverError_productPage"
-                  className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200"
-                >
-                  <div className="flex gap-3">
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-red-900 mb-1">
-                        ⚠️ Unable to Add Product
-                      </p>
-                      <p className="text-sm text-red-800">{serverError}</p>
-                    </div>
+                    <p className="text-sm text-red-800">{serverError}</p>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+          </ModalBody>
 
-            <DialogFooter className="shrink-0 pt-4">
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  id="cancelBtn_productPage"
-                  className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
-                  disabled={loading}
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button type="submit" disabled={loading} id="submitBtn_productPage">
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Adding...' : 'Add Product'}
+          <ModalFooter className="shrink-0 pt-4">
+            <ModalClose asChild>
+              <Button
+                type="button"
+                id="cancelBtn_productPage"
+                variant="secondary"
+                className="text-violet-600 font-medium"
+                disabled={loading}
+              >
+                Cancel
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+            </ModalClose>
+            <Button type="submit" disabled={loading} id="submitBtn_productPage">
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? 'Adding...' : 'Add Product'}
+            </Button>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </Modal>
   )
 }

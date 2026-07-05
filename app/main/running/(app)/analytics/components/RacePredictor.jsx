@@ -11,6 +11,15 @@ import {
 } from './utils'
 import { fmtPace } from '@/app/main/running/(app)/dashboard/utils/format'
 import EmptyState from './EmptyState'
+import Button from '@/components/base/Button/Button'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/base/Table/Table.jsx'
 
 export default function RacePredictor({ activities }) {
   const [sourceBracket, setSourceBracket] = useState('5K')
@@ -63,8 +72,9 @@ export default function RacePredictor({ activities }) {
         <span className="text-xs text-slate-500">Based on your best</span>
         <div className="flex flex-wrap gap-2">
           {availableBrackets.map((b) => (
-            <button
+            <Button
               key={b.key}
+              size="xs"
               onClick={() => setSourceBracket(b.key)}
               className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
                 activeBracket.key === b.key
@@ -76,7 +86,7 @@ export default function RacePredictor({ activities }) {
               }
             >
               {b.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -87,41 +97,30 @@ export default function RacePredictor({ activities }) {
         {fmtDurationShort(Math.round(source.timeSec))} total)
       </div>
 
-      <div className="overflow-x-auto">
-        <table
-          id="racePredictorTable_analyticsPage"
-          className="min-w-full text-sm"
-          aria-label="Race predictor results"
-        >
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Distance
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Predicted Time
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
-                Predicted Pace
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {predictions.map((p) => (
-              <tr
-                key={p.label}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-5 py-3.5 font-semibold text-slate-900">{p.label}</td>
-                <td className="px-5 py-3.5 font-mono font-semibold text-slate-700">
-                  {fmtDurationShort(p.predicted_sec)}
-                </td>
-                <td className="px-5 py-3.5 font-mono text-slate-700">{fmtPace(p.pace_sec)} /km</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        id="racePredictorTable_analyticsPage"
+        className="min-w-full"
+        aria-label="Race predictor results"
+      >
+        <TableHeader>
+          <TableRow>
+            <TableHead>Distance</TableHead>
+            <TableHead>Predicted Time</TableHead>
+            <TableHead>Predicted Pace</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {predictions.map((p) => (
+            <TableRow key={p.label}>
+              <TableCell className="font-semibold text-slate-900">{p.label}</TableCell>
+              <TableCell className="font-mono font-semibold text-slate-700">
+                {fmtDurationShort(p.predicted_sec)}
+              </TableCell>
+              <TableCell className="font-mono text-slate-700">{fmtPace(p.pace_sec)} /km</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
       <p className="text-xs text-slate-400 mt-3">
         Predicted using the Riegel formula. Accuracy improves the closer your source distance is to
         the target.

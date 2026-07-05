@@ -3,30 +3,33 @@
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, CalendarIcon, Loader2 } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Calendar as CalendarPicker } from '@/components/ui/calendar'
+import { AlertTriangle, Loader2 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
+import Button from '@/components/base/Button/Button'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
+import Input from '@/components/base/Input/Input'
+import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+} from '@/components/base/Select/Select'
+import Textarea from '@/components/base/Textarea/Textarea'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import FieldDescription from '@/components/base/Field/FieldDescription'
 import { toast } from 'sonner'
 import { createRaceLog } from '@/lib/api/running'
 import { createRaceLogSchema } from '@/schemas/raceLog'
@@ -36,7 +39,6 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
   const [distanceMode, setDistanceMode] = useState('preset')
   const [saving, setSaving] = useState(false)
   const [serverError, setServerError] = useState(null)
-  const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [finishTimeStr, setFinishTimeStr] = useState('')
 
   const {
@@ -101,282 +103,256 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent id="raceLogFormModal" className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Log a Race</DialogTitle>
-        </DialogHeader>
+    <Modal open={open} onOpenChange={(v) => !v && onClose()}>
+      <ModalContent
+        variant="bordered"
+        borderColor="border-slate-200"
+        id="raceLogFormModal"
+        className="max-w-lg max-h-[90vh] flex flex-col"
+      >
+        <ModalHeader>
+          <ModalTitle>Log a Race</ModalTitle>
+        </ModalHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
-          {/* Title */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="raceTitle">
-              Race name <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="raceTitle"
-              placeholder="e.g. Jakarta Marathon 2025"
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-              {...register('title')}
-              aria-describedby={errors.title ? 'raceTitleError' : undefined}
-            />
-            <p className="text-xs text-slate-400">Name it after the official race event 🏁</p>
-            {errors.title && (
-              <p id="raceTitleError" className="text-xs text-red-600" role="alert">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
+        <ModalBody className="flex-1 overflow-y-auto">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
+            {/* Title */}
+            <FieldContent error={errors.title?.message}>
+              <FieldLabel htmlFor="raceTitle" required>
+                Race name
+              </FieldLabel>
+              <Input
+                id="raceTitle"
+                placeholder="e.g. Jakarta Marathon 2025"
+                className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                {...register('title')}
+              />
+              <FieldDescription className="text-xs text-slate-400">
+                Name it after the official race event 🏁
+              </FieldDescription>
+              <FieldError />
+            </FieldContent>
 
-          {/* Race date */}
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              Race date <span className="text-red-500">*</span>
-            </Label>
+            {/* Race date */}
             <Controller
               name="race_date"
               control={control}
-              render={({ field }) => (
-                <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="raceDate"
-                      variant="outline"
-                      className={`w-full justify-start text-left text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 ${!field.value ? 'text-slate-400' : 'text-slate-900'}`}
-                      aria-describedby={errors.race_date ? 'raceDateError' : undefined}
-                    >
-                      <CalendarIcon
-                        className="size-4 mr-2 shrink-0 text-slate-400"
-                        aria-hidden="true"
-                      />
-                      {field.value ? format(parseISO(field.value), 'd MMM yyyy') : 'Pick a date'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarPicker
-                      mode="single"
-                      selected={field.value ? parseISO(field.value) : undefined}
-                      onSelect={(date) => {
-                        field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
-                        setDatePickerOpen(false)
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel required>Race date</FieldLabel>
+                  <DatePicker
+                    id="raceDate"
+                    value={field.value ? parseISO(field.value) : null}
+                    onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                  />
+                  <FieldDescription className="text-xs text-slate-400">
+                    The date you actually ran the race 📅
+                  </FieldDescription>
+                  <FieldError />
+                </FieldContent>
               )}
             />
-            <p className="text-xs text-slate-400">The date you actually ran the race 📅</p>
-            {errors.race_date && (
-              <p id="raceDateError" className="text-xs text-red-600" role="alert">
-                {errors.race_date.message}
-              </p>
-            )}
-          </div>
 
-          {/* Distance */}
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              Distance <span className="text-red-500">*</span>
-            </Label>
-            <Controller
-              name="distance_m"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  value={
-                    distanceMode === 'custom'
-                      ? 'custom'
-                      : field.value != null
-                        ? String(field.value)
-                        : ''
-                  }
-                  onValueChange={(v) => {
-                    if (v === 'custom') {
-                      setDistanceMode('custom')
-                      field.onChange(null)
-                    } else {
-                      setDistanceMode('preset')
-                      field.onChange(Number(v))
-                    }
-                  }}
-                >
-                  <SelectTrigger
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    aria-label="Select distance"
-                  >
-                    <SelectValue placeholder="Select distance…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DISTANCE_PRESETS.map((p) => (
-                      <SelectItem key={String(p.value)} value={String(p.value)}>
-                        {p.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {distanceMode === 'custom' && (
+            {/* Distance */}
+            <FieldContent error={errors.distance_m?.message}>
+              <FieldLabel required>Distance</FieldLabel>
               <Controller
                 name="distance_m"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    type="number"
-                    placeholder="Distance in meters (e.g. 15000)"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                    aria-label="Custom distance in meters"
-                  />
+                  <Select
+                    value={
+                      distanceMode === 'custom'
+                        ? 'custom'
+                        : field.value != null
+                          ? String(field.value)
+                          : ''
+                    }
+                    onValueChange={(v) => {
+                      if (v === 'custom') {
+                        setDistanceMode('custom')
+                        field.onChange(null)
+                      } else {
+                        setDistanceMode('preset')
+                        field.onChange(Number(v))
+                      }
+                    }}
+                  >
+                    <SelectTrigger
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      aria-label="Select distance"
+                    >
+                      <SelectValue placeholder="Select distance…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DISTANCE_PRESETS.map((p) => (
+                        <SelectItem key={String(p.value)} value={String(p.value)}>
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 )}
               />
-            )}
-            <p className="text-xs text-slate-400">
-              Pick a preset or enter exact meters for custom races 📏
-            </p>
-            {errors.distance_m && (
-              <p className="text-xs text-red-600" role="alert">
-                {errors.distance_m.type === 'invalid_type'
-                  ? 'Distance is required'
-                  : errors.distance_m.message}
-              </p>
-            )}
-          </div>
+              {distanceMode === 'custom' && (
+                <Controller
+                  name="distance_m"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      type="number"
+                      placeholder="Distance in meters (e.g. 15000)"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? Number(e.target.value) : null)
+                      }
+                      aria-label="Custom distance in meters"
+                    />
+                  )}
+                />
+              )}
+              <FieldDescription className="text-xs text-slate-400">
+                Pick a preset or enter exact meters for custom races 📏
+              </FieldDescription>
+              <FieldError />
+            </FieldContent>
 
-          {/* DNF checkbox */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-2.5">
-              <Controller
-                name="did_not_finish"
-                control={control}
-                render={({ field }) => (
-                  <Checkbox id="dnf" checked={field.value} onCheckedChange={field.onChange} />
-                )}
-              />
-              <Label htmlFor="dnf" className="cursor-pointer select-none">
-                Did not finish (DNF)
-              </Label>
-            </div>
-            <p className="text-xs text-slate-400">Check this if you did not finish the race 🚫</p>
-          </div>
+            {/* DNF checkbox */}
+            <FieldContent>
+              <div className="flex items-center gap-2.5">
+                <Controller
+                  name="did_not_finish"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox id="dnf" checked={field.value} onCheckedChange={field.onChange} />
+                  )}
+                />
+                <FieldLabel htmlFor="dnf" className="cursor-pointer select-none">
+                  Did not finish (DNF)
+                </FieldLabel>
+              </div>
+              <FieldDescription className="text-xs text-slate-400">
+                Check this if you did not finish the race 🚫
+              </FieldDescription>
+            </FieldContent>
 
-          {/* Finish time — hidden when DNF */}
-          {!dnf && (
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="finishTime">
-                Finish time (HH:MM:SS) <span className="text-red-500">*</span>
-              </Label>
+            {/* Finish time — hidden when DNF */}
+            {!dnf && (
               <Controller
                 name="finish_time_sec"
                 control={control}
-                render={({ field }) => (
-                  <Input
-                    id="finishTime"
-                    placeholder="e.g. 00:45:30"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={finishTimeStr}
-                    onChange={(e) => setFinishTimeStr(e.target.value)}
-                    onBlur={() => {
-                      const secs = hmsToSecs(finishTimeStr)
-                      field.onChange(secs ?? null)
-                      if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
-                    }}
-                    aria-describedby={errors.finish_time_sec ? 'finishTimeError' : undefined}
-                  />
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel htmlFor="finishTime" required>
+                      Finish time (HH:MM:SS)
+                    </FieldLabel>
+                    <Input
+                      id="finishTime"
+                      placeholder="e.g. 00:45:30"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={finishTimeStr}
+                      onChange={(e) => setFinishTimeStr(e.target.value)}
+                      onBlur={() => {
+                        const secs = hmsToSecs(finishTimeStr)
+                        field.onChange(secs ?? null)
+                        if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
+                      }}
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      Your official chip or gun time (hh:mm:ss) ⏱️
+                    </FieldDescription>
+                    <FieldError />
+                  </FieldContent>
                 )}
               />
-              <p className="text-xs text-slate-400">Your official chip or gun time (hh:mm:ss) ⏱️</p>
-              {errors.finish_time_sec && (
-                <p id="finishTimeError" className="text-xs text-red-600" role="alert">
-                  {errors.finish_time_sec.message}
-                </p>
-              )}
-            </div>
-          )}
+            )}
 
-          {/* Optional fields — 2 columns */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="posPlace">Position (place)</Label>
+            {/* Optional fields — 2 columns */}
+            <div className="grid grid-cols-2 gap-4">
               <Controller
                 name="position_place"
                 control={control}
-                render={({ field }) => (
-                  <Input
-                    id="posPlace"
-                    type="number"
-                    placeholder="e.g. 42"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel htmlFor="posPlace">Position (place)</FieldLabel>
+                    <Input
+                      id="posPlace"
+                      type="number"
+                      placeholder="e.g. 42"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? Number(e.target.value) : null)
+                      }
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      Your overall finisher position 🥇
+                    </FieldDescription>
+                    <FieldError />
+                  </FieldContent>
                 )}
               />
-              <p className="text-xs text-slate-400">Your overall finisher position 🥇</p>
-              {errors.position_place && (
-                <p className="text-xs text-red-600" role="alert">
-                  {errors.position_place.message}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="posMale">Position (male)</Label>
               <Controller
                 name="position_male"
                 control={control}
-                render={({ field }) => (
-                  <Input
-                    id="posMale"
-                    type="number"
-                    placeholder="e.g. 8"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
-                  />
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel htmlFor="posMale">Position (male)</FieldLabel>
+                    <Input
+                      id="posMale"
+                      type="number"
+                      placeholder="e.g. 8"
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value ? Number(e.target.value) : null)
+                      }
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      Your position within the male category 👟
+                    </FieldDescription>
+                    <FieldError />
+                  </FieldContent>
                 )}
               />
-              <p className="text-xs text-slate-400">Your position within the male category 👟</p>
-              {errors.position_male && (
-                <p className="text-xs text-red-600" role="alert">
-                  {errors.position_male.message}
-                </p>
-              )}
             </div>
-          </div>
 
-          {/* Notes */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="raceNotes">Notes</Label>
-            <Textarea
-              id="raceNotes"
-              placeholder="Weather, conditions, how you felt…"
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-              rows={3}
-              {...register('notes')}
-            />
-            <p className="text-xs text-slate-400">Conditions, how you felt, lessons learned 📝</p>
-          </div>
+            {/* Notes */}
+            <FieldContent>
+              <FieldLabel htmlFor="raceNotes">Notes</FieldLabel>
+              <Textarea
+                id="raceNotes"
+                placeholder="Weather, conditions, how you felt…"
+                className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                rows={3}
+                {...register('notes')}
+              />
+              <FieldDescription className="text-xs text-slate-400">
+                Conditions, how you felt, lessons learned 📝
+              </FieldDescription>
+            </FieldContent>
 
-          {serverError && (
-            <p className="text-xs text-red-600 flex items-center gap-1" role="alert">
-              <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
-              {serverError}
-            </p>
-          )}
-        </form>
+            {serverError && (
+              <p className="text-xs text-red-600 flex items-center gap-1" role="alert">
+                <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
+                {serverError}
+              </p>
+            )}
+          </form>
+        </ModalBody>
 
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
+        <ModalFooter className="gap-2">
+          <ModalClose asChild>
             <Button
-              className="text-violet-600 bg-white dark:bg-transparent hover:bg-violet-100 dark:hover:bg-violet-500/5 font-medium"
+              className="text-violet-600 font-medium"
               type="button"
+              variant="secondary"
               disabled={saving}
             >
               Cancel
             </Button>
-          </DialogClose>
+          </ModalClose>
           <Button
             id="raceLogSaveBtn"
             onClick={handleSubmit(onSubmit)}
@@ -385,8 +361,8 @@ export default function RaceFormModal({ open, onClose, onSaved }) {
           >
             {saving ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Log race'}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

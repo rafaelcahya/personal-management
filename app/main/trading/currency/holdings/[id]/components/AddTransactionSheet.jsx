@@ -2,34 +2,31 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format, parseISO } from 'date-fns'
-import { Loader2, Check, ChevronsUpDown, Search, CalendarIcon, ArrowLeftRight } from 'lucide-react'
+import { Loader2, Check, ChevronsUpDown, Search, ArrowLeftRight } from 'lucide-react'
 import { toast } from 'sonner'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Calendar } from '@/components/ui/calendar'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalDescription,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal.jsx'
+import Button from '@/components/base/Button/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
+import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldError from '@/components/base/Field/FieldError'
+import FieldDescription from '@/components/base/Field/FieldDescription'
+import Input from '@/components/base/Input/Input'
+import Textarea from '@/components/base/Textarea/Textarea'
+import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { cn } from '@/lib/utils'
 import {
   createCurrencyInvestment,
@@ -72,10 +69,6 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
   const triggerRef = useRef(null)
   const dialogRef = useRef(null)
   const dropdownRef = useRef(null)
-  const dateTriggerRef = useRef(null)
-  const calendarRef = useRef(null)
-  const [calendarOpen, setCalendarOpen] = useState(false)
-  const [calendarPos, setCalendarPos] = useState({ top: 0, left: 0 })
 
   useEffect(() => {
     if (!currencyDropdownOpen) return
@@ -101,29 +94,6 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
     }
     setCurrencyDropdownOpen(true)
     setCurrencySearch('')
-  }
-
-  useEffect(() => {
-    if (!calendarOpen) return
-    function handleOutside(e) {
-      if (!dateTriggerRef.current?.contains(e.target) && !calendarRef.current?.contains(e.target)) {
-        setCalendarOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleOutside)
-    return () => document.removeEventListener('mousedown', handleOutside)
-  }, [calendarOpen])
-
-  function openCalendar() {
-    const triggerRect = dateTriggerRef.current?.getBoundingClientRect()
-    const dialogRect = dialogRef.current?.getBoundingClientRect()
-    if (triggerRect && dialogRect) {
-      setCalendarPos({
-        top: triggerRect.bottom - dialogRect.top + 4,
-        left: triggerRect.left - dialogRect.left,
-      })
-    }
-    setCalendarOpen(true)
   }
 
   function selectCurrency(code, onChange) {
@@ -252,68 +222,67 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
   const { formState } = form
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <ModalContent
+        variant="bordered"
+        borderColor="border-slate-200"
         ref={dialogRef}
         id="addTransactionModal_currencyDetailPage"
         className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
       >
-        <DialogHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
-          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+        <ModalHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
+          <ModalTitle className="flex items-center gap-2 text-base font-semibold">
             <ArrowLeftRight className="size-4 text-violet-500" />
             Add Transaction
-          </DialogTitle>
-          <DialogDescription className="text-xs text-slate-500">
+          </ModalTitle>
+          <ModalDescription className="text-xs text-slate-500">
             Record a buy or sell transaction
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col overflow-y-auto px-5 py-5 gap-5"
-            noValidate
-          >
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col flex-1 min-h-0"
+          noValidate
+        >
+          <ModalBody className="flex flex-col gap-5 px-5 py-5">
             {/* Currency */}
-            <FormField
+            <Controller
               control={form.control}
               name="currency"
               render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Currency</FormLabel>
-                  <FormControl>
-                    <button
-                      ref={triggerRef}
-                      id="currencySelect_addTransactionModal"
-                      type="button"
-                      aria-expanded={currencyDropdownOpen}
-                      aria-haspopup="listbox"
-                      onClick={openDropdown}
-                      className={cn(
-                        'flex items-center justify-between w-full h-9 px-3 text-sm border rounded-md bg-white text-left font-medium focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 outline-none transition-colors',
-                        fieldState.error ? 'border-rose-500' : 'border-input',
-                        !field.value && 'text-muted-foreground'
-                      )}
-                    >
-                      {field.value ? (
-                        <span className="flex items-center gap-2">
-                          <span>{field.value}</span>
-                          <span className="text-slate-400 font-normal">
-                            — {currencyMap[field.value]?.name || ''}
-                          </span>
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Currency</FieldLabel>
+                  <Button
+                    ref={triggerRef}
+                    id="currencySelect_addTransactionModal"
+                    variant="outline"
+                    aria-expanded={currencyDropdownOpen}
+                    aria-haspopup="listbox"
+                    onClick={openDropdown}
+                    className={cn(
+                      'justify-between w-full h-9 px-3 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
+                      fieldState.error ? 'border-rose-500' : '',
+                      !field.value && 'text-muted-foreground'
+                    )}
+                  >
+                    {field.value ? (
+                      <span className="flex items-center gap-2">
+                        <span>{field.value}</span>
+                        <span className="text-slate-400 font-normal">
+                          — {currencyMap[field.value]?.name || ''}
                         </span>
-                      ) : (
-                        'Select currency...'
-                      )}
-                      <ChevronsUpDown
-                        className="size-4 text-slate-400 shrink-0"
-                        aria-hidden="true"
-                      />
-                    </button>
-                  </FormControl>
+                      </span>
+                    ) : (
+                      'Select currency...'
+                    )}
+                    <ChevronsUpDown className="size-4 text-slate-400 shrink-0" aria-hidden="true" />
+                  </Button>
 
-                  <FormDescription className="text-xs text-slate-400 flex flex-col gap-0.5">
-                    <span>The foreign currency you are buying or selling 💱</span>
+                  <FieldDescription className="flex flex-col gap-0.5">
+                    <span className="text-slate-400">
+                      The foreign currency you are buying or selling 💱
+                    </span>
                     {watchedCurrency && currentRate !== null && (
                       <span className="flex items-center gap-1.5 flex-wrap">
                         <span className="text-violet-600 font-semibold font-mono">
@@ -337,7 +306,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                     <span className="text-slate-400">
                       Rates sourced from central banks via Frankfurter 🏦
                     </span>
-                  </FormDescription>
+                  </FieldDescription>
                   {currencyDropdownOpen &&
                     dialogRef.current &&
                     createPortal(
@@ -380,9 +349,10 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                           {!currenciesLoading && currenciesError && (
                             <div className="flex flex-col items-center gap-2 py-6 text-sm text-slate-500">
                               <p>Failed to load currencies.</p>
-                              <button
-                                type="button"
-                                className="text-violet-600 text-xs underline hover:no-underline"
+                              <Button
+                                variant="link"
+                                size="sm"
+                                className="text-violet-600 text-xs h-auto p-0"
                                 onClick={() => {
                                   setCurrenciesError(false)
                                   setCurrenciesLoading(true)
@@ -393,7 +363,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                 }}
                               >
                                 Try again
-                              </button>
+                              </Button>
                             </div>
                           )}
 
@@ -403,13 +373,14 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                 Popular
                               </p>
                               {PINNED_CURRENCIES.map((c) => (
-                                <button
+                                <Button
                                   key={c}
-                                  type="button"
+                                  variant="ghost"
+                                  fullWidth
                                   role="option"
                                   aria-selected={field.value === c}
                                   onClick={() => selectCurrency(c, field.onChange)}
-                                  className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-slate-50 text-left"
+                                  className="justify-start gap-2 px-3 py-2 text-sm hover:bg-slate-50 rounded-none"
                                 >
                                   <Check
                                     className={cn(
@@ -422,7 +393,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                   <span className="text-slate-400 text-xs truncate">
                                     {currencyMap[c]?.name}
                                   </span>
-                                </button>
+                                </Button>
                               ))}
                               <div className="mx-3 my-1 border-t border-slate-100" />
                               <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
@@ -439,13 +410,14 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
 
                           {!currenciesLoading &&
                             filteredCurrencies.map((c) => (
-                              <button
+                              <Button
                                 key={c}
-                                type="button"
+                                variant="ghost"
+                                fullWidth
                                 role="option"
                                 aria-selected={field.value === c}
                                 onClick={() => selectCurrency(c, field.onChange)}
-                                className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-slate-50 text-left"
+                                className="justify-start gap-2 px-3 py-2 text-sm hover:bg-slate-50"
                               >
                                 <Check
                                   className={cn(
@@ -458,7 +430,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                 <span className="text-slate-400 text-xs truncate">
                                   {currencyMap[c]?.name}
                                 </span>
-                              </button>
+                              </Button>
                             ))}
 
                           {!currenciesLoading &&
@@ -472,140 +444,96 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                       </div>,
                       dialogRef.current
                     )}
-                  <FormMessage className="text-xs" />
-                </FormItem>
+                  <FieldError className="text-xs" />
+                </FieldContent>
               )}
             />
 
             {/* Type toggle */}
-            <FormField
+            <Controller
               control={form.control}
               name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Type</FormLabel>
-                  <div
+              render={({ field, fieldState }) => (
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Type</FieldLabel>
+                  <Tabs
                     id="typeToggle_addTransactionModal"
-                    role="group"
-                    aria-label="Transaction type"
-                    className="flex rounded-lg border border-slate-200 overflow-hidden"
+                    value={field.value}
+                    onValueChange={field.onChange}
                   >
-                    {['buy', 'sell'].map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        aria-pressed={field.value === t}
-                        onClick={() => field.onChange(t)}
-                        className={cn(
-                          'flex-1 py-2 text-sm font-medium capitalize transition-colors',
-                          field.value === t
-                            ? 'bg-violet-600 text-white'
-                            : 'text-slate-600 hover:bg-slate-50'
-                        )}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                  <FormDescription className="text-xs text-slate-400">
+                    <TabsList variant="pill" size="sm" className="w-full">
+                      <TabsTrigger value="buy" className="flex-1 capitalize justify-center">
+                        Buy
+                      </TabsTrigger>
+                      <TabsTrigger value="sell" className="flex-1 capitalize justify-center">
+                        Sell
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                  <FieldDescription className="text-xs text-slate-400">
                     Buy to add holdings, sell to reduce them 📊
-                  </FormDescription>
-                  <FormMessage className="text-xs" />
-                </FormItem>
+                  </FieldDescription>
+                  <FieldError className="text-xs" />
+                </FieldContent>
               )}
             />
 
             {/* Date */}
-            <FormField
+            <Controller
               control={form.control}
               name="transacted_at"
               render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Date</FormLabel>
-                  <FormControl>
-                    <Button
-                      ref={dateTriggerRef}
-                      id="dateInput_addTransactionModal"
-                      type="button"
-                      variant="outline"
-                      onClick={openCalendar}
-                      aria-invalid={!!fieldState.error}
-                      className={cn(
-                        'w-full justify-start text-left font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600',
-                        fieldState.error && 'border-rose-500',
-                        !field.value && 'text-slate-500'
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 size-4 opacity-50" />
-                      {field.value ? format(parseISO(field.value), 'PPP') : 'Pick a date'}
-                    </Button>
-                  </FormControl>
-                  <FormDescription className="text-xs text-slate-400">
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Date</FieldLabel>
+                  <DatePicker
+                    id="dateInput_addTransactionModal"
+                    value={field.value ? parseISO(field.value) : null}
+                    onChange={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                    displayFormat="PPP"
+                    placeholder="Pick a date"
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
+                  />
+                  <FieldDescription className="text-xs text-slate-400">
                     When did you execute this transaction? 📅
-                  </FormDescription>
-                  {calendarOpen &&
-                    dialogRef.current &&
-                    createPortal(
-                      <div
-                        ref={calendarRef}
-                        style={{
-                          position: 'absolute',
-                          top: calendarPos.top,
-                          left: calendarPos.left,
-                          zIndex: 9999,
-                        }}
-                        className="bg-white border border-slate-200 rounded-md shadow-lg p-0"
-                      >
-                        <Calendar
-                          mode="single"
-                          selected={field.value ? parseISO(field.value) : undefined}
-                          onSelect={(date) => {
-                            field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
-                            setCalendarOpen(false)
-                          }}
-                          initialFocus
-                        />
-                      </div>,
-                      dialogRef.current
-                    )}
-                  <FormMessage className="text-xs" />
-                </FormItem>
+                  </FieldDescription>
+                  <FieldError className="text-xs" />
+                </FieldContent>
               )}
             />
 
             {/* Amount (IDR) */}
-            <FormField
+            <Controller
               control={form.control}
               name="idr_amount"
               render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Amount (IDR)</FormLabel>
-                  <FormControl>
-                    <Input
-                      id="amountInput_addTransactionModal"
-                      type="text"
-                      placeholder="Rp 10.000.000"
-                      value={
-                        field.value
-                          ? `Rp ${Number(field.value.replace(/\D/g, '')).toLocaleString('id-ID')}`
-                          : ''
-                      }
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/\D/g, '')
-                        field.onChange(raw)
-                      }}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
-                      aria-invalid={!!fieldState.error}
-                      className={cn(
-                        'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                        fieldState.error && 'border-rose-500'
-                      )}
-                    />
-                  </FormControl>
-                  <FormDescription className="text-xs text-slate-400 flex items-center gap-1.5 flex-wrap">
-                    <span>Total IDR you spent (buy) or received (sell) 💵</span>
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Amount (IDR)</FieldLabel>
+                  <Input
+                    id="amountInput_addTransactionModal"
+                    type="text"
+                    placeholder="Rp 10.000.000"
+                    value={
+                      field.value
+                        ? `Rp ${Number(field.value.replace(/\D/g, '')).toLocaleString('id-ID')}`
+                        : ''
+                    }
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/\D/g, '')
+                      field.onChange(raw)
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-invalid={!!fieldState.error}
+                    className={cn(
+                      'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                      fieldState.error && 'border-rose-500'
+                    )}
+                  />
+                  <FieldDescription className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-slate-400">
+                      Total IDR you spent (buy) or received (sell) 💵
+                    </span>
                     {subtotal !== null && watchedCurrency && (
                       <span className="text-violet-600 font-semibold font-mono">
                         ={' '}
@@ -616,85 +544,81 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                         {watchedCurrency}
                       </span>
                     )}
-                  </FormDescription>
-                  <FormMessage className="text-xs" />
-                </FormItem>
+                  </FieldDescription>
+                  <FieldError className="text-xs" />
+                </FieldContent>
               )}
             />
 
             {/* Units */}
-            <FormField
+            <Controller
               control={form.control}
               name="foreign_amount"
               render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">
                     Units {watchedCurrency ? `(${watchedCurrency})` : ''}{' '}
                     <span className="text-slate-400 font-normal">(optional)</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      id="unitsInput_addTransactionModal"
-                      type="text"
-                      placeholder="e.g. 100.50"
-                      value={field.value}
-                      onChange={(e) => {
-                        const cleaned = e.target.value.replace(/[^0-9.]/g, '')
-                        field.onChange(cleaned)
-                      }}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
-                      aria-invalid={!!fieldState.error}
-                      className={cn(
-                        'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                        fieldState.error && 'border-rose-500'
-                      )}
-                    />
-                  </FormControl>
-                  <FormDescription className="text-xs text-slate-400">
+                  </FieldLabel>
+                  <Input
+                    id="unitsInput_addTransactionModal"
+                    type="text"
+                    placeholder="e.g. 100.50"
+                    value={field.value}
+                    onChange={(e) => {
+                      const cleaned = e.target.value.replace(/[^0-9.]/g, '')
+                      field.onChange(cleaned)
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-invalid={!!fieldState.error}
+                    className={cn(
+                      'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                      fieldState.error && 'border-rose-500'
+                    )}
+                  />
+                  <FieldDescription className="text-xs text-slate-400">
                     How many units you bought or sold — fill this if you don&apos;t know the rate 💡
-                  </FormDescription>
-                  <FormMessage className="text-xs" />
-                </FormItem>
+                  </FieldDescription>
+                  <FieldError className="text-xs" />
+                </FieldContent>
               )}
             />
 
             {/* Rate */}
-            <FormField
+            <Controller
               control={form.control}
               name="rate"
               render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">
                     Rate (IDR per 1 unit){' '}
                     <span className="text-slate-400 font-normal">(optional)</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      id="rateInput_addTransactionModal"
-                      type="text"
-                      placeholder="15.500"
-                      value={field.value}
-                      onChange={(e) => {
-                        const cleaned = e.target.value.replace(/[^0-9.]/g, '')
-                        field.onChange(cleaned)
-                      }}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
-                      aria-invalid={!!fieldState.error}
-                      className={cn(
-                        'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                        fieldState.error && 'border-rose-500'
-                      )}
-                    />
-                  </FormControl>
-                  <FormDescription className="text-xs text-slate-400">
+                  </FieldLabel>
+                  <Input
+                    id="rateInput_addTransactionModal"
+                    type="text"
+                    placeholder="15.500"
+                    value={field.value}
+                    onChange={(e) => {
+                      const cleaned = e.target.value.replace(/[^0-9.]/g, '')
+                      field.onChange(cleaned)
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    aria-invalid={!!fieldState.error}
+                    className={cn(
+                      'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                      fieldState.error && 'border-rose-500'
+                    )}
+                  />
+                  <FieldDescription className="text-xs text-slate-400">
                     IDR value per 1 unit of the currency (e.g. 16,000 for 1 USD) 🔢
-                  </FormDescription>
-                  <FormMessage className="text-xs" />
-                </FormItem>
+                  </FieldDescription>
+                  <FieldError className="text-xs" />
+                </FieldContent>
               )}
             />
 
@@ -727,56 +651,55 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
             )}
 
             {/* Notes */}
-            <FormField
+            <Controller
               control={form.control}
               name="notes"
               render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">Notes (optional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      id="notesInput_addTransactionModal"
-                      placeholder="Any notes about this transaction..."
-                      rows={3}
-                      {...field}
-                      aria-invalid={!!fieldState.error}
-                      className={cn(
-                        'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none',
-                        fieldState.error && 'border-rose-500'
-                      )}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
+                <FieldContent error={fieldState.error?.message}>
+                  <FieldLabel className="text-sm font-medium">Notes (optional)</FieldLabel>
+                  <Textarea
+                    id="notesInput_addTransactionModal"
+                    placeholder="Any notes about this transaction..."
+                    rows={3}
+                    {...field}
+                    aria-invalid={!!fieldState.error}
+                    className={cn(
+                      'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none',
+                      fieldState.error && 'border-rose-500'
+                    )}
+                  />
+                  <FieldError className="text-xs" />
+                </FieldContent>
               )}
             />
+          </ModalBody>
 
-            <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  disabled={formState.isSubmitting}
-                  className="text-violet-600 bg-white hover:bg-violet-100 font-medium"
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
+          <ModalFooter className="gap-2 pt-2 border-t border-slate-100">
+            <ModalClose asChild>
               <Button
-                id="submitBtn_addTransactionModal"
-                type="submit"
+                type="button"
+                variant="secondary"
                 disabled={formState.isSubmitting}
-                className="min-w-[80px]"
+                className="text-violet-600 font-medium"
               >
-                {formState.isSubmitting ? (
-                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                ) : (
-                  'Add Transaction'
-                )}
+                Cancel
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+            </ModalClose>
+            <Button
+              id="submitBtn_addTransactionModal"
+              type="submit"
+              disabled={formState.isSubmitting}
+              className="min-w-[80px]"
+            >
+              {formState.isSubmitting ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              ) : (
+                'Add Transaction'
+              )}
+            </Button>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </Modal>
   )
 }
