@@ -2,23 +2,30 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { BarChart2, TrendingUp, TrendingDown, Minus, AlertCircle, Plus } from 'lucide-react'
+import { AlertCircle, BarChart2, Minus, Plus, TrendingDown, TrendingUp } from 'lucide-react'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import Button from '@/components/base/Button/Button'
+import Card, {
+  CardAction,
+  CardDescription,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card'
 import AddTransactionSheet from './[id]/components/AddTransactionSheet'
 import {
   getCurrencyInvestments,
-  getForexRates,
   getCurrencyHoldings,
+  getForexRates,
 } from '@/lib/api/currencyInvestments'
 import PageHeader from '@/app/main/components/PageHeader'
 import {
   Table,
-  TableHeader,
   TableBody,
-  TableRow,
-  TableHead,
   TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/base/Table/Table.jsx'
 
 function formatIDR(amount) {
@@ -57,7 +64,7 @@ function PctChange({ pct }) {
 
 function TableSkeleton() {
   return (
-    <div className="animate-pulse" aria-label="Loading holdings">
+    <div aria-label="Loading holdings">
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
           <Skeleton className="h-4 w-12" />
@@ -150,11 +157,7 @@ export default function HoldingsPage() {
       .filter((i) => i.type === 'buy')
       .forEach((inv) => {
         if (!map[inv.currency]) {
-          map[inv.currency] = {
-            currency: inv.currency,
-            totalInvested: 0,
-            totalForeign: 0,
-          }
+          map[inv.currency] = { currency: inv.currency, totalInvested: 0, totalForeign: 0 }
         }
         map[inv.currency].totalInvested += inv.idr_amount || 0
         map[inv.currency].totalForeign += inv.foreign_amount || 0
@@ -196,29 +199,28 @@ export default function HoldingsPage() {
           { label: 'Holdings' },
         ]}
       />
-      <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        {/* Header */}
-        <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-            <BarChart2 className="size-4 text-violet-600" aria-hidden="true" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">Holdings</p>
-            <p className="text-xs text-slate-500 mt-0.5">All currency positions</p>
-          </div>
-          <Button
-            id="addInvestmentBtn_holdingsPage"
-            size="base"
-            onClick={() => setSheetOpen(true)}
-            className="bg-violet-600 hover:bg-violet-700 shrink-0 min-w-11"
-          >
-            <Plus className="size-4 mr-1.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Add Investment</span>
-            <span className="sm:hidden">Add</span>
-          </Button>
-        </div>
 
-        {/* Body */}
+      <Card>
+        <CardHeader>
+          <CardIcon icon={BarChart2} />
+          <div className="min-w-0 flex-1">
+            <CardTitle>Holdings</CardTitle>
+            <CardDescription>All currency positions</CardDescription>
+          </div>
+          <CardAction>
+            <Button
+              id="addInvestmentBtn_holdingsPage"
+              size="base"
+              onClick={() => setSheetOpen(true)}
+              className="bg-violet-600 hover:bg-violet-700 min-w-11"
+            >
+              <Plus className="size-4 mr-1.5" aria-hidden="true" />
+              <span className="hidden sm:inline">Add Investment</span>
+              <span className="sm:hidden">Add</span>
+            </Button>
+          </CardAction>
+        </CardHeader>
+
         {loading ? (
           <TableSkeleton />
         ) : error ? (
@@ -308,7 +310,7 @@ export default function HoldingsPage() {
             </TableBody>
           </Table>
         )}
-      </section>
+      </Card>
 
       <AddTransactionSheet
         open={sheetOpen}

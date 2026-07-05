@@ -13,7 +13,13 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts'
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { TrendingUp } from 'lucide-react'
 import { fetchPerformanceTrends } from '@/lib/api/running'
@@ -689,20 +695,19 @@ export default function PerformanceTrends({ activityType }) {
 
   return (
     <section id="performanceTrendsCard" aria-label="Performance trends">
-      <Card className="border border-slate-200/70 shadow-sm py-0">
-        <CardContent className="px-5 py-5 flex flex-col gap-8">
-          <div className="flex flex-col gap-1 -mb-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-              <h3 className="text-sm font-semibold text-slate-700">Performance Trends</h3>
-            </div>
-            <p className="text-xs text-slate-400">
+      <Card>
+        <CardHeader>
+          <CardIcon icon={TrendingUp} />
+          <div className="min-w-0 flex-1">
+            <CardTitle>Performance Trends</CardTitle>
+            <CardDescription>
               {loading || error
                 ? 'Heart rate, pace, effort, and power across recent runs.'
                 : `Last ${data.length} runs · Running activities only`}
-            </p>
+            </CardDescription>
           </div>
-
+        </CardHeader>
+        <CardContent className="flex flex-col gap-8">
           {loading && (
             <div className="flex flex-col gap-3">
               {Array.from({ length: 4 }).map((_, i) => (

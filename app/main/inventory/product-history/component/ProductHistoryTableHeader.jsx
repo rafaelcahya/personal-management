@@ -1,17 +1,26 @@
+import {
+  CardAction,
+  CardDescription,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card'
 import { History } from 'lucide-react'
 
-export default function ProductHistoryTableHeader() {
+export default function ProductHistoryTableHeader({ controls }) {
   return (
-    <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-      <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-        <History className="size-4 text-violet-600" aria-hidden="true" />
+    <CardHeader
+      layout={controls ? 'below' : 'beside'}
+      className={controls ? 'sticky top-0 z-10 gap-5' : undefined}
+    >
+      <div className="flex gap-2">
+        <CardIcon icon={History} />
+        <div className="min-w-0 flex-1">
+          <CardTitle>Product History</CardTitle>
+          <CardDescription>Track product usage and restock movement over time</CardDescription>
+        </div>
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-slate-900">Product History</p>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Track product usage and restock movement over time
-        </p>
-      </div>
-    </div>
+      {controls && <CardAction>{controls}</CardAction>}
+    </CardHeader>
   )
 }

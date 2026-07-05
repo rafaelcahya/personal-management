@@ -26,6 +26,7 @@ import FieldError from '@/components/base/Field/FieldError'
 import FieldDescription from '@/components/base/Field/FieldDescription'
 import { createQuantityUpdate } from '@/lib/api/productQuantity'
 import { getLastPurchasePrice, getStockHistory } from '@/lib/api/product'
+import Card, { CardContent } from '@/components/base/Card/Card'
 
 export default function AddStockForm({ product, onAdded }) {
   const [open, setOpen] = useState(false)
@@ -132,32 +133,36 @@ export default function AddStockForm({ product, onAdded }) {
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
           <ModalBody className="space-y-5">
             {/* Recent Purchases */}
-            {(historyLoading || stockHistory.length > 0) && (
-              <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-3">
-                <p className="text-xs font-medium text-slate-500 mb-2">Recent Purchases</p>
-                {historyLoading ? (
-                  <p className="text-xs text-muted-foreground">Loading history...</p>
-                ) : (
-                  <div className="space-y-1.5">
-                    {stockHistory.map((h, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs">
-                        <span className="text-slate-500 font-mono">
-                          {h.purchase_date ? format(new Date(h.purchase_date), 'd MMM yyyy') : '-'}
-                        </span>
-                        <div className="flex items-center gap-3">
-                          <span className="text-slate-600">
-                            qty: <span className="font-medium font-mono">{h.quantity_added}</span>
+            <Card>
+              {(historyLoading || stockHistory.length > 0) && (
+                <CardContent padding="sm">
+                  <p className="text-xs font-medium text-slate-500 mb-2">Recent Purchases</p>
+                  {historyLoading ? (
+                    <p className="text-xs text-muted-foreground">Loading history...</p>
+                  ) : (
+                    <div className="space-y-1.5">
+                      {stockHistory.map((h, i) => (
+                        <div key={i} className="flex items-center justify-between text-xs">
+                          <span className="text-slate-500 font-mono">
+                            {h.purchase_date
+                              ? format(new Date(h.purchase_date), 'd MMM yyyy')
+                              : '-'}
                           </span>
-                          <span className="text-slate-700 font-medium font-mono">
-                            Rp {Number(h.price || 0).toLocaleString('id-ID')}
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-slate-600">
+                              qty: <span className="font-medium font-mono">{h.quantity_added}</span>
+                            </span>
+                            <span className="text-slate-700 font-medium font-mono">
+                              Rp {Number(h.price || 0).toLocaleString('id-ID')}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              )}
+            </Card>
 
             {/* Quantity to Add */}
             <Controller

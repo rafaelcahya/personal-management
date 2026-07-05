@@ -2,7 +2,16 @@
 
 import { useState, useMemo } from 'react'
 import { format } from 'date-fns'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Wallet } from 'lucide-react'
+import Card, {
+  CardHeader,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+  CardAction,
+  CardContent,
+  CardFooter,
+} from '@/components/base/Card/Card'
 import {
   Modal,
   ModalContent,
@@ -124,47 +133,50 @@ export default function MonthlySpendByType({ items, loading }) {
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100 flex items-start justify-between gap-2">
-          <div>
-            <h2 className="text-base font-semibold text-slate-800">💸 Monthly Spend by Type</h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Spending per product category (last 6 months)
-            </p>
+      <Card>
+        <CardHeader>
+          <CardIcon icon={Wallet} />
+          <div className="min-w-0 flex-1">
+            <CardTitle>Monthly Spend by Type</CardTitle>
+            <CardDescription>Spending per product category (last 6 months)</CardDescription>
           </div>
           {!loading && totalThisMonth > 0 && (
-            <div className="text-right shrink-0">
+            <CardAction className="text-right">
               <p className="text-xs text-slate-400">This month</p>
               <p className="text-sm font-bold text-violet-700">{formatRupiah(totalThisMonth)}</p>
-            </div>
+            </CardAction>
           )}
-        </div>
-        <div className="px-5 py-3">
-          {loading ? (
-            <div className="space-y-2 py-2">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="animate-pulse flex justify-between py-2">
-                  <div className="h-3 bg-slate-200 rounded w-24"></div>
-                  <div className="h-3 bg-slate-200 rounded w-20"></div>
-                </div>
-              ))}
-            </div>
-          ) : items.length === 0 ? (
-            <div className="py-8 text-center">
-              <p className="text-sm text-slate-400">No purchase data yet 📋</p>
-            </div>
-          ) : (
-            <SpendList items={top5} />
-          )}
-        </div>
+        </CardHeader>
+
+        <CardContent padding="none">
+          <div className="px-5 py-3">
+            {loading ? (
+              <div className="space-y-2 py-2">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="animate-pulse flex justify-between py-2">
+                    <div className="h-3 bg-slate-200 rounded w-24"></div>
+                    <div className="h-3 bg-slate-200 rounded w-20"></div>
+                  </div>
+                ))}
+              </div>
+            ) : items.length === 0 ? (
+              <div className="py-8 text-center">
+                <p className="text-sm text-slate-400">No purchase data yet 📋</p>
+              </div>
+            ) : (
+              <SpendList items={top5} />
+            )}
+          </div>
+        </CardContent>
+
         {!loading && items.length > 0 && (
-          <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
+          <CardFooter align="end" className="py-3">
             <Button variant="ghost" onClick={() => setModalOpen(true)}>
               View All
             </Button>
-          </div>
+          </CardFooter>
         )}
-      </div>
+      </Card>
 
       <Modal open={modalOpen} onOpenChange={setModalOpen}>
         <ModalContent
@@ -172,11 +184,16 @@ export default function MonthlySpendByType({ items, loading }) {
           borderColor="border-slate-200"
           className="max-w-md w-full max-h-[85vh] flex flex-col p-0 gap-0"
         >
-          <ModalHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
-            <ModalTitle className="text-base font-semibold text-slate-800">
-              Monthly Spend by Type
-            </ModalTitle>
-            <p className="text-xs text-slate-400">All categories across the last 6 months</p>
+          <ModalHeader>
+            <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+              <Wallet className="size-4 text-violet-600" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <ModalTitle className="text-base font-semibold text-slate-800">
+                Monthly Spend by Type
+              </ModalTitle>
+              <p className="text-xs text-slate-400">All categories across the last 6 months</p>
+            </div>
           </ModalHeader>
           <ModalBody>
             <div className="py-3 px-1">

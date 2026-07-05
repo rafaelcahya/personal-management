@@ -14,7 +14,13 @@ import {
   ReferenceArea,
   Cell,
 } from 'recharts'
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import { fetchTemperatureEfficiency } from '@/lib/api/running'
 
 const MORNING_COLOR = '#f59e0b'
@@ -252,29 +258,20 @@ export default function TemperatureEfficiencySection() {
       aria-label="Temperature vs Cardiac Efficiency"
       className="scroll-mt-20"
     >
-      <Card className="border border-slate-200/70 shadow-sm py-0">
-        <CardContent className="px-5 py-5">
-          <div className="flex flex-col gap-1 mb-4">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <div className="flex items-center gap-2">
-                <Thermometer className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-                <h3 className="text-sm font-semibold text-slate-700">
-                  Temperature vs Cardiac Efficiency
-                </h3>
-              </div>
-              {!loading && !error && (
-                <span className="text-[10px] text-slate-400 bg-slate-100 rounded-full px-2 py-0.5 shrink-0">
-                  Based on {hrCount} runs with HR data — directional only
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-slate-400">
+      <Card>
+        <CardHeader>
+          <CardIcon icon={Thermometer} />
+          <div className="min-w-0 flex-1">
+            <CardTitle>Temperature vs Cardiac Efficiency</CardTitle>
+            <CardDescription>
               Pace/HR ratio per temperature (lower = more efficient). Color:{' '}
               <span className="text-amber-600 font-medium">orange = morning</span>,{' '}
               <span className="text-indigo-500 font-medium">indigo = evening</span>.
-            </p>
+              {!loading && !error && ` · Based on ${hrCount} runs with HR data — directional only`}
+            </CardDescription>
           </div>
-
+        </CardHeader>
+        <CardContent>
           {loading && <Skeleton />}
 
           {!loading && error && (

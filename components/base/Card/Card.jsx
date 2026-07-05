@@ -2,6 +2,7 @@ import { createElement, createContext, useContext } from 'react'
 import { cn } from '@/lib/utils'
 
 const CardContext = createContext({ variant: 'shell' })
+const CardHeaderContext = createContext({ layout: 'beside' })
 
 const cardVariants = {
   shell: 'bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden',
@@ -72,29 +73,48 @@ const paddingSizes = {
   xl: 'p-8',
 }
 
-export default function Card({ className, id, variant = 'shell', children, ...rest }) {
+export default function Card({
+  className,
+  id,
+  variant = 'shell',
+  children,
+  as: Tag = 'div',
+  ...rest
+}) {
   return (
     <CardContext.Provider value={{ variant }}>
-      <div
+      <Tag
         id={id}
         className={cn('flex flex-col', cardVariants[variant] ?? cardVariants.shell, className)}
         {...rest}
       >
         {children}
-      </div>
+      </Tag>
     </CardContext.Provider>
   )
 }
 
-export function CardHeader({ className, padding, id, children, ...rest }) {
+export function CardHeader({
+  className,
+  padding,
+  layout = 'beside',
+  id,
+  children,
+  as: Tag = 'div',
+  ...rest
+}) {
   const { variant } = useContext(CardContext)
   const paddingClass = padding
     ? paddingSizes[padding]
     : (headerVariants[variant] ?? headerVariants.shell)
+  const layoutClass =
+    layout === 'below' ? 'flex flex-wrap items-start gap-x-3 gap-y-2' : 'flex items-center gap-3'
   return (
-    <div id={id} className={cn('flex items-start gap-3', paddingClass, className)} {...rest}>
-      {children}
-    </div>
+    <CardHeaderContext.Provider value={{ layout }}>
+      <Tag id={id} className={cn(layoutClass, paddingClass, className)} {...rest}>
+        {children}
+      </Tag>
+    </CardHeaderContext.Provider>
   )
 }
 
@@ -133,21 +153,26 @@ export function CardDescription({ children, className, id, ...rest }) {
   )
 }
 
-export function CardContent({ children, className, padding, id, ...rest }) {
+export function CardContent({ children, className, padding, id, as: Tag = 'div', ...rest }) {
   const { variant } = useContext(CardContext)
   const paddingClass = padding
     ? paddingSizes[padding]
     : (contentVariants[variant] ?? contentVariants.shell)
   return (
-    <div id={id} className={cn(paddingClass, 'flex-1', className)} {...rest}>
+    <Tag id={id} className={cn(paddingClass, 'flex-1', className)} {...rest}>
       {children}
-    </div>
+    </Tag>
   )
 }
 
 export function CardAction({ children, className, id, ...rest }) {
+  const { layout } = useContext(CardHeaderContext)
   return (
-    <div id={id} className={cn('shrink-0', className)} {...rest}>
+    <div
+      id={id}
+      className={cn('shrink-0', layout === 'below' && 'basis-full', className)}
+      {...rest}
+    >
       {children}
     </div>
   )
@@ -159,13 +184,21 @@ const footerAlign = {
   end: 'justify-end',
 }
 
-export function CardFooter({ children, className, padding, align = 'start', id, ...rest }) {
+export function CardFooter({
+  children,
+  className,
+  padding,
+  align = 'start',
+  id,
+  as: Tag = 'div',
+  ...rest
+}) {
   const { variant } = useContext(CardContext)
   const paddingClass = padding
     ? paddingSizes[padding]
     : (footerVariants[variant] ?? footerVariants.shell)
   return (
-    <div
+    <Tag
       id={id}
       className={cn(
         paddingClass,
@@ -176,6 +209,6 @@ export function CardFooter({ children, className, padding, align = 'start', id, 
       {...rest}
     >
       {children}
-    </div>
+    </Tag>
   )
 }

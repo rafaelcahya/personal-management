@@ -14,6 +14,7 @@ import TradePagination from './list/component/TradePagination'
 import AddTrade from './AddTrade'
 import Input from '@/components/base/Input/Input'
 import { Search, X } from 'lucide-react'
+import Card, { CardContent } from '@/components/base/Card/Card'
 
 const DEFAULT_SORT_KEY = 'trade_date'
 const DEFAULT_SORT_DIR = 'desc'
@@ -157,81 +158,81 @@ export default function TradesPageClient({
         breadcrumbs={[{ label: 'Trading', href: '/main/trading/dashboard' }, { label: 'Trades' }]}
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+      <Card>
         <TradeTableHeader
-          action={
-            <AddTrade
-              open={addTradeOpen}
-              onOpenChange={setAddTradeOpen}
-              onAdded={async () => {
-                await Promise.all([fetchTrades(1), fetchSummary()])
-              }}
-            />
+          controls={
+            <div className="flex items-center gap-2 w-full">
+              <div className="relative flex-1" id="tradeSearchBar_tradePage">
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none"
+                  aria-hidden="true"
+                />
+                <Input
+                  id="tradeSearchInput_tradePage"
+                  type="text"
+                  placeholder="Search by ticker..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-8 pr-8 h-8 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  aria-label="Search trades by ticker"
+                />
+                {search && (
+                  <Button
+                    id="tradeSearchClearBtn_tradePage"
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={() => setSearch('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    aria-label="Clear search"
+                  >
+                    <X className="size-3.5" aria-hidden="true" />
+                  </Button>
+                )}
+              </div>
+              <AddTrade
+                open={addTradeOpen}
+                onOpenChange={setAddTradeOpen}
+                onAdded={async () => {
+                  await Promise.all([fetchTrades(1), fetchSummary()])
+                }}
+              />
+            </div>
           }
         />
 
-        {/* Sticky filter bar */}
-        <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5">
-          <div className="relative" id="tradeSearchBar_tradePage">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none"
-              aria-hidden="true"
-            />
-            <Input
-              id="tradeSearchInput_tradePage"
-              type="text"
-              placeholder="Search by ticker..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 pr-8 h-8 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-              aria-label="Search trades by ticker"
-            />
-            {search && (
-              <Button
-                id="tradeSearchClearBtn_tradePage"
-                variant="ghost"
-                size="icon-xs"
-                onClick={() => setSearch('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                aria-label="Clear search"
-              >
-                <X className="size-3.5" aria-hidden="true" />
-              </Button>
-            )}
+        <CardContent padding="none">
+          {/* Table area */}
+          <div className="px-5 pt-3">
+            <TradeMetricStrip summary={summary} />
           </div>
-        </div>
 
-        {/* Table area */}
-        <div className="px-5 pt-3">
-          <TradeMetricStrip summary={summary} />
-        </div>
-
-        {isLoading ? (
-          <TradeTableSkeleton />
-        ) : error ? (
-          <TradeErrorState message={error} onRetry={() => fetchTrades(page)} />
-        ) : filteredAndSorted.length === 0 ? (
-          <TradeEmptyState onAddTrade={() => setAddTradeOpen(true)} search={debouncedSearch} />
-        ) : (
-          <>
-            <TradesTable
-              trades={filteredAndSorted}
-              sortKey={sortKey}
-              sortDir={sortDir}
-              onSort={handleSort}
-              onRefresh={refresh}
-            />
-            {showPagination && (
-              <TradePagination
-                page={page}
-                totalPages={totalPages}
-                total={total}
-                onPageChange={handlePageChange}
+          {isLoading ? (
+            <TradeTableSkeleton />
+          ) : error ? (
+            <TradeErrorState message={error} onRetry={() => fetchTrades(page)} />
+          ) : filteredAndSorted.length === 0 ? (
+            <TradeEmptyState onAddTrade={() => setAddTradeOpen(true)} search={debouncedSearch} />
+          ) : (
+            <>
+              <TradesTable
+                trades={filteredAndSorted}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSort={handleSort}
+                onRefresh={refresh}
               />
-            )}
-          </>
-        )}
-      </div>
+              {showPagination && (
+                <TradePagination
+                  page={page}
+                  totalPages={totalPages}
+                  total={total}
+                  onPageChange={handlePageChange}
+                />
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
     </main>
   )
 }

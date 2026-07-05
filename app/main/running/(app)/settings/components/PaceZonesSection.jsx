@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Pencil, Timer } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
+import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
@@ -117,21 +118,14 @@ export default function PaceZonesSection() {
   }
 
   return (
-    <section
-      aria-label="Pace zones"
-      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
-    >
-      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-        <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-          <Timer className="size-4 text-violet-600" aria-hidden="true" />
+    <Card as="section" aria-label="Pace zones">
+      <CardHeader>
+        <CardIcon icon={Timer} />
+        <div className="min-w-0 flex-1">
+          <CardTitle>Pace Zones</CardTitle>
+          <CardDescription>Threshold pace used to calculate your 5 training zones</CardDescription>
         </div>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900">Pace Zones</p>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Threshold pace used to calculate your 5 training zones
-          </p>
-        </div>
-      </div>
+      </CardHeader>
 
       {loading ? (
         <div id="paceZonesLoading_settingsPage" className="px-5 py-4 flex flex-col gap-3">
@@ -301,6 +295,6 @@ export default function PaceZonesSection() {
           </div>
         </div>
       )}
-    </section>
+    </Card>
   )
 }

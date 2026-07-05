@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import Button from '@/components/base/Button/Button'
 import { Search, X, AlertCircle, Package } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
+import Card, { CardAction, CardContent } from '@/components/base/Card/Card'
 
 export default function ProductsPageClient() {
   const searchParams = useSearchParams()
@@ -150,11 +151,11 @@ export default function ProductsPageClient() {
       />
       <ProductListSummary summary={summary} loading={summaryLoading} />
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+      <Card className="overflow-hidden">
         <ProductTableHeader summary={summary} loading={summaryLoading} />
 
         {/* Controls bar */}
-        <div
+        <CardAction
           id="controlsBar_productListPage"
           className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5"
         >
@@ -164,91 +165,98 @@ export default function ProductsPageClient() {
               <AddProductForm onAdded={handleRefresh} />
             </div>
           </div>
-        </div>
+        </CardAction>
 
         {/* Table area */}
-        {loading ? (
-          <div
-            id="loadingSkeleton_productListPage"
-            className="animate-pulse"
-            aria-label="Loading products"
-          >
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
-                <Skeleton className="h-4 w-6" />
-                <Skeleton className="h-4 flex-1" />
-                <Skeleton className="h-4 w-20 hidden sm:block" />
-                <Skeleton className="h-4 w-16 hidden sm:block" />
-                <Skeleton className="h-4 w-24 hidden sm:block" />
-                <Skeleton className="h-5 w-16 rounded-full" />
-              </div>
-            ))}
-          </div>
-        ) : error ? (
-          <div
-            id="errorState_productListPage"
-            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-            role="alert"
-            aria-live="assertive"
-          >
-            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">Failed to load products</p>
-              <p className="text-xs text-slate-500">Check your connection and try again</p>
-            </div>
-            <Button
-              variant="outline"
-              size="base"
-              onClick={() => fetchProducts()}
-              className="min-w-11"
+        <CardContent className="p-0">
+          {loading ? (
+            <div
+              id="loadingSkeleton_productListPage"
+              className="animate-pulse"
+              aria-label="Loading products"
             >
-              Try again
-            </Button>
-          </div>
-        ) : products.length === 0 && !isSearching ? (
-          <div
-            id="emptyState_productListPage"
-            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-          >
-            <Package className="size-10 text-slate-300" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">No products yet</p>
-              <p className="text-xs text-slate-500">Start by adding your first product</p>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
+                  <Skeleton className="h-4 w-6" />
+                  <Skeleton className="h-4 flex-1" />
+                  <Skeleton className="h-4 w-20 hidden sm:block" />
+                  <Skeleton className="h-4 w-16 hidden sm:block" />
+                  <Skeleton className="h-4 w-24 hidden sm:block" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+              ))}
             </div>
-          </div>
-        ) : products.length === 0 && isSearching ? (
-          <div
-            id="searchEmptyState_productListPage"
-            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-          >
-            <Package className="size-10 text-slate-300" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">No products match your search</p>
-              {debouncedSearch && (
-                <p className="text-xs text-slate-500">
-                  Search: <span className="font-medium">"{debouncedSearch}"</span>
-                </p>
-              )}
+          ) : error ? (
+            <div
+              id="errorState_productListPage"
+              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">Failed to load products</p>
+                <p className="text-xs text-slate-500">Check your connection and try again</p>
+              </div>
+              <Button
+                variant="outline"
+                size="base"
+                onClick={() => fetchProducts()}
+                className="min-w-11"
+              >
+                Try again
+              </Button>
             </div>
-            <Button variant="outline" size="base" onClick={handleClearSearch} className="min-w-11">
-              Clear search
-            </Button>
-          </div>
-        ) : (
-          <ProductsTable
-            products={products}
-            sort={sort}
-            onSortChange={handleSortChange}
-            onRefresh={handleRefresh}
-            restockPredictions={restockPredictions}
-            page={page}
-            total={total}
-            totalPages={totalPages}
-            onPrev={() => setPage((p) => Math.max(1, p - 1))}
-            onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
-          />
-        )}
-      </div>
+          ) : products.length === 0 && !isSearching ? (
+            <div
+              id="emptyState_productListPage"
+              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+            >
+              <Package className="size-10 text-slate-300" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">No products yet</p>
+                <p className="text-xs text-slate-500">Start by adding your first product</p>
+              </div>
+            </div>
+          ) : products.length === 0 && isSearching ? (
+            <div
+              id="searchEmptyState_productListPage"
+              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+            >
+              <Package className="size-10 text-slate-300" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">No products match your search</p>
+                {debouncedSearch && (
+                  <p className="text-xs text-slate-500">
+                    Search: <span className="font-medium">"{debouncedSearch}"</span>
+                  </p>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="base"
+                onClick={handleClearSearch}
+                className="min-w-11"
+              >
+                Clear search
+              </Button>
+            </div>
+          ) : (
+            <ProductsTable
+              products={products}
+              sort={sort}
+              onSortChange={handleSortChange}
+              onRefresh={handleRefresh}
+              restockPredictions={restockPredictions}
+              page={page}
+              total={total}
+              totalPages={totalPages}
+              onPrev={() => setPage((p) => Math.max(1, p - 1))}
+              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+            />
+          )}
+        </CardContent>
+      </Card>
     </main>
   )
 }
