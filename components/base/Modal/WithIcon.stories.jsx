@@ -46,7 +46,9 @@ export const WithIcon = {
                   <ModalDescription>Manage your account preferences.</ModalDescription>
                 </ModalHeaderContent>
               </ModalHeader>
-              <p className="text-sm text-slate-600">Modal body content goes here.</p>
+              <ModalBody>
+                <p className="text-sm text-slate-600">Modal body content goes here.</p>
+              </ModalBody>
               <ModalFooter>
                 <ModalClose asChild>
                   <Button variant="outline">Cancel</Button>
@@ -69,7 +71,9 @@ export const WithIcon = {
                 <ModalIcon icon={Info} />
                 <ModalTitle>Information</ModalTitle>
               </ModalHeader>
-              <p className="text-sm text-slate-600">Modal body content goes here.</p>
+              <ModalBody>
+                <p className="text-sm text-slate-600">Modal body content goes here.</p>
+              </ModalBody>
               <ModalFooter>
                 <ModalClose asChild>
                   <Button>Got it</Button>
@@ -107,57 +111,34 @@ export const WithIcon = {
 
         {/* Bordered variant */}
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-gray-400">bordered variant</span>
+          <span className="text-xs text-gray-400">
+            bordered variant — ModalHeader + ModalBody both use padding={'{{ x: 4 }}'}
+          </span>
           <Modal>
             <ModalTrigger asChild>
               <Button variant="outline">Open — bordered variant</Button>
             </ModalTrigger>
-            <ModalContent variant="bordered">
-              <ModalHeader layout="beside">
+            <ModalContent variant="bordered" borderColor="border-slate-200">
+              <ModalHeader layout="beside" padding={{ x: 4 }}>
                 <ModalIcon icon={Settings} />
                 <ModalHeaderContent>
                   <ModalTitle>Settings</ModalTitle>
                   <ModalDescription>Manage your account preferences.</ModalDescription>
                 </ModalHeaderContent>
               </ModalHeader>
+              <ModalBody padding={{ x: 4 }}>
+                <p className="text-sm text-slate-600">
+                  Body uses{' '}
+                  <code className="bg-gray-100 px-1 rounded text-xs">padding={'{{ x: 4 }}'}</code>{' '}
+                  to align with the header's left edge.
+                </p>
+              </ModalBody>
               <ModalFooter>
                 <ModalClose asChild>
                   <Button variant="outline">Cancel</Button>
                 </ModalClose>
                 <Button>Save</Button>
               </ModalFooter>
-            </ModalContent>
-          </Modal>
-        </div>
-
-        {/* Custom padding */}
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-gray-400">
-            custom padding — padding={'{{ x: 4, y: 3 }}'}
-          </span>
-          <Modal>
-            <ModalTrigger asChild>
-              <Button variant="outline">Open — custom padding</Button>
-            </ModalTrigger>
-            <ModalContent variant="bordered">
-              <ModalHeader layout="beside" padding={{ x: 4, y: 3 }}>
-                <ModalIcon
-                  icon={AlertTriangle}
-                  className="bg-amber-50"
-                  iconClassName="text-amber-600"
-                />
-                <ModalHeaderContent>
-                  <ModalTitle>Custom Padding</ModalTitle>
-                  <ModalDescription>
-                    Header uses px-4 py-3 instead of the default px-6 py-4.
-                  </ModalDescription>
-                </ModalHeaderContent>
-              </ModalHeader>
-              <ModalBody padding={{ x: 4, y: 3 }}>
-                <p className="text-sm text-slate-600">
-                  Body also uses px-4 py-3 — aligns with header.
-                </p>
-              </ModalBody>
             </ModalContent>
           </Modal>
         </div>
