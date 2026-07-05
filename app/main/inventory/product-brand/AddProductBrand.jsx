@@ -13,6 +13,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalTrigger,
 } from '@/components/base/Modal/Modal.jsx'
@@ -21,7 +23,7 @@ import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
 import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Tag } from 'lucide-react'
 import { productBrandSchema } from '@/schemas/productBrand'
 import { addProductBrand } from '@/lib/api/productBrand'
 
@@ -77,19 +79,22 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader className="text-left">
-          <ModalTitle>🏷️ Add New Product Brand</ModalTitle>
-          <ModalDescription className="text-slate-foreground">
-            Create a new product brand to organize your inventory — keep stock levels accurate and
-            operations smooth.
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={Tag} />
+          <ModalHeaderContent>
+            <ModalTitle>Add New Product Brand</ModalTitle>
+            <ModalDescription>Create a new brand to organize your inventory.</ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form
           onSubmit={handleSubmit(handleAddNewProductBrand)}
           className="flex flex-col flex-1 min-h-0"
         >
-          <ModalBody className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
+          <ModalBody
+            className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto"
+            padding={{ x: 4 }}
+          >
             <Controller
               control={control}
               name="brand"

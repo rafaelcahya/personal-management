@@ -14,7 +14,10 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
+  ModalDescription,
   ModalBody,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
@@ -141,7 +144,7 @@ function PredictionTable({ items }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 px-2 py-2">
+      <div className="md:hidden space-y-2 py-2">
         {items.map((item, index) => (
           <div
             key={item.id}
@@ -240,18 +243,14 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
           borderColor="border-slate-200"
           className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
         >
-          <ModalHeader>
-            <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-              <Sparkles className="size-4 text-violet-600" aria-hidden="true" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <ModalTitle className="text-base font-semibold text-slate-800">
-                All Products — Restock Prediction
-              </ModalTitle>
-              <p className="text-xs text-slate-400">Sorted by most urgent first</p>
-            </div>
+          <ModalHeader layout="beside" padding={{ x: 4 }}>
+            <ModalIcon icon={Sparkles} />
+            <ModalHeaderContent>
+              <ModalTitle>All Products — Restock Prediction</ModalTitle>
+              <ModalDescription>Sorted by most urgent first</ModalDescription>
+            </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody className="overflow-y-auto flex-1 px-2">
+          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
             <PredictionTable items={items} />
           </ModalBody>
         </ModalContent>

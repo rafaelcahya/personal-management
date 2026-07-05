@@ -20,6 +20,7 @@ import {
   ModalHeader,
   ModalTitle,
   ModalFooter,
+  ModalDescription,
 } from '@/components/base/Modal/Modal.jsx'
 import { deleteAllActivities } from '@/lib/api/running'
 
@@ -109,19 +110,16 @@ export default function DangerZoneSection() {
           id="dangerZoneDialog_settingsPage"
           className="w-full max-w-md"
           aria-describedby="danger-zone-description"
-          variant="bordered"
-          borderColor="border-slate-200"
         >
           <ModalHeader>
-            <ModalTitle className="text-red-700">Delete all activity data?</ModalTitle>
-          </ModalHeader>
-
-          <ModalBody className="flex flex-col gap-4">
-            <p id="danger-zone-description" className="text-sm text-slate-600">
+            <ModalTitle>Delete all activity data?</ModalTitle>
+            <ModalDescription id="danger-zone-description" className="text-sm">
               This will permanently delete all your running activity data. This action cannot be
               undone.
-            </p>
+            </ModalDescription>
+          </ModalHeader>
 
+          <ModalBody padding={{ x: 0 }}>
             <FieldContent>
               <FieldLabel htmlFor="dangerZoneConfirmInput_settingsPage">
                 Type <span className="font-mono font-bold">DELETE</span> to confirm

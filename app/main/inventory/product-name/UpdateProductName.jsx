@@ -14,6 +14,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
 import Input from '@/components/base/Input/Input'
@@ -21,7 +23,7 @@ import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
 import Textarea from '@/components/base/Textarea/Textarea'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2, Package } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -109,15 +111,21 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader>
-          <ModalTitle>Update Product Name</ModalTitle>
-          <ModalDescription className="text-slate-foreground">
-            Edit name details including name, status, and notes.
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={Package} />
+          <ModalHeaderContent>
+            <ModalTitle>Update Product Name</ModalTitle>
+            <ModalDescription>
+              Edit name details including name, status, and notes.
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form onSubmit={handleSubmit(handleUpdate)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
+          <ModalBody
+            className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto"
+            padding={{ x: 4 }}
+          >
             <Controller
               control={control}
               name="product_name"

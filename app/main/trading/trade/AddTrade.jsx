@@ -12,6 +12,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalTrigger,
 } from '@/components/base/Modal/Modal.jsx'
@@ -23,7 +25,7 @@ import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { toast } from 'sonner'
-import { Loader2, PlusIcon } from 'lucide-react'
+import { Loader2, PlusIcon, TrendingUp } from 'lucide-react'
 import { tradeSchema } from '@/schemas/trade'
 import { createTrade, fetchAllTradeOptions } from '@/lib/api/trade'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
@@ -187,11 +189,14 @@ export default function AddTrade({
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader className="text-left shrink-0">
-          <ModalTitle>📊 Add New Trade</ModalTitle>
-          <ModalDescription className="text-slate-600">
-            Record your trade details to track performance and learn from every position
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={TrendingUp} />
+          <ModalHeaderContent>
+            <ModalTitle>Add New Trade</ModalTitle>
+            <ModalDescription>
+              Record your trade details to track performance and learn from every position
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         {optionsLoading ? (
@@ -204,7 +209,7 @@ export default function AddTrade({
           </div>
         ) : (
           <form onSubmit={handleSubmit(handleAddTrade)} className="flex flex-col flex-1 min-h-0">
-            <ModalBody className="space-y-4 pr-2">
+            <ModalBody className="space-y-4 pr-2" padding={{ x: 4 }}>
               {/* Trade Date */}
               <Controller
                 control={control}

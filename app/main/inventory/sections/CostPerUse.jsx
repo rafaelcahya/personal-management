@@ -13,7 +13,10 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
+  ModalDescription,
   ModalBody,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
@@ -109,18 +112,14 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
           borderColor="border-slate-200"
           className="w-[calc(100vw-2rem)] md:w-full md:max-w-5xl max-h-[85vh] flex flex-col p-0 gap-0"
         >
-          <ModalHeader>
-            <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-              <BarChart2 className="size-4 text-violet-600" aria-hidden="true" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <ModalTitle className="text-base font-semibold text-slate-800">
-                All Products — Cost Per Use
-              </ModalTitle>
-              <p className="text-xs text-slate-400">Sorted by highest cost per use</p>
-            </div>
+          <ModalHeader layout="beside" padding={{ x: 4 }}>
+            <ModalIcon icon={BarChart2} />
+            <ModalHeaderContent>
+              <ModalTitle>All Products — Cost Per Use</ModalTitle>
+              <ModalDescription>Sorted by highest cost per use</ModalDescription>
+            </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody className="overflow-y-auto flex-1 px-2">
+          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
             {all.length === 0 ? <EmptyState /> : <ProductTable products={all} />}
           </ModalBody>
         </ModalContent>

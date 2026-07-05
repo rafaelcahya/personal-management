@@ -13,6 +13,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalTrigger,
 } from '@/components/base/Modal/Modal.jsx'
@@ -21,7 +23,7 @@ import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
 import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Package } from 'lucide-react'
 import { productNameSchema } from '@/schemas/productName'
 import { createProductName } from '@/lib/api/productName'
 
@@ -70,19 +72,24 @@ export default function AddProductName({ onAdded }) {
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader>
-          <ModalTitle>Add New Product Name</ModalTitle>
-          <ModalDescription className="text-slate-foreground">
-            Create a new product name to organize your inventory — keep stock levels accurate and
-            operations smooth.
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={Package} />
+          <ModalHeaderContent>
+            <ModalTitle>Add New Product Name</ModalTitle>
+            <ModalDescription>
+              Create a new product name to organize your inventory.
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form
           onSubmit={handleSubmit(handleAddNewProductName)}
           className="flex flex-col flex-1 min-h-0"
         >
-          <ModalBody className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
+          <ModalBody
+            className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto"
+            padding={{ x: 4 }}
+          >
             <Controller
               control={control}
               name="product_name"

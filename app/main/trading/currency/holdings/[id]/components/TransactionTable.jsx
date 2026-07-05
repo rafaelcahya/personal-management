@@ -145,10 +145,10 @@ export default function TransactionTable({ transactions, onDelete, currency }) {
       </Table>
 
       <Modal open={dialogOpen} onOpenChange={setDialogOpen}>
-        <ModalContent showCloseButton={false} variant="bordered" borderColor="border-slate-200">
+        <ModalContent showCloseButton={false}>
           <ModalHeader>
             <ModalTitle>Delete transaction?</ModalTitle>
-            <ModalDescription>
+            <ModalDescription className="text-sm">
               This will hide the transaction. Data is kept for audit purposes.
             </ModalDescription>
           </ModalHeader>
@@ -160,7 +160,7 @@ export default function TransactionTable({ transactions, onDelete, currency }) {
             </ModalClose>
             <ModalClose asChild>
               <Button
-                className="bg-red-600 hover:bg-red-700 text-white"
+                variant="destructive"
                 onClick={() => {
                   if (deleteTarget) {
                     onDelete?.(deleteTarget.id)

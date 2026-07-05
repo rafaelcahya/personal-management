@@ -16,7 +16,10 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
+  ModalDescription,
   ModalBody,
 } from '@/components/base/Modal/Modal.jsx'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
@@ -184,21 +187,15 @@ export default function MonthlySpendByType({ items, loading }) {
           borderColor="border-slate-200"
           className="max-w-md w-full max-h-[85vh] flex flex-col p-0 gap-0"
         >
-          <ModalHeader>
-            <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-              <Wallet className="size-4 text-violet-600" aria-hidden="true" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <ModalTitle className="text-base font-semibold text-slate-800">
-                Monthly Spend by Type
-              </ModalTitle>
-              <p className="text-xs text-slate-400">All categories across the last 6 months</p>
-            </div>
+          <ModalHeader layout="beside" padding={{ x: 4 }}>
+            <ModalIcon icon={Wallet} />
+            <ModalHeaderContent>
+              <ModalTitle>Monthly Spend by Type</ModalTitle>
+              <ModalDescription>All categories across the last 6 months</ModalDescription>
+            </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody>
-            <div className="py-3 px-1">
-              <PaginatedSpendList items={items} />
-            </div>
+          <ModalBody padding={{ x: 4 }}>
+            <PaginatedSpendList items={items} />
           </ModalBody>
         </ModalContent>
       </Modal>

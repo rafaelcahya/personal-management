@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
-import { Loader2, Plus } from 'lucide-react'
+import { Loader2, PackagePlus, Plus } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
@@ -17,6 +17,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalTrigger,
 } from '@/components/base/Modal/Modal.jsx'
@@ -122,16 +124,21 @@ export default function AddStockForm({ product, onAdded }) {
           }
         }}
       >
-        <ModalHeader className="text-left shrink-0">
-          <ModalTitle>📦 Add More Stock</ModalTitle>
-          <ModalDescription>
-            Restocking {product.brand} {product.type} {product.product}. Let's add it to your
-            inventory and keep things organized! 🎯
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={PackagePlus} />
+          <ModalHeaderContent>
+            <ModalTitle>Add More Stock</ModalTitle>
+            <ModalDescription>
+              Restocking{' '}
+              <span className="text-violet-700">
+                {product.brand} {product.type} {product.product}
+              </span>
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody className="space-y-5">
+          <ModalBody className="space-y-5" padding={{ x: 4 }}>
             {/* Recent Purchases */}
             <Card>
               {(historyLoading || stockHistory.length > 0) && (

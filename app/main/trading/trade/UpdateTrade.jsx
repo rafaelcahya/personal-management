@@ -11,6 +11,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
@@ -21,7 +23,7 @@ import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Pencil } from 'lucide-react'
 import { tradeSchema } from '@/schemas/trade'
 import { updateTrade, fetchAllTradeOptions } from '@/lib/api/trade'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
@@ -181,11 +183,14 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader className="text-left shrink-0">
-          <ModalTitle>✏️ Update Trade</ModalTitle>
-          <ModalDescription className="text-slate-600">
-            Adjust your trade details to keep your journal accurate and insightful
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={Pencil} />
+          <ModalHeaderContent>
+            <ModalTitle>Update Trade</ModalTitle>
+            <ModalDescription>
+              Adjust your trade details to keep your journal accurate and insightful
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         {optionsLoading ? (
@@ -195,7 +200,7 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
           </div>
         ) : (
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-            <ModalBody className="space-y-4 pr-2">
+            <ModalBody className="space-y-4 pr-2" padding={{ x: 4 }}>
               {/* Trade Date */}
               <Controller
                 control={control}

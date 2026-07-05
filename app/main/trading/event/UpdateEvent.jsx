@@ -13,6 +13,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
 import FieldContent from '@/components/base/Field/FieldContent'
@@ -29,7 +31,7 @@ import {
 import Textarea from '@/components/base/Textarea/Textarea'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { CalendarDays, Loader2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
@@ -124,13 +126,16 @@ export default function UpdateEvent({ event, onClose, onUpdated }) {
         borderColor="border-slate-200"
         className="sm:max-w-3xl flex flex-col max-h-[90vh]"
       >
-        <ModalHeader className="text-left shrink-0">
-          <ModalTitle>Update Event</ModalTitle>
-          <ModalDescription className="text-slate-600">Modify event details</ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={CalendarDays} />
+          <ModalHeaderContent>
+            <ModalTitle>Update Market Event</ModalTitle>
+            <ModalDescription>Modify event details</ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody className="flex-1 overflow-y-auto space-y-4">
+          <ModalBody className="flex-1 overflow-y-auto space-y-4" padding={{ x: 4 }}>
             {/* Title */}
             <Controller
               control={control}
