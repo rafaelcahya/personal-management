@@ -182,7 +182,7 @@ export default function AddTrade({
         </Button>
       </ModalTrigger>
       <ModalContent
-        className="sm:max-w-xl flex flex-col max-h-[90vh]"
+        className="sm:max-w-xl flex flex-col max-h-[60vh]"
         id="addNewTradeForm_tradePage"
         variant="bordered"
         borderColor="border-slate-200"
@@ -316,7 +316,37 @@ export default function AddTrade({
               </div>
 
               {/* Dynamic Select Fields */}
-              {SELECT_CONFIG.map(({ name, label, apiKey, displayField, placeholder }) => (
+              {SELECT_CONFIG.slice(0, 1).map(
+                ({ name, label, apiKey, displayField, placeholder }) => (
+                  <DynamicSelectField
+                    key={name}
+                    control={control}
+                    name={name}
+                    label={label}
+                    options={options[apiKey]}
+                    loading={false}
+                    displayField={displayField}
+                    placeholder={placeholder}
+                  />
+                )
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                {SELECT_CONFIG.slice(1, 3).map(
+                  ({ name, label, apiKey, displayField, placeholder }) => (
+                    <DynamicSelectField
+                      key={name}
+                      control={control}
+                      name={name}
+                      label={label}
+                      options={options[apiKey]}
+                      loading={false}
+                      displayField={displayField}
+                      placeholder={placeholder}
+                    />
+                  )
+                )}
+              </div>
+              {SELECT_CONFIG.slice(3).map(({ name, label, apiKey, displayField, placeholder }) => (
                 <DynamicSelectField
                   key={name}
                   control={control}
