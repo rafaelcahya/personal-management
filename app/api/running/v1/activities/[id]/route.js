@@ -27,7 +27,7 @@ export async function GET(_request, { params }) {
     const { data: activity, error: activityError } = await supabase
       .from('rt_activities')
       .select(
-        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, description, weather_summary, created_at, name, avg_watts, weighted_avg_watts, device_watts, summary_polyline, gear_id, avg_temp_c, pr_count, workout_type, relative_effort, device_name, kilojoules, elev_high_m, elev_low_m, achievement_count, kudos_count, zones, aerobic_decoupling, efficiency_factor, estimated_vo2max, max_watts, commute, trainer, has_heartrate, manual'
+        'id, user_id, source, external_id, started_at, duration_sec, moving_time_sec, distance_m, avg_pace_sec_per_km, max_pace_sec_per_km, avg_hr, max_hr, avg_cadence, elevation_gain_m, elevation_loss_m, calories, activity_type, perceived_exertion, notes, description, weather_summary, created_at, name, avg_watts, weighted_avg_watts, device_watts, summary_polyline, gear_id, avg_temp_c, pr_count, workout_type, relative_effort, device_name, kilojoules, elev_high_m, elev_low_m, achievement_count, kudos_count, zones, aerobic_decoupling, efficiency_factor, estimated_vo2max, max_watts, commute, trainer, has_heartrate, manual, enriched_at'
       )
       .eq('id', id)
       .eq('user_id', user.id)
@@ -50,11 +50,10 @@ export async function GET(_request, { params }) {
       (activity.moving_time_sec ?? activity.duration_sec ?? 0) > 1200 && activity.avg_hr != null
 
     if (metricsIncomplete && gatePassed) {
-      try {
-        const { updated, values } = await computeAndSaveDerivedMetrics(id, user.id)
-        if (updated) Object.assign(activity, values)
-      } catch (computeErr) {
-        console.error('[running/activities/:id] lazy compute failed', computeErr)
+      const computeResult = await computeAndSaveDerivedMetrics(id, user.id)
+      if (computeResult.updated) Object.assign(activity, computeResult.values)
+      if (computeResult.error) {
+        console.error('[running/activities/:id] lazy compute failed', computeResult.error)
       }
     }
 

@@ -24,6 +24,7 @@ import {
   TrendingUp,
   BarChart2,
   Mountain,
+  RefreshCw,
 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/base/Tooltip/Tooltip.jsx'
 import Button from '@/components/base/Button/Button'
@@ -52,6 +53,12 @@ import { StatTile, SectionLabel } from '../components/activityShared'
 import { fmtDistance, fmtPace, fmtDuration, fmtDate } from '../../dashboard/utils/format'
 import RacingWeightSection from '../../race-log/components/RacingWeightSection'
 import PageHeader from '@/app/main/components/PageHeader'
+import {
+  Banner,
+  BannerIcon,
+  BannerContent,
+  BannerDescription,
+} from '@/components/base/Banner/Banner'
 
 // ─── skeleton ─────────────────────────────────────────────────────────────────
 
@@ -345,6 +352,20 @@ export default function ActivityDetailPage() {
                   </div>
 
                   <div className="border-t border-slate-100" />
+
+                  {activity.source === 'strava' &&
+                    activity.enriched_at == null &&
+                    activity.created_at != null &&
+                    Date.now() - new Date(activity.created_at).getTime() > 60 * 60 * 1000 && (
+                      <Banner id="enrichmentSyncNotice_activityDetailPage" variant="info">
+                        <BannerIcon icon={RefreshCw} />
+                        <BannerContent>
+                          <BannerDescription>
+                            Some data may still be syncing — refresh to check
+                          </BannerDescription>
+                        </BannerContent>
+                      </Banner>
+                    )}
 
                   {/* Stats grid */}
                   <div>
