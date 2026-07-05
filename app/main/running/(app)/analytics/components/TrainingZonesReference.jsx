@@ -1,6 +1,14 @@
 'use client'
 
 import { MapPin } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import {
   Table,
@@ -52,119 +60,116 @@ function HrRange({ min, max }) {
 
 export default function TrainingZonesReference({ data, loading, error, onRetry }) {
   return (
-    <section
-      id="trainingZonesReference_analyticsPage"
-      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
-    >
-      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-        <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-          <MapPin className="size-4 text-violet-600" aria-hidden="true" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-slate-900">Training Zones Reference</p>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Your target HR and pace ranges per zone, derived from your profile settings.
-          </p>
-        </div>
-      </div>
-
-      <div className="px-5 py-4">
-        {loading && (
-          <div className="flex flex-col gap-3" aria-label="Loading data">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full rounded-lg" />
-            ))}
+    <section id="trainingZonesReference_analyticsPage" aria-label="Training Zones Reference">
+      <Card>
+        <CardHeader>
+          <CardIcon icon={MapPin} />
+          <div className="min-w-0 flex-1">
+            <CardTitle>Training Zones Reference</CardTitle>
+            <CardDescription>
+              Your target HR and pace ranges per zone, derived from your profile settings.
+            </CardDescription>
           </div>
-        )}
+        </CardHeader>
 
-        {!loading && error && (
-          <div className="flex items-center gap-3">
-            <p className="text-sm text-red-600">{error}</p>
-            {onRetry && (
-              <Button
-                onClick={onRetry}
-                className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
-              >
-                Retry
-              </Button>
-            )}
-          </div>
-        )}
+        <CardContent>
+          {loading && (
+            <div className="flex flex-col gap-3" aria-label="Loading data">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full rounded-lg" />
+              ))}
+            </div>
+          )}
 
-        {!loading && !error && data && (
-          <>
-            {!data.hr_configured && !data.pace_configured && (
-              <p id="zoneReferenceNoConfig_analyticsPage" className="text-sm text-slate-400">
-                Configure your HR zones and threshold pace in Settings to see zone targets.
-              </p>
-            )}
-
-            {(data.hr_configured || data.pace_configured) && (
-              <>
-                <Table
-                  id="trainingZonesTable_analyticsPage"
-                  className="min-w-full"
-                  aria-label="Training zones reference"
+          {!loading && error && (
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-red-600">{error}</p>
+              {onRetry && (
+                <Button
+                  onClick={onRetry}
+                  className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
                 >
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-24">Zone</TableHead>
-                      {data.hr_configured && <TableHead>HR Range</TableHead>}
-                      {data.pace_configured && <TableHead>Pace Range</TableHead>}
-                      <TableHead className="hidden sm:table-cell">Guidance</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.zones?.map((z, i) => (
-                      <TableRow key={z.zone} className="align-top">
-                        <TableCell>
-                          <span
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold ${ZONE_COLORS[i]}`}
-                          >
-                            {z.zone}
-                            <span className="font-normal">{z.name}</span>
-                          </span>
-                        </TableCell>
-                        {data.hr_configured && (
-                          <TableCell className="font-mono text-slate-700 whitespace-nowrap">
-                            {z.hr ? (
-                              <HrRange min={z.hr.min} max={z.hr.max} />
-                            ) : (
-                              <span className="text-slate-400">—</span>
-                            )}
-                          </TableCell>
-                        )}
-                        {data.pace_configured && (
-                          <TableCell className="font-mono text-slate-700 whitespace-nowrap">
-                            {z.pace ? (
-                              <PaceRange min={z.pace.min} max={z.pace.max} />
-                            ) : (
-                              <span className="text-slate-400">—</span>
-                            )}
-                          </TableCell>
-                        )}
-                        <TableCell className="text-slate-500 text-xs leading-relaxed hidden sm:table-cell">
-                          {z.guidance}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                  Retry
+                </Button>
+              )}
+            </div>
+          )}
 
-                {(!data.hr_configured || !data.pace_configured) && (
-                  <p className="mt-3 px-5 text-xs text-slate-400">
-                    {!data.hr_configured && !data.pace_configured
-                      ? null
-                      : !data.hr_configured
-                        ? 'HR range not shown — configure HR zones in Settings.'
-                        : 'Pace range not shown — set threshold pace in Settings.'}
-                  </p>
-                )}
-              </>
-            )}
-          </>
-        )}
-      </div>
+          {!loading && !error && data && (
+            <>
+              {!data.hr_configured && !data.pace_configured && (
+                <p id="zoneReferenceNoConfig_analyticsPage" className="text-sm text-slate-400">
+                  Configure your HR zones and threshold pace in Settings to see zone targets.
+                </p>
+              )}
+
+              {(data.hr_configured || data.pace_configured) && (
+                <>
+                  <Table
+                    id="trainingZonesTable_analyticsPage"
+                    className="min-w-full"
+                    aria-label="Training zones reference"
+                  >
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-24">Zone</TableHead>
+                        {data.hr_configured && <TableHead>HR Range</TableHead>}
+                        {data.pace_configured && <TableHead>Pace Range</TableHead>}
+                        <TableHead className="hidden sm:table-cell">Guidance</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {data.zones?.map((z, i) => (
+                        <TableRow key={z.zone} className="align-top">
+                          <TableCell>
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold ${ZONE_COLORS[i]}`}
+                            >
+                              {z.zone}
+                              <span className="font-normal">{z.name}</span>
+                            </span>
+                          </TableCell>
+                          {data.hr_configured && (
+                            <TableCell className="font-mono text-slate-700 whitespace-nowrap">
+                              {z.hr ? (
+                                <HrRange min={z.hr.min} max={z.hr.max} />
+                              ) : (
+                                <span className="text-slate-400">—</span>
+                              )}
+                            </TableCell>
+                          )}
+                          {data.pace_configured && (
+                            <TableCell className="font-mono text-slate-700 whitespace-nowrap">
+                              {z.pace ? (
+                                <PaceRange min={z.pace.min} max={z.pace.max} />
+                              ) : (
+                                <span className="text-slate-400">—</span>
+                              )}
+                            </TableCell>
+                          )}
+                          <TableCell className="text-slate-500 text-xs leading-relaxed hidden sm:table-cell">
+                            {z.guidance}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                  {(!data.hr_configured || !data.pace_configured) && (
+                    <p className="mt-3 text-xs text-slate-400">
+                      {!data.hr_configured && !data.pace_configured
+                        ? null
+                        : !data.hr_configured
+                          ? 'HR range not shown — configure HR zones in Settings.'
+                          : 'Pace range not shown — set threshold pace in Settings.'}
+                    </p>
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
     </section>
   )
 }

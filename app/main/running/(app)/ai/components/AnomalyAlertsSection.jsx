@@ -3,6 +3,13 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { AlertTriangle, CheckCircle2, ChevronDown, ChevronUp, History } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
+import Card, {
+  CardContent,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+  CardAction,
+} from '@/components/base/Card/Card'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { acknowledgeInsight, fetchAcknowledgedAnomalyInsights } from '@/lib/api/running'
@@ -254,142 +261,152 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
   const pagedGroups = useMemo(() => groupInsightsByMonth(pagedItems), [pagedItems])
 
   return (
-    <section
+    <Card
       id="anomalyAlertsSection_aiCoachPage"
       aria-label="Anomaly alerts"
       aria-live="polite"
       aria-atomic="false"
+      as="section"
     >
-      <div className="flex items-center gap-2 mb-3">
-        <AlertTriangle className="h-4 w-4 text-amber-500" aria-hidden="true" />
-        <h2 className="text-sm font-semibold text-slate-700">Anomaly Alerts</h2>
+      <CardHeader>
+        <CardIcon icon={AlertTriangle} className="bg-amber-50" iconClassName="text-amber-500" />
+        <div className="min-w-0 flex-1">
+          <CardTitle>Anomaly Alerts</CardTitle>
+        </div>
         {anomalies.length > 0 && (
-          <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-medium">
-            {anomalies.length}
+          <CardAction>
+            <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-medium">
+              {anomalies.length}
+            </span>
+          </CardAction>
+        )}
+      </CardHeader>
+      <CardContent>
+        {anomalies.length === 0 ? (
+          <Card className="bg-slate-50 border-slate-200 shadow-none">
+            <CardContent className="space-y-1.5">
+              <p className="text-sm text-slate-500 font-medium">
+                All clear — no anomalies detected.
+              </p>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Alerts appear automatically after each activity sync when your training data shows a
+                training load spike (ACWR &gt; 1.5), elevated heart rate (&gt;10% above baseline),
+                significant pace drop (&gt;8% slower than baseline), or a gap of 10+ days since your
+                last run.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {anomalies.map((insight) => (
+              <AnomalyCard key={insight.id} insight={insight} onAcknowledged={handleAcknowledged} />
+            ))}
+          </div>
+        )}
+
+        {/* Placeholder during prefetch avoids layout shift when button appears */}
+        {historyLoading && (
+          <span className="mt-3 flex items-center gap-1 text-xs text-slate-300 pointer-events-none select-none">
+            <History className="h-3.5 w-3.5" aria-hidden="true" />
+            History
           </span>
         )}
-      </div>
+        {!historyLoading && !historyError && history !== null && history.length > 0 && (
+          <Button
+            id="anomalyHistoryBtn_aiCoachPage"
+            variant="ghost"
+            size="xs"
+            onClick={() => setHistorySheetOpen(true)}
+            aria-label="View acknowledged anomaly alert history"
+            className="mt-3 flex items-center gap-1 text-xs text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+          >
+            <History className="h-3.5 w-3.5" aria-hidden="true" />
+            History
+          </Button>
+        )}
 
-      {anomalies.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-1.5">
-          <p className="text-sm text-slate-500 font-medium">All clear — no anomalies detected.</p>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Alerts appear automatically after each activity sync when your training data shows a
-            training load spike (ACWR &gt; 1.5), elevated heart rate (&gt;10% above baseline),
-            significant pace drop (&gt;8% slower than baseline), or a gap of 10+ days since your
-            last run.
-          </p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {anomalies.map((insight) => (
-            <AnomalyCard key={insight.id} insight={insight} onAcknowledged={handleAcknowledged} />
-          ))}
-        </div>
-      )}
-
-      {/* Placeholder during prefetch avoids layout shift when button appears */}
-      {historyLoading && (
-        <span className="mt-3 flex items-center gap-1 text-xs text-slate-300 pointer-events-none select-none">
-          <History className="h-3.5 w-3.5" aria-hidden="true" />
-          History
-        </span>
-      )}
-      {!historyLoading && !historyError && history !== null && history.length > 0 && (
-        <Button
-          id="anomalyHistoryBtn_aiCoachPage"
-          variant="ghost"
-          size="xs"
-          onClick={() => setHistorySheetOpen(true)}
-          aria-label="View acknowledged anomaly alert history"
-          className="mt-3 flex items-center gap-1 text-xs text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
-        >
-          <History className="h-3.5 w-3.5" aria-hidden="true" />
-          History
-        </Button>
-      )}
-
-      <Sheet open={historySheetOpen} onOpenChange={setHistorySheetOpen}>
-        <SheetContent
-          id="anomalyHistoryModal_aiCoachPage"
-          side="right"
-          className="w-full md:w-[480px] p-0"
-        >
-          <SheetHeader className="px-6 py-4 border-b border-slate-100">
-            <SheetTitle className="text-base font-semibold text-slate-800">
-              Anomaly History
-            </SheetTitle>
-          </SheetHeader>
-          {/* 80px accounts for SheetHeader height */}
-          <ScrollArea className="h-[calc(100vh-80px)]">
-            <div className="px-6 py-4 space-y-6">
-              {historyLoading && (
-                <p className="text-sm text-slate-400 text-center py-8">Loading history...</p>
-              )}
-              {!historyLoading && historyError && (
-                <div className="text-center py-8 space-y-2">
-                  <p className="text-sm text-slate-400">Could not load history.</p>
-                  <Button
-                    variant="ghost"
-                    size="base"
-                    className="text-amber-600 hover:text-amber-700 px-0 h-auto font-normal text-xs"
-                    onClick={loadHistory}
-                  >
-                    Try again
-                  </Button>
-                </div>
-              )}
-              {!historyLoading && !historyError && safeHistory.length === 0 && (
-                <p className="text-sm text-slate-400 text-center py-8">
-                  No acknowledged alerts yet.
-                </p>
-              )}
-              {!historyLoading &&
-                !historyError &&
-                pagedGroups.map((group) => (
-                  <div key={group.label}>
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-                      {group.label}
-                    </p>
-                    <div className="space-y-3">
-                      {group.items.map((item) => (
-                        <AnomalyHistoryItem key={item.id} insight={item} />
-                      ))}
-                    </div>
+        <Sheet open={historySheetOpen} onOpenChange={setHistorySheetOpen}>
+          <SheetContent
+            id="anomalyHistoryModal_aiCoachPage"
+            side="right"
+            className="w-full md:w-[480px] p-0"
+          >
+            <SheetHeader className="px-6 py-4 border-b border-slate-100">
+              <SheetTitle className="text-base font-semibold text-slate-800">
+                Anomaly History
+              </SheetTitle>
+            </SheetHeader>
+            {/* 80px accounts for SheetHeader height */}
+            <ScrollArea className="h-[calc(100vh-80px)]">
+              <div className="px-6 py-4 space-y-6">
+                {historyLoading && (
+                  <p className="text-sm text-slate-400 text-center py-8">Loading history...</p>
+                )}
+                {!historyLoading && historyError && (
+                  <div className="text-center py-8 space-y-2">
+                    <p className="text-sm text-slate-400">Could not load history.</p>
+                    <Button
+                      variant="ghost"
+                      size="base"
+                      className="text-amber-600 hover:text-amber-700 px-0 h-auto font-normal text-xs"
+                      onClick={loadHistory}
+                    >
+                      Try again
+                    </Button>
                   </div>
-                ))}
-
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between pt-2">
-                  <Button
-                    variant="outline"
-                    size="base"
-                    disabled={page === 1}
-                    onClick={() => setPage((p) => p - 1)}
-                    aria-label="Previous page of anomaly history"
-                    className="text-xs h-8"
-                  >
-                    Prev
-                  </Button>
-                  <p className="text-xs text-slate-400">
-                    Page {page} of {totalPages}
+                )}
+                {!historyLoading && !historyError && safeHistory.length === 0 && (
+                  <p className="text-sm text-slate-400 text-center py-8">
+                    No acknowledged alerts yet.
                   </p>
-                  <Button
-                    variant="outline"
-                    size="base"
-                    disabled={page === totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                    aria-label="Next page of anomaly history"
-                    className="text-xs h-8"
-                  >
-                    Next
-                  </Button>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
-    </section>
+                )}
+                {!historyLoading &&
+                  !historyError &&
+                  pagedGroups.map((group) => (
+                    <div key={group.label}>
+                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
+                        {group.label}
+                      </p>
+                      <div className="space-y-3">
+                        {group.items.map((item) => (
+                          <AnomalyHistoryItem key={item.id} insight={item} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between pt-2">
+                    <Button
+                      variant="outline"
+                      size="base"
+                      disabled={page === 1}
+                      onClick={() => setPage((p) => p - 1)}
+                      aria-label="Previous page of anomaly history"
+                      className="text-xs h-8"
+                    >
+                      Prev
+                    </Button>
+                    <p className="text-xs text-slate-400">
+                      Page {page} of {totalPages}
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="base"
+                      disabled={page === totalPages}
+                      onClick={() => setPage((p) => p + 1)}
+                      aria-label="Next page of anomaly history"
+                      className="text-xs h-8"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      </CardContent>
+    </Card>
   )
 }

@@ -2,7 +2,9 @@
 
 import { useMemo, useState } from 'react'
 import { format, startOfWeek, addDays, subYears, eachWeekOfInterval } from 'date-fns'
+import { CalendarDays } from 'lucide-react'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
+import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
 
 const LEVELS = [
   { min: 0, max: 0, bg: 'bg-slate-100', label: 'No spend' },
@@ -60,28 +62,29 @@ export default function SpendingHeatmap({ items, loading }) {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-base font-semibold text-slate-800">🗓️ Spending Heatmap</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Daily purchase activity over the last 12 months
-          </p>
-        </div>
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col gap-1.5 flex-1">
+            <div className="h-4 bg-slate-200 rounded w-40 animate-pulse" />
+            <div className="h-3 bg-slate-100 rounded w-56 animate-pulse" />
+          </div>
+        </CardHeader>
         <div className="px-5 py-6 animate-pulse">
           <div className="h-24 bg-slate-100 rounded-lg w-full" />
         </div>
-      </div>
+      </Card>
     )
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100">
-        <h2 className="text-base font-semibold text-slate-800">🗓️ Spending Heatmap</h2>
-        <p className="text-xs text-slate-400 mt-0.5">
-          Daily purchase activity over the last 12 months
-        </p>
-      </div>
+    <Card>
+      <CardHeader>
+        <CardIcon icon={CalendarDays} />
+        <div className="min-w-0 flex-1">
+          <CardTitle>Spending Heatmap</CardTitle>
+          <CardDescription>Daily purchase activity over the last 12 months</CardDescription>
+        </div>
+      </CardHeader>
 
       <div className="relative">
         <div className="px-5 py-4 overflow-x-auto">
@@ -167,6 +170,6 @@ export default function SpendingHeatmap({ items, loading }) {
         ))}
         <span className="text-[10px] text-slate-400">More</span>
       </div>
-    </div>
+    </Card>
   )
 }

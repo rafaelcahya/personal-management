@@ -10,6 +10,7 @@ import ProductHistoryTableHeader from './component/ProductHistoryTableHeader'
 import ProductHistoryFilterDropdown from './component/ProductHistoryFilterDropdown'
 import PageHeader from '../../components/PageHeader'
 import { fetchProductHistory } from '@/lib/api/productHistory'
+import Card, { CardContent } from '@/components/base/Card/Card'
 
 const LIMIT = 15
 
@@ -106,93 +107,94 @@ export default function ProductHistoryPageClient() {
         ]}
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-        <ProductHistoryTableHeader />
-
-        {/* Controls bar */}
-        <div
-          id="controlsBar_productHistoryPage"
-          className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5"
-        >
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
-            <HistorySearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-            <div className="flex items-center justify-end gap-2 shrink-0">
-              <ProductHistoryFilterDropdown
-                filter={filterStatus}
-                onFilterChange={setFilterStatus}
-                sortOption={sortOption}
-                onSortChange={setSortOption}
-              />
+      <Card className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <ProductHistoryTableHeader
+          controls={
+            <div
+              id="controlsBar_productHistoryPage"
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between w-full"
+            >
+              <HistorySearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+              <div className="flex items-center justify-end gap-2 shrink-0">
+                <ProductHistoryFilterDropdown
+                  filter={filterStatus}
+                  onFilterChange={setFilterStatus}
+                  sortOption={sortOption}
+                  onSortChange={setSortOption}
+                />
+              </div>
             </div>
-          </div>
-        </div>
+          }
+        />
 
         {/* Content area */}
-        {loading ? (
-          <div
-            id="loadingSkeleton_productHistoryPage"
-            className="animate-pulse"
-            aria-label="Loading product history"
-          >
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
-                <Skeleton className="h-4 w-6" />
-                <Skeleton className="h-4 w-36" />
-                <Skeleton className="h-5 w-16 rounded-full" />
-                <Skeleton className="h-4 w-10" />
-                <Skeleton className="h-4 w-24 hidden sm:block" />
-                <Skeleton className="h-4 w-24 hidden sm:block" />
-                <Skeleton className="h-4 flex-1 hidden sm:block" />
-              </div>
-            ))}
-          </div>
-        ) : error ? (
-          <div
-            id="errorState_productHistoryPage"
-            className="flex flex-col items-center justify-center gap-4 py-16 text-center"
-            role="alert"
-            aria-live="assertive"
-          >
-            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">Failed to load history</p>
-              <p className="text-xs text-slate-500">Check your connection and try again</p>
-            </div>
-            <Button
-              variant="outline"
-              size="base"
-              onClick={() => setPage((p) => p)}
-              className="min-w-11"
+        <CardContent padding="none">
+          {loading ? (
+            <div
+              id="loadingSkeleton_productHistoryPage"
+              className="animate-pulse"
+              aria-label="Loading product history"
             >
-              Try again
-            </Button>
-          </div>
-        ) : !hasActiveFilters && data.length === 0 ? (
-          <div
-            id="emptyState_productHistoryPage"
-            className="flex flex-col items-center justify-center gap-4 py-16 text-center"
-          >
-            <History className="size-10 text-slate-300" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">No usage history yet</p>
-              <p className="text-xs text-slate-500">
-                Usage records appear here once you start using a product
-              </p>
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
+                  <Skeleton className="h-4 w-6" />
+                  <Skeleton className="h-4 w-36" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-4 w-10" />
+                  <Skeleton className="h-4 w-24 hidden sm:block" />
+                  <Skeleton className="h-4 w-24 hidden sm:block" />
+                  <Skeleton className="h-4 flex-1 hidden sm:block" />
+                </div>
+              ))}
             </div>
-          </div>
-        ) : (
-          <ProductHistoryTable
-            histories={data}
-            page={page}
-            totalPages={totalPages}
-            total={total}
-            onPrev={() => setPage((p) => p - 1)}
-            onNext={() => setPage((p) => p + 1)}
-            onClearFilters={handleClearFilters}
-            hasActiveFilters={hasActiveFilters}
-          />
-        )}
-      </div>
+          ) : error ? (
+            <div
+              id="errorState_productHistoryPage"
+              className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">Failed to load history</p>
+                <p className="text-xs text-slate-500">Check your connection and try again</p>
+              </div>
+              <Button
+                variant="outline"
+                size="base"
+                onClick={() => setPage((p) => p)}
+                className="min-w-11"
+              >
+                Try again
+              </Button>
+            </div>
+          ) : !hasActiveFilters && data.length === 0 ? (
+            <div
+              id="emptyState_productHistoryPage"
+              className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+            >
+              <History className="size-10 text-slate-300" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">No usage history yet</p>
+                <p className="text-xs text-slate-500">
+                  Usage records appear here once you start using a product
+                </p>
+              </div>
+            </div>
+          ) : (
+            <ProductHistoryTable
+              histories={data}
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              onPrev={() => setPage((p) => p - 1)}
+              onNext={() => setPage((p) => p + 1)}
+              onClearFilters={handleClearFilters}
+              hasActiveFilters={hasActiveFilters}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

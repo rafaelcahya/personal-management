@@ -25,7 +25,13 @@ import {
   Gauge,
   Clock,
 } from 'lucide-react'
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
 import { fetchCalendarActivities } from '@/lib/api/running'
 import { fmtDistance, fmtDuration, fmtPace, fmtDate } from '../utils/format'
@@ -602,17 +608,17 @@ export default function ActivitySection({ calendarActivities, recentActivities, 
 
   return (
     <section id="activitySection" aria-label="Activity">
-      <Card className="border border-slate-200/70 shadow-sm py-0">
-        <CardContent className="px-5 py-5">
-          <div className="flex flex-col gap-1 mb-4">
-            <div className="flex items-center gap-2">
-              <Activity className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-              <h3 className="text-sm font-semibold text-slate-700">Activity</h3>
+      <Card>
+        <CardHeader>
+          <div className="flex gap-2">
+            <CardIcon icon={Activity} />
+            <div>
+              <CardTitle>Activity</CardTitle>
+              <CardDescription>Monthly calendar and your most recent activities.</CardDescription>
             </div>
-            <p className="text-xs text-slate-400">
-              Monthly calendar and your most recent activities.
-            </p>
           </div>
+        </CardHeader>
+        <CardContent className="px-5 py-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x md:divide-slate-100">
             <CalendarColumn
               initialActivities={calendarActivities}

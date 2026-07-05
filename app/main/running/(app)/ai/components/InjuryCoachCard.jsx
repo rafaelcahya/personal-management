@@ -15,6 +15,19 @@ import {
   ChevronLeft,
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
+import Card, {
+  CardContent,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+  CardAction,
+} from '@/components/base/Card/Card'
+import {
+  SelectCard,
+  SelectCardIcon,
+  SelectCardTitle,
+  SelectCardDescription,
+} from '@/components/base/SelectCard/SelectCard'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
 import FieldContent from '@/components/base/Field/FieldContent'
@@ -188,11 +201,12 @@ export default function InjuryCoachCard() {
   const activeRole = ROLES.find((r) => r.id === selectedRole)
 
   return (
-    <section
-      className="rounded-xl border border-slate-200 bg-white p-4 space-y-4"
+    <Card
+      id="injuryCoachCard_aiCoachPage"
       aria-label="Injury and Recovery AI consultation"
+      as="section"
     >
-      <div className="flex items-center gap-2">
+      <CardHeader>
         {showHistory && (
           <Button
             id="injuryHistoryBackBtn_aiPage"
@@ -206,426 +220,423 @@ export default function InjuryCoachCard() {
             <ChevronLeft className="h-4 w-4 text-slate-600" aria-hidden="true" />
           </Button>
         )}
-        <span
-          className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-100 shrink-0"
-          aria-hidden="true"
-        >
-          <Stethoscope className="h-3.5 w-3.5 text-slate-600" aria-hidden="true" />
-        </span>
-        <h2 className="text-sm font-semibold text-slate-700">
-          {showHistory ? 'Consultation History' : 'Injury & Recovery'}
-        </h2>
+        <CardIcon icon={Stethoscope} className="bg-slate-100" iconClassName="text-slate-600" />
+        <div className="min-w-0 flex-1">
+          <CardTitle>{showHistory ? 'Consultation History' : 'Injury & Recovery'}</CardTitle>
+        </div>
+        <CardAction className="flex items-center gap-2">
+          {!showHistory && (
+            <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-medium">
+              AI
+            </span>
+          )}
+          <Button
+            id="injuryHistoryBtn_aiPage"
+            type="button"
+            size="xs"
+            variant="ghost"
+            onClick={showHistory ? () => setShowHistory(false) : openHistory}
+            className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100 px-2 py-1 rounded-md transition-colors"
+            aria-label={showHistory ? 'Close history' : 'View consultation history'}
+          >
+            <History className="h-3.5 w-3.5" aria-hidden="true" />
+            {!showHistory && 'History'}
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent padding="none" className="p-4 space-y-4">
         {!showHistory && (
-          <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-medium">
-            AI
-          </span>
-        )}
-        <Button
-          id="injuryHistoryBtn_aiPage"
-          type="button"
-          size="xs"
-          variant="ghost"
-          onClick={showHistory ? () => setShowHistory(false) : openHistory}
-          className="ml-auto flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100 px-2 py-1 rounded-md transition-colors"
-          aria-label={showHistory ? 'Close history' : 'View consultation history'}
-        >
-          <History className="h-3.5 w-3.5" aria-hidden="true" />
-          {!showHistory && 'History'}
-        </Button>
-      </div>
-
-      {!showHistory && (
-        <div
-          id="injuryDisclaimer_aiPage"
-          role="note"
-          className="flex items-start gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg"
-        >
-          <Info className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-0.5" aria-hidden="true" />
-          <p className="text-xs text-slate-500">
-            AI guidance only — not a substitute for professional medical advice.
-          </p>
-        </div>
-      )}
-
-      {showHistory && (
-        <div
-          id="injuryHistoryPanel_aiPage"
-          className="space-y-3"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {historyLoading && (
-            <div
-              id="injuryHistoryLoading_aiPage"
-              className="space-y-3 animate-pulse motion-reduce:animate-none"
-              aria-label="Loading consultation history"
-            >
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="rounded-lg border border-slate-200 p-3 space-y-2">
-                  <div className="h-3 bg-slate-200 rounded w-1/3" />
-                  <div className="h-3 bg-slate-200 rounded w-full" />
-                  <div className="h-3 bg-slate-200 rounded w-4/5" />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {!historyLoading && historyError && (
-            <p id="injuryHistoryError_aiPage" role="alert" className="text-sm text-red-500">
-              {historyError}
-            </p>
-          )}
-
-          {!historyLoading && !historyError && historyItems.length === 0 && (
-            <div
-              id="injuryHistoryEmpty_aiPage"
-              className="flex flex-col items-center justify-center py-8 text-center"
-            >
-              <History className="h-8 w-8 text-slate-300 mb-2" aria-hidden="true" />
-              <p className="text-sm text-slate-400">No consultations yet</p>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Your past AI responses will appear here
-              </p>
-            </div>
-          )}
-
-          {!historyLoading && !historyError && historyItems.length > 0 && (
-            <div className="space-y-3">
-              {historyItems.map((item) => {
-                const roleLabel = ROLE_LABELS[item.data_refs?.role] ?? item.data_refs?.role ?? '—'
-                const bodyPart = item.data_refs?.body_part
-                const phase = item.data_refs?.injuryPhase
-                return (
-                  <div
-                    key={item.id}
-                    id={`injuryHistoryItem_aiPage_${item.id}`}
-                    className="rounded-lg border border-slate-200 bg-slate-50 p-3 space-y-2"
-                  >
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs text-slate-400">
-                        {new Date(item.created_at).toLocaleDateString('en-GB', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </span>
-                      <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-medium">
-                        {roleLabel}
-                      </span>
-                      {bodyPart && (
-                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-                          {bodyPart}
-                        </span>
-                      )}
-                      {phase && (
-                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full capitalize">
-                          {phase}
-                        </span>
-                      )}
-                    </div>
-                    <div className="prose-sm text-slate-700 text-xs leading-relaxed line-clamp-4">
-                      {renderMarkdown(item.content)}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      {!showHistory && (
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-          role="group"
-          aria-label="Select AI role"
-        >
-          {ROLES.map((role) => {
-            const isSelected = selectedRole === role.id
-            return (
-              <Button
-                key={role.id}
-                id={role.cardId}
-                variant="ghost"
-                fullWidth
-                aria-pressed={isSelected}
-                onClick={() => handleRoleSelect(role.id)}
-                className={`text-left rounded-lg px-3 py-3 h-auto min-h-[44px] items-start flex-col ${isSelected ? 'border-2 border-violet-400 bg-violet-50' : 'border border-slate-200 bg-white hover:bg-slate-50'}`}
-              >
-                <div className="flex items-center gap-2 mb-0.5">
-                  <role.Icon
-                    className={`h-4 w-4 shrink-0 ${isSelected ? 'text-violet-600' : 'text-slate-400'}`}
-                    aria-hidden="true"
-                  />
-                  <p
-                    className={`text-sm font-semibold whitespace-normal ${isSelected ? 'text-violet-700' : 'text-slate-700'}`}
-                  >
-                    {role.label}
-                  </p>
-                </div>
-                <p className="text-xs text-slate-400 pl-6 whitespace-normal">{role.description}</p>
-              </Button>
-            )
-          })}
-        </div>
-      )}
-
-      {!showHistory && selectedRole && (
-        <form onSubmit={handleSubmit} className="space-y-3" noValidate>
-          <FieldContent>
-            <FieldLabel htmlFor="injuryBodyPartInput_aiPage">
-              Body part <span className="text-xs text-slate-400 font-normal">(optional)</span>
-            </FieldLabel>
-            <Input
-              id="injuryBodyPartInput_aiPage"
-              type="text"
-              value={bodyPart}
-              onChange={(e) => setBodyPart(e.target.value)}
-              placeholder="e.g. left knee, right Achilles, lower back"
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-            />
-          </FieldContent>
-
-          <FieldContent>
-            <FieldLabel>
-              Injury phase <span className="text-xs text-slate-400 font-normal">(optional)</span>
-            </FieldLabel>
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Injury phase">
-              {PHASES.map((p) => (
-                <Button
-                  key={p.id}
-                  id={p.elementId}
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  aria-pressed={phase === p.id}
-                  onClick={() => setPhase(phase === p.id ? null : p.id)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[36px] ${
-                    phase === p.id
-                      ? 'bg-violet-600 text-white border-violet-600'
-                      : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  {p.label}
-                </Button>
-              ))}
-            </div>
-            {phase && (
-              <p className="text-xs text-slate-500 leading-relaxed">
-                {PHASES.find((p2) => p2.id === phase)?.guide}
-              </p>
-            )}
-          </FieldContent>
-
-          <div ref={pickerRef}>
-            <FieldContent>
-              <FieldLabel htmlFor="injuryActivitySearch_aiPage">
-                Activity <span className="text-xs text-slate-400 font-normal">(optional)</span>
-              </FieldLabel>
-              {selectedActivity ? (
-                <div className="flex items-center gap-2 rounded-md border border-violet-300 bg-violet-50 px-3 py-2">
-                  <span
-                    id="injuryActivitySelectedPill_aiPage"
-                    className="text-sm font-medium text-violet-700 flex-1 min-w-0 truncate"
-                  >
-                    {new Date(selectedActivity.started_at).toLocaleDateString('en-GB', {
-                      day: 'numeric',
-                      month: 'short',
-                    })}
-                    {' · '}
-                    {fmtDist(selectedActivity.distance_m) ?? '—'}
-                    {selectedActivity.avg_pace_sec_per_km &&
-                      ` · ${fmtPace(selectedActivity.avg_pace_sec_per_km)}`}
-                  </span>
-                  <Button
-                    id="injuryActivityClearBtn_aiPage"
-                    variant="ghost"
-                    size="xs"
-                    onClick={() => setSelectedActivity(null)}
-                    className="shrink-0 text-slate-400 hover:text-slate-600"
-                    aria-label="Clear selected activity"
-                  >
-                    <X className="h-3.5 w-3.5" aria-hidden="true" />
-                  </Button>
-                </div>
-              ) : (
-                <div className="relative">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
-                    <input
-                      id="injuryActivitySearch_aiPage"
-                      type="text"
-                      value={activitySearch}
-                      onChange={(e) => setActivitySearch(e.target.value)}
-                      onFocus={() => setActivityOpen(true)}
-                      placeholder="Search by date or distance..."
-                      className="w-full rounded-md border border-slate-200 pl-8 pr-3 py-2 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                    />
-                  </div>
-                  {activityOpen && (
-                    <div
-                      id="injuryActivityList_aiPage"
-                      className="absolute z-50 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-md max-h-48 overflow-y-auto"
-                    >
-                      {activityLoading ? (
-                        <div className="flex items-center justify-center py-4">
-                          <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
-                        </div>
-                      ) : activityList.length === 0 ? (
-                        <p className="px-3 py-3 text-xs text-slate-400">No activities found</p>
-                      ) : (
-                        activityList.map((a) => (
-                          <Button
-                            key={a.id}
-                            id={`injuryActivityItem_aiPage_${a.id}`}
-                            variant="ghost"
-                            fullWidth
-                            onClick={() => {
-                              setSelectedActivity(a)
-                              setActivityOpen(false)
-                              setActivitySearch('')
-                            }}
-                            className="text-left px-3 py-2.5 h-auto items-start flex-col border-b border-slate-100 last:border-0"
-                          >
-                            {a.name && (
-                              <p className="text-sm font-medium text-slate-700 truncate">
-                                {a.name}
-                              </p>
-                            )}
-                            <p className="text-xs text-slate-400 mt-0.5">
-                              {new Date(a.started_at).toLocaleDateString('en-GB', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                              })}
-                              {a.distance_m && ` · ${fmtDist(a.distance_m)}`}
-                              {a.avg_pace_sec_per_km && ` · ${fmtPace(a.avg_pace_sec_per_km)}`}
-                            </p>
-                          </Button>
-                        ))
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            </FieldContent>
-          </div>
-
-          <FieldContent>
-            <FieldLabel htmlFor="injuryQuestionInput_aiPage">Your question</FieldLabel>
-            <Textarea
-              id="injuryQuestionInput_aiPage"
-              value={question}
-              onChange={handleQuestionChange}
-              placeholder={activeRole?.placeholder ?? 'Describe your symptoms or ask a question...'}
-              rows={3}
-              required
-              minLength={10}
-              className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none"
-            />
-          </FieldContent>
-
-          {emergencyBlock ? (
-            <div
-              role="alert"
-              className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-300 px-3 py-2"
-            >
-              <AlertTriangle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
-              <p className="text-xs text-red-800 font-medium">
-                Pain at this level needs immediate medical attention. Please stop training and see a
-                doctor or go to an emergency clinic.
-              </p>
-            </div>
-          ) : (
-            <>
-              <Button
-                id="injurySubmitBtn_aiPage"
-                type="submit"
-                size="md"
-                disabled={!isQuestionValid || loading}
-                className="bg-violet-600 hover:bg-violet-700 text-white text-sm focus-visible:ring-2 focus-visible:ring-violet-200"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" aria-hidden="true" />
-                    Getting guidance...
-                  </>
-                ) : (
-                  <>
-                    <Stethoscope className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-                    Ask {activeRole?.label ?? 'AI'}
-                  </>
-                )}
-              </Button>
-            </>
-          )}
-        </form>
-      )}
-
-      {!showHistory && loading && (
-        <div
-          className="space-y-2 animate-pulse motion-reduce:animate-none"
-          aria-label="Loading injury coach response"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <div className="h-3 bg-slate-200 rounded w-1/2" aria-hidden="true" />
-          <div className="h-3 bg-slate-200 rounded w-full" aria-hidden="true" />
-          <div className="h-3 bg-slate-200 rounded w-4/5" aria-hidden="true" />
-          <div className="h-3 bg-slate-200 rounded w-3/5" aria-hidden="true" />
-        </div>
-      )}
-
-      {!showHistory && !loading && error && (
-        <div role="alert" aria-live="polite" className="text-sm text-red-500">
-          {error}
-        </div>
-      )}
-
-      {!showHistory && !loading && result && (
-        <div
-          id="injuryOutputCard_aiPage"
-          className="rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-3"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {escalate && (
-            <div
-              id="injuryEscalateBanner_aiPage"
-              role="alert"
-              className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-300 px-3 py-2"
-            >
-              <AlertTriangle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
-              <p className="text-xs text-red-800 font-medium">
-                This situation may require in-person professional evaluation. Please consult a
-                qualified healthcare provider.
-              </p>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-              AI Response
-            </p>
-            {activeRole && (
-              <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium shrink-0">
-                {activeRole.label}
-              </span>
-            )}
-          </div>
-
-          <div className="prose-sm text-slate-700">
-            {renderMarkdown(result?.content ?? result?.data?.content)}
-          </div>
-
-          <div className="flex items-start gap-2 bg-white border border-slate-200 px-3 py-2 rounded-lg">
+          <div
+            id="injuryDisclaimer_aiPage"
+            role="note"
+            className="flex items-start gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg"
+          >
             <Info className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-0.5" aria-hidden="true" />
             <p className="text-xs text-slate-500">
               AI guidance only — not a substitute for professional medical advice.
             </p>
           </div>
-        </div>
-      )}
-    </section>
+        )}
+
+        {showHistory && (
+          <div
+            id="injuryHistoryPanel_aiPage"
+            className="space-y-3"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {historyLoading && (
+              <div
+                id="injuryHistoryLoading_aiPage"
+                className="space-y-3 animate-pulse motion-reduce:animate-none"
+                aria-label="Loading consultation history"
+              >
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="rounded-lg border border-slate-200 p-3 space-y-2">
+                    <div className="h-3 bg-slate-200 rounded w-1/3" />
+                    <div className="h-3 bg-slate-200 rounded w-full" />
+                    <div className="h-3 bg-slate-200 rounded w-4/5" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!historyLoading && historyError && (
+              <p id="injuryHistoryError_aiPage" role="alert" className="text-sm text-red-500">
+                {historyError}
+              </p>
+            )}
+
+            {!historyLoading && !historyError && historyItems.length === 0 && (
+              <div
+                id="injuryHistoryEmpty_aiPage"
+                className="flex flex-col items-center justify-center py-8 text-center"
+              >
+                <History className="h-8 w-8 text-slate-300 mb-2" aria-hidden="true" />
+                <p className="text-sm text-slate-400">No consultations yet</p>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Your past AI responses will appear here
+                </p>
+              </div>
+            )}
+
+            {!historyLoading && !historyError && historyItems.length > 0 && (
+              <div className="space-y-3">
+                {historyItems.map((item) => {
+                  const roleLabel = ROLE_LABELS[item.data_refs?.role] ?? item.data_refs?.role ?? '—'
+                  const bodyPart = item.data_refs?.body_part
+                  const phase = item.data_refs?.injuryPhase
+                  return (
+                    <div
+                      key={item.id}
+                      id={`injuryHistoryItem_aiPage_${item.id}`}
+                      className="rounded-lg border border-slate-200 bg-slate-50 p-3 space-y-2"
+                    >
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs text-slate-400">
+                          {new Date(item.created_at).toLocaleDateString('en-GB', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </span>
+                        <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-medium">
+                          {roleLabel}
+                        </span>
+                        {bodyPart && (
+                          <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                            {bodyPart}
+                          </span>
+                        )}
+                        {phase && (
+                          <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full capitalize">
+                            {phase}
+                          </span>
+                        )}
+                      </div>
+                      <div className="prose-sm text-slate-700 text-xs leading-relaxed line-clamp-4">
+                        {renderMarkdown(item.content)}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {!showHistory && (
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+            role="group"
+            aria-label="Select AI role"
+          >
+            {ROLES.map((role) => (
+              <SelectCard
+                key={role.id}
+                id={role.cardId}
+                value={role.id}
+                selected={selectedRole === role.id}
+                onSelect={handleRoleSelect}
+                layout="horizontal"
+              >
+                <SelectCardIcon>
+                  <role.Icon className="h-4 w-4" aria-hidden="true" />
+                </SelectCardIcon>
+                <div>
+                  <SelectCardTitle>{role.label}</SelectCardTitle>
+                  <SelectCardDescription>{role.description}</SelectCardDescription>
+                </div>
+              </SelectCard>
+            ))}
+          </div>
+        )}
+
+        {!showHistory && selectedRole && (
+          <form onSubmit={handleSubmit} className="space-y-3" noValidate>
+            <FieldContent>
+              <FieldLabel htmlFor="injuryBodyPartInput_aiPage">
+                Body part <span className="text-xs text-slate-400 font-normal">(optional)</span>
+              </FieldLabel>
+              <Input
+                id="injuryBodyPartInput_aiPage"
+                type="text"
+                value={bodyPart}
+                onChange={(e) => setBodyPart(e.target.value)}
+                placeholder="e.g. left knee, right Achilles, lower back"
+                className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+              />
+            </FieldContent>
+
+            <FieldContent>
+              <FieldLabel>
+                Injury phase <span className="text-xs text-slate-400 font-normal">(optional)</span>
+              </FieldLabel>
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Injury phase">
+                {PHASES.map((p) => (
+                  <Button
+                    key={p.id}
+                    id={p.elementId}
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    aria-pressed={phase === p.id}
+                    onClick={() => setPhase(phase === p.id ? null : p.id)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 min-h-[36px] ${
+                      phase === p.id
+                        ? 'bg-violet-600 text-white border-violet-600'
+                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    {p.label}
+                  </Button>
+                ))}
+              </div>
+              {phase && (
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  {PHASES.find((p2) => p2.id === phase)?.guide}
+                </p>
+              )}
+            </FieldContent>
+
+            <div ref={pickerRef}>
+              <FieldContent>
+                <FieldLabel htmlFor="injuryActivitySearch_aiPage">
+                  Activity <span className="text-xs text-slate-400 font-normal">(optional)</span>
+                </FieldLabel>
+                {selectedActivity ? (
+                  <div className="flex items-center gap-2 rounded-md border border-violet-300 bg-violet-50 px-3 py-2">
+                    <span
+                      id="injuryActivitySelectedPill_aiPage"
+                      className="text-sm font-medium text-violet-700 flex-1 min-w-0 truncate"
+                    >
+                      {new Date(selectedActivity.started_at).toLocaleDateString('en-GB', {
+                        day: 'numeric',
+                        month: 'short',
+                      })}
+                      {' · '}
+                      {fmtDist(selectedActivity.distance_m) ?? '—'}
+                      {selectedActivity.avg_pace_sec_per_km &&
+                        ` · ${fmtPace(selectedActivity.avg_pace_sec_per_km)}`}
+                    </span>
+                    <Button
+                      id="injuryActivityClearBtn_aiPage"
+                      variant="ghost"
+                      size="xs"
+                      onClick={() => setSelectedActivity(null)}
+                      className="shrink-0 text-slate-400 hover:text-slate-600"
+                      aria-label="Clear selected activity"
+                    >
+                      <X className="h-3.5 w-3.5" aria-hidden="true" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+                      <input
+                        id="injuryActivitySearch_aiPage"
+                        type="text"
+                        value={activitySearch}
+                        onChange={(e) => setActivitySearch(e.target.value)}
+                        onFocus={() => setActivityOpen(true)}
+                        placeholder="Search by date or distance..."
+                        className="w-full rounded-md border border-slate-200 pl-8 pr-3 py-2 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                      />
+                    </div>
+                    {activityOpen && (
+                      <div
+                        id="injuryActivityList_aiPage"
+                        className="absolute z-50 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-md max-h-48 overflow-y-auto"
+                      >
+                        {activityLoading ? (
+                          <div className="flex items-center justify-center py-4">
+                            <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                          </div>
+                        ) : activityList.length === 0 ? (
+                          <p className="px-3 py-3 text-xs text-slate-400">No activities found</p>
+                        ) : (
+                          activityList.map((a) => (
+                            <Button
+                              key={a.id}
+                              id={`injuryActivityItem_aiPage_${a.id}`}
+                              variant="ghost"
+                              fullWidth
+                              onClick={() => {
+                                setSelectedActivity(a)
+                                setActivityOpen(false)
+                                setActivitySearch('')
+                              }}
+                              className="text-left px-3 py-2.5 h-auto items-start flex-col border-b border-slate-100 last:border-0"
+                            >
+                              {a.name && (
+                                <p className="text-sm font-medium text-slate-700 truncate">
+                                  {a.name}
+                                </p>
+                              )}
+                              <p className="text-xs text-slate-400 mt-0.5">
+                                {new Date(a.started_at).toLocaleDateString('en-GB', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric',
+                                })}
+                                {a.distance_m && ` · ${fmtDist(a.distance_m)}`}
+                                {a.avg_pace_sec_per_km && ` · ${fmtPace(a.avg_pace_sec_per_km)}`}
+                              </p>
+                            </Button>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </FieldContent>
+            </div>
+
+            <FieldContent>
+              <FieldLabel htmlFor="injuryQuestionInput_aiPage">Your question</FieldLabel>
+              <Textarea
+                id="injuryQuestionInput_aiPage"
+                value={question}
+                onChange={handleQuestionChange}
+                placeholder={
+                  activeRole?.placeholder ?? 'Describe your symptoms or ask a question...'
+                }
+                rows={3}
+                required
+                minLength={10}
+                className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none"
+              />
+            </FieldContent>
+
+            {emergencyBlock ? (
+              <div
+                role="alert"
+                className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-300 px-3 py-2"
+              >
+                <AlertTriangle
+                  className="h-4 w-4 text-red-500 shrink-0 mt-0.5"
+                  aria-hidden="true"
+                />
+                <p className="text-xs text-red-800 font-medium">
+                  Pain at this level needs immediate medical attention. Please stop training and see
+                  a doctor or go to an emergency clinic.
+                </p>
+              </div>
+            ) : (
+              <>
+                <Button
+                  id="injurySubmitBtn_aiPage"
+                  type="submit"
+                  size="md"
+                  disabled={!isQuestionValid || loading}
+                  className="bg-violet-600 hover:bg-violet-700 text-white text-sm focus-visible:ring-2 focus-visible:ring-violet-200"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" aria-hidden="true" />
+                      Getting guidance...
+                    </>
+                  ) : (
+                    <>
+                      <Stethoscope className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+                      Ask {activeRole?.label ?? 'AI'}
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+          </form>
+        )}
+
+        {!showHistory && loading && (
+          <div
+            className="space-y-2 animate-pulse motion-reduce:animate-none"
+            aria-label="Loading injury coach response"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <div className="h-3 bg-slate-200 rounded w-1/2" aria-hidden="true" />
+            <div className="h-3 bg-slate-200 rounded w-full" aria-hidden="true" />
+            <div className="h-3 bg-slate-200 rounded w-4/5" aria-hidden="true" />
+            <div className="h-3 bg-slate-200 rounded w-3/5" aria-hidden="true" />
+          </div>
+        )}
+
+        {!showHistory && !loading && error && (
+          <div role="alert" aria-live="polite" className="text-sm text-red-500">
+            {error}
+          </div>
+        )}
+
+        {!showHistory && !loading && result && (
+          <div
+            id="injuryOutputCard_aiPage"
+            className="rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-3"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {escalate && (
+              <div
+                id="injuryEscalateBanner_aiPage"
+                role="alert"
+                className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-300 px-3 py-2"
+              >
+                <AlertTriangle
+                  className="h-4 w-4 text-red-500 shrink-0 mt-0.5"
+                  aria-hidden="true"
+                />
+                <p className="text-xs text-red-800 font-medium">
+                  This situation may require in-person professional evaluation. Please consult a
+                  qualified healthcare provider.
+                </p>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                AI Response
+              </p>
+              {activeRole && (
+                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium shrink-0">
+                  {activeRole.label}
+                </span>
+              )}
+            </div>
+
+            <div className="prose-sm text-slate-700">
+              {renderMarkdown(result?.content ?? result?.data?.content)}
+            </div>
+
+            <div className="flex items-start gap-2 bg-white border border-slate-200 px-3 py-2 rounded-lg">
+              <Info className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-0.5" aria-hidden="true" />
+              <p className="text-xs text-slate-500">
+                AI guidance only — not a substitute for professional medical advice.
+              </p>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

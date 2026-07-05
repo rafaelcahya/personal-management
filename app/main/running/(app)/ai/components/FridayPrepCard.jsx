@@ -1,6 +1,7 @@
 'use client'
 
 import { CalendarClock, Clock, MapPin } from 'lucide-react'
+import Card from '@/components/base/Card/Card'
 import { parseInline } from './utils'
 import {
   Accordion,
@@ -101,11 +102,7 @@ export default function FridayPrepCard({ fridayPrep }) {
   const stale = hasCurrentWeek ? isStale(fridayPrep.created_at) : false
 
   return (
-    <section
-      id="fridayPrepCard_aiCoachPage"
-      className="rounded-xl border border-slate-200 bg-white overflow-hidden"
-      aria-label="Weekend training plan"
-    >
+    <Card id="fridayPrepCard_aiCoachPage" aria-label="Weekend training plan" as="section">
       <Accordion type="single" collapsible>
         <AccordionItem value="friday-prep" className="border-0">
           <AccordionTrigger className="px-4 py-3 items-center hover:no-underline hover:bg-slate-50 focus-visible:ring-violet-200 focus-visible:ring-inset">
@@ -173,6 +170,6 @@ export default function FridayPrepCard({ fridayPrep }) {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </section>
+    </Card>
   )
 }

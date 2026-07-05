@@ -12,7 +12,13 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts'
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import { fetchSessionProfile } from '@/lib/api/running'
 
 const MORNING_COLOR = '#f59e0b'
@@ -213,27 +219,22 @@ export default function SessionProfileSection() {
       aria-label="Session Profile — Morning vs Evening"
       className="scroll-mt-20"
     >
-      <Card className="border border-slate-200/70 shadow-sm py-0">
-        <CardContent className="px-5 py-5">
-          <div className="flex flex-col gap-1 mb-4">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <div className="flex items-center gap-2">
-                <Clock className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-                <h3 className="text-sm font-semibold text-slate-700">
-                  {bothThresholdMet ? 'Morning vs Evening' : 'Session Profile — Morning vs Evening'}
-                </h3>
-              </div>
-              {!loading && !error && (
-                <span className="text-[10px] text-slate-400 bg-slate-100 rounded-full px-2 py-0.5 shrink-0">
-                  {totalRunsWithRe} of {totalRuns} runs have training load data
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-slate-400">
+      <Card>
+        <CardHeader>
+          <CardIcon icon={Clock} />
+          <div className="min-w-0 flex-1">
+            <CardTitle>
+              {bothThresholdMet ? 'Morning vs Evening' : 'Session Profile — Morning vs Evening'}
+            </CardTitle>
+            <CardDescription>
               Volume and training load split by time of day (WIB). Morning = 05–11, Evening = 12–20.
-            </p>
+              {!loading &&
+                !error &&
+                ` · ${totalRunsWithRe} of ${totalRuns} runs have training load data`}
+            </CardDescription>
           </div>
-
+        </CardHeader>
+        <CardContent>
           {loading && <Skeleton />}
 
           {!loading && error && (

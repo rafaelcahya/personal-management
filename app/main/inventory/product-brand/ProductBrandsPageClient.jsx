@@ -11,6 +11,7 @@ import Input from '@/components/base/Input/Input'
 import Button from '@/components/base/Button/Button'
 import { Search, X, Tag, AlertCircle } from 'lucide-react'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import Card, { CardContent } from '@/components/base/Card/Card'
 
 const LIMIT = 15
 
@@ -101,84 +102,86 @@ export default function ProductBrandsPageClient() {
         breadcrumbs={[{ label: 'Inventory', href: '/main/inventory' }, { label: 'Product Brand' }]}
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-        <ProductBrandTableHeader brands={brands} />
-
-        {/* Controls bar */}
-        <div
-          id="controlsBar_productBrandPage"
-          className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5"
-        >
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
-            <BrandSearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-            <div className="flex items-center justify-between gap-2 shrink-0">
-              <ProductBrandFilterDropdown
-                filter={filterStatus}
-                onFilterChange={setFilterStatus}
-                sortOrder={sortOrder}
-                onSortChange={setSortOrder}
-              />
-              <AddProductBrand onAdded={handleRefresh} />
+      <Card className="overflow-hidden">
+        <ProductBrandTableHeader
+          brands={brands}
+          controls={
+            <div
+              id="controlsBar_productBrandPage"
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between w-full"
+            >
+              <BrandSearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+              <div className="flex items-center justify-between gap-2 shrink-0">
+                <ProductBrandFilterDropdown
+                  filter={filterStatus}
+                  onFilterChange={setFilterStatus}
+                  sortOrder={sortOrder}
+                  onSortChange={setSortOrder}
+                />
+                <AddProductBrand onAdded={handleRefresh} />
+              </div>
             </div>
-          </div>
-        </div>
+          }
+        />
 
         {/* Table area */}
-        {loading ? (
-          <div className="animate-pulse" aria-label="Loading brands">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
-                <Skeleton className="h-4 w-4" />
-                <Skeleton className="h-4 w-6" />
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-5 w-16 rounded-full" />
-                <Skeleton className="h-5 w-10 rounded-full" />
-                <Skeleton className="h-4 flex-1 hidden sm:block" />
-                <Skeleton className="h-6 w-6 rounded" />
+        <CardContent padding="none">
+          {loading ? (
+            <div className="animate-pulse" aria-label="Loading brands">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
+                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="h-4 w-6" />
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-10 rounded-full" />
+                  <Skeleton className="h-4 flex-1 hidden sm:block" />
+                  <Skeleton className="h-6 w-6 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div
+              id="errorState_productBrandPage"
+              className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">Failed to load brands</p>
+                <p className="text-xs text-slate-500">Check your connection and try again</p>
               </div>
-            ))}
-          </div>
-        ) : error ? (
-          <div
-            id="errorState_productBrandPage"
-            className="flex flex-col items-center justify-center gap-4 py-16 text-center"
-            role="alert"
-            aria-live="assertive"
-          >
-            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">Failed to load brands</p>
-              <p className="text-xs text-slate-500">Check your connection and try again</p>
+              <Button variant="outline" size="base" onClick={handleRefresh} className="min-w-11">
+                Try again
+              </Button>
             </div>
-            <Button variant="outline" size="base" onClick={handleRefresh} className="min-w-11">
-              Try again
-            </Button>
-          </div>
-        ) : !hasActiveFilters && brands.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-            <Tag className="size-10 text-slate-300" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">No brands yet</p>
-              <p className="text-xs text-slate-500">
-                Add your first brand to start organizing your inventory
-              </p>
+          ) : !hasActiveFilters && brands.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+              <Tag className="size-10 text-slate-300" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">No brands yet</p>
+                <p className="text-xs text-slate-500">
+                  Add your first brand to start organizing your inventory
+                </p>
+              </div>
+              <AddProductBrand onAdded={handleRefresh} />
             </div>
-            <AddProductBrand onAdded={handleRefresh} />
-          </div>
-        ) : (
-          <ProductBrandsTable
-            brands={brands}
-            page={page}
-            totalPages={totalPages}
-            total={total}
-            filterStatus={filterStatus}
-            searchQuery={searchQuery}
-            onPrev={() => setPage((p) => p - 1)}
-            onNext={() => setPage((p) => p + 1)}
-            onRefresh={handleRefresh}
-          />
-        )}
-      </div>
+          ) : (
+            <ProductBrandsTable
+              brands={brands}
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              filterStatus={filterStatus}
+              searchQuery={searchQuery}
+              onPrev={() => setPage((p) => p - 1)}
+              onNext={() => setPage((p) => p + 1)}
+              onRefresh={handleRefresh}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

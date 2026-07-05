@@ -1,6 +1,13 @@
 'use client'
 
-import Card from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardAction,
+  CardDescription,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import {
   Target,
   Shield,
@@ -42,56 +49,59 @@ function StatCell({ label, value, sub, valueClassName, className = '' }) {
 export default function PerformanceSection({ metrics, loading }) {
   if (loading) {
     return (
-      <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-6 animate-pulse">
+      <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-6">
+        {/* Performance Ratios */}
         <div className="space-y-3">
           <div className="flex flex-col gap-1.5">
-            <div className="h-4 w-40 bg-slate-200 rounded" />
-            <div className="h-3 w-72 bg-slate-100 rounded" />
+            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-3 w-72" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="flex flex-col gap-1.5">
-                <div className="h-3 w-20 bg-slate-200 rounded" />
-                <div className="h-5 w-12 bg-slate-200 rounded" />
-                <div className="h-3 w-16 bg-slate-100 rounded" />
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-5 w-12" />
+                <Skeleton className="h-3 w-16" />
               </div>
             ))}
           </div>
         </div>
         <div className="border-t border-slate-100" />
+        {/* Trade Efficiency */}
         <div className="space-y-3">
           <div className="flex flex-col gap-1.5">
-            <div className="h-4 w-36 bg-slate-200 rounded" />
-            <div className="h-3 w-80 bg-slate-100 rounded" />
+            <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-3 w-80" />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="flex flex-col gap-1.5">
-                <div className="h-3 w-20 bg-slate-200 rounded" />
-                <div className="h-5 w-24 bg-slate-200 rounded" />
-                <div className="h-3 w-14 bg-slate-100 rounded" />
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-3 w-14" />
               </div>
             ))}
           </div>
-          <div className="bg-slate-100 rounded-lg px-4 py-3 flex flex-col gap-1.5">
-            <div className="h-3 w-32 bg-slate-200 rounded" />
-            <div className="h-5 w-40 bg-slate-200 rounded" />
-            <div className="h-3 w-52 bg-slate-100 rounded" />
+          <div className="bg-slate-50 rounded-lg px-4 py-3 flex flex-col gap-1.5">
+            <Skeleton className="h-3 w-32" />
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-3 w-52" />
           </div>
         </div>
         <div className="border-t border-slate-100" />
+        {/* Risk */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <div className="h-4 w-12 bg-slate-200 rounded" />
-            <div className="h-5 w-16 bg-slate-200 rounded-full" />
+            <Skeleton className="h-4 w-12" />
+            <Skeleton className="h-5 w-16 rounded-full" />
           </div>
-          <div className="h-6 bg-slate-200 rounded-lg" />
+          <Skeleton className="h-6 rounded-lg" />
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-slate-100 rounded-lg px-4 py-3 flex flex-col gap-1.5">
-                <div className="h-3 w-20 bg-slate-200 rounded" />
-                <div className="h-5 w-16 bg-slate-200 rounded" />
-                <div className="h-3 w-24 bg-slate-100 rounded" />
+              <div key={i} className="bg-slate-50 rounded-lg px-4 py-3 flex flex-col gap-1.5">
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-5 w-16" />
+                <Skeleton className="h-3 w-24" />
               </div>
             ))}
           </div>
@@ -170,15 +180,15 @@ export default function PerformanceSection({ metrics, loading }) {
   return (
     <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-4">
       {/* Performance Ratios */}
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <Zap className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-          <h3 className="text-sm font-semibold text-slate-700">Performance Ratios</h3>
+      <CardHeader className="p-0 border-0">
+        <CardIcon icon={Zap} />
+        <div className="min-w-0 flex-1">
+          <CardTitle>Performance Ratios</CardTitle>
+          <CardDescription>
+            Key ratios measuring your trading edge, reward-risk balance, and capital efficiency.
+          </CardDescription>
         </div>
-        <p className="text-xs text-slate-400">
-          Key ratios measuring your trading edge, reward-risk balance, and capital efficiency.
-        </p>
-      </div>
+      </CardHeader>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
         <StatCell
           label={
@@ -226,16 +236,16 @@ export default function PerformanceSection({ metrics, loading }) {
       <div className="border-t border-slate-100" />
 
       {/* Trade Efficiency */}
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-          <h3 className="text-sm font-semibold text-slate-700">Trade Efficiency</h3>
+      <CardHeader className="p-0 border-0">
+        <CardIcon icon={BarChart3} />
+        <div className="min-w-0 flex-1">
+          <CardTitle>Trade Efficiency</CardTitle>
+          <CardDescription>
+            Average impact per trade and profit concentration — applies {marginOfError}% margin of
+            error to safe-zone estimates.
+          </CardDescription>
         </div>
-        <p className="text-xs text-slate-400">
-          Average impact per trade and profit concentration — applies {marginOfError}% margin of
-          error to safe-zone estimates.
-        </p>
-      </div>
+      </CardHeader>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
         <StatCell
           label={
@@ -300,23 +310,23 @@ export default function PerformanceSection({ metrics, loading }) {
       <div className="border-t border-slate-100" />
 
       {/* Risk */}
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Shield className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-            <h3 className="text-sm font-semibold text-slate-700">Risk</h3>
-          </div>
+      <CardHeader className="p-0 border-0">
+        <CardIcon icon={Shield} />
+        <div className="min-w-0 flex-1">
+          <CardTitle>Risk</CardTitle>
+          <CardDescription>
+            Key risk metrics across your trades — reward-to-risk ratio, volatility, and capital
+            buffer.
+          </CardDescription>
+        </div>
+        <CardAction>
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${riskLevel.className}`}
           >
             {riskLevel.label}
           </span>
-        </div>
-        <p className="text-xs text-slate-400">
-          Key risk metrics across your trades — reward-to-risk ratio, volatility, and capital
-          buffer.
-        </p>
-      </div>
+        </CardAction>
+      </CardHeader>
 
       <div className="space-y-2">
         <div className="flex justify-between text-xs text-slate-500">

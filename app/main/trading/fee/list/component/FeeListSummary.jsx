@@ -37,11 +37,7 @@ export default function FeeListSummary({ feeCount, totalFee }) {
         {stats.map((stat, index) => {
           const Icon = stat.icon
           return (
-            <Card
-              id={`${stat.id}_desktopView`}
-              key={index}
-              className="p-0 border border-slate-200/50 shadow-slate-100"
-            >
+            <Card id={`${stat.id}_desktopView`} key={index}>
               <CardContent className="px-4 py-4">
                 <div className="flex items-center justify-between">
                   <div>

@@ -1,5 +1,7 @@
 'use client'
 
+import Card, { CardContent } from '@/components/base/Card/Card'
+
 function acwrColor(acwr) {
   if (acwr == null) return 'text-slate-400'
   if (acwr < 1.3) return 'text-emerald-600'
@@ -33,38 +35,44 @@ export default function TrainingLoadTiles({ trainingLoad }) {
       className="grid grid-cols-3 gap-3"
       aria-label="Training load overview"
     >
-      <div
-        className={`rounded-xl border p-4 flex flex-col gap-1 ${acwrBg(acwr)}`}
+      <Card
+        className={`${acwrBg(acwr)} shadow-none`}
         aria-label={`ACWR: ${acwr != null ? acwr.toFixed(2) : 'No data'}, ${acwrLabel(acwr)}`}
       >
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">ACWR</p>
-        <p className={`text-2xl font-bold leading-none ${acwrColor(acwr)}`}>
-          {acwr != null ? acwr.toFixed(2) : '—'}
-        </p>
-        <p className={`text-xs font-medium ${acwrColor(acwr)}`}>{acwrLabel(acwr)}</p>
-      </div>
+        <CardContent padding="none" className="p-4 flex flex-col gap-1">
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">ACWR</p>
+          <p className={`text-2xl font-bold leading-none ${acwrColor(acwr)}`}>
+            {acwr != null ? acwr.toFixed(2) : '—'}
+          </p>
+          <p className={`text-xs font-medium ${acwrColor(acwr)}`}>{acwrLabel(acwr)}</p>
+        </CardContent>
+      </Card>
 
-      <div
-        className="rounded-xl border bg-blue-50 border-blue-200 p-4 flex flex-col gap-1"
+      <Card
+        className="bg-blue-50 border-blue-200 shadow-none"
         aria-label={`ATL (Acute Training Load, 7-day): ${atl != null ? Math.round(atl) : 'No data'}`}
       >
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">ATL · 7d</p>
-        <p className="text-2xl font-bold leading-none text-blue-600">
-          {atl != null ? Math.round(atl) : '—'}
-        </p>
-        <p className="text-xs text-blue-500 font-medium">Acute load</p>
-      </div>
+        <CardContent padding="none" className="p-4 flex flex-col gap-1">
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">ATL · 7d</p>
+          <p className="text-2xl font-bold leading-none text-blue-600">
+            {atl != null ? Math.round(atl) : '—'}
+          </p>
+          <p className="text-xs text-blue-500 font-medium">Acute load</p>
+        </CardContent>
+      </Card>
 
-      <div
-        className="rounded-xl border bg-violet-50 border-violet-200 p-4 flex flex-col gap-1"
+      <Card
+        className="bg-violet-50 border-violet-200 shadow-none"
         aria-label={`CTL (Chronic Training Load, 28-day): ${ctl != null ? Math.round(ctl) : 'No data'}`}
       >
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">CTL · 28d</p>
-        <p className="text-2xl font-bold leading-none text-violet-600">
-          {ctl != null ? Math.round(ctl) : '—'}
-        </p>
-        <p className="text-xs text-violet-500 font-medium">Chronic load</p>
-      </div>
+        <CardContent padding="none" className="p-4 flex flex-col gap-1">
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">CTL · 28d</p>
+          <p className="text-2xl font-bold leading-none text-violet-600">
+            {ctl != null ? Math.round(ctl) : '—'}
+          </p>
+          <p className="text-xs text-violet-500 font-medium">Chronic load</p>
+        </CardContent>
+      </Card>
     </div>
   )
 }

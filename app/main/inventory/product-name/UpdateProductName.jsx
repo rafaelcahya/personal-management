@@ -33,6 +33,7 @@ import {
 import { productNameSchema } from '@/schemas/productName'
 import { updateProductName } from '@/lib/api/productName'
 import DeleteProductName from './DeleteProductName'
+import Card, { CardContent, CardDescription, CardIcon } from '@/components/base/Card/Card'
 
 export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
   const [loading, setLoading] = useState(false)
@@ -193,18 +194,15 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
             />
 
             {isInUse && !isDeleted && (
-              <div
-                id="productNameInUseWarning_updateDialog"
-                className="rounded-md border border-rose-300 bg-rose-50 dark:bg-rose-500/10 dark:border-rose-500/30 p-3"
-              >
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
-                  <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
+              <Card id="productNameInUseWarning_updateDialog" variant="danger">
+                <CardContent className="flex items-start gap-2">
+                  <CardIcon icon={AlertCircle} />
+                  <CardDescription className="text-sm font-medium text-rose-600 dark:text-rose-400">
                     Product name is still used by {productName.product_count} product(s) and cannot
                     be deleted.
-                  </p>
-                </div>
-              </div>
+                  </CardDescription>
+                </CardContent>
+              </Card>
             )}
           </ModalBody>
 

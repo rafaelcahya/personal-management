@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Info, Heart } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
+import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
 import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
@@ -157,21 +158,14 @@ export default function HrZonesSection() {
   const hasValidMaxHr = maxHr !== '' && !isNaN(maxHrNum) && maxHrNum >= 60
 
   return (
-    <section
-      aria-label="HR zones"
-      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
-    >
-      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-        <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-          <Heart className="size-4 text-violet-600" aria-hidden="true" />
+    <Card as="section" aria-label="HR zones">
+      <CardHeader>
+        <CardIcon icon={Heart} />
+        <div className="min-w-0 flex-1">
+          <CardTitle>HR Zones</CardTitle>
+          <CardDescription>Heart rate boundaries for training intensity</CardDescription>
         </div>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900">HR Zones</p>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Heart rate boundaries for training intensity
-          </p>
-        </div>
-      </div>
+      </CardHeader>
 
       {loading ? (
         <div id="hrZonesLoading_settingsPage" className="px-5 py-4 flex flex-col gap-3">
@@ -378,6 +372,6 @@ export default function HrZonesSection() {
           </div>
         </div>
       )}
-    </section>
+    </Card>
   )
 }

@@ -1,6 +1,12 @@
 ﻿'use client'
 
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import Button from '@/components/base/Button/Button'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
 import {
@@ -410,19 +416,19 @@ export default function TrainingLoad({ data, weeklyStats }) {
 
   return (
     <section id="trainingLoadCard" aria-label="Training load">
-      <Card className="border border-slate-200/70 shadow-sm py-0">
-        <CardContent className="px-5 py-5 flex flex-col gap-3">
-          <div className="flex flex-col gap-1 mb-1">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-              <h3 className="text-sm font-semibold text-slate-700">Training Load</h3>
-            </div>
-            <p className="text-xs text-slate-400">
+      <Card>
+        <CardHeader>
+          <CardIcon icon={TrendingUp} />
+          <div>
+            <CardTitle>Training Load</CardTitle>
+            <CardDescription>
               ACWR, acute vs chronic load, and weekly training metrics.
-            </p>
+            </CardDescription>
           </div>
+        </CardHeader>
+        <CardContent padding="md" className="flex flex-col gap-3">
           {/* Hero row — ACWR + status + ramp */}
-          <div className="flex flex-col-reverse sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-start sm:justify-between gap-4 pb-2">
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs text-slate-400">

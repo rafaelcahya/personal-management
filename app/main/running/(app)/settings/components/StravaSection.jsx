@@ -12,6 +12,7 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
+import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import {
   getStravaStatus,
@@ -82,22 +83,16 @@ export default function StravaSection() {
   }
 
   return (
-    <section
-      aria-label="Strava"
-      id="stravaConnectionSection_settings"
-      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
-    >
-      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-        <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-          <Activity className="size-4 text-violet-600" aria-hidden="true" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900">Strava</p>
-          <p className="text-xs text-slate-500 mt-0.5">
+    <Card as="section" aria-label="Strava" id="stravaConnectionSection_settings">
+      <CardHeader>
+        <CardIcon icon={Activity} />
+        <div className="min-w-0 flex-1">
+          <CardTitle>Strava</CardTitle>
+          <CardDescription>
             Connect and sync your Strava account to import activities
-          </p>
+          </CardDescription>
         </div>
-      </div>
+      </CardHeader>
 
       {statusLoading ? (
         <div id="stravaConnectionLoading_settings" className="px-5 py-4 flex flex-col gap-3">
@@ -263,6 +258,6 @@ export default function StravaSection() {
           </div>
         </div>
       )}
-    </section>
+    </Card>
   )
 }

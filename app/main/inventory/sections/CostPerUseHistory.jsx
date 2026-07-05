@@ -12,6 +12,7 @@ import {
   Dot,
 } from 'recharts'
 import { format } from 'date-fns'
+import { TrendingUp } from 'lucide-react'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import {
   Select,
@@ -20,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
+import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
 
 function CustomTooltip({ active, payload }) {
   if (!active || !payload?.length) return null
@@ -88,31 +90,34 @@ export default function CostPerUseHistory({ items, loading }) {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <div className="h-4 bg-slate-200 rounded w-48 animate-pulse" />
-          <div className="h-3 bg-slate-100 rounded w-36 mt-1.5 animate-pulse" />
-        </div>
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col gap-1.5 flex-1">
+            <div className="h-4 bg-slate-200 rounded w-48 animate-pulse" />
+            <div className="h-3 bg-slate-100 rounded w-36 animate-pulse" />
+          </div>
+        </CardHeader>
         <div className="px-5 py-6">
           <div className="h-48 bg-slate-100 rounded animate-pulse" />
         </div>
-      </div>
+      </Card>
     )
   }
 
   if (items.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-base font-semibold text-slate-800">📈 Avg Cost/Use Over Time</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            How your cost per use changes with each purchase
-          </p>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardIcon icon={TrendingUp} />
+          <div className="min-w-0 flex-1">
+            <CardTitle>Avg Cost/Use Over Time</CardTitle>
+            <CardDescription>How your cost per use changes with each purchase</CardDescription>
+          </div>
+        </CardHeader>
         <div className="py-10 text-center">
           <p className="text-sm text-slate-400">No purchase history yet 📊</p>
         </div>
-      </div>
+      </Card>
     )
   }
 
@@ -125,20 +130,23 @@ export default function CostPerUseHistory({ items, loading }) {
   const minVal = allValues.length ? Math.min(...allValues) * 0.85 : 0
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100 flex flex-col items-start justify-between gap-3">
-        <div>
-          <h2 className="text-base font-semibold text-slate-800">📈 Avg Cost/Use Over Time</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Cumulative cost per use after each purchase — hover for delta
-          </p>
+    <Card>
+      <CardHeader className="flex-col">
+        <div className="flex items-start gap-3">
+          <CardIcon icon={TrendingUp} />
+          <div className="min-w-0 flex-1">
+            <CardTitle>Avg Cost/Use Over Time</CardTitle>
+            <CardDescription>
+              Cumulative cost per use after each purchase — hover for delta
+            </CardDescription>
+          </div>
         </div>
         <ProductSelector
           items={items}
           selectedId={selected?.product_list_id}
           onChange={setSelectedId}
         />
-      </div>
+      </CardHeader>
 
       <div className="px-5 py-4">
         {chartData.length < 2 ? (
@@ -176,6 +184,6 @@ export default function CostPerUseHistory({ items, loading }) {
           </ResponsiveContainer>
         )}
       </div>
-    </div>
+    </Card>
   )
 }

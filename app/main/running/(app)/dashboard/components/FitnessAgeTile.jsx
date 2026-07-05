@@ -3,7 +3,14 @@
 import Link from 'next/link'
 import Button from '@/components/base/Button/Button'
 import { Brain, Info } from 'lucide-react'
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
 
 const TOOLTIP_TEXT =
@@ -32,16 +39,18 @@ export default function FitnessAgeTile({ fitnessAge, viewTrendHref }) {
 
   return (
     <section id="fitnessAgeTile_dashboardPage" aria-label="Fitness Age">
-      <Card className="border border-slate-200/70 shadow-sm py-0">
-        <CardContent className="px-5 py-5">
-          <div className="flex flex-col gap-1 mb-4">
-            <div className="flex items-center gap-2">
-              <Brain className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-              <h3 className="text-sm font-semibold text-slate-700">Fitness Age</h3>
+      <Card>
+        <CardHeader layout="below">
+          <div className="flex gap-2">
+            <CardIcon icon={Brain} />
+            <div>
+              <CardTitle>Fitness Age</CardTitle>
+              <CardDescription>
+                Estimated cardiovascular age based on VO₂max population norms.
+              </CardDescription>
             </div>
-            <p className="text-xs text-slate-400">
-              Estimated cardiovascular age based on VO₂max population norms.
-            </p>
+          </div>
+          <CardAction>
             {viewTrendHref && (
               <Link
                 href={viewTrendHref}
@@ -50,7 +59,9 @@ export default function FitnessAgeTile({ fitnessAge, viewTrendHref }) {
                 View full trend →
               </Link>
             )}
-          </div>
+          </CardAction>
+        </CardHeader>
+        <CardContent className="px-5 py-5">
           <div className="flex items-start gap-4">
             <div className="p-2 rounded-lg bg-violet-50 shrink-0 mt-0.5">
               <Brain className="size-4 text-violet-600" aria-hidden="true" />

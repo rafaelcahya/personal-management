@@ -17,6 +17,7 @@ import TimelineView from './component/TimelineView'
 import EventAnalysisModal from './component/EventAnalysisModal'
 import EventAnalysisHistoryModal from './component/EventAnalysisHistoryModal'
 import EventPagination from './component/EventPagination'
+import Card, { CardContent } from '@/components/base/Card/Card'
 
 const FILTER_STORAGE_KEY = 'event-list-filter'
 
@@ -137,127 +138,132 @@ export default function EventsPageClient() {
         ]}
       />
 
-      <div className="flex-1 min-h-0 relative bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-        <EventTableHeader />
+      <Card>
+        <EventTableHeader
+          controls={
+            <div className="space-y-2 w-full">
+              <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+                {/* View toggle — left */}
+                <Tabs value={view} onValueChange={setView} className="shrink-0 self-start">
+                  <TabsList variant="pill" size="sm">
+                    <TabsTrigger id="listViewBtn_eventPage" value="list" icon={List}>
+                      List
+                    </TabsTrigger>
+                    <TabsTrigger id="timelineViewBtn_eventPage" value="timeline" icon={AlignLeft}>
+                      Timeline
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
 
-        {/* Controls area */}
-        <div className="px-5 py-3 border-b border-slate-100 flex flex-col gap-3">
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-            {/* View toggle — left */}
-            <Tabs value={view} onValueChange={setView} className="shrink-0 self-start">
-              <TabsList variant="pill" size="sm">
-                <TabsTrigger id="listViewBtn_eventPage" value="list" icon={List}>
-                  List
-                </TabsTrigger>
-                <TabsTrigger id="timelineViewBtn_eventPage" value="timeline" icon={AlignLeft}>
-                  Timeline
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+                {/* Search + Filter + Add — right */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="relative flex-1 min-w-[160px]">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+                    <Input
+                      id="eventSearchInput_eventPage"
+                      value={searchInput}
+                      onChange={handleSearchChange}
+                      placeholder="Search events..."
+                      className="pl-8 h-9 w-full lg:w-48 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                    />
+                  </div>
 
-            {/* Search + Filter + Add — right */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="relative flex-1 min-w-[160px]">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
-                <Input
-                  id="eventSearchInput_eventPage"
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  placeholder="Search events..."
-                  className="pl-8 h-9 w-full lg:w-48 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                />
+                  <EventFilterDropdown
+                    filter={filter}
+                    onFilterChange={handleFilterChange}
+                    events={listEvent}
+                  />
+
+                  <AddEvent
+                    onAdded={() => doFetch({ searchVal: search, pageVal: 1, filterVal: filter })}
+                  />
+                </div>
               </div>
 
-              <EventFilterDropdown
-                filter={filter}
-                onFilterChange={handleFilterChange}
-                events={listEvent}
-              />
-
-              <AddEvent
-                onAdded={() => doFetch({ searchVal: search, pageVal: 1, filterVal: filter })}
-              />
+              {/* AI History button */}
+              <div className="flex justify-end">
+                <Button
+                  variant="outline"
+                  size="base"
+                  onClick={() => setHistoryModalOpen(true)}
+                  className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
+                >
+                  <History className="size-3.5" />
+                  AI Analysis History
+                </Button>
+              </div>
             </div>
-          </div>
-
-          {/* AI History button */}
-          <div className="flex justify-end">
-            <Button
-              variant="outline"
-              size="base"
-              onClick={() => setHistoryModalOpen(true)}
-              className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
-            >
-              <History className="size-3.5" />
-              AI Analysis History
-            </Button>
-          </div>
-        </div>
+          }
+        />
 
         {/* Content area */}
-        {isLoading ? (
-          <div className="flex flex-col gap-3 px-5 py-5">
-            {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-12 w-full rounded-lg" />
-            ))}
-          </div>
-        ) : isEmpty ? (
-          <div className="flex flex-col items-center justify-center py-12 gap-3">
-            {isFiltered ? (
-              <>
-                <SearchX className="size-10 text-slate-300" />
-                <p className="text-center font-medium text-slate-600 text-lg">No matching events</p>
-                <p className="text-center text-slate-500 text-sm">
-                  Try a different search term or filter
-                </p>
-                {filter && (
-                  <Button
-                    variant="outline"
-                    size="base"
-                    onClick={() => handleFilterChange(null)}
-                    className="text-violet-600 border-violet-200 hover:bg-violet-50"
-                  >
-                    Clear filter
-                  </Button>
-                )}
-              </>
-            ) : (
-              <>
-                <CalendarX2 className="size-10 text-slate-300" />
-                <p className="text-center font-medium text-slate-600 text-lg">No events yet</p>
-                <p className="text-center text-slate-500 text-sm">
-                  Start by adding your first market event to track!
-                </p>
-                <AddEvent
-                  onAdded={() => doFetch({ searchVal: search, pageVal: 1, filterVal: filter })}
+        <CardContent padding="none">
+          {isLoading ? (
+            <div className="flex flex-col gap-3 px-5 py-5">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full rounded-lg" />
+              ))}
+            </div>
+          ) : isEmpty ? (
+            <div className="flex flex-col items-center justify-center py-12 gap-3">
+              {isFiltered ? (
+                <>
+                  <SearchX className="size-10 text-slate-300" />
+                  <p className="text-center font-medium text-slate-600 text-lg">
+                    No matching events
+                  </p>
+                  <p className="text-center text-slate-500 text-sm">
+                    Try a different search term or filter
+                  </p>
+                  {filter && (
+                    <Button
+                      variant="outline"
+                      size="base"
+                      onClick={() => handleFilterChange(null)}
+                      className="text-violet-600 border-violet-200 hover:bg-violet-50"
+                    >
+                      Clear filter
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <CalendarX2 className="size-10 text-slate-300" />
+                  <p className="text-center font-medium text-slate-600 text-lg">No events yet</p>
+                  <p className="text-center text-slate-500 text-sm">
+                    Start by adding your first market event to track!
+                  </p>
+                  <AddEvent
+                    onAdded={() => doFetch({ searchVal: search, pageVal: 1, filterVal: filter })}
+                  />
+                </>
+              )}
+            </div>
+          ) : (
+            <>
+              {view === 'timeline' ? (
+                <div className="px-5 py-4">
+                  <TimelineView events={listEvent} />
+                </div>
+              ) : (
+                <EventsTable
+                  events={listEvent}
+                  onRefresh={handleRefresh}
+                  selectedIds={selectedIds}
+                  onToggle={handleToggle}
                 />
-              </>
-            )}
-          </div>
-        ) : (
-          <>
-            {view === 'timeline' ? (
-              <div className="px-5 py-4">
-                <TimelineView events={listEvent} />
-              </div>
-            ) : (
-              <EventsTable
-                events={listEvent}
-                onRefresh={handleRefresh}
-                selectedIds={selectedIds}
-                onToggle={handleToggle}
-              />
-            )}
+              )}
 
-            <EventPagination
-              page={page}
-              totalPages={totalPages}
-              total={total}
-              onPageChange={(p) => setPage(p)}
-            />
-          </>
-        )}
-      </div>
+              <EventPagination
+                page={page}
+                totalPages={totalPages}
+                total={total}
+                onPageChange={(p) => setPage(p)}
+              />
+            </>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Floating multi-select action bar */}
       {selectedIds.size >= 1 && (

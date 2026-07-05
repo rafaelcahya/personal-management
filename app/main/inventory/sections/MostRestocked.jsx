@@ -3,13 +3,19 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { RefreshCw, AlertCircle } from 'lucide-react'
+import Card, {
+  CardHeader,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from '@/components/base/Card/Card'
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalTitle,
   ModalBody,
-  ModalDescription,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
@@ -148,16 +154,14 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
 
   return (
     <>
-      <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-            <RefreshCw className="size-4 text-violet-600" aria-hidden="true" />
-          </div>
+      <Card>
+        <CardHeader>
+          <CardIcon icon={RefreshCw} />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">Most Restocked</p>
-            <p className="text-xs text-slate-500 mt-0.5">Products you restock most frequently</p>
+            <CardTitle>Most Restocked</CardTitle>
+            <CardDescription>Products you restock most frequently</CardDescription>
           </div>
-        </div>
+        </CardHeader>
 
         {loading ? (
           <TableSkeleton />
@@ -185,13 +189,13 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
         )}
 
         {!loading && !error && items.length > 0 && (
-          <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
+          <CardFooter align="end" className="py-3">
             <Button variant="ghost" onClick={() => setModalOpen(true)}>
               View All
             </Button>
-          </div>
+          </CardFooter>
         )}
-      </section>
+      </Card>
 
       <Modal open={modalOpen} onOpenChange={setModalOpen}>
         <ModalContent
@@ -199,13 +203,16 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
           borderColor="border-slate-200"
           className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
         >
-          <ModalHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
-            <ModalTitle className="text-base font-semibold text-slate-800">
-              All Products — Restock History
-            </ModalTitle>
-            <ModalDescription className="text-xs text-slate-400">
-              Sorted by most restocked
-            </ModalDescription>
+          <ModalHeader>
+            <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
+              <RefreshCw className="size-4 text-violet-600" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <ModalTitle className="text-base font-semibold text-slate-800">
+                All Products — Restock History
+              </ModalTitle>
+              <p className="text-xs text-slate-400">Sorted by most restocked</p>
+            </div>
           </ModalHeader>
           <ModalBody className="overflow-y-auto flex-1 px-2">
             <RestockTable items={items} />
