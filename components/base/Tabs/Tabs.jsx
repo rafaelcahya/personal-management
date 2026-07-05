@@ -68,11 +68,34 @@ export function TabsList({ children, variant = 'underline', size = 'base', class
   const [indicatorStyle, setIndicatorStyle] = useState({})
   const isVertical = orientation === 'vertical'
 
-  // Animate underline indicator to the active tab's position
+  // Animate indicator to the active tab's position (underline + pill)
   useLayoutEffect(() => {
-    if (variant !== 'underline' || !listRef.current) return
+    if (variant !== 'underline' && variant !== 'pill') return
+    if (!listRef.current) return
     const activeEl = listRef.current.querySelector('[data-active="true"]')
     if (!activeEl) return
+
+    if (variant === 'pill') {
+      if (isVertical) {
+        setIndicatorStyle({
+          top: 0,
+          left: activeEl.offsetLeft,
+          width: activeEl.offsetWidth,
+          height: activeEl.offsetHeight,
+          transform: `translateY(${activeEl.offsetTop}px)`,
+        })
+      } else {
+        setIndicatorStyle({
+          top: activeEl.offsetTop,
+          left: 0,
+          width: activeEl.offsetWidth,
+          height: activeEl.offsetHeight,
+          transform: `translateX(${activeEl.offsetLeft}px)`,
+        })
+      }
+      return
+    }
+
     if (isVertical) {
       setIndicatorStyle({
         top: 0,
@@ -158,6 +181,19 @@ export function TabsList({ children, variant = 'underline', size = 'base', class
             }}
           />
         )}
+        {variant === 'pill' && (
+          <span
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              backgroundColor: 'white',
+              borderRadius: '0.5rem',
+              boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+              transition: 'transform 200ms ease, width 200ms ease, height 200ms ease',
+              ...indicatorStyle,
+            }}
+          />
+        )}
       </div>
     </ListCtx.Provider>
   )
@@ -195,7 +231,8 @@ export function TabsTrigger({
         variant === 'underline' && isActive && 'text-violet-700',
         variant === 'underline' && !isActive && !disabled && 'text-gray-500 hover:text-gray-800',
         // pill
-        variant === 'pill' && isActive && 'bg-white text-gray-900 shadow-sm',
+        variant === 'pill' && 'z-10',
+        variant === 'pill' && isActive && 'text-gray-900',
         variant === 'pill' && !isActive && !disabled && 'text-gray-500 hover:text-gray-700',
         // disabled
         disabled && 'opacity-40 cursor-not-allowed pointer-events-none',
