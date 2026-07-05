@@ -326,7 +326,10 @@ function UserSection({ collapsed, user, mobile = false }) {
         fullWidth
         aria-label="User menu"
         onClick={() => setOpen(!open)}
-        className={cn('justify-start gap-2.5 p-0', collapsed && 'justify-center')}
+        className={cn(
+          'justify-start gap-2.5 p-0 hover:bg-white active:bg-white',
+          collapsed && 'justify-center'
+        )}
       >
         <div className="size-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0 text-violet-700 font-semibold text-sm">
           {initials}
