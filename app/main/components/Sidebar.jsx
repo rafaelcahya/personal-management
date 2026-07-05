@@ -288,7 +288,7 @@ function UserSection({ collapsed, user, mobile = false }) {
   const initials = name.charAt(0).toUpperCase()
 
   return (
-    <div className="relative border-slate-100 p-3" ref={ref}>
+    <div className="relative" ref={ref}>
       {open && (
         <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-10">
           {!collapsed && (
@@ -326,10 +326,7 @@ function UserSection({ collapsed, user, mobile = false }) {
         fullWidth
         aria-label="User menu"
         onClick={() => setOpen(!open)}
-        className={cn(
-          'justify-start gap-2.5 rounded-xl p-2 hover:bg-slate-50 active:bg-slate-50',
-          collapsed && 'justify-center'
-        )}
+        className={cn('justify-start gap-2.5 p-0', collapsed && 'justify-center')}
       >
         <div className="size-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0 text-violet-700 font-semibold text-sm">
           {initials}
@@ -441,14 +438,14 @@ export default function Sidebar({ user }) {
         <SidebarContent className="py-0">
           <SidebarNav collapsed={collapsed} />
         </SidebarContent>
-        {!collapsed && (
-          <div className="px-4 pb-1">
-            <p id="appVersion_sidebar" className="text-[10px] text-slate-400">
+        <SidebarFooter>
+          {!collapsed && (
+            <p id="appVersion_sidebar" className="text-[10px] text-slate-400 pb-2">
               v{packageJson.version}
             </p>
-          </div>
-        )}
-        <UserSection collapsed={collapsed} user={user} />
+          )}
+          <UserSection collapsed={collapsed} user={user} />
+        </SidebarFooter>
 
         {/* Collapse toggle */}
         <Button
@@ -517,11 +514,9 @@ export default function Sidebar({ user }) {
               <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
             </SidebarContent>
             <SidebarFooter>
-              <div className="px-4 pb-1">
-                <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400">
-                  v{packageJson.version}
-                </p>
-              </div>
+              <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400 pb-2">
+                v{packageJson.version}
+              </p>
               <UserSection collapsed={false} user={user} mobile={true} />
             </SidebarFooter>
           </aside>
