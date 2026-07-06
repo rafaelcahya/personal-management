@@ -328,7 +328,7 @@ function StepBiometrics({ onNext, defaultValues }) {
               { value: 'formula', label: 'Use formula (220 − age)' },
               { value: 'manual', label: 'Enter manually' },
             ].map((option) => (
-              <label
+              <FieldLabel
                 key={option.value}
                 className={[
                   'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm cursor-pointer transition-all',
@@ -351,7 +351,7 @@ function StepBiometrics({ onNext, defaultValues }) {
                   aria-label={option.label}
                 />
                 {option.label}
-              </label>
+              </FieldLabel>
             ))}
           </div>
 
