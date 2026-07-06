@@ -2,8 +2,10 @@
 
 import Card, {
   CardAction,
+  CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -182,14 +184,14 @@ export default function PerformanceSection({ metrics, loading }) {
       {/* Performance Ratios */}
       <CardHeader className="p-0 border-0">
         <CardIcon icon={Zap} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Performance Ratios</CardTitle>
           <CardDescription>
             Key ratios measuring your trading edge, reward-risk balance, and capital efficiency.
           </CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
+      <CardContent padding="none" className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
         <StatCell
           label={
             <span className="flex items-center gap-1">
@@ -231,94 +233,96 @@ export default function PerformanceSection({ metrics, loading }) {
           valueClassName={sharpePersonalColor.text}
           sub={sharpePersonalComment}
         />
-      </div>
+      </CardContent>
 
       <div className="border-t border-slate-100" />
 
       {/* Trade Efficiency */}
       <CardHeader className="p-0 border-0">
         <CardIcon icon={BarChart3} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Trade Efficiency</CardTitle>
           <CardDescription>
             Average impact per trade and profit concentration — applies {marginOfError}% margin of
             error to safe-zone estimates.
           </CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
+      <CardContent padding="none">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Avg Profit/Trade <TrendingUp className="size-3 text-green-500" />
+              </span>
+            }
+            value={`Rp ${profitPerTrade.toLocaleString('id-ID')}`}
+            valueClassName="text-green-600"
+          />
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Avg Loss/Trade <TrendingDown className="size-3 text-red-400" />
+              </span>
+            }
+            value={`Rp ${lossPerTrade.toLocaleString('id-ID')}`}
+            valueClassName="text-red-500"
+          />
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Win Potential <Trophy className="size-3 text-amber-500" />
+              </span>
+            }
+            value={`Rp ${winStreakPotential.toLocaleString('id-ID')}`}
+            valueClassName="text-amber-600"
+            sub="per winning trade"
+          />
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Profit Distribution <ChartNoAxesColumn className="size-3 text-violet-500" />
+              </span>
+            }
+            value={`${profitContribution}%`}
+            valueClassName="text-violet-600"
+            sub="of total P/L volume"
+          />
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Std Deviation <Activity className="size-3 text-slate-400" />
+              </span>
+            }
+            value={`Rp ${Math.floor(stdDevRupiah).toLocaleString('id-ID')}`}
+            sub={stdDevComment}
+          />
+        </div>
         <StatCell
           label={
             <span className="flex items-center gap-1">
-              Avg Profit/Trade <TrendingUp className="size-3 text-green-500" />
+              Expected Value/Trade <TrendingUpDown className="size-3 text-slate-400" />
             </span>
           }
-          value={`Rp ${profitPerTrade.toLocaleString('id-ID')}`}
-          valueClassName="text-green-600"
+          value={`${expectedValue >= 0 ? '+' : ''}Rp ${Math.floor(expectedValue).toLocaleString('id-ID')}`}
+          valueClassName={expectedValue >= 0 ? 'text-green-600' : 'text-red-500'}
+          sub="(Win% × Avg Win) − (Loss% × Avg Loss)"
+          className="bg-slate-50 rounded-lg px-4 py-3"
         />
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              Avg Loss/Trade <TrendingDown className="size-3 text-red-400" />
-            </span>
-          }
-          value={`Rp ${lossPerTrade.toLocaleString('id-ID')}`}
-          valueClassName="text-red-500"
-        />
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              Win Potential <Trophy className="size-3 text-amber-500" />
-            </span>
-          }
-          value={`Rp ${winStreakPotential.toLocaleString('id-ID')}`}
-          valueClassName="text-amber-600"
-          sub="per winning trade"
-        />
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              Profit Distribution <ChartNoAxesColumn className="size-3 text-violet-500" />
-            </span>
-          }
-          value={`${profitContribution}%`}
-          valueClassName="text-violet-600"
-          sub="of total P/L volume"
-        />
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              Std Deviation <Activity className="size-3 text-slate-400" />
-            </span>
-          }
-          value={`Rp ${Math.floor(stdDevRupiah).toLocaleString('id-ID')}`}
-          sub={stdDevComment}
-        />
-      </div>
-      <StatCell
-        label={
-          <span className="flex items-center gap-1">
-            Expected Value/Trade <TrendingUpDown className="size-3 text-slate-400" />
-          </span>
-        }
-        value={`${expectedValue >= 0 ? '+' : ''}Rp ${Math.floor(expectedValue).toLocaleString('id-ID')}`}
-        valueClassName={expectedValue >= 0 ? 'text-green-600' : 'text-red-500'}
-        sub="(Win% × Avg Win) − (Loss% × Avg Loss)"
-        className="bg-slate-50 rounded-lg px-4 py-3"
-      />
+      </CardContent>
 
       <div className="border-t border-slate-100" />
 
       {/* Risk */}
       <CardHeader className="p-0 border-0">
         <CardIcon icon={Shield} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Risk</CardTitle>
           <CardDescription>
             Key risk metrics across your trades — reward-to-risk ratio, volatility, and capital
             buffer.
           </CardDescription>
-        </div>
+        </CardHeaderContent>
         <CardAction>
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${riskLevel.className}`}
@@ -328,96 +332,98 @@ export default function PerformanceSection({ metrics, loading }) {
         </CardAction>
       </CardHeader>
 
-      <div className="space-y-2">
-        <div className="flex justify-between text-xs text-slate-500">
-          <span>Risk</span>
-          <span className="font-semibold text-slate-700">1:{riskRewardRatio} R:R</span>
-          <span>Reward</span>
-        </div>
-        <div className="h-6 bg-slate-100 rounded-lg overflow-hidden flex">
-          <div
-            className="bg-red-400 flex items-center justify-center text-white text-xs font-semibold"
-            style={{ width: `${riskBarPct}%` }}
-          >
-            Risk
+      <CardContent padding="none">
+        <div className="space-y-2 pb-2">
+          <div className="flex justify-between text-xs text-slate-500">
+            <span>Risk</span>
+            <span className="font-semibold text-slate-700">1:{riskRewardRatio} R:R</span>
+            <span>Reward</span>
           </div>
-          <div
-            className="bg-green-500 flex items-center justify-center text-white text-xs font-semibold"
-            style={{ width: `${rewardBarPct}%` }}
-          >
-            Reward
+          <div className="h-6 bg-slate-100 rounded-lg overflow-hidden flex">
+            <div
+              className="bg-red-400 flex items-center justify-center text-white text-xs font-semibold"
+              style={{ width: `${riskBarPct}%` }}
+            >
+              Risk
+            </div>
+            <div
+              className="bg-green-500 flex items-center justify-center text-white text-xs font-semibold"
+              style={{ width: `${rewardBarPct}%` }}
+            >
+              Reward
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              Risk/Trade <AlertTriangle className="size-3 text-red-400" />
-            </span>
-          }
-          value={`${riskPercentage}%`}
-          valueClassName="text-red-500"
-          sub={`Rp ${Math.floor(riskPerTrade).toLocaleString('id-ID')}`}
-          className="bg-slate-50 rounded-lg px-4 py-3"
-        />
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              Max Risk (2%) <AlertTriangle className="size-3 text-amber-400" />
-            </span>
-          }
-          value={`Rp ${maxRiskCapital.toLocaleString('id-ID')}`}
-          valueClassName="text-amber-600"
-          sub="2% of capital"
-          className="bg-slate-50 rounded-lg px-4 py-3"
-        />
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              R:R Ratio <Target className="size-3 text-blue-400" />
-            </span>
-          }
-          value={`1:${riskRewardRatio}`}
-          valueClassName="text-blue-600"
-          sub="Risk vs Reward"
-          className="bg-slate-50 rounded-lg px-4 py-3"
-        />
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              Safe Buffer <Shield className="size-3 text-violet-400" />
-            </span>
-          }
-          value={`${timesToZeroWithMoe}x`}
-          valueClassName="text-violet-600"
-          sub="Consecutive losses (adjusted)"
-          className="bg-slate-50 rounded-lg px-4 py-3"
-        />
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              Lose Streak Buffer <Shield className="size-3 text-slate-400" />
-            </span>
-          }
-          value={`${timesToZeroWithoutMoe}x`}
-          valueClassName="text-slate-700"
-          sub="Consecutive losses (base)"
-          className="bg-slate-50 rounded-lg px-4 py-3"
-        />
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              Volatility <Activity className="size-3 text-amber-400" />
-            </span>
-          }
-          value={stdDevComment}
-          valueClassName="text-amber-600"
-          sub={`σ: Rp ${Math.floor(stdDevRupiah).toLocaleString('id-ID')}`}
-          className="bg-slate-50 rounded-lg px-4 py-3"
-        />
-      </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Risk/Trade <AlertTriangle className="size-3 text-red-400" />
+              </span>
+            }
+            value={`${riskPercentage}%`}
+            valueClassName="text-red-500"
+            sub={`Rp ${Math.floor(riskPerTrade).toLocaleString('id-ID')}`}
+            className="bg-slate-50 rounded-lg px-4 py-3"
+          />
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Max Risk (2%) <AlertTriangle className="size-3 text-amber-400" />
+              </span>
+            }
+            value={`Rp ${maxRiskCapital.toLocaleString('id-ID')}`}
+            valueClassName="text-amber-600"
+            sub="2% of capital"
+            className="bg-slate-50 rounded-lg px-4 py-3"
+          />
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                R:R Ratio <Target className="size-3 text-blue-400" />
+              </span>
+            }
+            value={`1:${riskRewardRatio}`}
+            valueClassName="text-blue-600"
+            sub="Risk vs Reward"
+            className="bg-slate-50 rounded-lg px-4 py-3"
+          />
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Safe Buffer <Shield className="size-3 text-violet-400" />
+              </span>
+            }
+            value={`${timesToZeroWithMoe}x`}
+            valueClassName="text-violet-600"
+            sub="Consecutive losses (adjusted)"
+            className="bg-slate-50 rounded-lg px-4 py-3"
+          />
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Lose Streak Buffer <Shield className="size-3 text-slate-400" />
+              </span>
+            }
+            value={`${timesToZeroWithoutMoe}x`}
+            valueClassName="text-slate-700"
+            sub="Consecutive losses (base)"
+            className="bg-slate-50 rounded-lg px-4 py-3"
+          />
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Volatility <Activity className="size-3 text-amber-400" />
+              </span>
+            }
+            value={stdDevComment}
+            valueClassName="text-amber-600"
+            sub={`σ: Rp ${Math.floor(stdDevRupiah).toLocaleString('id-ID')}`}
+            className="bg-slate-50 rounded-lg px-4 py-3"
+          />
+        </div>
+      </CardContent>
     </Card>
   )
 }

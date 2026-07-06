@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Info, Heart } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
+import Card, {
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
@@ -161,10 +167,10 @@ export default function HrZonesSection() {
     <Card as="section" aria-label="HR zones">
       <CardHeader>
         <CardIcon icon={Heart} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>HR Zones</CardTitle>
           <CardDescription>Heart rate boundaries for training intensity</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
 
       {loading ? (

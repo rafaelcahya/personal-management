@@ -2,6 +2,7 @@ import {
   CardAction,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -15,13 +16,13 @@ export default function EventTableHeader({ controls }) {
     >
       <div className="flex gap-2">
         <CardIcon icon={Zap} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Market Events</CardTitle>
           <CardDescription>
             Track political decisions, central bank announcements, and global events that impact
             your positions
           </CardDescription>
-        </div>
+        </CardHeaderContent>
       </div>
       {controls && <CardAction>{controls}</CardAction>}
     </CardHeader>

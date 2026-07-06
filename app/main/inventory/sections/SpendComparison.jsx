@@ -16,7 +16,14 @@ import {
 } from 'recharts'
 import { BarChart2 } from 'lucide-react'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
-import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
+import Card, {
+  CardContent,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 
 function monthLabel(monthStr) {
   if (!monthStr) return '—'
@@ -73,14 +80,14 @@ export default function SpendComparison({ data, loading }) {
     return (
       <Card>
         <CardHeader>
-          <div className="flex flex-col gap-1.5 flex-1">
+          <CardHeaderContent>
             <div className="h-4 bg-slate-200 rounded w-48 animate-pulse" />
             <div className="h-3 bg-slate-100 rounded w-32 animate-pulse" />
-          </div>
+          </CardHeaderContent>
         </CardHeader>
-        <div className="px-5 py-6">
+        <CardContent className="py-6">
           <div className="h-48 bg-slate-100 rounded animate-pulse" />
-        </div>
+        </CardContent>
       </Card>
     )
   }
@@ -99,14 +106,14 @@ export default function SpendComparison({ data, loading }) {
       <Card>
         <CardHeader>
           <CardIcon icon={BarChart2} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>Spend This Month vs Last Month</CardTitle>
             <CardDescription>Compare your total purchasing spend month-over-month</CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
-        <div className="py-10 text-center">
+        <CardContent className="py-10 text-center">
           <p className="text-sm text-slate-400">No purchase data yet 📋</p>
-        </div>
+        </CardContent>
       </Card>
     )
   }
@@ -129,13 +136,13 @@ export default function SpendComparison({ data, loading }) {
     <Card>
       <CardHeader>
         <CardIcon icon={BarChart2} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Spend This Month vs Last Month</CardTitle>
           <CardDescription>Compare your total purchasing spend month-over-month</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
 
-      <div className="px-5 py-4 flex flex-col gap-5">
+      <CardContent className="flex flex-col gap-5">
         {/* Stats row */}
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
           <div className="flex flex-col sm:flex-row gap-6">
@@ -209,7 +216,7 @@ export default function SpendComparison({ data, loading }) {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
+      </CardContent>
     </Card>
   )
 }

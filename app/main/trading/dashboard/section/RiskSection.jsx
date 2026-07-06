@@ -1,8 +1,10 @@
 'use client'
 
 import Card, {
+  CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -91,16 +93,16 @@ export default function RiskSection({ metrics, loading }) {
   return (
     <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-4">
       {/* Take Profit row */}
-      <CardHeader className="p-0 border-0">
+      <CardHeader padding="none">
         <CardIcon icon={ArrowUpRight} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Take Profit Targets</CardTitle>
           <CardDescription>
             Tiered targets based on historical average profit and standard deviation.
           </CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <CardContent padding="none" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <StatCell
           label={
             <span className="flex items-center gap-1">
@@ -134,21 +136,21 @@ export default function RiskSection({ metrics, loading }) {
           valueClassName={bearTP > 0 ? 'text-amber-600' : 'text-slate-400'}
           sub={bearTP > 0 ? 'avg profit − 1σ' : 'volatility exceeds avg profit'}
         />
-      </div>
+      </CardContent>
 
       <div className="border-t border-slate-100" />
 
       {/* Stop Loss row */}
-      <CardHeader className="p-0 border-0">
+      <CardHeader padding="none">
         <CardIcon icon={ArrowDownRight} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Stop Loss Levels</CardTitle>
           <CardDescription>
             Tiered stop levels based on historical average loss and standard deviation.
           </CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <CardContent padding="none" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <StatCell
           label={
             <span className="flex items-center gap-1">
@@ -182,7 +184,7 @@ export default function RiskSection({ metrics, loading }) {
           valueClassName="text-red-500"
           sub="widened by 1σ"
         />
-      </div>
+      </CardContent>
     </Card>
   )
 }

@@ -6,6 +6,7 @@ import Button from '@/components/base/Button/Button'
 import Card, {
   CardContent,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
   CardAction,
@@ -178,9 +179,9 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
     >
       <CardHeader>
         <CardIcon icon={Sparkles} className="bg-violet-200" />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Daily Insight</CardTitle>
-        </div>
+        </CardHeaderContent>
         <CardAction>
           <span className="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full font-medium">
             BETA

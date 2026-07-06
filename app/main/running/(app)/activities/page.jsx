@@ -50,6 +50,7 @@ import Card, {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -260,12 +261,12 @@ function ActivitiesInner() {
       <Card>
         <CardHeader>
           <CardIcon icon={Activity} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>Activity</CardTitle>
             <CardDescription>
               Browse and filter all your recorded workouts — runs, rides, and everything in between
             </CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
 
         {/* Filter bar */}

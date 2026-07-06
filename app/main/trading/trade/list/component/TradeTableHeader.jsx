@@ -2,6 +2,7 @@ import {
   CardAction,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -15,12 +16,12 @@ export default function TradeTableHeader({ controls }) {
     >
       <div className="flex gap-2">
         <CardIcon icon={TrendingUp} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Trade Journal</CardTitle>
           <CardDescription>
             Track every buy and sell — learn from wins, improve from losses
           </CardDescription>
-        </div>
+        </CardHeaderContent>
       </div>
       {controls && <CardAction>{controls}</CardAction>}
     </CardHeader>

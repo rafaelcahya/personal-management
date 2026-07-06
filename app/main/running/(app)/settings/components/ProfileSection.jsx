@@ -6,7 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
 import { CheckCircle2, AlertCircle, User } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
+import Card, {
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 import Input from '@/components/base/Input/Input'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import FieldContent from '@/components/base/Field/FieldContent'
@@ -118,10 +124,10 @@ export default function ProfileSection() {
     <Card as="section" aria-label="Profile">
       <CardHeader>
         <CardIcon icon={User} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Profile</CardTitle>
           <CardDescription>Personal details used for performance calculations</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
 
       {loading ? (

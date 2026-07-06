@@ -2,6 +2,7 @@ import {
   CardAction,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -15,10 +16,10 @@ export default function ProductBrandTableHeader({ controls }) {
     >
       <div className="flex gap-2">
         <CardIcon icon={Tag} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Product Brands</CardTitle>
           <CardDescription>Manage brand status and notes for your inventory</CardDescription>
-        </div>
+        </CardHeaderContent>
       </div>
       {controls && <CardAction>{controls}</CardAction>}
     </CardHeader>

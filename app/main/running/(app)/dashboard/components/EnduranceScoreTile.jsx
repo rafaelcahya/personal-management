@@ -8,6 +8,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -33,12 +34,12 @@ export default function EnduranceScoreTile({ enduranceScore, viewTrendHref }) {
         <CardHeader layout="below">
           <div className="flex gap-2">
             <CardIcon icon={Gauge} />
-            <div className="min-w-0 flex-1">
+            <CardHeaderContent>
               <CardTitle>Endurance Score</CardTitle>
               <CardDescription className="text-xs text-slate-400">
                 Composite fitness score (0–100) from VO₂max, training load, and long run history.
               </CardDescription>
-            </div>
+            </CardHeaderContent>
           </div>
           <CardAction>
             {viewTrendHref && (

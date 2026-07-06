@@ -15,6 +15,7 @@ import Card, {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from './Card'
@@ -185,10 +186,10 @@ export const Docs = {
             <Card key={variant} variant={variant}>
               <CardHeader>
                 <CardIcon icon={icon} />
-                <div className="min-w-0 flex-1">
+                <CardHeaderContent>
                   <CardTitle>{title}</CardTitle>
                   <CardDescription>{desc}</CardDescription>
-                </div>
+                </CardHeaderContent>
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-slate-500">variant=&quot;{variant}&quot;</p>
@@ -292,6 +293,7 @@ export const Docs = {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card'`}</Code>
@@ -301,10 +303,10 @@ export const Docs = {
           <div className="mb-4 max-w-sm">
             <Card>
               <CardHeader>
-                <div className="min-w-0 flex-1">
+                <CardHeaderContent>
                   <CardTitle>Welcome back</CardTitle>
                   <CardDescription>Sign in to your account to continue</CardDescription>
-                </div>
+                </CardHeaderContent>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
@@ -338,16 +340,17 @@ export const Docs = {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardHeaderContent,
   CardTitle,
 } from '@/components/base/Card'
 import { Lock, Mail } from 'lucide-react'
 
 <Card>
   <CardHeader>
-    <div className="min-w-0 flex-1">
+    <CardHeaderContent>
       <CardTitle>Welcome back</CardTitle>
       <CardDescription>Sign in to your account to continue</CardDescription>
-    </div>
+    </CardHeaderContent>
   </CardHeader>
   <CardContent className="space-y-4">
     <div className="space-y-1.5">
@@ -419,6 +422,11 @@ import { Lock, Mail } from 'lucide-react'
                   'size-9 rounded-lg · shell/transparent: bg-violet-50 icon-violet-600 · status variants: matching tint',
                 ],
                 [
+                  'CardHeaderContent',
+                  'Flex column wrapper for CardTitle + CardDescription inside CardHeader',
+                  'flex flex-col gap-0.5 min-w-0 flex-1',
+                ],
+                [
                   'CardTitle',
                   'Primary heading in CardHeader',
                   'text-sm font-semibold text-slate-900 · renders as h3',
@@ -454,10 +462,10 @@ import { Lock, Mail } from 'lucide-react'
         <Code>{`<Card>                          {/* root */}
   <CardHeader>                  {/* top band */}
     <CardIcon icon={Icon} />    {/* violet badge */}
-    <div className="min-w-0 flex-1">
+    <CardHeaderContent>         {/* flex-col wrapper — min-w-0 flex-1 */}
       <CardTitle />             {/* h3 heading */}
       <CardDescription />      {/* subtitle */}
-    </div>
+    </CardHeaderContent>
     <CardAction />              {/* right slot */}
   </CardHeader>
   <CardContent />               {/* body */}
@@ -512,7 +520,7 @@ import { Lock, Mail } from 'lucide-react'
                 'children',
                 'ReactNode',
                 '—',
-                'Recommended: CardIcon, a div with CardTitle + CardDescription, then CardAction.',
+                'Recommended: CardIcon, then CardHeaderContent (with CardTitle + CardDescription inside), then CardAction.',
               ],
               [
                 'padding',
@@ -553,6 +561,43 @@ import { Lock, Mail } from 'lucide-react'
               ],
             ]}
           />
+        </SubSection>
+
+        <SubSection
+          title="CardHeaderContent"
+          description="Flex column wrapper for CardTitle and CardDescription inside CardHeader. Handles min-width truncation and flex-grow so the text area fills available space between CardIcon and CardAction. Always use this instead of a raw div."
+        >
+          <PropsTable
+            rows={[
+              [
+                'children',
+                'ReactNode',
+                '—',
+                'CardTitle and optionally CardDescription. Do not put other elements here.',
+              ],
+              ['className', 'string', "''", 'Extra classes — rarely needed.'],
+            ]}
+          />
+          <Code>{`{/* always wrap CardTitle + CardDescription in CardHeaderContent */}
+<CardHeader>
+  <CardIcon icon={ShoppingCart} />
+  <CardHeaderContent>
+    <CardTitle>Inventory</CardTitle>
+    <CardDescription>All active products</CardDescription>
+  </CardHeaderContent>
+  <CardAction>
+    <Button>Add</Button>
+  </CardAction>
+</CardHeader>
+
+{/* without CardAction — CardHeaderContent still required */}
+<CardHeader>
+  <CardIcon icon={Package} />
+  <CardHeaderContent>
+    <CardTitle>Overview</CardTitle>
+    <CardDescription>Summary of your portfolio</CardDescription>
+  </CardHeaderContent>
+</CardHeader>`}</Code>
         </SubSection>
 
         <SubSection

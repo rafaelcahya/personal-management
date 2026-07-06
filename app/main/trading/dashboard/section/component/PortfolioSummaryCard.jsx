@@ -4,6 +4,7 @@ import Card, {
   CardTitle,
   CardDescription,
   CardIcon,
+  CardHeaderContent,
 } from '@/components/base/Card/Card.jsx'
 import { LayoutDashboard, TrendingDown, TrendingUp, Wallet } from 'lucide-react'
 
@@ -28,10 +29,10 @@ export default function PortfolioSummaryCard({
     <Card>
       <CardHeader className="flex">
         <CardIcon icon={LayoutDashboard} />
-        <div>
+        <CardHeaderContent>
           <CardTitle>Portfolio Summary</CardTitle>
           <CardDescription>Current account value and total realized profit/loss.</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
       <CardContent padding="none" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 py-4">
         <div className="px-5 py-3 border-r border-slate-200">

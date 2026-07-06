@@ -11,6 +11,7 @@ import Card, {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -82,13 +83,13 @@ export default function SettingsDialog({ open, onOpenChange, onUpdated }) {
     <Card>
       <CardHeader>
         <CardIcon icon={SlidersHorizontal} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Performance Configuration</CardTitle>
           <CardDescription>
             Configure trading metrics parameters for accurate performance analysis and risk
             management.
           </CardDescription>
-        </div>
+        </CardHeaderContent>
         <CardAction>
           <Button
             variant="ghost"

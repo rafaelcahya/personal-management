@@ -18,6 +18,7 @@ import Button from '@/components/base/Button/Button'
 import Card, {
   CardContent,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
   CardAction,
@@ -221,9 +222,9 @@ export default function InjuryCoachCard() {
           </Button>
         )}
         <CardIcon icon={Stethoscope} className="bg-slate-100" iconClassName="text-slate-600" />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>{showHistory ? 'Consultation History' : 'Injury & Recovery'}</CardTitle>
-        </div>
+        </CardHeaderContent>
         <CardAction className="flex items-center gap-2">
           {!showHistory && (
             <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-medium">

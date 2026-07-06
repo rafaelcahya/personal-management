@@ -4,6 +4,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -49,12 +50,12 @@ export default function YtdStats({ ytd_stats }) {
       <Card>
         <CardHeader>
           <CardIcon icon={CalendarDays} />
-          <div>
+          <CardHeaderContent>
             <CardTitle>Year to Date</CardTitle>
             <CardDescription className="text-xs text-slate-400">
               Your cumulative running stats for this year.
             </CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-4">

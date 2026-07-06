@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Pencil, Timer } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
+import Card, {
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
@@ -121,10 +127,10 @@ export default function PaceZonesSection() {
     <Card as="section" aria-label="Pace zones">
       <CardHeader>
         <CardIcon icon={Timer} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Pace Zones</CardTitle>
           <CardDescription>Threshold pace used to calculate your 5 training zones</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
 
       {loading ? (

@@ -172,6 +172,14 @@ export function CardContent({ children, className, padding, id, as: Tag = 'div',
   )
 }
 
+export function CardHeaderContent({ children, className, id, ...rest }) {
+  return (
+    <div id={id} className={cn('flex flex-col gap-0.5 min-w-0 flex-1', className)} {...rest}>
+      {children}
+    </div>
+  )
+}
+
 export function CardAction({ children, className, id, ...rest }) {
   const { layout } = useContext(CardHeaderContext)
   return (

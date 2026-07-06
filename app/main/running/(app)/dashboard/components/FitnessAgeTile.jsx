@@ -8,6 +8,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -43,12 +44,12 @@ export default function FitnessAgeTile({ fitnessAge, viewTrendHref }) {
         <CardHeader layout="below">
           <div className="flex gap-2">
             <CardIcon icon={Brain} />
-            <div>
+            <CardHeaderContent>
               <CardTitle>Fitness Age</CardTitle>
               <CardDescription>
                 Estimated cardiovascular age based on VO₂max population norms.
               </CardDescription>
-            </div>
+            </CardHeaderContent>
           </div>
           <CardAction>
             {viewTrendHref && (

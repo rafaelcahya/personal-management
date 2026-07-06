@@ -2,6 +2,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -32,10 +33,10 @@ export default function PnLCard({
     <Card>
       <CardHeader>
         <CardIcon icon={TrendingUp} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Unrealized P&L</CardTitle>
           <CardDescription>Portfolio performance over time</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap items-center gap-2 mb-4">

@@ -2,6 +2,7 @@ import {
   CardAction,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -14,12 +15,12 @@ export default function ProductTableHeader({ summary, loading }) {
   return (
     <CardHeader>
       <CardIcon icon={Package} />
-      <div className="min-w-0 flex-1">
+      <CardHeaderContent>
         <CardTitle className="text-sm font-semibold text-slate-900">Product Inventory</CardTitle>
         <CardDescription className="text-xs text-slate-500 mt-0.5">
           Track stock levels, usage patterns, and restock timing
         </CardDescription>
-      </div>
+      </CardHeaderContent>
       <CardAction>
         {activeProducts !== null && (
           <div className="flex items-center gap-2 shrink-0">

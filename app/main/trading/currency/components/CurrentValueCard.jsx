@@ -2,6 +2,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -20,10 +21,10 @@ export default function CurrentValueCard({ totalCurrentValue, currencyBreakdown 
     <Card>
       <CardHeader>
         <CardIcon icon={BarChart2} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Current Value</CardTitle>
           <CardDescription>Based on live forex rates</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-2xl font-bold font-mono text-slate-900">

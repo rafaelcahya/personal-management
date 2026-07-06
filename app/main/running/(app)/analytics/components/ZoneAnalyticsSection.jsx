@@ -6,6 +6,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -107,13 +108,13 @@ export default function ZoneAnalyticsSection() {
       <Card>
         <CardHeader>
           <CardIcon icon={BarChart2} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>Zone Analytics</CardTitle>
             <CardDescription>
               Training distribution across HR zones, pace, cadence, and gear — aggregated across
               activities.
             </CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <ZoneFilterBar

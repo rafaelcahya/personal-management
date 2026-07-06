@@ -168,7 +168,7 @@ export default function ProductsPageClient() {
         </CardAction>
 
         {/* Table area */}
-        <CardContent className="p-0">
+        <CardContent padding="none">
           {loading ? (
             <div
               id="loadingSkeleton_productListPage"

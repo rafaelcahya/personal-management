@@ -4,6 +4,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -419,12 +420,12 @@ export default function TrainingLoad({ data, weeklyStats }) {
       <Card>
         <CardHeader>
           <CardIcon icon={TrendingUp} />
-          <div>
+          <CardHeaderContent>
             <CardTitle>Training Load</CardTitle>
             <CardDescription>
               ACWR, acute vs chronic load, and weekly training metrics.
             </CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
         <CardContent padding="md" className="flex flex-col gap-3">
           {/* Hero row — ACWR + status + ramp */}

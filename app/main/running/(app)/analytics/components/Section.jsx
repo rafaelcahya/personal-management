@@ -2,6 +2,7 @@
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -12,10 +13,10 @@ export default function Section({ id, title, description, icon: Icon, children }
       <Card>
         <CardHeader>
           <CardIcon icon={Icon} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>{title}</CardTitle>
             {description && <CardDescription>{description}</CardDescription>}
-          </div>
+          </CardHeaderContent>
         </CardHeader>
         <CardContent>{children}</CardContent>
       </Card>
