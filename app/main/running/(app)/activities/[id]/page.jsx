@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/base/Tooltip/Tooltip.jsx'
 import Button from '@/components/base/Button/Button'
+import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
 import {
   fetchActivity,
@@ -845,7 +846,7 @@ export default function ActivityDetailPage() {
                             className="size-4 text-slate-400 shrink-0 mt-0.5"
                             aria-hidden="true"
                           />
-                          <textarea
+                          <Textarea
                             id="notesTextarea_activityDetailPage"
                             rows={3}
                             value={notesValue}
@@ -855,7 +856,7 @@ export default function ActivityDetailPage() {
                                 handleSaveNotes()
                               }
                             }}
-                            className="w-full text-sm text-slate-700 bg-white border border-slate-200 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
+                            className="w-full text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-none"
                             placeholder="Add your notes… (Ctrl+Enter to save)"
                             autoFocus
                           />
