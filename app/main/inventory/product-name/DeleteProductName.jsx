@@ -47,10 +47,10 @@ export default function DeleteProductName({
           Delete
         </Button>
       </ModalTrigger>
-      <ModalContent showCloseButton={false} variant="bordered" borderColor="border-slate-200">
+      <ModalContent showCloseButton={false}>
         <ModalHeader>
           <ModalTitle className="font-semibold">Delete Product Name</ModalTitle>
-          <ModalDescription className="text-slate-foreground">
+          <ModalDescription className="text-sm">
             Are you sure you want to delete this product name? This action cannot be undone.
           </ModalDescription>
         </ModalHeader>

@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { Heart, Gauge, Activity, Package, BarChart2 } from 'lucide-react'
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import { fetchZoneAnalytics, fetchGearAnalytics, fetchActivityTypes } from '@/lib/api/running'
 import ZoneFilterBar from './ZoneFilterBar'
 import HrZoneBreakdown from './HrZoneBreakdown'
@@ -98,20 +105,18 @@ export default function ZoneAnalyticsSection() {
 
   return (
     <section id="zoneAnalyticsSection_analyticsPage" aria-label="Zone Analytics">
-      <Card className="border border-slate-200/70 shadow-sm py-0">
-        <CardContent className="px-5 py-5 flex flex-col gap-4">
-          {/* Header */}
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <BarChart2 className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-              <h3 className="text-sm font-semibold text-slate-700">Zone Analytics</h3>
-            </div>
-            <p className="text-xs text-slate-400">
+      <Card>
+        <CardHeader>
+          <CardIcon icon={BarChart2} />
+          <CardHeaderContent>
+            <CardTitle>Zone Analytics</CardTitle>
+            <CardDescription>
               Training distribution across HR zones, pace, cadence, and gear — aggregated across
               activities.
-            </p>
-          </div>
-
+            </CardDescription>
+          </CardHeaderContent>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
           <ZoneFilterBar
             range={range}
             activityType={activityType}

@@ -4,7 +4,14 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Footprints, Pencil, Check, X, AlertTriangle, Loader2 } from 'lucide-react'
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'
@@ -376,18 +383,17 @@ export default function ShoeRotation() {
       aria-live="polite"
       className="flex flex-col h-full"
     >
-      <Card className="border border-slate-200/70 shadow-sm flex-1 py-0">
-        <CardContent className="px-5 py-5">
-          <div className="flex flex-col gap-1 mb-4">
-            <div className="flex items-center gap-2">
-              <Footprints className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-              <h3 className="text-sm font-semibold text-slate-700">Shoe Rotation</h3>
-            </div>
-            <p className="text-xs text-slate-400">
+      <Card>
+        <CardHeader>
+          <CardIcon icon={Footprints} />
+          <CardHeaderContent>
+            <CardTitle>Shoe Rotation</CardTitle>
+            <CardDescription>
               Active shoes synced from Strava with mileage tracking.
-            </p>
-          </div>
-
+            </CardDescription>
+          </CardHeaderContent>
+        </CardHeader>
+        <CardContent className="px-5 py-5">
           {loading && (
             <div id="gearLoadingSkeleton" aria-label="Loading gear" className="flex flex-col gap-3">
               {[1, 2, 3].map((i) => (

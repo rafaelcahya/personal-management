@@ -28,6 +28,7 @@ import ImpactBadge from '../component/ImpactBadge'
 import UpdateEvent from '../UpdateEvent'
 import DeleteEvent from '../DeleteEvent'
 import EventAnalysisModal from '../component/EventAnalysisModal'
+import Card from '@/components/base/Card/Card'
 
 function formatEventDate(dateStr) {
   if (!dateStr) return '—'
@@ -193,7 +194,7 @@ export default function EventDetailClient({ id }) {
         ]}
       />
 
-      <div className="border border-slate-200 rounded-xl bg-white overflow-hidden">
+      <Card className="overflow-hidden">
         {/* Title + Meta row */}
         <div className="flex flex-col gap-3 px-5 pt-5 pb-4 border-b border-slate-100">
           <div className="flex items-start justify-between gap-3">
@@ -401,7 +402,7 @@ export default function EventDetailClient({ id }) {
             )}
           </div>
         )}
-      </div>
+      </Card>
 
       {analysisModalOpen && (
         <EventAnalysisModal

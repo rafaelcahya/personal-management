@@ -1,7 +1,16 @@
-﻿'use client'
+'use client'
 
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
-import { Shield, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import EmptyState from '@/components/ui/common/EmptyState'
+import { ArrowDownRight, ArrowUpRight, Minus, TrendingDown, TrendingUp } from 'lucide-react'
 
 function StatCell({ label, value, sub, valueClassName, chip }) {
   return (
@@ -24,43 +33,46 @@ function StatCell({ label, value, sub, valueClassName, chip }) {
   )
 }
 
+const StatCellSkeleton = () => (
+  <div className="bg-slate-50 rounded-lg px-4 py-3 flex flex-col gap-1.5">
+    <div className="flex items-start justify-between">
+      <Skeleton className="h-3 w-10" />
+      <Skeleton className="h-4 w-14 rounded-full" />
+    </div>
+    <Skeleton className="h-5 w-28" />
+    <Skeleton className="h-3 w-20" />
+  </div>
+)
+
 export default function RiskSection({ metrics, loading }) {
   if (loading) {
     return (
-      <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-4 animate-pulse">
+      <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-4">
         {/* Take Profit */}
-        <div className="flex flex-col gap-1.5">
-          <div className="h-4 w-40 bg-slate-200 rounded" />
-          <div className="h-3 w-72 bg-slate-100 rounded" />
-        </div>
+        <CardHeader className="p-0 border-0">
+          <Skeleton className="h-7 w-7 rounded-lg shrink-0" />
+          <div className="min-w-0 flex-1 flex flex-col gap-1.5">
+            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-3 w-72" />
+          </div>
+        </CardHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-slate-100 rounded-lg px-4 py-3 flex flex-col gap-1.5">
-              <div className="flex items-start justify-between">
-                <div className="h-3 w-10 bg-slate-200 rounded" />
-                <div className="h-4 w-14 bg-slate-200 rounded-full" />
-              </div>
-              <div className="h-5 w-28 bg-slate-200 rounded" />
-              <div className="h-3 w-20 bg-slate-100 rounded" />
-            </div>
+            <StatCellSkeleton key={i} />
           ))}
         </div>
         <div className="border-t border-slate-100" />
         {/* Stop Loss */}
-        <div className="flex flex-col gap-1.5">
-          <div className="h-4 w-36 bg-slate-200 rounded" />
-          <div className="h-3 w-72 bg-slate-100 rounded" />
-        </div>
+        <CardHeader className="p-0 border-0">
+          <Skeleton className="h-7 w-7 rounded-lg shrink-0" />
+          <div className="min-w-0 flex-1 flex flex-col gap-1.5">
+            <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-3 w-72" />
+          </div>
+        </CardHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-slate-100 rounded-lg px-4 py-3 flex flex-col gap-1.5">
-              <div className="flex items-start justify-between">
-                <div className="h-3 w-10 bg-slate-200 rounded" />
-                <div className="h-4 w-14 bg-slate-200 rounded-full" />
-              </div>
-              <div className="h-5 w-28 bg-slate-200 rounded" />
-              <div className="h-3 w-20 bg-slate-100 rounded" />
-            </div>
+            <StatCellSkeleton key={i} />
           ))}
         </div>
       </Card>
@@ -69,21 +81,10 @@ export default function RiskSection({ metrics, loading }) {
 
   if (!metrics || metrics.totalTrades === 0) {
     return (
-      <Card className="border border-slate-200/70 shadow-sm">
-        <CardContent className="p-8 text-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
-              <Shield className="size-8 text-slate-400" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-base mb-1">No Risk Data Available</h3>
-              <p className="text-sm text-slate-500">
-                Add more trades to see risk analysis and suggestions
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <EmptyState
+        title="No Risk Data Available"
+        description="Add more trades to see risk analysis and suggestions"
+      />
     )
   }
 
@@ -92,16 +93,16 @@ export default function RiskSection({ metrics, loading }) {
   return (
     <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-4">
       {/* Take Profit row */}
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <ArrowUpRight className="size-4 text-violet-500 shrink-0" />
-          <h3 className="text-sm font-semibold text-slate-700">Take Profit Targets</h3>
-        </div>
-        <p className="text-xs text-slate-400">
-          Tiered targets based on historical average profit and standard deviation.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <CardHeader padding="none">
+        <CardIcon icon={ArrowUpRight} />
+        <CardHeaderContent>
+          <CardTitle>Take Profit Targets</CardTitle>
+          <CardDescription>
+            Tiered targets based on historical average profit and standard deviation.
+          </CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
+      <CardContent padding="none" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <StatCell
           label={
             <span className="flex items-center gap-1">
@@ -135,21 +136,21 @@ export default function RiskSection({ metrics, loading }) {
           valueClassName={bearTP > 0 ? 'text-amber-600' : 'text-slate-400'}
           sub={bearTP > 0 ? 'avg profit − 1σ' : 'volatility exceeds avg profit'}
         />
-      </div>
+      </CardContent>
 
       <div className="border-t border-slate-100" />
 
       {/* Stop Loss row */}
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <ArrowDownRight className="size-4 text-violet-500 shrink-0" />
-          <h3 className="text-sm font-semibold text-slate-700">Stop Loss Levels</h3>
-        </div>
-        <p className="text-xs text-slate-400">
-          Tiered stop levels based on historical average loss and standard deviation.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <CardHeader padding="none">
+        <CardIcon icon={ArrowDownRight} />
+        <CardHeaderContent>
+          <CardTitle>Stop Loss Levels</CardTitle>
+          <CardDescription>
+            Tiered stop levels based on historical average loss and standard deviation.
+          </CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
+      <CardContent padding="none" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <StatCell
           label={
             <span className="flex items-center gap-1">
@@ -183,7 +184,7 @@ export default function RiskSection({ metrics, loading }) {
           valueClassName="text-red-500"
           sub="widened by 1σ"
         />
-      </div>
+      </CardContent>
     </Card>
   )
 }

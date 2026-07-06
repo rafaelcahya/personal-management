@@ -11,6 +11,7 @@ import Input from '@/components/base/Input/Input'
 import { Search, X, FileText, AlertCircle } from 'lucide-react'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import Button from '@/components/base/Button/Button'
+import Card, { CardContent } from '@/components/base/Card/Card'
 
 const LIMIT = 15
 
@@ -104,93 +105,95 @@ export default function ProductNamesPageClient() {
         breadcrumbs={[{ label: 'Inventory', href: '/main/inventory' }, { label: 'Product Name' }]}
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-        <ProductNameTableHeader names={names} />
-
-        {/* Controls bar */}
-        <div
-          id="controlsBar_productNamePage"
-          className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5"
-        >
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
-            <NameSearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-            <div className="flex items-center justify-between gap-2 shrink-0">
-              <ProductNameFilterDropdown
-                filter={filterStatus}
-                onFilterChange={setFilterStatus}
-                sortOrder={sortOrder}
-                onSortChange={setSortOrder}
-              />
-              <AddProductName onAdded={handleRefresh} />
+      <Card className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <ProductNameTableHeader
+          names={names}
+          controls={
+            <div
+              id="controlsBar_productNamePage"
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between w-full"
+            >
+              <NameSearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+              <div className="flex items-center justify-between gap-2 shrink-0">
+                <ProductNameFilterDropdown
+                  filter={filterStatus}
+                  onFilterChange={setFilterStatus}
+                  sortOrder={sortOrder}
+                  onSortChange={setSortOrder}
+                />
+                <AddProductName onAdded={handleRefresh} />
+              </div>
             </div>
-          </div>
-        </div>
+          }
+        />
 
         {/* Table area */}
-        {error ? (
-          <div
-            id="errorState_productNamePage"
-            className="flex flex-col items-center justify-center gap-4 py-16 text-center"
-            role="alert"
-            aria-live="assertive"
-          >
-            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">Failed to load product names</p>
-              <p className="text-xs text-slate-500">Check your connection and try again</p>
-            </div>
-            <Button variant="outline" size="base" onClick={handleRefresh} className="min-w-11">
-              Try again
-            </Button>
-          </div>
-        ) : loading ? (
-          <div
-            id="loadingSkeleton_productNamePage"
-            className="animate-pulse"
-            aria-label="Loading product names"
-          >
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
-                <Skeleton className="h-4 w-4" />
-                <Skeleton className="h-4 w-6" />
-                <Skeleton className="h-4 w-36" />
-                <Skeleton className="h-5 w-16 rounded-full" />
-                <Skeleton className="h-5 w-10 rounded-full" />
-                <Skeleton className="h-4 flex-1 hidden sm:block" />
-                <Skeleton className="h-6 w-6 rounded" />
+        <CardContent padding="none">
+          {error ? (
+            <div
+              id="errorState_productNamePage"
+              className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">Failed to load product names</p>
+                <p className="text-xs text-slate-500">Check your connection and try again</p>
               </div>
-            ))}
-          </div>
-        ) : total === 0 && !hasActiveFilters ? (
-          <div
-            id="emptyState_productNamePage"
-            className="flex flex-col items-center justify-center gap-4 py-16 text-center"
-          >
-            <FileText className="size-10 text-slate-300" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">No product names yet</p>
-              <p className="text-xs text-slate-500">
-                Add your first product name to start organizing your inventory
-              </p>
+              <Button variant="outline" size="base" onClick={handleRefresh} className="min-w-11">
+                Try again
+              </Button>
             </div>
-            <AddProductName onAdded={handleRefresh} />
-          </div>
-        ) : showTable ? (
-          <ProductNamesTable
-            names={names}
-            page={page}
-            totalPages={totalPages}
-            total={total}
-            filterStatus={filterStatus}
-            searchQuery={searchQuery}
-            onPrev={() => setPage((p) => Math.max(1, p - 1))}
-            onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
-            onRefresh={handleRefresh}
-            onClearSearch={() => setSearchQuery('')}
-            onClearFilter={() => setFilterStatus(null)}
-          />
-        ) : null}
-      </div>
+          ) : loading ? (
+            <div
+              id="loadingSkeleton_productNamePage"
+              className="animate-pulse"
+              aria-label="Loading product names"
+            >
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex gap-4 px-5 py-3.5 border-b border-slate-100">
+                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="h-4 w-6" />
+                  <Skeleton className="h-4 w-36" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-10 rounded-full" />
+                  <Skeleton className="h-4 flex-1 hidden sm:block" />
+                  <Skeleton className="h-6 w-6 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : total === 0 && !hasActiveFilters ? (
+            <div
+              id="emptyState_productNamePage"
+              className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+            >
+              <FileText className="size-10 text-slate-300" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">No product names yet</p>
+                <p className="text-xs text-slate-500">
+                  Add your first product name to start organizing your inventory
+                </p>
+              </div>
+              <AddProductName onAdded={handleRefresh} />
+            </div>
+          ) : showTable ? (
+            <ProductNamesTable
+              names={names}
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              filterStatus={filterStatus}
+              searchQuery={searchQuery}
+              onPrev={() => setPage((p) => Math.max(1, p - 1))}
+              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+              onRefresh={handleRefresh}
+              onClearSearch={() => setSearchQuery('')}
+              onClearFilter={() => setFilterStatus(null)}
+            />
+          ) : null}
+        </CardContent>
+      </Card>
     </div>
   )
 }

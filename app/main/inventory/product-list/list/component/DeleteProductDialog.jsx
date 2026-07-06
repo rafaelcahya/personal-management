@@ -52,11 +52,11 @@ export default function DeleteProductDialog({ product, onDeleted }) {
       <ModalContent showCloseButton={false}>
         <ModalHeader>
           <ModalTitle>Delete {product.brand}?</ModalTitle>
-          <ModalDescription>
+          <ModalDescription className="text-sm">
             This will permanently delete{' '}
-            <strong>
+            <span className="text-violet-700">
               {product.brand} {product.type} {product.product}
-            </strong>
+            </span>
             . This action cannot be undone.
           </ModalDescription>
         </ModalHeader>

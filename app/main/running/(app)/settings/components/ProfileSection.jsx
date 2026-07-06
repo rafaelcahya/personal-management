@@ -6,6 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
 import { CheckCircle2, AlertCircle, User } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
+import Card, {
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 import Input from '@/components/base/Input/Input'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 import FieldContent from '@/components/base/Field/FieldContent'
@@ -114,21 +121,14 @@ export default function ProfileSection() {
   }
 
   return (
-    <section
-      aria-label="Profile"
-      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
-    >
-      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-        <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-          <User className="size-4 text-violet-600" aria-hidden="true" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900">Profile</p>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Personal details used for performance calculations
-          </p>
-        </div>
-      </div>
+    <Card as="section" aria-label="Profile">
+      <CardHeader>
+        <CardIcon icon={User} />
+        <CardHeaderContent>
+          <CardTitle>Profile</CardTitle>
+          <CardDescription>Personal details used for performance calculations</CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
 
       {loading ? (
         <div id="profileLoading_settingsPage" className="px-5 py-4 flex flex-col gap-3">
@@ -380,6 +380,6 @@ export default function ProfileSection() {
           </form>
         </div>
       )}
-    </section>
+    </Card>
   )
 }

@@ -14,7 +14,16 @@ import {
   Cell,
   Dot,
 } from 'recharts'
+import { BarChart2 } from 'lucide-react'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
+import Card, {
+  CardContent,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 
 function monthLabel(monthStr) {
   if (!monthStr) return '—'
@@ -69,15 +78,17 @@ function LineTooltip({ active, payload }) {
 export default function SpendComparison({ data, loading }) {
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <div className="h-4 bg-slate-200 rounded w-48 animate-pulse" />
-          <div className="h-3 bg-slate-100 rounded w-32 mt-1.5 animate-pulse" />
-        </div>
-        <div className="px-5 py-6">
+      <Card>
+        <CardHeader>
+          <CardHeaderContent>
+            <div className="h-4 bg-slate-200 rounded w-48 animate-pulse" />
+            <div className="h-3 bg-slate-100 rounded w-32 animate-pulse" />
+          </CardHeaderContent>
+        </CardHeader>
+        <CardContent className="py-6">
           <div className="h-48 bg-slate-100 rounded animate-pulse" />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -92,19 +103,18 @@ export default function SpendComparison({ data, loading }) {
 
   if (!hasAnyData) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-base font-semibold text-slate-800">
-            📊 Spend This Month vs Last Month
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Compare your total purchasing spend month-over-month
-          </p>
-        </div>
-        <div className="py-10 text-center">
+      <Card>
+        <CardHeader>
+          <CardIcon icon={BarChart2} />
+          <CardHeaderContent>
+            <CardTitle>Spend This Month vs Last Month</CardTitle>
+            <CardDescription>Compare your total purchasing spend month-over-month</CardDescription>
+          </CardHeaderContent>
+        </CardHeader>
+        <CardContent className="py-10 text-center">
           <p className="text-sm text-slate-400">No purchase data yet 📋</p>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -123,17 +133,16 @@ export default function SpendComparison({ data, loading }) {
   const lineMin = allLineValues.length ? Math.min(...allLineValues) * 0.8 : 0
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100">
-        <h2 className="text-base font-semibold text-slate-800">
-          📊 Spend This Month vs Last Month
-        </h2>
-        <p className="text-xs text-slate-400 mt-0.5">
-          Compare your total purchasing spend month-over-month
-        </p>
-      </div>
+    <Card>
+      <CardHeader>
+        <CardIcon icon={BarChart2} />
+        <CardHeaderContent>
+          <CardTitle>Spend This Month vs Last Month</CardTitle>
+          <CardDescription>Compare your total purchasing spend month-over-month</CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
 
-      <div className="px-5 py-4 flex flex-col gap-5">
+      <CardContent className="flex flex-col gap-5">
         {/* Stats row */}
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
           <div className="flex flex-col sm:flex-row gap-6">
@@ -207,7 +216,7 @@ export default function SpendComparison({ data, loading }) {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

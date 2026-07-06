@@ -10,10 +10,12 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetFooter,
-} from '@/components/ui/sheet'
+} from '@/components/base/Sheet/Sheet'
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import { ANALYTICS_SECTIONS } from '../sections'
 import Button from '@/components/base/Button/Button'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import Input from '@/components/base/Input/Input'
 
 function scrollToSection(id, onClose) {
   const el = document.getElementById(id)
@@ -43,12 +45,12 @@ function SectionsContent({
     <div className="flex flex-col">
       <div className="relative px-3 pt-3 pb-2">
         <Search className="absolute left-6 top-[22px] size-3.5 text-slate-400 pointer-events-none" />
-        <input
+        <Input
           type="text"
           placeholder="Search sections..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-7 pr-7 py-1.5 text-xs border border-slate-200 rounded-md bg-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-violet-300 focus:border-violet-400"
+          className="pl-7 pr-7 h-auto py-1.5 text-xs border-slate-200 bg-slate-50"
         />
         {search && (
           <Button
@@ -85,12 +87,12 @@ function SectionsContent({
                 aria-checked={isVisible}
                 aria-label={`Toggle ${section.label}`}
               />
-              <label
+              <FieldLabel
                 htmlFor={`toggle-${section.id}`}
                 className="flex-1 text-xs cursor-pointer select-none"
               >
                 {section.label}
-              </label>
+              </FieldLabel>
               <Button
                 size="xs"
                 variant="ghost"
@@ -180,6 +182,7 @@ export default function SectionsManager({
         </SheetTrigger>
         <SheetContent
           side="bottom"
+          size="auto"
           className="px-0 pb-0 gap-0 rounded-t-xl"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >

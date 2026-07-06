@@ -47,15 +47,10 @@ export default function ProductBrandDelete({
           Delete
         </Button>
       </ModalTrigger>
-      <ModalContent
-        id="deleteBrandConfirmDialog_productBrandPage"
-        showCloseButton={false}
-        variant="bordered"
-        borderColor="border-slate-200"
-      >
+      <ModalContent id="deleteBrandConfirmDialog_productBrandPage" showCloseButton={false}>
         <ModalHeader>
           <ModalTitle className="font-semibold">Delete Product Brand</ModalTitle>
-          <ModalDescription className="text-slate-foreground">
+          <ModalDescription className="text-sm">
             Are you sure you want to delete this product brand? This action cannot be undone.
           </ModalDescription>
         </ModalHeader>

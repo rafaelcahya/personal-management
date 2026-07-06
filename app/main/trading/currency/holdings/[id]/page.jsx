@@ -16,6 +16,15 @@ import {
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Badge } from '@/components/base/Badge/Badge'
 import Button from '@/components/base/Button/Button'
+import Card, {
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import RateHistoryChart from './components/RateHistoryChart'
@@ -196,9 +205,11 @@ export default function CurrencyDetailPage() {
 
   if (error) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <ErrorState onRetry={loadData} />
-      </div>
+      <Card>
+        <CardContent>
+          <ErrorState onRetry={loadData} />
+        </CardContent>
+      </Card>
     )
   }
 
@@ -263,58 +274,56 @@ export default function CurrencyDetailPage() {
       </div>
 
       {/* Rate History Chart card */}
-      <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-            <TrendingUp className="size-4 text-violet-600" aria-hidden="true" />
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-900">Rate History</p>
-            <p className="text-xs text-slate-500 mt-0.5">Historical IDR rate from first purchase</p>
-          </div>
-        </div>
-        <div className="p-4">
+      <Card>
+        <CardHeader>
+          <CardIcon icon={TrendingUp} />
+          <CardHeaderContent>
+            <CardTitle>Rate History</CardTitle>
+            <CardDescription>Historical IDR rate from first purchase</CardDescription>
+          </CardHeaderContent>
+        </CardHeader>
+        <CardContent>
           <RateHistoryChart data={rateHistory} avgBuyRate={avgBuyRate} />
-        </div>
-      </section>
+        </CardContent>
+      </Card>
 
       {/* Summary Stats */}
-      <section aria-label="Summary statistics">
-        <div className="flex items-start gap-3 mb-3">
-          <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-            <BarChart2 className="size-4 text-violet-600" aria-hidden="true" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-900">Summary</p>
-            <p className="text-xs text-slate-500 mt-0.5">Computed from all transactions</p>
-          </div>
-        </div>
-        <SummaryStats investments={investments} currentRate={currentRate} />
-      </section>
+      <Card>
+        <CardHeader>
+          <CardIcon icon={BarChart2} />
+          <CardHeaderContent>
+            <CardTitle>Summary</CardTitle>
+            <CardDescription>Computed from all transactions</CardDescription>
+          </CardHeaderContent>
+        </CardHeader>
+        <CardContent padding="lg">
+          <SummaryStats investments={investments} currentRate={currentRate} />
+        </CardContent>
+      </Card>
 
       {/* Transactions card */}
-      <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-            <Receipt className="size-4 text-violet-600" aria-hidden="true" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">Transactions</p>
-            <p className="text-xs text-slate-500 mt-0.5">{investments.length} records</p>
-          </div>
-          <Button
-            id="addTransactionBtn_currencyDetailPage"
-            size="base"
-            onClick={() => setSheetOpen(true)}
-            className="bg-violet-600 hover:bg-violet-700 shrink-0 min-w-11"
-          >
-            <Plus className="size-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Add Transaction</span>
-            <span className="sm:hidden">Add</span>
-          </Button>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardIcon icon={Receipt} />
+          <CardHeaderContent>
+            <CardTitle>Transactions</CardTitle>
+            <CardDescription>{investments.length} records</CardDescription>
+          </CardHeaderContent>
+          <CardAction>
+            <Button
+              id="addTransactionBtn_currencyDetailPage"
+              size="base"
+              onClick={() => setSheetOpen(true)}
+              className="bg-violet-600 hover:bg-violet-700 shrink-0 min-w-11"
+            >
+              <Plus className="size-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Add Transaction</span>
+              <span className="sm:hidden">Add</span>
+            </Button>
+          </CardAction>
+        </CardHeader>
         <TransactionTable transactions={investments} onDelete={handleDelete} currency={currency} />
-      </section>
+      </Card>
 
       <AddTransactionSheet
         open={sheetOpen}

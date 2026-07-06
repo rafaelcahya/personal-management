@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, Loader2 } from 'lucide-react'
+import { AlertTriangle, Loader2, Pencil } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
@@ -20,7 +20,10 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  ModalDescription,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalFooter,
   ModalClose,
@@ -134,11 +137,15 @@ export default function EditRaceModal({ open, onClose, entry, onSaved }) {
         id="editRaceModal_raceDetailPage"
         className="max-w-lg max-h-[90vh] flex flex-col"
       >
-        <ModalHeader>
-          <ModalTitle>Edit Race Entry</ModalTitle>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={Pencil} />
+          <ModalHeaderContent>
+            <ModalTitle>Edit Race Entry</ModalTitle>
+            <ModalDescription>Update your race entry details and results</ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
-        <ModalBody className="flex-1 overflow-y-auto">
+        <ModalBody className="flex-1 overflow-y-auto" padding={{ x: 4 }}>
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 py-1">
             {/* Title */}
             <FieldContent error={errors.title?.message}>

@@ -2,10 +2,21 @@
 
 import { useState } from 'react'
 import { AlertTriangle, AlertCircle } from 'lucide-react'
+import Card, {
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+  CardContent,
+} from '@/components/base/Card/Card'
 import {
   Modal,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalBody,
   ModalDescription,
@@ -113,7 +124,7 @@ function LowStockTable({ items }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 px-2 py-2">
+      <div className="md:hidden space-y-2 py-2">
         {items.map((item, index) => (
           <div
             key={item.id}
@@ -152,50 +163,50 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
 
   return (
     <>
-      <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-            <AlertTriangle className="size-4 text-violet-600" aria-hidden="true" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">Low Stock Alert</p>
-            <p className="text-xs text-slate-500 mt-0.5">Products running low — restock soon</p>
-          </div>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardIcon icon={AlertTriangle} />
+          <CardHeaderContent>
+            <CardTitle>Low Stock Alert</CardTitle>
+            <CardDescription>Products running low — restock soon</CardDescription>
+          </CardHeaderContent>
+        </CardHeader>
 
-        {loading ? (
-          <TableSkeleton />
-        ) : error ? (
-          <div
-            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-            role="alert"
-            aria-live="assertive"
-          >
-            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-              <p className="text-xs text-slate-500">Check your connection and try again</p>
+        <CardContent padding="none">
+          {loading ? (
+            <TableSkeleton />
+          ) : error ? (
+            <div
+              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">Failed to load data</p>
+                <p className="text-xs text-slate-500">Check your connection and try again</p>
+              </div>
+              {onRetry && (
+                <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                  Try again
+                </Button>
+              )}
             </div>
-            {onRetry && (
-              <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-                Try again
-              </Button>
-            )}
-          </div>
-        ) : items.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <LowStockTable items={top5} />
-        )}
+          ) : items.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <LowStockTable items={top5} />
+          )}
+        </CardContent>
 
         {!loading && !error && items.length > 0 && (
-          <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
+          <CardFooter align="end" className="py-3">
             <Button variant="ghost" onClick={() => setModalOpen(true)}>
               View All
             </Button>
-          </div>
+          </CardFooter>
         )}
-      </section>
+      </Card>
 
       <Modal open={modalOpen} onOpenChange={setModalOpen}>
         <ModalContent
@@ -203,15 +214,14 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
           borderColor="border-slate-200"
           className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
         >
-          <ModalHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
-            <ModalTitle className="text-base font-semibold text-slate-800">
-              All Low Stock Products
-            </ModalTitle>
-            <ModalDescription className="text-xs text-slate-400">
-              Sorted by lowest stock first
-            </ModalDescription>
+          <ModalHeader layout="beside" padding={{ x: 4 }}>
+            <ModalIcon icon={AlertTriangle} />
+            <ModalHeaderContent>
+              <ModalTitle>All Low Stock Products</ModalTitle>
+              <ModalDescription>Sorted by lowest stock first</ModalDescription>
+            </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody className="overflow-y-auto flex-1 px-2">
+          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
             <LowStockTable items={items} />
           </ModalBody>
         </ModalContent>

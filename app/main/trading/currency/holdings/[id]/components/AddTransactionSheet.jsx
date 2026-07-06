@@ -13,6 +13,8 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalDescription,
   ModalFooter,
@@ -230,14 +232,12 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
         id="addTransactionModal_currencyDetailPage"
         className="max-w-md max-h-[90vh] flex flex-col p-0 gap-0"
       >
-        <ModalHeader className="border-b border-slate-100 px-5 py-4 shrink-0">
-          <ModalTitle className="flex items-center gap-2 text-base font-semibold">
-            <ArrowLeftRight className="size-4 text-violet-500" />
-            Add Transaction
-          </ModalTitle>
-          <ModalDescription className="text-xs text-slate-500">
-            Record a buy or sell transaction
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={ArrowLeftRight} />
+          <ModalHeaderContent>
+            <ModalTitle>Add Transaction</ModalTitle>
+            <ModalDescription>Record a buy or sell transaction</ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form
@@ -245,7 +245,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
           className="flex flex-col flex-1 min-h-0"
           noValidate
         >
-          <ModalBody className="flex flex-col gap-5 px-5 py-5">
+          <ModalBody className="flex flex-col gap-5 py-5" padding={{ x: 4 }}>
             {/* Currency */}
             <Controller
               control={form.control}
@@ -323,13 +323,13 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                       >
                         <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100">
                           <Search className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />
-                          <input
+                          <Input
                             type="text"
                             placeholder="Search currencies..."
                             value={currencySearch}
                             onChange={(e) => setCurrencySearch(e.target.value)}
                             autoFocus
-                            className="flex-1 text-sm outline-none bg-transparent placeholder:text-slate-400"
+                            className="flex-1 bg-transparent border-0 rounded-none h-auto px-0 focus-visible:ring-0 shadow-none"
                             aria-label="Search currencies"
                           />
                         </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { CalendarDays } from 'lucide-react'
+import Card from '@/components/base/Card/Card'
 import {
   Accordion,
   AccordionItem,
@@ -17,10 +18,11 @@ function getFirstTwoLines(content) {
 
 export default function WeeklyReviewCard({ weeklyReview }) {
   return (
-    <section
+    <Card
       id="weeklyReviewCard_aiCoachPage"
-      className="rounded-xl border border-slate-200 bg-white overflow-hidden"
       aria-label="Latest weekly review"
+      className="overflow-visible"
+      as="section"
     >
       <Accordion type="single" collapsible>
         <AccordionItem value="weekly-review" className="border-0">
@@ -72,6 +74,6 @@ export default function WeeklyReviewCard({ weeklyReview }) {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </section>
+    </Card>
   )
 }

@@ -1,14 +1,17 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, Loader2, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ListChecks, Loader2, Search } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import {
   Modal,
   ModalBody,
   ModalContent,
+  ModalDescription,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
 import {
@@ -68,8 +71,12 @@ export default function ActivityPickerDialog({ open, onClose, onSelect, currentA
         id="activityPickerDialog"
         className="max-w-2xl flex flex-col gap-0 p-0 max-h-[80vh]"
       >
-        <ModalHeader className="px-5 pt-5 pb-3 shrink-0">
-          <ModalTitle>Select Activity</ModalTitle>
+        <ModalHeader layout="beside" padding={{ x: 4 }} className="pt-5 pb-3">
+          <ModalIcon icon={ListChecks} />
+          <ModalHeaderContent>
+            <ModalTitle>Select Activity</ModalTitle>
+            <ModalDescription>Choose a Strava activity to link to this race</ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <ModalBody className="flex-1 min-h-0 flex flex-col p-0 gap-0">

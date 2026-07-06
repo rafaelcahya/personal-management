@@ -44,7 +44,7 @@ export default function DeleteEvent({ event, onDeleted, onClose, redirectTo, ope
         <ModalContent showCloseButton={false}>
           <ModalHeader>
             <ModalTitle>Delete Event?</ModalTitle>
-            <ModalDescription className="text-slate-600">
+            <ModalDescription className="text-sm">
               This event will be permanently removed. This action cannot be undone.
             </ModalDescription>
           </ModalHeader>

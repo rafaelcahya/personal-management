@@ -45,10 +45,10 @@ export default function DeleteTrade({ trade, onDeleted, onClose, className }) {
           Delete
         </Button>
       </ModalTrigger>
-      <ModalContent showCloseButton={false} variant="bordered" borderColor="border-slate-200">
+      <ModalContent showCloseButton={false}>
         <ModalHeader>
           <ModalTitle>Delete Trade?</ModalTitle>
-          <ModalDescription>
+          <ModalDescription className="text-sm">
             This action cannot be undone. This will permanently delete this trade record from your
             trading journal.
           </ModalDescription>

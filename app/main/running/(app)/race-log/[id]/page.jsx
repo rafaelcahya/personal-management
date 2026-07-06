@@ -267,11 +267,12 @@ export default function RaceDetailPage() {
       />
 
       <Modal open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
-        <ModalContent showCloseButton={false} variant="bordered" borderColor="border-slate-200">
+        <ModalContent showCloseButton={false}>
           <ModalHeader>
             <ModalTitle>Delete this race entry?</ModalTitle>
-            <ModalDescription>
-              <strong>{entry?.title}</strong> will be permanently deleted. This cannot be undone.
+            <ModalDescription className="text-sm">
+              <span className="text-violet-700">{entry?.title}</span> will be permanently deleted.
+              This cannot be undone.
             </ModalDescription>
           </ModalHeader>
           <ModalFooter>

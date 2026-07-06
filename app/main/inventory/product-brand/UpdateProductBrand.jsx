@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2, Tag } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import {
   Modal,
@@ -15,6 +15,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
 import Input from '@/components/base/Input/Input'
@@ -33,6 +35,7 @@ import {
 import { productBrandSchema } from '@/schemas/productBrand'
 import { updateProductBrand } from '@/lib/api/productBrand'
 import ProductBrandDelete from './DeleteProductBrand'
+import Card, { CardContent } from '@/components/base/Card/Card'
 
 export default function ProductBrandUpdate({ productBrand, onClose, onUpdated }) {
   const [loading, setLoading] = useState(false)
@@ -108,15 +111,21 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader className="text-left">
-          <ModalTitle>✏️ Update Product Brand</ModalTitle>
-          <ModalDescription className="text-slate-foreground">
-            Edit brand details including name, status, and notes.
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={Tag} />
+          <ModalHeaderContent>
+            <ModalTitle>Update Product Brand</ModalTitle>
+            <ModalDescription>
+              Edit brand details including name, status, and notes.
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form onSubmit={handleSubmit(handleUpdate)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
+          <ModalBody
+            className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto"
+            padding={{ x: 4 }}
+          >
             {/* Brand Name */}
             <Controller
               control={control}
@@ -196,17 +205,14 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
             />
 
             {isInUse && !isDeleted && (
-              <div
-                id="brandInUseWarning_updateBrandDialog"
-                className="rounded-md border border-rose-300 bg-rose-50 dark:bg-rose-500/10 dark:border-rose-500/30 p-3"
-              >
-                <div className="flex items-start gap-2">
+              <Card id="brandInUseWarning_updateBrandDialog" variant="danger">
+                <CardContent className="flex items-start gap-2">
                   <AlertCircle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
                   <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
                     Brand is by {productBrand.product_count} product(s) and cannot be deleted.
                   </p>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )}
           </ModalBody>
 

@@ -3,13 +3,23 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { Sparkles, AlertCircle } from 'lucide-react'
+import Card, {
+  CardHeader,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+  CardContent,
+} from '@/components/base/Card/Card'
 import {
   Modal,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
-  ModalBody,
   ModalDescription,
+  ModalBody,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
@@ -135,7 +145,7 @@ function PredictionTable({ items }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 px-2 py-2">
+      <div className="md:hidden space-y-2 py-2">
         {items.map((item, index) => (
           <div
             key={item.id}
@@ -183,52 +193,52 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
 
   return (
     <>
-      <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-            <Sparkles className="size-4 text-violet-600" aria-hidden="true" />
-          </div>
+      <Card>
+        <CardHeader>
+          <CardIcon icon={Sparkles} />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">Restock Prediction</p>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <CardTitle>Restock Prediction</CardTitle>
+            <CardDescription>
               Estimated when each product will run out based on usage history
-            </p>
+            </CardDescription>
           </div>
-        </div>
+        </CardHeader>
 
-        {loading ? (
-          <TableSkeleton />
-        ) : error ? (
-          <div
-            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-            role="alert"
-            aria-live="assertive"
-          >
-            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-              <p className="text-xs text-slate-500">Check your connection and try again</p>
+        <CardContent padding="none">
+          {loading ? (
+            <TableSkeleton />
+          ) : error ? (
+            <div
+              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">Failed to load data</p>
+                <p className="text-xs text-slate-500">Check your connection and try again</p>
+              </div>
+              {onRetry && (
+                <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                  Try again
+                </Button>
+              )}
             </div>
-            {onRetry && (
-              <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-                Try again
-              </Button>
-            )}
-          </div>
-        ) : items.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <PredictionTable items={top5} />
-        )}
+          ) : items.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <PredictionTable items={top5} />
+          )}
+        </CardContent>
 
         {!loading && !error && items.length > 0 && (
-          <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
+          <CardFooter align="end" className="py-3">
             <Button variant="ghost" onClick={() => setModalOpen(true)}>
               View All
             </Button>
-          </div>
+          </CardFooter>
         )}
-      </section>
+      </Card>
 
       <Modal open={modalOpen} onOpenChange={setModalOpen}>
         <ModalContent
@@ -236,15 +246,14 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
           borderColor="border-slate-200"
           className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
         >
-          <ModalHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
-            <ModalTitle className="text-base font-semibold text-slate-800 text-left">
-              All Products — Restock Prediction
-            </ModalTitle>
-            <ModalDescription className="text-xs text-slate-400">
-              Sorted by most urgent first
-            </ModalDescription>
+          <ModalHeader layout="beside" padding={{ x: 4 }}>
+            <ModalIcon icon={Sparkles} />
+            <ModalHeaderContent>
+              <ModalTitle>All Products — Restock Prediction</ModalTitle>
+              <ModalDescription>Sorted by most urgent first</ModalDescription>
+            </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody className="overflow-y-auto flex-1 px-2">
+          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
             <PredictionTable items={items} />
           </ModalBody>
         </ModalContent>

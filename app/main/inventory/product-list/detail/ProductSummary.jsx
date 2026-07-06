@@ -9,7 +9,7 @@ export default function ProductSummary({ product }) {
 
   return (
     <Card id="summarySection_productListPage" className="text-sm w-full self-start">
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3" padding="sm">
         <div className="space-y-1">
           <p className="text-slate-500 text-xs">Product</p>
           <p className="font-medium text-slate-800 leading-snug">

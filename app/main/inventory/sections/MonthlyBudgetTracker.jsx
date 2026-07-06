@@ -1,9 +1,20 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { Wallet } from 'lucide-react'
 import { getBudgets, upsertBudget } from '@/lib/api/inventoryBudget'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import { toast } from 'sonner'
+import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
+import Card, {
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/base/Card/Card'
 
 function ProgressBar({ percent }) {
   const capped = Math.min(percent, 100)
@@ -69,7 +80,7 @@ function BudgetRow({ type, actual, budget, onSave }) {
           <span className="text-slate-300">/</span>
           {editing ? (
             <div className="flex items-center gap-1">
-              <input
+              <Input
                 ref={inputRef}
                 type="number"
                 min="0"
@@ -79,7 +90,7 @@ function BudgetRow({ type, actual, budget, onSave }) {
                   if (e.key === 'Enter') handleSave()
                   if (e.key === 'Escape') setEditing(false)
                 }}
-                className="w-28 text-right border border-violet-300 rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-violet-400"
+                className="w-28 text-right border-violet-300 rounded h-auto py-0.5 px-2"
               />
               <Button
                 onClick={handleSave}
@@ -163,14 +174,17 @@ export default function MonthlyBudgetTracker({ monthlySpendByType, loading }) {
   const isLoading = loading || budgetLoading
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100">
-        <h2 className="text-base font-semibold text-slate-800">💰 Monthly Budget Tracker</h2>
-        <p className="text-xs text-slate-400 mt-0.5">
-          Track this month's spend vs your budget per category
-        </p>
-      </div>
-      <div className="px-5 py-3">
+    <Card>
+      <CardHeader>
+        <CardIcon icon={Wallet} />
+        <CardHeaderContent>
+          <CardTitle>Monthly Budget Tracker</CardTitle>
+          <CardDescription>
+            Track this month&apos;s spend vs your budget per category
+          </CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
+      <CardContent padding="none">
         {isLoading ? (
           <div className="space-y-4 py-2">
             {[...Array(4)].map((_, i) => (
@@ -198,7 +212,7 @@ export default function MonthlyBudgetTracker({ monthlySpendByType, loading }) {
             />
           ))
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

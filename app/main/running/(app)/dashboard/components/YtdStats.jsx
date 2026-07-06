@@ -1,6 +1,13 @@
 ﻿'use client'
 
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import { Trophy, Footprints, Clock, Mountain, Star, CalendarDays } from 'lucide-react'
 
 function formatDistance(m) {
@@ -40,15 +47,17 @@ export default function YtdStats({ ytd_stats }) {
 
   return (
     <section id="ytdStatsCard" aria-label="Year to date stats" className="flex flex-col h-full">
-      <Card className="border border-slate-200/70 shadow-sm py-0 flex-1">
-        <CardContent className="px-5 py-5">
-          <div className="flex flex-col gap-1 mb-4">
-            <div className="flex items-center gap-2">
-              <CalendarDays className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-              <h3 className="text-sm font-semibold text-slate-700">Year to Date</h3>
-            </div>
-            <p className="text-xs text-slate-400">Your cumulative running stats for this year.</p>
-          </div>
+      <Card>
+        <CardHeader>
+          <CardIcon icon={CalendarDays} />
+          <CardHeaderContent>
+            <CardTitle>Year to Date</CardTitle>
+            <CardDescription className="text-xs text-slate-400">
+              Your cumulative running stats for this year.
+            </CardDescription>
+          </CardHeaderContent>
+        </CardHeader>
+        <CardContent>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-4">
             <StatItem
               icon={Footprints}

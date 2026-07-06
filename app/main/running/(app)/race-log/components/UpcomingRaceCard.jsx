@@ -19,6 +19,16 @@ import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
+import Card, {
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card'
 import {
   Modal,
   ModalBody,
@@ -27,7 +37,9 @@ import {
   ModalTitle,
   ModalFooter,
   ModalClose,
+  ModalDescription,
 } from '@/components/base/Modal/Modal.jsx'
+import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { updateUpcomingRace, deleteUpcomingRace, createRaceLog } from '@/lib/api/running'
 import { getDistanceLabel, hmsToSecs, secsToHMS, secsToHMSInput, formatDate } from './raceLogUtils'
@@ -42,12 +54,12 @@ function daysUntil(dateStr) {
   return Math.round((race - today) / 86400000)
 }
 
-function getCardStyle(days) {
+function getUrgencyClass(days) {
   if (days <= 1) return 'border-2 border-red-300 bg-red-50/40'
   if (days <= 3) return 'border border-orange-300 bg-orange-50/40'
   if (days <= 7) return 'border border-amber-300 bg-amber-50/50'
   if (days <= 14) return 'border border-amber-200 bg-amber-50/25'
-  return 'border border-slate-200/50 bg-white'
+  return ''
 }
 
 function CountdownBadge({ dateStr }) {
@@ -184,158 +196,167 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
 
   return (
     <>
-      <div
+      <Card
         id={`upcomingRaceCard_${race.id}_raceLogPage`}
-        className={`${getCardStyle(days)} rounded-xl p-4 flex flex-col gap-4`}
+        className={cn(getUrgencyClass(days), 'shadow-none overflow-visible')}
       >
-        {/* Header row */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex items-center justify-center size-9 rounded-full bg-violet-50 shrink-0">
-              <Flag className="size-4 text-violet-500" aria-hidden="true" />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-sm font-semibold text-slate-800 truncate">{race.title}</span>
-              <span className="text-xs text-violet-600 font-medium">
-                {getDistanceLabel(race.distance_m)}
-              </span>
-            </div>
-          </div>
-          {race.race_date && <CountdownBadge dateStr={race.race_date} />}
-        </div>
-
-        {/* Amber info guide — shown when no linked activity */}
-        {!linked && (
-          <div
-            id="upcomingRaceInfoGuide_raceLogPage"
-            className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2 text-sm text-amber-800"
-            role="alert"
-          >
-            <AlertTriangle className="size-4 shrink-0 mt-0.5 text-amber-500" aria-hidden="true" />
-            <span>
-              This race hasn&apos;t been run yet. Once you&apos;ve finished, link your Strava
-              activity to fill in the results.
-            </span>
-          </div>
-        )}
-
-        {/* Racepack pickup guide — shown at ≤7 days and ≤3 days, not at ≤1 day */}
-        {days > 1 && days <= 7 && (
-          <div
-            id={`racepackGuide_${race.id}_raceLogPage`}
-            className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2 text-sm text-blue-800"
-          >
-            <Info className="size-4 shrink-0 mt-0.5 text-blue-500" aria-hidden="true" />
-            <span>
-              🎽 Racepack pickup is usually H&#8209;3 to H&#8209;1. Check the event page for your
-              schedule and pickup location.
-            </span>
-          </div>
-        )}
-
-        {/* Race details row */}
-        <div className="flex items-center gap-3 flex-wrap text-xs text-slate-500">
-          {race.target_time_sec && (
-            <span
-              id={`targetTimeBadge_${race.id}_raceLogPage`}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 font-semibold"
-            >
-              <svg className="size-3 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5" />
-                <path
-                  d="M8 5v3.5l2 1.5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              {secsToHMS(race.target_time_sec)}
-            </span>
-          )}
+        <CardHeader className="border-none">
+          <CardIcon icon={Flag} />
+          <CardHeaderContent>
+            <CardTitle>{race.title}</CardTitle>
+            <CardDescription className="text-violet-600 font-medium mt-0">
+              {getDistanceLabel(race.distance_m)}
+            </CardDescription>
+          </CardHeaderContent>
           {race.race_date && (
-            <span className="flex items-center gap-1.5">
-              <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
-              {formatDate(race.race_date)}
-            </span>
+            <CardAction>
+              <CountdownBadge dateStr={race.race_date} />
+            </CardAction>
           )}
-          {race.location && (
-            <span className="flex items-center gap-1.5">
-              <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
-              {race.location}
-            </span>
-          )}
-        </div>
+        </CardHeader>
 
-        {/* Manual result fields — collapsible */}
-        <div className="border border-slate-200/70 rounded-lg overflow-hidden">
-          <Button
-            id={`resultsToggle_${race.id}_raceLogPage`}
-            variant="ghost"
-            fullWidth
-            onClick={() => setResultsOpen((v) => !v)}
-            className="justify-between px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50"
-            aria-expanded={resultsOpen}
-          >
-            <span>Log result</span>
-            <ChevronDown
-              className={`size-3.5 transition-transform duration-200 ${resultsOpen ? 'rotate-180' : ''}`}
-              aria-hidden="true"
-            />
-          </Button>
-          {resultsOpen && (
-            <div className="grid grid-cols-2 gap-3 px-3 pb-3 pt-2 border-t border-slate-200/70">
-              <FieldContent className="col-span-2">
-                <FieldLabel htmlFor={`finishTime_${race.id}`} className="text-xs">
-                  Finish time (hh:mm:ss)
-                </FieldLabel>
-                <Input
-                  id={`finishTime_${race.id}`}
-                  placeholder="00:45:30"
-                  value={finishTimeStr}
-                  onChange={(e) => setFinishTimeStr(e.target.value)}
-                  onBlur={() => {
-                    const secs = hmsToSecs(finishTimeStr)
-                    if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
-                  }}
-                  disabled={fieldsDisabled}
-                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        <CardContent className="space-y-3 pt-0">
+          {/* Amber info guide — shown when no linked activity */}
+          {!linked && (
+            <Card
+              id="upcomingRaceInfoGuide_raceLogPage"
+              variant="warning"
+              className="shadow-none"
+              role="alert"
+            >
+              <CardContent className="flex items-start gap-2 py-3">
+                <AlertTriangle
+                  className="size-4 shrink-0 mt-0.5 text-amber-500"
+                  aria-hidden="true"
                 />
-              </FieldContent>
-              <FieldContent>
-                <FieldLabel htmlFor={`positionPlace_${race.id}`} className="text-xs">
-                  Position (overall)
-                </FieldLabel>
-                <Input
-                  id={`positionPlace_${race.id}`}
-                  type="number"
-                  placeholder="e.g. 42"
-                  value={positionPlace}
-                  onChange={(e) => setPositionPlace(e.target.value)}
-                  disabled={fieldsDisabled}
-                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-              </FieldContent>
-              <FieldContent>
-                <FieldLabel htmlFor={`positionMale_${race.id}`} className="text-xs">
-                  Position (male)
-                </FieldLabel>
-                <Input
-                  id={`positionMale_${race.id}`}
-                  type="number"
-                  placeholder="e.g. 8"
-                  value={positionMale}
-                  onChange={(e) => setPositionMale(e.target.value)}
-                  disabled={fieldsDisabled}
-                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-              </FieldContent>
-            </div>
+                <span className="text-sm text-amber-800">
+                  This race hasn&apos;t been run yet. Once you&apos;ve finished, link your Strava
+                  activity to fill in the results.
+                </span>
+              </CardContent>
+            </Card>
           )}
-        </div>
 
-        {/* Actions row */}
-        <div className="flex items-center justify-between gap-2 flex-wrap">
+          {/* Racepack pickup guide — shown at ≤7 days, not ≤1 day */}
+          {days > 1 && days <= 7 && (
+            <Card
+              id={`racepackGuide_${race.id}_raceLogPage`}
+              variant="info"
+              className="shadow-none"
+            >
+              <CardContent className="flex items-start gap-2 py-3">
+                <Info className="size-4 shrink-0 mt-0.5 text-blue-500" aria-hidden="true" />
+                <span className="text-sm text-blue-800">
+                  🎽 Racepack pickup is usually H&#8209;3 to H&#8209;1. Check the event page for
+                  your schedule and pickup location.
+                </span>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Race details row */}
+          <div className="flex items-center gap-3 flex-wrap text-xs text-slate-500">
+            {race.target_time_sec && (
+              <span
+                id={`targetTimeBadge_${race.id}_raceLogPage`}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 font-semibold"
+              >
+                <svg className="size-3 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5" />
+                  <path
+                    d="M8 5v3.5l2 1.5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                {secsToHMS(race.target_time_sec)}
+              </span>
+            )}
+            {race.race_date && (
+              <span className="flex items-center gap-1.5">
+                <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
+                {formatDate(race.race_date)}
+              </span>
+            )}
+            {race.location && (
+              <span className="flex items-center gap-1.5">
+                <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
+                {race.location}
+              </span>
+            )}
+          </div>
+
+          {/* Manual result fields — collapsible */}
+          <div className="border border-slate-200/70 rounded-lg overflow-hidden">
+            <Button
+              id={`resultsToggle_${race.id}_raceLogPage`}
+              variant="ghost"
+              fullWidth
+              onClick={() => setResultsOpen((v) => !v)}
+              className="justify-between px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50"
+              aria-expanded={resultsOpen}
+            >
+              <span>Log result</span>
+              <ChevronDown
+                className={`size-3.5 transition-transform duration-200 ${resultsOpen ? 'rotate-180' : ''}`}
+                aria-hidden="true"
+              />
+            </Button>
+            {resultsOpen && (
+              <div className="grid grid-cols-2 gap-3 px-3 pb-3 pt-2 border-t border-slate-200/70">
+                <FieldContent className="col-span-2">
+                  <FieldLabel htmlFor={`finishTime_${race.id}`} className="text-xs">
+                    Finish time (hh:mm:ss)
+                  </FieldLabel>
+                  <Input
+                    id={`finishTime_${race.id}`}
+                    placeholder="00:45:30"
+                    value={finishTimeStr}
+                    onChange={(e) => setFinishTimeStr(e.target.value)}
+                    onBlur={() => {
+                      const secs = hmsToSecs(finishTimeStr)
+                      if (secs != null) setFinishTimeStr(secsToHMSInput(secs))
+                    }}
+                    disabled={fieldsDisabled}
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </FieldContent>
+                <FieldContent>
+                  <FieldLabel htmlFor={`positionPlace_${race.id}`} className="text-xs">
+                    Position (overall)
+                  </FieldLabel>
+                  <Input
+                    id={`positionPlace_${race.id}`}
+                    type="number"
+                    placeholder="e.g. 42"
+                    value={positionPlace}
+                    onChange={(e) => setPositionPlace(e.target.value)}
+                    disabled={fieldsDisabled}
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </FieldContent>
+                <FieldContent>
+                  <FieldLabel htmlFor={`positionMale_${race.id}`} className="text-xs">
+                    Position (male)
+                  </FieldLabel>
+                  <Input
+                    id={`positionMale_${race.id}`}
+                    type="number"
+                    placeholder="e.g. 8"
+                    value={positionMale}
+                    onChange={(e) => setPositionMale(e.target.value)}
+                    disabled={fieldsDisabled}
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </FieldContent>
+              </div>
+            )}
+          </div>
+        </CardContent>
+
+        <CardFooter className="justify-between gap-2 flex-wrap py-2">
           {/* Left actions */}
           <div className="flex items-center gap-2 flex-wrap">
             <Button
@@ -443,8 +464,8 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
               <Trash2 className="size-3.5" aria-hidden="true" />
             </Button>
           </div>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
 
       <ActivityPickerDialog
         open={pickerOpen}
@@ -464,19 +485,17 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
       />
 
       <Modal open={deleteOpen} onOpenChange={(v) => !v && setDeleteOpen(false)}>
-        <ModalContent variant="bordered" borderColor="border-slate-200" className="max-w-sm">
+        <ModalContent className="max-w-md">
           <ModalHeader>
             <ModalTitle>Delete upcoming race?</ModalTitle>
+            <ModalDescription className="text-sm">
+              This will remove <span className="text-violet-700">{race.title}</span> from your
+              upcoming races. This action cannot be undone.
+            </ModalDescription>
           </ModalHeader>
-          <ModalBody>
-            <p className="text-sm text-slate-600">
-              This will remove <span className="font-medium">{race.title}</span> from your upcoming
-              races. This action cannot be undone.
-            </p>
-          </ModalBody>
           <ModalFooter className="gap-2">
             <ModalClose asChild>
-              <Button variant="outline" type="button" disabled={deleting}>
+              <Button variant="secondary" type="button" disabled={deleting}>
                 Cancel
               </Button>
             </ModalClose>

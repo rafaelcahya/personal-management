@@ -14,6 +14,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
 import Input from '@/components/base/Input/Input'
@@ -21,7 +23,7 @@ import FieldContent from '@/components/base/Field/FieldContent'
 import FieldLabel from '@/components/base/Field/FieldLabel'
 import FieldError from '@/components/base/Field/FieldError'
 import Textarea from '@/components/base/Textarea/Textarea'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2, Package } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -33,6 +35,7 @@ import {
 import { productNameSchema } from '@/schemas/productName'
 import { updateProductName } from '@/lib/api/productName'
 import DeleteProductName from './DeleteProductName'
+import Card, { CardContent, CardDescription, CardIcon } from '@/components/base/Card/Card'
 
 export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
   const [loading, setLoading] = useState(false)
@@ -108,15 +111,21 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader>
-          <ModalTitle>Update Product Name</ModalTitle>
-          <ModalDescription className="text-slate-foreground">
-            Edit name details including name, status, and notes.
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={Package} />
+          <ModalHeaderContent>
+            <ModalTitle>Update Product Name</ModalTitle>
+            <ModalDescription>
+              Edit name details including name, status, and notes.
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form onSubmit={handleSubmit(handleUpdate)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
+          <ModalBody
+            className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto"
+            padding={{ x: 4 }}
+          >
             <Controller
               control={control}
               name="product_name"
@@ -193,18 +202,15 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
             />
 
             {isInUse && !isDeleted && (
-              <div
-                id="productNameInUseWarning_updateDialog"
-                className="rounded-md border border-rose-300 bg-rose-50 dark:bg-rose-500/10 dark:border-rose-500/30 p-3"
-              >
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
-                  <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
+              <Card id="productNameInUseWarning_updateDialog" variant="danger">
+                <CardContent className="flex items-start gap-2">
+                  <CardIcon icon={AlertCircle} />
+                  <CardDescription className="text-sm font-medium text-rose-600 dark:text-rose-400">
                     Product name is still used by {productName.product_count} product(s) and cannot
                     be deleted.
-                  </p>
-                </div>
-              </div>
+                  </CardDescription>
+                </CardContent>
+              </Card>
             )}
           </ModalBody>
 

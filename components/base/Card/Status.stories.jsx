@@ -50,90 +50,130 @@ const ErrorRetry = ({ onRetry }) => (
 export const AllVariants = {
   name: 'All Variants',
   render: () => (
-    <div className="p-6 max-w-2xl flex flex-col gap-4">
-      <Card variant="shell">
-        <CardHeader>
-          <CardIcon icon={Package} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Shell</CardTitle>
-            <CardDescription>Default card — no semantic status</CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DataRow label="Total Items" value="48" />
-          <DataRow label="Categories" value="5" />
-        </CardContent>
-      </Card>
+    <div className="flex flex-col items-center gap-6 w-full">
+      {/* 1. Information guide */}
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+        Pass <code className="font-mono bg-gray-100 px-1 rounded text-xs">variant</code> to{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">Card</code> to communicate
+        semantic status. Sub-components{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardHeader</code>,{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardIcon</code>,{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardContent</code>, and{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardFooter</code> automatically
+        adapt their tint, border color, and icon color — no extra props needed.
+      </p>
 
-      <Card variant="info">
-        <CardHeader>
-          <CardIcon icon={Info} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Info</CardTitle>
-            <CardDescription>Informational — neutral guidance or tips</CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DataRow label="Total Items" value="48" />
-          <DataRow label="Categories" value="5" />
-        </CardContent>
-      </Card>
+      {/* 2. Live preview */}
+      <div className="flex flex-col gap-4 w-full max-w-2xl">
+        <Card variant="shell">
+          <CardHeader>
+            <CardIcon icon={Package} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Shell</CardTitle>
+              <CardDescription>Default card — no semantic status</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="Total Items" value="48" />
+            <DataRow label="Categories" value="5" />
+          </CardContent>
+        </Card>
 
-      <Card variant="success">
-        <CardHeader>
-          <CardIcon icon={CheckCircle2} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Success</CardTitle>
-            <CardDescription>Operation completed — sync done, order approved</CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DataRow label="Total Items" value="48" />
-          <DataRow label="Categories" value="5" />
-        </CardContent>
-      </Card>
+        <Card variant="transparent">
+          <CardHeader>
+            <CardIcon icon={Package} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Transparent</CardTitle>
+              <CardDescription>No background or border — page-level wrapper</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="Total Items" value="48" />
+            <DataRow label="Categories" value="5" />
+          </CardContent>
+        </Card>
 
-      <Card variant="warning">
-        <CardHeader>
-          <CardIcon icon={AlertTriangle} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Warning</CardTitle>
-            <CardDescription>Recoverable issue — low stock, approaching limit</CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DataRow label="Total Items" value="48" />
-          <DataRow label="Categories" value="5" />
-        </CardContent>
-      </Card>
+        <Card variant="info">
+          <CardHeader>
+            <CardIcon icon={Info} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Info</CardTitle>
+              <CardDescription>Informational — neutral guidance or tips</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="Total Items" value="48" />
+            <DataRow label="Categories" value="5" />
+          </CardContent>
+        </Card>
 
-      <Card variant="danger">
-        <CardHeader>
-          <CardIcon icon={XCircle} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Danger</CardTitle>
-            <CardDescription>Blocking state — action required, data missing</CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DataRow label="Total Items" value="48" />
-          <DataRow label="Categories" value="5" />
-        </CardContent>
-      </Card>
+        <Card variant="success">
+          <CardHeader>
+            <CardIcon icon={CheckCircle2} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Success</CardTitle>
+              <CardDescription>Operation completed — sync done, order approved</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="Total Items" value="48" />
+            <DataRow label="Categories" value="5" />
+          </CardContent>
+        </Card>
 
-      <Card variant="muted">
-        <CardHeader>
-          <CardIcon icon={Package} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Muted</CardTitle>
-            <CardDescription>De-emphasized — archived, read-only, or inactive</CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DataRow label="Total Items" value="48" />
-          <DataRow label="Categories" value="5" />
-        </CardContent>
-      </Card>
+        <Card variant="warning">
+          <CardHeader>
+            <CardIcon icon={AlertTriangle} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Warning</CardTitle>
+              <CardDescription>Recoverable issue — low stock, approaching limit</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="Total Items" value="48" />
+            <DataRow label="Categories" value="5" />
+          </CardContent>
+        </Card>
+
+        <Card variant="danger">
+          <CardHeader>
+            <CardIcon icon={XCircle} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Danger</CardTitle>
+              <CardDescription>Blocking state — action required, data missing</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="Total Items" value="48" />
+            <DataRow label="Categories" value="5" />
+          </CardContent>
+        </Card>
+
+        <Card variant="muted">
+          <CardHeader>
+            <CardIcon icon={Package} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Muted</CardTitle>
+              <CardDescription>De-emphasized — archived, read-only, or inactive</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="Total Items" value="48" />
+            <DataRow label="Categories" value="5" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 3. Code snippet */}
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
+        <code>{`<Card variant="shell">...</Card>       {/* default */}
+<Card variant="transparent">...</Card>
+<Card variant="info">...</Card>
+<Card variant="success">...</Card>
+<Card variant="warning">...</Card>
+<Card variant="danger">...</Card>
+<Card variant="muted">...</Card>`}</code>
+      </pre>
     </div>
   ),
 }
@@ -143,30 +183,59 @@ export const AllVariants = {
 export const LoadingState = {
   name: 'Loading State',
   render: () => (
-    <div className="p-6 max-w-2xl flex flex-col gap-4">
-      {[
-        { variant: 'shell', icon: Package, title: 'Shell' },
-        { variant: 'info', icon: Info, title: 'Info' },
-        { variant: 'success', icon: CheckCircle2, title: 'Success' },
-        { variant: 'warning', icon: AlertTriangle, title: 'Warning' },
-        { variant: 'danger', icon: XCircle, title: 'Danger' },
-        { variant: 'muted', icon: Package, title: 'Muted' },
-      ].map(({ variant, icon, title }) => (
-        <Card key={variant} variant={variant}>
-          <CardHeader>
-            <CardIcon icon={icon} />
-            <div className="min-w-0 flex-1">
-              <CardTitle>{title}</CardTitle>
-              <CardDescription>Loading…</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <SkeletonRow />
-            <SkeletonRow />
-            <SkeletonRow />
-          </CardContent>
-        </Card>
-      ))}
+    <div className="flex flex-col items-center gap-6 w-full">
+      {/* 1. Information guide */}
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+        While data is loading, replace{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardContent</code> with
+        skeleton rows. The variant tint is preserved — so the card still communicates status even
+        while loading.
+      </p>
+
+      {/* 2. Live preview */}
+      <div className="flex flex-col gap-4 w-full max-w-2xl">
+        {[
+          { variant: 'shell', icon: Package, title: 'Shell' },
+          { variant: 'info', icon: Info, title: 'Info' },
+          { variant: 'success', icon: CheckCircle2, title: 'Success' },
+          { variant: 'warning', icon: AlertTriangle, title: 'Warning' },
+          { variant: 'danger', icon: XCircle, title: 'Danger' },
+          { variant: 'muted', icon: Package, title: 'Muted' },
+        ].map(({ variant, icon, title }) => (
+          <Card key={variant} variant={variant}>
+            <CardHeader>
+              <CardIcon icon={icon} />
+              <div className="min-w-0 flex-1">
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>Loading…</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <SkeletonRow />
+              <SkeletonRow />
+              <SkeletonRow />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* 3. Code snippet */}
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
+        <code>{`<Card variant="warning">
+  <CardHeader>
+    <CardIcon icon={AlertTriangle} />
+    <div className="min-w-0 flex-1">
+      <CardTitle>Low Stock Alert</CardTitle>
+      <CardDescription>Loading…</CardDescription>
+    </div>
+  </CardHeader>
+  <CardContent>
+    <SkeletonRow />
+    <SkeletonRow />
+    <SkeletonRow />
+  </CardContent>
+</Card>`}</code>
+      </pre>
     </div>
   ),
 }
@@ -176,28 +245,59 @@ export const LoadingState = {
 export const ErrorState = {
   name: 'Error State',
   render: () => (
-    <div className="p-6 max-w-2xl flex flex-col gap-4">
-      {[
-        { variant: 'shell', icon: Package, title: 'Shell' },
-        { variant: 'info', icon: Info, title: 'Info' },
-        { variant: 'success', icon: CheckCircle2, title: 'Success' },
-        { variant: 'warning', icon: AlertTriangle, title: 'Warning' },
-        { variant: 'danger', icon: XCircle, title: 'Danger' },
-        { variant: 'muted', icon: Package, title: 'Muted' },
-      ].map(({ variant, icon, title }) => (
-        <Card key={variant} variant={variant}>
-          <CardHeader>
-            <CardIcon icon={icon} />
-            <div className="min-w-0 flex-1">
-              <CardTitle>{title}</CardTitle>
-              <CardDescription>Could not load data</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ErrorRetry onRetry={() => {}} />
-          </CardContent>
-        </Card>
-      ))}
+    <div className="flex flex-col items-center gap-6 w-full">
+      {/* 1. Information guide */}
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+        When a fetch fails, show an error state inside{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardContent</code> with a retry
+        button. The card variant stays the same — the error is in the content area, not the card
+        style.
+      </p>
+
+      {/* 2. Live preview */}
+      <div className="flex flex-col gap-4 w-full max-w-2xl">
+        {[
+          { variant: 'shell', icon: Package, title: 'Shell' },
+          { variant: 'info', icon: Info, title: 'Info' },
+          { variant: 'success', icon: CheckCircle2, title: 'Success' },
+          { variant: 'warning', icon: AlertTriangle, title: 'Warning' },
+          { variant: 'danger', icon: XCircle, title: 'Danger' },
+          { variant: 'muted', icon: Package, title: 'Muted' },
+        ].map(({ variant, icon, title }) => (
+          <Card key={variant} variant={variant}>
+            <CardHeader>
+              <CardIcon icon={icon} />
+              <div className="min-w-0 flex-1">
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>Could not load data</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ErrorRetry onRetry={() => {}} />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* 3. Code snippet */}
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
+        <code>{`<Card variant="shell">
+  <CardHeader>
+    <CardIcon icon={Package} />
+    <div className="min-w-0 flex-1">
+      <CardTitle>Products</CardTitle>
+      <CardDescription>Could not load data</CardDescription>
+    </div>
+  </CardHeader>
+  <CardContent>
+    <div className="flex flex-col items-center gap-3 py-6 text-center">
+      <XCircle className="size-8 text-slate-300" />
+      <p className="text-sm text-slate-500">Failed to load data</p>
+      <Button size="sm" variant="outline" onClick={onRetry}>Retry</Button>
+    </div>
+  </CardContent>
+</Card>`}</code>
+      </pre>
     </div>
   ),
 }
@@ -207,88 +307,120 @@ export const ErrorState = {
 export const WithAction = {
   name: 'With Action',
   render: () => (
-    <div className="p-6 max-w-2xl flex flex-col gap-4">
-      <Card variant="info">
-        <CardHeader>
-          <CardIcon icon={Info} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Sync in Progress</CardTitle>
-            <CardDescription>Last synced: 5 minutes ago</CardDescription>
-          </div>
-          <CardAction>
-            <Button size="sm" variant="outline">
-              Refresh
-            </Button>
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          <DataRow label="Records synced" value="1,204" />
-          <DataRow label="Errors" value="0" />
-        </CardContent>
-      </Card>
+    <div className="flex flex-col items-center gap-6 w-full">
+      {/* 1. Information guide */}
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+        Use <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardAction</code> inside{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardHeader</code> to place a
+        button or control in the right slot. Combine with status variants to surface contextual
+        actions — e.g. Refresh for info, View Items for warning, Retry for danger.
+      </p>
 
-      <Card variant="warning">
-        <CardHeader>
-          <CardIcon icon={AlertTriangle} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Low Stock Alert</CardTitle>
-            <CardDescription>3 items need restocking soon</CardDescription>
-          </div>
-          <CardAction>
-            <Button size="sm" variant="outline">
-              View Items
-            </Button>
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          <DataRow label="Vitamin C Serum" value="1 left" />
-          <DataRow label="Body Lotion" value="2 left" />
-          <DataRow label="Moisturizer" value="3 left" />
-        </CardContent>
-      </Card>
+      {/* 2. Live preview */}
+      <div className="flex flex-col gap-4 w-full max-w-2xl">
+        <Card variant="info">
+          <CardHeader>
+            <CardIcon icon={Info} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Sync in Progress</CardTitle>
+              <CardDescription>Last synced: 5 minutes ago</CardDescription>
+            </div>
+            <CardAction>
+              <Button size="sm" variant="outline">
+                Refresh
+              </Button>
+            </CardAction>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="Records synced" value="1,204" />
+            <DataRow label="Errors" value="0" />
+          </CardContent>
+        </Card>
 
-      <Card variant="danger">
-        <CardHeader>
-          <CardIcon icon={XCircle} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Payment Failed</CardTitle>
-            <CardDescription>Order #4821 could not be processed</CardDescription>
-          </div>
-          <CardAction>
-            <Button size="sm" variant="outline">
-              Retry
-            </Button>
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          <DataRow label="Order" value="#4821" />
-          <DataRow label="Amount" value="Rp 180.000" />
-          <DataRow label="Reason" value="Insufficient funds" />
-        </CardContent>
-        <CardFooter>
-          <p className="text-xs text-slate-500">Contact support if the issue persists</p>
-        </CardFooter>
-      </Card>
+        <Card variant="warning">
+          <CardHeader>
+            <CardIcon icon={AlertTriangle} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Low Stock Alert</CardTitle>
+              <CardDescription>3 items need restocking soon</CardDescription>
+            </div>
+            <CardAction>
+              <Button size="sm" variant="outline">
+                View Items
+              </Button>
+            </CardAction>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="Vitamin C Serum" value="1 left" />
+            <DataRow label="Body Lotion" value="2 left" />
+            <DataRow label="Moisturizer" value="3 left" />
+          </CardContent>
+        </Card>
 
-      <Card variant="success">
-        <CardHeader>
-          <CardIcon icon={CheckCircle2} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Export Complete</CardTitle>
-            <CardDescription>Your CSV file is ready to download</CardDescription>
-          </div>
-          <CardAction>
-            <Button size="sm" variant="outline">
-              Download
-            </Button>
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          <DataRow label="File" value="inventory-2026.csv" />
-          <DataRow label="Records" value="48 items" />
-          <DataRow label="Size" value="~24 KB" />
-        </CardContent>
-      </Card>
+        <Card variant="danger">
+          <CardHeader>
+            <CardIcon icon={XCircle} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Payment Failed</CardTitle>
+              <CardDescription>Order #4821 could not be processed</CardDescription>
+            </div>
+            <CardAction>
+              <Button size="sm" variant="outline">
+                Retry
+              </Button>
+            </CardAction>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="Order" value="#4821" />
+            <DataRow label="Amount" value="Rp 180.000" />
+            <DataRow label="Reason" value="Insufficient funds" />
+          </CardContent>
+          <CardFooter>
+            <p className="text-xs text-slate-500">Contact support if the issue persists</p>
+          </CardFooter>
+        </Card>
+
+        <Card variant="success">
+          <CardHeader>
+            <CardIcon icon={CheckCircle2} />
+            <div className="min-w-0 flex-1">
+              <CardTitle>Export Complete</CardTitle>
+              <CardDescription>Your CSV file is ready to download</CardDescription>
+            </div>
+            <CardAction>
+              <Button size="sm" variant="outline">
+                Download
+              </Button>
+            </CardAction>
+          </CardHeader>
+          <CardContent>
+            <DataRow label="File" value="inventory-2026.csv" />
+            <DataRow label="Records" value="48 items" />
+            <DataRow label="Size" value="~24 KB" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 3. Code snippet */}
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
+        <code>{`<Card variant="warning">
+  <CardHeader>
+    <CardIcon icon={AlertTriangle} />
+    <div className="min-w-0 flex-1">
+      <CardTitle>Low Stock Alert</CardTitle>
+      <CardDescription>3 items need restocking soon</CardDescription>
+    </div>
+    <CardAction>
+      <Button size="sm" variant="outline">View Items</Button>
+    </CardAction>
+  </CardHeader>
+  <CardContent>
+    {items.map(item => (
+      <DataRow key={item.name} label={item.name} value={item.stock} />
+    ))}
+  </CardContent>
+</Card>`}</code>
+      </pre>
     </div>
   ),
 }

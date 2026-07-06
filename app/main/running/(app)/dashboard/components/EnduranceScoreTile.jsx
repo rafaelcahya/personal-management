@@ -3,7 +3,15 @@
 import Link from 'next/link'
 import Button from '@/components/base/Button/Button'
 import { Gauge, Info } from 'lucide-react'
-import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import Card, {
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card.jsx'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
 
 const TOOLTIP_TEXT =
@@ -22,16 +30,18 @@ export default function EnduranceScoreTile({ enduranceScore, viewTrendHref }) {
 
   return (
     <section id="enduranceScoreTile_dashboardPage" aria-label="Endurance Score">
-      <Card className="border border-slate-200/70 shadow-sm py-0">
-        <CardContent className="px-5 py-5">
-          <div className="flex flex-col gap-1 mb-4">
-            <div className="flex items-center gap-2">
-              <Gauge className="size-4 text-violet-500 shrink-0" aria-hidden="true" />
-              <h3 className="text-sm font-semibold text-slate-700">Endurance Score</h3>
-            </div>
-            <p className="text-xs text-slate-400">
-              Composite fitness score (0–100) from VO₂max, training load, and long run history.
-            </p>
+      <Card>
+        <CardHeader layout="below">
+          <div className="flex gap-2">
+            <CardIcon icon={Gauge} />
+            <CardHeaderContent>
+              <CardTitle>Endurance Score</CardTitle>
+              <CardDescription className="text-xs text-slate-400">
+                Composite fitness score (0–100) from VO₂max, training load, and long run history.
+              </CardDescription>
+            </CardHeaderContent>
+          </div>
+          <CardAction>
             {viewTrendHref && (
               <Link
                 href={viewTrendHref}
@@ -40,7 +50,9 @@ export default function EnduranceScoreTile({ enduranceScore, viewTrendHref }) {
                 View full trend →
               </Link>
             )}
-          </div>
+          </CardAction>
+        </CardHeader>
+        <CardContent className="px-5 py-5">
           <div className="flex items-start gap-4">
             <div className="p-2 rounded-lg bg-indigo-50 shrink-0 mt-0.5">
               <Gauge className="size-4 text-indigo-600" aria-hidden="true" />

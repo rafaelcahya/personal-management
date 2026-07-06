@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
-import { Loader2, Plus } from 'lucide-react'
+import { Loader2, PackagePlus, Plus } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
@@ -17,6 +17,8 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
   ModalTrigger,
 } from '@/components/base/Modal/Modal.jsx'
@@ -26,6 +28,7 @@ import FieldError from '@/components/base/Field/FieldError'
 import FieldDescription from '@/components/base/Field/FieldDescription'
 import { createQuantityUpdate } from '@/lib/api/productQuantity'
 import { getLastPurchasePrice, getStockHistory } from '@/lib/api/product'
+import Card, { CardContent } from '@/components/base/Card/Card'
 
 export default function AddStockForm({ product, onAdded }) {
   const [open, setOpen] = useState(false)
@@ -121,43 +124,52 @@ export default function AddStockForm({ product, onAdded }) {
           }
         }}
       >
-        <ModalHeader className="text-left shrink-0">
-          <ModalTitle>📦 Add More Stock</ModalTitle>
-          <ModalDescription>
-            Restocking {product.brand} {product.type} {product.product}. Let's add it to your
-            inventory and keep things organized! 🎯
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={PackagePlus} />
+          <ModalHeaderContent>
+            <ModalTitle>Add More Stock</ModalTitle>
+            <ModalDescription>
+              Restocking{' '}
+              <span className="text-violet-700">
+                {product.brand} {product.type} {product.product}
+              </span>
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody className="space-y-5">
+          <ModalBody className="space-y-5" padding={{ x: 4 }}>
             {/* Recent Purchases */}
-            {(historyLoading || stockHistory.length > 0) && (
-              <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-3">
-                <p className="text-xs font-medium text-slate-500 mb-2">Recent Purchases</p>
-                {historyLoading ? (
-                  <p className="text-xs text-muted-foreground">Loading history...</p>
-                ) : (
-                  <div className="space-y-1.5">
-                    {stockHistory.map((h, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs">
-                        <span className="text-slate-500 font-mono">
-                          {h.purchase_date ? format(new Date(h.purchase_date), 'd MMM yyyy') : '-'}
-                        </span>
-                        <div className="flex items-center gap-3">
-                          <span className="text-slate-600">
-                            qty: <span className="font-medium font-mono">{h.quantity_added}</span>
+            <Card>
+              {(historyLoading || stockHistory.length > 0) && (
+                <CardContent padding="sm">
+                  <p className="text-xs font-medium text-slate-500 mb-2">Recent Purchases</p>
+                  {historyLoading ? (
+                    <p className="text-xs text-muted-foreground">Loading history...</p>
+                  ) : (
+                    <div className="space-y-1.5">
+                      {stockHistory.map((h, i) => (
+                        <div key={i} className="flex items-center justify-between text-xs">
+                          <span className="text-slate-500 font-mono">
+                            {h.purchase_date
+                              ? format(new Date(h.purchase_date), 'd MMM yyyy')
+                              : '-'}
                           </span>
-                          <span className="text-slate-700 font-medium font-mono">
-                            Rp {Number(h.price || 0).toLocaleString('id-ID')}
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-slate-600">
+                              qty: <span className="font-medium font-mono">{h.quantity_added}</span>
+                            </span>
+                            <span className="text-slate-700 font-medium font-mono">
+                              Rp {Number(h.price || 0).toLocaleString('id-ID')}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              )}
+            </Card>
 
             {/* Quantity to Add */}
             <Controller

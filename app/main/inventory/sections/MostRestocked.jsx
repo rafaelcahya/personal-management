@@ -3,13 +3,24 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { RefreshCw, AlertCircle } from 'lucide-react'
+import Card, {
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+  CardContent,
+} from '@/components/base/Card/Card'
 import {
   Modal,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
-  ModalBody,
   ModalDescription,
+  ModalBody,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
@@ -102,7 +113,7 @@ function RestockTable({ items }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 px-2 py-2">
+      <div className="md:hidden space-y-2 py-2">
         {items.map((item, index) => (
           <div
             key={item.id}
@@ -148,50 +159,50 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
 
   return (
     <>
-      <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-            <RefreshCw className="size-4 text-violet-600" aria-hidden="true" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">Most Restocked</p>
-            <p className="text-xs text-slate-500 mt-0.5">Products you restock most frequently</p>
-          </div>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardIcon icon={RefreshCw} />
+          <CardHeaderContent>
+            <CardTitle>Most Restocked</CardTitle>
+            <CardDescription>Products you restock most frequently</CardDescription>
+          </CardHeaderContent>
+        </CardHeader>
 
-        {loading ? (
-          <TableSkeleton />
-        ) : error ? (
-          <div
-            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-            role="alert"
-            aria-live="assertive"
-          >
-            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-              <p className="text-xs text-slate-500">Check your connection and try again</p>
+        <CardContent padding="none">
+          {loading ? (
+            <TableSkeleton />
+          ) : error ? (
+            <div
+              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">Failed to load data</p>
+                <p className="text-xs text-slate-500">Check your connection and try again</p>
+              </div>
+              {onRetry && (
+                <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                  Try again
+                </Button>
+              )}
             </div>
-            {onRetry && (
-              <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-                Try again
-              </Button>
-            )}
-          </div>
-        ) : items.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <RestockTable items={top5} />
-        )}
+          ) : items.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <RestockTable items={top5} />
+          )}
+        </CardContent>
 
         {!loading && !error && items.length > 0 && (
-          <div className="px-5 py-3 border-t border-slate-100 flex justify-end">
+          <CardFooter align="end" className="py-3">
             <Button variant="ghost" onClick={() => setModalOpen(true)}>
               View All
             </Button>
-          </div>
+          </CardFooter>
         )}
-      </section>
+      </Card>
 
       <Modal open={modalOpen} onOpenChange={setModalOpen}>
         <ModalContent
@@ -199,15 +210,14 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
           borderColor="border-slate-200"
           className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
         >
-          <ModalHeader className="flex flex-col items-start px-6 py-4 border-b border-slate-100 shrink-0">
-            <ModalTitle className="text-base font-semibold text-slate-800">
-              All Products — Restock History
-            </ModalTitle>
-            <ModalDescription className="text-xs text-slate-400">
-              Sorted by most restocked
-            </ModalDescription>
+          <ModalHeader layout="beside" padding={{ x: 4 }}>
+            <ModalIcon icon={RefreshCw} />
+            <ModalHeaderContent>
+              <ModalTitle>All Products — Restock History</ModalTitle>
+              <ModalDescription>Sorted by most restocked</ModalDescription>
+            </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody className="overflow-y-auto flex-1 px-2">
+          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
             <RestockTable items={items} />
           </ModalBody>
         </ModalContent>

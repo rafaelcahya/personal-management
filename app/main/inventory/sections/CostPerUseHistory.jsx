@@ -12,6 +12,7 @@ import {
   Dot,
 } from 'recharts'
 import { format } from 'date-fns'
+import { TrendingUp } from 'lucide-react'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import {
   Select,
@@ -20,6 +21,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
+import Card, {
+  CardContent,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+  CardAction,
+} from '@/components/base/Card/Card'
 
 function CustomTooltip({ active, payload }) {
   if (!active || !payload?.length) return null
@@ -88,31 +98,34 @@ export default function CostPerUseHistory({ items, loading }) {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <div className="h-4 bg-slate-200 rounded w-48 animate-pulse" />
-          <div className="h-3 bg-slate-100 rounded w-36 mt-1.5 animate-pulse" />
-        </div>
-        <div className="px-5 py-6">
+      <Card>
+        <CardHeader>
+          <CardHeaderContent>
+            <div className="h-4 bg-slate-200 rounded w-48 animate-pulse" />
+            <div className="h-3 bg-slate-100 rounded w-36 animate-pulse" />
+          </CardHeaderContent>
+        </CardHeader>
+        <CardContent className="py-6">
           <div className="h-48 bg-slate-100 rounded animate-pulse" />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     )
   }
 
   if (items.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-base font-semibold text-slate-800">📈 Avg Cost/Use Over Time</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            How your cost per use changes with each purchase
-          </p>
-        </div>
-        <div className="py-10 text-center">
+      <Card>
+        <CardHeader>
+          <CardIcon icon={TrendingUp} />
+          <CardHeaderContent>
+            <CardTitle>Avg Cost/Use Over Time</CardTitle>
+            <CardDescription>How your cost per use changes with each purchase</CardDescription>
+          </CardHeaderContent>
+        </CardHeader>
+        <CardContent className="py-10 text-center">
           <p className="text-sm text-slate-400">No purchase history yet 📊</p>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -125,22 +138,26 @@ export default function CostPerUseHistory({ items, loading }) {
   const minVal = allValues.length ? Math.min(...allValues) * 0.85 : 0
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm shadow-slate-100 overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100 flex flex-col items-start justify-between gap-3">
-        <div>
-          <h2 className="text-base font-semibold text-slate-800">📈 Avg Cost/Use Over Time</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+    <Card>
+      <CardHeader>
+        <CardIcon icon={TrendingUp} />
+        <CardHeaderContent>
+          <CardTitle>Avg Cost/Use Over Time</CardTitle>
+          <CardDescription>
             Cumulative cost per use after each purchase — hover for delta
-          </p>
-        </div>
+          </CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
+
+      <CardAction className="p-5">
         <ProductSelector
           items={items}
           selectedId={selected?.product_list_id}
           onChange={setSelectedId}
         />
-      </div>
+      </CardAction>
 
-      <div className="px-5 py-4">
+      <CardContent>
         {chartData.length < 2 ? (
           <div className="py-8 text-center">
             <p className="text-sm text-slate-400">Not enough purchases to show a trend yet.</p>
@@ -175,7 +192,7 @@ export default function CostPerUseHistory({ items, loading }) {
             </LineChart>
           </ResponsiveContainer>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

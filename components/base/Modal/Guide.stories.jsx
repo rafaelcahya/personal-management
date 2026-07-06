@@ -5,6 +5,9 @@ import {
   ModalTrigger,
   ModalContent,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
+  ModalBody,
   ModalTitle,
   ModalDescription,
   ModalFooter,
@@ -60,9 +63,11 @@ export const Docs = {
                     Make changes to your profile here. Click save when you're done.
                   </ModalDescription>
                 </ModalHeader>
-                <p className="text-sm text-muted-foreground">
-                  Your profile information is visible to other workspace members.
-                </p>
+                <ModalBody>
+                  <p className="text-sm text-muted-foreground">
+                    Your profile information is visible to other workspace members.
+                  </p>
+                </ModalBody>
                 <ModalFooter>
                   <ModalClose asChild>
                     <button
@@ -84,7 +89,8 @@ export const Docs = {
           </div>
           <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
             <code>{`import {
-  Modal, ModalTrigger, ModalContent, ModalHeader,
+  Modal, ModalTrigger, ModalContent,
+  ModalHeader, ModalHeaderContent, ModalIcon, ModalBody,
   ModalTitle, ModalDescription, ModalFooter, ModalClose,
 } from '@/components/base/Modal/Modal'`}</code>
           </pre>
@@ -118,28 +124,43 @@ export const Docs = {
                   {/* ModalHeader */}
                   <div className="relative border-2 border-dashed border-violet-400 rounded p-2 pt-6">
                     <span className="absolute top-1 left-1.5 text-[10px] font-mono text-violet-500 whitespace-nowrap">
-                      ModalHeader
+                      ModalHeader (layout="beside")
                     </span>
-                    <div className="flex flex-col gap-1">
-                      <div className="relative border-2 border-dashed border-violet-300 rounded px-2 py-1 pt-5">
-                        <span className="absolute top-0.5 left-1.5 text-[10px] font-mono text-violet-400 whitespace-nowrap">
-                          ModalTitle
+                    <div className="flex flex-row gap-2 items-start">
+                      {/* ModalIcon */}
+                      <div className="relative border-2 border-dashed border-violet-300 rounded px-2 py-1 pt-5 shrink-0">
+                        <span className="absolute top-0.5 left-1 text-[10px] font-mono text-violet-400 whitespace-nowrap">
+                          ModalIcon
                         </span>
-                        <span className="text-xs font-semibold text-gray-700">Title</span>
+                        <span className="text-xs text-gray-500">icon</span>
                       </div>
-                      <div className="relative border-2 border-dashed border-violet-300 rounded px-2 py-1 pt-5">
-                        <span className="absolute top-0.5 left-1.5 text-[10px] font-mono text-violet-400 whitespace-nowrap">
-                          ModalDescription
+                      {/* ModalHeaderContent */}
+                      <div className="relative border-2 border-dashed border-violet-300 rounded p-2 pt-5 flex-1">
+                        <span className="absolute top-0.5 left-1 text-[10px] font-mono text-violet-400 whitespace-nowrap">
+                          ModalHeaderContent
                         </span>
-                        <span className="text-xs text-gray-500">Description text</span>
+                        <div className="flex flex-col gap-1">
+                          <div className="relative border-2 border-dashed border-violet-200 rounded px-2 py-0.5 pt-4">
+                            <span className="absolute top-0.5 left-1 text-[10px] font-mono text-violet-300 whitespace-nowrap">
+                              ModalTitle
+                            </span>
+                            <span className="text-xs font-semibold text-gray-700">Title</span>
+                          </div>
+                          <div className="relative border-2 border-dashed border-violet-200 rounded px-2 py-0.5 pt-4">
+                            <span className="absolute top-0.5 left-1 text-[10px] font-mono text-violet-300 whitespace-nowrap">
+                              ModalDescription
+                            </span>
+                            <span className="text-xs text-gray-500">Description</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Body */}
-                  <div className="relative border-2 border-dashed border-gray-300 rounded px-2 py-1.5 pt-5">
-                    <span className="absolute top-0.5 left-1.5 text-[10px] font-mono text-gray-400 whitespace-nowrap">
-                      children (body)
+                  {/* ModalBody */}
+                  <div className="relative border-2 border-dashed border-sky-400 rounded px-2 py-1.5 pt-5">
+                    <span className="absolute top-0.5 left-1.5 text-[10px] font-mono text-sky-500 whitespace-nowrap">
+                      ModalBody
                     </span>
                     <span className="text-xs text-gray-400">content / form fields</span>
                   </div>
@@ -196,12 +217,24 @@ export const Docs = {
                 ],
                 [
                   'ModalHeader',
-                  'Wrapper for ModalTitle and ModalDescription. Stacks them vertically with a gap.',
+                  'Header wrapper. layout="beside" places ModalIcon on the left, ModalHeaderContent on the right. Accepts a padding prop.',
+                ],
+                [
+                  'ModalIcon',
+                  'Rounded icon box (size-9, rounded-lg, violet tint) rendered inside ModalHeader when using layout="beside".',
+                ],
+                [
+                  'ModalHeaderContent',
+                  'Flex-column wrapper for ModalTitle + ModalDescription when using layout="beside". Prevents icon from stretching.',
                 ],
                 ['ModalTitle', 'Accessible dialog title. Required for screen readers.'],
                 [
                   'ModalDescription',
                   'Optional subtitle below the title. Also read by screen readers.',
+                ],
+                [
+                  'ModalBody',
+                  'Scrollable body container between ModalHeader and ModalFooter. Accepts a padding prop to override the default px-6 py-4.',
                 ],
                 [
                   'ModalFooter',
@@ -452,6 +485,98 @@ export const Docs = {
               </table>
             </div>
 
+            {/* ModalHeader */}
+            <div className="flex flex-col gap-2">
+              <h3 className="text-sm font-semibold text-gray-700">ModalHeader</h3>
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                      Prop
+                    </th>
+                    <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                      Type
+                    </th>
+                    <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                      Default
+                    </th>
+                    <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                      Description
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  <tr>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">layout</td>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">
+                      default | beside
+                    </td>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">default</td>
+                    <td className="py-2.5 text-xs text-gray-600">
+                      default stacks title and description vertically. beside places ModalIcon on
+                      the left and ModalHeaderContent on the right.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">padding</td>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">
+                      {'{ x?: number, y?: number }'}
+                    </td>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">—</td>
+                    <td className="py-2.5 text-xs text-gray-600">
+                      Overrides horizontal/vertical padding. Uses a lookup map for Tailwind JIT
+                      safety (px-4, px-6, etc.).
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* ModalBody */}
+            <div className="flex flex-col gap-2">
+              <h3 className="text-sm font-semibold text-gray-700">ModalBody</h3>
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                      Prop
+                    </th>
+                    <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                      Type
+                    </th>
+                    <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                      Default
+                    </th>
+                    <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                      Description
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  <tr>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">padding</td>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">
+                      {'{ x?: number, y?: number }'}
+                    </td>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">—</td>
+                    <td className="py-2.5 text-xs text-gray-600">
+                      Overrides the default px-6 py-4 padding. Use padding={'{{ x: 4 }}'} to align
+                      body content with a bordered header that uses px-4.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">className</td>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">string</td>
+                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">—</td>
+                    <td className="py-2.5 text-xs text-gray-600">
+                      Additional CSS classes merged via cn(). Applied after padding prop classes so
+                      twMerge resolves conflicts correctly.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
             {/* ModalContent */}
             <div className="flex flex-col gap-2">
               <h3 className="text-sm font-semibold text-gray-700">ModalContent</h3>
@@ -629,19 +754,21 @@ export const Docs = {
                       <ModalTitle>Account Settings</ModalTitle>
                       <ModalDescription>Manage your account preferences.</ModalDescription>
                     </ModalHeader>
-                    <div className="flex flex-col gap-4">
-                      <div className="flex flex-col gap-1.5">
-                        <label className={labelClass}>Display Name</label>
-                        <input type="text" defaultValue="Rafael Cahya" className={inputClass} />
+                    <ModalBody>
+                      <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-1.5">
+                          <label className={labelClass}>Display Name</label>
+                          <input type="text" defaultValue="Rafael Cahya" className={inputClass} />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className={labelClass}>Currency</label>
+                          <select className={inputClass}>
+                            <option>IDR — Indonesian Rupiah</option>
+                            <option>USD — US Dollar</option>
+                          </select>
+                        </div>
                       </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className={labelClass}>Currency</label>
-                        <select className={inputClass}>
-                          <option>IDR — Indonesian Rupiah</option>
-                          <option>USD — US Dollar</option>
-                        </select>
-                      </div>
-                    </div>
+                    </ModalBody>
                     <ModalFooter>
                       <ModalClose asChild>
                         <button

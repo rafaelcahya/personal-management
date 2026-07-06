@@ -1,5 +1,6 @@
 'use client'
 
+import Card, { CardContent } from '@/components/base/Card/Card'
 import { fmtDistance, fmtPace, fmtDuration } from '../../dashboard/utils/format'
 
 function computeFromSegments(excessDistM, activityMovingTimeSec, segments, timeKey) {
@@ -112,50 +113,54 @@ export default function DistanceBreakdown({
 
       <div className="grid grid-cols-2 gap-3 mb-3">
         {/* Official segment */}
-        <div className="flex flex-col gap-3 p-3 bg-violet-50 rounded-lg border border-violet-100/60">
-          <span className="text-[10px] font-semibold text-violet-500 uppercase tracking-wide">
-            Official · {fmtDistance(officialDistM)} km
-          </span>
-          <div className="flex flex-col gap-0.5">
-            <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
-              {fmtDuration(officialTimeSec)}
+        <Card className="bg-violet-50 border-violet-100/60 shadow-none">
+          <CardContent padding="none" className="flex flex-col gap-3 p-3">
+            <span className="text-[10px] font-semibold text-violet-500 uppercase tracking-wide">
+              Official · {fmtDistance(officialDistM)} km
             </span>
-            <span className="text-[10px] text-slate-400 uppercase tracking-wide">Total time</span>
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
-              {fmtPace(officialPaceSec)}
-              <span className="text-xs font-normal text-slate-400">/km</span>
-            </span>
-            <span className="text-[10px] text-slate-400 uppercase tracking-wide">Avg pace</span>
-          </div>
-        </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
+                {fmtDuration(officialTimeSec)}
+              </span>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wide">Total time</span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
+                {fmtPace(officialPaceSec)}
+                <span className="text-xs font-normal text-slate-400">/km</span>
+              </span>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wide">Avg pace</span>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Excess segment */}
-        <div className="flex flex-col gap-3 p-3 bg-amber-50 rounded-lg border border-amber-100/60">
-          <span className="text-[10px] font-semibold text-amber-600 uppercase tracking-wide">
-            Excess · +{fmtDistance(excessDistM)} km
-          </span>
-          <div className="flex flex-col gap-0.5">
-            <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
-              {excessTimeSec > 0 ? fmtDuration(excessTimeSec) : '—'}
+        <Card className="bg-amber-50 border-amber-100/60 shadow-none">
+          <CardContent padding="none" className="flex flex-col gap-3 p-3">
+            <span className="text-[10px] font-semibold text-amber-600 uppercase tracking-wide">
+              Excess · +{fmtDistance(excessDistM)} km
             </span>
-            <span className="text-[10px] text-slate-400 uppercase tracking-wide">Total time</span>
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
-              {excessPaceSec != null ? (
-                <>
-                  {fmtPace(excessPaceSec)}
-                  <span className="text-xs font-normal text-slate-400">/km</span>
-                </>
-              ) : (
-                '—'
-              )}
-            </span>
-            <span className="text-[10px] text-slate-400 uppercase tracking-wide">Avg pace</span>
-          </div>
-        </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
+                {excessTimeSec > 0 ? fmtDuration(excessTimeSec) : '—'}
+              </span>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wide">Total time</span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
+                {excessPaceSec != null ? (
+                  <>
+                    {fmtPace(excessPaceSec)}
+                    <span className="text-xs font-normal text-slate-400">/km</span>
+                  </>
+                ) : (
+                  '—'
+                )}
+              </span>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wide">Avg pace</span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Per-km pace from splits */}

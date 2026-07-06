@@ -2,6 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Info, Bell } from 'lucide-react'
+import Card, {
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Switch } from '@/components/base/Switch/Switch'
 import { getUserSettings, updateUserSettings, savePushSubscription } from '@/lib/api/running'
@@ -166,21 +173,14 @@ export default function NotificationsSection() {
   }
 
   return (
-    <section
-      aria-label="Notifications"
-      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
-    >
-      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-        <div className="flex items-center justify-center size-9 rounded-lg bg-violet-50 shrink-0">
-          <Bell className="size-4 text-violet-600" aria-hidden="true" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900">Notifications</p>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Configure push alerts for your training insights
-          </p>
-        </div>
-      </div>
+    <Card as="section" aria-label="Notifications">
+      <CardHeader>
+        <CardIcon icon={Bell} />
+        <CardHeaderContent>
+          <CardTitle>Notifications</CardTitle>
+          <CardDescription>Configure push alerts for your training insights</CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
 
       {loading ? (
         <div id="notificationsLoading_settingsPage" className="px-5 py-4 flex flex-col gap-4">
@@ -271,6 +271,6 @@ export default function NotificationsSection() {
           )}
         </div>
       )}
-    </section>
+    </Card>
   )
 }

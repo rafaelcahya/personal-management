@@ -34,10 +34,14 @@ const innerBorderMap = {
 
 function getSideStyle(side, size) {
   const w = widthMap[size] ?? widthMap.default
-  const h = heightMap[size] ?? heightMap.default
   const base = { position: 'fixed', zIndex: 10000 }
   if (side === 'right') return { ...base, right: 0, top: 0, bottom: 0, width: w }
   if (side === 'left') return { ...base, left: 0, top: 0, bottom: 0, width: w }
+  if (size === 'auto') {
+    if (side === 'top') return { ...base, top: 0, left: 0, right: 0, maxHeight: '80vh' }
+    return { ...base, bottom: 0, left: 0, right: 0, maxHeight: '80vh' }
+  }
+  const h = heightMap[size] ?? heightMap.default
   if (side === 'top') return { ...base, top: 0, left: 0, right: 0, height: h }
   return { ...base, bottom: 0, left: 0, right: 0, height: h }
 }
@@ -206,7 +210,7 @@ export function SheetContent({
   const panelClass = cn('flex flex-col shadow-xl border-slate-200', innerBorderMap[side], className)
   const panelBaseStyle = {
     ...getSideStyle(side, size),
-    overflowY: 'auto',
+    overflowY: size === 'auto' ? 'hidden' : 'auto',
     backgroundColor: 'white',
   }
 

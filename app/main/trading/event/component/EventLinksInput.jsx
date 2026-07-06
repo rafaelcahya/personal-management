@@ -5,6 +5,7 @@ import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import { Label } from '@/components/ui/label'
 import { PlusIcon, Trash2, LinkIcon } from 'lucide-react'
+import Card from '@/components/base/Card/Card'
 
 export default function EventLinksInput({ value = [], onChange, error }) {
   const [hyperlink, setHyperlink] = useState('')
@@ -55,7 +56,7 @@ export default function EventLinksInput({ value = [], onChange, error }) {
 
       {/* Existing links list */}
       {value.length > 0 && (
-        <div className="flex flex-col gap-1.5 rounded-lg border border-slate-200 p-2 max-h-36 overflow-y-auto">
+        <Card className="flex flex-col gap-1.5 rounded-lg border border-slate-200 p-2 max-h-36 overflow-y-auto">
           {value.map((entry, i) => (
             <div
               key={i}
@@ -77,7 +78,7 @@ export default function EventLinksInput({ value = [], onChange, error }) {
               </Button>
             </div>
           ))}
-        </div>
+        </Card>
       )}
 
       {/* Add new link entry */}

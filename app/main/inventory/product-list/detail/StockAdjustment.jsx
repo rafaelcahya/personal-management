@@ -1,12 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Activity } from 'lucide-react'
 import {
   Modal,
   ModalBody,
   ModalContent,
   ModalDescription,
   ModalHeader,
+  ModalHeaderContent,
+  ModalIcon,
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
@@ -60,14 +63,17 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
           }
         }}
       >
-        <ModalHeader className="text-left shrink-0">
-          <ModalTitle>Track Product Usage</ModalTitle>
-          <ModalDescription className="text-slate-foreground">
-            Record when you start using a product and mark it as depleted when finished.
-          </ModalDescription>
+        <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalIcon icon={Activity} />
+          <ModalHeaderContent>
+            <ModalTitle>Track Product Usage</ModalTitle>
+            <ModalDescription>
+              Record when you start using a product and mark it as depleted when finished.
+            </ModalDescription>
+          </ModalHeaderContent>
         </ModalHeader>
 
-        <ModalBody>
+        <ModalBody padding={{ x: 4 }}>
           <div className="flex flex-col gap-5 w-full">
             {/* Product Summary */}
             <ProductSummary product={product} />

@@ -1,4 +1,13 @@
-import { Lock, Mail, ShoppingCart } from 'lucide-react'
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  Lock,
+  Mail,
+  Package,
+  ShoppingCart,
+  XCircle,
+} from 'lucide-react'
 import Button from '../Button/Button'
 import Card, {
   CardAction,
@@ -6,6 +15,7 @@ import Card, {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from './Card'
@@ -94,9 +104,11 @@ export const Docs = {
       <Section title="Overview">
         <p className="text-sm text-gray-600 leading-relaxed mb-4">
           Card is the primary container for grouping related information into a single visual unit.
-          It comes in two variants: <strong>shell</strong> (white card with border and shadow) and{' '}
-          <strong>transparent</strong> (no background or border — sits directly on the page as a
-          section wrapper).
+          It has seven variants: <strong>shell</strong> (default white card),{' '}
+          <strong>transparent</strong> (no background — page-level wrapper), <strong>info</strong>,{' '}
+          <strong>success</strong>, <strong>warning</strong>, <strong>danger</strong>, and{' '}
+          <strong>muted</strong>. Status variants automatically tint the background, border, and{' '}
+          <code className="font-mono">CardIcon</code> color to match.
         </p>
         <p className="text-sm text-gray-600 leading-relaxed mb-4">
           Use Card to display data in any form — tables, forms, stats, alerts, or empty/error
@@ -113,7 +125,166 @@ export const Docs = {
         </div>
       </Section>
 
-      {/* 2. Usage */}
+      {/* 2. Variants */}
+      <Section title="Variants">
+        <p className="text-sm text-gray-600 leading-relaxed mb-6">
+          Pass <code className="font-mono bg-gray-100 px-1 rounded">variant</code> to{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">Card</code>. Sub-components{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">CardHeader</code>,{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">CardIcon</code>,{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">CardContent</code>, and{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded">CardFooter</code> automatically adapt
+          their background tint, border color, and icon color — no extra props needed.
+        </p>
+
+        {/* Visual grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          {[
+            {
+              variant: 'shell',
+              icon: Package,
+              title: 'Shell',
+              desc: 'Default — white bg, slate border',
+            },
+            {
+              variant: 'transparent',
+              icon: Package,
+              title: 'Transparent',
+              desc: 'No bg or border — page wrapper',
+            },
+            {
+              variant: 'info',
+              icon: Info,
+              title: 'Info',
+              desc: 'Neutral guidance or tips',
+            },
+            {
+              variant: 'success',
+              icon: CheckCircle2,
+              title: 'Success',
+              desc: 'Operation completed',
+            },
+            {
+              variant: 'warning',
+              icon: AlertTriangle,
+              title: 'Warning',
+              desc: 'Recoverable issue — low stock',
+            },
+            {
+              variant: 'danger',
+              icon: XCircle,
+              title: 'Danger',
+              desc: 'Blocking state — action required',
+            },
+            {
+              variant: 'muted',
+              icon: Package,
+              title: 'Muted',
+              desc: 'De-emphasized — archived, inactive',
+            },
+          ].map(({ variant, icon, title, desc }) => (
+            <Card key={variant} variant={variant}>
+              <CardHeader>
+                <CardIcon icon={icon} />
+                <CardHeaderContent>
+                  <CardTitle>{title}</CardTitle>
+                  <CardDescription>{desc}</CardDescription>
+                </CardHeaderContent>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-slate-500">variant=&quot;{variant}&quot;</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Variant table */}
+        <div className="overflow-x-auto mb-6 border border-gray-200 rounded-lg">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                {['Variant', 'Background', 'Icon color', 'When to use'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wide"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                [
+                  'shell',
+                  'bg-white',
+                  'violet-600',
+                  'Default — data tables, forms, any neutral container',
+                ],
+                [
+                  'transparent',
+                  'none',
+                  'violet-600',
+                  'Page-level section wrapper, card-in-card outer',
+                ],
+                [
+                  'info',
+                  'blue-50',
+                  'blue-600',
+                  'Informational tips, sync status, neutral guidance',
+                ],
+                [
+                  'success',
+                  'emerald-50',
+                  'emerald-600',
+                  'Completed operations, approvals, exported files',
+                ],
+                [
+                  'warning',
+                  'amber-50',
+                  'amber-700',
+                  'Recoverable issues — low stock, approaching limits',
+                ],
+                ['danger', 'red-50', 'red-600', 'Blocking errors, payment failures, missing data'],
+                [
+                  'muted',
+                  'muted/40',
+                  'muted-foreground',
+                  'Archived items, read-only or inactive sections',
+                ],
+              ].map(([variant, bg, iconColor, when]) => (
+                <tr key={variant} className="border-b border-gray-100 last:border-0">
+                  <td className="px-4 py-2.5 font-mono text-violet-700 text-xs whitespace-nowrap">
+                    {variant}
+                  </td>
+                  <td className="px-4 py-2.5 font-mono text-xs text-gray-400 whitespace-nowrap">
+                    {bg}
+                  </td>
+                  <td className="px-4 py-2.5 font-mono text-xs text-gray-400 whitespace-nowrap">
+                    {iconColor}
+                  </td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600">{when}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <Code>{`{/* default — shell */}
+<Card>...</Card>
+
+{/* status variants */}
+<Card variant="info">...</Card>
+<Card variant="success">...</Card>
+<Card variant="warning">...</Card>
+<Card variant="danger">...</Card>
+<Card variant="muted">...</Card>
+
+{/* page-level wrapper — no bg/border */}
+<Card variant="transparent">...</Card>`}</Code>
+      </Section>
+
+      {/* 3. Usage */}
       <Section title="Usage">
         <SubSection title="Import">
           <Code>{`import Card, {
@@ -122,6 +293,7 @@ export const Docs = {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card'`}</Code>
@@ -131,10 +303,10 @@ export const Docs = {
           <div className="mb-4 max-w-sm">
             <Card>
               <CardHeader>
-                <div className="min-w-0 flex-1">
+                <CardHeaderContent>
                   <CardTitle>Welcome back</CardTitle>
                   <CardDescription>Sign in to your account to continue</CardDescription>
-                </div>
+                </CardHeaderContent>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
@@ -168,16 +340,17 @@ export const Docs = {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardHeaderContent,
   CardTitle,
 } from '@/components/base/Card'
 import { Lock, Mail } from 'lucide-react'
 
 <Card>
   <CardHeader>
-    <div className="min-w-0 flex-1">
+    <CardHeaderContent>
       <CardTitle>Welcome back</CardTitle>
       <CardDescription>Sign in to your account to continue</CardDescription>
-    </div>
+    </CardHeaderContent>
   </CardHeader>
   <CardContent className="space-y-4">
     <div className="space-y-1.5">
@@ -206,7 +379,7 @@ import { Lock, Mail } from 'lucide-react'
         </SubSection>
       </Section>
 
-      {/* 3. Composition */}
+      {/* 4. Composition */}
       <Section title="Composition">
         <p className="text-sm text-gray-600 mb-6">
           Card is made up of the sub-components below. <strong>CardHeader</strong> automatically
@@ -245,8 +418,13 @@ import { Lock, Mail } from 'lucide-react'
                 ],
                 [
                   'CardIcon',
-                  'Violet icon badge inside CardHeader',
-                  'size-9 rounded-lg bg-violet-50, icon size-4 text-violet-600',
+                  'Icon badge inside CardHeader — auto-adapts color per variant',
+                  'size-9 rounded-lg · shell/transparent: bg-violet-50 icon-violet-600 · status variants: matching tint',
+                ],
+                [
+                  'CardHeaderContent',
+                  'Flex column wrapper for CardTitle + CardDescription inside CardHeader',
+                  'flex flex-col gap-0.5 min-w-0 flex-1',
                 ],
                 [
                   'CardTitle',
@@ -284,10 +462,10 @@ import { Lock, Mail } from 'lucide-react'
         <Code>{`<Card>                          {/* root */}
   <CardHeader>                  {/* top band */}
     <CardIcon icon={Icon} />    {/* violet badge */}
-    <div className="min-w-0 flex-1">
+    <CardHeaderContent>         {/* flex-col wrapper — min-w-0 flex-1 */}
       <CardTitle />             {/* h3 heading */}
       <CardDescription />      {/* subtitle */}
-    </div>
+    </CardHeaderContent>
     <CardAction />              {/* right slot */}
   </CardHeader>
   <CardContent />               {/* body */}
@@ -295,7 +473,7 @@ import { Lock, Mail } from 'lucide-react'
 </Card>`}</Code>
       </Section>
 
-      {/* 4. API Reference */}
+      {/* 5. API Reference */}
       <Section title="API Reference">
         <SubSection
           title="Card"
@@ -305,9 +483,15 @@ import { Lock, Mail } from 'lucide-react'
             rows={[
               [
                 'variant',
-                "'shell' | 'transparent'",
+                "'shell' | 'transparent' | 'info' | 'success' | 'warning' | 'danger' | 'muted'",
                 "'shell'",
-                'shell — white card with border and shadow. transparent — no background or border, sits directly on the page.',
+                'Controls background, border, and CardIcon color. shell — white card. transparent — no bg/border. Status variants (info/success/warning/danger/muted) auto-tint all sub-components.',
+              ],
+              [
+                'as',
+                'ElementType',
+                "'div'",
+                'Renders the card as any HTML element — e.g. as="article" or as="section".',
               ],
               [
                 'children',
@@ -320,7 +504,7 @@ import { Lock, Mail } from 'lucide-react'
                 'id',
                 'string',
                 '—',
-                'Sets id on the card div. Convention: id="{componentName}_{pageName}".',
+                'Sets id on the card element. Convention: id="{componentName}_{pageName}".',
               ],
             ]}
           />
@@ -328,7 +512,7 @@ import { Lock, Mail } from 'lucide-react'
 
         <SubSection
           title="CardHeader"
-          description="Top section rendered as a flex row. Automatically applies border-b and padding for shell variant, or pb-3 for transparent."
+          description="Top section rendered as a flex row. Automatically applies border-b and padding based on the parent variant. Status variants use matching border colors."
         >
           <PropsTable
             rows={[
@@ -336,16 +520,17 @@ import { Lock, Mail } from 'lucide-react'
                 'children',
                 'ReactNode',
                 '—',
-                'Recommended children: CardIcon, a div with CardTitle + CardDescription, and CardAction.',
+                'Recommended: CardIcon, then CardHeaderContent (with CardTitle + CardDescription inside), then CardAction.',
               ],
               [
                 'padding',
                 "'none' | 'xs' | 'sm' | 'base' | 'md' | 'lg' | 'xl'",
                 '—',
-                'Override the default padding. When omitted, shell uses px-5 py-4; transparent uses pb-3 (bottom-only).',
+                'Override the default padding. When omitted, shell/status use px-5 py-4; transparent uses pb-3 (bottom-only).',
               ],
+              ['as', 'ElementType', "'div'", 'Renders as any HTML element — e.g. as="header".'],
               ['className', 'string', "''", 'Extra classes merged with the base layout classes.'],
-              ['id', 'string', '—', 'Sets id on the header div.'],
+              ['id', 'string', '—', 'Sets id on the header element.'],
             ]}
           />
         </SubSection>
@@ -376,6 +561,43 @@ import { Lock, Mail } from 'lucide-react'
               ],
             ]}
           />
+        </SubSection>
+
+        <SubSection
+          title="CardHeaderContent"
+          description="Flex column wrapper for CardTitle and CardDescription inside CardHeader. Handles min-width truncation and flex-grow so the text area fills available space between CardIcon and CardAction. Always use this instead of a raw div."
+        >
+          <PropsTable
+            rows={[
+              [
+                'children',
+                'ReactNode',
+                '—',
+                'CardTitle and optionally CardDescription. Do not put other elements here.',
+              ],
+              ['className', 'string', "''", 'Extra classes — rarely needed.'],
+            ]}
+          />
+          <Code>{`{/* always wrap CardTitle + CardDescription in CardHeaderContent */}
+<CardHeader>
+  <CardIcon icon={ShoppingCart} />
+  <CardHeaderContent>
+    <CardTitle>Inventory</CardTitle>
+    <CardDescription>All active products</CardDescription>
+  </CardHeaderContent>
+  <CardAction>
+    <Button>Add</Button>
+  </CardAction>
+</CardHeader>
+
+{/* without CardAction — CardHeaderContent still required */}
+<CardHeader>
+  <CardIcon icon={Package} />
+  <CardHeaderContent>
+    <CardTitle>Overview</CardTitle>
+    <CardDescription>Summary of your portfolio</CardDescription>
+  </CardHeaderContent>
+</CardHeader>`}</Code>
         </SubSection>
 
         <SubSection
