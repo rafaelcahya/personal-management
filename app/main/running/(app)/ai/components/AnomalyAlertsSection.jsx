@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { AlertTriangle, CheckCircle2, ChevronDown, ChevronUp, History } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, History } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Card, {
   CardContent,
@@ -11,7 +11,13 @@ import Card, {
   CardTitle,
   CardAction,
 } from '@/components/base/Card/Card'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/base/Sheet/Sheet'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/base/Accordion/Accordion'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { acknowledgeInsight, fetchAcknowledgedAnomalyInsights } from '@/lib/api/running'
 
@@ -69,48 +75,36 @@ function groupInsightsByMonth(insights) {
 }
 
 function AnomalyHistoryItem({ insight }) {
-  const [expanded, setExpanded] = useState(false)
   const anomalyType = insight.data_refs?.anomaly_type ?? null
 
   return (
-    <div className="border border-slate-200 rounded-lg overflow-hidden">
-      <Button
-        onClick={() => setExpanded((v) => !v)}
-        variant="ghost"
-        size="xs"
-        className="w-full flex items-center justify-between px-4 py-3 text-left"
-        aria-expanded={expanded}
-      >
-        <div className="flex flex-col gap-0.5 min-w-0">
-          <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide truncate">
-            {anomalyLabel(anomalyType)}
-          </p>
-          <p className="text-xs text-slate-400">
-            {new Date(insight.created_at).toLocaleString('en-US', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </p>
-        </div>
-        {expanded ? (
-          <ChevronUp className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />
-        ) : (
-          <ChevronDown className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />
-        )}
-      </Button>
-      {expanded && (
-        <div className="px-4 pb-4 pt-1 border-t border-slate-100">
+    <Accordion type="single" collapsible>
+      <AccordionItem value="history" className="border border-slate-200 rounded-lg !border-b">
+        <AccordionTrigger className="px-4 py-3 items-start hover:no-underline hover:bg-slate-50 rounded-lg data-[state=open]:rounded-b-none focus-visible:ring-violet-200 focus-visible:ring-inset">
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide truncate">
+              {anomalyLabel(anomalyType)}
+            </p>
+            <p className="text-xs text-slate-400">
+              {new Date(insight.created_at).toLocaleString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </p>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent className="px-4 pb-4 pt-1 border-t border-slate-100">
           <p className="text-sm text-slate-700 leading-relaxed">
             {parseInline(
               insight.content ?? insight.title ?? 'Anomaly detected in your training data.'
             )}
           </p>
-        </div>
-      )}
-    </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   )
 }
 

@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetFooter,
-} from '@/components/ui/sheet'
+} from '@/components/base/Sheet/Sheet'
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import { ANALYTICS_SECTIONS } from '../sections'
 import Button from '@/components/base/Button/Button'
@@ -182,6 +182,7 @@ export default function SectionsManager({
         </SheetTrigger>
         <SheetContent
           side="bottom"
+          size="auto"
           className="px-0 pb-0 gap-0 rounded-t-xl"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
