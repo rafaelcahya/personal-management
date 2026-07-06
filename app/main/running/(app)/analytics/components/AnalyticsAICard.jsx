@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Sparkles, Loader2, Clock, History } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/base/Sheet/Sheet'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Accordion,
@@ -511,8 +511,8 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
 function HistoryItem({ insight }) {
   return (
     <Accordion type="single" collapsible>
-      <AccordionItem value="history" className="border border-slate-200 rounded-lg overflow-hidden">
-        <AccordionTrigger className="px-4 py-3 items-center hover:no-underline hover:bg-slate-50 focus-visible:ring-violet-200 focus-visible:ring-inset">
+      <AccordionItem value="history" className="border border-slate-200 rounded-lg !border-b">
+        <AccordionTrigger className="items-center hover:no-underline hover:bg-slate-50 rounded-lg data-[state=open]:rounded-b-none focus-visible:ring-violet-200 focus-visible:ring-inset">
           <p className="text-xs text-slate-500 truncate">
             {new Date(insight.created_at).toLocaleString('en-US', {
               day: 'numeric',
@@ -523,7 +523,7 @@ function HistoryItem({ insight }) {
             })}
           </p>
         </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 pt-1 border-t border-slate-100">
+        <AccordionContent className="px-4 py-4 border-t border-slate-100">
           <RoleInsight content={insight.content} />
         </AccordionContent>
       </AccordionItem>
