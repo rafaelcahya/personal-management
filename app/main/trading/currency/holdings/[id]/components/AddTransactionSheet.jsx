@@ -323,13 +323,13 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                       >
                         <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100">
                           <Search className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />
-                          <input
+                          <Input
                             type="text"
                             placeholder="Search currencies..."
                             value={currencySearch}
                             onChange={(e) => setCurrencySearch(e.target.value)}
                             autoFocus
-                            className="flex-1 text-sm outline-none bg-transparent placeholder:text-slate-400"
+                            className="flex-1 bg-transparent border-0 rounded-none h-auto px-0 focus-visible:ring-0 shadow-none"
                             aria-label="Search currencies"
                           />
                         </div>

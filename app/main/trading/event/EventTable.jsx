@@ -14,6 +14,7 @@ import {
   TableHead,
   TableCell,
 } from '@/components/base/Table/Table.jsx'
+import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 
 function formatEventDate(dateStr) {
   if (!dateStr) return '—'
@@ -83,13 +84,11 @@ export default function EventTable({ events, onRefresh, selectedIds = new Set(),
                         onToggle(event.id, event)
                       }}
                     >
-                      <input
+                      <Checkbox
                         id={`multiSelectCheckbox_${event.id}_eventPage`}
-                        type="checkbox"
                         checked={isSelected}
-                        onChange={() => onToggle(event.id, event)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="size-4 rounded accent-violet-600 cursor-pointer"
+                        onCheckedChange={() => onToggle(event.id, event)}
+                        className="rounded cursor-pointer"
                       />
                     </TableCell>
                   )}
