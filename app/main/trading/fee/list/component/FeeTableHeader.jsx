@@ -2,6 +2,7 @@ import {
   CardAction,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -11,12 +12,12 @@ export default function FeeTableHeader({ action }) {
   return (
     <CardHeader>
       <CardIcon icon={Receipt} />
-      <div className="min-w-0 flex-1">
+      <CardHeaderContent>
         <CardTitle>Fee List</CardTitle>
         <CardDescription>
           Track commissions, admin fees, and trading costs that impact your bottom line
         </CardDescription>
-      </div>
+      </CardHeaderContent>
       {action && <CardAction>{action}</CardAction>}
     </CardHeader>
   )

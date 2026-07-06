@@ -12,7 +12,13 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
+import Card, {
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import {
   getStravaStatus,
@@ -86,12 +92,12 @@ export default function StravaSection() {
     <Card as="section" aria-label="Strava" id="stravaConnectionSection_settings">
       <CardHeader>
         <CardIcon icon={Activity} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Strava</CardTitle>
           <CardDescription>
             Connect and sync your Strava account to import activities
           </CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
 
       {statusLoading ? (

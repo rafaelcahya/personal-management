@@ -6,6 +6,7 @@ import Button from '@/components/base/Button/Button'
 import Card, {
   CardContent,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
   CardAction,
@@ -270,9 +271,9 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
     >
       <CardHeader>
         <CardIcon icon={AlertTriangle} className="bg-amber-50" iconClassName="text-amber-500" />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Anomaly Alerts</CardTitle>
-        </div>
+        </CardHeaderContent>
         {anomalies.length > 0 && (
           <CardAction>
             <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-medium">

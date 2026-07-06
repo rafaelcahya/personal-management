@@ -4,7 +4,14 @@ import { useMemo, useState } from 'react'
 import { format, startOfWeek, addDays, subYears, eachWeekOfInterval } from 'date-fns'
 import { CalendarDays } from 'lucide-react'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
-import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
+import Card, {
+  CardContent,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 
 const LEVELS = [
   { min: 0, max: 0, bg: 'bg-slate-100', label: 'No spend' },
@@ -64,14 +71,14 @@ export default function SpendingHeatmap({ items, loading }) {
     return (
       <Card>
         <CardHeader>
-          <div className="flex flex-col gap-1.5 flex-1">
+          <CardHeaderContent>
             <div className="h-4 bg-slate-200 rounded w-40 animate-pulse" />
             <div className="h-3 bg-slate-100 rounded w-56 animate-pulse" />
-          </div>
+          </CardHeaderContent>
         </CardHeader>
-        <div className="px-5 py-6 animate-pulse">
+        <CardContent className="py-6 animate-pulse">
           <div className="h-24 bg-slate-100 rounded-lg w-full" />
-        </div>
+        </CardContent>
       </Card>
     )
   }
@@ -80,96 +87,98 @@ export default function SpendingHeatmap({ items, loading }) {
     <Card>
       <CardHeader>
         <CardIcon icon={CalendarDays} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Spending Heatmap</CardTitle>
           <CardDescription>Daily purchase activity over the last 12 months</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
 
-      <div className="relative">
-        <div className="px-5 py-4 overflow-x-auto">
-          <div className="inline-flex gap-3">
-            {/* Day labels */}
-            <div className="flex flex-col gap-[3px] pt-5">
-              {DAY_LABELS.map((d, i) => (
-                <div
-                  key={d}
-                  className="h-[11px] text-[9px] text-slate-400 leading-none flex items-center"
-                  style={{ visibility: i % 2 === 1 ? 'visible' : 'hidden' }}
-                >
-                  {d}
-                </div>
-              ))}
-            </div>
-
-            {/* Grid */}
-            <div className="relative">
-              {/* Month labels */}
-              <div className="flex h-4 mb-1 relative" style={{ width: weeks.length * 14 }}>
-                {monthLabels.map(({ label, col }) => (
-                  <span
-                    key={`${label}-${col}`}
-                    className="absolute text-[10px] text-slate-500"
-                    style={{ left: col * 14 }}
+      <CardContent padding="none">
+        <div className="relative">
+          <div className="px-5 py-4 overflow-x-auto">
+            <div className="inline-flex gap-3">
+              {/* Day labels */}
+              <div className="flex flex-col gap-[3px] pt-5">
+                {DAY_LABELS.map((d, i) => (
+                  <div
+                    key={d}
+                    className="h-[11px] text-[9px] text-slate-400 leading-none flex items-center"
+                    style={{ visibility: i % 2 === 1 ? 'visible' : 'hidden' }}
                   >
-                    {label}
-                  </span>
-                ))}
-              </div>
-
-              {/* Cells */}
-              <div className="flex gap-[3px]">
-                {weeks.map((week, wi) => (
-                  <div key={wi} className="flex flex-col gap-[3px]">
-                    {week.map(({ date, key, total, level }) => {
-                      if (level === -1) return <div key={key} className="w-[11px] h-[11px]" />
-                      const levelCls = LEVELS[level]?.bg ?? 'bg-slate-100'
-                      return (
-                        <div
-                          key={key}
-                          className={`w-[11px] h-[11px] rounded-[2px] cursor-pointer ${levelCls} transition-opacity hover:opacity-70`}
-                          onMouseEnter={(e) =>
-                            setTooltip({
-                              date: format(date, 'dd MMM yyyy'),
-                              total,
-                              x: e.currentTarget.getBoundingClientRect().left,
-                              y: e.currentTarget.getBoundingClientRect().top,
-                            })
-                          }
-                          onMouseLeave={() => setTooltip(null)}
-                        />
-                      )
-                    })}
+                    {d}
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
 
-          {/* Tooltip */}
-          {tooltip && (
-            <div
-              className="fixed z-50 pointer-events-none bg-slate-800 text-white text-xs rounded px-2 py-1.5 shadow-lg -translate-x-1/2 -translate-y-full"
-              style={{ left: tooltip.x + 6, top: tooltip.y - 6 }}
-            >
-              <p className="font-medium">{tooltip.date}</p>
-              <p className="text-slate-300">
-                {tooltip.total > 0 ? formatRupiah(tooltip.total) : 'No spend'}
-              </p>
+              {/* Grid */}
+              <div className="relative">
+                {/* Month labels */}
+                <div className="flex h-4 mb-1 relative" style={{ width: weeks.length * 14 }}>
+                  {monthLabels.map(({ label, col }) => (
+                    <span
+                      key={`${label}-${col}`}
+                      className="absolute text-[10px] text-slate-500"
+                      style={{ left: col * 14 }}
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Cells */}
+                <div className="flex gap-[3px]">
+                  {weeks.map((week, wi) => (
+                    <div key={wi} className="flex flex-col gap-[3px]">
+                      {week.map(({ date, key, total, level }) => {
+                        if (level === -1) return <div key={key} className="w-[11px] h-[11px]" />
+                        const levelCls = LEVELS[level]?.bg ?? 'bg-slate-100'
+                        return (
+                          <div
+                            key={key}
+                            className={`w-[11px] h-[11px] rounded-[2px] cursor-pointer ${levelCls} transition-opacity hover:opacity-70`}
+                            onMouseEnter={(e) =>
+                              setTooltip({
+                                date: format(date, 'dd MMM yyyy'),
+                                total,
+                                x: e.currentTarget.getBoundingClientRect().left,
+                                y: e.currentTarget.getBoundingClientRect().top,
+                              })
+                            }
+                            onMouseLeave={() => setTooltip(null)}
+                          />
+                        )
+                      })}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
+
+            {/* Tooltip */}
+            {tooltip && (
+              <div
+                className="fixed z-50 pointer-events-none bg-slate-800 text-white text-xs rounded px-2 py-1.5 shadow-lg -translate-x-1/2 -translate-y-full"
+                style={{ left: tooltip.x + 6, top: tooltip.y - 6 }}
+              >
+                <p className="font-medium">{tooltip.date}</p>
+                <p className="text-slate-300">
+                  {tooltip.total > 0 ? formatRupiah(tooltip.total) : 'No spend'}
+                </p>
+              </div>
+            )}
+          </div>
+          {/* Scroll indicator — visible only on mobile */}
+          <div className="md:hidden absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-white to-transparent pointer-events-none rounded-r-xl" />
         </div>
-        {/* Scroll indicator — visible only on mobile */}
-        <div className="md:hidden absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-white to-transparent pointer-events-none rounded-r-xl" />
-      </div>
-      {/* Legend */}
-      <div className="px-5 pb-4 flex items-center gap-1.5">
-        <span className="text-[10px] text-slate-400">Less</span>
-        {LEVELS.map((l, i) => (
-          <div key={i} className={`w-[11px] h-[11px] rounded-[2px] ${l.bg}`} title={l.label} />
-        ))}
-        <span className="text-[10px] text-slate-400">More</span>
-      </div>
+        {/* Legend */}
+        <div className="px-5 pb-4 flex items-center gap-1.5">
+          <span className="text-[10px] text-slate-400">Less</span>
+          {LEVELS.map((l, i) => (
+            <div key={i} className={`w-[11px] h-[11px] rounded-[2px] ${l.bg}`} title={l.label} />
+          ))}
+          <span className="text-[10px] text-slate-400">More</span>
+        </div>
+      </CardContent>
     </Card>
   )
 }

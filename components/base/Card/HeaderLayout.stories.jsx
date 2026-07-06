@@ -15,6 +15,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from './Card'
@@ -47,10 +48,10 @@ export const Beside = {
         <Card>
           <CardHeader>
             <CardIcon icon={ShoppingCart} />
-            <div className="min-w-0 flex-1">
+            <CardHeaderContent>
               <CardTitle>Inventory</CardTitle>
               <CardDescription>All active products in your store</CardDescription>
-            </div>
+            </CardHeaderContent>
             <CardAction>
               <Button size="md" className="bg-violet-600 hover:bg-violet-700 min-w-11">
                 <Plus className="size-4 mr-1.5" />
@@ -67,10 +68,10 @@ export const Beside = {
         <Card>
           <CardHeader>
             <CardIcon icon={BarChart2} />
-            <div className="min-w-0 flex-1">
+            <CardHeaderContent>
               <CardTitle>Trade Journal</CardTitle>
               <CardDescription>All buy and sell entries</CardDescription>
-            </div>
+            </CardHeaderContent>
             <CardAction>
               <div className="flex items-center gap-2">
                 <Button size="md" variant="outline" className="min-w-11">
@@ -93,10 +94,10 @@ export const Beside = {
         <Card>
           <CardHeader>
             <CardIcon icon={TrendingUp} />
-            <div className="min-w-0 flex-1">
+            <CardHeaderContent>
               <CardTitle>Portfolio Overview</CardTitle>
               <CardDescription>Performance since last month</CardDescription>
-            </div>
+            </CardHeaderContent>
             <CardAction>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
                 +12.4%
@@ -112,10 +113,10 @@ export const Beside = {
         <Card>
           <CardHeader>
             <CardIcon icon={Bell} />
-            <div className="min-w-0 flex-1">
+            <CardHeaderContent>
               <CardTitle>Notifications</CardTitle>
               <CardDescription>Recent alerts and updates</CardDescription>
-            </div>
+            </CardHeaderContent>
             <CardAction>
               <Button size="md" variant="ghost" className="min-w-11">
                 <Settings className="size-4" />
@@ -133,10 +134,10 @@ export const Beside = {
         <code>{`{/* layout="beside" is the default — no need to pass it explicitly */}
 <CardHeader>
   <CardIcon icon={ShoppingCart} />
-  <div className="min-w-0 flex-1">
+  <CardHeaderContent>
     <CardTitle>Inventory</CardTitle>
     <CardDescription>All active products</CardDescription>
-  </div>
+  </CardHeaderContent>
   <CardAction>
     <Button>Add Item</Button>
   </CardAction>
@@ -145,10 +146,10 @@ export const Beside = {
 {/* Multiple buttons in CardAction */}
 <CardHeader>
   <CardIcon icon={BarChart2} />
-  <div className="min-w-0 flex-1">
+  <CardHeaderContent>
     <CardTitle>Trade Journal</CardTitle>
     <CardDescription>All buy and sell entries</CardDescription>
-  </div>
+  </CardHeaderContent>
   <CardAction>
     <div className="flex items-center gap-2">
       <Button variant="outline">Export</Button>
@@ -160,10 +161,10 @@ export const Beside = {
 {/* Badge in CardAction */}
 <CardHeader>
   <CardIcon icon={TrendingUp} />
-  <div className="min-w-0 flex-1">
+  <CardHeaderContent>
     <CardTitle>Portfolio</CardTitle>
     <CardDescription>Performance this month</CardDescription>
-  </div>
+  </CardHeaderContent>
   <CardAction>
     <span className="... rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
       +12.4%
@@ -193,10 +194,10 @@ export const Below = {
         <Card>
           <CardHeader layout="below">
             <CardIcon icon={TrendingUp} />
-            <div className="min-w-0 flex-1">
+            <CardHeaderContent>
               <CardTitle>Unrealized P&L</CardTitle>
               <CardDescription>Portfolio performance over time</CardDescription>
-            </div>
+            </CardHeaderContent>
             <CardAction>
               <div className="flex flex-wrap items-center gap-2">
                 {['7D', '30D', '3M', '6M', '1Y'].map((label, i) => (
@@ -225,10 +226,10 @@ export const Below = {
         <Card>
           <CardHeader layout="below">
             <CardIcon icon={Calendar} />
-            <div className="min-w-0 flex-1">
+            <CardHeaderContent>
               <CardTitle>Activity Log</CardTitle>
               <CardDescription>Filter by date range</CardDescription>
-            </div>
+            </CardHeaderContent>
             <CardAction>
               <div className="flex items-center gap-2">
                 <div className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-400 min-w-[120px]">
@@ -253,10 +254,10 @@ export const Below = {
         <Card>
           <CardHeader layout="below">
             <CardIcon icon={ShoppingCart} />
-            <div className="min-w-0 flex-1">
+            <CardHeaderContent>
               <CardTitle>Products</CardTitle>
               <CardDescription>Manage your inventory items</CardDescription>
-            </div>
+            </CardHeaderContent>
             <CardAction>
               <div className="flex items-center justify-between gap-2 w-full">
                 <div className="flex items-center gap-2">
@@ -297,10 +298,10 @@ export const Below = {
         <code>{`{/* Filter tab bar below the header */}
 <CardHeader layout="below">
   <CardIcon icon={TrendingUp} />
-  <div className="min-w-0 flex-1">
+  <CardHeaderContent>
     <CardTitle>Unrealized P&L</CardTitle>
     <CardDescription>Portfolio performance over time</CardDescription>
-  </div>
+  </CardHeaderContent>
   <CardAction>
     <div className="flex flex-wrap items-center gap-2">
       {FILTERS.map(f => (
@@ -313,10 +314,10 @@ export const Below = {
 {/* Toolbar with left tabs + right actions */}
 <CardHeader layout="below">
   <CardIcon icon={ShoppingCart} />
-  <div className="min-w-0 flex-1">
+  <CardHeaderContent>
     <CardTitle>Products</CardTitle>
     <CardDescription>Manage your inventory items</CardDescription>
-  </div>
+  </CardHeaderContent>
   <CardAction>
     <div className="flex items-center justify-between gap-2 w-full">
       <div className="flex gap-2">

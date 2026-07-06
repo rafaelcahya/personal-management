@@ -21,6 +21,7 @@ import Card, {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -259,12 +260,12 @@ export default function RaceLogPage() {
         <Card>
           <CardHeader>
             <CardIcon icon={Medal} />
-            <div className="min-w-0 flex-1">
+            <CardHeaderContent>
               <CardTitle>Race Log</CardTitle>
               <CardDescription>
                 Every finish line you&apos;ve crossed — your full race history in one place
               </CardDescription>
-            </div>
+            </CardHeaderContent>
           </CardHeader>
 
           <CardContent

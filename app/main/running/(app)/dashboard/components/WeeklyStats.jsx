@@ -8,6 +8,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -194,12 +195,12 @@ export default function WeeklyStats({ data, activityType = null }) {
       <CardHeader className="flex-col md:flex-row justify-between">
         <div className="flex items-center gap-2">
           <CardIcon icon={CalendarRange} />
-          <div>
+          <CardHeaderContent>
             <CardTitle>{weekTitle}</CardTitle>
             <CardDescription>
               Distance, duration, sessions, and pace compared to {vsLabel}.
             </CardDescription>
-          </div>
+          </CardHeaderContent>
         </div>
         <CardAction
           id="weeklyStatsWeekFilter_dashboardPage"

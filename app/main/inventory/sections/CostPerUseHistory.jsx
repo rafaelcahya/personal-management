@@ -21,7 +21,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
-import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
+import Card, {
+  CardContent,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+  CardAction,
+} from '@/components/base/Card/Card'
 
 function CustomTooltip({ active, payload }) {
   if (!active || !payload?.length) return null
@@ -92,14 +100,14 @@ export default function CostPerUseHistory({ items, loading }) {
     return (
       <Card>
         <CardHeader>
-          <div className="flex flex-col gap-1.5 flex-1">
+          <CardHeaderContent>
             <div className="h-4 bg-slate-200 rounded w-48 animate-pulse" />
             <div className="h-3 bg-slate-100 rounded w-36 animate-pulse" />
-          </div>
+          </CardHeaderContent>
         </CardHeader>
-        <div className="px-5 py-6">
+        <CardContent className="py-6">
           <div className="h-48 bg-slate-100 rounded animate-pulse" />
-        </div>
+        </CardContent>
       </Card>
     )
   }
@@ -109,14 +117,14 @@ export default function CostPerUseHistory({ items, loading }) {
       <Card>
         <CardHeader>
           <CardIcon icon={TrendingUp} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>Avg Cost/Use Over Time</CardTitle>
             <CardDescription>How your cost per use changes with each purchase</CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
-        <div className="py-10 text-center">
+        <CardContent className="py-10 text-center">
           <p className="text-sm text-slate-400">No purchase history yet 📊</p>
-        </div>
+        </CardContent>
       </Card>
     )
   }
@@ -131,24 +139,25 @@ export default function CostPerUseHistory({ items, loading }) {
 
   return (
     <Card>
-      <CardHeader className="flex-col">
-        <div className="flex items-start gap-3">
-          <CardIcon icon={TrendingUp} />
-          <div className="min-w-0 flex-1">
-            <CardTitle>Avg Cost/Use Over Time</CardTitle>
-            <CardDescription>
-              Cumulative cost per use after each purchase — hover for delta
-            </CardDescription>
-          </div>
-        </div>
+      <CardHeader>
+        <CardIcon icon={TrendingUp} />
+        <CardHeaderContent>
+          <CardTitle>Avg Cost/Use Over Time</CardTitle>
+          <CardDescription>
+            Cumulative cost per use after each purchase — hover for delta
+          </CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
+
+      <CardAction className="p-5">
         <ProductSelector
           items={items}
           selectedId={selected?.product_list_id}
           onChange={setSelectedId}
         />
-      </CardHeader>
+      </CardAction>
 
-      <div className="px-5 py-4">
+      <CardContent>
         {chartData.length < 2 ? (
           <div className="py-8 text-center">
             <p className="text-sm text-slate-400">Not enough purchases to show a trend yet.</p>
@@ -183,7 +192,7 @@ export default function CostPerUseHistory({ items, loading }) {
             </LineChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </CardContent>
     </Card>
   )
 }

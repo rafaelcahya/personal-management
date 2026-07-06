@@ -9,6 +9,7 @@ import Card, {
   CardTitle,
   CardDescription,
   CardFooter,
+  CardContent,
 } from '@/components/base/Card/Card'
 import {
   Modal,
@@ -203,30 +204,32 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
           </div>
         </CardHeader>
 
-        {loading ? (
-          <TableSkeleton />
-        ) : error ? (
-          <div
-            className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-            role="alert"
-            aria-live="assertive"
-          >
-            <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-              <p className="text-xs text-slate-500">Check your connection and try again</p>
+        <CardContent padding="none">
+          {loading ? (
+            <TableSkeleton />
+          ) : error ? (
+            <div
+              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-slate-700">Failed to load data</p>
+                <p className="text-xs text-slate-500">Check your connection and try again</p>
+              </div>
+              {onRetry && (
+                <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                  Try again
+                </Button>
+              )}
             </div>
-            {onRetry && (
-              <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-                Try again
-              </Button>
-            )}
-          </div>
-        ) : items.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <PredictionTable items={top5} />
-        )}
+          ) : items.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <PredictionTable items={top5} />
+          )}
+        </CardContent>
 
         {!loading && !error && items.length > 0 && (
           <CardFooter align="end" className="py-3">

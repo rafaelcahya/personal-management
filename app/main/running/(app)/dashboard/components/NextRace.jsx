@@ -5,6 +5,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -157,15 +158,13 @@ export default function NextRace({ upcoming_races }) {
       <section id="nextRaceCard" aria-label="Next race" className="flex flex-col h-full">
         <Card>
           <CardHeader>
-            <div className="flex gap-2">
-              <CardIcon icon={Flag} />
-              <div className="min-w-0 flex-1">
-                <CardTitle className="text-sm font-semibold text-slate-700">Next Race</CardTitle>
-                <CardDescription className="text-xs text-slate-400">
-                  Your upcoming race goals and target times.
-                </CardDescription>
-              </div>
-            </div>
+            <CardIcon icon={Flag} />
+            <CardHeaderContent>
+              <CardTitle className="text-sm font-semibold text-slate-700">Next Race</CardTitle>
+              <CardDescription className="text-xs text-slate-400">
+                Your upcoming race goals and target times.
+              </CardDescription>
+            </CardHeaderContent>
           </CardHeader>
           <CardContent
             id="nextRaceEmptyState"
@@ -191,15 +190,13 @@ export default function NextRace({ upcoming_races }) {
     <section id="nextRaceCard" aria-label="Next race" className="flex flex-col h-full">
       <Card>
         <CardHeader>
-          <div className="flex gap-2">
-            <CardIcon icon={Flag} />
-            <div className="min-w-0 flex-1">
-              <CardTitle className="text-sm font-semibold text-slate-700">Next Race</CardTitle>
-              <CardDescription className="text-xs text-slate-400">
-                Your upcoming race goals and target times.
-              </CardDescription>
-            </div>
-          </div>
+          <CardIcon icon={Flag} />
+          <CardHeaderContent>
+            <CardTitle className="text-sm font-semibold text-slate-700">Next Race</CardTitle>
+            <CardDescription className="text-xs text-slate-400">
+              Your upcoming race goals and target times.
+            </CardDescription>
+          </CardHeaderContent>
         </CardHeader>
         <CardContent id="nextRaceList" className="px-5 pb-5 flex flex-col gap-3">
           {races.map((race, index) => (

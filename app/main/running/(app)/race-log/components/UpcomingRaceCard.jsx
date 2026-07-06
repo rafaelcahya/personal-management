@@ -25,6 +25,7 @@ import Card, {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -201,12 +202,12 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
       >
         <CardHeader className="border-none">
           <CardIcon icon={Flag} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>{race.title}</CardTitle>
             <CardDescription className="text-violet-600 font-medium mt-0">
               {getDistanceLabel(race.distance_m)}
             </CardDescription>
-          </div>
+          </CardHeaderContent>
           {race.race_date && (
             <CardAction>
               <CountdownBadge dateStr={race.race_date} />

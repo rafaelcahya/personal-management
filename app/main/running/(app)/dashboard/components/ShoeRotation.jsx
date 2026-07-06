@@ -8,6 +8,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -384,15 +385,13 @@ export default function ShoeRotation() {
     >
       <Card>
         <CardHeader>
-          <div className="flex gap-2">
-            <CardIcon icon={Footprints} />
-            <div>
-              <CardTitle>Shoe Rotation</CardTitle>
-              <CardDescription>
-                Active shoes synced from Strava with mileage tracking.
-              </CardDescription>
-            </div>
-          </div>
+          <CardIcon icon={Footprints} />
+          <CardHeaderContent>
+            <CardTitle>Shoe Rotation</CardTitle>
+            <CardDescription>
+              Active shoes synced from Strava with mileage tracking.
+            </CardDescription>
+          </CardHeaderContent>
         </CardHeader>
         <CardContent className="px-5 py-5">
           {loading && (

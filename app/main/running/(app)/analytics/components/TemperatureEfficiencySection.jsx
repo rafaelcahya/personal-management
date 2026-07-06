@@ -18,6 +18,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -261,7 +262,7 @@ export default function TemperatureEfficiencySection() {
       <Card>
         <CardHeader>
           <CardIcon icon={Thermometer} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>Temperature vs Cardiac Efficiency</CardTitle>
             <CardDescription>
               Pace/HR ratio per temperature (lower = more efficient). Color:{' '}
@@ -269,7 +270,7 @@ export default function TemperatureEfficiencySection() {
               <span className="text-indigo-500 font-medium">indigo = evening</span>.
               {!loading && !error && ` · Based on ${hrCount} runs with HR data — directional only`}
             </CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
         <CardContent>
           {loading && <Skeleton />}

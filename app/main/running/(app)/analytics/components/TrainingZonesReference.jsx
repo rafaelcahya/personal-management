@@ -6,6 +6,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -64,12 +65,12 @@ export default function TrainingZonesReference({ data, loading, error, onRetry }
       <Card>
         <CardHeader>
           <CardIcon icon={MapPin} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>Training Zones Reference</CardTitle>
             <CardDescription>
               Your target HR and pace ranges per zone, derived from your profile settings.
             </CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
 
         <CardContent>

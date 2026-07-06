@@ -4,10 +4,12 @@ import { useState } from 'react'
 import { BarChart2, AlertCircle } from 'lucide-react'
 import Card, {
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
   CardDescription,
   CardFooter,
+  CardContent,
 } from '@/components/base/Card/Card'
 import {
   Modal,
@@ -81,21 +83,23 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
       <Card>
         <CardHeader>
           <CardIcon icon={BarChart2} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>Cost Per Use</CardTitle>
             <CardDescription>Price per single use</CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
 
-        {loading ? (
-          <TableSkeleton />
-        ) : error ? (
-          <ErrorState onRetry={onRetry} />
-        ) : top5.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <ProductTable products={top5} />
-        )}
+        <CardContent padding="none">
+          {loading ? (
+            <TableSkeleton />
+          ) : error ? (
+            <ErrorState onRetry={onRetry} />
+          ) : top5.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <ProductTable products={top5} />
+          )}
+        </CardContent>
 
         {!loading && !error && top5.length > 0 && (
           <CardFooter align="end" className="py-3">

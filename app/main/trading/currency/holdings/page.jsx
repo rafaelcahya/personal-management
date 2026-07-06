@@ -9,6 +9,7 @@ import Card, {
   CardAction,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -203,10 +204,10 @@ export default function HoldingsPage() {
       <Card>
         <CardHeader>
           <CardIcon icon={BarChart2} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>Holdings</CardTitle>
             <CardDescription>All currency positions</CardDescription>
-          </div>
+          </CardHeaderContent>
           <CardAction>
             <Button
               id="addInvestmentBtn_holdingsPage"

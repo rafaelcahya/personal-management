@@ -1,7 +1,13 @@
 'use client'
 
 import { Trophy, Calendar } from 'lucide-react'
-import Card, { CardContent, CardHeader, CardIcon, CardTitle } from '@/components/base/Card/Card'
+import Card, {
+  CardContent,
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+} from '@/components/base/Card/Card'
 
 function daysToRace(targetDate) {
   if (!targetDate) return null
@@ -27,9 +33,9 @@ export default function RaceCountdownCard({ upcomingRace, weeklyReview }) {
     <Card id="raceCountdownCard_aiCoachPage" aria-label="Upcoming race countdown">
       <CardHeader>
         <CardIcon icon={Trophy} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Upcoming Race</CardTitle>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
       <CardContent className="space-y-3 pt-0">
         {!race ? (

@@ -2,7 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Info, Bell } from 'lucide-react'
-import Card, { CardHeader, CardIcon, CardTitle, CardDescription } from '@/components/base/Card/Card'
+import Card, {
+  CardHeader,
+  CardHeaderContent,
+  CardIcon,
+  CardTitle,
+  CardDescription,
+} from '@/components/base/Card/Card'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Switch } from '@/components/base/Switch/Switch'
 import { getUserSettings, updateUserSettings, savePushSubscription } from '@/lib/api/running'
@@ -170,10 +176,10 @@ export default function NotificationsSection() {
     <Card as="section" aria-label="Notifications">
       <CardHeader>
         <CardIcon icon={Bell} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Notifications</CardTitle>
           <CardDescription>Configure push alerts for your training insights</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
 
       {loading ? (

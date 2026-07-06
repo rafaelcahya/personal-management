@@ -6,6 +6,7 @@ import Button from '@/components/base/Button/Button'
 import Card, {
   CardContent,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
   CardDescription,
@@ -63,10 +64,10 @@ export default function DangerZoneSection() {
     <Card as="section" aria-label="Danger zone" className="border-red-200">
       <CardHeader className="border-red-100">
         <CardIcon icon={AlertTriangle} className="bg-red-50" iconClassName="text-red-600" />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Danger Zone</CardTitle>
           <CardDescription>Irreversible actions — proceed with caution</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-3">

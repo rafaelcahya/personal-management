@@ -2,6 +2,7 @@ import {
   CardAction,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -15,10 +16,10 @@ export default function ProductHistoryTableHeader({ controls }) {
     >
       <div className="flex gap-2">
         <CardIcon icon={History} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Product History</CardTitle>
           <CardDescription>Track product usage and restock movement over time</CardDescription>
-        </div>
+        </CardHeaderContent>
       </div>
       {controls && <CardAction>{controls}</CardAction>}
     </CardHeader>

@@ -2,6 +2,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -39,12 +40,12 @@ export default function PerformanceDistributionCard({
     <Card>
       <CardHeader className="flex">
         <CardIcon icon={Target} />
-        <div>
+        <CardHeaderContent>
           <CardTitle>Performance Distribution</CardTitle>
           <CardDescription className="text-xs text-slate-400">
             Win/loss breakdown with profit and loss metrics per trade.
           </CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200">
         {/* Win side */}

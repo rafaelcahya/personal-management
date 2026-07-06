@@ -29,6 +29,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -610,13 +611,11 @@ export default function ActivitySection({ calendarActivities, recentActivities, 
     <section id="activitySection" aria-label="Activity">
       <Card>
         <CardHeader>
-          <div className="flex gap-2">
-            <CardIcon icon={Activity} />
-            <div>
-              <CardTitle>Activity</CardTitle>
-              <CardDescription>Monthly calendar and your most recent activities.</CardDescription>
-            </div>
-          </div>
+          <CardIcon icon={Activity} />
+          <CardHeaderContent>
+            <CardTitle>Activity</CardTitle>
+            <CardDescription>Monthly calendar and your most recent activities.</CardDescription>
+          </CardHeaderContent>
         </CardHeader>
         <CardContent className="px-5 py-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x md:divide-slate-100">

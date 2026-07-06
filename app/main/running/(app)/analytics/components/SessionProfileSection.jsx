@@ -16,6 +16,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -222,7 +223,7 @@ export default function SessionProfileSection() {
       <Card>
         <CardHeader>
           <CardIcon icon={Clock} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>
               {bothThresholdMet ? 'Morning vs Evening' : 'Session Profile — Morning vs Evening'}
             </CardTitle>
@@ -232,7 +233,7 @@ export default function SessionProfileSection() {
                 !error &&
                 ` · ${totalRunsWithRe} of ${totalRuns} runs have training load data`}
             </CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
         <CardContent>
           {loading && <Skeleton />}

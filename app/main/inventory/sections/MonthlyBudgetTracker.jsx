@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import Button from '@/components/base/Button/Button'
 import Card, {
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
   CardDescription,
@@ -175,14 +176,14 @@ export default function MonthlyBudgetTracker({ monthlySpendByType, loading }) {
     <Card>
       <CardHeader>
         <CardIcon icon={Wallet} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Monthly Budget Tracker</CardTitle>
           <CardDescription>
             Track this month&apos;s spend vs your budget per category
           </CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
-      <CardContent className="py-3">
+      <CardContent padding="none">
         {isLoading ? (
           <div className="space-y-4 py-2">
             {[...Array(4)].map((_, i) => (

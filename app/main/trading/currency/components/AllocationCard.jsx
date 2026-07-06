@@ -2,6 +2,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
@@ -13,10 +14,10 @@ export default function AllocationCard({ data }) {
     <Card>
       <CardHeader>
         <CardIcon icon={DollarSign} />
-        <div className="min-w-0 flex-1">
+        <CardHeaderContent>
           <CardTitle>Allocation</CardTitle>
           <CardDescription>IDR invested by currency</CardDescription>
-        </div>
+        </CardHeaderContent>
       </CardHeader>
       <CardContent>
         <AllocationChart data={data} />
