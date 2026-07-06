@@ -29,6 +29,7 @@ import {
   Timer,
   DollarSign,
   ChevronDown,
+  MapPin,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -96,6 +97,12 @@ const RUNNING_ITEMS = [
     name: 'Run Calc',
     href: '/main/running/run-calculator',
     icon: Timer,
+  },
+  {
+    id: 'routeBuilderNav_sidebar',
+    name: 'Routes',
+    href: '/main/running/route-builder',
+    icon: MapPin,
   },
   { name: 'Settings', href: '/main/running/settings', icon: Settings },
 ]
