@@ -4,17 +4,24 @@ import { cn } from '@/lib/utils'
 const CardContext = createContext({ variant: 'shell' })
 const CardHeaderContext = createContext({ layout: 'beside' })
 
-const cardVariants = {
-  shell: 'bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden',
+const cardBaseClasses = {
+  shell: 'bg-white rounded-xl shadow-sm overflow-hidden',
   transparent: '',
-  info: 'bg-blue-50 border border-blue-200 rounded-xl shadow-sm overflow-hidden dark:bg-blue-950/40 dark:border-blue-900',
-  success:
-    'bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm overflow-hidden dark:bg-emerald-950/40 dark:border-emerald-900',
-  warning:
-    'bg-amber-50 border border-amber-200 rounded-xl shadow-sm overflow-hidden dark:bg-amber-950/40 dark:border-amber-900',
-  danger:
-    'bg-red-50 border border-red-200 rounded-xl shadow-sm overflow-hidden dark:bg-red-950/40 dark:border-red-900',
-  muted: 'bg-muted/40 border border-border rounded-xl shadow-sm overflow-hidden',
+  info: 'bg-blue-50 rounded-xl shadow-sm overflow-hidden dark:bg-blue-950/40',
+  success: 'bg-emerald-50 rounded-xl shadow-sm overflow-hidden dark:bg-emerald-950/40',
+  warning: 'bg-amber-50 rounded-xl shadow-sm overflow-hidden dark:bg-amber-950/40',
+  danger: 'bg-red-50 rounded-xl shadow-sm overflow-hidden dark:bg-red-950/40',
+  muted: 'bg-muted/40 rounded-xl shadow-sm overflow-hidden',
+}
+
+const cardBorderClasses = {
+  shell: 'border border-slate-200',
+  transparent: 'border border-slate-200',
+  info: 'border border-blue-200 dark:border-blue-900',
+  success: 'border border-emerald-200 dark:border-emerald-900',
+  warning: 'border border-amber-200 dark:border-amber-900',
+  danger: 'border border-red-200 dark:border-red-900',
+  muted: 'border border-border',
 }
 
 const headerVariants = {
@@ -77,17 +84,17 @@ export default function Card({
   className,
   id,
   variant = 'shell',
+  bordered,
   children,
   as: Tag = 'div',
   ...rest
 }) {
+  const isBordered = bordered !== undefined ? bordered : variant !== 'transparent'
+  const baseClass = cardBaseClasses[variant] ?? cardBaseClasses.shell
+  const borderClass = isBordered ? (cardBorderClasses[variant] ?? cardBorderClasses.shell) : ''
   return (
     <CardContext.Provider value={{ variant }}>
-      <Tag
-        id={id}
-        className={cn('flex flex-col', cardVariants[variant] ?? cardVariants.shell, className)}
-        {...rest}
-      >
+      <Tag id={id} className={cn('flex flex-col', baseClass, borderClass, className)} {...rest}>
         {children}
       </Tag>
     </CardContext.Provider>
