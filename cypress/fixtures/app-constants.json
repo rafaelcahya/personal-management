@@ -196,6 +196,12 @@
       "symptoms_by_id": "/api/running/v1/symptoms/:id",
       "injury_coach": "/api/running/v1/ai/injury-coach",
       "injury_coach_history": "/api/running/v1/ai/injury-coach/history"
+    },
+    "running_routes": {
+      "list": "/api/running/v1/routes",
+      "create": "/api/running/v1/routes",
+      "update": "/api/running/v1/routes",
+      "delete": "/api/running/v1/routes"
     }
   },
   "test_ids": {
@@ -1026,6 +1032,27 @@
       "steps_count": "stepsCount_runCalculator",
       "steps_distance_km": "stepsDistanceKm_runCalculator",
       "steps_distance_mi": "stepsDistanceMi_runCalculator"
+    },
+    "running_route_builder": {
+      "route_builder_card": "routeBuilderCard_routeBuilderPage",
+      "saved_routes_card": "savedRoutesCard_routeBuilderPage",
+      "saved_routes_loading": "savedRoutesLoading_routeBuilderPage",
+      "saved_routes_error": "savedRoutesError_routeBuilderPage",
+      "saved_routes_empty": "savedRoutesEmpty_routeBuilderPage",
+      "saved_routes_list": "savedRoutesList_routeBuilderPage",
+      "route_preview_modal": "routePreviewModal_routeBuilderPage",
+      "undo_waypoint_btn": "undoWaypointBtn_routeBuilderPage",
+      "clear_route_btn": "clearRouteBtn_routeBuilderPage",
+      "route_name_input": "routeNameInput_routeBuilderPage",
+      "save_route_btn": "saveRouteBtn_routeBuilderPage",
+      "route_builder_map": "routeBuilderMap_routeBuilderPage",
+      "saved_route_item": "savedRoute_{id}_routeBuilderPage",
+      "view_route_btn": "viewRouteBtn_{id}_routeBuilderPage",
+      "rename_route_btn": "renameRouteBtn_{id}_routeBuilderPage",
+      "delete_route_btn": "deleteRouteBtn_{id}_routeBuilderPage",
+      "edit_route_name_input": "editRouteNameInput_{id}_routeBuilderPage",
+      "confirm_rename_btn": "confirmRenameBtn_{id}_routeBuilderPage",
+      "cancel_rename_btn": "cancelRenameBtn_{id}_routeBuilderPage"
     },
     "trading_currency": {
       "currency_nav": "currencyNav_sidebar",

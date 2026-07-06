@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-06-23 (issue #458 — currency investment feature)
-**Branch:** feat/issue-458-currency-investment
+**Last Updated:** 2026-07-06 (issue #592 — route builder feature)
+**Branch:** release/v1.23
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,371  | 46%  |
+| API       | 1,388  | 46%  |
 | UI        | 1,597  | 54%  |
-| **Total** | **2,968** | 100% |
+| **Total** | **2,985** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
 | Trading Management   | 205   | 300   | 505   |
-| Running Tracker      | 443   | 695   | 1,138 |
+| Running Tracker      | 460   | 695   | 1,155 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,371** | **1,597** | **2,968** |
+| **Total**            | **1,388** | **1,597** | **2,985** |
 
 ---
 
@@ -264,6 +264,13 @@
 | Upcoming Races Target Time   | 0   | 19 | 19    |
 | **Subtotal**                 | **56** | **108** | **164** |
 
+#### Route Builder
+
+| Feature        | API | UI | Total |
+| -------------- | --- | -- | ----- |
+| Route Builder  | 17  | 0  | 17    |
+| **Subtotal**   | **17** | **0** | **17** |
+
 #### Manual Entry
 
 | Feature        | API | UI | Total |
@@ -287,7 +294,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **53** | **21** | **74** |
 
-**Running Total — API: 443 | UI: 695 | Total: 1,138**
+**Running Total — API: 460 | UI: 695 | Total: 1,155**
 
 ---
 
@@ -316,7 +323,7 @@
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
 | Trading Management   | 205   | 300   | 505   |
-| Running Tracker      | 443   | 695   | 1,138 |
+| Running Tracker      | 460   | 695   | 1,155 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,371** | **1,597** | **2,968** |
+| **Total**            | **1,388** | **1,597** | **2,985** |
