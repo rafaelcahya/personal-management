@@ -259,7 +259,7 @@ export default function RunCalculatorPage() {
 
       {/* Calculator */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full">
+        <TabsList className="w-full" variant="pill">
           <TabsTrigger id="tabPace_runCalculator" value="pace" className="flex-1 justify-center">
             Pace Mode
           </TabsTrigger>
