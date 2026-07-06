@@ -6,6 +6,7 @@ import { getBudgets, upsertBudget } from '@/lib/api/inventoryBudget'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import { toast } from 'sonner'
 import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
 import Card, {
   CardHeader,
   CardHeaderContent,
@@ -79,7 +80,7 @@ function BudgetRow({ type, actual, budget, onSave }) {
           <span className="text-slate-300">/</span>
           {editing ? (
             <div className="flex items-center gap-1">
-              <input
+              <Input
                 ref={inputRef}
                 type="number"
                 min="0"
@@ -89,7 +90,7 @@ function BudgetRow({ type, actual, budget, onSave }) {
                   if (e.key === 'Enter') handleSave()
                   if (e.key === 'Escape') setEditing(false)
                 }}
-                className="w-28 text-right border border-violet-300 rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-violet-400"
+                className="w-28 text-right border-violet-300 rounded h-auto py-0.5 px-2"
               />
               <Button
                 onClick={handleSave}

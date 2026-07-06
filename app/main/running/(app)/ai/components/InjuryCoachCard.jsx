@@ -455,14 +455,14 @@ export default function InjuryCoachCard() {
                   <div className="relative">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
-                      <input
+                      <Input
                         id="injuryActivitySearch_aiPage"
                         type="text"
                         value={activitySearch}
                         onChange={(e) => setActivitySearch(e.target.value)}
                         onFocus={() => setActivityOpen(true)}
                         placeholder="Search by date or distance..."
-                        className="w-full rounded-md border border-slate-200 pl-8 pr-3 py-2 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                        className="pl-8"
                       />
                     </div>
                     {activityOpen && (

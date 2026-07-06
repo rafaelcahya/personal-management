@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Sparkles, Loader2, RefreshCw, Send, X } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
 import Card, {
   CardContent,
   CardHeader,
@@ -288,7 +289,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
             )}
 
             <div id="dailyInsightAskCoach_aiCoachPage" className="flex gap-2">
-              <input
+              <Input
                 type="text"
                 value={freeText}
                 onChange={(e) => setFreeText(e.target.value)}
@@ -297,7 +298,7 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
                 }}
                 placeholder="Ask your coach anything..."
                 disabled={followUpLoading}
-                className="flex-1 text-xs px-3 py-1.5 rounded-lg border border-violet-200 bg-white/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 text-slate-700 placeholder:text-slate-400 selection:bg-violet-500 disabled:opacity-50 text-sm font-medium"
+                className="flex-1 border-violet-200 bg-white/70 rounded-lg h-auto py-1.5"
               />
               <Button
                 id="dailyInsightAskBtn_aiCoachPage"

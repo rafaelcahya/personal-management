@@ -105,7 +105,7 @@ export default function EventTagsInput({ value = [], onChange, id }) {
           </span>
         ))}
         {remaining > 0 && (
-          <input
+          <Input
             ref={inputRef}
             id={id}
             value={input}
@@ -113,7 +113,7 @@ export default function EventTagsInput({ value = [], onChange, id }) {
             onKeyDown={handleKeyDown}
             onFocus={() => input && setShowSuggestions(suggestions.length > 0)}
             placeholder={value.length === 0 ? 'Type a tag and press Enter' : ''}
-            className="flex-1 min-w-[120px] bg-transparent outline-none text-sm font-medium selection:bg-violet-500"
+            className="flex-1 min-w-[120px] bg-transparent border-0 rounded-none h-auto px-0 py-0 focus-visible:ring-0 shadow-none"
           />
         )}
       </div>
