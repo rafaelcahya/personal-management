@@ -14,6 +14,7 @@ import {
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import { ANALYTICS_SECTIONS } from '../sections'
 import Button from '@/components/base/Button/Button'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 
 function scrollToSection(id, onClose) {
   const el = document.getElementById(id)
@@ -85,12 +86,12 @@ function SectionsContent({
                 aria-checked={isVisible}
                 aria-label={`Toggle ${section.label}`}
               />
-              <label
+              <FieldLabel
                 htmlFor={`toggle-${section.id}`}
                 className="flex-1 text-xs cursor-pointer select-none"
               >
                 {section.label}
-              </label>
+              </FieldLabel>
               <Button
                 size="xs"
                 variant="ghost"
