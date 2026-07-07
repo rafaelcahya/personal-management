@@ -204,7 +204,7 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
           </div>
         </CardHeader>
 
-        <CardContent padding="none">
+        <CardContent className="p-4 md:p-0">
           {loading ? (
             <TableSkeleton />
           ) : error ? (

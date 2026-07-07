@@ -228,7 +228,7 @@ export default function LifecycleScore({ items, loading, error, onRetry }) {
           </CardHeaderContent>
         </CardHeader>
 
-        <CardContent padding="none">
+        <CardContent className="p-4 md:p-0">
           {loading ? (
             <TableSkeleton />
           ) : error ? (
