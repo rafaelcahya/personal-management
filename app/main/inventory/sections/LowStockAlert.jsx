@@ -82,7 +82,6 @@ function LowStockTable({ items }) {
       <Table
         wrapperClassName="hidden md:block"
         id="lowStockAlertTable_inventoryPage"
-        className="min-w-full"
         aria-label="Low stock alerts"
       >
         <TableHeader>
@@ -172,7 +171,7 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
           </CardHeaderContent>
         </CardHeader>
 
-        <CardContent padding="none">
+        <CardContent className="p-4 md:p-0">
           {loading ? (
             <TableSkeleton />
           ) : error ? (
