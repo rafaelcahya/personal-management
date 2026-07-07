@@ -128,6 +128,8 @@ const preview = {
             'Controlled',
             '*',
           ],
+          'Pagination',
+          ['Docs', 'Default', 'Variants', 'Icon Only', 'States', '*'],
           'Popover',
           ['Docs', 'Basic', 'Positions', 'With Form', 'With Filter', 'Controlled', '*'],
           'Separator',
