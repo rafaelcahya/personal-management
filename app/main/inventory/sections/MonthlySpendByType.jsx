@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { format } from 'date-fns'
-import { ChevronLeft, ChevronRight, Wallet } from 'lucide-react'
+import { Wallet } from 'lucide-react'
 import Card, {
   CardHeader,
   CardIcon,
@@ -21,9 +21,11 @@ import {
   ModalTitle,
   ModalDescription,
   ModalBody,
+  ModalFooter,
 } from '@/components/base/Modal/Modal.jsx'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import Button from '@/components/base/Button/Button'
+import Pagination from '@/components/base/Pagination/Pagination'
 
 function thisMonthTotal(items) {
   const thisMonth = new Date().toISOString().slice(0, 7)
@@ -84,55 +86,20 @@ function SpendList({ items }) {
 
 const MONTHS_PER_PAGE = 2
 
-function PaginatedSpendList({ items }) {
-  const [page, setPage] = useState(0)
-  const { grouped, months } = useMemo(() => groupByMonth(items), [items])
-  const totalPages = Math.ceil(months.length / MONTHS_PER_PAGE)
-  const pageMonths = months.slice(page * MONTHS_PER_PAGE, (page + 1) * MONTHS_PER_PAGE)
-
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex flex-col gap-4">
-        {pageMonths.map((month) => (
-          <MonthBlock key={month} month={month} items={grouped[month]} />
-        ))}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-4 mt-2 border-t border-slate-100">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage((p) => p - 1)}
-            disabled={page === 0}
-            className="flex items-center gap-1"
-          >
-            <ChevronLeft className="size-3.5" />
-            Prev
-          </Button>
-          <span className="text-xs text-slate-500">
-            {page + 1} / {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage((p) => p + 1)}
-            disabled={page === totalPages - 1}
-            className="flex items-center gap-1"
-          >
-            Next
-            <ChevronRight className="size-3.5" />
-          </Button>
-        </div>
-      )}
-    </div>
-  )
-}
-
 export default function MonthlySpendByType({ items, loading }) {
   const [modalOpen, setModalOpen] = useState(false)
+  const [modalPage, setModalPage] = useState(1)
   const top5 = items.slice(0, 5)
   const totalThisMonth = thisMonthTotal(items)
+
+  const { grouped, months } = useMemo(() => groupByMonth(items), [items])
+  const modalTotalPages = Math.max(1, Math.ceil(months.length / MONTHS_PER_PAGE))
+  const pageMonths = months.slice((modalPage - 1) * MONTHS_PER_PAGE, modalPage * MONTHS_PER_PAGE)
+
+  function handleModalOpen(open) {
+    setModalOpen(open)
+    if (!open) setModalPage(1)
+  }
 
   return (
     <>
@@ -181,7 +148,7 @@ export default function MonthlySpendByType({ items, loading }) {
         )}
       </Card>
 
-      <Modal open={modalOpen} onOpenChange={setModalOpen}>
+      <Modal open={modalOpen} onOpenChange={handleModalOpen}>
         <ModalContent
           variant="bordered"
           borderColor="border-slate-200"
@@ -194,9 +161,22 @@ export default function MonthlySpendByType({ items, loading }) {
               <ModalDescription>All categories across the last 6 months</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 4 }}>
-            <PaginatedSpendList items={items} />
+          <ModalBody padding={{ x: 4 }} className="overflow-y-auto flex-1">
+            <div className="flex flex-col gap-4">
+              {pageMonths.map((month) => (
+                <MonthBlock key={month} month={month} items={grouped[month]} />
+              ))}
+            </div>
           </ModalBody>
+          <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+            <Pagination
+              page={modalPage}
+              totalPages={modalTotalPages}
+              total={months.length}
+              onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
+              onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
+            />
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

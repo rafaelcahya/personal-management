@@ -15,13 +15,12 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
   FilePenLine,
   MoreHorizontalIcon,
   Pencil,
   StarIcon,
 } from 'lucide-react'
+import Pagination from '@/components/base/Pagination/Pagination'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { favoriteProduct } from '@/lib/api/product'
@@ -420,39 +419,17 @@ export default function ProductsTable({
             ))}
           </TableBody>
         </Table>
-
-        {totalPages > 1 && (
-          <div
-            id="paginationFooter_productListPage"
-            className="flex items-center justify-between px-5 pt-2 mt-2"
-            aria-label="Pagination"
-          >
-            <Button
-              variant="ghost"
-              onClick={onPrev}
-              disabled={page <= 1}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="size-4" aria-hidden="true" />
-              Prev
-            </Button>
-            <span className="text-xs text-slate-400 text-center" aria-live="polite">
-              Page {page} of {totalPages} · {total} records
-            </span>
-            <Button
-              variant="ghost"
-              onClick={onNext}
-              disabled={page >= totalPages}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
-              aria-label="Next page"
-            >
-              Next
-              <ChevronRight className="size-4" aria-hidden="true" />
-            </Button>
-          </div>
-        )}
       </div>
+
+      <Pagination
+        id="paginationFooter_productListPage"
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        onPrev={onPrev}
+        onNext={onNext}
+        className="pb-4"
+      />
 
       {selectedProduct && (
         <StockAdjustment
