@@ -40,7 +40,7 @@ export default function Pagination({
   const prevBtn = (
     <Button
       variant="ghost"
-      size={iconOnly ? 'icon-sm' : 'sm'}
+      size={iconOnly ? 'icon-sm' : 'xs'}
       onClick={onPrev}
       disabled={page <= 1}
       className="text-slate-600 hover:text-violet-600"
@@ -60,7 +60,7 @@ export default function Pagination({
   const nextBtn = (
     <Button
       variant="ghost"
-      size={iconOnly ? 'icon-sm' : 'sm'}
+      size={iconOnly ? 'icon-sm' : 'xs'}
       onClick={onNext}
       disabled={page >= totalPages}
       className="text-slate-600 hover:text-violet-600"
@@ -75,7 +75,7 @@ export default function Pagination({
     return (
       <div
         id={id}
-        className={twMerge(clsx('grid grid-cols-3 items-center px-5 pt-2 mt-2'), className)}
+        className={twMerge(clsx('grid grid-cols-3 items-center w-full px-1 pt-2 mt-2'), className)}
         aria-label="Pagination"
       >
         <div>{prevBtn}</div>
@@ -88,7 +88,7 @@ export default function Pagination({
   return (
     <div
       id={id}
-      className={twMerge(clsx(variantClass[variant], 'px-5 pt-2 mt-2'), className)}
+      className={twMerge(clsx(variantClass[variant], 'w-full px-1 py-2 mt-2'), className)}
       aria-label="Pagination"
     >
       {prevBtn}

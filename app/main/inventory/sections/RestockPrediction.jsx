@@ -20,8 +20,10 @@ import {
   ModalTitle,
   ModalDescription,
   ModalBody,
+  ModalFooter,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
+import Pagination from '@/components/base/Pagination/Pagination'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import {
   Table,
@@ -92,7 +94,7 @@ function EmptyState() {
   )
 }
 
-function PredictionTable({ items }) {
+function PredictionTable({ items, startIndex = 0 }) {
   return (
     <>
       {/* Desktop table */}
@@ -117,7 +119,7 @@ function PredictionTable({ items }) {
           {items.map((item, index) => (
             <TableRow key={item.id} clickable>
               <TableCell className="text-slate-500 text-xs" align="center">
-                {index + 1}
+                {startIndex + index + 1}
               </TableCell>
               <TableCell>
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
@@ -145,7 +147,7 @@ function PredictionTable({ items }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 py-2">
+      <div className="md:hidden space-y-2 py-2 px-3">
         {items.map((item, index) => (
           <div
             key={item.id}
@@ -164,7 +166,7 @@ function PredictionTable({ items }) {
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-xs text-slate-400">#{index + 1}</span>
+                <span className="text-xs text-slate-400">#{startIndex + index + 1}</span>
                 <UrgencyBadge quantity={item.quantity} daysUntilEmpty={item.days_until_empty} />
               </div>
             </div>
@@ -187,9 +189,21 @@ function PredictionTable({ items }) {
   )
 }
 
+const MODAL_PAGE_SIZE = 10
+
 export default function RestockPrediction({ items, loading, error, onRetry }) {
   const [modalOpen, setModalOpen] = useState(false)
+  const [modalPage, setModalPage] = useState(1)
   const top5 = items.slice(0, 5)
+
+  const modalTotalPages = Math.max(1, Math.ceil(items.length / MODAL_PAGE_SIZE))
+  const modalStartIndex = (modalPage - 1) * MODAL_PAGE_SIZE
+  const modalItems = items.slice(modalStartIndex, modalStartIndex + MODAL_PAGE_SIZE)
+
+  function handleModalOpen(open) {
+    setModalOpen(open)
+    if (!open) setModalPage(1)
+  }
 
   return (
     <>
@@ -240,7 +254,7 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
         )}
       </Card>
 
-      <Modal open={modalOpen} onOpenChange={setModalOpen}>
+      <Modal open={modalOpen} onOpenChange={handleModalOpen}>
         <ModalContent
           variant="bordered"
           borderColor="border-slate-200"
@@ -254,8 +268,17 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
             </ModalHeaderContent>
           </ModalHeader>
           <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
-            <PredictionTable items={items} />
+            <PredictionTable items={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
+          <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+            <Pagination
+              page={modalPage}
+              totalPages={modalTotalPages}
+              total={items.length}
+              onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
+              onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
+            />
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

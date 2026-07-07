@@ -20,9 +20,11 @@ import {
   ModalTitle,
   ModalDescription,
   ModalBody,
+  ModalFooter,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import Pagination from '@/components/base/Pagination/Pagination'
 import ProductTable from '../components/ProductTable'
 
 function TableSkeleton() {
@@ -75,8 +77,20 @@ function ErrorState({ onRetry }) {
   )
 }
 
+const MODAL_PAGE_SIZE = 10
+
 export default function CostPerUse({ top5, all, loading, error, onRetry }) {
   const [modalOpen, setModalOpen] = useState(false)
+  const [modalPage, setModalPage] = useState(1)
+
+  const modalTotalPages = Math.max(1, Math.ceil(all.length / MODAL_PAGE_SIZE))
+  const modalStartIndex = (modalPage - 1) * MODAL_PAGE_SIZE
+  const modalItems = all.slice(modalStartIndex, modalStartIndex + MODAL_PAGE_SIZE)
+
+  function handleModalOpen(open) {
+    setModalOpen(open)
+    if (!open) setModalPage(1)
+  }
 
   return (
     <>
@@ -110,7 +124,7 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
         )}
       </Card>
 
-      <Modal open={modalOpen} onOpenChange={setModalOpen}>
+      <Modal open={modalOpen} onOpenChange={handleModalOpen}>
         <ModalContent
           variant="bordered"
           borderColor="border-slate-200"
@@ -124,8 +138,21 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
             </ModalHeaderContent>
           </ModalHeader>
           <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
-            {all.length === 0 ? <EmptyState /> : <ProductTable products={all} />}
+            {all.length === 0 ? (
+              <EmptyState />
+            ) : (
+              <ProductTable products={modalItems} startIndex={modalStartIndex} />
+            )}
           </ModalBody>
+          <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+            <Pagination
+              page={modalPage}
+              totalPages={modalTotalPages}
+              total={all.length}
+              onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
+              onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
+            />
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
