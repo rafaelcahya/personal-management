@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { ClockIcon } from 'lucide-react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/base/Popover/Popover'
 import { useFieldContentContext } from '../Field/FieldContent'
 import { triggerVariants } from '../DatePicker/calendarParts'
 import {
