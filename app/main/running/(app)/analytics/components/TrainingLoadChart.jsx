@@ -18,7 +18,7 @@ import {
   TooltipContent,
 } from '@/components/base/Tooltip/Tooltip.jsx'
 import { ACWR_COLORS } from './utils'
-import EmptyState from './EmptyState'
+import { EmptyState, EmptyStateTitle } from '@/components/base/EmptyState/EmptyState'
 
 const STATUS_LABELS = {
   no_data: 'No Data',
@@ -79,7 +79,13 @@ function StatusInfoTip({ content }) {
 
 export default function TrainingLoadChart({ trainingLoad }) {
   if (!trainingLoad || trainingLoad.status === 'no_data') {
-    return <EmptyState message="Not enough training history to show load trends (need 28+ days)" />
+    return (
+      <EmptyState size="sm">
+        <EmptyStateTitle>
+          Not enough training history to show load trends (need 28+ days)
+        </EmptyStateTitle>
+      </EmptyState>
+    )
   }
 
   const { acwr, acute_load_7d, chronic_load_28d, status, training_status } = trainingLoad

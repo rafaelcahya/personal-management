@@ -23,7 +23,11 @@ import {
   TrendingUpDown,
   AlertTriangle,
 } from 'lucide-react'
-import EmptyState from '@/components/ui/common/EmptyState'
+import {
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 
 const MAX_RISK_PCT = 0.02
 
@@ -114,10 +118,12 @@ export default function PerformanceSection({ metrics, loading }) {
 
   if (!metrics || metrics.totalTrades === 0) {
     return (
-      <EmptyState
-        title="No Performance Data"
-        description="Add trades to see detailed performance analysis"
-      />
+      <EmptyState>
+        <EmptyStateTitle>No Performance Data</EmptyStateTitle>
+        <EmptyStateDescription>
+          Add trades to see detailed performance analysis
+        </EmptyStateDescription>
+      </EmptyState>
     )
   }
 

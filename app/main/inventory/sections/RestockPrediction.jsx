@@ -33,6 +33,13 @@ import {
   TableHead,
   TableCell,
 } from '@/components/base/Table/Table.jsx'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 
 function UrgencyBadge({ quantity, daysUntilEmpty }) {
   if (quantity === 0)
@@ -78,18 +85,6 @@ function TableSkeleton() {
           <Skeleton className="h-5 w-16 rounded-full" />
         </div>
       ))}
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <Sparkles className="size-10 text-slate-300" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">Not enough data yet</p>
-        <p className="text-xs text-slate-500">Use products regularly to see predictions</p>
-      </div>
     </div>
   )
 }
@@ -221,24 +216,26 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
           {loading ? (
             <TableSkeleton />
           ) : error ? (
-            <div
-              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-              role="alert"
-              aria-live="assertive"
-            >
-              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-                <p className="text-xs text-slate-500">Check your connection and try again</p>
-              </div>
+            <EmptyState size="sm" variant="error" role="alert" aria-live="assertive">
+              <EmptyStateIcon icon={AlertCircle} />
+              <EmptyStateTitle>Failed to load data</EmptyStateTitle>
+              <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
-                <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-                  Try again
-                </Button>
+                <EmptyStateActions>
+                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                    Try again
+                  </Button>
+                </EmptyStateActions>
               )}
-            </div>
+            </EmptyState>
           ) : items.length === 0 ? (
-            <EmptyState />
+            <EmptyState size="sm">
+              <EmptyStateIcon icon={Sparkles} />
+              <EmptyStateTitle>Not enough data yet</EmptyStateTitle>
+              <EmptyStateDescription>
+                Use products regularly to see predictions
+              </EmptyStateDescription>
+            </EmptyState>
           ) : (
             <PredictionTable items={top5} />
           )}

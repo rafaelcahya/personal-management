@@ -34,6 +34,13 @@ import {
   TableCell,
 } from '@/components/base/Table/Table.jsx'
 import StatusBadge from '../components/StatusBadge'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 
 function StockBadge({ quantity }) {
   if (quantity === 0) {
@@ -61,18 +68,6 @@ function TableSkeleton() {
           <Skeleton className="h-5 w-20 rounded-full" />
         </div>
       ))}
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <AlertTriangle className="size-10 text-slate-300" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">All good! Stock levels are healthy</p>
-        <p className="text-xs text-slate-500">No products are running low right now</p>
-      </div>
     </div>
   )
 }
@@ -189,24 +184,24 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
           {loading ? (
             <TableSkeleton />
           ) : error ? (
-            <div
-              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-              role="alert"
-              aria-live="assertive"
-            >
-              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-                <p className="text-xs text-slate-500">Check your connection and try again</p>
-              </div>
+            <EmptyState size="sm" variant="error" role="alert" aria-live="assertive">
+              <EmptyStateIcon icon={AlertCircle} />
+              <EmptyStateTitle>Failed to load data</EmptyStateTitle>
+              <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
-                <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-                  Try again
-                </Button>
+                <EmptyStateActions>
+                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                    Try again
+                  </Button>
+                </EmptyStateActions>
               )}
-            </div>
+            </EmptyState>
           ) : items.length === 0 ? (
-            <EmptyState />
+            <EmptyState size="sm">
+              <EmptyStateIcon icon={AlertTriangle} />
+              <EmptyStateTitle>All good! Stock levels are healthy</EmptyStateTitle>
+              <EmptyStateDescription>No products are running low right now</EmptyStateDescription>
+            </EmptyState>
           ) : (
             <LowStockTable items={top5} />
           )}
