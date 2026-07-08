@@ -11,7 +11,11 @@ import {
   Cell,
 } from 'recharts'
 import { RUN_TYPES, getWeekKey, fmtWeekLabel, fmtWeekRange } from './utils'
-import EmptyState from './EmptyState'
+import {
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 
 export default function WeeklyElevationChart({ activities }) {
   const now = new Date()
@@ -45,10 +49,12 @@ export default function WeeklyElevationChart({ activities }) {
 
   if (!hasAnyElevation) {
     return (
-      <EmptyState
-        message="No elevation data yet"
-        details="Log runs with elevation gain to see your weekly climbing trend."
-      />
+      <EmptyState size="sm">
+        <EmptyStateTitle>No elevation data yet</EmptyStateTitle>
+        <EmptyStateDescription>
+          Log runs with elevation gain to see your weekly climbing trend.
+        </EmptyStateDescription>
+      </EmptyState>
     )
   }
 

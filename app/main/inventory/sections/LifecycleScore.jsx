@@ -34,6 +34,13 @@ import {
   TableCell,
 } from '@/components/base/Table/Table.jsx'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 
 function TierBadge({ score }) {
   if (score >= 80)
@@ -93,18 +100,6 @@ function TableSkeleton() {
           <Skeleton className="h-4 w-24" />
         </div>
       ))}
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <Trophy className="size-10 text-slate-300" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">Not enough data to score products</p>
-        <p className="text-xs text-slate-500">Use and restock products to generate scores</p>
-      </div>
     </div>
   )
 }
@@ -246,24 +241,26 @@ export default function LifecycleScore({ items, loading, error, onRetry }) {
           {loading ? (
             <TableSkeleton />
           ) : error ? (
-            <div
-              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-              role="alert"
-              aria-live="assertive"
-            >
-              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-                <p className="text-xs text-slate-500">Check your connection and try again</p>
-              </div>
+            <EmptyState size="sm" variant="error" role="alert" aria-live="assertive">
+              <EmptyStateIcon icon={AlertCircle} />
+              <EmptyStateTitle>Failed to load data</EmptyStateTitle>
+              <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
-                <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-                  Try again
-                </Button>
+                <EmptyStateActions>
+                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                    Try again
+                  </Button>
+                </EmptyStateActions>
               )}
-            </div>
+            </EmptyState>
           ) : items.length === 0 ? (
-            <EmptyState />
+            <EmptyState size="sm">
+              <EmptyStateIcon icon={Trophy} />
+              <EmptyStateTitle>Not enough data to score products</EmptyStateTitle>
+              <EmptyStateDescription>
+                Use and restock products to generate scores
+              </EmptyStateDescription>
+            </EmptyState>
           ) : (
             <ScoreTable items={top5} />
           )}

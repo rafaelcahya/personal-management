@@ -37,6 +37,13 @@ import {
   TableHead,
   TableCell,
 } from '@/components/base/Table/Table.jsx'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 import RaceFormModal from './components/RaceFormModal'
 import UpcomingRaceFormModal from './components/UpcomingRaceFormModal'
@@ -231,28 +238,23 @@ export default function RaceLogPage() {
 
       {/* Empty state — no races at all */}
       {!loading && !error && total === 0 && !hasActiveFilters && (
-        <div
-          id="raceLogEmptyState"
-          className="flex flex-col items-center justify-center py-20 gap-4 text-center"
-        >
-          <div className="flex items-center justify-center size-14 rounded-full bg-violet-50">
-            <Medal className="size-7 text-violet-400" aria-hidden="true" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-700">No races logged yet</p>
-            <p className="text-xs text-slate-400 mt-1">
-              Every race you finish deserves to be remembered.
-            </p>
-          </div>
-          <Button
-            onClick={() => setFormOpen(true)}
-            size="base"
-            className="flex items-center gap-1.5"
-          >
-            <Flag className="size-4" aria-hidden="true" />
-            Log your first race
-          </Button>
-        </div>
+        <EmptyState id="raceLogEmptyState" size="lg">
+          <EmptyStateIcon icon={Medal} className="text-violet-400 bg-violet-50 rounded-full p-3" />
+          <EmptyStateTitle>No races logged yet</EmptyStateTitle>
+          <EmptyStateDescription>
+            Every race you finish deserves to be remembered.
+          </EmptyStateDescription>
+          <EmptyStateActions>
+            <Button
+              onClick={() => setFormOpen(true)}
+              size="base"
+              className="flex items-center gap-1.5"
+            >
+              <Flag className="size-4" aria-hidden="true" />
+              Log your first race
+            </Button>
+          </EmptyStateActions>
+        </EmptyState>
       )}
 
       {/* Search + filter bar + Race table */}

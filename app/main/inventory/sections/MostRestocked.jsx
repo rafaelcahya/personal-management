@@ -34,6 +34,13 @@ import {
   TableHead,
   TableCell,
 } from '@/components/base/Table/Table.jsx'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 
 function TableSkeleton() {
   return (
@@ -46,18 +53,6 @@ function TableSkeleton() {
           <Skeleton className="h-5 w-12 rounded-full" />
         </div>
       ))}
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <RefreshCw className="size-10 text-slate-300" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">No restock history yet</p>
-        <p className="text-xs text-slate-500">Restock products to see frequency data</p>
-      </div>
     </div>
   )
 }
@@ -186,24 +181,24 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
           {loading ? (
             <TableSkeleton />
           ) : error ? (
-            <div
-              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-              role="alert"
-              aria-live="assertive"
-            >
-              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-                <p className="text-xs text-slate-500">Check your connection and try again</p>
-              </div>
+            <EmptyState size="sm" variant="error" role="alert" aria-live="assertive">
+              <EmptyStateIcon icon={AlertCircle} />
+              <EmptyStateTitle>Failed to load data</EmptyStateTitle>
+              <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
-                <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-                  Try again
-                </Button>
+                <EmptyStateActions>
+                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                    Try again
+                  </Button>
+                </EmptyStateActions>
               )}
-            </div>
+            </EmptyState>
           ) : items.length === 0 ? (
-            <EmptyState />
+            <EmptyState size="sm">
+              <EmptyStateIcon icon={RefreshCw} />
+              <EmptyStateTitle>No restock history yet</EmptyStateTitle>
+              <EmptyStateDescription>Restock products to see frequency data</EmptyStateDescription>
+            </EmptyState>
           ) : (
             <RestockTable items={top5} />
           )}

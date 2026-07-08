@@ -28,6 +28,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/base/Table/Table.jsx'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 
 function formatIDR(amount) {
   return new Intl.NumberFormat('id-ID', {
@@ -80,38 +87,34 @@ function TableSkeleton() {
   )
 }
 
-function EmptyState({ onAdd }) {
+function HoldingsEmptyState({ onAdd }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <BarChart2 className="size-10 text-slate-300" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">No currency holdings yet</p>
-        <p className="text-xs text-slate-500">Add your first investment to get started</p>
-      </div>
-      <Button size="base" onClick={onAdd} className="bg-violet-600 hover:bg-violet-700 min-w-11">
-        <Plus className="size-4 mr-1.5" aria-hidden="true" />
-        Add Investment
-      </Button>
-    </div>
+    <EmptyState>
+      <EmptyStateIcon icon={BarChart2} />
+      <EmptyStateTitle>No currency holdings yet</EmptyStateTitle>
+      <EmptyStateDescription>Add your first investment to get started</EmptyStateDescription>
+      <EmptyStateActions>
+        <Button size="base" onClick={onAdd} className="bg-violet-600 hover:bg-violet-700 min-w-11">
+          <Plus className="size-4 mr-1.5" aria-hidden="true" />
+          Add Investment
+        </Button>
+      </EmptyStateActions>
+    </EmptyState>
   )
 }
 
-function ErrorState({ onRetry }) {
+function HoldingsErrorState({ onRetry }) {
   return (
-    <div
-      className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-      role="alert"
-      aria-live="assertive"
-    >
-      <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">Failed to load holdings</p>
-        <p className="text-xs text-slate-500">Check your connection and try again</p>
-      </div>
-      <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-        Try again
-      </Button>
-    </div>
+    <EmptyState variant="error" role="alert" aria-live="assertive">
+      <EmptyStateIcon icon={AlertCircle} />
+      <EmptyStateTitle>Failed to load holdings</EmptyStateTitle>
+      <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
+      <EmptyStateActions>
+        <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+          Try again
+        </Button>
+      </EmptyStateActions>
+    </EmptyState>
   )
 }
 
@@ -225,9 +228,9 @@ export default function HoldingsPage() {
         {loading ? (
           <TableSkeleton />
         ) : error ? (
-          <ErrorState onRetry={loadData} />
+          <HoldingsErrorState onRetry={loadData} />
         ) : holdings.length === 0 ? (
-          <EmptyState onAdd={() => setSheetOpen(true)} />
+          <HoldingsEmptyState onAdd={() => setSheetOpen(true)} />
         ) : (
           <Table
             id="holdingsTable_holdingsPage"

@@ -1,7 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import EmptyState from './EmptyState'
+import {
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 import {
   Table,
   TableHeader,
@@ -33,7 +37,11 @@ export default function GearUsageBreakdown({ gear, error }) {
   const [showRetired, setShowRetired] = useState(false)
 
   if (error) {
-    return <EmptyState message="Failed to load gear data" />
+    return (
+      <EmptyState size="sm" variant="error">
+        <EmptyStateTitle>Failed to load gear data</EmptyStateTitle>
+      </EmptyState>
+    )
   }
 
   if (!gear) return null
@@ -44,12 +52,14 @@ export default function GearUsageBreakdown({ gear, error }) {
   if (!visible.length) {
     return (
       <div id="gearUsageBreakdown_analyticsPage" className="flex flex-col gap-3">
-        <EmptyState
-          message={
-            gear.length === 0 ? 'No gear usage in this range' : 'No active gear in this range'
-          }
-          details={gear.length > 0 && !showRetired ? 'Toggle to include retired gear.' : undefined}
-        />
+        <EmptyState size="sm">
+          <EmptyStateTitle>
+            {gear.length === 0 ? 'No gear usage in this range' : 'No active gear in this range'}
+          </EmptyStateTitle>
+          {gear.length > 0 && !showRetired && (
+            <EmptyStateDescription>Toggle to include retired gear.</EmptyStateDescription>
+          )}
+        </EmptyState>
         {hasRetired && (
           <RetiredToggle showRetired={showRetired} onToggle={() => setShowRetired((v) => !v)} />
         )}

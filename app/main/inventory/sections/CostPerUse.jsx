@@ -26,6 +26,13 @@ import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import Pagination from '@/components/base/Pagination/Pagination'
 import ProductTable from '../components/ProductTable'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 
 function TableSkeleton() {
   return (
@@ -40,39 +47,6 @@ function TableSkeleton() {
           <Skeleton className="h-5 w-14 rounded-full hidden sm:block" />
         </div>
       ))}
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <BarChart2 className="size-10 text-slate-300" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">No products yet</p>
-        <p className="text-xs text-slate-500">Add your first product to see cost per use data</p>
-      </div>
-    </div>
-  )
-}
-
-function ErrorState({ onRetry }) {
-  return (
-    <div
-      className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-      role="alert"
-      aria-live="assertive"
-    >
-      <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-        <p className="text-xs text-slate-500">Check your connection and try again</p>
-      </div>
-      {onRetry && (
-        <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-          Try again
-        </Button>
-      )}
     </div>
   )
 }
@@ -107,9 +81,26 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
           {loading ? (
             <TableSkeleton />
           ) : error ? (
-            <ErrorState onRetry={onRetry} />
+            <EmptyState size="sm" variant="error" role="alert" aria-live="assertive">
+              <EmptyStateIcon icon={AlertCircle} />
+              <EmptyStateTitle>Failed to load data</EmptyStateTitle>
+              <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
+              {onRetry && (
+                <EmptyStateActions>
+                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                    Try again
+                  </Button>
+                </EmptyStateActions>
+              )}
+            </EmptyState>
           ) : top5.length === 0 ? (
-            <EmptyState />
+            <EmptyState size="sm">
+              <EmptyStateIcon icon={BarChart2} />
+              <EmptyStateTitle>No products yet</EmptyStateTitle>
+              <EmptyStateDescription>
+                Add your first product to see cost per use data
+              </EmptyStateDescription>
+            </EmptyState>
           ) : (
             <ProductTable products={top5} />
           )}
@@ -139,7 +130,13 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
           </ModalHeader>
           <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
             {all.length === 0 ? (
-              <EmptyState />
+              <EmptyState size="sm">
+                <EmptyStateIcon icon={BarChart2} />
+                <EmptyStateTitle>No products yet</EmptyStateTitle>
+                <EmptyStateDescription>
+                  Add your first product to see cost per use data
+                </EmptyStateDescription>
+              </EmptyState>
             ) : (
               <ProductTable products={modalItems} startIndex={modalStartIndex} />
             )}

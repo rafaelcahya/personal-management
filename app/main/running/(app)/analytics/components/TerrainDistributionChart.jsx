@@ -3,17 +3,23 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { RUN_TYPES } from './utils'
 import { HILL_TIERS, computeHillScore, getHillTier } from '@/lib/services/running/utils/hillScore'
-import EmptyState from './EmptyState'
+import {
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 
 export default function TerrainDistributionChart({ activities }) {
   const runs = activities.filter((a) => RUN_TYPES.has(a.activity_type))
 
   if (runs.length === 0) {
     return (
-      <EmptyState
-        message="No runs yet"
-        details="Log some runs to see your terrain mix breakdown."
-      />
+      <EmptyState size="sm">
+        <EmptyStateTitle>No runs yet</EmptyStateTitle>
+        <EmptyStateDescription>
+          Log some runs to see your terrain mix breakdown.
+        </EmptyStateDescription>
+      </EmptyState>
     )
   }
 
