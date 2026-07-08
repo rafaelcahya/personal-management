@@ -7,8 +7,8 @@ import FieldPrefix from './FieldPrefix'
 import FieldSuffix from './FieldSuffix'
 import Input from '../Input/Input'
 import { Mail, Globe } from 'lucide-react'
-import { Switch } from '@/components/ui/switch'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Switch } from '@/components/base/Switch/Switch'
+import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
