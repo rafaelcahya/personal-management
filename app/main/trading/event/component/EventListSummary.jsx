@@ -3,7 +3,11 @@
 import { useState } from 'react'
 import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import Button from '@/components/base/Button/Button'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/base/Collapsible/Collapsible'
 import { Calendar, TrendingUp, TrendingDown, Star, ChevronDown, ChevronUp } from 'lucide-react'
 
 export default function EventListSummary({ summary }) {
