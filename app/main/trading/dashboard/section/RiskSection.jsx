@@ -9,7 +9,11 @@ import Card, {
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
-import EmptyState from '@/components/ui/common/EmptyState'
+import {
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 import { ArrowDownRight, ArrowUpRight, Minus, TrendingDown, TrendingUp } from 'lucide-react'
 
 function StatCell({ label, value, sub, valueClassName, chip }) {
@@ -81,10 +85,12 @@ export default function RiskSection({ metrics, loading }) {
 
   if (!metrics || metrics.totalTrades === 0) {
     return (
-      <EmptyState
-        title="No Risk Data Available"
-        description="Add more trades to see risk analysis and suggestions"
-      />
+      <EmptyState>
+        <EmptyStateTitle>No Risk Data Available</EmptyStateTitle>
+        <EmptyStateDescription>
+          Add more trades to see risk analysis and suggestions
+        </EmptyStateDescription>
+      </EmptyState>
     )
   }
 

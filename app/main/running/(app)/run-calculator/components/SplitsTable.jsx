@@ -17,7 +17,7 @@ export default function SplitsTable({ splits, unit }) {
     <div id="splitsTable_runCalculator" className="flex flex-col gap-2">
       <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Splits</p>
       <Table className="min-w-full" aria-label="Pace splits per kilometre or mile">
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead>{unit === 'mi' ? 'Mile' : 'KM'}</TableHead>
             <TableHead>Split Time</TableHead>

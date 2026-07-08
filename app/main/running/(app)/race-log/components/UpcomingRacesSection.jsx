@@ -4,6 +4,13 @@ import { useState } from 'react'
 import { Flag, Plus, AlertTriangle } from 'lucide-react'
 
 import Button from '@/components/base/Button/Button'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 import UpcomingRaceCard from './UpcomingRaceCard'
 import UpcomingRaceFormModal from './UpcomingRaceFormModal'
 
@@ -51,28 +58,26 @@ export default function UpcomingRacesSection({
 
       {/* Empty state */}
       {!loading && !error && races.length === 0 && (
-        <div
+        <EmptyState
           id="upcomingRacesEmptyState_raceLogPage"
-          className="flex flex-col items-center justify-center py-16 gap-4 text-center border border-slate-200/50 rounded-xl bg-white"
+          className="border border-slate-200/50 rounded-xl bg-white"
         >
-          <div className="flex items-center justify-center size-12 rounded-full bg-violet-50">
-            <Flag className="size-6 text-violet-400" aria-hidden="true" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-700">No upcoming races</p>
-            <p className="text-xs text-slate-400 mt-1">
-              Add a race you&apos;re planning to run and track your progress.
-            </p>
-          </div>
-          <Button
-            size="base"
-            onClick={() => setFormOpen(true)}
-            className="flex items-center gap-1.5"
-          >
-            <Plus className="size-4" aria-hidden="true" />
-            Add upcoming race
-          </Button>
-        </div>
+          <EmptyStateIcon icon={Flag} className="text-violet-400 bg-violet-50 rounded-full p-2.5" />
+          <EmptyStateTitle>No upcoming races</EmptyStateTitle>
+          <EmptyStateDescription>
+            Add a race you&apos;re planning to run and track your progress.
+          </EmptyStateDescription>
+          <EmptyStateActions>
+            <Button
+              size="base"
+              onClick={() => setFormOpen(true)}
+              className="flex items-center gap-1.5"
+            >
+              <Plus className="size-4" aria-hidden="true" />
+              Add upcoming race
+            </Button>
+          </EmptyStateActions>
+        </EmptyState>
       )}
 
       {/* Race cards */}

@@ -12,7 +12,7 @@ import {
 } from 'recharts'
 import { RUN_TYPES, DISTANCE_BRACKETS, getBracket, fmtPaceTick } from './utils'
 import { fmtPace } from '@/app/main/running/(app)/dashboard/utils/format'
-import EmptyState from './EmptyState'
+import { EmptyState, EmptyStateTitle } from '@/components/base/EmptyState/EmptyState'
 
 export default function BestPaceChart({ activities }) {
   const bracketMap = {}
@@ -41,7 +41,11 @@ export default function BestPaceChart({ activities }) {
   }))
 
   if (data.length === 0) {
-    return <EmptyState message="Not enough data across distance categories yet" />
+    return (
+      <EmptyState size="sm">
+        <EmptyStateTitle>Not enough data across distance categories yet</EmptyStateTitle>
+      </EmptyState>
+    )
   }
 
   const paceMin = Math.max(0, Math.min(...data.map((d) => d.pace)) - 20)

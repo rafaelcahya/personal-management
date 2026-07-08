@@ -4,7 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AlertCircle } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Card, { CardContent } from '@/components/base/Card/Card'
-import EmptyState from '@/components/ui/common/EmptyState'
+import {
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 import {
   getCurrencyInvestments,
   getForexHistory,
@@ -204,10 +208,12 @@ export default function CurrencyDashboardPage() {
     return (
       <div className="space-y-6">
         {PAGE_HEADER}
-        <EmptyState
-          title="No currency investments yet"
-          description="Add your first transaction from the Holdings page"
-        />
+        <EmptyState>
+          <EmptyStateTitle>No currency investments yet</EmptyStateTitle>
+          <EmptyStateDescription>
+            Add your first transaction from the Holdings page
+          </EmptyStateDescription>
+        </EmptyState>
       </div>
     )
 

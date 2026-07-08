@@ -7,6 +7,13 @@ import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import { toast } from 'sonner'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 import Card, {
   CardHeader,
   CardHeaderContent,
@@ -18,9 +25,9 @@ import Card, {
 
 function ProgressBar({ percent }) {
   const capped = Math.min(percent, 100)
-  const color = percent >= 100 ? 'bg-red-500' : percent >= 75 ? 'bg-yellow-400' : 'bg-violet-500'
+  const color = percent >= 100 ? 'bg-destructive' : percent >= 75 ? 'bg-yellow-400' : 'bg-primary'
   return (
-    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+    <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
       <div
         className={`h-2 rounded-full transition-all duration-500 ${color}`}
         style={{ width: `${capped}%` }}
@@ -57,18 +64,18 @@ function BudgetRow({ type, actual, budget, onSave }) {
   const percent = budget > 0 ? Math.round((actual / budget) * 100) : null
 
   return (
-    <div className="py-3 border-b border-slate-50 last:border-0">
+    <div className="py-3 px-4 border-b border-border last:border-0">
       <div className="flex items-center justify-between gap-3 mb-1.5">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-sm font-medium text-slate-700 truncate">{type}</span>
+          <span className="text-sm font-medium text-foreground truncate">{type}</span>
           {percent != null && (
             <span
               className={`text-xs font-medium px-1.5 py-0.5 rounded shrink-0 ${
                 percent >= 100
-                  ? 'bg-red-100 text-red-600'
+                  ? 'bg-destructive/10 text-destructive'
                   : percent >= 75
                     ? 'bg-yellow-100 text-yellow-700'
-                    : 'bg-violet-100 text-violet-700'
+                    : 'bg-primary/10 text-primary'
               }`}
             >
               {percent}%
@@ -76,8 +83,8 @@ function BudgetRow({ type, actual, budget, onSave }) {
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0 text-sm">
-          <span className="text-slate-600">{formatRupiah(actual)}</span>
-          <span className="text-slate-300">/</span>
+          <span className="text-muted-foreground">{formatRupiah(actual)}</span>
+          <span className="text-border">/</span>
           {editing ? (
             <div className="flex items-center gap-1">
               <Input
@@ -92,30 +99,21 @@ function BudgetRow({ type, actual, budget, onSave }) {
                 }}
                 className="w-28 text-right border-violet-300 rounded h-auto py-0.5 px-2"
               />
-              <Button
-                onClick={handleSave}
-                variant="ghost"
-                disabled={saving}
-                className="text-xs px-2 py-1 bg-violet-600 text-white rounded hover:bg-violet-700 disabled:opacity-50"
-              >
+              <Button onClick={handleSave} variant="default" size="sm" disabled={saving}>
                 {saving ? '...' : 'Save'}
               </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setEditing(false)}
-                className="text-xs px-2 py-1 text-slate-500 hover:text-slate-700"
-              >
+              <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
                 Cancel
               </Button>
             </div>
           ) : (
             <Button
               variant="ghost"
+              size="sm"
               onClick={() => {
                 setValue(budget != null ? String(budget) : '')
                 setEditing(true)
               }}
-              className="text-slate-400 hover:text-violet-600 transition-colors"
               title="Set budget"
             >
               {budget != null ? (
@@ -130,7 +128,7 @@ function BudgetRow({ type, actual, budget, onSave }) {
       {budget > 0 ? (
         <ProgressBar percent={percent} />
       ) : (
-        <div className="w-full bg-slate-100 rounded-full h-2" />
+        <div className="w-full bg-muted rounded-full h-2" />
       )}
     </div>
   )
@@ -186,21 +184,25 @@ export default function MonthlyBudgetTracker({ monthlySpendByType, loading }) {
       </CardHeader>
       <CardContent padding="none">
         {isLoading ? (
-          <div className="space-y-4 py-2">
+          <div className="space-y-4 px-4 py-3">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="animate-pulse space-y-2">
+              <div key={i} className="space-y-2">
                 <div className="flex justify-between">
-                  <div className="h-3 bg-slate-200 rounded w-20" />
-                  <div className="h-3 bg-slate-200 rounded w-32" />
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-3 w-32" />
                 </div>
-                <div className="h-2 bg-slate-200 rounded-full w-full" />
+                <Skeleton className="h-2 w-full rounded-full" />
               </div>
             ))}
           </div>
         ) : allTypes.length === 0 ? (
-          <div className="py-8 text-center">
-            <p className="text-sm text-slate-400">No spend data this month 📋</p>
-          </div>
+          <EmptyState size="sm">
+            <EmptyStateIcon icon={Wallet} />
+            <EmptyStateTitle>No spend data this month</EmptyStateTitle>
+            <EmptyStateDescription>
+              Spend data will appear here once inventory usage is recorded.
+            </EmptyStateDescription>
+          </EmptyState>
         ) : (
           allTypes.map((type) => (
             <BudgetRow

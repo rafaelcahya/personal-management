@@ -10,7 +10,11 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { RUN_TYPES, rolling30DayAvg } from './utils'
-import EmptyState from './EmptyState'
+import {
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 
 export default function EfTrendChart({ activities }) {
   const basePts = activities
@@ -25,13 +29,13 @@ export default function EfTrendChart({ activities }) {
 
   if (basePts.length < 3) {
     return (
-      <div className="flex flex-col items-center justify-center h-[180px] gap-1 text-center px-4">
-        <p className="text-sm text-slate-400">Not enough Efficiency Factor data yet</p>
-        <p id="efTrendEmptyCount_analyticsPage" className="text-xs text-slate-300">
+      <EmptyState size="sm">
+        <EmptyStateTitle>Not enough Efficiency Factor data yet</EmptyStateTitle>
+        <EmptyStateDescription id="efTrendEmptyCount_analyticsPage">
           Need at least 3 runs with EF calculated. Currently have {basePts.length}. Qualifying runs
           require 20+ min with HR data.
-        </p>
-      </div>
+        </EmptyStateDescription>
+      </EmptyState>
     )
   }
 

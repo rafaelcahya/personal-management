@@ -2,39 +2,45 @@
 
 import { Settings } from 'lucide-react'
 import ZoneBreakdownBars from './ZoneBreakdownBars'
-import EmptyState from './EmptyState'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 
 // Z1 (Easy/slowest) → Z5 (VO2max/fastest): blue shades → violet
 const PACE_ZONE_COLORS = ['#bfdbfe', '#93c5fd', '#60a5fa', '#818cf8', '#7c3aed']
 
 export default function PaceZoneBreakdown({ data, error }) {
   if (error) {
-    return <EmptyState message="Failed to load pace zone data" />
+    return (
+      <EmptyState size="sm" variant="error">
+        <EmptyStateTitle>Failed to load pace zone data</EmptyStateTitle>
+      </EmptyState>
+    )
   }
 
   if (!data) return null
 
   if (!data.has_threshold) {
     return (
-      <div
-        id="paceZoneNoThreshold_analyticsPage"
-        className="flex flex-col items-center justify-center h-[180px] gap-2 text-center px-4"
-      >
-        <Settings className="size-4 text-slate-300" aria-hidden="true" />
-        <p className="text-sm text-slate-400">Threshold pace not set</p>
-        <p className="text-xs text-slate-300">
+      <EmptyState id="paceZoneNoThreshold_analyticsPage" size="sm">
+        <EmptyStateIcon icon={Settings} />
+        <EmptyStateTitle>Threshold pace not set</EmptyStateTitle>
+        <EmptyStateDescription>
           Set your threshold pace in Settings to enable pace zone breakdown.
-        </p>
-      </div>
+        </EmptyStateDescription>
+      </EmptyState>
     )
   }
 
   if (!data.has_data || !data.zones) {
     return (
-      <EmptyState
-        message="No pace data in this range"
-        details="Activities with GPS pace data are needed."
-      />
+      <EmptyState size="sm">
+        <EmptyStateTitle>No pace data in this range</EmptyStateTitle>
+        <EmptyStateDescription>Activities with GPS pace data are needed.</EmptyStateDescription>
+      </EmptyState>
     )
   }
 

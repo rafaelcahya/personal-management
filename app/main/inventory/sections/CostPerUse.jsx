@@ -20,10 +20,19 @@ import {
   ModalTitle,
   ModalDescription,
   ModalBody,
+  ModalFooter,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import Pagination from '@/components/base/Pagination/Pagination'
 import ProductTable from '../components/ProductTable'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 
 function TableSkeleton() {
   return (
@@ -42,41 +51,20 @@ function TableSkeleton() {
   )
 }
 
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <BarChart2 className="size-10 text-slate-300" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">No products yet</p>
-        <p className="text-xs text-slate-500">Add your first product to see cost per use data</p>
-      </div>
-    </div>
-  )
-}
-
-function ErrorState({ onRetry }) {
-  return (
-    <div
-      className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-      role="alert"
-      aria-live="assertive"
-    >
-      <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-        <p className="text-xs text-slate-500">Check your connection and try again</p>
-      </div>
-      {onRetry && (
-        <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-          Try again
-        </Button>
-      )}
-    </div>
-  )
-}
+const MODAL_PAGE_SIZE = 10
 
 export default function CostPerUse({ top5, all, loading, error, onRetry }) {
   const [modalOpen, setModalOpen] = useState(false)
+  const [modalPage, setModalPage] = useState(1)
+
+  const modalTotalPages = Math.max(1, Math.ceil(all.length / MODAL_PAGE_SIZE))
+  const modalStartIndex = (modalPage - 1) * MODAL_PAGE_SIZE
+  const modalItems = all.slice(modalStartIndex, modalStartIndex + MODAL_PAGE_SIZE)
+
+  function handleModalOpen(open) {
+    setModalOpen(open)
+    if (!open) setModalPage(1)
+  }
 
   return (
     <>
@@ -89,13 +77,30 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
           </CardHeaderContent>
         </CardHeader>
 
-        <CardContent padding="none">
+        <CardContent className="p-4 md:p-0">
           {loading ? (
             <TableSkeleton />
           ) : error ? (
-            <ErrorState onRetry={onRetry} />
+            <EmptyState size="sm" variant="error" role="alert" aria-live="assertive">
+              <EmptyStateIcon icon={AlertCircle} />
+              <EmptyStateTitle>Failed to load data</EmptyStateTitle>
+              <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
+              {onRetry && (
+                <EmptyStateActions>
+                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                    Try again
+                  </Button>
+                </EmptyStateActions>
+              )}
+            </EmptyState>
           ) : top5.length === 0 ? (
-            <EmptyState />
+            <EmptyState size="sm">
+              <EmptyStateIcon icon={BarChart2} />
+              <EmptyStateTitle>No products yet</EmptyStateTitle>
+              <EmptyStateDescription>
+                Add your first product to see cost per use data
+              </EmptyStateDescription>
+            </EmptyState>
           ) : (
             <ProductTable products={top5} />
           )}
@@ -110,7 +115,7 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
         )}
       </Card>
 
-      <Modal open={modalOpen} onOpenChange={setModalOpen}>
+      <Modal open={modalOpen} onOpenChange={handleModalOpen}>
         <ModalContent
           variant="bordered"
           borderColor="border-slate-200"
@@ -123,9 +128,30 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
               <ModalDescription>Sorted by highest cost per use</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
-            {all.length === 0 ? <EmptyState /> : <ProductTable products={all} />}
+          <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
+            {all.length === 0 ? (
+              <EmptyState size="sm">
+                <EmptyStateIcon icon={BarChart2} />
+                <EmptyStateTitle>No products yet</EmptyStateTitle>
+                <EmptyStateDescription>
+                  Add your first product to see cost per use data
+                </EmptyStateDescription>
+              </EmptyState>
+            ) : (
+              <ProductTable products={modalItems} startIndex={modalStartIndex} />
+            )}
           </ModalBody>
+          {modalTotalPages > 1 && (
+            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+              <Pagination
+                page={modalPage}
+                totalPages={modalTotalPages}
+                total={all.length}
+                onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
+                onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
+              />
+            </ModalFooter>
+          )}
         </ModalContent>
       </Modal>
     </>

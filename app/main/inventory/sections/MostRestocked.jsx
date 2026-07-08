@@ -21,8 +21,10 @@ import {
   ModalTitle,
   ModalDescription,
   ModalBody,
+  ModalFooter,
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
+import Pagination from '@/components/base/Pagination/Pagination'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import {
   Table,
@@ -32,6 +34,13 @@ import {
   TableHead,
   TableCell,
 } from '@/components/base/Table/Table.jsx'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 
 function TableSkeleton() {
   return (
@@ -48,29 +57,17 @@ function TableSkeleton() {
   )
 }
 
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <RefreshCw className="size-10 text-slate-300" aria-hidden="true" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700">No restock history yet</p>
-        <p className="text-xs text-slate-500">Restock products to see frequency data</p>
-      </div>
-    </div>
-  )
-}
-
-function RestockTable({ items }) {
+function RestockTable({ items, startIndex = 0 }) {
   return (
     <>
       {/* Desktop table */}
       <Table
-        wrapperClassName="hidden md:block"
+        wrapperClassName="hidden md:block overflow-clip"
         id="mostRestockedTable_inventoryPage"
         className="min-w-full"
         aria-label="Most restocked products"
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead className="w-8" align="center">
               No
@@ -80,11 +77,11 @@ function RestockTable({ items }) {
             <TableHead>Restocks</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody divider={false}>
           {items.map((item, index) => (
             <TableRow key={item.id}>
               <TableCell className="text-slate-500 text-xs" align="center">
-                {index + 1}
+                {startIndex + index + 1}
               </TableCell>
               <TableCell>
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
@@ -113,7 +110,7 @@ function RestockTable({ items }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 py-2">
+      <div className="md:hidden space-y-2 py-2 px-3">
         {items.map((item, index) => (
           <div
             key={item.id}
@@ -132,7 +129,7 @@ function RestockTable({ items }) {
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-xs text-slate-400">#{index + 1}</span>
+                <span className="text-xs text-slate-400">#{startIndex + index + 1}</span>
                 <span className="bg-violet-100 text-violet-700 border border-violet-200 rounded-full px-2 py-0.5 text-xs font-medium">
                   {item.restock_count}×
                 </span>
@@ -153,9 +150,21 @@ function RestockTable({ items }) {
   )
 }
 
+const MODAL_PAGE_SIZE = 10
+
 export default function MostRestocked({ items, loading, error, onRetry }) {
   const [modalOpen, setModalOpen] = useState(false)
+  const [modalPage, setModalPage] = useState(1)
   const top5 = items.slice(0, 5)
+
+  const modalTotalPages = Math.max(1, Math.ceil(items.length / MODAL_PAGE_SIZE))
+  const modalStartIndex = (modalPage - 1) * MODAL_PAGE_SIZE
+  const modalItems = items.slice(modalStartIndex, modalStartIndex + MODAL_PAGE_SIZE)
+
+  function handleModalOpen(open) {
+    setModalOpen(open)
+    if (!open) setModalPage(1)
+  }
 
   return (
     <>
@@ -168,28 +177,28 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
           </CardHeaderContent>
         </CardHeader>
 
-        <CardContent padding="none">
+        <CardContent className="p-4 md:p-0">
           {loading ? (
             <TableSkeleton />
           ) : error ? (
-            <div
-              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-              role="alert"
-              aria-live="assertive"
-            >
-              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-700">Failed to load data</p>
-                <p className="text-xs text-slate-500">Check your connection and try again</p>
-              </div>
+            <EmptyState size="sm" variant="error" role="alert" aria-live="assertive">
+              <EmptyStateIcon icon={AlertCircle} />
+              <EmptyStateTitle>Failed to load data</EmptyStateTitle>
+              <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
-                <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
-                  Try again
-                </Button>
+                <EmptyStateActions>
+                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                    Try again
+                  </Button>
+                </EmptyStateActions>
               )}
-            </div>
+            </EmptyState>
           ) : items.length === 0 ? (
-            <EmptyState />
+            <EmptyState size="sm">
+              <EmptyStateIcon icon={RefreshCw} />
+              <EmptyStateTitle>No restock history yet</EmptyStateTitle>
+              <EmptyStateDescription>Restock products to see frequency data</EmptyStateDescription>
+            </EmptyState>
           ) : (
             <RestockTable items={top5} />
           )}
@@ -204,7 +213,7 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
         )}
       </Card>
 
-      <Modal open={modalOpen} onOpenChange={setModalOpen}>
+      <Modal open={modalOpen} onOpenChange={handleModalOpen}>
         <ModalContent
           variant="bordered"
           borderColor="border-slate-200"
@@ -217,9 +226,20 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
               <ModalDescription>Sorted by most restocked</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
-            <RestockTable items={items} />
+          <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
+            <RestockTable items={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
+          {modalTotalPages > 1 && (
+            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+              <Pagination
+                page={modalPage}
+                totalPages={modalTotalPages}
+                total={items.length}
+                onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
+                onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
+              />
+            </ModalFooter>
+          )}
         </ModalContent>
       </Modal>
     </>

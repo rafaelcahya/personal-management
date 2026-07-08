@@ -10,6 +10,12 @@ import Card, {
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
 import { Flag, Calendar, MapPin, Clock } from 'lucide-react'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 
 function formatRaceDistance(m) {
   if (!m) return '?'
@@ -166,20 +172,22 @@ export default function NextRace({ upcoming_races }) {
               </CardDescription>
             </CardHeaderContent>
           </CardHeader>
-          <CardContent
-            id="nextRaceEmptyState"
-            className="px-5 py-8 flex flex-col items-center gap-3 text-center"
-          >
-            <div className="flex items-center justify-center size-10 rounded-full bg-violet-50">
-              <Flag className="size-5 text-violet-400" aria-hidden="true" />
-            </div>
-            <p className="text-sm text-slate-500">No upcoming races</p>
-            <Link
-              href="/main/running/race-log"
-              className="text-xs font-medium text-violet-600 hover:text-violet-700 hover:underline transition-colors"
-            >
-              Add your first race →
-            </Link>
+          <CardContent id="nextRaceEmptyState" className="px-5 py-0">
+            <EmptyState size="sm">
+              <EmptyStateIcon
+                icon={Flag}
+                className="text-violet-400 bg-violet-50 rounded-full p-2"
+              />
+              <EmptyStateTitle>No upcoming races</EmptyStateTitle>
+              <EmptyStateActions>
+                <Link
+                  href="/main/running/race-log"
+                  className="text-xs font-medium text-violet-600 hover:text-violet-700 hover:underline transition-colors"
+                >
+                  Add your first race →
+                </Link>
+              </EmptyStateActions>
+            </EmptyState>
           </CardContent>
         </Card>
       </section>

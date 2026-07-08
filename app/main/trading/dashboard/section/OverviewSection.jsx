@@ -1,6 +1,10 @@
 'use client'
 
-import EmptyState from '@/components/ui/common/EmptyState'
+import {
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 import OverviewSkeleton from './component/OverviewSkeleton'
 import PortfolioSummaryCard from './component/PortfolioSummaryCard'
 import PerformanceDistributionCard from './component/PerformanceDistributionCard'
@@ -10,10 +14,12 @@ export default function OverviewSection({ metrics, loading }) {
 
   if (!metrics || metrics.totalTrades === 0) {
     return (
-      <EmptyState
-        title="No Trading Data Yet"
-        description="Start adding trades to see your performance metrics, win rate, and portfolio growth"
-      />
+      <EmptyState>
+        <EmptyStateTitle>No Trading Data Yet</EmptyStateTitle>
+        <EmptyStateDescription>
+          Start adding trades to see your performance metrics, win rate, and portfolio growth
+        </EmptyStateDescription>
+      </EmptyState>
     )
   }
 

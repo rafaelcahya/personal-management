@@ -1,7 +1,7 @@
 'use client'
 
 import Input from '@/components/base/Input/Input'
-import { Label } from '@/components/ui/label'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 import {
   Select,
   SelectContent,
@@ -38,7 +38,7 @@ export default function DistanceSelect({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="text-sm font-medium">Distance</Label>
+      <FieldLabel className="text-sm font-medium">Distance</FieldLabel>
       <Select value={preset} onValueChange={onPresetChange}>
         <SelectTrigger
           id={selectId}

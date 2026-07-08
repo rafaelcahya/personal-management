@@ -18,7 +18,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from '@/components/base/Accordion/Accordion'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { ScrollArea } from '@/components/base/ScrollArea/ScrollArea'
 import { acknowledgeInsight, fetchAcknowledgedAnomalyInsights } from '@/lib/api/running'
 
 const PAGE_SIZE = 5

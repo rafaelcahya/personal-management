@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Input from '@/components/base/Input/Input'
-import { Label } from '@/components/ui/label'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 import { X } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { fetchEventTags } from '@/lib/api/event'
@@ -75,10 +75,10 @@ export default function EventTagsInput({ value = [], onChange, id }) {
 
   return (
     <div className="flex flex-col gap-1.5" ref={containerRef}>
-      <Label className="font-medium text-sm">
+      <FieldLabel className="font-medium text-sm">
         Tags
         <span className="text-slate-400 ml-1 font-normal text-xs">(optional)</span>
-      </Label>
+      </FieldLabel>
 
       <div
         className="flex flex-wrap gap-1.5 min-h-[40px] rounded-md border border-input bg-background px-3 py-2 focus-within:ring-2 focus-within:ring-violet-200 focus-within:border-violet-600 cursor-text"

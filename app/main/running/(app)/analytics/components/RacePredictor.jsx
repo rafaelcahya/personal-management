@@ -10,7 +10,7 @@ import {
   fmtDurationShort,
 } from './utils'
 import { fmtPace } from '@/app/main/running/(app)/dashboard/utils/format'
-import EmptyState from './EmptyState'
+import { EmptyState, EmptyStateTitle } from '@/components/base/EmptyState/EmptyState'
 import Button from '@/components/base/Button/Button'
 import {
   Table,
@@ -47,7 +47,11 @@ export default function RacePredictor({ activities }) {
 
   if (availableBrackets.length === 0) {
     return (
-      <EmptyState message="Need at least one run in a recognized distance bracket (5K–Marathon)" />
+      <EmptyState size="sm">
+        <EmptyStateTitle>
+          Need at least one run in a recognized distance bracket (5K–Marathon)
+        </EmptyStateTitle>
+      </EmptyState>
     )
   }
 
@@ -102,7 +106,7 @@ export default function RacePredictor({ activities }) {
         className="min-w-full"
         aria-label="Race predictor results"
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead>Distance</TableHead>
             <TableHead>Predicted Time</TableHead>

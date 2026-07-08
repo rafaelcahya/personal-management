@@ -11,7 +11,7 @@ import {
 } from 'recharts'
 import { fmtPaceTick } from './utils'
 import { fmtPace } from '@/app/main/running/(app)/dashboard/utils/format'
-import EmptyState from './EmptyState'
+import { EmptyState, EmptyStateTitle } from '@/components/base/EmptyState/EmptyState'
 
 export default function PaceTrendChart({ trendData }) {
   const data = trendData
@@ -25,7 +25,11 @@ export default function PaceTrendChart({ trendData }) {
     }))
 
   if (data.length < 3) {
-    return <EmptyState message="Need at least 3 runs to show pace trend" />
+    return (
+      <EmptyState size="sm">
+        <EmptyStateTitle>Need at least 3 runs to show pace trend</EmptyStateTitle>
+      </EmptyState>
+    )
   }
 
   const paces = data.map((d) => d.pace)
