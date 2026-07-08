@@ -230,6 +230,8 @@ function DropdownMenuContent({ children, className }) {
 // ─── DropdownMenuItem ────────────────────────────────────────────────────────────
 
 function DropdownMenuItem({
+  id,
+  asDiv,
   icon: Icon,
   label,
   shortcut,
@@ -246,8 +248,35 @@ function DropdownMenuItem({
     setOpen(false)
   }
 
+  const content = (
+    <>
+      {Icon && <Icon className="size-4 shrink-0 text-gray-500" />}
+      {label !== undefined ? <span className="flex-1 text-left">{label}</span> : children}
+      {shortcut && (
+        <span className="ml-auto text-xs text-gray-400 tracking-widest">{shortcut}</span>
+      )}
+    </>
+  )
+
+  if (asDiv) {
+    return (
+      <div
+        id={id}
+        role="menuitem"
+        data-menu-item=""
+        data-disabled={disabled ? '' : undefined}
+        tabIndex={-1}
+        onClick={handleClick}
+        className={cn(itemBase, itemInteractive, disabled && itemDisabled, className)}
+      >
+        {content}
+      </div>
+    )
+  }
+
   return (
     <button
+      id={id}
       type="button"
       role="menuitem"
       data-menu-item=""
@@ -257,11 +286,7 @@ function DropdownMenuItem({
       onClick={handleClick}
       className={cn(itemBase, itemInteractive, disabled && itemDisabled, className)}
     >
-      {Icon && <Icon className="size-4 shrink-0 text-gray-500" />}
-      <span className="flex-1 text-left">{label ?? children}</span>
-      {shortcut && (
-        <span className="ml-auto text-xs text-gray-400 tracking-widest">{shortcut}</span>
-      )}
+      {content}
     </button>
   )
 }
