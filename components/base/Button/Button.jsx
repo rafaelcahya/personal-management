@@ -211,4 +211,5 @@ const Button = forwardRef(function Button(
 
 Button.displayName = 'Button'
 
+export { buttonVariants }
 export default Button
