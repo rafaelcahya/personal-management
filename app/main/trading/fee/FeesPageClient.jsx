@@ -5,7 +5,7 @@ import { fetchFeeSummary, fetchFeeList } from '@/lib/api/fee'
 import { toast } from 'sonner'
 import FeeListSummary from './list/component/FeeListSummary'
 import FeeMetricStrip from './list/component/FeeMetricStrip'
-import FeePagination from './list/component/FeePagination'
+import Pagination from '@/components/base/Pagination/Pagination'
 import FeeTableSkeleton from './list/component/FeeTableSkeleton'
 import FeeErrorState from './list/component/FeeErrorState'
 import PageHeader from '../../components/PageHeader'
@@ -97,7 +97,7 @@ export default function FeesPageClient() {
       <Card className="flex-1 min-h-0 relative bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
         <FeeTableHeader action={<AddFee onAdded={handleAdded} />} />
 
-        <CardContent padding="none">
+        <CardContent padding="none" className="pb-4">
           <div className="px-5 pt-3">
             <FeeMetricStrip feeCount={summary.feeCount} totalFee={summary.totalFee} />
           </div>
@@ -121,11 +121,16 @@ export default function FeesPageClient() {
             </div>
           )}
 
-          <FeePagination
+          <Pagination
+            id="feePagination_feePage"
+            prevId="feePaginationPrevBtn_feePage"
+            nextId="feePaginationNextBtn_feePage"
+            infoId="feePaginationInfo_feePage"
             page={page}
             totalPages={totalPages}
             total={total}
-            onPageChange={handlePageChange}
+            onPrev={() => handlePageChange(page - 1)}
+            onNext={() => handlePageChange(page + 1)}
           />
         </CardContent>
       </Card>

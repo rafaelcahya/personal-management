@@ -33,7 +33,7 @@ export default function ProductUsageLog({ log, onUpdate }) {
           className="min-w-full"
           aria-label="Product usage log"
         >
-          <TableHeader>
+          <TableHeader sticky>
             <TableRow>
               <TableHead className="w-8" />
               <TableHead>Start Date</TableHead>

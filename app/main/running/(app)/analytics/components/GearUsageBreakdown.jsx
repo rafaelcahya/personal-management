@@ -64,7 +64,7 @@ export default function GearUsageBreakdown({ gear, error }) {
         className="min-w-full"
         aria-label="Gear usage breakdown"
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead className="px-3 py-3 font-semibold text-slate-500">Gear</TableHead>
             <TableHead className="px-3 py-3 font-semibold text-slate-500" align="right">

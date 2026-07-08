@@ -298,7 +298,7 @@ export default function ProductsTable({
       {/* ── Desktop Table (sm+) ── */}
       <div className="hidden sm:block flex-1">
         <Table id="desktopTable_productListPage" className="min-w-full" aria-label="Products">
-          <TableHeader>
+          <TableHeader sticky>
             <TableRow>
               <TableHead
                 className="w-[35%] cursor-pointer select-none"
@@ -335,7 +335,8 @@ export default function ProductsTable({
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody divider={false}>
+            {' '}
             {products.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="w-[35%]">

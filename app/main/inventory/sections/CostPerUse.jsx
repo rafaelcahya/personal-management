@@ -137,22 +137,24 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
               <ModalDescription>Sorted by highest cost per use</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
+          <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
             {all.length === 0 ? (
               <EmptyState />
             ) : (
               <ProductTable products={modalItems} startIndex={modalStartIndex} />
             )}
           </ModalBody>
-          <ModalFooter className="border-t border-slate-100 p-0 pb-4">
-            <Pagination
-              page={modalPage}
-              totalPages={modalTotalPages}
-              total={all.length}
-              onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
-              onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
-            />
-          </ModalFooter>
+          {modalTotalPages > 1 && (
+            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+              <Pagination
+                page={modalPage}
+                totalPages={modalTotalPages}
+                total={all.length}
+                onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
+                onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
+              />
+            </ModalFooter>
+          )}
         </ModalContent>
       </Modal>
     </>

@@ -16,7 +16,7 @@ export default function LapsTable({ laps }) {
     <div>
       <SectionLabel>Laps</SectionLabel>
       <Table className="min-w-full" aria-label="Laps">
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead className="w-10">#</TableHead>
             <TableHead align="right">Dist</TableHead>

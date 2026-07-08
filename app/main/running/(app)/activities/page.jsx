@@ -404,7 +404,7 @@ function ActivitiesInner() {
             className="min-w-[640px] w-full"
             aria-label="Activities"
           >
-            <TableHeader>
+            <TableHeader sticky>
               <TableRow>
                 <TableHead className="w-[40%]">Activity</TableHead>
                 <TableHead>Date</TableHead>

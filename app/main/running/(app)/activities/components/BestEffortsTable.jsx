@@ -19,7 +19,7 @@ export default function BestEffortsTable({ bestEfforts }) {
     <div>
       <SectionLabel>Best Efforts</SectionLabel>
       <Table className="min-w-full" aria-label="Best efforts">
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead>Distance</TableHead>
             <TableHead align="right">Time</TableHead>
