@@ -1,7 +1,7 @@
 'use client'
 
 import Input from '@/components/base/Input/Input'
-import { Label } from '@/components/ui/label'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 
 export default function TimeInput({ hours, minutes, seconds, onChange, idPrefix }) {
   function handleBlur(field, value) {
@@ -16,7 +16,7 @@ export default function TimeInput({ hours, minutes, seconds, onChange, idPrefix 
 
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="text-sm font-medium">Time</Label>
+      <FieldLabel className="text-sm font-medium">Time</FieldLabel>
       <div className="flex items-center gap-1.5">
         <div className="flex flex-col items-center gap-0.5">
           <Input

@@ -14,7 +14,7 @@ import Card, {
 } from '@/components/base/Card/Card.jsx'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import { Label } from '@/components/ui/label'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { fetchGear, updateGear } from '@/lib/api/running'
 import { updateGearSchema } from '@/schemas/runningGear'
@@ -87,12 +87,12 @@ function GearEditForm({ gear, onSave, onCancel }) {
     >
       {/* Category */}
       <div>
-        <Label
+        <FieldLabel
           htmlFor={`gearCategoryInput-${gear.id}`}
           className="text-xs text-slate-600 mb-1 block"
         >
           Category
-        </Label>
+        </FieldLabel>
         <div className="flex flex-wrap gap-1.5">
           {CATEGORY_OPTIONS.map((cat) => (
             <Button
@@ -122,12 +122,12 @@ function GearEditForm({ gear, onSave, onCancel }) {
 
       {/* Retirement km */}
       <div>
-        <Label
+        <FieldLabel
           htmlFor={`gearRetirementKmInput-${gear.id}`}
           className="text-xs text-slate-600 mb-1 block"
         >
           Retire at (km)
-        </Label>
+        </FieldLabel>
         <Input
           id={`gearRetirementKmInput-${gear.id}`}
           type="number"
