@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Avatar, AvatarImage, AvatarFallback, AvatarStatus, AvatarGroup } from './Avatar'
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/base/Popover/Popover'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
