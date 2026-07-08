@@ -33,12 +33,16 @@ export default function Pagination({
   variant = 'full',
   iconOnly = false,
   id,
+  prevId,
+  nextId,
+  infoId,
   className,
 }) {
   if (totalPages <= 1) return null
 
   const prevBtn = (
     <Button
+      id={prevId}
       variant="ghost"
       size={iconOnly ? 'icon-sm' : 'xs'}
       onClick={onPrev}
@@ -52,13 +56,14 @@ export default function Pagination({
   )
 
   const pageInfo = (
-    <span className="text-xs text-slate-400 text-center" aria-live="polite">
+    <span id={infoId} className="text-xs text-slate-400 text-center" aria-live="polite">
       Page {page} of {totalPages} · {total} records
     </span>
   )
 
   const nextBtn = (
     <Button
+      id={nextId}
       variant="ghost"
       size={iconOnly ? 'icon-sm' : 'xs'}
       onClick={onNext}

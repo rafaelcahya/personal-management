@@ -75,7 +75,7 @@ export default function TransactionTable({ transactions, onDelete, currency }) {
         className="min-w-full"
         aria-label={`${currency} transactions`}
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead>Date</TableHead>
             <TableHead>Type</TableHead>

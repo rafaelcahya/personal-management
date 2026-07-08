@@ -14,12 +14,12 @@ export default function ProductTable({ products, startIndex = 0 }) {
     <>
       {/* Desktop table */}
       <Table
-        wrapperClassName="hidden md:block"
+        wrapperClassName="hidden md:block overflow-clip"
         id="productTable_productListPage"
         className="min-w-full"
         aria-label="Product cost per use"
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead className="w-8" align="center">
               No
@@ -39,7 +39,7 @@ export default function ProductTable({ products, startIndex = 0 }) {
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody divider={false}>
           {products.map((item, index) => (
             <TableRow key={item.id} clickable>
               <TableCell className="text-slate-500 text-xs" align="center">

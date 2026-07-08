@@ -8,8 +8,9 @@ import Button from '@/components/base/Button/Button'
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import { bulkUpdateProductNameStatus } from '@/lib/api/productName'
 import ProductNameUpdate from '../UpdateProductName'
-import { ChevronLeft, ChevronRight, Pencil, SearchX, X } from 'lucide-react'
+import { Pencil, SearchX, X } from 'lucide-react'
 import { toast } from 'sonner'
+import Pagination from '@/components/base/Pagination/Pagination'
 import {
   Table,
   TableHeader,
@@ -168,7 +169,7 @@ export default function ProductNamesTable({
           className="min-w-full"
           aria-label="Product names"
         >
-          <TableHeader>
+          <TableHeader sticky>
             <TableRow>
               <TableHead className="w-[40px]" onClick={(e) => e.stopPropagation()}>
                 <Checkbox
@@ -192,7 +193,7 @@ export default function ProductNamesTable({
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody divider={false}>
             {names.map((productName, index) => (
               <TableRow key={productName.id} clickable onClick={() => setSelectedName(productName)}>
                 <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
@@ -268,39 +269,16 @@ export default function ProductNamesTable({
         </Table>
       </div>
 
-      {/* Pagination footer */}
-      {totalPages > 1 && (
-        <div
-          id="paginationFooter_productNamePage"
-          className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2 text-xs text-slate-500"
-        >
-          <span>
-            Page {page} of {totalPages} · {total} records
-          </span>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="base"
-              id="prevPageBtn_productNamePage"
-              className="h-7 px-2 text-xs"
-              onClick={onPrev}
-              disabled={page <= 1}
-            >
-              <ChevronLeft className="size-3.5" />
-            </Button>
-            <Button
-              variant="outline"
-              size="base"
-              id="nextPageBtn_productNamePage"
-              className="h-7 px-2 text-xs"
-              onClick={onNext}
-              disabled={page >= totalPages}
-            >
-              <ChevronRight className="size-3.5" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        id="paginationFooter_productNamePage"
+        prevId="prevPageBtn_productNamePage"
+        nextId="nextPageBtn_productNamePage"
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        onPrev={onPrev}
+        onNext={onNext}
+      />
 
       <ProductNameUpdate
         productName={selectedName}

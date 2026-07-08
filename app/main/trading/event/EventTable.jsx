@@ -47,7 +47,7 @@ export default function EventTable({ events, onRefresh, selectedIds = new Set(),
 
       {/* Desktop table — lg and above */}
       <Table wrapperClassName="hidden lg:block" className="min-w-full" aria-label="Events">
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             {onToggle && <TableHead className="w-10" />}
             <TableHead>Event</TableHead>
@@ -55,7 +55,7 @@ export default function EventTable({ events, onRefresh, selectedIds = new Set(),
             <TableHead className="w-[140px]">Date</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody divider={false}>
           {events.length === 0 ? (
             <TableRow>
               <TableCell

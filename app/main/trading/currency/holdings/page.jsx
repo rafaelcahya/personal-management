@@ -231,10 +231,11 @@ export default function HoldingsPage() {
         ) : (
           <Table
             id="holdingsTable_holdingsPage"
+            wrapperClassName="overflow-x-auto"
             className="min-w-full"
             aria-label="Currency holdings"
           >
-            <TableHeader>
+            <TableHeader sticky>
               <TableRow>
                 <TableHead>Currency</TableHead>
                 <TableHead className="hidden sm:table-cell" align="right">
@@ -250,7 +251,7 @@ export default function HoldingsPage() {
                 </TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody divider={false}>
               {holdings.map((row) => (
                 <TableRow
                   key={row.currency}

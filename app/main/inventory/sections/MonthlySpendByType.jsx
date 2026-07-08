@@ -168,15 +168,17 @@ export default function MonthlySpendByType({ items, loading }) {
               ))}
             </div>
           </ModalBody>
-          <ModalFooter className="border-t border-slate-100 p-0 pb-4">
-            <Pagination
-              page={modalPage}
-              totalPages={modalTotalPages}
-              total={months.length}
-              onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
-              onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
-            />
-          </ModalFooter>
+          {modalTotalPages > 1 && (
+            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+              <Pagination
+                page={modalPage}
+                totalPages={modalTotalPages}
+                total={months.length}
+                onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
+                onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
+              />
+            </ModalFooter>
+          )}
         </ModalContent>
       </Modal>
     </>

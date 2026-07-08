@@ -11,10 +11,14 @@ export function Table({ children, className, wrapperClassName, ...props }) {
   )
 }
 
-export function TableHeader({ children, className, sticky, ...props }) {
+export function TableHeader({ children, className, sticky, bordered, ...props }) {
   return (
     <thead
-      className={cn(sticky && 'sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e7eb]', className)}
+      className={cn(
+        sticky && 'sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e7eb]',
+        bordered && 'border-b border-gray-200',
+        className
+      )}
       {...props}
     >
       {children}
@@ -22,9 +26,9 @@ export function TableHeader({ children, className, sticky, ...props }) {
   )
 }
 
-export function TableBody({ children, className, ...props }) {
+export function TableBody({ children, className, divider = true, ...props }) {
   return (
-    <tbody className={cn('divide-y divide-gray-100', className)} {...props}>
+    <tbody className={cn(divider && 'divide-y divide-gray-100', className)} {...props}>
       {children}
     </tbody>
   )

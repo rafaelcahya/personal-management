@@ -102,7 +102,7 @@ export default function RacePredictor({ activities }) {
         className="min-w-full"
         aria-label="Race predictor results"
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead>Distance</TableHead>
             <TableHead>Predicted Time</TableHead>

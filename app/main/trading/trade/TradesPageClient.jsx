@@ -10,7 +10,7 @@ import TradesTable from './list/TradesTable'
 import TradeTableSkeleton from './list/component/TradeTableSkeleton'
 import TradeErrorState from './list/component/TradeErrorState'
 import TradeEmptyState from './list/component/TradeEmptyState'
-import TradePagination from './list/component/TradePagination'
+import Pagination from '@/components/base/Pagination/Pagination'
 import AddTrade from './AddTrade'
 import Input from '@/components/base/Input/Input'
 import { Search, X } from 'lucide-react'
@@ -200,7 +200,7 @@ export default function TradesPageClient({
           }
         />
 
-        <CardContent padding="none">
+        <CardContent padding="none" className="pb-4">
           {/* Table area */}
           <div className="px-5 pt-3">
             <TradeMetricStrip summary={summary} />
@@ -222,11 +222,16 @@ export default function TradesPageClient({
                 onRefresh={refresh}
               />
               {showPagination && (
-                <TradePagination
+                <Pagination
+                  id="tradePagination_tradePage"
+                  prevId="tradePaginationPrevBtn_tradePage"
+                  nextId="tradePaginationNextBtn_tradePage"
+                  infoId="tradePaginationInfo_tradePage"
                   page={page}
                   totalPages={totalPages}
                   total={total}
-                  onPageChange={handlePageChange}
+                  onPrev={() => handlePageChange(page - 1)}
+                  onNext={() => handlePageChange(page + 1)}
                 />
               )}
             </>

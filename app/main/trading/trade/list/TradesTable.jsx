@@ -53,7 +53,7 @@ export default function TradesTable({ trades, sortKey, sortDir, onSort, onRefres
         className="min-w-full"
         aria-label="Trades"
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <SortableHead column={sortColumn} label="Date" sortKey="trade_date" />
             <TableHead>Ticker</TableHead>
@@ -64,7 +64,7 @@ export default function TradesTable({ trades, sortKey, sortDir, onSort, onRefres
             <TableHead>Type</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody divider={false}>
           {trades.map((trade) => (
             <TableRow
               key={trade.id}

@@ -335,7 +335,7 @@ export default function RaceLogPage() {
               className="min-w-[700px] w-full"
               aria-label="Race log"
             >
-              <TableHeader>
+              <TableHeader sticky>
                 <TableRow>
                   <TableHead className="w-[32%]">Race</TableHead>
                   <TableHead>Date</TableHead>

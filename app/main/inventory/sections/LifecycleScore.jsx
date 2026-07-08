@@ -114,12 +114,12 @@ function ScoreTable({ items, startIndex = 0 }) {
     <>
       {/* Desktop table */}
       <Table
-        wrapperClassName="hidden md:block"
+        wrapperClassName="hidden md:block overflow-clip"
         id="lifecycleScoreTable_inventoryPage"
         className="min-w-full"
         aria-label="Product lifecycle scores"
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead className="w-8" align="center">
               No
@@ -131,7 +131,7 @@ function ScoreTable({ items, startIndex = 0 }) {
             <TableHead>Score</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody divider={false}>
           {items.map((item, index) => (
             <TableRow key={item.id}>
               <TableCell className="text-slate-500 text-xs" align="center">
@@ -291,18 +291,20 @@ export default function LifecycleScore({ items, loading, error, onRetry }) {
               <ModalDescription>Sorted by highest score</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 0 }} className="overflow-y-auto flex-1">
+          <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
             <ScoreTable items={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
-          <ModalFooter className="border-t border-slate-100 p-0 pb-4">
-            <Pagination
-              page={modalPage}
-              totalPages={modalTotalPages}
-              total={items.length}
-              onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
-              onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
-            />
-          </ModalFooter>
+          {modalTotalPages > 1 && (
+            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+              <Pagination
+                page={modalPage}
+                totalPages={modalTotalPages}
+                total={items.length}
+                onPrev={() => setModalPage((p) => Math.max(1, p - 1))}
+                onNext={() => setModalPage((p) => Math.min(modalTotalPages, p + 1))}
+              />
+            </ModalFooter>
+          )}
         </ModalContent>
       </Modal>
     </>

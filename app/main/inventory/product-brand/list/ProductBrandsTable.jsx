@@ -8,8 +8,9 @@ import Button from '@/components/base/Button/Button'
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import ProductBrandUpdate from '../UpdateProductBrand'
 import { updateProductBrand } from '@/lib/api/productBrand'
-import { ChevronLeft, ChevronRight, Pencil, X } from 'lucide-react'
+import { Pencil, X } from 'lucide-react'
 import { toast } from 'sonner'
+import Pagination from '@/components/base/Pagination/Pagination'
 import {
   Table,
   TableHeader,
@@ -151,7 +152,7 @@ export default function ProductBrandsTable({
             className="min-w-full"
             aria-label="Product brands"
           >
-            <TableHeader>
+            <TableHeader sticky>
               <TableRow>
                 <TableHead className="w-[40px]" onClick={(e) => e.stopPropagation()}>
                   <Checkbox
@@ -175,7 +176,7 @@ export default function ProductBrandsTable({
                 </TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody divider={false}>
               {brands.map((productBrand, index) => (
                 <TableRow
                   key={productBrand.id}
@@ -248,31 +249,13 @@ export default function ProductBrandsTable({
             </TableBody>
           </Table>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">
-              <Button
-                onClick={onPrev}
-                disabled={page <= 1}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
-                aria-label="Previous page"
-              >
-                <ChevronLeft className="size-4" aria-hidden="true" />
-                Prev
-              </Button>
-              <span className="text-xs text-slate-400 text-center" aria-live="polite">
-                Page {page} of {totalPages} · {total} records
-              </span>
-              <Button
-                onClick={onNext}
-                disabled={page >= totalPages}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[44px]"
-                aria-label="Next page"
-              >
-                Next
-                <ChevronRight className="size-4" aria-hidden="true" />
-              </Button>
-            </div>
-          )}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            onPrev={onPrev}
+            onNext={onNext}
+          />
         </div>
       )}
 

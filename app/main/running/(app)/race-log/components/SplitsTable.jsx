@@ -24,7 +24,7 @@ export default function SplitsTable({ splits }) {
     <div>
       <SectionLabel>Splits (per km)</SectionLabel>
       <Table className="min-w-full" aria-label="Splits">
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead className="w-10">#</TableHead>
             <TableHead align="right">Dist</TableHead>
