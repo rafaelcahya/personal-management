@@ -5,10 +5,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/base/DropdownMenu/DropdownMenu'
 import { SlidersHorizontal, Check, Loader2 } from 'lucide-react'
 import { getProductNameSummary } from '@/lib/api/productName'
 import { useEffect, useState } from 'react'
@@ -82,9 +81,9 @@ export default function ProductNameFilterDropdown({
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent className="w-56">
         {/* Filter section */}
-        <DropdownMenuLabel className="flex items-center justify-between">
+        <div className="px-3 py-1.5 text-sm font-semibold flex items-center justify-between">
           <span>Filter by status</span>
           {hasActiveFilter && (
             <Button
@@ -100,13 +99,13 @@ export default function ProductNameFilterDropdown({
               Clear
             </Button>
           )}
-        </DropdownMenuLabel>
+        </div>
         <DropdownMenuSeparator />
         {FILTER_OPTIONS.map((option) => (
           <DropdownMenuItem
             key={option.value ?? 'all'}
             id={`filterOption_${option.value ?? 'all'}_productNamePage`}
-            onClick={() => onFilterChange(option.value)}
+            onSelect={() => onFilterChange(option.value)}
             className="flex items-center justify-between cursor-pointer hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
           >
             <span className="flex items-center gap-2">
@@ -121,7 +120,7 @@ export default function ProductNameFilterDropdown({
 
         {/* Sort section */}
         <DropdownMenuSeparator />
-        <DropdownMenuLabel className="flex items-center justify-between">
+        <div className="px-3 py-1.5 text-sm font-semibold flex items-center justify-between">
           <span>Sort by</span>
           {hasNonDefaultSort && (
             <Button
@@ -137,13 +136,13 @@ export default function ProductNameFilterDropdown({
               Reset
             </Button>
           )}
-        </DropdownMenuLabel>
+        </div>
         <DropdownMenuSeparator />
         {SORT_OPTIONS.map((option) => (
           <DropdownMenuItem
             key={option.value}
             id={`sortOption_${option.value}_productNamePage`}
-            onClick={() => onSortChange?.(option.value)}
+            onSelect={() => onSortChange?.(option.value)}
             className="flex items-center justify-between cursor-pointer hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
           >
             <span>{option.label}</span>

@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/base/DropdownMenu/DropdownMenu'
 import { Badge } from '@/components/base/Badge/Badge'
 import Button from '@/components/base/Button/Button'
 import {
@@ -84,24 +84,24 @@ function ActionMenu({
           <MoreHorizontalIcon />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent>
         <DropdownMenuItem
           id="editAction_productListPage"
-          onClick={() => onEdit(product)}
+          onSelect={() => onEdit(product)}
           className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
         >
           <Pencil className="h-4 w-4 mr-2" />
           Edit Product
         </DropdownMenuItem>
         <DropdownMenuItem
-          onSelect={(e) => e.preventDefault()}
+          asDiv
           className="p-0 hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
         >
           <AddStockForm product={product} onAdded={onRefresh} />
         </DropdownMenuItem>
         <DropdownMenuItem
           id="recordUsageAction_productListPage"
-          onClick={() => onRecordUsage(product)}
+          onSelect={() => onRecordUsage(product)}
           className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
         >
           <FilePenLine className="h-4 w-4 mr-2" />
@@ -109,7 +109,7 @@ function ActionMenu({
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => onToggleFavorite(product)}
+          onSelect={() => onToggleFavorite(product)}
           disabled={loadingFavorite === product.id}
           className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
         >
@@ -123,7 +123,7 @@ function ActionMenu({
         {!product.deleted_at && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="p-0">
+            <DropdownMenuItem asDiv className="p-0">
               <DeleteProductDialog product={product} onDeleted={onRefresh} />
             </DropdownMenuItem>
           </>

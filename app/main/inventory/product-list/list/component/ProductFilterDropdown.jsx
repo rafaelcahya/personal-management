@@ -5,10 +5,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/base/DropdownMenu/DropdownMenu'
 import { Filter, Check, Loader2 } from 'lucide-react'
 
 const FILTER_OPTIONS = [
@@ -67,8 +66,8 @@ export default function ProductFilterDropdown({ filter, onFilterChange, summary,
           <span>{currentFilterLabel}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
-        <DropdownMenuLabel className="flex items-center justify-between">
+      <DropdownMenuContent className="w-64">
+        <div className="px-3 py-1.5 text-sm font-semibold flex items-center justify-between">
           <span>Filter Products</span>
           {filter && (
             <Button
@@ -83,10 +82,10 @@ export default function ProductFilterDropdown({ filter, onFilterChange, summary,
               Clear
             </Button>
           )}
-        </DropdownMenuLabel>
+        </div>
         {/* General */}
         <DropdownMenuItem
-          onClick={() => onFilterChange(null)}
+          onSelect={() => onFilterChange(null)}
           className="flex items-center justify-between cursor-pointer hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
         >
           <span className="flex items-center gap-2">
@@ -99,13 +98,13 @@ export default function ProductFilterDropdown({ filter, onFilterChange, summary,
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
-        <DropdownMenuLabel className="text-xs text-muted-foreground">Status</DropdownMenuLabel>
+        <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground">Status</div>
 
         {/* Status Group */}
         {FILTER_OPTIONS.filter((opt) => opt.group === 'status').map((option) => (
           <DropdownMenuItem
             key={option.value}
-            onClick={() => onFilterChange(option.value)}
+            onSelect={() => onFilterChange(option.value)}
             className="flex items-center justify-between cursor-pointer hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
           >
             <span className="flex items-center gap-2">
@@ -119,13 +118,13 @@ export default function ProductFilterDropdown({ filter, onFilterChange, summary,
         ))}
 
         <DropdownMenuSeparator />
-        <DropdownMenuLabel className="text-xs text-muted-foreground">Inventory</DropdownMenuLabel>
+        <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground">Inventory</div>
 
         {/* Inventory Group */}
         {FILTER_OPTIONS.filter((opt) => opt.group === 'inventory').map((option) => (
           <DropdownMenuItem
             key={option.value}
-            onClick={() => onFilterChange(option.value)}
+            onSelect={() => onFilterChange(option.value)}
             className="flex items-center justify-between cursor-pointer hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
           >
             <span className="flex items-center gap-2">
@@ -139,13 +138,13 @@ export default function ProductFilterDropdown({ filter, onFilterChange, summary,
         ))}
 
         <DropdownMenuSeparator />
-        <DropdownMenuLabel className="text-xs text-muted-foreground">Usage</DropdownMenuLabel>
+        <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground">Usage</div>
 
         {/* Usage Group */}
         {FILTER_OPTIONS.filter((opt) => opt.group === 'usage').map((option) => (
           <DropdownMenuItem
             key={option.value}
-            onClick={() => onFilterChange(option.value)}
+            onSelect={() => onFilterChange(option.value)}
             className="flex items-center justify-between cursor-pointer hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
           >
             <span className="flex items-center gap-2">
