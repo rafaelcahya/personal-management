@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Sparkles, Loader2, Clock, History } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/base/Sheet/Sheet'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { ScrollArea } from '@/components/base/ScrollArea/ScrollArea'
 import {
   Accordion,
   AccordionItem,
