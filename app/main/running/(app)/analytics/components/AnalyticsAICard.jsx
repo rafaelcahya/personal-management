@@ -512,7 +512,7 @@ function HistoryItem({ insight }) {
   return (
     <Accordion type="single" collapsible>
       <AccordionItem value="history" className="border border-slate-200 rounded-lg !border-b">
-        <AccordionTrigger className="items-center hover:no-underline hover:bg-slate-50 rounded-lg data-[state=open]:rounded-b-none focus-visible:ring-violet-200 focus-visible:ring-inset">
+        <AccordionTrigger className="items-center hover:no-underline hover:bg-slate-50 rounded-lg data-[state=open]:rounded-b-none focus-visible:ring-violet-200 focus-visible:ring-inset px-4">
           <p className="text-xs text-slate-500 truncate">
             {new Date(insight.created_at).toLocaleString('en-US', {
               day: 'numeric',
