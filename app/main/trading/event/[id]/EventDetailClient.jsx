@@ -21,7 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/base/DropdownMenu/DropdownMenu'
 import { fetchEventDetail, fetchEventAnalysis } from '@/lib/api/event'
 import PageHeader from '../../../components/PageHeader'
 import ImpactBadge from '../component/ImpactBadge'
@@ -238,9 +238,9 @@ export default function EventDetailClient({ id }) {
                     <MoreHorizontal className="size-4 text-slate-500" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent>
                   <DropdownMenuItem
-                    onClick={() => setEditOpen(true)}
+                    onSelect={() => setEditOpen(true)}
                     className="cursor-pointer gap-2"
                   >
                     <FilePenLine className="size-4" />
@@ -248,7 +248,7 @@ export default function EventDetailClient({ id }) {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={() => setDeleteOpen(true)}
+                    onSelect={() => setDeleteOpen(true)}
                     className="cursor-pointer gap-2 text-red-600 focus:text-red-600 focus:bg-red-50"
                   >
                     <Trash2 className="size-4" />

@@ -13,7 +13,11 @@ import {
 } from 'recharts'
 import Button from '@/components/base/Button/Button'
 import { fetchPmcSeries } from '@/lib/api/running'
-import EmptyState from './EmptyState'
+import {
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 
 const RANGE_OPTIONS = [30, 60, 90]
 
@@ -112,10 +116,14 @@ export default function PerformanceManagementChart() {
       )}
 
       {!loading && !error && !data?.meets_min_history && (
-        <EmptyState
-          message="Not enough training history to show the chart (need 7+ days)"
-          details="Log activities consistently for at least a week to see your Fitness/Fatigue/Form trend."
-        />
+        <EmptyState size="sm">
+          <EmptyStateTitle>
+            Not enough training history to show the chart (need 7+ days)
+          </EmptyStateTitle>
+          <EmptyStateDescription>
+            Log activities consistently for at least a week to see your Fitness/Fatigue/Form trend.
+          </EmptyStateDescription>
+        </EmptyState>
       )}
 
       {!loading && !error && data?.meets_min_history && (

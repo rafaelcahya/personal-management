@@ -22,6 +22,7 @@ import Card, {
 } from '@/components/base/Card/Card.jsx'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { TrendingUp } from 'lucide-react'
+import { EmptyState, EmptyStateTitle } from '@/components/base/EmptyState/EmptyState'
 import { fetchPerformanceTrends } from '@/lib/api/running'
 
 // ─── distance bracket classification ─────────────────────────────────────────
@@ -112,7 +113,11 @@ function HrChart({ data }) {
     }))
 
   if (chartData.length === 0) {
-    return <EmptyState message="No heart rate data in the last 25 activities" />
+    return (
+      <EmptyState size="xs" className="h-[220px]">
+        <EmptyStateTitle>No heart rate data in the last 25 activities</EmptyStateTitle>
+      </EmptyState>
+    )
   }
 
   const hrMin = Math.max(0, Math.min(...chartData.map((d) => d['Avg HR'])) - 10)
@@ -189,7 +194,11 @@ function HrChart({ data }) {
 
 function SinglePaceChart({ bracket, runs }) {
   if (!bracket || runs.length === 0) {
-    return <EmptyState message="No pace data for this distance" />
+    return (
+      <EmptyState size="xs" className="h-[220px]">
+        <EmptyStateTitle>No pace data for this distance</EmptyStateTitle>
+      </EmptyState>
+    )
   }
 
   const chartData = runs.map((r) => ({ date: r.dateLabel, pace: r.pace }))
@@ -420,7 +429,11 @@ function PaceChart({ data }) {
   const [selected, setSelected] = useState(() => new Set(defaultKey ? [defaultKey] : []))
 
   if (activeBrackets.length === 0) {
-    return <EmptyState message="Not enough pace data across distance categories" />
+    return (
+      <EmptyState size="xs" className="h-[220px]">
+        <EmptyStateTitle>Not enough pace data across distance categories</EmptyStateTitle>
+      </EmptyState>
+    )
   }
 
   function toggleBracket(key) {
@@ -500,7 +513,11 @@ function EffortChart({ data }) {
 
   if (chartData.length === 0) {
     return (
-      <EmptyState message="No effort data (Strava Relative Effort) in the last 25 activities" />
+      <EmptyState size="xs" className="h-[220px]">
+        <EmptyStateTitle>
+          No effort data (Strava Relative Effort) in the last 25 activities
+        </EmptyStateTitle>
+      </EmptyState>
     )
   }
 
@@ -593,7 +610,11 @@ function PowerChart({ data }) {
 
   if (chartData.length === 0) {
     return (
-      <EmptyState message="No power data yet — requires a Garmin or compatible device with running power" />
+      <EmptyState size="xs" className="h-[220px]">
+        <EmptyStateTitle>
+          No power data yet — requires a Garmin or compatible device with running power
+        </EmptyStateTitle>
+      </EmptyState>
     )
   }
 
@@ -643,16 +664,6 @@ function PowerChart({ data }) {
         />
       </LineChart>
     </ResponsiveContainer>
-  )
-}
-
-// ─── empty state ──────────────────────────────────────────────────────────────
-
-function EmptyState({ message }) {
-  return (
-    <div className="flex items-center justify-center h-[220px] text-sm text-slate-400">
-      {message}
-    </div>
   )
 }
 

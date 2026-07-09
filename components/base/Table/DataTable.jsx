@@ -121,6 +121,7 @@ export function DataTable({
   onSortChange,
   selectedRows: selectedRowsProp,
   onSelectionChange,
+  onRowClick,
   className,
 }) {
   const isControlledSort = sortProp !== undefined
@@ -328,8 +329,14 @@ export function DataTable({
                   <Fragment key={id}>
                     <TableRow
                       selected={isSelected}
-                      clickable={expandable}
-                      onClick={expandable ? () => handleExpandRow(id) : undefined}
+                      clickable={expandable || !!onRowClick}
+                      onClick={
+                        expandable
+                          ? () => handleExpandRow(id)
+                          : onRowClick
+                            ? () => onRowClick(row)
+                            : undefined
+                      }
                     >
                       {selectable && (
                         <TableCell onClick={(e) => e.stopPropagation()}>

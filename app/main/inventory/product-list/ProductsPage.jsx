@@ -15,6 +15,13 @@ import Button from '@/components/base/Button/Button'
 import { Search, X, AlertCircle, Package } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
 import Card, { CardAction, CardContent } from '@/components/base/Card/Card'
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+} from '@/components/base/EmptyState/EmptyState'
 
 export default function ProductsPageClient() {
   const searchParams = useSearchParams()
@@ -187,60 +194,52 @@ export default function ProductsPageClient() {
               ))}
             </div>
           ) : error ? (
-            <div
+            <EmptyState
               id="errorState_productListPage"
-              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
+              variant="error"
               role="alert"
               aria-live="assertive"
             >
-              <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-700">Failed to load products</p>
-                <p className="text-xs text-slate-500">Check your connection and try again</p>
-              </div>
-              <Button
-                variant="outline"
-                size="base"
-                onClick={() => fetchProducts()}
-                className="min-w-11"
-              >
-                Try again
-              </Button>
-            </div>
+              <EmptyStateIcon icon={AlertCircle} />
+              <EmptyStateTitle>Failed to load products</EmptyStateTitle>
+              <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
+              <EmptyStateActions>
+                <Button
+                  variant="outline"
+                  size="base"
+                  onClick={() => fetchProducts()}
+                  className="min-w-11"
+                >
+                  Try again
+                </Button>
+              </EmptyStateActions>
+            </EmptyState>
           ) : products.length === 0 && !isSearching ? (
-            <div
-              id="emptyState_productListPage"
-              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-            >
-              <Package className="size-10 text-slate-300" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-700">No products yet</p>
-                <p className="text-xs text-slate-500">Start by adding your first product</p>
-              </div>
-            </div>
+            <EmptyState id="emptyState_productListPage">
+              <EmptyStateIcon icon={Package} />
+              <EmptyStateTitle>No products yet</EmptyStateTitle>
+              <EmptyStateDescription>Start by adding your first product</EmptyStateDescription>
+            </EmptyState>
           ) : products.length === 0 && isSearching ? (
-            <div
-              id="searchEmptyState_productListPage"
-              className="flex flex-col items-center justify-center py-16 gap-4 text-center"
-            >
-              <Package className="size-10 text-slate-300" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-700">No products match your search</p>
-                {debouncedSearch && (
-                  <p className="text-xs text-slate-500">
-                    Search: <span className="font-medium">"{debouncedSearch}"</span>
-                  </p>
-                )}
-              </div>
-              <Button
-                variant="outline"
-                size="base"
-                onClick={handleClearSearch}
-                className="min-w-11"
-              >
-                Clear search
-              </Button>
-            </div>
+            <EmptyState id="searchEmptyState_productListPage" variant="search">
+              <EmptyStateIcon icon={Package} />
+              <EmptyStateTitle>No products match your search</EmptyStateTitle>
+              {debouncedSearch && (
+                <EmptyStateDescription>
+                  Search: <span className="font-medium">&ldquo;{debouncedSearch}&rdquo;</span>
+                </EmptyStateDescription>
+              )}
+              <EmptyStateActions>
+                <Button
+                  variant="outline"
+                  size="base"
+                  onClick={handleClearSearch}
+                  className="min-w-11"
+                >
+                  Clear search
+                </Button>
+              </EmptyStateActions>
+            </EmptyState>
           ) : (
             <ProductsTable
               products={products}

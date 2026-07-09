@@ -15,7 +15,7 @@ import {
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import { Label } from '@/components/ui/label'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 import Textarea from '@/components/base/Textarea/Textarea'
 import {
   Select,
@@ -114,12 +114,12 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
         <ModalBody className="flex-1 overflow-y-auto">
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 py-1">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="goalTitle">Race title</Label>
+              <FieldLabel htmlFor="goalTitle">Race title</FieldLabel>
               <Input id="goalTitle" placeholder="e.g. Bali Marathon 2026" {...register('title')} />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label>Target distance</Label>
+              <FieldLabel>Target distance</FieldLabel>
               <Controller
                 name="target_distance_m"
                 control={control}
@@ -179,7 +179,7 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="goalDate">Target date</Label>
+              <FieldLabel htmlFor="goalDate">Target date</FieldLabel>
               <Input id="goalDate" type="date" {...register('target_date')} />
               {errors.target_date && (
                 <p className="text-xs text-red-600" role="alert">
@@ -189,7 +189,7 @@ export default function EditGoalModal({ open, goal, onClose, onSaved }) {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="goalDescription">Notes / description</Label>
+              <FieldLabel htmlFor="goalDescription">Notes / description</FieldLabel>
               <Textarea
                 id="goalDescription"
                 placeholder="Training goals, race context…"

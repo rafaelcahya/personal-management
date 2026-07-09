@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/base/DropdownMenu/DropdownMenu'
 import {
   Modal,
   ModalContent,
@@ -75,7 +75,7 @@ export default function TransactionTable({ transactions, onDelete, currency }) {
         className="min-w-full"
         aria-label={`${currency} transactions`}
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead>Date</TableHead>
             <TableHead>Type</TableHead>
@@ -125,10 +125,10 @@ export default function TransactionTable({ transactions, onDelete, currency }) {
                       <MoreHorizontal className="size-4 text-slate-400" aria-hidden="true" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                  <DropdownMenuContent>
                     <DropdownMenuItem
                       className="text-red-600 focus:text-red-600 focus:bg-red-50 gap-2"
-                      onClick={() => {
+                      onSelect={() => {
                         setDeleteTarget(tx)
                         setDialogOpen(true)
                       }}

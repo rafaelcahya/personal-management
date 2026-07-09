@@ -8,20 +8,19 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/base/DropdownMenu/DropdownMenu'
 import { Badge } from '@/components/base/Badge/Badge'
 import Button from '@/components/base/Button/Button'
 import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
   FilePenLine,
   MoreHorizontalIcon,
   Pencil,
   StarIcon,
 } from 'lucide-react'
+import Pagination from '@/components/base/Pagination/Pagination'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { favoriteProduct } from '@/lib/api/product'
@@ -85,24 +84,24 @@ function ActionMenu({
           <MoreHorizontalIcon />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent>
         <DropdownMenuItem
           id="editAction_productListPage"
-          onClick={() => onEdit(product)}
+          onSelect={() => onEdit(product)}
           className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
         >
           <Pencil className="h-4 w-4 mr-2" />
           Edit Product
         </DropdownMenuItem>
         <DropdownMenuItem
-          onSelect={(e) => e.preventDefault()}
+          asDiv
           className="p-0 hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
         >
           <AddStockForm product={product} onAdded={onRefresh} />
         </DropdownMenuItem>
         <DropdownMenuItem
           id="recordUsageAction_productListPage"
-          onClick={() => onRecordUsage(product)}
+          onSelect={() => onRecordUsage(product)}
           className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
         >
           <FilePenLine className="h-4 w-4 mr-2" />
@@ -110,7 +109,7 @@ function ActionMenu({
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => onToggleFavorite(product)}
+          onSelect={() => onToggleFavorite(product)}
           disabled={loadingFavorite === product.id}
           className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
         >
@@ -124,7 +123,7 @@ function ActionMenu({
         {!product.deleted_at && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="p-0">
+            <DropdownMenuItem asDiv className="p-0">
               <DeleteProductDialog product={product} onDeleted={onRefresh} />
             </DropdownMenuItem>
           </>
@@ -299,7 +298,7 @@ export default function ProductsTable({
       {/* ── Desktop Table (sm+) ── */}
       <div className="hidden sm:block flex-1">
         <Table id="desktopTable_productListPage" className="min-w-full" aria-label="Products">
-          <TableHeader>
+          <TableHeader sticky>
             <TableRow>
               <TableHead
                 className="w-[35%] cursor-pointer select-none"
@@ -336,7 +335,8 @@ export default function ProductsTable({
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody divider={false}>
+            {' '}
             {products.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="w-[35%]">
@@ -420,39 +420,17 @@ export default function ProductsTable({
             ))}
           </TableBody>
         </Table>
-
-        {totalPages > 1 && (
-          <div
-            id="paginationFooter_productListPage"
-            className="flex items-center justify-between px-5 pt-2 mt-2"
-            aria-label="Pagination"
-          >
-            <Button
-              variant="ghost"
-              onClick={onPrev}
-              disabled={page <= 1}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="size-4" aria-hidden="true" />
-              Prev
-            </Button>
-            <span className="text-xs text-slate-400 text-center" aria-live="polite">
-              Page {page} of {totalPages} · {total} records
-            </span>
-            <Button
-              variant="ghost"
-              onClick={onNext}
-              disabled={page >= totalPages}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
-              aria-label="Next page"
-            >
-              Next
-              <ChevronRight className="size-4" aria-hidden="true" />
-            </Button>
-          </div>
-        )}
       </div>
+
+      <Pagination
+        id="paginationFooter_productListPage"
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        onPrev={onPrev}
+        onNext={onNext}
+        className="pb-4"
+      />
 
       {selectedProduct && (
         <StockAdjustment

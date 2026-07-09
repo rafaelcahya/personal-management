@@ -43,7 +43,7 @@ export default function RaceProjectionTable({ refTimeSec, refDistM, unit }) {
         Estimated via Riegel formula — accuracy decreases for distances far from your reference.
       </p>
       <Table className="min-w-full" aria-label="Race time projections">
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead>Race</TableHead>
             <TableHead>Finish Time</TableHead>

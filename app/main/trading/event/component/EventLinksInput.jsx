@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import { Label } from '@/components/ui/label'
+import FieldLabel from '@/components/base/Field/FieldLabel'
 import { PlusIcon, Trash2, LinkIcon } from 'lucide-react'
 import Card from '@/components/base/Card/Card'
 
@@ -49,10 +49,10 @@ export default function EventLinksInput({ value = [], onChange, error }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <Label className="font-medium text-sm">
+      <FieldLabel className="font-medium text-sm">
         Reference Links
         <span className="text-rose-500 ml-1">*</span>
-      </Label>
+      </FieldLabel>
 
       {/* Existing links list */}
       {value.length > 0 && (

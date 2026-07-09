@@ -9,17 +9,17 @@ import {
   TableCell,
 } from '@/components/base/Table/Table.jsx'
 
-export default function ProductTable({ products }) {
+export default function ProductTable({ products, startIndex = 0 }) {
   return (
     <>
       {/* Desktop table */}
       <Table
-        wrapperClassName="hidden md:block"
+        wrapperClassName="hidden md:block overflow-clip"
         id="productTable_productListPage"
         className="min-w-full"
         aria-label="Product cost per use"
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead className="w-8" align="center">
               No
@@ -39,11 +39,11 @@ export default function ProductTable({ products }) {
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody divider={false}>
           {products.map((item, index) => (
             <TableRow key={item.id} clickable>
               <TableCell className="text-slate-500 text-xs" align="center">
-                {index + 1}
+                {startIndex + index + 1}
               </TableCell>
               <TableCell>
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
@@ -93,7 +93,7 @@ export default function ProductTable({ products }) {
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-xs text-slate-400">#{index + 1}</span>
+                <span className="text-xs text-slate-400">#{startIndex + index + 1}</span>
                 <StatusBadge status={item.product_status} />
               </div>
             </div>

@@ -8,10 +8,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/base/DropdownMenu/DropdownMenu'
 import { toast } from 'sonner'
 
 export function UserMenu({ user }) {
@@ -65,16 +64,16 @@ export function UserMenu({ user }) {
           <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="font-normal py-2">
+      <DropdownMenuContent className="w-56">
+        <div className="px-3 py-2 text-sm font-normal">
           <p id="userMenuEmail_landingPage" className="text-xs text-muted-foreground truncate">
             {user?.email}
           </p>
-        </DropdownMenuLabel>
+        </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           id="userMenuSignOut_landingPage"
-          onClick={handleLogout}
+          onSelect={handleLogout}
           disabled={loading}
           className="text-red-500 focus:text-red-500 focus:bg-red-50 cursor-pointer gap-2 hover:outline-none"
         >

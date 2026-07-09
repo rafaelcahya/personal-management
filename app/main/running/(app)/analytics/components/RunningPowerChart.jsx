@@ -11,7 +11,11 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { RUN_TYPES } from './utils'
-import EmptyState from './EmptyState'
+import {
+  EmptyState,
+  EmptyStateTitle,
+  EmptyStateDescription,
+} from '@/components/base/EmptyState/EmptyState'
 import Button from '@/components/base/Button/Button'
 
 const RANGE_OPTIONS = [30, 60, 90]
@@ -26,10 +30,12 @@ export default function RunningPowerChart({ activities }) {
 
   if (pts.length === 0) {
     return (
-      <EmptyState
-        message="No running power data yet"
-        details="Power data requires a compatible device (e.g. Garmin running power) synced via Strava."
-      />
+      <EmptyState size="sm">
+        <EmptyStateTitle>No running power data yet</EmptyStateTitle>
+        <EmptyStateDescription>
+          Power data requires a compatible device (e.g. Garmin running power) synced via Strava.
+        </EmptyStateDescription>
+      </EmptyState>
     )
   }
 

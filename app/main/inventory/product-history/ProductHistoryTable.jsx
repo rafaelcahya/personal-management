@@ -1,10 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { SearchX, ChevronLeft, ChevronRight } from 'lucide-react'
+import { SearchX } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { Badge } from '@/components/base/Badge/Badge'
 import { cn } from '@/lib/utils'
+import Pagination from '@/components/base/Pagination/Pagination'
 import {
   Table,
   TableHeader,
@@ -74,7 +75,7 @@ export default function ProductHistoryTable({
         className="min-w-full"
         aria-label="Product history"
       >
-        <TableHeader>
+        <TableHeader sticky>
           <TableRow>
             <TableHead className="w-[30px]" align="center">
               #
@@ -89,7 +90,7 @@ export default function ProductHistoryTable({
             <TableHead>Note</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody divider={false}>
           {histories.map((history, index) => (
             <TableRow key={history.id} clickable>
               <TableCell className="font-mono text-slate-700 w-[30px]" align="center">
@@ -144,33 +145,13 @@ export default function ProductHistoryTable({
         </TableBody>
       </Table>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-2 mt-2" aria-label="Pagination">
-          <Button
-            variant="ghost"
-            onClick={onPrev}
-            disabled={page <= 1}
-            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
-            aria-label="Previous page"
-          >
-            <ChevronLeft className="size-4" aria-hidden="true" />
-            Prev
-          </Button>
-          <span className="text-xs text-slate-400 text-center" aria-live="polite">
-            Page {page} of {totalPages} · {total} records
-          </span>
-          <Button
-            variant="ghost"
-            onClick={onNext}
-            disabled={page >= totalPages}
-            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-600 hover:text-violet-600 min-h-[44px]"
-            aria-label="Next page"
-          >
-            Next
-            <ChevronRight className="size-4" aria-hidden="true" />
-          </Button>
-        </div>
-      )}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        onPrev={onPrev}
+        onNext={onNext}
+      />
     </div>
   )
 }
