@@ -260,6 +260,23 @@ export const Docs = {
   <TabsContent value="trades" className="pl-6"><p>Trades</p></TabsContent>
 </Tabs>`}</Code>
         </SubSection>
+
+        <SubSection title="Sizes">
+          <Code>{`{/* xs */}
+<TabsList variant="underline" size="xs">...</TabsList>
+
+{/* sm */}
+<TabsList variant="underline" size="sm">...</TabsList>
+
+{/* md (default) */}
+<TabsList variant="underline" size="md">...</TabsList>
+
+{/* lg */}
+<TabsList variant="underline" size="lg">...</TabsList>
+
+{/* xl */}
+<TabsList variant="underline" size="xl">...</TabsList>`}</Code>
+        </SubSection>
       </Section>
 
       {/* Keyboard navigation */}
@@ -305,130 +322,109 @@ export const Docs = {
         </div>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Tabs when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use for 2–5 peer-level content views on the same page',
+                  body: "Overview, Trades, Settings — tabs work when each panel is at the same hierarchy level and only one is relevant at a time. If the views aren't peers, consider a different pattern.",
+                },
+                {
+                  title: 'Use for compact in-page toggles without a full page reload',
+                  body: 'Chart views, filter presets, data breakdowns — anywhere a user needs to switch context quickly without navigating away from the current page.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: 'Use Sidebar / NavMenu when switching between distinct routes or pages',
+                  body: 'Tabs are for in-page content only. If each tab would normally have its own URL, use proper navigation — tabs are not a substitute for routing.',
+                },
+                {
+                  title: 'Use Accordion when sections can be open simultaneously or are optional',
+                  body: 'Accordion lets users read multiple sections at once. Tabs force one active panel at a time — wrong for content users need to compare side by side.',
+                },
+                {
+                  title: 'Use a dropdown when there are more than 5–6 options or space is limited',
+                  body: 'A tab strip with 6+ items either wraps or overflows on small screens. A select dropdown scales to any number of options without layout issues.',
+                },
+                {
+                  title: "Don't use tabs for sequential workflows",
+                  body: 'A stepper communicates progression and prevents skipping steps. Tabs imply all panels are equally accessible at any time — wrong when step order matters.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Tabs follow the WAI-ARIA tabs pattern — keyboard navigation is built in',
+                  body: '← → (horizontal) or ↑ ↓ (vertical) move focus between tabs. Disabled tabs are skipped. Tab key moves focus to the active panel. No manual ARIA attributes needed.',
+                },
+                {
+                  title: 'Keep labels short and grammatically parallel',
+                  body: 'Use 1–2 word nouns: "Overview", "Trades", "Settings". Avoid verbs or inconsistent lengths. Parallel grammar makes the tab list scannable and screen-reader-friendly.',
+                },
+                {
+                  title: 'Keep tab count between 2 and 5',
+                  body: 'Fewer than 2 tabs is a plain section — no navigation needed. More than 5 creates scanning overhead for sighted and keyboard users alike.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Set defaultValue to the most important panel, not the first in the list',
+                  body: "The first panel sets the user's mental model of the feature. Default to the highest-value or most-used panel. Non-default tabs are frequently missed on first visit.",
+                },
+                {
+                  title: 'Match variant to context',
+                  body: 'Use underline for primary page-level navigation (detail page, settings). Use pill inside cards, sidebars, or any surface with a background — pill reads better against contained backgrounds.',
+                },
+                {
+                  title: 'Match size to density',
+                  body: 'Use sm inside dense panels or compact containers. Use md (default) for most contexts. Use lg only for prominent top-level navigation where the tab strip needs visual weight.',
+                },
+                {
+                  title: 'Apply icons consistently — all or none',
+                  body: 'If one tab has an icon, every tab in the same list should have one. Mixed icon/no-icon triggers create uneven spacing and draw unintended attention to icon-less items.',
+                },
+                {
+                  title: "Don't nest Tabs inside another Tabs without clear scope separation",
+                  body: 'Nested tabs create orientation confusion and make keyboard navigation hard to follow. Only nest when the two levels have visually and semantically distinct scopes.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      You have 2–5 peer-level content views on the same page (e.g. Overview, Trades,
-                      Settings)
-                    </li>
-                    <li>Content panels are mutually exclusive — only one is relevant at a time</li>
-                    <li>
-                      You need keyboard-navigable in-page section switching without a full page
-                      reload
-                    </li>
-                    <li>
-                      You want a compact toggle between chart views, filter presets, or data
-                      breakdowns
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Sidebar / NavMenu</strong> when switching between distinct routes
-                      or full pages — tabs are for in-page content only
-                    </li>
-                    <li>
-                      Use <strong>Accordion</strong> when sections are optional, collapsible, or
-                      need to be open simultaneously
-                    </li>
-                    <li>
-                      Use a <strong>dropdown select</strong> when there are more than 5–6 options
-                      and horizontal space is limited
-                    </li>
-                    <li>
-                      Use a <strong>stepper</strong> when the sections represent sequential steps
-                      with a defined order
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Keep tab labels short and scannable — 1 to 2 words (e.g. "Overview", "Trades") so
-                  users can read the full tab list at a glance without scrolling.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use the <strong>underline</strong> variant for primary page-level sections and the{' '}
-                  <strong>pill</strong> variant for compact or nested contexts such as a card or
-                  sidebar panel.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Ensure every tab contains meaningful, distinct content — each panel should justify
-                  its own existence and not duplicate information shown in another tab.
-                </p>
               </div>
             </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't hide critical or primary-action content behind a non-default tab. Users
-                  often miss content that isn't visible on first load — keep the most important
-                  information in the default panel.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use tabs for sequential workflows where step order matters. A stepper
-                  communicates progression and prevents skipping steps; tabs imply all panels are
-                  equally accessible at any time.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't nest Tabs inside another Tabs component unless the two levels have clearly
-                  different scopes. Nested tabs create orientation confusion and make keyboard
-                  navigation hard to follow.
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </Section>
 
@@ -519,6 +515,12 @@ export const Docs = {
                     "'underline' | 'pill'",
                     "'underline'",
                     'Visual style. underline: animated line indicator. pill: white rounded background on active tab.',
+                  ],
+                  [
+                    'size',
+                    "'xs' | 'sm' | 'md' | 'lg' | 'xl'",
+                    "'md'",
+                    'Controls the padding and font size of all triggers in this list.',
                   ],
                 ].map(([prop, type, def, desc]) => (
                   <tr key={prop} className="even:bg-gray-50">

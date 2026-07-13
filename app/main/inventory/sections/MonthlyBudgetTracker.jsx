@@ -182,7 +182,7 @@ export default function MonthlyBudgetTracker({ monthlySpendByType, loading }) {
           </CardDescription>
         </CardHeaderContent>
       </CardHeader>
-      <CardContent padding="none">
+      <CardContent className="p-0">
         {isLoading ? (
           <div className="space-y-4 px-4 py-3">
             {[...Array(4)].map((_, i) => (

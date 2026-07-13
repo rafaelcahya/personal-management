@@ -8,6 +8,40 @@ import Button from '@/components/base/Button/Button'
 const meta = { title: 'Popover/With Filter' }
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
+const Code = ({ children }) => (
+  <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
+    <code>{children}</code>
+  </pre>
+)
+
 const TYPES = ['Buy', 'Sell']
 const SECTORS = ['Financials', 'Telecom', 'Consumer']
 
@@ -180,7 +214,11 @@ function FilterDemo() {
                   <td className="px-4 py-2.5 text-xs text-gray-700">{row.name}</td>
                   <td className="px-4 py-2.5 text-xs">
                     <span
-                      className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${row.type === 'Buy' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`}
+                      className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                        row.type === 'Buy'
+                          ? 'bg-emerald-50 text-emerald-700'
+                          : 'bg-red-50 text-red-600'
+                      }`}
                     >
                       {row.type}
                     </span>
@@ -199,20 +237,68 @@ function FilterDemo() {
 export const WithFilter = {
   name: 'With Filter',
   render: () => (
-    <div className="flex flex-col gap-6 w-full max-w-2xl min-h-72">
-      <p className="text-sm text-gray-500 leading-relaxed">
-        A filter panel inside a Popover. Draft state is applied only on "Apply" — discarded on
-        cancel or close. The trigger badge shows how many filters are active.
+    <div className="flex flex-col gap-6 w-full">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
+        A filter panel inside a Popover. Draft state is only committed on &quot;Apply&quot; —
+        discarded on cancel or close. The trigger badge shows how many filters are active so users
+        can see filter state at a glance without opening the panel.
       </p>
 
-      <FilterDemo />
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">
+          filter panel — click Filter, check options, then Apply
+        </span>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <FilterDemo />
+        </div>
+      </div>
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-        <code>{`const [open, setOpen] = useState(false)
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Filter panels where changes commit only on Apply',
+                body: 'Use a draft state that syncs to applied state only when the user clicks Apply. This lets users preview selections before committing — essential for filters that trigger expensive queries.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't commit filter state on every checkbox change",
+                body: 'Applying each checkbox change immediately triggers a refetch on every click. Use draft state and a single Apply action to batch all changes into one commit.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Show active filter count in the trigger badge',
+                body: 'Users should be able to see filter state at a glance without opening the panel. A badge on the trigger communicates "filters are active" immediately.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Provide Reset inside the panel and Clear filters outside',
+                body: '"Reset" inside the panel resets the draft without closing. "Clear filters" outside clears the applied state. They serve different purposes and users expect both controls.',
+              },
+            ],
+          },
+        ]}
+      />
+
+      <Code>{`const [open, setOpen] = useState(false)
 const [draft, setDraft] = useState({ types: [], sectors: [] })
 
 function handleOpen(val) {
-  if (val) setDraft({ types, sectors })  // reset draft on open
+  if (val) setDraft({ types, sectors })  // reset draft to applied state on open
   setOpen(val)
 }
 
@@ -225,11 +311,10 @@ function handleOpen(val) {
     </Button>
   </PopoverTrigger>
   <PopoverContent className="w-56 p-3" side="bottom" align="start">
-    {/* filter checkboxes */}
+    {/* filter checkboxes updating draft */}
     <Button size="sm" onClick={handleApply}>Apply</Button>
   </PopoverContent>
-</Popover>`}</code>
-      </pre>
+</Popover>`}</Code>
     </div>
   ),
 }

@@ -195,7 +195,6 @@ export default function ActivityPickerDialog({ open, onClose, onSelect, currentA
           <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 shrink-0">
             <Button
               variant="outline"
-              size="base"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1 || loading}
               className="flex items-center gap-1"
@@ -208,7 +207,6 @@ export default function ActivityPickerDialog({ open, onClose, onSelect, currentA
             </span>
             <Button
               variant="outline"
-              size="base"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages || loading}
               className="flex items-center gap-1"

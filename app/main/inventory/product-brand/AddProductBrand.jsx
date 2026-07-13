@@ -1,5 +1,6 @@
 'use client'
 
+import { FieldContent, FieldLabel, FieldError, FieldContainer } from '@/components/base/Field/Field'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,9 +19,6 @@ import {
   ModalTitle,
   ModalTrigger,
 } from '@/components/base/Modal/Modal.jsx'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
 import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
 import { Loader2, Tag } from 'lucide-react'
@@ -74,12 +72,12 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
         <Button>Add Product Brand</Button>
       </ModalTrigger>
       <ModalContent
-        className="w-full sm:w-md"
+        className="w-full"
         id={`addNewProductBrandForm_${context}_productBrandPage`}
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader layout="beside" padding={{ x: 4 }}>
+        <ModalHeader layout="beside">
           <ModalIcon icon={Tag} />
           <ModalHeaderContent>
             <ModalTitle>Add New Product Brand</ModalTitle>
@@ -91,44 +89,43 @@ export default function AddProduct({ onAdded, context = 'desktop' }) {
           onSubmit={handleSubmit(handleAddNewProductBrand)}
           className="flex flex-col flex-1 min-h-0"
         >
-          <ModalBody
-            className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto"
-            padding={{ x: 4 }}
-          >
-            <Controller
-              control={control}
-              name="brand"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Product brand</FieldLabel>
-                  <Input
-                    {...field}
-                    placeholder="e.g. Clear"
-                    id="brandNameInput_addBrandDialog"
-                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                      fieldState.error ? 'border-rose-500' : ''
-                    }`}
-                  />
-                  <FieldError className="font-medium" />
-                </FieldContent>
-              )}
-            />
+          <ModalBody className="overflow-y-auto">
+            <FieldContainer>
+              <Controller
+                control={control}
+                name="brand"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Product brand</FieldLabel>
+                    <Input
+                      {...field}
+                      placeholder="e.g. Clear"
+                      id="brandNameInput_addBrandDialog"
+                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldError className="font-medium" />
+                  </FieldContent>
+                )}
+              />
 
-            <Controller
-              control={control}
-              name="note"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Notes</FieldLabel>
-                  <Textarea
-                    {...field}
-                    placeholder="Additional notes"
-                    id="noteInput_addBrandDialog"
-                    className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
-                  />
-                </FieldContent>
-              )}
-            />
+              <Controller
+                control={control}
+                name="note"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Notes</FieldLabel>
+                    <Textarea
+                      {...field}
+                      placeholder="Additional notes"
+                      id="noteInput_addBrandDialog"
+                      className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
+                    />
+                  </FieldContent>
+                )}
+              />
+            </FieldContainer>
           </ModalBody>
 
           <ModalFooter>

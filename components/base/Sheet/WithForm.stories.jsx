@@ -19,6 +19,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const inputClass =
   'w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500'
 
@@ -155,17 +183,67 @@ function AddTradeSheet() {
 export const WithForm = {
   name: 'With Form',
   render: () => (
-    <div className="flex flex-col gap-6 w-full max-w-xl">
-      <p className="text-sm text-gray-500 leading-relaxed">
+    <div className="flex flex-col gap-6 w-full">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         A form inside a Sheet using controlled mode (
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">open</code> +{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">onOpenChange</code>) so the
         parent can reset form state each time the sheet opens.
       </p>
 
-      <AddTradeSheet />
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">add trade form — controlled, resets on open</span>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <AddTradeSheet />
+        </div>
+      </div>
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Sheet for forms that are secondary to the main page',
+                body: 'Use a Sheet when the form overlays the current context rather than replacing it — e.g. adding a trade while viewing the trades list.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: 'Don\'t put multi-step wizards in a sheet without size="full"',
+                body: 'Multi-step flows need space. In a default-sized sheet they feel cramped — use size="lg" or size="full", or navigate to a dedicated page.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Make the body scrollable so the footer stays visible',
+                body: 'Wrap form fields in overflow-y-auto between the header and SheetFooter — tall forms should scroll inside the panel, not push the footer off-screen.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Reset form state in onOpenChange(true), not on close',
+                body: 'Resetting on open (not on close) means the previous values stay available until the sheet is fully gone — and fresh values are guaranteed the moment it reopens.',
+              },
+              {
+                title: 'Disable submit while required fields are empty',
+                body: 'Immediate visual feedback via a disabled button is less friction than a generic error on submit. Only enable the button when the minimum required fields are filled.',
+              },
+            ],
+          },
+        ]}
+      />
+
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
         <code>{`const [open, setOpen] = useState(false)
 
 function handleOpen(val) {
@@ -181,7 +259,7 @@ function handleOpen(val) {
     <SheetHeader>
       <SheetTitle>Add Trade</SheetTitle>
     </SheetHeader>
-    <div className="flex-1 px-6 py-4">
+    <div className="flex-1 px-6 py-4 overflow-y-auto">
       {/* form fields */}
     </div>
     <SheetFooter>

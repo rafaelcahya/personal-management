@@ -12,15 +12,19 @@ const ListCtx = createContext(null)
 const useList = () => useContext(ListCtx)
 
 const triggerSizes = {
+  xs: 'px-2 py-0.5 text-xs',
   sm: 'px-2.5 py-1 text-xs',
-  base: 'px-3 py-2 text-sm',
+  md: 'px-3 py-2 text-sm',
   lg: 'px-4 py-2.5 text-sm',
+  xl: 'px-5 py-3 text-base',
 }
 
 const iconSizes = {
+  xs: 'size-3',
   sm: 'size-3.5',
-  base: 'size-4',
+  md: 'size-4',
   lg: 'size-4',
+  xl: 'size-5',
 }
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
@@ -62,7 +66,7 @@ export function Tabs({
 
 // ─── TabsList ─────────────────────────────────────────────────────────────────
 
-export function TabsList({ children, variant = 'underline', size = 'base', className, ...props }) {
+export function TabsList({ children, variant = 'underline', size = 'md', className, ...props }) {
   const { activeValue, setActiveValue, orientation } = useTabs()
   const listRef = useRef(null)
   const [indicatorStyle, setIndicatorStyle] = useState({})
@@ -161,9 +165,9 @@ export function TabsList({ children, variant = 'underline', size = 'base', class
         className={cn(
           'relative flex shrink-0',
           isVertical ? 'flex-col' : 'flex-row',
-          variant === 'underline' && !isVertical && 'border-b border-gray-200',
-          variant === 'underline' && isVertical && 'border-r border-gray-200 pr-0',
-          variant === 'pill' && 'gap-1 p-1 bg-gray-100 rounded-xl',
+          variant === 'underline' && !isVertical && 'border-b border-slate-200',
+          variant === 'underline' && isVertical && 'border-r border-slate-200 pr-0',
+          variant === 'pill' && 'gap-1 p-1 bg-slate-100 rounded-xl',
           className
         )}
         {...props}
@@ -225,22 +229,22 @@ export function TabsTrigger({
       onClick={() => setActiveValue(value)}
       className={cn(
         'relative inline-flex items-center gap-1.5 font-medium transition-colors outline-none',
-        triggerSizes[size] ?? triggerSizes.base,
+        triggerSizes[size] ?? triggerSizes.md,
         'focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-1 rounded-md',
         // underline
         variant === 'underline' && isActive && 'text-violet-700',
-        variant === 'underline' && !isActive && !disabled && 'text-gray-500 hover:text-gray-800',
+        variant === 'underline' && !isActive && !disabled && 'text-slate-500 hover:text-slate-800',
         // pill
-        variant === 'pill' && 'z-10',
-        variant === 'pill' && isActive && 'text-gray-900',
-        variant === 'pill' && !isActive && !disabled && 'text-gray-500 hover:text-gray-700',
+        variant === 'pill' && 'z-10 text-sm flex-1 justify-center',
+        variant === 'pill' && isActive && 'text-slate-900',
+        variant === 'pill' && !isActive && !disabled && 'text-slate-500 hover:text-slate-700',
         // disabled
         disabled && 'opacity-40 cursor-not-allowed pointer-events-none',
         className
       )}
       {...props}
     >
-      {Icon && <Icon className={cn(iconSizes[size] ?? iconSizes.base, 'shrink-0')} />}
+      {Icon && <Icon className={cn(iconSizes[size] ?? iconSizes.md, 'shrink-0')} />}
       {children}
     </button>
   )

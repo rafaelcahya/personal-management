@@ -38,11 +38,11 @@ export default function PerformanceDistributionCard({
 }) {
   return (
     <Card>
-      <CardHeader className="flex">
+      <CardHeader>
         <CardIcon icon={Target} />
         <CardHeaderContent>
           <CardTitle>Performance Distribution</CardTitle>
-          <CardDescription className="text-xs text-slate-400">
+          <CardDescription>
             Win/loss breakdown with profit and loss metrics per trade.
           </CardDescription>
         </CardHeaderContent>

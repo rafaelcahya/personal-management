@@ -20,7 +20,7 @@ const badgeVariants = cva(
       size: {
         xs: 'px-1.5 py-0 text-[10px]',
         sm: 'px-2 py-px text-xs',
-        md: 'px-2 py-0.5 text-xs',
+        base: 'px-2 py-0.5 text-xs',
         lg: 'px-2.5 py-0.5 text-sm',
         xl: 'px-3 py-1 text-sm',
       },
@@ -36,13 +36,13 @@ const badgeVariants = cva(
     },
     defaultVariants: {
       variant: 'default',
-      size: 'md',
+      size: 'base',
       radius: 'full',
     },
   }
 )
 
-function Badge({ variant, size = 'md', radius = 'full', className, ...props }) {
+function Badge({ variant, size = 'base', radius = 'full', className, ...props }) {
   return (
     <span
       className={twMerge(clsx(badgeVariants({ variant, size, radius }), className))}

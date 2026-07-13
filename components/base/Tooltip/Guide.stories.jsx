@@ -10,6 +10,43 @@ export default meta
 
 // ─── Primitives ──────────────────────────────────────────────────────────────
 
+function ApiTable({ rows }) {
+  return (
+    <div className="overflow-x-auto mb-6">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 const Section = ({ title, description, children }) => (
   <div className="mb-12">
     <h2 className="text-xl font-semibold text-gray-900 mb-1">{title}</h2>
@@ -337,300 +374,167 @@ export const Docs = {
       <Section title="API Reference">
         <SubSection
           title="Tooltip"
-          description="Root component. Wraps TooltipProvider internally — no separate Provider needed."
+          description="Root component. Manages open state, delay timer, and passes context to children."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'delayDuration',
-                    'number',
-                    '300',
-                    'Milliseconds before the tooltip opens after hover.',
-                  ],
-                  ['open', 'boolean', '—', 'Controlled open state.'],
-                  ['defaultOpen', 'boolean', '—', 'Uncontrolled initial open state.'],
-                  [
-                    'onOpenChange',
-                    '(open: boolean) => void',
-                    '—',
-                    'Called when open state changes.',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'delayDuration',
+                'number',
+                '700',
+                'Milliseconds before the tooltip opens after hover.',
+              ],
+              ['open', 'boolean', '—', 'Controlled open state.'],
+              ['defaultOpen', 'boolean', 'false', 'Uncontrolled initial open state — starts open.'],
+              ['onOpenChange', '(open: boolean) => void', '—', 'Called when open state changes.'],
+            ]}
+          />
         </SubSection>
 
         <SubSection
           title="TooltipTrigger"
-          description="The element that triggers the tooltip on hover/focus."
+          description="Wraps the trigger element in a relative span. Use asChild to merge onto an existing element."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'asChild',
-                    'boolean',
-                    'false',
-                    'Merge props onto the child element instead of rendering a button wrapper.',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'asChild',
+                'boolean',
+                'false',
+                'Merge hover/focus handlers onto the child element instead of wrapping in a span.',
+              ],
+            ]}
+          />
         </SubSection>
 
         <SubSection
           title="TooltipContent"
-          description="The tooltip panel. Renders in a Portal — never clipped by parent overflow."
+          description="The tooltip panel. Positions relative to the trigger using absolute CSS."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'children',
-                    'ReactNode',
-                    '—',
-                    'Any content — string, icons, key-value layouts, etc.',
-                  ],
-                  [
-                    'side',
-                    "'top' | 'right' | 'bottom' | 'left'",
-                    "'top'",
-                    'Which side of the trigger the tooltip appears on.',
-                  ],
-                  [
-                    'align',
-                    "'start' | 'center' | 'end'",
-                    "'center'",
-                    'Alignment along the side axis.',
-                  ],
-                  ['sideOffset', 'number', '6', 'Distance in pixels between trigger and tooltip.'],
-                  [
-                    'animation',
-                    "'none' | 'fade' | 'zoom' | 'slide-up' | 'slide-down'",
-                    "'fade'",
-                    'Enter/exit animation type.',
-                  ],
-                  [
-                    'duration',
-                    "'fast' | 'default' | 'slow' | 'slower' | number",
-                    "'default'",
-                    'Animation duration. Presets: fast=100ms, default=150ms, slow=300ms, slower=500ms.',
-                  ],
-                  [
-                    'variant',
-                    "'default' | 'info' | 'success' | 'warning' | 'danger'",
-                    "'default'",
-                    'Semantic color variant — changes background, border, and text color.',
-                  ],
-                  [
-                    'showArrow',
-                    'boolean',
-                    'false',
-                    'Show a caret arrow pointing toward the trigger.',
-                  ],
-                  ['className', 'string', '—', 'Extra classes merged onto the tooltip panel.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'children',
+                'ReactNode',
+                '—',
+                'Any content — string, icons, key-value layouts, etc.',
+              ],
+              [
+                'side',
+                "'top' | 'right' | 'bottom' | 'left'",
+                "'top'",
+                'Which side of the trigger the tooltip appears on.',
+              ],
+              ['align', "'start' | 'center' | 'end'", "'center'", 'Alignment along the side axis.'],
+              ['sideOffset', 'number', '6', 'Distance in pixels between trigger and tooltip.'],
+              [
+                'animation',
+                "'none' | 'fade' | 'zoom' | 'slide-up' | 'slide-down'",
+                "'fade'",
+                'Enter/exit animation type.',
+              ],
+              [
+                'duration',
+                "'fast' | 'default' | 'slow' | 'slower' | number",
+                "'default'",
+                'Animation duration. Presets: fast=100ms, default=150ms, slow=300ms, slower=500ms.',
+              ],
+              [
+                'variant',
+                "'default' | 'info' | 'success' | 'warning' | 'danger'",
+                "'default'",
+                'Semantic color variant — changes background, border, and text color.',
+              ],
+              ['showArrow', 'boolean', 'false', 'Show a caret arrow pointing toward the trigger.'],
+              ['className', 'string', '—', 'Extra classes merged onto the tooltip panel.'],
+            ]}
+          />
         </SubSection>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Tooltip when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use Tooltip for brief supplemental labels on icon-only buttons',
+                  body: 'When a button has no visible text, a tooltip provides the accessible name and helps mouse users understand the action without adding permanent UI noise.',
+                },
+                {
+                  title: 'Use Tooltip to surface keyboard shortcuts and stat breakdowns on hover',
+                  body: 'Showing a shortcut like "Save (⌘S)" or a quick key-value stat panel keeps the interface clean while providing power-user context exactly when needed.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't put critical information only inside a Tooltip",
+                  body: 'Tooltips are invisible until hover and completely inaccessible on touch devices. If the information is essential to the task, place it inline or in a persistent help text element.',
+                },
+                {
+                  title: "Don't place interactive elements inside TooltipContent",
+                  body: 'Users cannot reliably move their cursor into the tooltip before it closes. For content with buttons, inputs, or links, use Popover. For richer hover content, use HoverCard.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Always use asChild for button-like triggers',
+                  body: 'asChild merges hover/focus handlers directly onto your button. Without it, an extra span wrapper is inserted which can break flex layouts and cause unexpected stacking.',
+                },
+                {
+                  title: 'Wrap disabled elements in a span before using TooltipTrigger',
+                  body: "Disabled buttons don't fire pointer events, so the tooltip will never open. Wrap the button in a <span> and apply asChild to the span — the tooltip then receives hover events reliably.",
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Keep tooltip text short — under 12 words',
+                  body: 'Tooltips are hints, not documentation. If you need a paragraph of explanation, use a Popover or HoverCard. The ideal tooltip is a phrase the user can read in a glance.',
+                },
+                {
+                  title: 'Use delayDuration={0} in dense UI areas like toolbars',
+                  body: 'The 700ms default prevents accidental tooltips while the cursor passes over the page. Set it to 0 only in dense areas where quick context-switching is expected.',
+                },
+                {
+                  title: "Use showArrow when the tooltip's trigger isn't obvious",
+                  body: 'In grids or tightly packed layouts, an arrow connecting the tooltip to its trigger prevents confusion. Skip it for isolated triggers where the spatial connection is already clear.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      You need a short plain-text label for an icon button with no visible text
-                    </li>
-                    <li>
-                      You want to show a keyboard shortcut next to an action (e.g. "Save (⌘S)")
-                    </li>
-                    <li>You want to surface a stat breakdown or quick numeric detail on hover</li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>HoverCard</strong> when the content includes images, links, or
-                      multi-line rich layouts that need more space
-                    </li>
-                    <li>
-                      Use <strong>Popover</strong> when the content contains interactive elements
-                      like buttons, inputs, or forms that the user needs to click
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Keep tooltip text short — one sentence or a brief phrase. Tooltips are hints, not
-                  documentation.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use Tooltip on icon-only buttons to provide a text label, improving accessibility
-                  for screen readers and mouse users alike.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Set <code className="font-mono">delayDuration={`{0}`}</code> on tooltips that
-                  appear in dense UI areas (e.g. toolbars) so users get instant feedback.
-                </p>
               </div>
             </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't put critical information only inside a Tooltip — it is invisible until hover
-                  and completely inaccessible on touch devices.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't place interactive elements (links, buttons, inputs) inside TooltipContent —
-                  users cannot reliably move their cursor into the tooltip before it closes. Use
-                  Popover instead.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't wrap disabled elements in TooltipTrigger without{' '}
-                  <code className="font-mono">asChild</code> and a focusable wrapper — disabled
-                  buttons don't fire pointer events, so the tooltip will never open.
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </Section>
     </div>

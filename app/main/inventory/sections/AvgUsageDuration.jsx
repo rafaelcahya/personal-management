@@ -40,15 +40,14 @@ import {
   EmptyStateDescription,
   EmptyStateActions,
 } from '@/components/base/EmptyState/EmptyState'
+import { Badge } from '@/components/base/Badge/Badge'
 
 function DurationBadge({ days }) {
-  let cls = 'bg-green-100 text-green-700 border-green-200'
-  if (days < 30) cls = 'bg-red-100 text-red-700 border-red-200'
-  else if (days < 60) cls = 'bg-yellow-100 text-yellow-700 border-yellow-200'
+  let cls = 'bg-green-100 text-green-700'
+  if (days < 30) cls = 'bg-red-100 text-red-700'
+  else if (days < 60) cls = 'bg-yellow-100 text-yellow-700'
   return (
-    <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${cls}`}>
-      {days} days
-    </span>
+    <Badge className={`text-xs font-medium px-2 py-0.5 rounded-full ${cls}`}>{days} days</Badge>
   )
 }
 
@@ -178,7 +177,7 @@ export default function AvgUsageDuration({ items, loading, error, onRetry }) {
               <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
                 <EmptyStateActions>
-                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                  <Button variant="outline" onClick={onRetry} className="min-w-11">
                     Try again
                   </Button>
                 </EmptyStateActions>
@@ -207,23 +206,19 @@ export default function AvgUsageDuration({ items, loading, error, onRetry }) {
       </Card>
 
       <Modal open={modalOpen} onOpenChange={handleModalOpen}>
-        <ModalContent
-          variant="bordered"
-          borderColor="border-slate-200"
-          className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
-        >
-          <ModalHeader layout="beside" padding={{ x: 4 }}>
+        <ModalContent variant="bordered" borderColor="border-slate-200" className="max-h-[85vh]">
+          <ModalHeader layout="beside">
             <ModalIcon icon={Timer} />
             <ModalHeaderContent>
               <ModalTitle>All Products — Average Usage Duration</ModalTitle>
               <ModalDescription>Sorted by longest average duration</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
+          <ModalBody className="p-0">
             <DurationTable data={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
           {modalTotalPages > 1 && (
-            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+            <ModalFooter>
               <Pagination
                 page={modalPage}
                 totalPages={modalTotalPages}

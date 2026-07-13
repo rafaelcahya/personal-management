@@ -7,24 +7,52 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const triggerClass =
   'inline-flex items-center px-4 py-2 rounded-lg border text-sm font-medium hover:bg-accent transition-colors cursor-default'
 
 export const Basic = {
   name: 'Basic',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+    <div className="flex flex-col gap-6 w-full">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         Hover over the trigger to open the card. The panel stays open when the mouse moves into it —
         use <code className="font-mono bg-gray-100 px-1 rounded text-xs">openDelay</code> and{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">closeDelay</code> to control
         timing.
       </p>
 
-      <div className="flex flex-col gap-5 w-full max-w-2xl">
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-gray-400">button trigger</span>
-          <div className="flex items-center gap-3 py-6">
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">button trigger</span>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-3 py-4">
             <HoverCard>
               <HoverCardTrigger asChild>
                 <button type="button" className={triggerClass}>
@@ -39,10 +67,12 @@ export const Basic = {
             </HoverCard>
           </div>
         </div>
+      </div>
 
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-gray-400">text trigger (span)</span>
-          <div className="flex items-center gap-3 py-6">
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">text trigger (span with asChild)</span>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-3 py-4">
             <HoverCard>
               <HoverCardTrigger asChild>
                 <span className="text-sm underline decoration-dotted cursor-default text-slate-700">
@@ -56,10 +86,12 @@ export const Basic = {
             </HoverCard>
           </div>
         </div>
+      </div>
 
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-gray-400">no delay (instant)</span>
-          <div className="flex items-center gap-3 py-6">
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">openDelay=0 — opens instantly</span>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-3 py-4">
             <HoverCard openDelay={0}>
               <HoverCardTrigger asChild>
                 <button type="button" className={triggerClass}>
@@ -72,10 +104,12 @@ export const Basic = {
             </HoverCard>
           </div>
         </div>
+      </div>
 
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-gray-400">long delay (700ms open, 400ms close)</span>
-          <div className="flex items-center gap-3 py-6">
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">openDelay=700 closeDelay=400 — long delay</span>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-3 py-4">
             <HoverCard openDelay={700} closeDelay={400}>
               <HoverCardTrigger asChild>
                 <button type="button" className={triggerClass}>
@@ -88,10 +122,14 @@ export const Basic = {
             </HoverCard>
           </div>
         </div>
+      </div>
 
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-gray-400">interactive content (link + button inside)</span>
-          <div className="flex items-center gap-3 py-6">
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">
+          interactive content — panel stays open on mouseenter
+        </span>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="flex items-center gap-3 py-4">
             <HoverCard openDelay={0}>
               <HoverCardTrigger asChild>
                 <button type="button" className={triggerClass}>
@@ -122,6 +160,47 @@ export const Basic = {
           </div>
         </div>
       </div>
+
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use for hover-triggered previews with rich or interactive content',
+                body: 'HoverCard is the right choice when the preview might contain links, action buttons, or structured data the user needs to interact with. The panel stays open when the mouse moves into it.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use openDelay=0 in production with dense trigger areas",
+                body: 'In dense layouts, openDelay=0 causes panels to flash open on every accidental mouse-over and create visual noise. Set openDelay to 200–400ms. Reserve openDelay=0 for demos and Storybook.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Set a short closeDelay so users can reach panel content',
+                body: 'The panel staying open when the mouse enters it is intentional. A closeDelay of 100–200ms gives users enough time to travel from the trigger into the panel and interact with buttons or links inside.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use asChild on HoverCardTrigger to avoid extra DOM wrappers',
+                body: 'asChild merges hover props directly onto your element — a ticker badge, item name, or user handle. Without asChild, an extra <span> wrapper is added to the DOM that may affect layout or styling.',
+              },
+            ],
+          },
+        ]}
+      />
 
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`<HoverCard openDelay={300} closeDelay={150}>

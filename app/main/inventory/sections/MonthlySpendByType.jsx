@@ -118,7 +118,7 @@ export default function MonthlySpendByType({ items, loading }) {
           )}
         </CardHeader>
 
-        <CardContent padding="none">
+        <CardContent className="p-0">
           <div className="px-5 py-3">
             {loading ? (
               <div className="space-y-2 py-2">
@@ -149,19 +149,15 @@ export default function MonthlySpendByType({ items, loading }) {
       </Card>
 
       <Modal open={modalOpen} onOpenChange={handleModalOpen}>
-        <ModalContent
-          variant="bordered"
-          borderColor="border-slate-200"
-          className="max-w-md w-full max-h-[85vh] flex flex-col p-0 gap-0"
-        >
-          <ModalHeader layout="beside" padding={{ x: 4 }}>
+        <ModalContent variant="bordered" borderColor="border-slate-200" className="max-h-[85vh]">
+          <ModalHeader layout="beside">
             <ModalIcon icon={Wallet} />
             <ModalHeaderContent>
               <ModalTitle>Monthly Spend by Type</ModalTitle>
               <ModalDescription>All categories across the last 6 months</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 4 }} className="overflow-y-auto flex-1">
+          <ModalBody>
             <div className="flex flex-col gap-4">
               {pageMonths.map((month) => (
                 <MonthBlock key={month} month={month} items={grouped[month]} />
@@ -169,7 +165,7 @@ export default function MonthlySpendByType({ items, loading }) {
             </div>
           </ModalBody>
           {modalTotalPages > 1 && (
-            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+            <ModalFooter>
               <Pagination
                 page={modalPage}
                 totalPages={modalTotalPages}

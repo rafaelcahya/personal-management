@@ -1,5 +1,12 @@
 'use client'
 
+import {
+  FieldContent,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+  FieldContainer,
+} from '@/components/base/Field/Field'
 import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -18,10 +25,6 @@ import {
   ModalIcon,
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
-import FieldDescription from '@/components/base/Field/FieldDescription'
 import {
   Select,
   SelectContent,
@@ -106,11 +109,11 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
     <Modal open={open} onOpenChange={handleOpenChange}>
       <ModalContent
         id="editProductDialog_productListPage"
-        className="sm:max-w-md flex flex-col max-h-[90vh]"
+        className="max-h-[90vh]"
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader layout="beside" padding={{ x: 4 }}>
+        <ModalHeader layout="beside">
           <ModalIcon icon={Pencil} />
           <ModalHeaderContent>
             <ModalTitle>Edit Product</ModalTitle>
@@ -128,142 +131,135 @@ export default function EditProductSheet({ product, open, onOpenChange, onUpdate
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col flex-1 min-h-0"
         >
-          <ModalBody className="space-y-5" padding={{ x: 4 }}>
-            {/* Brand */}
-            <Controller
-              control={control}
-              name="brand_id"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel>Brand</FieldLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger
-                      id="brandSelect_editProductDialog"
-                      className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
-                    >
-                      <SelectValue placeholder="Select brand" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60 overflow-y-auto">
-                      {brands.length === 0 ? (
-                        <div className="p-8 text-center text-sm text-muted-foreground">
-                          No active brands available
-                        </div>
-                      ) : (
-                        brands.map((b) => (
-                          <SelectItem key={b.id} value={b.id.toString()}>
-                            {b.brand}
+          <ModalBody>
+            <FieldContainer>
+              {/* Brand */}
+              <Controller
+                control={control}
+                name="brand_id"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel>Brand</FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="brandSelect_editProductDialog" className="font-medium">
+                        <SelectValue placeholder="Select brand" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {brands.length === 0 ? (
+                          <SelectItem disabled value="">
+                            No active brands available
                           </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <FieldDescription className="text-xs text-slate-400">
-                    Which brand is this from? 🏷️
-                  </FieldDescription>
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
+                        ) : (
+                          brands.map((b) => (
+                            <SelectItem key={b.id} value={b.id.toString()}>
+                              {b.brand}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FieldDescription className="text-xs text-slate-400">
+                      Which brand is this from? 🏷️
+                    </FieldDescription>
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
 
-            {/* Product Name */}
-            <Controller
-              control={control}
-              name="product_id"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel>Product Name</FieldLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger
-                      id="nameSelect_editProductDialog"
-                      className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
-                    >
-                      <SelectValue placeholder="Select product name" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60 overflow-y-auto">
-                      {productNames.length === 0 ? (
-                        <div className="p-8 text-center text-sm text-muted-foreground">
-                          No active product names available
-                        </div>
-                      ) : (
-                        productNames.map((n) => (
-                          <SelectItem key={n.id} value={n.id.toString()}>
-                            {n.product_name}
+              {/* Product Name */}
+              <Controller
+                control={control}
+                name="product_id"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel>Product Name</FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="nameSelect_editProductDialog" className="font-medium">
+                        <SelectValue placeholder="Select product name" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {productNames.length === 0 ? (
+                          <SelectItem disabled value="">
+                            No active product names available
                           </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <FieldDescription className="text-xs text-slate-400">
-                    What's the product called? 📦
-                  </FieldDescription>
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
+                        ) : (
+                          productNames.map((n) => (
+                            <SelectItem key={n.id} value={n.id.toString()}>
+                              {n.product_name}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FieldDescription className="text-xs text-slate-400">
+                      What's the product called? 📦
+                    </FieldDescription>
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
 
-            {/* Type */}
-            <Controller
-              control={control}
-              name="type"
-              rules={{ required: 'Type is required' }}
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel>Type</FieldLabel>
-                  <Input
-                    id="typeInput_editProductDialog"
-                    {...field}
-                    placeholder="e.g. Whitening, Hydrating, SPF 50"
-                    className={`font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500 ${
-                      fieldState.error ? 'border-rose-500' : ''
-                    }`}
-                  />
-                  <FieldDescription className="text-xs text-slate-400">
-                    What kind is it? (serum, lotion, toner, etc.) 💡
-                  </FieldDescription>
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
+              {/* Type */}
+              <Controller
+                control={control}
+                name="type"
+                rules={{ required: 'Type is required' }}
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel>Type</FieldLabel>
+                    <Input
+                      id="typeInput_editProductDialog"
+                      {...field}
+                      placeholder="e.g. Whitening, Hydrating, SPF 50"
+                      className={`font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      What kind is it? (serum, lotion, toner, etc.) 💡
+                    </FieldDescription>
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
 
-            {/* Status */}
-            <Controller
-              control={control}
-              name="product_status"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel>Status</FieldLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger
-                      id="statusSelect_editProductDialog"
-                      className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-500"
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FieldDescription className="text-xs text-slate-400">
-                    Active products appear in your inventory, inactive ones are hidden from stock
-                    tracking. 🔄
-                  </FieldDescription>
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
+              {/* Status */}
+              <Controller
+                control={control}
+                name="product_status"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel>Status</FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="statusSelect_editProductDialog" className="font-medium">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FieldDescription className="text-xs text-slate-400">
+                      Active products appear in your inventory, inactive ones are hidden from stock
+                      tracking. 🔄
+                    </FieldDescription>
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
 
-            {serverError && (
-              <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
-                <p className="text-sm font-semibold text-red-900 mb-1">
-                  ⚠️ Unable to update product
-                </p>
-                <p className="text-sm text-red-800">{serverError}</p>
-              </div>
-            )}
+              {serverError && (
+                <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
+                  <p className="text-sm font-semibold text-red-900 mb-1">
+                    ⚠️ Unable to update product
+                  </p>
+                  <p className="text-sm text-red-800">{serverError}</p>
+                </div>
+              )}
+            </FieldContainer>
           </ModalBody>
 
-          <ModalFooter className="shrink-0 pt-4">
+          <ModalFooter>
             <ModalClose asChild>
               <Button
                 id="cancelBtn_editProductDialog"

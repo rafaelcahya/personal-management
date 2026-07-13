@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Zap, Shield, Star, Truck, Package, CreditCard, Banknote } from 'lucide-react'
+import { Zap, Shield, Package, Truck, Star, CreditCard, Banknote } from 'lucide-react'
+import { SelectCard, SelectCardIcon, SelectCardTitle, SelectCardDescription } from './SelectCard'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
@@ -7,78 +8,6 @@ const meta = {
 }
 
 export default meta
-
-// ─── Mock components (visualization only — replaced by real components after implementation) ──
-
-const cn = (...classes) => classes.filter(Boolean).join(' ')
-
-const MockCard = ({
-  layout = 'vertical',
-  indicator = 'badge',
-  selected = false,
-  disabled = false,
-  onClick,
-  icon,
-  title,
-  description,
-  extra,
-}) => {
-  const isH = layout === 'horizontal'
-  const isBadge = indicator === 'badge'
-
-  return (
-    <div
-      onClick={!disabled ? onClick : undefined}
-      className={cn(
-        'relative rounded-lg transition-all select-none',
-        isH
-          ? cn('flex items-center gap-4', isBadge && 'pr-12')
-          : cn('flex flex-col gap-2.5', isBadge && 'pr-8'),
-        selected
-          ? 'border border-violet-600 ring-2 ring-violet-200 bg-violet-50/40 p-4'
-          : 'border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm',
-        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-      )}
-    >
-      {isBadge && (
-        <div
-          className={cn(
-            'absolute size-5 rounded-full flex items-center justify-center transition-all bg-white',
-            isH ? 'right-4 top-1/2 -translate-y-1/2' : 'top-3 right-3',
-            selected ? 'bg-violet-600' : 'border-2 border-gray-300'
-          )}
-        >
-          {selected && <span className="size-2 rounded-full bg-white block" />}
-        </div>
-      )}
-
-      {icon && (
-        <div
-          className={cn(
-            'flex items-center justify-center rounded-md shrink-0',
-            isH ? 'size-9' : 'size-9',
-            selected ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-500'
-          )}
-        >
-          {icon}
-        </div>
-      )}
-
-      <div className={cn(isH && 'flex-1', 'flex flex-col gap-0.5')}>
-        <p
-          className={cn(
-            'text-sm font-medium leading-snug',
-            selected ? 'text-gray-900' : 'text-gray-800'
-          )}
-        >
-          {title}
-        </p>
-        {description && <p className="text-xs text-muted-foreground leading-snug">{description}</p>}
-        {extra && <div className="mt-1">{extra}</div>}
-      </div>
-    </div>
-  )
-}
 
 // ─── Primitives ──────────────────────────────────────────────────────────────
 
@@ -121,9 +50,50 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
-// ─── Interactive demo ─────────────────────────────────────────────────────────
+const ApiTable = ({ headers = ['Prop', 'Type', 'Default', 'Description'], rows }) => (
+  <div className="mb-6 overflow-x-auto">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, ri) => (
+          <tr key={ri} className="even:bg-gray-50">
+            {row.map((cell, ci) => (
+              <td
+                key={ci}
+                className={`px-3 py-2 border border-gray-200 text-xs ${
+                  ci === 0
+                    ? 'font-mono text-violet-700 whitespace-nowrap'
+                    : ci === 1
+                      ? 'font-mono text-gray-500 max-w-xs'
+                      : ci === 2
+                        ? 'font-mono text-gray-400 whitespace-nowrap'
+                        : 'text-gray-700'
+                }`}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
 
-const OverviewDemo = () => {
+// ─── Interactive demos ────────────────────────────────────────────────────────
+
+const PlanDemo = () => {
   const [selected, setSelected] = useState('pro')
   const plans = [
     {
@@ -146,25 +116,26 @@ const OverviewDemo = () => {
     },
   ]
   return (
-    <div className="grid grid-cols-3 gap-3 w-full max-w-lg">
+    <div className="grid grid-cols-3 gap-3 max-w-lg">
       {plans.map((p) => (
-        <MockCard
+        <SelectCard
           key={p.value}
-          indicator="badge"
+          value={p.value}
           selected={selected === p.value}
-          onClick={() => setSelected(p.value)}
-          icon={p.icon}
-          title={p.title}
-          description={p.description}
-        />
+          onSelect={setSelected}
+        >
+          <SelectCardIcon>{p.icon}</SelectCardIcon>
+          <SelectCardTitle>{p.title}</SelectCardTitle>
+          <SelectCardDescription>{p.description}</SelectCardDescription>
+        </SelectCard>
       ))}
     </div>
   )
 }
 
-const HorizontalDemo = () => {
+const ShippingDemo = () => {
   const [selected, setSelected] = useState('standard')
-  const options = [
+  const methods = [
     {
       value: 'standard',
       icon: <Package className="size-5" />,
@@ -185,18 +156,19 @@ const HorizontalDemo = () => {
     },
   ]
   return (
-    <div className="flex flex-col gap-2 w-full max-w-sm">
-      {options.map((o) => (
-        <MockCard
-          key={o.value}
+    <div className="flex flex-col gap-2 max-w-sm">
+      {methods.map((m) => (
+        <SelectCard
+          key={m.value}
           layout="horizontal"
-          indicator="badge"
-          selected={selected === o.value}
-          onClick={() => setSelected(o.value)}
-          icon={o.icon}
-          title={o.title}
-          description={o.description}
-        />
+          value={m.value}
+          selected={selected === m.value}
+          onSelect={setSelected}
+        >
+          <SelectCardIcon>{m.icon}</SelectCardIcon>
+          <SelectCardTitle>{m.title}</SelectCardTitle>
+          <SelectCardDescription>{m.description}</SelectCardDescription>
+        </SelectCard>
       ))}
     </div>
   )
@@ -216,17 +188,18 @@ export const Docs = {
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
           A clickable card for single-option selection. Content is composed via sub-components —{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-sm">SelectCardIcon</code>,{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-sm">SelectCardTitle</code>, and{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-sm">SelectCardDescription</code>{' '}
-          — making the card flexible for any content layout.
+          <code className="font-mono text-sm">SelectCardIcon</code>,{' '}
+          <code className="font-mono text-sm">SelectCardTitle</code>, and{' '}
+          <code className="font-mono text-sm">SelectCardDescription</code> — making the card
+          flexible for any content layout. Built from scratch with keyboard support and aria-pressed
+          accessibility.
         </p>
       </div>
 
       {/* Overview */}
       <Section title="Overview">
         <p className="text-sm text-gray-500 mb-4">Click a card to select it.</p>
-        <OverviewDemo />
+        <PlanDemo />
       </Section>
 
       {/* Anatomy */}
@@ -235,7 +208,6 @@ export const Docs = {
         description="SelectCard is composed of a root and three optional sub-components."
       >
         <div className="flex flex-col gap-6 mb-6">
-          {/* Vertical anatomy */}
           <div>
             <p className="text-xs font-mono text-violet-700 mb-2">layout="vertical"</p>
             <div className="relative w-40 rounded-lg border-2 border-dashed border-violet-300 p-4 flex flex-col gap-2 bg-violet-50/30">
@@ -264,13 +236,9 @@ export const Docs = {
                   SelectCardDescription
                 </span>
               </div>
-              <div className="absolute top-1 right-8 text-green-600" style={{ fontSize: 9 }}>
-                <span className="font-mono">indicator</span>
-              </div>
             </div>
           </div>
 
-          {/* Horizontal anatomy */}
           <div>
             <p className="text-xs font-mono text-violet-700 mb-2">layout="horizontal"</p>
             <div className="relative rounded-lg border-2 border-dashed border-violet-300 p-4 flex items-center gap-4 bg-violet-50/30 w-96">
@@ -324,24 +292,28 @@ export const Docs = {
               {[
                 [
                   'SelectCard',
-                  '<div>',
-                  'Root. Handles layout, indicator, selected/disabled state, and click. Accepts value, selected, onSelect, layout, indicator, disabled.',
+                  '<div role="button">',
+                  'Root. Handles layout, indicator, selected/disabled state, click, and keyboard (Enter/Space). Accepts value, selected, onSelect, layout, indicator, disabled.',
                 ],
                 [
                   'SelectCardIcon',
                   '<div>',
-                  'Icon slot. Colors shift automatically based on selected state.',
+                  'Icon slot. Background and color shift automatically between gray (unselected) and violet (selected).',
                 ],
-                ['SelectCardTitle', '<p>', 'Primary label. font-medium. Required.'],
+                [
+                  'SelectCardTitle',
+                  '<p>',
+                  'Primary label. font-medium. Required for accessibility.',
+                ],
                 [
                   'SelectCardDescription',
                   '<p>',
-                  'Supporting text below the title. text-muted. Optional.',
+                  'Supporting text below the title. text-muted-foreground. Optional.',
                 ],
                 [
                   'Indicator',
                   '<div>',
-                  'Auto-rendered by SelectCard via the indicator prop ("badge" | "check"). Not composable.',
+                  'Auto-rendered by SelectCard via the indicator prop ("badge" | "border"). Not composable.',
                 ],
               ].map(([part, el, desc]) => (
                 <tr key={part} className="even:bg-gray-50">
@@ -358,7 +330,9 @@ export const Docs = {
           </table>
         </div>
 
-        <Code>{`<SelectCard
+        <Code>{`import { SelectCard, SelectCardIcon, SelectCardTitle, SelectCardDescription } from '@/components/base/SelectCard/SelectCard'
+
+<SelectCard
   value="pro"
   selected={selected === 'pro'}
   onSelect={(value) => setSelected(value)}
@@ -371,15 +345,13 @@ export const Docs = {
 </SelectCard>`}</Code>
       </Section>
 
-      {/* Layout */}
-      <Section
-        title="Layout"
-        description="Two layout modes — vertical stacks content top-to-bottom, horizontal places icon on the left and content on the right."
-      >
-        <SubSection
-          title="Vertical (default)"
-          description="Icon on top, title and description below. Best for grid layouts like pricing or plan selection."
-        >
+      {/* Usage */}
+      <Section title="Usage">
+        <SubSection title="Layout — Vertical">
+          <p className="text-xs text-gray-500 mb-3">
+            Icon on top, title and description below. Best for grid layouts like pricing or plan
+            selection where cards are equally weighted.
+          </p>
           <div className="grid grid-cols-3 gap-3 max-w-lg mb-4">
             {[
               {
@@ -387,6 +359,7 @@ export const Docs = {
                 icon: <Package className="size-5" />,
                 title: 'Starter',
                 description: 'For individuals.',
+                selected: false,
               },
               {
                 value: 'b',
@@ -400,36 +373,37 @@ export const Docs = {
                 icon: <Shield className="size-5" />,
                 title: 'Enterprise',
                 description: 'Custom scale.',
+                selected: false,
               },
             ].map((p) => (
-              <MockCard
+              <SelectCard
                 key={p.value}
                 layout="vertical"
                 indicator="badge"
-                selected={!!p.selected}
-                icon={p.icon}
-                title={p.title}
-                description={p.description}
-              />
+                value={p.value}
+                selected={p.selected}
+                onSelect={() => {}}
+              >
+                <SelectCardIcon>{p.icon}</SelectCardIcon>
+                <SelectCardTitle>{p.title}</SelectCardTitle>
+                <SelectCardDescription>{p.description}</SelectCardDescription>
+              </SelectCard>
             ))}
           </div>
-          <Code>{`<SelectCard
-  layout="vertical"
-  indicator="badge"
-  value="pro"
-  selected={selected === 'pro'}
-  onSelect={(value) => setSelected(value)}
->
-  <SelectCardIcon><Zap /></SelectCardIcon>
-  <SelectCardTitle>Pro</SelectCardTitle>
-  <SelectCardDescription>For growing teams.</SelectCardDescription>
-</SelectCard>`}</Code>
+          <Code>{`<div className="grid grid-cols-3 gap-3">
+  <SelectCard layout="vertical" value="pro" selected={selected === 'pro'} onSelect={setSelected}>
+    <SelectCardIcon><Zap /></SelectCardIcon>
+    <SelectCardTitle>Pro</SelectCardTitle>
+    <SelectCardDescription>For growing teams.</SelectCardDescription>
+  </SelectCard>
+</div>`}</Code>
         </SubSection>
 
-        <SubSection
-          title="Horizontal"
-          description="Icon on the left, title and description stacked on the right. Best for list layouts like shipping or payment methods."
-        >
+        <SubSection title="Layout — Horizontal">
+          <p className="text-xs text-gray-500 mb-3">
+            Icon on the left, title and description stacked on the right. Best for list layouts like
+            shipping or payment methods where cards are in a vertical stack.
+          </p>
           <div className="flex flex-col gap-2 max-w-sm mb-4">
             {[
               {
@@ -437,6 +411,7 @@ export const Docs = {
                 icon: <Package className="size-5" />,
                 title: 'Standard delivery',
                 description: '3–5 business days · Free',
+                selected: false,
               },
               {
                 value: 'b',
@@ -446,368 +421,123 @@ export const Docs = {
                 selected: true,
               },
             ].map((o) => (
-              <MockCard
+              <SelectCard
                 key={o.value}
                 layout="horizontal"
                 indicator="badge"
-                selected={!!o.selected}
-                icon={o.icon}
-                title={o.title}
-                description={o.description}
-              />
+                value={o.value}
+                selected={o.selected}
+                onSelect={() => {}}
+              >
+                <SelectCardIcon>{o.icon}</SelectCardIcon>
+                <SelectCardTitle>{o.title}</SelectCardTitle>
+                <SelectCardDescription>{o.description}</SelectCardDescription>
+              </SelectCard>
             ))}
           </div>
-          <Code>{`<SelectCard
-  layout="horizontal"
-  indicator="badge"
-  value="express"
-  selected={selected === 'express'}
-  onSelect={(value) => setSelected(value)}
->
-  <SelectCardIcon><Truck /></SelectCardIcon>
-  <SelectCardTitle>Express delivery</SelectCardTitle>
-  <SelectCardDescription>1–2 business days · Rp 25.000</SelectCardDescription>
+          <Code>{`<div className="flex flex-col gap-2">
+  <SelectCard layout="horizontal" value="express" selected={selected === 'express'} onSelect={setSelected}>
+    <SelectCardIcon><Truck /></SelectCardIcon>
+    <SelectCardTitle>Express delivery</SelectCardTitle>
+    <SelectCardDescription>1–2 business days · Rp 25.000</SelectCardDescription>
+  </SelectCard>
+</div>`}</Code>
+        </SubSection>
+
+        <SubSection title="Indicator">
+          <p className="text-xs text-gray-500 mb-3">
+            Two visual styles for showing the selected state. Default is{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">badge</code>.
+          </p>
+          <div className="flex flex-col gap-6 mb-4">
+            {[
+              {
+                indicator: 'badge',
+                desc: 'Circular badge in the corner — outline when unselected, filled when selected. Clear affordance.',
+              },
+              {
+                indicator: 'border',
+                desc: 'No indicator element — border and background change color. Cleaner when the selection context is obvious.',
+              },
+            ].map(({ indicator, desc }) => (
+              <div key={indicator}>
+                <p className="text-xs font-mono font-medium text-violet-700 mb-1">
+                  indicator="{indicator}"
+                </p>
+                <p className="text-xs text-gray-500 mb-3 max-w-sm">{desc}</p>
+                <div className="grid grid-cols-2 gap-3 max-w-xs">
+                  {[false, true].map((sel) => (
+                    <SelectCard
+                      key={String(sel)}
+                      indicator={indicator}
+                      layout="vertical"
+                      value="x"
+                      selected={sel}
+                      onSelect={() => {}}
+                    >
+                      <SelectCardIcon>
+                        <Zap className="size-5" />
+                      </SelectCardIcon>
+                      <SelectCardTitle>{sel ? 'Selected' : 'Unselected'}</SelectCardTitle>
+                      <SelectCardDescription>Active state</SelectCardDescription>
+                    </SelectCard>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <Code>{`{/* Badge indicator (default) */}
+<SelectCard indicator="badge" value="pro" selected={selected === 'pro'} onSelect={setSelected}>
+  ...
+</SelectCard>
+
+{/* Border only — no badge element */}
+<SelectCard indicator="border" value="card" selected={selected === 'card'} onSelect={setSelected}>
+  ...
 </SelectCard>`}</Code>
         </SubSection>
-      </Section>
 
-      {/* Indicator */}
-      <Section title="Indicator" description="Two visual styles for showing the selected state.">
-        <div className="flex flex-col gap-6">
-          {[
-            {
-              indicator: 'badge',
-              label: 'Badge',
-              desc: 'A circular badge in the corner — outline when unselected, filled checkmark when selected. Clear affordance for selection.',
-            },
-            {
-              indicator: 'border',
-              label: 'Border',
-              desc: 'No indicator element — the border and background change color on selection. Cleaner look when the selection context is obvious.',
-            },
-          ].map(({ indicator, label, desc }) => (
-            <div key={indicator}>
-              <div className="flex items-start gap-4 mb-2">
-                <div>
-                  <p className="text-xs font-mono font-medium text-violet-700 mb-0.5">
-                    indicator="{indicator}"
-                  </p>
-                  <p className="text-xs text-gray-500 max-w-sm">{desc}</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3 max-w-xs">
-                <MockCard
-                  indicator={indicator}
-                  layout="vertical"
-                  selected={false}
-                  icon={<Zap className="size-5" />}
-                  title="Unselected"
-                  description="Default state"
-                />
-                <MockCard
-                  indicator={indicator}
-                  layout="vertical"
-                  selected={true}
-                  icon={<Zap className="size-5" />}
-                  title="Selected"
-                  description="Active state"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* States */}
-      <Section title="States" description="All states across both layouts.">
-        {[
-          { layout: 'vertical', label: 'Vertical' },
-          { layout: 'horizontal', label: 'Horizontal' },
-        ].map(({ layout, label }) => (
-          <SubSection key={layout} title={label}>
-            <div
-              className={
-                layout === 'vertical'
-                  ? 'grid grid-cols-4 gap-3 max-w-2xl mb-4'
-                  : 'flex flex-col gap-2 max-w-sm mb-4'
-              }
-            >
-              {[
-                { state: 'Default', selected: false, disabled: false },
-                { state: 'Selected', selected: true, disabled: false },
-                { state: 'Disabled', selected: false, disabled: true },
-                { state: 'Disabled selected', selected: true, disabled: true },
-              ].map(({ state, selected, disabled }) => (
-                <div key={state} className="flex flex-col gap-1.5">
-                  <p className="text-xs text-gray-400 font-mono">{state}</p>
-                  <MockCard
-                    layout={layout}
-                    indicator="badge"
-                    selected={selected}
-                    disabled={disabled}
-                    icon={<Zap className="size-5" />}
-                    title="Option label"
-                    description="Supporting text"
-                  />
-                </div>
-              ))}
-            </div>
-          </SubSection>
-        ))}
-      </Section>
-
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use SelectCard when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Each option benefits from a visual icon or illustration to convey its meaning
-                    </li>
-                    <li>
-                      Options have a title plus supporting description (e.g. plan name + feature
-                      summary)
-                    </li>
-                    <li>
-                      The number of choices is small — typically 2–5 items — and worth giving visual
-                      weight
-                    </li>
-                    <li>
-                      You want the selected state to be obvious at a glance (highlighted card, not
-                      just a radio dot)
-                    </li>
-                    <li>
-                      Options are laid out in a grid (pricing tiers) or a stacked list (shipping
-                      methods, payment methods)
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>RadioGroup</strong> when options are text-only labels with no
-                      icons or descriptions — a compact list is clearer and takes less space
-                    </li>
-                    <li>
-                      Use <strong>Select / Combobox</strong> when there are 6+ options — a dropdown
-                      scales better than a row of cards
-                    </li>
-                    <li>
-                      Use <strong>Checkbox</strong> when users can pick multiple options
-                      simultaneously — SelectCard is single-select only
-                    </li>
-                    <li>
-                      Use <strong>ToggleGroup</strong> when options are very short labels (e.g. "S /
-                      M / L") and a button-bar style fits better
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Keep the number of cards small — 2 to 5 options. More than 5 cards in a row
-                  becomes overwhelming and defeats the visual clarity SelectCard is meant to
-                  provide.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always provide a{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">SelectCardTitle</code> for
-                  every card. Icons and descriptions are optional, but a clear label is required so
-                  users understand each option without guessing.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Pre-select a sensible default when one option is clearly the most common choice
-                  (e.g. the recommended plan or the free shipping tier). Leaving all cards
-                  unselected forces an extra click with no user benefit.
-                </p>
-              </div>
-            </div>
+        <SubSection title="Disabled">
+          <p className="text-xs text-gray-500 mb-3">
+            Pass <code className="font-mono bg-gray-100 px-1 rounded">disabled</code> to prevent
+            interaction. The card dims and cursor becomes not-allowed. Selected state is preserved
+            visually even when disabled.
+          </p>
+          <div className="grid grid-cols-3 gap-3 max-w-lg mb-4">
+            <SelectCard value="a" layout="vertical" selected={false} disabled onSelect={() => {}}>
+              <SelectCardIcon>
+                <Package className="size-5" />
+              </SelectCardIcon>
+              <SelectCardTitle>Starter</SelectCardTitle>
+              <SelectCardDescription>Disabled unselected</SelectCardDescription>
+            </SelectCard>
+            <SelectCard value="b" layout="vertical" selected={true} disabled onSelect={() => {}}>
+              <SelectCardIcon>
+                <Zap className="size-5" />
+              </SelectCardIcon>
+              <SelectCardTitle>Pro</SelectCardTitle>
+              <SelectCardDescription>Disabled selected</SelectCardDescription>
+            </SelectCard>
+            <SelectCard value="c" layout="vertical" selected={false} onSelect={() => {}}>
+              <SelectCardIcon>
+                <Shield className="size-5" />
+              </SelectCardIcon>
+              <SelectCardTitle>Enterprise</SelectCardTitle>
+              <SelectCardDescription>Active</SelectCardDescription>
+            </SelectCard>
           </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't mix SelectCard with a separate RadioGroup or Checkbox for the same selection
-                  — it creates inconsistent interaction patterns in the same form and confuses users
-                  about which control is authoritative.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't put long paragraphs inside{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">SelectCardDescription</code>
-                  . It should be one short sentence or a key detail (price, ETA, feature count). If
-                  you need more copy, use a tooltip or an expandable detail panel instead.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use SelectCard for multi-select scenarios. The component is designed for
-                  single-option selection — using it for multi-select requires custom state logic
-                  that breaks the expected UX (only one card highlighted at a time).
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* Props */}
-      <Section title="Props">
-        <SubSection title="SelectCard">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'layout',
-                    '"vertical" | "horizontal"',
-                    '"vertical"',
-                    'Visual layout — vertical stacks content, horizontal places icon on the left.',
-                  ],
-                  [
-                    'indicator',
-                    '"badge" | "border"',
-                    '"badge"',
-                    'Selection indicator style — badge shows a checkmark circle, border only changes the card border.',
-                  ],
-                  ['selected', 'boolean', 'false', 'Whether the card is currently selected.'],
-                  [
-                    'onSelect',
-                    '(value: string) => void',
-                    '—',
-                    'Called when the card is clicked. Receives the value prop.',
-                  ],
-                  [
-                    'value',
-                    'string',
-                    '—',
-                    'Identifier passed to onSelect — used to track which card is selected in the parent.',
-                  ],
-                  ['disabled', 'boolean', 'false', 'Prevents interaction and dims the card.'],
-                  ['className', 'string', '—', 'Additional CSS classes on the root element.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Code>{`<SelectCard value="starter" disabled selected={false} onSelect={setSelected}>
+  ...
+</SelectCard>`}</Code>
         </SubSection>
 
-        <SubSection title="SelectCardIcon / SelectCardTitle / SelectCardDescription">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['className', 'string', '—', 'Additional CSS classes.'],
-                  ['children', 'ReactNode', '—', 'Content to render inside the sub-component.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <SubSection title="Pricing / Plan selection">
+          <p className="text-xs text-gray-500 mb-3">
+            Vertical layout in a 3-column grid. One card pre-selected as the recommended plan.
+          </p>
+          <div className="mb-4">
+            <PlanDemo />
           </div>
-        </SubSection>
-      </Section>
-
-      {/* Usage examples */}
-      <Section title="Usage Examples" description="Real-world patterns using SelectCard.">
-        <SubSection
-          title="Pricing / Plan selection"
-          description="Vertical layout in a 3-column grid. One card pre-selected."
-        >
-          <OverviewDemo />
           <Code>{`const [plan, setPlan] = useState('pro')
 
 const plans = [
@@ -834,17 +564,20 @@ const plans = [
 </div>`}</Code>
         </SubSection>
 
-        <SubSection
-          title="Shipping / Delivery method"
-          description="Horizontal layout in a vertical list."
-        >
-          <HorizontalDemo />
+        <SubSection title="Shipping / Delivery method">
+          <p className="text-xs text-gray-500 mb-3">
+            Horizontal layout in a vertical list. Each card shows the delivery option, ETA, and
+            price as the description.
+          </p>
+          <div className="mb-4">
+            <ShippingDemo />
+          </div>
           <Code>{`const [method, setMethod] = useState('standard')
 
 const methods = [
-  { value: 'standard', icon: <Package />, title: 'Standard delivery', description: '3–5 business days · Free' },
-  { value: 'express',  icon: <Truck />,   title: 'Express delivery',  description: '1–2 business days · Rp 25.000' },
-  { value: 'overnight',icon: <Star />,    title: 'Overnight delivery', description: 'Next business day · Rp 75.000' },
+  { value: 'standard',  icon: <Package />, title: 'Standard delivery',  description: '3–5 business days · Free' },
+  { value: 'express',   icon: <Truck />,   title: 'Express delivery',   description: '1–2 business days · Rp 25.000' },
+  { value: 'overnight', icon: <Star />,    title: 'Overnight delivery', description: 'Next business day · Rp 75.000' },
 ]
 
 <div className="flex flex-col gap-2">
@@ -865,10 +598,12 @@ const methods = [
 </div>`}</Code>
         </SubSection>
 
-        <SubSection
-          title="Payment method"
-          description="Horizontal layout, border indicator — selection shown through border only."
-        >
+        <SubSection title="Payment method — border indicator">
+          <p className="text-xs text-gray-500 mb-3">
+            Horizontal layout with{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">indicator="border"</code> — no
+            badge element, selection shown through border and background only.
+          </p>
           <div className="flex flex-col gap-2 max-w-sm mb-4">
             {[
               {
@@ -883,17 +618,21 @@ const methods = [
                 icon: <Banknote className="size-5" />,
                 title: 'Bank transfer',
                 description: 'Manual transfer via ATM or m-banking',
+                selected: false,
               },
             ].map((p) => (
-              <MockCard
+              <SelectCard
                 key={p.value}
                 layout="horizontal"
                 indicator="border"
-                selected={!!p.selected}
-                icon={p.icon}
-                title={p.title}
-                description={p.description}
-              />
+                value={p.value}
+                selected={p.selected}
+                onSelect={() => {}}
+              >
+                <SelectCardIcon>{p.icon}</SelectCardIcon>
+                <SelectCardTitle>{p.title}</SelectCardTitle>
+                <SelectCardDescription>{p.description}</SelectCardDescription>
+              </SelectCard>
             ))}
           </div>
           <Code>{`<SelectCard
@@ -907,6 +646,185 @@ const methods = [
   <SelectCardTitle>Credit / Debit card</SelectCardTitle>
   <SelectCardDescription>Visa, Mastercard, JCB</SelectCardDescription>
 </SelectCard>`}</Code>
+        </SubSection>
+      </Section>
+
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title:
+                    'Use SelectCard when each option benefits from a visual icon and supporting description',
+                  body: 'Pricing plans, shipping methods, and payment options all have a title plus context. SelectCard surfaces that context directly — no need to expand or hover to understand each choice.',
+                },
+                {
+                  title:
+                    'Use vertical layout for grid arrangements, horizontal for list arrangements',
+                  body: 'Vertical works well in 2–3 column grids (pricing). Horizontal fits vertical lists (shipping methods) where the label scans left-to-right.',
+                },
+                {
+                  title:
+                    'Pre-select a sensible default when one option is clearly the recommended choice',
+                  body: 'Leaving all cards unselected forces an extra click with no user benefit. Pre-select the most common plan, the free tier, or the safest default.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't use SelectCard for text-only options — use RadioGroup",
+                  body: 'If the options have no icons or descriptions worth showing, a compact RadioGroup is clearer and takes less space. SelectCard adds visual weight that should be earned.',
+                },
+                {
+                  title: "Don't use SelectCard for 6 or more options — use Select or Combobox",
+                  body: 'A dropdown scales better than a row of cards when the option list grows long. More than 5 cards in a row becomes overwhelming.',
+                },
+                {
+                  title: "Don't use SelectCard for multiple selection — use Checkbox Group",
+                  body: 'SelectCard is designed for single-select only. Using it for multi-select requires custom state logic that breaks the expected UX of only one card highlighted at a time.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title:
+                    'Always provide a SelectCardTitle — it is the accessible label for the card',
+                  body: 'SelectCard uses role="button" with aria-pressed. The title text is what screen readers announce when the card receives focus. Icons and descriptions are supplementary.',
+                },
+                {
+                  title: 'Keyboard users can select cards with Enter or Space',
+                  body: 'SelectCard handles onKeyDown internally for Enter and Space. No additional keyboard wiring is needed.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: "Don't put long paragraphs in SelectCardDescription",
+                  body: 'The description should be one short sentence or a key detail (price, ETA, feature count). If you need more copy, use a tooltip or expandable detail panel instead.',
+                },
+                {
+                  title:
+                    "Don't mix SelectCard with RadioGroup or Checkbox for the same selection group",
+                  body: 'Mixing component types for the same choice creates inconsistent interaction patterns and confuses users about which control is authoritative.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* API Reference */}
+      <Section title="API Reference">
+        <SubSection title="SelectCard">
+          <ApiTable
+            rows={[
+              ['value', 'string', '—', 'Identifier passed to onSelect when the card is clicked.'],
+              [
+                'selected',
+                'boolean',
+                'false',
+                'Whether the card is currently selected. Drives all visual state changes.',
+              ],
+              [
+                'onSelect',
+                '(value: string) => void',
+                '—',
+                'Called when the card is clicked or activated via keyboard. Receives the value prop.',
+              ],
+              [
+                'layout',
+                '"vertical" | "horizontal"',
+                '"vertical"',
+                'Card content layout — vertical stacks content top-to-bottom; horizontal places icon on the left.',
+              ],
+              [
+                'indicator',
+                '"badge" | "border"',
+                '"badge"',
+                'Selection indicator style — badge shows a filled circle; border changes only the card border and background.',
+              ],
+              [
+                'disabled',
+                'boolean',
+                'false',
+                'Prevents interaction and dims the card. Selected state is preserved visually.',
+              ],
+              ['className', 'string', '—', 'Additional Tailwind classes on the root element.'],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="SelectCardIcon">
+          <ApiTable
+            rows={[
+              [
+                'children',
+                'ReactNode',
+                '—',
+                'Icon element to render (typically a lucide-react icon at size-5).',
+              ],
+              [
+                'className',
+                'string',
+                '—',
+                'Additional Tailwind classes. Applied alongside the auto-generated selected/unselected color classes.',
+              ],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="SelectCardTitle">
+          <ApiTable
+            rows={[
+              ['children', 'ReactNode', '—', 'Primary label text. Required for accessibility.'],
+              ['className', 'string', '—', 'Additional Tailwind classes.'],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="SelectCardDescription">
+          <ApiTable
+            rows={[
+              [
+                'children',
+                'ReactNode',
+                '—',
+                'Supporting text below the title. Keep to one short sentence or a key detail.',
+              ],
+              ['className', 'string', '—', 'Additional Tailwind classes.'],
+            ]}
+          />
         </SubSection>
       </Section>
     </div>

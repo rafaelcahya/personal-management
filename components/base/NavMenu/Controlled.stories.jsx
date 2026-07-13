@@ -17,6 +17,34 @@ import {
 const meta = { title: 'NavMenu/Controlled' }
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const Preview = ({ children }) => (
   <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg mb-3 overflow-visible">
     {children}
@@ -155,8 +183,8 @@ function ControlledDemo() {
 export const Controlled = {
   name: 'Controlled',
   render: () => (
-    <div className="flex flex-col gap-10 w-full max-w-3xl">
-      <p className="text-sm text-gray-500 leading-relaxed">
+    <div className="flex flex-col gap-6 w-full">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         Pass <code className="font-mono bg-gray-100 px-1 rounded text-xs">value</code> and{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">onValueChange</code> to take
         control of which dropdown is open. Give each{' '}
@@ -168,6 +196,51 @@ export const Controlled = {
       <Preview>
         <ControlledDemo />
       </Preview>
+
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use when you need to open a dropdown programmatically',
+                body: 'From a button elsewhere in the layout, a search result, or any event outside the nav — controlled mode lets any part of the page drive which dropdown is open.',
+              },
+              {
+                title: 'Use when the active dropdown id needs to be read by a parent component',
+                body: 'If adjacent UI needs to react to which dropdown is open (e.g. showing a sidebar panel), controlled mode gives you that value via onValueChange.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: 'Use uncontrolled mode when no external control is needed',
+                body: 'If you only need the nav to open/close on hover or click without any parent state, the default uncontrolled mode is simpler — same visual result with less boilerplate.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'onValueChange fires with null when all dropdowns close',
+                body: 'Handle the null case in any external logic that reads the active menu id — null means no dropdown is open, not an error.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Pass a stable string id and use trigger="click"',
+                body: 'The id prop is what value and onValueChange reference — avoid computed or unstable ids. trigger="click" is the natural pairing for controlled mode; in hover mode, onMouseLeave can override the controlled state.',
+              },
+            ],
+          },
+        ]}
+      />
 
       <Code>{`const [activeMenu, setActiveMenu] = useState(null)
 

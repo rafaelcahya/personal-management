@@ -82,6 +82,7 @@ const itemDisabled = 'opacity-40 cursor-not-allowed pointer-events-none'
 
 function DropdownMenu({ children, trigger = 'click' }) {
   const [open, setOpen] = useState(false)
+  const [activeKey, setActiveKey] = useState(null)
   const triggerRef = useRef(null)
   const closeTimer = useRef(null)
 
@@ -102,7 +103,17 @@ function DropdownMenu({ children, trigger = 'click' }) {
 
   return (
     <MenuCtx.Provider
-      value={{ open, setOpen, openMenu, closeMenu, cancelClose, trigger, triggerRef }}
+      value={{
+        open,
+        setOpen,
+        openMenu,
+        closeMenu,
+        cancelClose,
+        trigger,
+        triggerRef,
+        activeKey,
+        setActiveKey,
+      }}
     >
       {children}
     </MenuCtx.Provider>
@@ -137,7 +148,8 @@ function DropdownMenuTrigger({ children, asChild = false }) {
 // ─── DropdownMenuContent ────────────────────────────────────────────────────────
 
 function DropdownMenuContent({ children, className }) {
-  const { open, setOpen, closeMenu, cancelClose, trigger, triggerRef } = useContext(MenuCtx)
+  const { open, setOpen, closeMenu, cancelClose, trigger, triggerRef, setActiveKey } =
+    useContext(MenuCtx)
   const contentRef = useRef(null)
   const [posKey, setPosKey] = useState(0)
   const floatStyle = useFloating(triggerRef, contentRef, open, 'bottom', posKey)
@@ -150,6 +162,22 @@ function DropdownMenuContent({ children, className }) {
     return () => {
       window.removeEventListener('scroll', handler, { capture: true })
       window.removeEventListener('resize', handler)
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    function onDown(e) {
+      setActiveKey(e.key.toLowerCase())
+    }
+    function onUp() {
+      setActiveKey(null)
+    }
+    document.addEventListener('keydown', onDown)
+    document.addEventListener('keyup', onUp)
+    return () => {
+      document.removeEventListener('keydown', onDown)
+      document.removeEventListener('keyup', onUp)
     }
   }, [open])
 
@@ -235,12 +263,13 @@ function DropdownMenuItem({
   icon: Icon,
   label,
   shortcut,
+  shortcutVariant = 'chip',
   disabled,
   onSelect,
   className,
   children,
 }) {
-  const { setOpen } = useContext(MenuCtx)
+  const { setOpen, activeKey } = useContext(MenuCtx)
 
   const handleClick = () => {
     if (disabled) return
@@ -252,8 +281,40 @@ function DropdownMenuItem({
     <>
       {Icon && <Icon className="size-4 shrink-0 text-gray-500" />}
       {label !== undefined ? <span className="flex-1 text-left">{label}</span> : children}
-      {shortcut && (
-        <span className="ml-auto text-xs text-gray-400 tracking-widest">{shortcut}</span>
+      {shortcut && shortcutVariant === 'chip' && (
+        <span className="ml-auto flex items-center gap-1 shrink-0">
+          {shortcut.split(' ').map((k, i) => (
+            <kbd
+              key={i}
+              className={cn(
+                'inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono border rounded transition-colors',
+                activeKey === k.toLowerCase()
+                  ? 'bg-violet-100 border-violet-300 text-violet-600'
+                  : 'bg-gray-100 border-gray-200 text-gray-500'
+              )}
+            >
+              {k}
+            </kbd>
+          ))}
+        </span>
+      )}
+      {shortcut && shortcutVariant === 'text' && (
+        <span className="ml-auto flex shrink-0 tracking-[0.5em]">
+          {shortcut
+            .replace(/ /g, '')
+            .split('')
+            .map((char, i) => (
+              <span
+                key={i}
+                className={cn(
+                  'text-[11px] font-mono transition-colors',
+                  activeKey === char.toLowerCase() ? 'text-violet-500' : 'text-gray-400'
+                )}
+              >
+                {char}
+              </span>
+            ))}
+        </span>
       )}
     </>
   )

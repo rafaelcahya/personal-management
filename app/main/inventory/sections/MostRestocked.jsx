@@ -41,6 +41,7 @@ import {
   EmptyStateDescription,
   EmptyStateActions,
 } from '@/components/base/EmptyState/EmptyState'
+import { Badge } from '@/components/base/Badge/Badge'
 
 function TableSkeleton() {
   return (
@@ -74,7 +75,7 @@ function RestockTable({ items, startIndex = 0 }) {
             </TableHead>
             <TableHead>Product</TableHead>
             <TableHead>Last Restock</TableHead>
-            <TableHead>Restocks</TableHead>
+            <TableHead align="right">Restocks</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody divider={false}>
@@ -99,10 +100,8 @@ function RestockTable({ items, startIndex = 0 }) {
                   ? format(new Date(item.last_restock_date), 'dd MMM yyyy')
                   : '—'}
               </TableCell>
-              <TableCell>
-                <span className="bg-violet-100 text-violet-700 border border-violet-200 rounded-full px-2 py-0.5 text-xs font-medium">
-                  {item.restock_count}×
-                </span>
+              <TableCell align="right">
+                <Badge variant="secondary">{item.restock_count}×</Badge>
               </TableCell>
             </TableRow>
           ))}
@@ -187,7 +186,7 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
               <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
                 <EmptyStateActions>
-                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                  <Button variant="outline" onClick={onRetry} className="min-w-11">
                     Try again
                   </Button>
                 </EmptyStateActions>
@@ -217,20 +216,21 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
         <ModalContent
           variant="bordered"
           borderColor="border-slate-200"
-          className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
+          className="max-h-[85vh]"
+          size="lg"
         >
-          <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalHeader layout="beside">
             <ModalIcon icon={RefreshCw} />
             <ModalHeaderContent>
               <ModalTitle>All Products — Restock History</ModalTitle>
               <ModalDescription>Sorted by most restocked</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
+          <ModalBody className="p-0">
             <RestockTable items={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
           {modalTotalPages > 1 && (
-            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+            <ModalFooter>
               <Pagination
                 page={modalPage}
                 totalPages={modalTotalPages}

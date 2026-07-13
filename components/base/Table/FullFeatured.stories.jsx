@@ -7,6 +7,34 @@ import { DataTable } from './DataTable'
 const meta = { title: 'Table/Full Featured' }
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const data = [
   {
     id: 1,
@@ -93,12 +121,7 @@ function FullFeaturedDemo() {
       sortable: true,
       width: 90,
     },
-    {
-      id: 'name',
-      header: 'Name',
-      cell: (row) => row.name,
-      sortable: true,
-    },
+    { id: 'name', header: 'Name', cell: (row) => row.name, sortable: true },
     {
       id: 'sector',
       header: 'Sector',
@@ -115,13 +138,7 @@ function FullFeaturedDemo() {
       sortable: true,
       align: 'right',
     },
-    {
-      id: 'qty',
-      header: 'Qty',
-      cell: (row) => row.qty,
-      sortable: true,
-      align: 'right',
-    },
+    { id: 'qty', header: 'Qty', cell: (row) => row.qty, sortable: true, align: 'right' },
     {
       id: 'pl',
       header: 'P&L',
@@ -202,15 +219,63 @@ function FullFeaturedDemo() {
 export const FullFeatured = {
   name: 'Full Featured',
   render: () => (
-    <div className="flex flex-col gap-6 w-full max-w-4xl">
+    <div className="flex flex-col gap-6 w-full">
       <p className="text-sm text-gray-500 leading-relaxed">
         All features enabled simultaneously: search, sort, select, expand, pagination, sticky
         header, and a custom empty state. This is the closest to a real app usage.
       </p>
 
-      <FullFeaturedDemo />
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">
+          search · sort · select · expand · pagination · sticky header
+        </span>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <FullFeaturedDemo />
+        </div>
+      </div>
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Combine features progressively — only add what the use case requires',
+                body: 'Start with data + columns. Add searchable, sortable, pagination as needed. Only add selectable and expandable when the user actually needs bulk actions or inline detail.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't enable every feature by default",
+                body: 'Checkboxes and expand arrows on a simple read-only list create visual noise. Enable each feature only when users have a concrete reason to use it.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Test the feature combination — search, sort, and pagination all interact',
+                body: 'Search resets page to 1. Sort applies after search but before pagination. If you combine all three, verify the interaction order produces the result users expect.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use stickyHeader when the table is taller than the viewport',
+                body: 'stickyHeader keeps column labels visible as users scroll down — critical when pageSize is large (20+) or the expand content is tall.',
+              },
+            ],
+          },
+        ]}
+      />
+
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
         <code>{`<DataTable
   data={positions}
   rowId="id"

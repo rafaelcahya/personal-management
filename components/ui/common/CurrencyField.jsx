@@ -1,9 +1,7 @@
 'use client'
 
+import { FieldContent, FieldLabel, FieldError } from '@/components/base/Field/Field'
 import { Controller } from 'react-hook-form'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
 import Input from '@/components/base/Input/Input'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
 

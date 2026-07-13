@@ -7,6 +7,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 function Panel({ title, body }) {
   return (
     <div className="pt-4">
@@ -68,6 +96,47 @@ export const Basic = {
           </TabsContent>
         </Tabs>
       </div>
+
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Set defaultValue to the most important panel',
+                body: 'The first panel users see sets their mental model of the feature. Default to the highest-value or most-used panel — not just the first item in the list.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use defaultValue for a panel that's rarely needed",
+                body: 'If users almost never visit the first tab, reconsider the panel order. The default tab should reflect the most common entry point.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Make sure defaultValue matches a real TabsTrigger value',
+                body: 'A mismatch silently renders the tab strip with no active indicator and no visible panel. Double-check that every defaultValue corresponds to an existing trigger.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use uncontrolled mode for self-contained tab groups',
+                body: 'Switch to value + onValueChange only when an external action — a URL param, sidebar link, or button outside the tabs — needs to drive the active tab.',
+              },
+            ],
+          },
+        ]}
+      />
 
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
         <code>{`<Tabs defaultValue="overview">

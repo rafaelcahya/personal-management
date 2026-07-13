@@ -63,6 +63,44 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ component, rows }) => (
+  <div className="mb-6">
+    {component && <p className="text-xs font-mono font-semibold text-gray-500 mb-2">{component}</p>}
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function OverviewDemo() {
@@ -123,7 +161,6 @@ export const Docs = {
 
       {/* Anatomy */}
       <Section title="Anatomy">
-        {/* Box diagram */}
         <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
           <div className="flex flex-wrap gap-8">
             <div className="flex flex-col gap-2">
@@ -131,26 +168,22 @@ export const Docs = {
                 Structure
               </span>
 
-              {/* Root: ToastProvider */}
               <div className="relative p-4 border-2 border-dashed border-violet-400 rounded-xl inline-block">
                 <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
                   ToastProvider
                 </span>
 
-                {/* Core: Toast */}
                 <div className="relative p-3 border border-dashed border-blue-300 rounded-lg mb-2">
                   <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-blue-500">
                     Toast
                   </span>
                   <div className="mt-1 flex flex-col gap-1.5">
-                    {/* Internal: ToastTitle */}
                     <div className="relative p-2 border border-dashed border-slate-300 rounded">
                       <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-slate-400">
                         ToastTitle
                       </span>
                       <div className="mt-0.5 text-[10px] text-gray-400 font-mono">title text</div>
                     </div>
-                    {/* Internal: ToastDescription */}
                     <div className="relative p-2 border border-dashed border-slate-300 rounded">
                       <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-slate-400">
                         ToastDescription
@@ -159,7 +192,6 @@ export const Docs = {
                         description text
                       </div>
                     </div>
-                    {/* Optional: ToastAction */}
                     <div className="relative p-2 border border-dashed border-green-300 rounded">
                       <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
                         ToastAction (optional)
@@ -168,7 +200,6 @@ export const Docs = {
                         action button
                       </div>
                     </div>
-                    {/* Optional: ToastClose */}
                     <div className="relative p-2 border border-dashed border-green-300 rounded">
                       <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
                         ToastClose (optional)
@@ -178,7 +209,6 @@ export const Docs = {
                   </div>
                 </div>
 
-                {/* Core: ToastViewport */}
                 <div className="relative p-3 border border-dashed border-blue-300 rounded-lg">
                   <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-blue-500">
                     ToastViewport
@@ -192,7 +222,6 @@ export const Docs = {
           </div>
         </div>
 
-        {/* Parts table */}
         <div className="overflow-x-auto mb-4">
           <table className="w-full text-sm border-collapse">
             <thead>
@@ -211,7 +240,7 @@ export const Docs = {
               {[
                 [
                   'ToastProvider',
-                  '<div> (context)',
+                  '(context only)',
                   'Required root. Accepts position prop — controls viewport placement and slide animation direction.',
                 ],
                 [
@@ -222,12 +251,12 @@ export const Docs = {
                 [
                   'Toast',
                   '<li>',
-                  'Individual toast notification. Accepts variant, duration, open, and onOpenChange.',
+                  'Individual toast notification. Accepts variant, duration, animation, and onOpenChange.',
                 ],
-                ['ToastTitle', '<div>', 'Semibold heading text inside the toast.'],
+                ['ToastTitle', '<p>', 'Semibold heading text inside the toast.'],
                 [
                   'ToastDescription',
-                  '<div>',
+                  '<p>',
                   'Supporting body text below the title. Slightly smaller and muted.',
                 ],
                 [
@@ -255,9 +284,8 @@ export const Docs = {
           </table>
         </div>
 
-        {/* Source code */}
         <Code>{`<ToastProvider position="bottom-right">
-  <Toast open={open} onOpenChange={setOpen} variant="success">
+  <Toast onOpenChange={(o) => !o && setOpen(false)} variant="success">
     <div className="flex-1 min-w-0">
       <ToastTitle>Saved</ToastTitle>
       <ToastDescription>Your changes have been saved.</ToastDescription>
@@ -289,34 +317,38 @@ export const Docs = {
 <ToastProvider position="bottom-right">
   <button onClick={() => setOpen(true)}>Show Toast</button>
 
-  <Toast open={open} onOpenChange={setOpen}>
-    <div className="flex-1 min-w-0">
-      <ToastTitle>Done</ToastTitle>
-      <ToastDescription>Action completed successfully.</ToastDescription>
-    </div>
-    <ToastClose />
-  </Toast>
+  {open && (
+    <Toast onOpenChange={(o) => !o && setOpen(false)}>
+      <div className="flex-1 min-w-0">
+        <ToastTitle>Done</ToastTitle>
+        <ToastDescription>Action completed successfully.</ToastDescription>
+      </div>
+      <ToastClose />
+    </Toast>
+  )}
 
   <ToastViewport />
 </ToastProvider>`}</Code>
         </SubSection>
 
         <SubSection title="With action button">
-          <Code>{`<Toast open={open} onOpenChange={setOpen} variant="info">
-  <div className="flex-1 min-w-0">
-    <ToastTitle>Update available</ToastTitle>
-    <ToastDescription>A new version is ready to install.</ToastDescription>
-  </div>
-  <ToastAction altText="Install update" variant="info">Install</ToastAction>
-  <ToastClose />
-</Toast>`}</Code>
+          <Code>{`{open && (
+  <Toast onOpenChange={(o) => !o && setOpen(false)} variant="info">
+    <div className="flex-1 min-w-0">
+      <ToastTitle>Update available</ToastTitle>
+      <ToastDescription>A new version is ready to install.</ToastDescription>
+    </div>
+    <ToastAction altText="Install update" variant="info">Install</ToastAction>
+    <ToastClose />
+  </Toast>
+)}`}</Code>
         </SubSection>
       </Section>
 
       {/* Animation */}
       <Section
         title="Animation"
-        description="Toasts slide in/out from the direction matching their viewport position. Duration controls auto-dismiss timing."
+        description="Toasts slide in/out from the direction matching their viewport position."
       >
         <SubSection title="Enter / exit">
           <div className="overflow-x-auto mb-4">
@@ -335,9 +367,12 @@ export const Docs = {
               </thead>
               <tbody>
                 {[
-                  ['open', 'Slides in from the direction of the viewport position + fades in'],
+                  [
+                    'open (mount)',
+                    'Slides in from the direction of the viewport position + fades in',
+                  ],
                   ['closed (auto or dismiss)', 'Slides out in the same direction + fades out'],
-                  ['swipe right', 'Follows finger, then slides out on release'],
+                  ['swipe right > 80px', 'Follows pointer, then closes on release'],
                 ].map(([event, desc]) => (
                   <tr key={event} className="even:bg-gray-50">
                     <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
@@ -365,328 +400,175 @@ export const Docs = {
         </SubSection>
       </Section>
 
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use Toast for transient, low-stakes feedback',
+                  body: 'Toasts work well for brief confirmations like "Saved", "Deleted", or "Copied" — messages where it is safe to miss the notification and the user can keep working without reading it.',
+                },
+                {
+                  title: 'Add an Undo action when the operation is reversible',
+                  body: 'For destructive actions like deleting an item, a ToastAction Undo button lets the user recover without navigating back into settings.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't use Toast for messages that must always be visible",
+                  body: 'Use a Banner when the message must stay on screen until explicitly dismissed — e.g. a system outage warning or a required consent notice.',
+                },
+                {
+                  title: "Don't use Toast when the user must make a decision",
+                  body: 'If the user must acknowledge or choose before continuing — e.g. confirming a destructive action — use a Modal instead. A toast auto-dismisses and gives no guarantee the user saw it.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Always include a ToastClose button',
+                  body: 'Auto-dismiss may not fire if the tab stays in background or the timer is cleared. A close button guarantees the user can always dismiss the toast manually.',
+                },
+                {
+                  title: 'Always include altText on ToastAction',
+                  body: 'altText is the accessible label for screen readers. Write it as a short imperative — "Undo delete" or "Install update" — not just "Undo" or "Install".',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Always wrap with ToastProvider + ToastViewport',
+                  body: 'ToastViewport creates a Portal on document.body. Without it, toasts render inside the current DOM tree and get clipped by overflow:hidden containers.',
+                },
+                {
+                  title: 'Use conditional rendering — {open && <Toast>}',
+                  body: 'Mount the toast when you want it to appear. The component manages its own enter/exit animation and calls onOpenChange(false) after the exit completes so you can unmount it cleanly.',
+                },
+                {
+                  title: 'Use duration={Infinity} only for actionable toasts',
+                  body: 'If a toast requires the user to click an action to proceed, set duration={Infinity} and always include a ToastClose button. A persistent toast without a dismiss option traps the user.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       {/* API Reference */}
       <Section title="API Reference">
         <SubSection title="Toast" description="The individual toast notification element.">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'variant',
-                    "'default' | 'info' | 'success' | 'warning' | 'danger'",
-                    "'default'",
-                    'Semantic color variant.',
-                  ],
-                  [
-                    'animation',
-                    "'slide-fade' | 'slide' | 'fade' | 'none'",
-                    "'slide-fade'",
-                    'Enter/exit animation. slide-fade: slide up + fade. slide: slide only. fade: fade only. none: instant.',
-                  ],
-                  [
-                    'duration',
-                    'number',
-                    '5000',
-                    'Auto-dismiss delay in ms. Pass Infinity to disable.',
-                  ],
-                  ['open', 'boolean', '—', 'Controlled open state.'],
-                  ['onOpenChange', '(open: boolean) => void', '—', 'Called when state changes.'],
-                  ['className', 'string', '—', 'Extra classes merged onto the toast.'],
-                  ['children', 'ReactNode', '—', 'Content — title, description, actions.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'variant',
+                "'default' | 'info' | 'success' | 'warning' | 'danger'",
+                "'default'",
+                'Semantic color variant.',
+              ],
+              [
+                'animation',
+                "'slide-fade' | 'slide' | 'fade' | 'none'",
+                "'slide-fade'",
+                'Enter/exit animation. slide-fade combines slide + fade. slide moves only. fade opacity only. none is instant.',
+              ],
+              ['duration', 'number', '5000', 'Auto-dismiss delay in ms. Pass Infinity to disable.'],
+              [
+                'onOpenChange',
+                '(open: boolean) => void',
+                '—',
+                'Called with false after exit animation completes.',
+              ],
+              ['className', 'string', '—', 'Extra classes merged onto the toast.'],
+              ['children', 'ReactNode', '—', 'Content — title, description, actions.'],
+            ]}
+          />
         </SubSection>
 
         <SubSection
           title="ToastProvider"
           description="Required root. Provides position context shared by ToastViewport and Toast."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'position',
-                    "'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'",
-                    "'bottom-right'",
-                    'Screen position for the toast stack. Controls both viewport placement and slide animation direction.',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'position',
+                "'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'",
+                "'bottom-right'",
+                'Screen position for the toast stack. Controls both viewport placement and slide animation direction.',
+              ],
+            ]}
+          />
         </SubSection>
 
         <SubSection
           title="ToastViewport"
           description="Fixed portal container for all active toasts. Reads position from ToastProvider context."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[['className', 'string', '—', 'Extra classes merged onto the viewport.']].map(
-                  ([prop, type, def, desc]) => (
-                    <tr key={prop} className="even:bg-gray-50">
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                        {prop}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                        {type}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                        {def}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                        {desc}
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[['className', 'string', '—', 'Extra classes merged onto the viewport.']]}
+          />
         </SubSection>
 
         <SubSection
           title="ToastAction"
           description="Optional action button rendered inside the toast."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['altText', 'string', '—', 'Required screen reader label describing the action.'],
-                  [
-                    'variant',
-                    "'default' | 'info' | 'success' | 'warning' | 'danger'",
-                    "'default'",
-                    'Match to the parent Toast variant for correct border/hover colors.',
-                  ],
-                  [
-                    'position',
-                    "'inline' | 'stacked-left' | 'stacked-right'",
-                    "'inline'",
-                    'inline — action sits in the same row. stacked-left / stacked-right — action wraps to its own row, aligned left or right.',
-                  ],
-                  ['children', 'ReactNode', '—', 'Button label.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'altText',
+                'string',
+                '—',
+                'Required accessible label describing the action for screen readers.',
+              ],
+              [
+                'variant',
+                "'default' | 'info' | 'success' | 'warning' | 'danger'",
+                "'default'",
+                'Match to the parent Toast variant for correct border/hover colors.',
+              ],
+              [
+                'position',
+                "'inline' | 'stacked-left' | 'stacked-right'",
+                "'inline'",
+                'inline — sits in the same row. stacked-left / stacked-right — wraps to its own row, aligned left or right.',
+              ],
+              ['children', 'ReactNode', '—', 'Button label.'],
+            ]}
+          />
         </SubSection>
-      </Section>
-
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Toast when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The action has completed and the user only needs a brief confirmation (e.g.
-                      "Saved", "Deleted", "Copied")
-                    </li>
-                    <li>
-                      The notification is transient — it is safe to miss and does not block the
-                      user's workflow
-                    </li>
-                    <li>
-                      An optional inline action (e.g. Undo) is useful but not required to proceed
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Banner</strong> when the message must remain visible until
-                      explicitly dismissed — e.g. a system outage warning or a required consent
-                      notice
-                    </li>
-                    <li>
-                      Use <strong>Modal</strong> when the user must acknowledge or make a decision
-                      before continuing — e.g. a destructive action confirmation
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Keep the message short and outcome-focused — "Changes saved" or "Item deleted"
-                  tells the user exactly what happened without extra words.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Match the variant to the severity: use <strong>success</strong> for confirmations,{' '}
-                  <strong>danger</strong> for errors, <strong>warning</strong> for caution, and{' '}
-                  <strong>info</strong> for neutral updates.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Provide an Undo action when the operation is reversible — e.g. after deleting an
-                  item — so the user can recover without re-opening settings.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use a Toast for error messages that require user input to resolve — an
-                  inline form error or a Modal is more appropriate when action is required.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't stack more than 3 toasts at once. Flooding the screen reduces the signal
-                  value of each notification and overwhelms the user.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't pass{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">duration={'{Infinity}'}</code>{' '}
-                  unless the message is truly critical — persistent toasts overlap page content and
-                  defeat the purpose of a transient notification.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
       </Section>
     </div>
   ),

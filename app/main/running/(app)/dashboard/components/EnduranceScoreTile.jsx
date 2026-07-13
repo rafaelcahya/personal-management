@@ -36,7 +36,7 @@ export default function EnduranceScoreTile({ enduranceScore, viewTrendHref }) {
             <CardIcon icon={Gauge} />
             <CardHeaderContent>
               <CardTitle>Endurance Score</CardTitle>
-              <CardDescription className="text-xs text-slate-400">
+              <CardDescription>
                 Composite fitness score (0–100) from VO₂max, training load, and long run history.
               </CardDescription>
             </CardHeaderContent>

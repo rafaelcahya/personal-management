@@ -1,5 +1,6 @@
 'use client'
 
+import { FieldContent, FieldLabel, FieldError, FieldContainer } from '@/components/base/Field/Field'
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { cn } from '@/lib/utils'
@@ -19,9 +20,6 @@ import {
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
 import Input from '@/components/base/Input/Input'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
 import Textarea from '@/components/base/Textarea/Textarea'
 import { AlertCircle, Loader2, Package } from 'lucide-react'
 import {
@@ -111,7 +109,7 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader layout="beside" padding={{ x: 4 }}>
+        <ModalHeader layout="beside">
           <ModalIcon icon={Package} />
           <ModalHeaderContent>
             <ModalTitle>Update Product Name</ModalTitle>
@@ -122,96 +120,78 @@ export default function ProductNameUpdate({ productName, onClose, onUpdated }) {
         </ModalHeader>
 
         <form onSubmit={handleSubmit(handleUpdate)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody
-            className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto"
-            padding={{ x: 4 }}
-          >
-            <Controller
-              control={control}
-              name="product_name"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Product Name</FieldLabel>
-                  <Input
-                    {...field}
-                    placeholder="e.g. Clear"
-                    className={cn(
-                      'text-sm font-medium capitalize focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                      fieldState.error && 'border-red-500 focus-visible:ring-red-500'
-                    )}
-                  />
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
-
-            {/* Status Select */}
-            <Controller
-              control={control}
-              name="product_name_status"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Status</FieldLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-green-500 rounded-full" />
-                          <span>Active</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="inactive">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                          <span>Inactive</span>
-                        </div>
-                      </SelectItem>
-                      {isDeleted && (
-                        <SelectItem value="deleted" className="text-red-600 hover:bg-red-50">
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                            <span>Deleted</span>
-                          </div>
-                        </SelectItem>
+          <ModalBody className="overflow-y-auto">
+            <FieldContainer>
+              <Controller
+                control={control}
+                name="product_name"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Product Name</FieldLabel>
+                    <Input
+                      {...field}
+                      placeholder="e.g. Clear"
+                      className={cn(
+                        'text-sm font-medium capitalize focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                        fieldState.error && 'border-red-500 focus-visible:ring-red-500'
                       )}
-                    </SelectContent>
-                  </Select>
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
+                    />
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
 
-            {/* Notes */}
-            <Controller
-              control={control}
-              name="note"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Note</FieldLabel>
-                  <Textarea
-                    {...field}
-                    placeholder="Additional notes about this brand..."
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-vertical min-h-[80px]"
-                    rows={3}
-                  />
-                </FieldContent>
-              )}
-            />
+              {/* Status Select */}
+              <Controller
+                control={control}
+                name="product_name_status"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Status</FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                        {isDeleted && <SelectItem value="deleted">Deleted</SelectItem>}
+                      </SelectContent>
+                    </Select>
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
 
-            {isInUse && !isDeleted && (
-              <Card id="productNameInUseWarning_updateDialog" variant="danger">
-                <CardContent className="flex items-start gap-2">
-                  <CardIcon icon={AlertCircle} />
-                  <CardDescription className="text-sm font-medium text-rose-600 dark:text-rose-400">
-                    Product name is still used by {productName.product_count} product(s) and cannot
-                    be deleted.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            )}
+              {/* Notes */}
+              <Controller
+                control={control}
+                name="note"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Note</FieldLabel>
+                    <Textarea
+                      {...field}
+                      placeholder="Additional notes about this brand..."
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-vertical min-h-[80px]"
+                      rows={3}
+                    />
+                  </FieldContent>
+                )}
+              />
+
+              {isInUse && !isDeleted && (
+                <Card id="productNameInUseWarning_updateDialog" variant="danger">
+                  <CardContent className="flex items-start gap-2">
+                    <CardIcon icon={AlertCircle} />
+                    <CardDescription className="text-sm font-medium text-rose-600 dark:text-rose-400">
+                      Product name is still used by {productName.product_count} product(s) and
+                      cannot be deleted.
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              )}
+            </FieldContainer>
           </ModalBody>
 
           <ModalFooter>

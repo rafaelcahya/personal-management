@@ -15,6 +15,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 export const WithActions = {
   name: 'With Actions',
   render: () => (
@@ -94,6 +122,47 @@ export const WithActions = {
           </div>
         </div>
       </div>
+
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Add an action when there is a clear next step',
+                body: 'Add Product, Import CSV, Retry — these move the user forward. If there is no meaningful action available, omit EmptyStateActions entirely rather than adding a placeholder.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: 'Never add more than two actions',
+                body: 'Limit to one primary and one ghost or secondary. More than two creates decision paralysis and dilutes the call to action. Never use Dismiss or Skip as a primary — those are not meaningful next steps.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Primary action goes first in EmptyStateActions',
+                body: 'The first button in EmptyStateActions is the most prominent. Place the main CTA first so keyboard and screen reader users reach it before secondary options.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use variant="outline" on Retry for error variant',
+                body: 'A filled primary button on a red empty state looks alarming. The outline keeps the recovery tone calm while still providing a clear action. Use ghost for a secondary support link.',
+              },
+            ],
+          },
+        ]}
+      />
 
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* single action */}

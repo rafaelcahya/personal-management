@@ -427,7 +427,7 @@ export default function TrainingLoad({ data, weeklyStats }) {
             </CardDescription>
           </CardHeaderContent>
         </CardHeader>
-        <CardContent padding="md" className="flex flex-col gap-3">
+        <CardContent className="flex flex-col gap-3">
           {/* Hero row — ACWR + status + ramp */}
           <div className="flex flex-col-reverse sm:flex-row sm:items-start sm:justify-between gap-4 pb-2">
             <div className="flex flex-col gap-1">

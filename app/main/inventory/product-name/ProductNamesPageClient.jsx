@@ -128,7 +128,7 @@ export default function ProductNamesPageClient() {
         />
 
         {/* Table area */}
-        <CardContent padding="none">
+        <CardContent className="p-0">
           {error ? (
             <div
               id="errorState_productNamePage"
@@ -141,7 +141,7 @@ export default function ProductNamesPageClient() {
                 <p className="text-sm font-medium text-slate-700">Failed to load product names</p>
                 <p className="text-xs text-slate-500">Check your connection and try again</p>
               </div>
-              <Button variant="outline" size="base" onClick={handleRefresh} className="min-w-11">
+              <Button variant="outline" onClick={handleRefresh} className="min-w-11">
                 Try again
               </Button>
             </div>

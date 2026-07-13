@@ -17,8 +17,10 @@ import {
   ArrowUpDown,
   FilePenLine,
   MoreHorizontalIcon,
+  PackagePlus,
   Pencil,
   StarIcon,
+  Trash2Icon,
 } from 'lucide-react'
 import Pagination from '@/components/base/Pagination/Pagination'
 import { toast } from 'sonner'
@@ -49,16 +51,10 @@ const COLUMN_SORT_MAP = {
 
 function QuantityBadge({ quantity }) {
   if (quantity === 0) {
-    return (
-      <Badge className="bg-red-100 text-red-600 hover:bg-red-100 font-mono">Out of Stock</Badge>
-    )
+    return <Badge className="bg-red-100 text-red-700">Out of Stock</Badge>
   }
   if (quantity > 0 && quantity < LOW_STOCK_THRESHOLD) {
-    return (
-      <Badge className="bg-yellow-100 text-yellow-600 hover:bg-yellow-100 font-mono">
-        Low Stock
-      </Badge>
-    )
+    return <Badge className="bg-yellow-100 text-yellow-700">Low Stock</Badge>
   }
   return <span className="font-mono font-medium tabular-nums">{quantity}</span>
 }
@@ -66,9 +62,11 @@ function QuantityBadge({ quantity }) {
 function ActionMenu({
   product,
   onEdit,
+  onAddStock,
   onRecordUsage,
   onToggleFavorite,
   loadingFavorite,
+  onDelete,
   onRefresh,
 }) {
   return (
@@ -94,10 +92,11 @@ function ActionMenu({
           Edit Product
         </DropdownMenuItem>
         <DropdownMenuItem
-          asDiv
-          className="p-0 hover:bg-violet-50 hover:outline-none focus:bg-violet-50"
+          onSelect={() => onAddStock(product)}
+          className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
         >
-          <AddStockForm product={product} onAdded={onRefresh} />
+          <PackagePlus className="h-4 w-4 mr-2" />
+          Add Stock
         </DropdownMenuItem>
         <DropdownMenuItem
           id="recordUsageAction_productListPage"
@@ -123,8 +122,12 @@ function ActionMenu({
         {!product.deleted_at && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asDiv className="p-0">
-              <DeleteProductDialog product={product} onDeleted={onRefresh} />
+            <DropdownMenuItem
+              onSelect={() => onDelete(product)}
+              className="text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700 cursor-pointer"
+            >
+              <Trash2Icon className="h-4 w-4 mr-2" />
+              Delete Product
             </DropdownMenuItem>
           </>
         )}
@@ -156,6 +159,8 @@ export default function ProductsTable({
 }) {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [editProduct, setEditProduct] = useState(null)
+  const [addStockProduct, setAddStockProduct] = useState(null)
+  const [deleteProduct, setDeleteProduct] = useState(null)
   const [loadingFavorite, setLoadingFavorite] = useState(null)
   const [previewImg, setPreviewImg] = useState(null)
 
@@ -187,7 +192,9 @@ export default function ProductsTable({
 
   const sharedActionProps = {
     onEdit: setEditProduct,
+    onAddStock: setAddStockProduct,
     onRecordUsage: setSelectedProduct,
+    onDelete: setDeleteProduct,
     onToggleFavorite: handleToggleFavorite,
     loadingFavorite,
     onRefresh,
@@ -211,33 +218,35 @@ export default function ProductsTable({
                     product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'
                   }`}
                 />
-                {product.product_image && (
-                  <Button
-                    size="xs"
-                    variant="ghost"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setPreviewImg(product.product_image)
-                    }}
-                    className="shrink-0 hover:bg-transparent"
-                    aria-label="View product image"
-                  >
-                    <img
-                      src={product.product_image}
-                      alt={product.product}
-                      className="size-8 rounded object-cover border border-slate-200"
-                    />
-                  </Button>
-                )}
-                <div className="min-w-0">
-                  <p className="text-xs text-slate-400 truncate leading-tight">{product.brand}</p>
-                  <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                    <p className="font-medium text-slate-700 text-sm truncate">{product.product}</p>
-                    {product.type && (
-                      <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                        {product.type}
-                      </span>
-                    )}
+                <div className="flex flex-col items-start gap-2">
+                  {product.product_image && (
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setPreviewImg(product.product_image)
+                      }}
+                      className="shrink-0 cursor-pointer"
+                      aria-label="View product image"
+                    >
+                      <img
+                        src={product.product_image}
+                        alt={product.product}
+                        className="size-8 rounded object-cover border border-slate-200"
+                      />
+                    </span>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-xs text-slate-400 truncate leading-tight">{product.brand}</p>
+                    <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                      <p className="font-medium text-slate-700 text-sm truncate">
+                        {product.product}
+                      </p>
+                      {product.type && (
+                        <Badge className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
+                          {product.type}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -347,14 +356,12 @@ export default function ProductsTable({
                       }`}
                     />
                     {product.product_image && (
-                      <Button
-                        size="xs"
-                        variant="ghost"
+                      <span
                         onClick={(e) => {
                           e.stopPropagation()
                           setPreviewImg(product.product_image)
                         }}
-                        className="shrink-0 hover:bg-transparent"
+                        className="shrink-0 cursor-pointer"
                         aria-label="View product image"
                       >
                         <img
@@ -362,11 +369,11 @@ export default function ProductsTable({
                           alt={product.product}
                           className="size-8 rounded object-cover border border-slate-200"
                         />
-                      </Button>
+                      </span>
                     )}
-                    <div className="min-w-0">
+                    <div>
                       <p className="text-xs text-slate-400 truncate">{product.brand}</p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
+                      <div className="flex flex-col items-start gap-1.5">
                         <p className="font-semibold text-slate-900 truncate">{product.product}</p>
                         {product.type && (
                           <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
@@ -406,8 +413,8 @@ export default function ProductsTable({
                   <Badge
                     className={`${
                       product.product_status === 'active'
-                        ? 'bg-green-100 text-green-600 hover:bg-green-100 capitalize'
-                        : 'bg-red-100 text-red-600 hover:bg-red-100 capitalize'
+                        ? 'bg-green-100 text-green-700 hover:bg-green-100 capitalize'
+                        : 'bg-red-100 text-red-700 hover:bg-red-100 capitalize'
                     }`}
                   >
                     {product.product_status}
@@ -431,6 +438,34 @@ export default function ProductsTable({
         onNext={onNext}
         className="pb-4"
       />
+
+      {deleteProduct && (
+        <DeleteProductDialog
+          product={deleteProduct}
+          open={true}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setDeleteProduct(null)
+          }}
+          onDeleted={async () => {
+            await onRefresh()
+            setDeleteProduct(null)
+          }}
+        />
+      )}
+
+      {addStockProduct && (
+        <AddStockForm
+          product={addStockProduct}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setAddStockProduct(null)
+          }}
+          onAdded={async () => {
+            await onRefresh()
+            setAddStockProduct(null)
+          }}
+        />
+      )}
 
       {selectedProduct && (
         <StockAdjustment

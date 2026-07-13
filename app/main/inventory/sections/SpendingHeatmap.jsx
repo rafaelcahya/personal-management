@@ -93,7 +93,7 @@ export default function SpendingHeatmap({ items, loading }) {
         </CardHeaderContent>
       </CardHeader>
 
-      <CardContent padding="none">
+      <CardContent className="p-0">
         <div className="relative">
           <div className="px-5 py-4 overflow-x-auto">
             <div className="inline-flex gap-3">

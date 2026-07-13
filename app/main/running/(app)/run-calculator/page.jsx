@@ -1,11 +1,10 @@
 'use client'
 
+import { FieldContent, FieldLabel } from '@/components/base/Field/Field'
 import { useState, useMemo, useEffect } from 'react'
 import { Timer, AlertTriangle } from 'lucide-react'
 import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import Input from '@/components/base/Input/Input'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/base/Tabs/Tabs.jsx'
 import { RadioGroup, RadioGroupItem } from '@/components/base/RadioGroup/RadioGroup'
 import {

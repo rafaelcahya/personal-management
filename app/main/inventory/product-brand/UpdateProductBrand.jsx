@@ -1,5 +1,6 @@
 'use client'
 
+import { FieldContent, FieldLabel, FieldError, FieldContainer } from '@/components/base/Field/Field'
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { cn } from '@/lib/utils'
@@ -20,9 +21,6 @@ import {
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
 import Input from '@/components/base/Input/Input'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
 import Textarea from '@/components/base/Textarea/Textarea'
 import {
   Select,
@@ -107,11 +105,10 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
     <Modal open={!!productBrand} onOpenChange={onClose}>
       <ModalContent
         id="updateBrandDialog_productBrandPage"
-        className="sm:max-w-md"
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader layout="beside" padding={{ x: 4 }}>
+        <ModalHeader layout="beside">
           <ModalIcon icon={Tag} />
           <ModalHeaderContent>
             <ModalTitle>Update Product Brand</ModalTitle>
@@ -122,98 +119,80 @@ export default function ProductBrandUpdate({ productBrand, onClose, onUpdated })
         </ModalHeader>
 
         <form onSubmit={handleSubmit(handleUpdate)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody
-            className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto"
-            padding={{ x: 4 }}
-          >
-            {/* Brand Name */}
-            <Controller
-              control={control}
-              name="brand"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Brand Name</FieldLabel>
-                  <Input
-                    {...field}
-                    id="brandNameInput_updateBrandDialog"
-                    placeholder="e.g. Clear"
-                    className={cn(
-                      'text-sm font-medium capitalize focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
-                      fieldState.error && 'border-red-500 focus-visible:ring-red-500'
-                    )}
-                  />
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
-
-            {/* Status Select */}
-            <Controller
-              control={control}
-              name="brand_status"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Status</FieldLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger id="statusSelect_updateBrandDialog" className="w-full">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-green-500 rounded-full" />
-                          <span>Active</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="inactive">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                          <span>Inactive</span>
-                        </div>
-                      </SelectItem>
-                      {isDeleted && (
-                        <SelectItem value="deleted" className="text-red-600 hover:bg-red-50">
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                            <span>Deleted</span>
-                          </div>
-                        </SelectItem>
+          <ModalBody className="overflow-y-auto">
+            <FieldContainer>
+              {/* Brand Name */}
+              <Controller
+                control={control}
+                name="brand"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Brand Name</FieldLabel>
+                    <Input
+                      {...field}
+                      id="brandNameInput_updateBrandDialog"
+                      placeholder="e.g. Clear"
+                      className={cn(
+                        'text-sm font-medium capitalize focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500',
+                        fieldState.error && 'border-red-500 focus-visible:ring-red-500'
                       )}
-                    </SelectContent>
-                  </Select>
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
+                    />
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
 
-            {/* Notes */}
-            <Controller
-              control={control}
-              name="note"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Note</FieldLabel>
-                  <Textarea
-                    {...field}
-                    id="noteInput_updateBrandDialog"
-                    placeholder="Additional notes about this brand..."
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-vertical min-h-[80px]"
-                    rows={3}
-                  />
-                </FieldContent>
-              )}
-            />
+              {/* Status Select */}
+              <Controller
+                control={control}
+                name="brand_status"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Status</FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="statusSelect_updateBrandDialog">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                        {isDeleted && <SelectItem value="deleted">Deleted</SelectItem>}
+                      </SelectContent>
+                    </Select>
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
 
-            {isInUse && !isDeleted && (
-              <Card id="brandInUseWarning_updateBrandDialog" variant="danger">
-                <CardContent className="flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
-                  <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
-                    Brand is by {productBrand.product_count} product(s) and cannot be deleted.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+              {/* Notes */}
+              <Controller
+                control={control}
+                name="note"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Note</FieldLabel>
+                    <Textarea
+                      {...field}
+                      id="noteInput_updateBrandDialog"
+                      placeholder="Additional notes about this brand..."
+                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-vertical min-h-[80px]"
+                      rows={3}
+                    />
+                  </FieldContent>
+                )}
+              />
+
+              {isInUse && !isDeleted && (
+                <Card id="brandInUseWarning_updateBrandDialog" variant="danger">
+                  <CardContent className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
+                    <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
+                      Brand is by {productBrand.product_count} product(s) and cannot be deleted.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </FieldContainer>
           </ModalBody>
 
           <ModalFooter>

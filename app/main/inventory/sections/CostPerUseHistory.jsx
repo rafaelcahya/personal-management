@@ -75,10 +75,10 @@ function ProductSelector({ items, selectedId, onChange }) {
       value={selectedId != null ? String(selectedId) : ''}
       onValueChange={(val) => onChange(Number(val))}
     >
-      <SelectTrigger className="text-xs h-8 w-full">
+      <SelectTrigger className="text-xs">
         <SelectValue />
       </SelectTrigger>
-      <SelectContent className="max-h-48 overflow-y-auto">
+      <SelectContent>
         {items.map((item) => (
           <SelectItem key={item.product_list_id} value={String(item.product_list_id)}>
             {item.brand ? `${item.brand} · ` : ''}

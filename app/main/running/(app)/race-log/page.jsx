@@ -176,7 +176,6 @@ export default function RaceLogPage() {
           <Button
             id="addRaceBtn"
             onClick={() => setFormOpen(true)}
-            size="base"
             className="flex items-center gap-1.5"
             aria-label="Log race"
           >
@@ -186,7 +185,6 @@ export default function RaceLogPage() {
           <Button
             id="addUpcomingRaceBtn_raceLogPage"
             onClick={() => setAddUpcomingOpen(true)}
-            size="base"
             className="flex items-center gap-1.5"
             aria-label="Add upcoming race"
           >
@@ -230,7 +228,7 @@ export default function RaceLogPage() {
         >
           <AlertTriangle className="size-8 text-red-400" aria-hidden="true" />
           <p className="text-sm text-slate-600">{error}</p>
-          <Button variant="outline" size="base" onClick={load}>
+          <Button variant="outline" onClick={load}>
             Try again
           </Button>
         </div>
@@ -245,11 +243,7 @@ export default function RaceLogPage() {
             Every race you finish deserves to be remembered.
           </EmptyStateDescription>
           <EmptyStateActions>
-            <Button
-              onClick={() => setFormOpen(true)}
-              size="base"
-              className="flex items-center gap-1.5"
-            >
+            <Button onClick={() => setFormOpen(true)} className="flex items-center gap-1.5">
               <Flag className="size-4" aria-hidden="true" />
               Log your first race
             </Button>
@@ -270,10 +264,7 @@ export default function RaceLogPage() {
             </CardHeaderContent>
           </CardHeader>
 
-          <CardContent
-            padding="none"
-            className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5"
-          >
+          <CardContent className="sticky top-0 z-10 bg-white border-b border-slate-100">
             <div className="relative mb-2">
               <Search
                 className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none"
@@ -330,7 +321,7 @@ export default function RaceLogPage() {
             </div>
           </CardContent>
 
-          <CardContent padding="none">
+          <CardContent className="p-0">
             <Table
               id="raceLogList"
               wrapperClassName="overflow-x-auto flex-1"

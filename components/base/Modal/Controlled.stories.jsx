@@ -15,20 +15,54 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 export const Controlled = {
   name: 'Controlled',
   render: () => {
     const [open, setOpen] = useState(false)
 
     return (
-      <div className="flex flex-col items-center gap-6 w-full">
-        <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
-          Pass <code className="font-mono bg-gray-100 px-1 rounded text-xs">open</code> and{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-xs">onOpenChange</code> to{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-xs">Modal</code> to control open
-          state externally — useful when the trigger is elsewhere in the tree, or when the modal
-          opens from a programmatic event (e.g., after an API call).
-        </p>
+      <div className="flex flex-col gap-6 w-full">
+        <div className="flex flex-col gap-2 max-w-2xl">
+          <p className="text-sm text-gray-500 leading-relaxed">
+            Pass <code className="font-mono bg-gray-100 px-1 rounded text-xs">open</code> and{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded text-xs">onOpenChange</code> to{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded text-xs">Modal</code> to control
+            open state externally. In this mode,{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded text-xs">ModalTrigger</code> is
+            omitted — the modal is opened and closed entirely through parent state. This is the
+            controlled pattern, as opposed to the uncontrolled pattern where{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded text-xs">ModalTrigger</code> manages
+            state internally.
+          </p>
+        </div>
 
         <div className="flex flex-col gap-5 w-full max-w-2xl">
           <div className="flex flex-col gap-1.5">
@@ -81,6 +115,51 @@ export const Controlled = {
             </Modal>
           </div>
         </div>
+
+        <BestPractices
+          items={[
+            {
+              heading: 'When to use',
+              cards: [
+                {
+                  title: 'Use when the trigger lives in a different part of the component tree',
+                  body: 'A toolbar button that opens a modal rendered in a different section of the page — the trigger and modal cannot share the same Modal root in the tree.',
+                },
+                {
+                  title: 'Use for programmatic open events',
+                  body: 'After a successful API call, validation error, or timer expiry. The uncontrolled ModalTrigger pattern has no way to handle events that originate outside the modal tree.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              cards: [
+                {
+                  title: 'Use uncontrolled when trigger and modal are co-located',
+                  body: 'If the trigger and modal live in the same component, the uncontrolled pattern (Modal + ModalTrigger) requires less state management and is easier to reason about.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              cards: [
+                {
+                  title: 'Always pass onOpenChange so dismiss paths still work',
+                  body: 'Without onOpenChange, the × button, overlay click, and Escape key cannot update the external state. The modal appears stuck open to the user.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              cards: [
+                {
+                  title: 'onOpenChange receives false when the user dismisses — handle it',
+                  body: "The handler is called with false when the user presses Escape, clicks the overlay, or clicks ×. Make sure setOpen(false) is what you want — don't open a second modal or run side effects on every dismiss.",
+                },
+              ],
+            },
+          ]}
+        />
 
         <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
           <code>{`const [open, setOpen] = useState(false)

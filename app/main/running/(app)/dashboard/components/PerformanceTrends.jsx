@@ -17,6 +17,7 @@ import Card, {
   CardContent,
   CardDescription,
   CardHeader,
+  CardHeaderContent,
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
@@ -709,14 +710,14 @@ export default function PerformanceTrends({ activityType }) {
       <Card>
         <CardHeader>
           <CardIcon icon={TrendingUp} />
-          <div className="min-w-0 flex-1">
+          <CardHeaderContent>
             <CardTitle>Performance Trends</CardTitle>
             <CardDescription>
               {loading || error
                 ? 'Heart rate, pace, effort, and power across recent runs.'
                 : `Last ${data.length} runs · Running activities only`}
             </CardDescription>
-          </div>
+          </CardHeaderContent>
         </CardHeader>
         <CardContent className="flex flex-col gap-8">
           {loading && (

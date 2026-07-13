@@ -865,7 +865,6 @@ export default function ActivityDetailPage() {
                           <Button
                             id="notesCancelBtn_activityDetailPage"
                             variant="secondary"
-                            size="base"
                             onClick={() => setNotesEditing(false)}
                             disabled={notesSaving}
                             className="text-violet-600 font-medium"
@@ -874,7 +873,6 @@ export default function ActivityDetailPage() {
                           </Button>
                           <Button
                             id="notesSaveBtn_activityDetailPage"
-                            size="base"
                             onClick={handleSaveNotes}
                             disabled={notesSaving}
                             className="min-w-[60px]"

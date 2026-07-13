@@ -47,7 +47,7 @@ function formatIDR(amount) {
 function PctChange({ pct }) {
   if (pct === null || pct === undefined || isNaN(pct)) {
     return (
-      <span className="flex items-center gap-1 text-slate-500">
+      <span className="flex items-center justify-end gap-1 text-slate-500">
         <Minus className="size-3" aria-hidden="true" />
         <span>—</span>
       </span>
@@ -57,7 +57,7 @@ function PctChange({ pct }) {
   const isNeg = pct < 0
   return (
     <span
-      className={`flex items-center gap-1 font-medium ${isPos ? 'text-emerald-600' : isNeg ? 'text-red-500' : 'text-slate-500'}`}
+      className={`flex items-center justify-end gap-1 font-medium ${isPos ? 'text-emerald-600' : isNeg ? 'text-red-500' : 'text-slate-500'}`}
     >
       {isPos && <TrendingUp className="size-3" aria-hidden="true" />}
       {isNeg && <TrendingDown className="size-3" aria-hidden="true" />}
@@ -94,7 +94,7 @@ function HoldingsEmptyState({ onAdd }) {
       <EmptyStateTitle>No currency holdings yet</EmptyStateTitle>
       <EmptyStateDescription>Add your first investment to get started</EmptyStateDescription>
       <EmptyStateActions>
-        <Button size="base" onClick={onAdd} className="bg-violet-600 hover:bg-violet-700 min-w-11">
+        <Button onClick={onAdd} className="bg-violet-600 hover:bg-violet-700 min-w-11">
           <Plus className="size-4 mr-1.5" aria-hidden="true" />
           Add Investment
         </Button>
@@ -110,7 +110,7 @@ function HoldingsErrorState({ onRetry }) {
       <EmptyStateTitle>Failed to load holdings</EmptyStateTitle>
       <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
       <EmptyStateActions>
-        <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+        <Button variant="outline" onClick={onRetry} className="min-w-11">
           Try again
         </Button>
       </EmptyStateActions>
@@ -214,7 +214,6 @@ export default function HoldingsPage() {
           <CardAction>
             <Button
               id="addInvestmentBtn_holdingsPage"
-              size="base"
               onClick={() => setSheetOpen(true)}
               className="bg-violet-600 hover:bg-violet-700 min-w-11"
             >

@@ -324,7 +324,7 @@ export default function RouteBuilderPage() {
             >
               <AlertCircle className="size-5 text-red-400" />
               <p className="text-sm text-slate-500">{routesError}</p>
-              <Button variant="ghost" size="base" onClick={loadRoutes} className="text-violet-600">
+              <Button variant="ghost" onClick={loadRoutes} className="text-violet-600">
                 Retry
               </Button>
             </div>

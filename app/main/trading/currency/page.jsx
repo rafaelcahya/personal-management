@@ -196,7 +196,7 @@ export default function CurrencyDashboardPage() {
               <p className="text-sm font-medium text-slate-700">Failed to load currency data</p>
               <p className="text-xs text-slate-500">Check your connection and try again</p>
             </div>
-            <Button variant="outline" size="base" onClick={loadData} className="min-w-11">
+            <Button variant="outline" onClick={loadData} className="min-w-11">
               Try again
             </Button>
           </CardContent>

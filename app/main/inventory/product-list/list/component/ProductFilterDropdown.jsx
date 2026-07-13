@@ -59,7 +59,6 @@ export default function ProductFilterDropdown({ filter, onFilterChange, summary,
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          size="base"
           className="gap-2 focus-visible:ring-violet-200 focus-visible:border-violet-500"
         >
           <Filter className="size-4" aria-hidden="true" />
@@ -72,7 +71,6 @@ export default function ProductFilterDropdown({ filter, onFilterChange, summary,
           {filter && (
             <Button
               variant="ghost"
-              size="base"
               className="h-6 px-2 text-xs hover:bg-violet-100 text-violet-500 hover:text-violet-500"
               onClick={(e) => {
                 e.stopPropagation()

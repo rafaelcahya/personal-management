@@ -351,127 +351,86 @@ export const Docs = {
         </div>
       </section>
 
-      {/* When to Use */}
+      {/* Best Practices */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use EmptyState when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Best Practices</h2>
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use for section-level or full-page zero-data states',
+                  body: 'A list, table, or card has zero items to show — render EmptyState so the user knows the section exists but is currently empty. Never hide a section when there is no data.',
+                },
+                {
+                  title: 'Use for failed fetches with an optional retry action',
+                  body: 'When a network or server failure replaces content, use variant="error" and add a Retry button. An error state with no recovery path is a dead end.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't show EmptyState while data is loading",
+                  body: 'Show a skeleton loader instead — EmptyState is for resolved zero-data states only. Showing it during loading creates a false impression that the section has no data.',
+                },
+                {
+                  title: "Don't use for transient errors that don't replace content",
+                  body: 'Use a toast or alert for transient errors that do not take over the content area. EmptyState is for persistent states where the content area is completely replaced.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Always provide at least a title',
+                  body: 'EmptyStateTitle is the minimum signal. It tells the user what is missing. Add a description when the reason is not immediately obvious, and an action when there is a clear next step.',
+                },
+                {
+                  title: 'When there is a clear next step, add an EmptyStateActions button',
+                  body: 'Add Product, Import CSV, Retry — these move the user forward. Limit to one primary and one ghost at most. Never use Dismiss or Skip as a primary action.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Match variant to the situation',
+                  body: 'Use empty for zero data, search when a filter or query produced no results, and error for server or network failures. Using the wrong variant sends a misleading signal.',
+                },
+                {
+                  title: 'Match size to the container',
+                  body: 'xs for dropdowns and popovers, sm for compact table rows, default for cards and panels, lg for full-page layouts where EmptyState is the primary view content.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      A list, table, or card section has zero items to display and you need to
-                      communicate that to the user
-                    </li>
-                    <li>
-                      A data fetch fails and you want to show an error state with an optional retry
-                      action
-                    </li>
-                    <li>
-                      A search or filter query returns no matching results and you need to guide the
-                      user on next steps
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use a <strong>skeleton loader</strong> when data is still loading — EmptyState
-                      is for resolved zero-data states only
-                    </li>
-                    <li>
-                      Use a <strong>toast or alert</strong> when you need to notify the user of a
-                      transient error that does not replace page content
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Dos & Don'ts */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Dos & Don&apos;ts</h2>
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Match the <code className="bg-green-100 px-1 rounded">variant</code> to the
-                  situation — use <strong>empty</strong> for zero data, <strong>search</strong> when
-                  a filter or query produced no results, and <strong>error</strong> when a network
-                  or server failure occurred.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Match the <code className="bg-green-100 px-1 rounded">size</code> to the container
-                  — use <strong>xs/sm</strong> inside dropdowns and table rows,{' '}
-                  <strong>default</strong> inside cards and panels, and <strong>lg</strong> when the
-                  entire page is empty.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always provide at least a <strong>title</strong>. Add a description when the
-                  reason for the empty state is not immediately obvious, and add an action button
-                  when there is a clear next step the user can take.
-                </p>
               </div>
             </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don&apos;t</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don&apos;t hide a section or render nothing when there is no data. A missing
-                  section causes confusion — always render <strong>EmptyState</strong> so the user
-                  knows the section exists but is currently empty.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don&apos;t use the <strong>error</strong> variant for zero-data situations.
-                  Reserve it exclusively for failed fetches or server errors — misusing it trains
-                  users to ignore real error states.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don&apos;t place multiple action buttons without a clear primary action first.
-                  Keep <strong>EmptyStateActions</strong> to one primary button and at most one
-                  ghost/secondary button to avoid decision paralysis.
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 

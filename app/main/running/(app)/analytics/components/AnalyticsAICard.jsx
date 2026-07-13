@@ -285,7 +285,7 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
     >
       <Accordion type="single" collapsible>
         <AccordionItem value="item" className="border-0">
-          <AccordionTrigger className="px-0 py-2 gap-2 items-center hover:no-underline focus-visible:ring-violet-200 rounded">
+          <AccordionTrigger className="gap-2 items-center hover:no-underline focus-visible:ring-violet-200 rounded">
             <span className="flex items-center justify-center w-6 h-6 rounded-md bg-violet-100 shrink-0">
               <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-hidden="true" />
             </span>
@@ -327,8 +327,8 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
             </div>
           )}
 
-          <AccordionContent className="pb-0">
-            <div className="space-y-3 pt-1">
+          <AccordionContent>
+            <div className="space-y-3">
               {/* Loading skeleton */}
               {insights === undefined && !loadError && (
                 <div
@@ -353,7 +353,6 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                   <Button
                     id={`analyticsAiRetryBtn_${sectionId}_analyticsPage`}
                     variant="ghost"
-                    size="base"
                     className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal text-xs"
                     onClick={() => {
                       stopPolling()
@@ -379,7 +378,6 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                   )}
                   <Button
                     id={`analyticsAiGenerateBtn_${sectionId}_analyticsPage`}
-                    size="base"
                     disabled={generating}
                     onClick={handleGenerate}
                     className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 focus-visible:ring-2 focus-visible:ring-violet-200"
@@ -440,7 +438,6 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                     <Button
                       id={`analyticsAiRefreshBtn_${sectionId}_analyticsPage`}
                       variant="ghost"
-                      size="base"
                       disabled={generating || isPending}
                       onClick={handleGenerate}
                       className="text-violet-600 hover:text-violet-700 px-0 h-auto text-xs font-normal focus-visible:ring-2 focus-visible:ring-violet-200"
@@ -474,8 +471,8 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
         <SheetContent
           id={`analyticsAiHistoryModal_${sectionId}_analyticsPage`}
           side="right"
-          className="w-full md:w-[480px] p-0"
           aria-label="Analysis history"
+          size="lg"
         >
           <SheetHeader className="px-6 py-4 border-b border-slate-100">
             <SheetTitle className="text-base font-semibold text-slate-800">
@@ -492,11 +489,11 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                     <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
                       {group.label}
                     </p>
-                    <div className="space-y-4">
+                    <Accordion type="single" variant="card" collapsible>
                       {group.items.map((item) => (
                         <HistoryItem key={item.id} insight={item} />
                       ))}
-                    </div>
+                    </Accordion>
                   </div>
                 ))
               )}
@@ -510,23 +507,21 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
 
 function HistoryItem({ insight }) {
   return (
-    <Accordion type="single" collapsible>
-      <AccordionItem value="history" className="border border-slate-200 rounded-lg !border-b">
-        <AccordionTrigger className="items-center hover:no-underline hover:bg-slate-50 rounded-lg data-[state=open]:rounded-b-none focus-visible:ring-violet-200 focus-visible:ring-inset px-4">
-          <p className="text-xs text-slate-500 truncate">
-            {new Date(insight.created_at).toLocaleString('en-US', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </p>
-        </AccordionTrigger>
-        <AccordionContent className="px-4 py-4 border-t border-slate-100">
-          <RoleInsight content={insight.content} />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <AccordionItem value={insight.id}>
+      <AccordionTrigger>
+        <p className="text-xs text-slate-500 truncate">
+          {new Date(insight.created_at).toLocaleString('en-US', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </p>
+      </AccordionTrigger>
+      <AccordionContent>
+        <RoleInsight content={insight.content} />
+      </AccordionContent>
+    </AccordionItem>
   )
 }

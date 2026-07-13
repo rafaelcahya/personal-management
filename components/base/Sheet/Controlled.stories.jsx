@@ -18,6 +18,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 function ControlledDemo() {
   const [open, setOpen] = useState(false)
 
@@ -89,17 +117,67 @@ function ControlledDemo() {
 export const Controlled = {
   name: 'Controlled',
   render: () => (
-    <div className="flex flex-col gap-6 w-full max-w-xl min-h-48">
-      <p className="text-sm text-gray-500 leading-relaxed">
+    <div className="flex flex-col gap-6 w-full">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         Pass <code className="font-mono bg-gray-100 px-1 rounded text-xs">open</code> and{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">onOpenChange</code> to take
         full control of the open state. Useful when you need to open/close programmatically — e.g.
         after a form save, route change, or from a sibling component.
       </p>
 
-      <ControlledDemo />
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">controlled open state with external buttons</span>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <ControlledDemo />
+        </div>
+      </div>
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Controlled mode when the sheet must close after a save',
+                body: 'Call setOpen(false) inside your async submit handler after the action completes. Uncontrolled mode cannot do this — the user must manually close.',
+              },
+              {
+                title: 'Controlled mode when form state must reset on open',
+                body: 'Trigger the reset inside onOpenChange(true) so stale field values never appear when the sheet reopens after a previous submission.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use controlled mode for simple trigger-and-dismiss flows",
+                body: 'Uncontrolled (no open prop) is simpler and requires less boilerplate. Only reach for controlled mode when you need programmatic open/close.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Controlled open state does not affect focus or keyboard behavior',
+                body: 'Whether open is set by state or the trigger, focus management, Escape, and scroll lock all behave identically.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Always handle onOpenChange — never leave it undefined in controlled mode',
+                body: "Without onOpenChange, Escape and overlay clicks won't update your state, and the sheet will appear to ignore those interactions.",
+              },
+            ],
+          },
+        ]}
+      />
+
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
         <code>{`{/* Uncontrolled (default) */}
 <Sheet>
   <SheetTrigger asChild>

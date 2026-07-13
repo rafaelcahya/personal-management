@@ -1,9 +1,9 @@
 'use client'
 
+import { FieldLabel } from '@/components/base/Field/Field'
 import { useState } from 'react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 import { PlusIcon, Trash2, LinkIcon } from 'lucide-react'
 import Card from '@/components/base/Card/Card'
 
@@ -120,7 +120,6 @@ export default function EventLinksInput({ value = [], onChange, error }) {
         <Button
           type="button"
           variant="outline"
-          size="base"
           onClick={handleAdd}
           id="addLinkBtn_eventPage"
           className="self-start text-violet-600 border-violet-200 hover:bg-violet-50 h-7 text-xs font-medium"

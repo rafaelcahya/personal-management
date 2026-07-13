@@ -12,7 +12,7 @@ export default function DashboardError({ message, onRetry }) {
       aria-live="assertive"
     >
       <p className="text-slate-500 text-sm">{message || 'Failed to load dashboard'}</p>
-      <Button onClick={onRetry} variant="outline" size="base">
+      <Button onClick={onRetry} variant="outline">
         <RefreshCw className="w-4 h-4 mr-2" aria-hidden="true" />
         Retry
       </Button>

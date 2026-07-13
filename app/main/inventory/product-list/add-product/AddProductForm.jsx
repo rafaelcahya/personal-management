@@ -1,5 +1,12 @@
 'use client'
 
+import {
+  FieldContent,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+  FieldContainer,
+} from '@/components/base/Field/Field'
 import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -20,10 +27,6 @@ import {
   ModalTitle,
   ModalTrigger,
 } from '@/components/base/Modal/Modal.jsx'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
-import FieldDescription from '@/components/base/Field/FieldDescription'
 import {
   Select,
   SelectContent,
@@ -160,12 +163,12 @@ export default function AddProductForm({ onAdded }) {
         </Button>
       </ModalTrigger>
       <ModalContent
-        className="sm:max-w-md flex flex-col max-h-[90vh]"
+        className="max-h-[90vh]"
         id="addNewProductForm_productPage"
         variant="bordered"
         borderColor="border-slate-200"
       >
-        <ModalHeader layout="beside" padding={{ x: 4 }}>
+        <ModalHeader layout="beside">
           <ModalIcon icon={Package} />
           <ModalHeaderContent>
             <ModalTitle>Add New Product</ModalTitle>
@@ -176,169 +179,165 @@ export default function AddProductForm({ onAdded }) {
         </ModalHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody className="space-y-4" padding={{ x: 4 }}>
-            {/* Image Upload */}
-            <FieldContent>
-              <FieldLabel className="font-medium">Product Image</FieldLabel>
-              <AttachmentGroup
-                id="productImageField_productPage"
-                trigger="dropzone"
-                accept="image/*"
-                multiple={false}
-                maxFiles={1}
-                showTriggerAlways={false}
-                onFilesAdd={handleImageAdd}
-              >
-                {imageAttachment && (
-                  <Attachment
-                    file={{
-                      name: imageAttachment.file.name,
-                      size: imageAttachment.file.size,
-                      type: imageAttachment.file.type,
-                      url: imageAttachment.objectUrl,
-                    }}
-                    status="idle"
-                    onRemove={handleImageRemove}
-                  />
+          <ModalBody>
+            <FieldContainer>
+              {/* Image Upload */}
+              <FieldContent>
+                <FieldLabel className="font-medium">Product Image</FieldLabel>
+                <AttachmentGroup
+                  id="productImageField_productPage"
+                  trigger="dropzone"
+                  accept="image/*"
+                  multiple={false}
+                  maxFiles={1}
+                  showTriggerAlways={false}
+                  onFilesAdd={handleImageAdd}
+                >
+                  {imageAttachment && (
+                    <Attachment
+                      file={{
+                        name: imageAttachment.file.name,
+                        size: imageAttachment.file.size,
+                        type: imageAttachment.file.type,
+                        url: imageAttachment.objectUrl,
+                      }}
+                      status="idle"
+                      onRemove={handleImageRemove}
+                    />
+                  )}
+                </AttachmentGroup>
+                <FieldDescription className="text-xs text-slate-400">
+                  Add a photo to easily identify this product later 🖼️
+                </FieldDescription>
+              </FieldContent>
+
+              {/* Product Brand */}
+              <Controller
+                control={form.control}
+                name="product_brand"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel>Product brand</FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="productBrandField_productPage" className="font-medium">
+                        <SelectValue placeholder="Select brand" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {productBrands?.length === 0 ? (
+                          <SelectItem disabled value="">
+                            No active product brands available
+                          </SelectItem>
+                        ) : (
+                          productBrands?.map((productBrand) => (
+                            <SelectItem key={productBrand.id} value={productBrand.id.toString()}>
+                              {productBrand.brand}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FieldDescription className="text-xs text-slate-400">
+                      Which brand is this from? 🏷️
+                    </FieldDescription>
+                    <FieldError />
+                  </FieldContent>
                 )}
-              </AttachmentGroup>
-              <FieldDescription className="text-xs text-slate-400">
-                Add a photo to easily identify this product later 🖼️
-              </FieldDescription>
-            </FieldContent>
+              />
 
-            {/* Product Brand */}
-            <Controller
-              control={form.control}
-              name="product_brand"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel>Product brand</FieldLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger
-                      className="min-w-full font-medium"
-                      id="productBrandField_productPage"
-                    >
-                      <SelectValue placeholder="Select brand" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60 overflow-y-auto">
-                      {productBrands?.length === 0 ? (
-                        <div className="p-8 text-center text-muted-foreground">
-                          No active product brands available
-                        </div>
-                      ) : (
-                        productBrands?.map((productBrand) => (
-                          <SelectItem key={productBrand.id} value={productBrand.id.toString()}>
-                            {productBrand.brand}
+              {/* Product Name */}
+              <Controller
+                control={control}
+                name="product_name"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel>Product name</FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="productNameField_productPage" className="font-medium">
+                        <SelectValue placeholder="Select name" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {productNames?.length === 0 ? (
+                          <SelectItem disabled value="">
+                            No active product names available
                           </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <FieldDescription className="text-xs text-slate-400">
-                    Which brand is this from? 🏷️
-                  </FieldDescription>
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
+                        ) : (
+                          productNames?.map((productName) => (
+                            <SelectItem key={productName.id} value={productName.id.toString()}>
+                              {productName.product_name}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FieldDescription className="text-xs text-slate-400">
+                      What's the product called? 📦
+                    </FieldDescription>
+                    <FieldError />
+                  </FieldContent>
+                )}
+              />
 
-            {/* Product Name */}
-            <Controller
-              control={control}
-              name="product_name"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel>Product name</FieldLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger
-                      className="min-w-full font-medium"
-                      id="productNameField_productPage"
-                    >
-                      <SelectValue placeholder="Select name" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60 overflow-y-auto">
-                      {productNames?.length === 0 ? (
-                        <div className="p-8 text-center text-muted-foreground">
-                          No active product names available
-                        </div>
-                      ) : (
-                        productNames?.map((productName) => (
-                          <SelectItem key={productName.id} value={productName.id.toString()}>
-                            {productName.product_name}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <FieldDescription className="text-xs text-slate-400">
-                    What's the product called? 📦
-                  </FieldDescription>
-                  <FieldError />
-                </FieldContent>
-              )}
-            />
+              {/* Type */}
+              <Controller
+                control={control}
+                name="type"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Type</FieldLabel>
+                    <Input
+                      {...field}
+                      id="typeField_productPage"
+                      placeholder="e.g. Whitening, Hydrating, SPF 50"
+                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      What kind is it? (serum, lotion, toner, etc.) 💡
+                    </FieldDescription>
+                    <FieldError className="font-medium" />
+                  </FieldContent>
+                )}
+              />
 
-            {/* Type */}
-            <Controller
-              control={control}
-              name="type"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Type</FieldLabel>
-                  <Input
-                    {...field}
-                    id="typeField_productPage"
-                    placeholder="e.g. Whitening, Hydrating, SPF 50"
-                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                      fieldState.error ? 'border-rose-500' : ''
-                    }`}
-                  />
-                  <FieldDescription className="text-xs text-slate-400">
-                    What kind is it? (serum, lotion, toner, etc.) 💡
-                  </FieldDescription>
-                  <FieldError className="font-medium" />
-                </FieldContent>
-              )}
-            />
+              {/* Notes */}
+              <Controller
+                control={control}
+                name="note"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <FieldLabel className="font-medium">Notes</FieldLabel>
+                    <Textarea
+                      {...field}
+                      id="noteField_productPage"
+                      value={field.value || ''}
+                      placeholder="Additional details or reminders..."
+                      className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
+                    />
+                    <FieldDescription className="text-xs text-slate-400">
+                      Optional notes about this product 📝
+                    </FieldDescription>
+                  </FieldContent>
+                )}
+              />
 
-            {/* Notes */}
-            <Controller
-              control={control}
-              name="note"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Notes</FieldLabel>
-                  <Textarea
-                    {...field}
-                    id="noteField_productPage"
-                    value={field.value || ''}
-                    placeholder="Additional details or reminders..."
-                    className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium"
-                  />
-                  <FieldDescription className="text-xs text-slate-400">
-                    Optional notes about this product 📝
-                  </FieldDescription>
-                </FieldContent>
-              )}
-            />
-
-            {/* Server Error Display */}
-            {serverError && (
-              <div
-                id="serverError_productPage"
-                className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200"
-              >
-                <div className="flex gap-3">
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-red-900 mb-1">
-                      ⚠️ Unable to Add Product
-                    </p>
-                    <p className="text-sm text-red-800">{serverError}</p>
+              {/* Server Error Display */}
+              {serverError && (
+                <div
+                  id="serverError_productPage"
+                  className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200"
+                >
+                  <div className="flex gap-3">
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-red-900 mb-1">
+                        ⚠️ Unable to Add Product
+                      </p>
+                      <p className="text-sm text-red-800">{serverError}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </FieldContainer>
           </ModalBody>
 
           <ModalFooter className="shrink-0 pt-4">

@@ -102,74 +102,76 @@ export default function FridayPrepCard({ fridayPrep }) {
   const stale = hasCurrentWeek ? isStale(fridayPrep.created_at) : false
 
   return (
-    <Card id="fridayPrepCard_aiCoachPage" aria-label="Weekend training plan" as="section">
-      <Accordion type="single" collapsible>
-        <AccordionItem value="friday-prep" className="border-0">
-          <AccordionTrigger className="px-4 py-3 items-center hover:no-underline hover:bg-slate-50 focus-visible:ring-violet-200 focus-visible:ring-inset">
-            <div className="flex items-center gap-2 flex-1">
-              <CalendarClock className="h-4 w-4 text-violet-500 shrink-0" aria-hidden="true" />
-              <div>
-                <p className="text-sm font-semibold text-slate-700 truncate">
-                  Weekend Training Plan
+    <Accordion
+      type="single"
+      variant="card"
+      collapsible
+      id="fridayPrepCard_aiCoachPage"
+      aria-label="Weekend training plan"
+    >
+      <AccordionItem value="friday-prep">
+        <AccordionTrigger>
+          <div className="flex items-center gap-2 flex-1">
+            <CalendarClock className="h-4 w-4 text-violet-500 shrink-0" aria-hidden="true" />
+            <div>
+              <p className="text-sm font-semibold text-slate-700 truncate">Weekend Training Plan</p>
+              {hasCurrentWeek && parsed?.weekend_plan?.summary && (
+                <p className="text-xs text-slate-400 line-clamp-2 truncate mt-0.5 whitespace-normal">
+                  {parsed.weekend_plan.summary}
                 </p>
-                {hasCurrentWeek && parsed?.weekend_plan?.summary && (
-                  <p className="text-xs text-slate-400 line-clamp-2 truncate mt-0.5 whitespace-normal">
-                    {parsed.weekend_plan.summary}
-                  </p>
-                )}
-                {!hasCurrentWeek && (
-                  <p className="text-xs text-slate-400 truncate mt-0.5">
-                    Generated every Friday at 3 PM
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 ml-2 mr-2">
-              {stale && <span className="text-xs text-amber-500 hidden sm:block">Last week</span>}
-              {hasCurrentWeek && fridayPrep.created_at && (
-                <p className="text-xs text-slate-400 hidden sm:block">
-                  {new Date(fridayPrep.created_at).toLocaleDateString('en-US', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
+              )}
+              {!hasCurrentWeek && (
+                <p className="text-xs text-slate-400 truncate mt-0.5">
+                  Generated every Friday at 3 PM
                 </p>
               )}
             </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-5 pt-3 border-t border-slate-100">
-            <div id="fridayPrepCardBody_aiCoachPage" className="flex flex-col gap-5">
-              {!hasCurrentWeek ? (
-                <p className="text-sm text-slate-400">
-                  No weekend plan yet. Plans are generated automatically every Friday at 3 PM.
-                </p>
-              ) : parsed ? (
-                <>
-                  {stale && (
-                    <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
-                      This plan was generated last week — a fresh plan will appear next Friday.
-                    </p>
-                  )}
-                  <DualRoleBlock section={parsed.weekend_plan} label="Weekend Overview" />
-                  <div className="flex flex-col gap-2">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                      Sessions
-                    </p>
-                    <SessionBlock session={parsed.saturday} day="Saturday" />
-                    <SessionBlock session={parsed.sunday} day="Sunday" />
-                  </div>
-                  <DualRoleBlock section={parsed.load_check} label="Load Check" />
-                  <DualRoleBlock section={parsed.readiness} label="Readiness" />
-                </>
-              ) : (
-                <p className="text-sm text-slate-400">
-                  Could not parse this week&apos;s plan. A new one will be generated next Friday.
-                </p>
-              )}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </Card>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 ml-2 mr-2">
+            {stale && <span className="text-xs text-amber-500 hidden sm:block">Last week</span>}
+            {hasCurrentWeek && fridayPrep.created_at && (
+              <p className="text-xs text-slate-400 hidden sm:block">
+                {new Date(fridayPrep.created_at).toLocaleDateString('en-US', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </p>
+            )}
+          </div>
+        </AccordionTrigger>
+        <AccordionContent>
+          <div id="fridayPrepCardBody_aiCoachPage" className="flex flex-col gap-5">
+            {!hasCurrentWeek ? (
+              <p className="text-sm text-slate-400">
+                No weekend plan yet. Plans are generated automatically every Friday at 3 PM.
+              </p>
+            ) : parsed ? (
+              <>
+                {stale && (
+                  <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+                    This plan was generated last week — a fresh plan will appear next Friday.
+                  </p>
+                )}
+                <DualRoleBlock section={parsed.weekend_plan} label="Weekend Overview" />
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Sessions
+                  </p>
+                  <SessionBlock session={parsed.saturday} day="Saturday" />
+                  <SessionBlock session={parsed.sunday} day="Sunday" />
+                </div>
+                <DualRoleBlock section={parsed.load_check} label="Load Check" />
+                <DualRoleBlock section={parsed.readiness} label="Readiness" />
+              </>
+            ) : (
+              <p className="text-sm text-slate-400">
+                Could not parse this week&apos;s plan. A new one will be generated next Friday.
+              </p>
+            )}
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   )
 }

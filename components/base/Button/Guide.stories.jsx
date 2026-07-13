@@ -55,6 +55,45 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+// ─── Props table helper ───────────────────────────────────────────────────────
+const ApiTable = ({ component, rows }) => (
+  <div className="mb-6">
+    {component && <p className="text-xs font-mono font-semibold text-gray-500 mb-2">{component}</p>}
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)
+
 // ─── Story ───────────────────────────────────────────────────────────────────
 
 export const Docs = {
@@ -68,7 +107,7 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A flexible, accessible button component with six visual variants, six sizes, icon support
+          A flexible, accessible button component with six visual variants, five sizes, icon support
           with configurable positioning, and built-in loading state. Built on top of CVA for
           type-safe variant management.
         </p>
@@ -244,7 +283,7 @@ import { Plus } from 'lucide-react'
       {/* Sizes */}
       <Section
         title="Sizes"
-        description="Six text sizes and six icon-only sizes. Choose based on context density."
+        description="Five text sizes and five icon-only sizes. Choose based on context density."
       >
         <SubSection title="Text Sizes" description="For buttons with a label.">
           <div className="overflow-x-auto mb-4">
@@ -265,10 +304,9 @@ import { Plus } from 'lucide-react'
                 {[
                   ['xs', '24px', 'px-2', 'text-xs', 'Dense tables, compact toolbars', 'xs'],
                   ['sm', '28px', 'px-3', 'text-xs', 'Secondary actions in tight layouts', 'sm'],
-                  ['base', '32px', 'px-3.5', 'text-sm', 'Default for most UI contexts', 'base'],
-                  ['md', '36px', 'px-4', 'text-sm', 'Forms, modals, standard dialogs', 'md'],
-                  ['lg', '40px', 'px-6', 'text-sm', 'Hero sections, prominent CTAs', 'lg'],
-                  ['xl', '48px', 'px-8', 'text-base', 'Landing pages, marketing', 'xl'],
+                  ['md', '32px', 'px-3.5', 'text-sm', 'Default for most UI contexts', 'md'],
+                  ['lg', '36px', 'px-4', 'text-sm', 'Forms, modals, standard dialogs', 'lg'],
+                  ['xl', '40px', 'px-6', 'text-sm', 'Hero sections, prominent CTAs', 'xl'],
                 ].map(([size, h, p, t, use, label]) => (
                   <tr key={size} className="even:bg-gray-50">
                     <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700">
@@ -314,10 +352,9 @@ import { Plus } from 'lucide-react'
                 {[
                   ['icon-xs', '24×24px'],
                   ['icon-sm', '28×28px'],
-                  ['icon-base', '32×32px'],
-                  ['icon-md', '36×36px'],
-                  ['icon-lg', '40×40px'],
-                  ['icon-xl', '48×48px'],
+                  ['icon-md', '32×32px'],
+                  ['icon-lg', '36×36px'],
+                  ['icon-xl', '40×40px'],
                 ].map(([size, dim]) => (
                   <tr key={size} className="even:bg-gray-50">
                     <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700">
@@ -335,88 +372,60 @@ import { Plus } from 'lucide-react'
         </SubSection>
       </Section>
 
-      {/* Props */}
-      <Section title="Props">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'variant',
-                  "'default' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'",
-                  "'default'",
-                  'Visual style of the button',
-                ],
-                [
-                  'size',
-                  "'xs' | 'sm' | 'base' | 'md' | 'lg' | 'xl' | 'icon' | 'icon-xs' … 'icon-xl'",
-                  "'base'",
-                  'Button dimensions',
-                ],
-                [
-                  'useIcon',
-                  'boolean | ReactElement',
-                  'false',
-                  'true renders default Plus icon; pass an element for a custom icon',
-                ],
-                [
-                  'iconPosition',
-                  "'left' | 'right'",
-                  "'left'",
-                  'Position of the icon relative to the label',
-                ],
-                ['isLoading', 'boolean', 'false', 'Shows a spinner and disables interaction'],
-                [
-                  'loadingText',
-                  'string',
-                  "'Loading'",
-                  'Screen-reader-only text announced during loading state',
-                ],
-                ['disabled', 'boolean', 'false', 'Disables the button'],
-                [
-                  'fullWidth',
-                  'boolean',
-                  'false',
-                  'Stretches the button to fill its container width',
-                ],
-                ['asChild', 'boolean', 'false', 'Merge button props onto the single child element'],
-                [
-                  'as',
-                  'React.ElementType',
-                  "'button'",
-                  'Render as a different element (e.g. "a", Link)',
-                ],
-                ['className', 'string', '—', 'Additional CSS classes merged via twMerge'],
-                ['children', 'ReactNode', '—', 'Button label content'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* ── API Reference ──────────────────────────────────────────────────── */}
+      <Section title="API Reference">
+        <ApiTable
+          component="Button"
+          rows={[
+            [
+              'variant',
+              "'default' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'",
+              "'default'",
+              'Visual style of the button.',
+            ],
+            [
+              'size',
+              "'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'icon' | 'icon-xs' | 'icon-sm' | 'icon-md' | 'icon-lg' | 'icon-xl'",
+              "'md'",
+              'Button dimensions.',
+            ],
+            [
+              'useIcon',
+              'boolean | ReactElement',
+              'false',
+              'true renders the default Plus icon; pass a React element for a custom icon.',
+            ],
+            [
+              'iconPosition',
+              "'left' | 'right'",
+              "'left'",
+              'Position of the icon relative to the label.',
+            ],
+            ['isLoading', 'boolean', 'false', 'Shows a spinner and disables interaction.'],
+            [
+              'loadingText',
+              'string',
+              "'Loading'",
+              'Screen-reader-only text announced during loading state.',
+            ],
+            ['disabled', 'boolean', 'false', 'Disables the button.'],
+            ['fullWidth', 'boolean', 'false', 'Stretches the button to fill its container width.'],
+            [
+              'asChild',
+              'boolean',
+              'false',
+              'Merge button props onto the single child element via Radix Slot.',
+            ],
+            [
+              'as',
+              'React.ElementType',
+              "'button'",
+              'Render as a different HTML element (e.g. "a", "div").',
+            ],
+            ['className', 'string', '—', 'Additional CSS classes merged via twMerge.'],
+            ['children', 'ReactNode', '—', 'Button label content.'],
+          ]}
+        />
       </Section>
 
       {/* States */}
@@ -570,167 +579,90 @@ import { Plus } from 'lucide-react'
         </SubSection>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Button when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+      {/* ── Best Practices ─────────────────────────────────────────────────── */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use Button when the action triggers a mutation or state change',
+                  body: 'Save, Submit, Delete, Confirm — any action that writes data or changes app state belongs on a Button. Buttons imply a consequence; that is the right semantic when something will happen.',
+                },
+                {
+                  title: 'Use isLoading when the action is async',
+                  body: 'Form submits, API calls, and file uploads need a loading state to prevent double-submits and show users their action registered. The spinner renders in the icon slot so the button width stays stable.',
+                },
+                {
+                  title: 'Use disabled when a required precondition is not yet met',
+                  body: 'Required fields empty, terms not accepted, insufficient permissions. Always pair disabled with a tooltip or inline message that explains what the user needs to do.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title:
+                    'Don\'t use Button for pure navigation — use variant="link" or asChild with Next.js Link',
+                  body: 'Buttons imply an action with a consequence; navigation should use anchor semantics. Use variant="link" with asChild and Next.js Link, or a native <a> tag for links to routes or external URLs.',
+                },
+                {
+                  title: 'Don\'t use variant="default" for multiple actions in the same view',
+                  body: 'The filled default variant draws the most visual attention. Using it on more than one button per form, modal, or section dilutes the primary action. Pair with secondary, outline, or ghost for supporting actions.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Icon-only buttons require aria-label — always',
+                  body: 'Without aria-label, screen readers announce nothing meaningful for icon-only buttons. The component logs a console error in development when it is missing on any icon-* size.',
+                },
+                {
+                  title: 'Customize loadingText to describe the in-progress action',
+                  body: 'The default "Loading" is generic. Pass loadingText="Saving" on a save button, "Deleting" on a delete button so screen reader users hear what is happening instead of just "Loading".',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Use asChild with Next.js Link for in-app navigation',
+                  body: 'asChild merges all button props — including className, aria-*, and ref — onto the Link child without creating a nested anchor. This is the preferred pattern for Next.js navigation.',
+                },
+                {
+                  title: 'Use fullWidth inside a constrained container, not a wide desktop layout',
+                  body: 'A full-width button that spans an entire desktop viewport looks unbalanced. Wrap the button group in a max-w-sm or w-72 container so fullWidth fills a natural column width, not the whole screen.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The action triggers a mutation, form submit, or state change (Save, Delete,
-                      Confirm)
-                    </li>
-                    <li>
-                      The action needs a loading state to prevent double-submits during async
-                      operations
-                    </li>
-                    <li>
-                      The action requires a disabled or destructive state to communicate intent
-                      clearly
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>variant="link"</strong> when navigating to a route without
-                      triggering a data mutation
-                    </li>
-                    <li>
-                      Use <strong>icon-only Button (ghost or outline)</strong> when space is tight
-                      and the action is self-explanatory in a toolbar
-                    </li>
-                    <li>
-                      Use a native <strong>&lt;a&gt;</strong> tag (via <strong>asChild</strong> or{' '}
-                      <strong>as="a"</strong>) when linking to an external URL that needs standard
-                      anchor semantics
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-4">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <Preview>
-                  <Button variant="default">Save changes</Button>
-                  <Button variant="secondary">Cancel</Button>
-                </Preview>
-                <p className="text-xs text-green-800">
-                  Use Default + Secondary together for primary and secondary actions in the same
-                  context.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <Preview>
-                  <Button variant="destructive" useIcon={<Trash2 />}>
-                    Delete account
-                  </Button>
-                </Preview>
-                <p className="text-xs text-green-800">
-                  Use Destructive variant for irreversible actions like delete or reset.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <Preview>
-                  <Button
-                    size="icon-md"
-                    variant="ghost"
-                    useIcon={<Download />}
-                    aria-label="Download file"
-                  />
-                </Preview>
-                <p className="text-xs text-green-800">
-                  Always include aria-label on icon-only buttons.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <Preview>
-                  <Button isLoading>Saving...</Button>
-                </Preview>
-                <p className="text-xs text-green-800">
-                  Use isLoading during async operations to prevent double-submits.
-                </p>
               </div>
             </div>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-4">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <Preview>
-                  <Button variant="default">Save</Button>
-                  <Button variant="default">Submit</Button>
-                  <Button variant="default">Confirm</Button>
-                </Preview>
-                <p className="text-xs text-red-800">
-                  Don't use multiple Default buttons in the same view — it dilutes the primary
-                  action.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <Preview>
-                  <Button variant="ghost">Delete account</Button>
-                </Preview>
-                <p className="text-xs text-red-800">
-                  Don't use Ghost or Link for destructive actions — they appear too safe.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <Preview>
-                  <Button size="icon-md" useIcon />
-                </Preview>
-                <p className="text-xs text-red-800">
-                  Don't omit aria-label on icon-only buttons — screen readers will have nothing to
-                  announce.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <Preview>
-                  <Button variant="default" size="xl">
-                    Ok
-                  </Button>
-                </Preview>
-                <p className="text-xs text-red-800">
-                  Don't use XL size for short labels — reserve large sizes for prominent CTAs with
-                  meaningful copy.
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </Section>
 

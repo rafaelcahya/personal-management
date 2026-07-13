@@ -56,7 +56,11 @@ export default function Pagination({
   )
 
   const pageInfo = (
-    <span id={infoId} className="text-xs text-slate-400 text-center" aria-live="polite">
+    <span
+      id={infoId}
+      className="text-xs text-slate-400 text-center whitespace-nowrap"
+      aria-live="polite"
+    >
       Page {page} of {totalPages} · {total} records
     </span>
   )
@@ -80,7 +84,7 @@ export default function Pagination({
     return (
       <div
         id={id}
-        className={twMerge(clsx('grid grid-cols-3 items-center w-full px-1 pt-2 mt-2'), className)}
+        className={twMerge(clsx('grid grid-cols-3 items-center w-full'), className)}
         aria-label="Pagination"
       >
         <div>{prevBtn}</div>
@@ -93,7 +97,7 @@ export default function Pagination({
   return (
     <div
       id={id}
-      className={twMerge(clsx(variantClass[variant], 'w-full px-1 py-2 mt-2'), className)}
+      className={twMerge(clsx(variantClass[variant], 'w-full'), className)}
       aria-label="Pagination"
     >
       {prevBtn}

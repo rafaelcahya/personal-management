@@ -1,5 +1,6 @@
 'use client'
 
+import { FieldContent, FieldLabel } from '@/components/base/Field/Field'
 import { useState, useEffect, useRef } from 'react'
 import { useDebounce } from '@/hooks/useDebounce'
 import {
@@ -31,8 +32,6 @@ import {
 } from '@/components/base/SelectCard/SelectCard'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 import { getInjuryCoachInsight, fetchActivities, fetchInjuryCoachHistory } from '@/lib/api/running'
 import { renderMarkdown } from './utils'
 
@@ -245,7 +244,7 @@ export default function InjuryCoachCard() {
           </Button>
         </CardAction>
       </CardHeader>
-      <CardContent padding="none" className="p-4 space-y-4">
+      <CardContent className="p-4 space-y-4">
         {!showHistory && (
           <div
             id="injuryDisclaimer_aiPage"

@@ -247,7 +247,6 @@ export default function RaceDetailPage() {
               <Button
                 id="deleteRaceBtn_raceDetailPage"
                 variant="outline"
-                size="base"
                 onClick={() => setDeleteOpen(true)}
                 className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
               >

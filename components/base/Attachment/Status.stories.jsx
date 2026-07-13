@@ -8,6 +8,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const PLACEHOLDER_IMG =
   'data:image/svg+xml,' +
   encodeURIComponent(
@@ -38,40 +66,58 @@ const FILE_SHEET = {
   url: null,
 }
 
-// ─── Idle ─────────────────────────────────────────────────────────────────────
-
 export const Idle = {
   name: 'Idle',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
-        Initial state after a file is picked. No progress bar, no error. Only the remove button is
-        shown in{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">AttachmentActions</code>.
+    <div className="flex flex-col gap-10 p-8 max-w-2xl w-full">
+      <span className="text-xs text-gray-400">
+        Initial state after a file is picked. No progress bar, no error. Only the remove button
+        appears in <code className="font-mono bg-gray-100 px-1 rounded">AttachmentActions</code>.
         Typically the parent starts the upload immediately and transitions to{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">"uploading"</code>.
-      </p>
+        <code className="font-mono bg-gray-100 px-1 rounded">"uploading"</code>.
+      </span>
 
-      <div className="flex flex-col gap-2 w-full max-w-lg">
+      <div className="flex flex-col gap-2">
         <Attachment file={FILE_PDF} status="idle" onRemove={() => {}} />
         <Attachment file={FILE_IMAGE} status="idle" onRemove={() => {}} />
         <Attachment file={FILE_DOC} status="idle" onRemove={() => {}} />
       </div>
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Transition out of idle immediately — do not leave files stuck here',
+                body: 'Idle is a transient state between file selection and upload start. Start the upload in onFilesAdd and move status to "uploading" right away so users see progress.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use idle as an intermediary when batch-confirming before upload',
+                body: 'If the form requires an explicit submit before uploading (e.g. a bulk operation), idle is acceptable as a holding state. Make it clear to users that the upload has not started.',
+              },
+            ],
+          },
+        ]}
+      />
+
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
         <code>{`<Attachment file={file} status="idle" onRemove={handleRemove} />`}</code>
       </pre>
     </div>
   ),
 }
 
-// ─── Uploading ────────────────────────────────────────────────────────────────
-
 function UploadingDemo() {
   const [progress, setProgress] = useState(30)
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-lg">
+    <div className="flex flex-col gap-4">
       <Attachment file={FILE_PDF} status="uploading" progress={progress} onRemove={() => {}} />
       <Attachment file={FILE_IMAGE} status="uploading" progress={72} onRemove={() => {}} />
       <Attachment file={FILE_DOC} status="uploading" progress={100} onRemove={() => {}} />
@@ -95,17 +141,43 @@ function UploadingDemo() {
 export const Uploading = {
   name: 'Uploading',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
-        Shows <code className="font-mono bg-gray-100 px-1 rounded text-xs">AttachmentProgress</code>{' '}
-        below the file row. Pass{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">progress</code> (0–100) from
-        your upload handler. Drag the slider to preview the bar movement.
-      </p>
+    <div className="flex flex-col gap-10 p-8 max-w-2xl w-full">
+      <span className="text-xs text-gray-400">
+        Shows <code className="font-mono bg-gray-100 px-1 rounded">AttachmentProgress</code> below
+        the file row. Pass <code className="font-mono bg-gray-100 px-1 rounded">progress</code>{' '}
+        (0–100) from your upload handler. Drag the slider to preview the bar movement.
+      </span>
 
       <UploadingDemo />
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Always pass a live progress value — not just 0 or 100',
+                body: 'Update progress from XHR onprogress or fetchs ReadableStream as the upload proceeds. A bar stuck at 0% until it jumps to 100% is worse than no bar at all.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Reset progress to 0 before retrying a failed upload',
+                body: 'When the user retries, set status back to "uploading" and reset progress to 0. The previous partial progress value should not carry over.',
+              },
+              {
+                title: 'Allow removing while uploading — abort the request in onRemove',
+                body: 'Pass onRemove even in the uploading state. If the user removes the row, cancel the in-flight XHR or AbortController signal before removing the item from state.',
+              },
+            ],
+          },
+        ]}
+      />
+
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
         <code>{`<Attachment
   file={file}
   status="uploading"
@@ -117,21 +189,19 @@ export const Uploading = {
   ),
 }
 
-// ─── Done ─────────────────────────────────────────────────────────────────────
-
 export const Done = {
   name: 'Done',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+    <div className="flex flex-col gap-10 p-8 max-w-2xl w-full">
+      <span className="text-xs text-gray-400">
         Upload complete. Progress bar is hidden. When{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">file.url</code> is set, a
-        download button appears in{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">AttachmentActions</code>. For
-        image files with a URL, a chevron button lets the user expand the inline preview.
-      </p>
+        <code className="font-mono bg-gray-100 px-1 rounded">file.url</code> is set, a download
+        button appears in{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded">AttachmentActions</code>. For image
+        files with a URL, a chevron button lets the user expand the inline preview.
+      </span>
 
-      <div className="flex flex-col gap-2 w-full max-w-lg">
+      <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
           <span className="text-[10px] font-mono text-violet-700">done — no URL (no download)</span>
           <Attachment file={{ ...FILE_PDF, url: null }} status="done" onRemove={() => {}} />
@@ -148,40 +218,73 @@ export const Done = {
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-[10px] font-mono text-violet-700">
-            done — image with URL (image icon + preview toggle)
+            done — image with URL (preview toggle visible)
           </span>
           <Attachment file={FILE_IMAGE} status="done" onRemove={() => {}} />
         </div>
       </div>
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Set file.url after upload completes to unlock download and preview',
+                body: 'The download button and image preview toggle appear only when file.url is set. Update the file object in state with the URL returned by the upload API after the response arrives.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Do not auto-remove the row on done — let users review and remove manually',
+                body: 'Users need confirmation that their file was accepted. Keeping the row visible (with the green "Uploaded" label) gives that signal. Auto-removal can feel like data loss.',
+              },
+            ],
+          },
+        ]}
+      />
+
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
         <code>{`{/* No download button (url not set) */}
-<Attachment file={{ name: 'contract.pdf', size: 1024000, type: 'application/pdf', url: null }} status="done" onRemove={handleRemove} />
+<Attachment
+  file={{ name: 'contract.pdf', size: 1024000, type: 'application/pdf', url: null }}
+  status="done"
+  onRemove={handleRemove}
+/>
 
 {/* Download button visible */}
-<Attachment file={{ name: 'proposal.docx', url: '/uploads/proposal.docx', ... }} status="done" onRemove={handleRemove} />
+<Attachment
+  file={{ name: 'proposal.docx', url: '/uploads/proposal.docx', ... }}
+  status="done"
+  onRemove={handleRemove}
+/>
 
 {/* Image — preview toggle visible */}
-<Attachment file={{ name: 'photo.jpg', type: 'image/jpeg', url: '/uploads/photo.jpg', ... }} status="done" onRemove={handleRemove} />`}</code>
+<Attachment
+  file={{ name: 'photo.jpg', type: 'image/jpeg', url: '/uploads/photo.jpg', ... }}
+  status="done"
+  onRemove={handleRemove}
+/>`}</code>
       </pre>
     </div>
   ),
 }
 
-// ─── Error ────────────────────────────────────────────────────────────────────
-
 export const ErrorState = {
   name: 'Error State',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
-        Shows <code className="font-mono bg-gray-100 px-1 rounded text-xs">AttachmentError</code>{' '}
-        with a title and optional description below the row. A retry button appears in{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">AttachmentActions</code> when{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">onRetry</code> is provided.
-      </p>
+    <div className="flex flex-col gap-10 p-8 max-w-2xl w-full">
+      <span className="text-xs text-gray-400">
+        Shows <code className="font-mono bg-gray-100 px-1 rounded">AttachmentError</code> with a
+        title and optional description below the row. A retry button appears in{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded">AttachmentActions</code> when{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded">onRetry</code> is provided.
+      </span>
 
-      <div className="flex flex-col gap-3 w-full max-w-lg">
+      <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
           <span className="text-[10px] font-mono text-violet-700">error — title only</span>
           <Attachment
@@ -217,7 +320,34 @@ export const ErrorState = {
         </div>
       </div>
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Always include errorDescription — never leave users guessing',
+                body: 'The red border and "Upload failed" title signal failure, but users need to know why and what to do next. Always pass an errorDescription with an actionable message.',
+              },
+              {
+                title: 'Provide onRetry for transient failures (network, timeout)',
+                body: 'Network errors are often temporary. Pass onRetry so users can retry without having to re-select the file. Omit it only when the failure is permanent (e.g. unsupported type).',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Reset status to "uploading" when retry starts',
+                body: 'In the onRetry handler, set status back to "uploading" and progress to 0 before re-issuing the request. The error UI should disappear immediately when the retry begins.',
+              },
+            ],
+          },
+        ]}
+      />
+
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
         <code>{`{/* With retry button */}
 <Attachment
   file={file}
@@ -228,7 +358,7 @@ export const ErrorState = {
   onRetry={handleRetry}
 />
 
-{/* No retry button */}
+{/* No retry button — permanent failure */}
 <Attachment
   file={file}
   status="error"

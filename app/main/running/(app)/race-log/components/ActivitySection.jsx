@@ -87,7 +87,6 @@ export default function ActivitySection({
               {onEditClick && (
                 <Button
                   id="editRaceBtn_raceDetailPage"
-                  size="base"
                   variant="secondary"
                   onClick={onEditClick}
                   className="shrink-0 flex items-center gap-1.5"

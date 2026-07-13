@@ -1,5 +1,6 @@
 'use client'
 
+import { FieldLabel } from '@/components/base/Field/Field'
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,7 +16,6 @@ import {
 } from '@/components/base/Modal/Modal.jsx'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 import Textarea from '@/components/base/Textarea/Textarea'
 import {
   Select,

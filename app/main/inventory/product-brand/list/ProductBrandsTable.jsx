@@ -104,7 +104,6 @@ export default function ProductBrandsTable({
           <span className="text-sm font-medium text-violet-700">{selectedIds.length} selected</span>
           <div className="flex items-center gap-2 ml-auto">
             <Button
-              size="base"
               variant="outline"
               id="bulkSetActiveBtn_productBrandPage"
               className="h-7 text-xs border-green-300 text-green-700 hover:bg-green-50"
@@ -114,7 +113,6 @@ export default function ProductBrandsTable({
               Set Active
             </Button>
             <Button
-              size="base"
               variant="outline"
               id="bulkSetInactiveBtn_productBrandPage"
               className="h-7 text-xs border-orange-300 text-orange-700 hover:bg-orange-50"
@@ -124,7 +122,6 @@ export default function ProductBrandsTable({
               Set Inactive
             </Button>
             <Button
-              size="base"
               variant="ghost"
               id="bulkDeselectAllBtn_productBrandPage"
               className="h-7 text-xs text-slate-500 hover:text-slate-700"

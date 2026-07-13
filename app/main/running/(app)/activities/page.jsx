@@ -17,8 +17,6 @@ import {
   Activity,
   PersonStanding,
   Wind,
-  ChevronLeft,
-  ChevronRight,
   AlertCircle,
   Search,
   X,
@@ -32,6 +30,7 @@ import {
   SelectValue,
 } from '@/components/base/Select/Select'
 import Button from '@/components/base/Button/Button'
+import Pagination from '@/components/base/Pagination/Pagination'
 import { fetchActivities } from '@/lib/api/running'
 import { fmtDistance, fmtPace, fmtDuration } from '../dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
@@ -270,10 +269,7 @@ function ActivitiesInner() {
         </CardHeader>
 
         {/* Filter bar */}
-        <CardContent
-          padding="none"
-          className="sticky top-0 z-10 bg-white border-b border-slate-100 px-3 sm:px-5 py-2 sm:py-2.5"
-        >
+        <CardContent className="sticky top-0 z-10 bg-white border-b border-slate-100">
           {/* Search input */}
           <div className="relative mb-2">
             <Search
@@ -334,9 +330,9 @@ function ActivitiesInner() {
             <div className="flex items-center gap-2 flex-wrap">
               <Select
                 value={range}
-                onValueChange={(v) => router.push(buildUrl(searchParams, { range: v }))}
+                onValueChange={(val) => router.push(buildUrl(searchParams, { range: val }))}
               >
-                <SelectTrigger className="w-32 sm:w-36 h-8">
+                <SelectTrigger className="w-32 sm:w-36">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -349,9 +345,9 @@ function ActivitiesInner() {
 
               <Select
                 value={sort}
-                onValueChange={(v) => router.push(buildUrl(searchParams, { sort: v }))}
+                onValueChange={(val) => router.push(buildUrl(searchParams, { sort: val }))}
               >
-                <SelectTrigger className="w-36 sm:w-40 h-8">
+                <SelectTrigger className="w-36 sm:w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -366,7 +362,7 @@ function ActivitiesInner() {
         </CardContent>
 
         {/* Table area */}
-        <CardContent padding="none">
+        <CardContent className="p-0">
           {/* Total count */}
           {!loading && !error && (
             <p className="text-sm text-slate-400 px-5 pt-3" aria-live="polite">
@@ -450,7 +446,7 @@ function ActivitiesInner() {
                         {hasFilters ? 'No activities match your filters.' : 'No activities yet.'}
                       </p>
                       {hasFilters && (
-                        <Button variant="ghost" size="base" onClick={clearFilters}>
+                        <Button variant="ghost" onClick={clearFilters}>
                           Clear filters
                         </Button>
                       )}
@@ -569,29 +565,16 @@ function ActivitiesInner() {
         </CardContent>
 
         {/* Pagination */}
-        {!loading && !error && totalPages > 1 && (
-          <CardFooter className="justify-between" aria-label="Pagination">
-            <Button
-              variant="ghost"
-              onClick={() => router.push(buildUrl(searchParams, { page: page - 1 }))}
-              disabled={page <= 1}
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="size-4" aria-hidden="true" />
-              Prev
-            </Button>
-            <span className="text-xs text-slate-400 text-center" aria-live="polite">
-              Page {page} of {totalPages} · {total} activities
-            </span>
-            <Button
-              variant="ghost"
-              onClick={() => router.push(buildUrl(searchParams, { page: page + 1 }))}
-              disabled={page >= totalPages}
-              aria-label="Next page"
-            >
-              Next
-              <ChevronRight className="size-4" aria-hidden="true" />
-            </Button>
+        {!loading && !error && (
+          <CardFooter>
+            <Pagination
+              id="activitiesPagination_activitiesPage"
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              onPrev={() => router.push(buildUrl(searchParams, { page: page - 1 }))}
+              onNext={() => router.push(buildUrl(searchParams, { page: page + 1 }))}
+            />
           </CardFooter>
         )}
       </Card>

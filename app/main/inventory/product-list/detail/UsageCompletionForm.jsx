@@ -1,12 +1,14 @@
 'use client'
 
+import {
+  FieldContent,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+} from '@/components/base/Field/Field'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
-import FieldDescription from '@/components/base/Field/FieldDescription'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
@@ -157,12 +159,7 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            size="base"
-            disabled={isSubmitting}
-            id="updateRecordBtn-usageCompletionForm"
-          >
+          <Button type="submit" disabled={isSubmitting} id="updateRecordBtn-usageCompletionForm">
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSubmitting ? 'Updating...' : 'Update Record'}
           </Button>

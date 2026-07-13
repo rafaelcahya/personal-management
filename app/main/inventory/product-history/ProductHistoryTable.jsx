@@ -60,7 +60,7 @@ export default function ProductHistoryTable({
           </p>
         </div>
         {hasActiveFilters && onClearFilters && (
-          <Button variant="outline" size="base" onClick={onClearFilters}>
+          <Button variant="outline" onClick={onClearFilters}>
             Clear filters
           </Button>
         )}
@@ -96,7 +96,7 @@ export default function ProductHistoryTable({
               <TableCell className="font-mono text-slate-700 w-[30px]" align="center">
                 {(page - 1) * 15 + index + 1}
               </TableCell>
-              <TableCell className="w-[250px]">
+              <TableCell className="min-w-[250px]">
                 <div className="min-w-0">
                   <p className="text-xs text-slate-400 truncate leading-tight">
                     {history.brand || '—'}
