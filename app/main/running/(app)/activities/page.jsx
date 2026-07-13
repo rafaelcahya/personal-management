@@ -31,7 +31,7 @@ import {
 } from '@/components/base/Select/Select'
 import Button from '@/components/base/Button/Button'
 import Pagination from '@/components/base/Pagination/Pagination'
-import { fetchActivities } from '@/lib/api/running'
+import { fetchActivities, getUserProfile, getHrZones } from '@/lib/api/running'
 import { fmtDistance, fmtPace, fmtDuration } from '../dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
@@ -53,6 +53,86 @@ import Card, {
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
+import { Badge } from '@/components/base/Badge/Badge'
+
+// ─── zone classification ──────────────────────────────────────────────────────
+
+const PACE_ZONE_DEFS = [
+  { name: 'Z1', label: 'Recovery', loMult: 1.29, hiMult: null, cls: 'bg-sky-100 text-sky-700' },
+  { name: 'Z2', label: 'Endurance', loMult: 1.14, hiMult: 1.29, cls: 'bg-blue-100 text-blue-700' },
+  { name: 'Z3', label: 'Tempo', loMult: 1.06, hiMult: 1.14, cls: 'bg-indigo-100 text-indigo-700' },
+  {
+    name: 'Z4',
+    label: 'Threshold',
+    loMult: 0.99,
+    hiMult: 1.06,
+    cls: 'bg-violet-100 text-violet-700',
+  },
+  { name: 'Z5', label: 'VO₂max', loMult: null, hiMult: 0.99, cls: 'bg-purple-100 text-purple-700' },
+]
+
+const HR_ZONE_DEFS = [
+  { name: 'Z1', label: 'Recovery', cls: 'bg-green-100 text-green-700' },
+  { name: 'Z2', label: 'Aerobic', cls: 'bg-yellow-100 text-yellow-700' },
+  { name: 'Z3', label: 'Tempo', cls: 'bg-orange-100 text-orange-700' },
+  { name: 'Z4', label: 'Threshold', cls: 'bg-red-100 text-red-700' },
+  { name: 'Z5', label: 'VO₂max', cls: 'bg-rose-100 text-rose-700' },
+]
+
+function getPaceZone(avgPaceSec, thresholdPaceSec) {
+  if (!avgPaceSec || !thresholdPaceSec || thresholdPaceSec <= 0) return null
+  for (const z of PACE_ZONE_DEFS) {
+    const lo = z.loMult != null ? z.loMult * thresholdPaceSec : 0
+    const hi = z.hiMult != null ? z.hiMult * thresholdPaceSec : Infinity
+    if (avgPaceSec >= lo && avgPaceSec < hi) return z
+  }
+  return PACE_ZONE_DEFS[PACE_ZONE_DEFS.length - 1]
+}
+
+function getHrZone(avgHr, method, maxHr, restingHr, thresholdHr) {
+  if (!avgHr) return null
+  let zones = null
+  if (method === 'karvonen' && maxHr && restingHr && maxHr > restingHr) {
+    const hrr = maxHr - restingHr
+    zones = [
+      [0.5, 0.6],
+      [0.6, 0.7],
+      [0.7, 0.8],
+      [0.8, 0.9],
+      [0.9, Infinity],
+    ].map(([lo, hi]) => [restingHr + lo * hrr, hi === Infinity ? Infinity : restingHr + hi * hrr])
+  } else if (method === 'threshold' && thresholdHr) {
+    zones = [
+      [0, 0.68],
+      [0.68, 0.83],
+      [0.83, 0.94],
+      [0.94, 1.05],
+      [1.05, Infinity],
+    ].map(([lo, hi]) => [lo * thresholdHr, hi === Infinity ? Infinity : hi * thresholdHr])
+  } else if (maxHr) {
+    zones = [
+      [0, 0.6],
+      [0.6, 0.7],
+      [0.7, 0.8],
+      [0.8, 0.9],
+      [0.9, Infinity],
+    ].map(([lo, hi]) => [lo * maxHr, hi === Infinity ? Infinity : hi * maxHr])
+  }
+  if (!zones) return null
+  for (let i = 0; i < zones.length; i++) {
+    if (avgHr >= zones[i][0] && avgHr < zones[i][1]) return HR_ZONE_DEFS[i]
+  }
+  return HR_ZONE_DEFS[HR_ZONE_DEFS.length - 1]
+}
+
+function ZoneBadge({ zone }) {
+  if (!zone) return null
+  return (
+    <Badge className={`inline-flex w-fit text-[10px] mt-0.5 ${zone.cls}`}>
+      {zone.name} {zone.label}
+    </Badge>
+  )
+}
 
 // ─── activity config ──────────────────────────────────────────────────────────
 
@@ -181,10 +261,25 @@ function ActivitiesInner() {
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const debounceRef = useRef(null)
+  const [zoneConfig, setZoneConfig] = useState(null)
 
   const LIMIT = 20
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
   const hasFilters = type || range !== 'all' || sort !== 'newest'
+
+  useEffect(() => {
+    Promise.all([getUserProfile(), getHrZones()])
+      .then(([profile, hrZones]) => {
+        setZoneConfig({
+          thresholdPaceSec: profile?.threshold_pace_sec ?? null,
+          maxHr: hrZones?.max_hr ?? null,
+          restingHr: hrZones?.resting_hr_baseline ?? null,
+          thresholdHr: hrZones?.threshold_hr ?? null,
+          method: hrZones?.hr_zones_method ?? 'max_hr',
+        })
+      })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     clearTimeout(debounceRef.current)
@@ -537,7 +632,19 @@ function ActivitiesInner() {
                         className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
                         align="right"
                       >
-                        {pace ?? NULL_CELL}
+                        {pace ? (
+                          <div className="flex flex-col items-end">
+                            <span>{pace}</span>
+                            <ZoneBadge
+                              zone={getPaceZone(
+                                a.avg_pace_sec_per_km,
+                                zoneConfig?.thresholdPaceSec
+                              )}
+                            />
+                          </div>
+                        ) : (
+                          NULL_CELL
+                        )}
                       </TableCell>
                       <TableCell
                         className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
@@ -549,7 +656,22 @@ function ActivitiesInner() {
                         className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
                         align="right"
                       >
-                        {a.avg_hr ? `${a.avg_hr} bpm` : NULL_CELL}
+                        {a.avg_hr != null ? (
+                          <div className="flex flex-col items-end">
+                            <span>{a.avg_hr} bpm</span>
+                            <ZoneBadge
+                              zone={getHrZone(
+                                a.avg_hr,
+                                zoneConfig?.method ?? 'max_hr',
+                                zoneConfig?.maxHr,
+                                zoneConfig?.restingHr,
+                                zoneConfig?.thresholdHr
+                              )}
+                            />
+                          </div>
+                        ) : (
+                          NULL_CELL
+                        )}
                       </TableCell>
                       <TableCell
                         className="font-mono tabular-nums text-slate-700 whitespace-nowrap"
