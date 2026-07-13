@@ -87,7 +87,7 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
               <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
                 <EmptyStateActions>
-                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                  <Button variant="outline" onClick={onRetry} className="min-w-11">
                     Try again
                   </Button>
                 </EmptyStateActions>

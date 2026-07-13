@@ -5,419 +5,390 @@ import Pagination from './Pagination'
 const meta = { title: 'Pagination' }
 export default meta
 
-export const Docs = {
-  name: 'Docs',
-  render: () => {
-    return (
-      <div className="flex flex-col gap-10 w-full max-w-3xl py-6 px-2">
-        {/* Header */}
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold text-gray-900">Pagination</h1>
-          <p className="text-base text-gray-500 leading-relaxed">
-            A standalone pagination bar — Prev / page info / Next — extracted from the table
-            pattern. Use it beneath any list or table that paginates server-side.
-          </p>
-        </div>
+// ─── Primitives ───────────────────────────────────────────────────────────────
 
-        {/* Overview */}
-        <section className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Overview</h2>
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
-            <PaginationDemo />
-          </div>
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`import Pagination from '@/components/base/Pagination/Pagination'
+const Section = ({ title, description, children }) => (
+  <div className="mb-12">
+    <h2 className="text-xl font-semibold text-gray-900 mb-1">{title}</h2>
+    {description && <p className="text-sm text-gray-500 mb-4">{description}</p>}
+    <hr className="mb-5 border-gray-200" />
+    {children}
+  </div>
+)
 
-const [page, setPage] = useState(1)
-const totalPages = 8
-const total = 75
+const SubSection = ({ title, description, children }) => (
+  <div className="mb-8">
+    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-1">{title}</h3>
+    {description && <p className="text-xs text-gray-500 mb-3">{description}</p>}
+    {children}
+  </div>
+)
 
-<Pagination
-  page={page}
-  totalPages={totalPages}
-  total={total}
-  onPrev={() => setPage((p) => Math.max(1, p - 1))}
-  onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
-/>`}</code>
-          </pre>
-        </section>
+const Code = ({ children }) => (
+  <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto mb-4 leading-relaxed">
+    <code>{children}</code>
+  </pre>
+)
 
-        {/* Variants */}
-        <section className="flex flex-col gap-6">
-          <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Variants</h2>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            The <code className="font-mono bg-gray-100 px-1 rounded text-xs">variant</code> prop
-            controls the layout of the controls. Default is{' '}
-            <code className="font-mono bg-gray-100 px-1 rounded text-xs">full</code>.
-          </p>
-
-          {[
-            {
-              variant: 'full',
-              label: 'full',
-              desc: 'Prev far left · page info centered · Next far right (default)',
-            },
-            { variant: 'center', label: 'center', desc: 'All controls centered' },
-            { variant: 'left', label: 'left', desc: 'All controls left-aligned' },
-            { variant: 'right', label: 'right', desc: 'All controls right-aligned' },
-          ].map(({ variant, label, desc }) => (
-            <div key={variant} className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">{label}</code>
-                <span className="text-xs text-gray-400">{desc}</span>
-              </div>
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <Pagination
-                  page={4}
-                  totalPages={8}
-                  total={75}
-                  variant={variant}
-                  onPrev={() => {}}
-                  onNext={() => {}}
-                />
-              </div>
-            </div>
-          ))}
-
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`{/* full — Prev far left, page info centered, Next far right (default) */}
-<Pagination ... variant="full" />
-
-{/* center — all controls centered */}
-<Pagination ... variant="center" />
-
-{/* left — all controls left-aligned */}
-<Pagination ... variant="left" />
-
-{/* right — all controls right-aligned */}
-<Pagination ... variant="right" />`}</code>
-          </pre>
-        </section>
-
-        {/* Icon Only */}
-        <section className="flex flex-col gap-6">
-          <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Icon Only</h2>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            Add <code className="font-mono bg-gray-100 px-1 rounded text-xs">iconOnly</code> to show
-            chevron-only buttons — useful in compact layouts or narrow containers.
-          </p>
-
-          {[
-            { variant: 'full', label: 'full + iconOnly' },
-            { variant: 'center', label: 'center + iconOnly' },
-            { variant: 'right', label: 'right + iconOnly' },
-          ].map(({ variant, label }) => (
-            <div key={variant} className="flex flex-col gap-2">
-              <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded w-fit">
-                {label}
-              </code>
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <Pagination
-                  page={4}
-                  totalPages={8}
-                  total={75}
-                  variant={variant}
-                  iconOnly
-                  onPrev={() => {}}
-                  onNext={() => {}}
-                />
-              </div>
-            </div>
-          ))}
-
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`<Pagination
-  page={page}
-  totalPages={totalPages}
-  total={total}
-  iconOnly
-  onPrev={handlePrev}
-  onNext={handleNext}
-/>`}</code>
-          </pre>
-        </section>
-
-        {/* States */}
-        <section className="flex flex-col gap-6">
-          <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">States</h2>
-
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">
-                Default (mid-page)
-              </code>
-              <span className="text-xs text-gray-400">both Prev and Next enabled</span>
-            </div>
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <Pagination page={4} totalPages={8} total={75} onPrev={() => {}} onNext={() => {}} />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">
-                First page
-              </code>
-              <span className="text-xs text-gray-400">Prev disabled</span>
-            </div>
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <Pagination page={1} totalPages={8} total={75} onPrev={() => {}} onNext={() => {}} />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">Last page</code>
-              <span className="text-xs text-gray-400">Next disabled</span>
-            </div>
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <Pagination page={8} totalPages={8} total={75} onPrev={() => {}} onNext={() => {}} />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">
-                Single page
-              </code>
-              <span className="text-xs text-gray-400">totalPages &lt;= 1 → renders nothing</span>
-            </div>
-            <div className="border border-dashed border-gray-200 rounded-lg px-4 py-3 bg-gray-50">
-              <p className="text-xs text-gray-400 italic">
-                Nothing renders below this line when totalPages = 1
-              </p>
-              <Pagination page={1} totalPages={1} total={6} onPrev={() => {}} onNext={() => {}} />
-            </div>
-            <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-              <code>{`{/* Returns null when totalPages <= 1 — safe to always render */}
-<Pagination page={1} totalPages={1} total={6} onPrev={...} onNext={...} />
-{/* → renders nothing */}`}</code>
-            </pre>
-          </div>
-        </section>
-
-        {/* Usage */}
-        <section className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Usage</h2>
-
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-gray-700">With a server-side table</span>
-            <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-              <code>{`const [page, setPage] = useState(1)
-const { data, total, totalPages } = useFetch({ page })
-
-return (
-  <>
-    <Table>...</Table>
-    <Pagination
-      page={page}
-      totalPages={totalPages}
-      total={total}
-      onPrev={() => setPage((p) => Math.max(1, p - 1))}
-      onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
-    />
-  </>
-)`}</code>
-            </pre>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-gray-700">
-              Shared between desktop table and mobile card list
-            </span>
-            <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-              <code>{`{/* Mobile cards */}
-<div className="sm:hidden">
-  {items.map(...)}
-</div>
-
-{/* Desktop table */}
-<div className="hidden sm:block">
-  <Table>...</Table>
-</div>
-
-{/* Pagination — outside both wrappers, always visible */}
-<Pagination
-  page={page}
-  totalPages={totalPages}
-  total={total}
-  onPrev={handlePrev}
-  onNext={handleNext}
-/>`}</code>
-            </pre>
-          </div>
-        </section>
-
-        {/* When to use */}
-        <section className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to use</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-3 p-4 rounded-xl border border-violet-200 bg-violet-50">
-              <p className="text-sm font-semibold text-gray-800">Use Pagination when…</p>
-              <ul className="flex flex-col gap-1.5 text-xs text-gray-600 leading-relaxed list-none">
-                {[
-                  'Data is fetched page-by-page from a server (server-side pagination).',
-                  'The table switches to a card layout on mobile — place Pagination outside both wrappers so it appears on all viewports.',
-                  'You need a touch-friendly prev/next bar with a 44px minimum tap target.',
-                ].map((item, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-violet-500 shrink-0">·</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex flex-col gap-3 p-4 rounded-xl border border-gray-200 bg-gray-50">
-              <p className="text-sm font-semibold text-gray-800">Consider an alternative when…</p>
-              <ul className="flex flex-col gap-1.5 text-xs text-gray-600 leading-relaxed list-none">
-                {[
-                  'All data is already in memory — use DataTable with the pagination prop instead.',
-                  'The list is short enough to show all items at once (< 20 rows).',
-                  'You need page-number buttons or jump-to-page input — this component only supports prev/next.',
-                ].map((item, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-slate-400 shrink-0">·</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* Dos & Don'ts */}
-        <section className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Dos & Don'ts</h2>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                  ✓
-                </span>
-                <span className="text-sm font-semibold text-green-700">Do</span>
-              </div>
-              <div className="space-y-3">
-                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                  <p className="text-xs text-green-800">
-                    Place <code className="font-mono bg-green-100 px-1 rounded">Pagination</code>{' '}
-                    outside any{' '}
-                    <code className="font-mono bg-green-100 px-1 rounded">hidden sm:block</code> or{' '}
-                    <code className="font-mono bg-green-100 px-1 rounded">sm:hidden</code> wrappers
-                    so it renders on all screen sizes.
-                  </p>
-                </div>
-                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                  <p className="text-xs text-green-800">
-                    Pass all five required props every time:{' '}
-                    <code className="font-mono bg-green-100 px-1 rounded">page</code>,{' '}
-                    <code className="font-mono bg-green-100 px-1 rounded">totalPages</code>,{' '}
-                    <code className="font-mono bg-green-100 px-1 rounded">total</code>,{' '}
-                    <code className="font-mono bg-green-100 px-1 rounded">onPrev</code>, and{' '}
-                    <code className="font-mono bg-green-100 px-1 rounded">onNext</code>.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                  ✕
-                </span>
-                <span className="text-sm font-semibold text-red-700">Don't</span>
-              </div>
-              <div className="space-y-3">
-                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                  <p className="text-xs text-red-800">
-                    Don't add a guard like{' '}
-                    <code className="font-mono bg-red-100 px-1 rounded">
-                      {'{totalPages > 1 && <Pagination />}'}
-                    </code>{' '}
-                    — the component already returns{' '}
-                    <code className="font-mono bg-red-100 px-1 rounded">null</code> when{' '}
-                    <code className="font-mono bg-red-100 px-1 rounded">totalPages &lt;= 1</code>.
-                  </p>
-                </div>
-                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                  <p className="text-xs text-red-800">
-                    Don't manage disabled state yourself — pass the real{' '}
-                    <code className="font-mono bg-red-100 px-1 rounded">page</code> and{' '}
-                    <code className="font-mono bg-red-100 px-1 rounded">totalPages</code> values and
-                    the component handles it.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* API Reference */}
-        <section className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">API Reference</h2>
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-32">
-                  Prop
-                </th>
-                <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-36">
-                  Type
-                </th>
-                <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-16">
-                  Default
-                </th>
-                <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
-                  Description
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {[
-                ['page', 'number', '—', 'Current page number (1-based).'],
-                ['totalPages', 'number', '—', 'Total pages. Returns null when <= 1.'],
-                ['total', 'number', '—', 'Total record count shown in the label.'],
-                ['onPrev', '() => void', '—', 'Called when Prev button is clicked.'],
-                ['onNext', '() => void', '—', 'Called when Next button is clicked.'],
-                [
-                  'iconOnly',
-                  'boolean',
-                  'false',
-                  'Show chevron-only buttons — hides Prev/Next text.',
-                ],
-                [
-                  'variant',
-                  '"full" | "center" | "left" | "right"',
-                  '"full"',
-                  'Layout of controls. full = Prev far left, page info centered, Next far right. center/left/right = all controls grouped together.',
-                ],
-                ['id', 'string', '—', 'Optional id on the container div.'],
-                ['className', 'string', '—', 'Extra classes merged onto the container.'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop}>
-                  <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{prop}</td>
-                  <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">{type}</td>
-                  <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">{def}</td>
-                  <td className="py-2.5 text-xs text-gray-600">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      </div>
-    )
-  },
+const Tag = ({ children, color = 'gray' }) => {
+  const colors = {
+    gray: 'bg-gray-100 text-gray-600',
+    violet: 'bg-violet-100 text-violet-700',
+    green: 'bg-green-100 text-green-700',
+    blue: 'bg-blue-100 text-blue-700',
+  }
+  return (
+    <span
+      className={`inline-block px-2 py-0.5 rounded text-xs font-mono font-medium ${colors[color]}`}
+    >
+      {children}
+    </span>
+  )
 }
 
+const ApiTable = ({ rows }) => (
+  <div className="overflow-x-auto mb-6">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(([prop, type, def, desc]) => (
+          <tr key={prop} className="even:bg-gray-50">
+            <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+              {prop}
+            </td>
+            <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+              {type}
+            </td>
+            <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+              {def}
+            </td>
+            <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+// ─── Live demo ────────────────────────────────────────────────────────────────
+
 function PaginationDemo() {
-  const [page, setPage] = useState(3)
-  const totalPages = 8
-  const total = 75
+  const [page, setPage] = useState(4)
   return (
     <Pagination
       page={page}
-      totalPages={totalPages}
-      total={total}
+      totalPages={8}
+      total={75}
       onPrev={() => setPage((p) => Math.max(1, p - 1))}
-      onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+      onNext={() => setPage((p) => Math.min(8, p + 1))}
     />
   )
+}
+
+// ─── Story ────────────────────────────────────────────────────────────────────
+
+export const Docs = {
+  name: 'Docs',
+  render: () => (
+    <div className="p-8 max-w-4xl font-sans text-gray-900">
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <div className="mb-10">
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900">Pagination</h1>
+          <Tag color="violet">Base Component</Tag>
+        </div>
+        <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
+          A standalone pagination bar — Prev / page info / Next. Use it beneath any list or table
+          that paginates server-side. Returns{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-sm">null</code> automatically
+          when{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-sm">totalPages &lt;= 1</code>.
+        </p>
+      </div>
+
+      {/* ── Overview ───────────────────────────────────────────────────────── */}
+      <Section title="Overview">
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3">
+          <PaginationDemo />
+        </div>
+        <p className="text-xs text-gray-400 mb-4">Click Prev / Next to change the page.</p>
+        <Code>{`import Pagination from '@/components/base/Pagination/Pagination'
+
+const [page, setPage] = useState(1)
+
+<Pagination
+  page={page}
+  totalPages={8}
+  total={75}
+  onPrev={() => setPage((p) => Math.max(1, p - 1))}
+  onNext={() => setPage((p) => Math.min(8, p + 1))}
+/>`}</Code>
+      </Section>
+
+      {/* ── Anatomy ────────────────────────────────────────────────────────── */}
+      <Section title="Anatomy">
+        <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
+          {/* full variant diagram */}
+          <div className="flex flex-col gap-2 mb-6">
+            <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wide mb-1">
+              variant=&quot;full&quot; (default)
+            </span>
+            <div className="relative p-4 border-2 border-dashed border-violet-400 rounded-xl">
+              <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
+                Pagination
+              </span>
+              <div className="grid grid-cols-3 items-center gap-2 mt-1">
+                <div className="relative px-3 py-1.5 border border-dashed border-blue-300 rounded text-center">
+                  <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-blue-500">
+                    prevBtn
+                  </span>
+                  <span className="text-[10px] text-gray-500 mt-0.5 block">← Prev</span>
+                </div>
+                <div className="relative px-3 py-1.5 border border-dashed border-slate-300 rounded text-center">
+                  <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-slate-400">
+                    pageInfo
+                  </span>
+                  <span className="text-[10px] text-gray-400 mt-0.5 block">
+                    Page 4 of 8 · 75 records
+                  </span>
+                </div>
+                <div className="relative px-3 py-1.5 border border-dashed border-blue-300 rounded text-center">
+                  <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-blue-500">
+                    nextBtn
+                  </span>
+                  <span className="text-[10px] text-gray-500 mt-0.5 block">Next →</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* center/left/right variant diagram */}
+          <div className="flex flex-col gap-2">
+            <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wide mb-1">
+              variant=&quot;center&quot; / &quot;left&quot; / &quot;right&quot;
+            </span>
+            <div className="relative p-4 border-2 border-dashed border-violet-400 rounded-xl">
+              <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
+                Pagination
+              </span>
+              <div className="flex items-center justify-center gap-3 mt-1">
+                <div className="relative px-3 py-1.5 border border-dashed border-blue-300 rounded">
+                  <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-blue-500">
+                    prevBtn
+                  </span>
+                  <span className="text-[10px] text-gray-500 mt-0.5 block">← Prev</span>
+                </div>
+                <div className="relative px-3 py-1.5 border border-dashed border-slate-300 rounded">
+                  <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-slate-400">
+                    pageInfo
+                  </span>
+                  <span className="text-[10px] text-gray-400 mt-0.5 block">
+                    Page 4 of 8 · 75 records
+                  </span>
+                </div>
+                <div className="relative px-3 py-1.5 border border-dashed border-blue-300 rounded">
+                  <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-blue-500">
+                    nextBtn
+                  </span>
+                  <span className="text-[10px] text-gray-500 mt-0.5 block">Next →</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <SubSection title="Parts">
+          <div className="overflow-x-auto mb-4">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-gray-50">
+                  {['Part', 'Element', 'Role'].map((h) => (
+                    <th
+                      key={h}
+                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  [
+                    'prevBtn',
+                    '<Button>',
+                    'Ghost button with ChevronLeft. Disabled when page <= 1.',
+                  ],
+                  [
+                    'pageInfo',
+                    '<span>',
+                    'Page N of M · X records. Has aria-live="polite" for screen readers.',
+                  ],
+                  [
+                    'nextBtn',
+                    '<Button>',
+                    'Ghost button with ChevronRight. Disabled when page >= totalPages.',
+                  ],
+                ].map(([part, el, role]) => (
+                  <tr key={part} className="even:bg-gray-50">
+                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                      {part}
+                    </td>
+                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
+                      {el}
+                    </td>
+                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
+                      {role}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SubSection>
+      </Section>
+
+      {/* ── Best Practices ─────────────────────────────────────────────────── */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Beneath any list or table that paginates server-side',
+                  body: 'Use Pagination when data is fetched page-by-page from a server. Works for both table and mobile card list layouts.',
+                },
+                {
+                  title: 'Always render unconditionally',
+                  body: 'The component returns null automatically when totalPages <= 1. No guard wrapper needed — just render it and let it decide.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: 'Data already in memory — use DataTable instead',
+                  body: "Don't use when all data is already loaded client-side. Use the DataTable component with its built-in pagination prop to avoid managing two separate page states for the same dataset.",
+                },
+                {
+                  title: 'Short lists under ~20 rows',
+                  body: "Don't paginate a list small enough to show all items at once — the extra navigation step adds friction without benefit.",
+                },
+                {
+                  title: 'When you need page-number buttons or jump-to-page input',
+                  body: 'This component only supports prev/next navigation. If users need to jump to a specific page directly, a different pagination pattern is required.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'pageInfo has aria-live="polite" for screen readers',
+                  body: 'Screen readers announce page changes automatically when the page info text updates. No extra markup needed.',
+                },
+                {
+                  title: 'Prev and Next buttons have aria-label attributes',
+                  body: 'The buttons are accessible even with iconOnly — aria-label="Previous page" and aria-label="Next page" are always present.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Place outside any sm:hidden / sm:block responsive wrappers',
+                  body: 'Pagination should render on all screen sizes — mobile and desktop share the same bar. Wrapping it in a responsive visibility class will hide it on some viewports.',
+                },
+                {
+                  title: 'Always clamp onPrev and onNext handlers',
+                  body: 'Use Math.max(1, p - 1) for Prev and Math.min(totalPages, p + 1) for Next to prevent out-of-range page values in parent state.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ── API Reference ──────────────────────────────────────────────────── */}
+      <Section title="API Reference">
+        <ApiTable
+          rows={[
+            ['page', 'number', '—', 'Current page number (1-based).'],
+            ['totalPages', 'number', '—', 'Total number of pages. Returns null when <= 1.'],
+            ['total', 'number', '—', 'Total record count shown in the page info label.'],
+            ['onPrev', '() => void', '—', 'Called when the Prev button is clicked.'],
+            ['onNext', '() => void', '—', 'Called when the Next button is clicked.'],
+            [
+              'variant',
+              '"full" | "center" | "left" | "right"',
+              '"full"',
+              'Layout of controls. full = Prev far left, page info centered, Next far right. Others = all controls grouped together.',
+            ],
+            [
+              'iconOnly',
+              'boolean',
+              'false',
+              'Show chevron-only buttons — hides the Prev/Next text labels.',
+            ],
+            ['id', 'string', '—', 'Optional id on the container div.'],
+            [
+              'prevId',
+              'string',
+              '—',
+              'Optional id on the Prev button — used for Cypress test targeting.',
+            ],
+            [
+              'nextId',
+              'string',
+              '—',
+              'Optional id on the Next button — used for Cypress test targeting.',
+            ],
+            [
+              'infoId',
+              'string',
+              '—',
+              'Optional id on the page info span — used for Cypress test targeting.',
+            ],
+            ['className', 'string', '—', 'Extra classes merged onto the container div.'],
+          ]}
+        />
+      </Section>
+    </div>
+  ),
 }

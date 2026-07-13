@@ -1,7 +1,13 @@
 'use client'
-import { Children, cloneElement, createContext, useContext, useEffect, useState } from 'react'
-import * as DialogPrimitive from '@radix-ui/react-dialog'
-import * as TooltipPrimitive from '@radix-ui/react-tooltip'
+import {
+  Children,
+  cloneElement,
+  createContext,
+  createPortal,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -31,6 +37,26 @@ function SidebarProvider({
     return () => mq.removeEventListener('change', handler)
   }, [])
 
+  useEffect(() => {
+    if (isMobile && open) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isMobile, open])
+
+  useEffect(() => {
+    if (!isMobile || !open) return
+    const handler = (e) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [isMobile, open])
+
   const toggleSidebar = () => {
     if (isMobile) {
       setOpen((prev) => !prev)
@@ -43,48 +69,61 @@ function SidebarProvider({
     <SidebarContext.Provider
       value={{ open, setOpen, collapsed, setCollapsed, isMobile, toggleSidebar, collapseAnimation }}
     >
-      <TooltipPrimitive.Provider delayDuration={300}>
-        <DialogPrimitive.Root open={isMobile && open} onOpenChange={(o) => setOpen(o)}>
-          {children}
-        </DialogPrimitive.Root>
-      </TooltipPrimitive.Provider>
+      {children}
     </SidebarContext.Provider>
   )
 }
 
 function SidebarOverlay({ className, ...props }) {
-  return (
-    <DialogPrimitive.Overlay
+  const { open, setOpen, isMobile } = useSidebar()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted || !isMobile) return null
+
+  return createPortal(
+    <div
+      onClick={() => setOpen(false)}
+      aria-hidden="true"
       className={cn(
-        'fixed inset-0 z-40 bg-black/50',
-        'data-[state=open]:animate-in data-[state=open]:fade-in-0',
-        'data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
+        'fixed inset-0 z-40 bg-black/50 transition-opacity duration-200',
+        open ? 'opacity-100' : 'opacity-0 pointer-events-none',
         className
       )}
       {...props}
-    />
+    />,
+    document.body
   )
 }
 
 function Sidebar({ className, side = 'left', children, ...props }) {
-  const { collapsed, isMobile, collapseAnimation } = useSidebar()
+  const { collapsed, isMobile, open, collapseAnimation } = useSidebar()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   if (isMobile) {
-    return (
-      <DialogPrimitive.Content
+    if (!mounted) return null
+    return createPortal(
+      <aside
         className={cn(
-          'fixed inset-y-0 z-50 flex flex-col bg-white w-72',
-          'data-[state=open]:animate-in data-[state=closed]:animate-out duration-200',
+          'fixed inset-y-0 z-50 flex flex-col bg-white w-72 transition-transform duration-200',
           side === 'left'
-            ? 'left-0 border-r border-gray-200 data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left'
-            : 'right-0 border-l border-gray-200 data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right',
+            ? cn('left-0 border-r border-gray-200', open ? 'translate-x-0' : '-translate-x-full')
+            : cn('right-0 border-l border-gray-200', open ? 'translate-x-0' : 'translate-x-full'),
           className
         )}
         aria-label="Navigation sidebar"
         {...props}
       >
         {children}
-      </DialogPrimitive.Content>
+      </aside>,
+      document.body
     )
   }
 
@@ -188,7 +227,7 @@ function SidebarItemLabel({ className, children, ...props }) {
   return (
     <span
       className={cn(
-        'flex-1 text-sm truncate whitespace-nowrap',
+        'flex-1 truncate whitespace-nowrap',
         collapseAnimation === 'slide' && 'transition-[opacity,width] duration-200',
         collapsed ? 'opacity-0 w-0 overflow-hidden flex-none' : 'opacity-100',
         className
@@ -215,6 +254,29 @@ function SidebarItemBadge({ className, children, ...props }) {
     >
       {children}
     </span>
+  )
+}
+
+function SidebarTooltip({ label, children }) {
+  const [visible, setVisible] = useState(false)
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+    >
+      {children}
+      {visible && label && (
+        <div
+          role="tooltip"
+          className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 px-2.5 py-1.5 rounded-md bg-gray-900 text-white text-xs font-medium shadow-md whitespace-nowrap pointer-events-none"
+        >
+          {label}
+          <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -248,16 +310,18 @@ function SidebarSub({ open: isOpen = false, animation = 'slide', className, chil
 }
 
 const itemSizeClasses = {
-  sm: { px: 'px-1.5', rest: 'py-1 min-h-[32px] gap-2', icon: 'size-4' },
-  md: { px: 'px-2', rest: 'py-1.5 min-h-[38px] gap-2', icon: 'size-4' },
-  lg: { px: 'px-2', rest: 'py-2 min-h-[44px] gap-2.5', icon: 'size-5' },
+  xs: { px: 'px-1', rest: 'py-0.5 min-h-[28px] gap-1.5', icon: 'size-3.5', label: 'text-xs' },
+  sm: { px: 'px-1.5', rest: 'py-1 min-h-[32px] gap-2', icon: 'size-4', label: 'text-xs' },
+  base: { px: 'px-2', rest: 'py-1.5 min-h-[38px] gap-2', icon: 'size-4', label: 'text-sm' },
+  lg: { px: 'px-2', rest: 'py-2 min-h-[44px] gap-2.5', icon: 'size-5', label: 'text-sm' },
+  xl: { px: 'px-3', rest: 'py-2.5 min-h-[52px] gap-3', icon: 'size-5', label: 'text-base' },
 }
 
 function SidebarItem({
   icon,
   label,
   badge,
-  size = 'md',
+  size = 'base',
   active = false,
   disabled = false,
   onClick,
@@ -273,7 +337,7 @@ function SidebarItem({
   const hasSub = !!subChild
   const otherChildren = childArray.filter((c) => c.type !== SidebarSub)
 
-  const sz = itemSizeClasses[size] ?? itemSizeClasses.md
+  const sz = itemSizeClasses[size] ?? itemSizeClasses.base
 
   const handleClick = (e) => {
     if (disabled) return
@@ -322,7 +386,7 @@ function SidebarItem({
         {...props}
       >
         {iconEl}
-        {label && <SidebarItemLabel>{label}</SidebarItemLabel>}
+        {label && <SidebarItemLabel className={sz.label}>{label}</SidebarItemLabel>}
         {badge != null && <SidebarItemBadge>{badge}</SidebarItemBadge>}
         {otherChildren.filter((c) => c.type !== SidebarItemIcon).length > 0 &&
           otherChildren.filter((c) => c.type !== SidebarItemIcon)}
@@ -348,23 +412,7 @@ function SidebarItem({
   )
 
   if (collapsed && !isMobile && label) {
-    return (
-      <TooltipPrimitive.Root>
-        <TooltipPrimitive.Trigger asChild>
-          <div>{content}</div>
-        </TooltipPrimitive.Trigger>
-        <TooltipPrimitive.Portal>
-          <TooltipPrimitive.Content
-            side="right"
-            sideOffset={8}
-            className="z-50 px-2.5 py-1.5 rounded-md bg-gray-900 text-white text-xs font-medium shadow-md"
-          >
-            {label}
-            <TooltipPrimitive.Arrow className="fill-gray-900" />
-          </TooltipPrimitive.Content>
-        </TooltipPrimitive.Portal>
-      </TooltipPrimitive.Root>
-    )
+    return <SidebarTooltip label={label}>{content}</SidebarTooltip>
   }
 
   return content

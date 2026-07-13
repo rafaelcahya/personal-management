@@ -175,7 +175,6 @@ export default function EventDetailClient({ id }) {
   const AnalyzeButton = ({ className = '' }) => (
     <Button
       id="analyzeEventBtn_eventDetailPage"
-      size="base"
       onClick={() => setAnalysisModalOpen(true)}
       className={`gap-1.5 bg-violet-600 hover:bg-violet-700 text-white ${className}`}
     >
@@ -363,7 +362,6 @@ export default function EventDetailClient({ id }) {
                     <Button
                       id="refreshAnalysisBtn_eventDetailPage"
                       variant="outline"
-                      size="base"
                       onClick={() => setAnalysisModalOpen(true)}
                       className="h-7 gap-1.5 text-xs"
                     >

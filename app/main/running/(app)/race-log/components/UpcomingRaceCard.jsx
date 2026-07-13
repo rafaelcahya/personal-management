@@ -1,5 +1,6 @@
 'use client'
 
+import { FieldContent, FieldLabel } from '@/components/base/Field/Field'
 import { useState } from 'react'
 import {
   Flag,
@@ -17,8 +18,6 @@ import {
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 import Card, {
   CardAction,
   CardContent,
@@ -362,7 +361,6 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
             <Button
               id="linkActivityBtn_raceLogPage"
               variant="ghost"
-              size="base"
               onClick={() => setPickerOpen(true)}
               disabled={linking || unlinking}
               className="flex items-center gap-1.5 text-xs md:min-h-9"
@@ -418,7 +416,6 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
             <Button
               id="addToCalendarBtn_raceLogPage"
               variant="ghost"
-              size="base"
               onClick={handleAddToCalendar}
               className="flex items-center gap-1.5 text-xs md:min-h-9"
             >
@@ -441,7 +438,6 @@ export default function UpcomingRaceCard({ race, onUpdated, onDeleted, onComplet
             {linked && (
               <Button
                 id="saveAsCompletedBtn_raceLogPage"
-                size="base"
                 onClick={handleSaveAsCompleted}
                 disabled={completing}
                 className="flex items-center gap-1.5 text-xs md:min-h-9"

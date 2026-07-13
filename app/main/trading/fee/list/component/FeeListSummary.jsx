@@ -55,56 +55,54 @@ export default function FeeListSummary({ feeCount, totalFee }) {
       </div>
 
       {/* Mobile View - Accordion */}
-      <Card id="feeSummaryCollapsible_feePage" className="sm:hidden py-0 overflow-hidden">
-        <Accordion type="single" collapsible>
-          <AccordionItem value="fee-summary" className="border-0">
-            <AccordionTrigger
-              id="feeSummaryCollapsibleTrigger_feePage"
-              className="px-4 py-3 items-center hover:no-underline hover:bg-slate-50 focus-visible:ring-violet-200 focus-visible:ring-inset"
+      <Accordion
+        type="single"
+        collapsible
+        variant="card"
+        id="feeSummaryCollapsible_feePage"
+        className="sm:hidden overflow-hidden"
+      >
+        <AccordionItem value="fee-summary">
+          <AccordionTrigger id="feeSummaryCollapsibleTrigger_feePage">
+            <div
+              id="feeSummaryCollapsibleDefault_feePage"
+              className="flex items-center gap-3 min-w-0 flex-1"
             >
-              <div
-                id="feeSummaryCollapsibleDefault_feePage"
-                className="flex items-center gap-3 min-w-0 flex-1"
-              >
-                <div className="p-2 rounded-lg bg-red-50 shrink-0">
-                  <DollarSign className="size-4 text-red-600" />
-                </div>
-                <div className="text-left min-w-0">
-                  <p className="text-sm font-semibold truncate">Fee Summary</p>
-                  <p className="text-xs font-medium text-red-600 truncate">
-                    Total: Rp {totalFee.toLocaleString('id-ID')}
-                  </p>
-                </div>
+              <div className="p-2 rounded-lg bg-red-50 shrink-0">
+                <DollarSign className="size-4 text-red-600" />
               </div>
-            </AccordionTrigger>
-            <AccordionContent
-              id="feeSummaryCollapsibleContent_feePage"
-              className="px-4 pb-4 pt-2 border-t border-slate-100"
-            >
-              <div className="grid grid-cols-2 gap-3">
-                {stats.map((stat, index) => {
-                  const Icon = stat.icon
-                  return (
-                    <div
-                      key={index}
-                      id={`${stat.id}_mobileView`}
-                      className="p-3 rounded-lg border bg-slate-50/50"
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className={`p-1.5 rounded-md ${stat.bgColor}`}>
-                          <Icon className={`size-3.5 ${stat.color}`} />
-                        </div>
-                        <p className="text-xs font-medium text-slate-600">{stat.title}</p>
+              <div className="text-left min-w-0">
+                <p className="text-sm font-semibold truncate">Fee Summary</p>
+                <p className="text-xs font-medium text-red-600 truncate">
+                  Total: Rp {totalFee.toLocaleString('id-ID')}
+                </p>
+              </div>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent id="feeSummaryCollapsibleContent_feePage">
+            <div className="grid grid-cols-2 gap-3">
+              {stats.map((stat, index) => {
+                const Icon = stat.icon
+                return (
+                  <div
+                    key={index}
+                    id={`${stat.id}_mobileView`}
+                    className="p-3 rounded-lg border bg-slate-50/50"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`p-1.5 rounded-md ${stat.bgColor}`}>
+                        <Icon className={`size-3.5 ${stat.color}`} />
                       </div>
-                      <p className="text-lg font-bold ml-0.5">{stat.value}</p>
+                      <p className="text-xs font-medium text-slate-600">{stat.title}</p>
                     </div>
-                  )
-                })}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </Card>
+                    <p className="text-lg font-bold ml-0.5">{stat.value}</p>
+                  </div>
+                )
+              })}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </>
   )
 }

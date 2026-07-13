@@ -74,9 +74,44 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ rows }) => (
+  <div className="overflow-x-auto mb-6">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(([prop, type, def, desc]) => (
+          <tr key={prop} className="even:bg-gray-50">
+            <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+              {prop}
+            </td>
+            <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+              {type}
+            </td>
+            <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+              {def}
+            </td>
+            <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
 // ─── Live demo ────────────────────────────────────────────────────────────────
 
-function AnatomyDemo() {
+function OverviewDemo() {
   return (
     <NavMenu trigger="hover">
       <NavMenuList>
@@ -146,7 +181,7 @@ export const Docs = {
   name: 'Docs',
   render: () => (
     <div className="p-8 max-w-4xl font-sans text-gray-900">
-      {/* Header */}
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-2">
           <h1 className="text-3xl font-bold text-gray-900">NavMenu</h1>
@@ -160,18 +195,120 @@ export const Docs = {
         </p>
       </div>
 
-      {/* Overview */}
+      {/* ── Overview ───────────────────────────────────────────────────────── */}
       <Section title="Overview">
         <Preview>
-          <AnatomyDemo />
+          <OverviewDemo />
         </Preview>
         <p className="text-xs text-gray-400 mb-4">
           Hover over Products or Settings to see the dropdown. Home link is marked active.
         </p>
       </Section>
 
-      {/* Anatomy */}
+      {/* ── Anatomy ────────────────────────────────────────────────────────── */}
       <Section title="Anatomy">
+        {/* Visual box diagram */}
+        <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
+          <div className="flex flex-wrap gap-10">
+            {/* Panel: nav bar (closed) */}
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wide mb-1">
+                Nav bar
+              </span>
+              <div className="relative p-4 border-2 border-dashed border-violet-400 rounded-xl inline-block">
+                <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
+                  NavMenu
+                </span>
+                <div className="relative p-3 border border-dashed border-blue-300 rounded-lg">
+                  <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-blue-500">
+                    NavMenuList
+                  </span>
+                  <div className="mt-1 flex items-center gap-2">
+                    <div className="relative px-2 py-1 border border-dashed border-green-300 rounded">
+                      <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
+                        NavMenuLink
+                      </span>
+                      <span className="text-[10px] text-gray-400 mt-0.5 block">Home</span>
+                    </div>
+                    <div className="relative px-2 py-1 border border-dashed border-slate-300 rounded">
+                      <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-slate-400">
+                        NavMenuItem
+                      </span>
+                      <div className="relative px-2 py-1 border border-dashed border-violet-300 rounded mt-0.5">
+                        <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-violet-500">
+                          NavMenuTrigger
+                        </span>
+                        <span className="text-[10px] text-gray-400 mt-0.5 block">Products ∨</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Panel: open dropdown */}
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wide mb-1">
+                Open dropdown
+              </span>
+              <div className="relative p-3 border-2 border-dashed border-blue-300 rounded-xl inline-block">
+                <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-blue-500">
+                  NavMenuContent (columns=2)
+                </span>
+                <div className="mt-1 flex gap-3">
+                  <div className="relative p-2 border border-dashed border-slate-300 rounded-lg">
+                    <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-slate-400">
+                      NavMenuGroup
+                    </span>
+                    <div className="mt-1 flex flex-col gap-1">
+                      <div className="relative px-2 py-0.5 border border-dashed border-slate-300 rounded">
+                        <span className="text-[10px] font-mono text-slate-400">
+                          NavMenuGroupTitle
+                        </span>
+                      </div>
+                      <div className="relative px-2 py-0.5 border border-dashed border-slate-300 rounded">
+                        <span className="text-[10px] font-mono text-slate-400">
+                          NavMenuGroupItem
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="relative p-2 border border-dashed border-slate-300 rounded-lg">
+                    <span className="absolute -top-2 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-slate-400">
+                      NavMenuGroup
+                    </span>
+                    <div className="mt-1 flex flex-col gap-1">
+                      <div className="relative px-2 py-0.5 border border-dashed border-slate-300 rounded">
+                        <span className="text-[10px] font-mono text-slate-400">
+                          NavMenuGroupTitle
+                        </span>
+                      </div>
+                      <div className="relative px-2 py-0.5 border border-dashed border-slate-300 rounded">
+                        <span className="text-[10px] font-mono text-slate-400">
+                          NavMenuGroupItem
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-2 flex flex-col gap-1">
+                  <div className="relative px-2 py-0.5 border border-dashed border-green-300 rounded">
+                    <span className="text-[10px] font-mono text-green-500">
+                      NavMenuSeparator (optional)
+                    </span>
+                  </div>
+                  <div className="relative px-2 py-0.5 border border-dashed border-green-300 rounded">
+                    <span className="text-[10px] font-mono text-green-500">
+                      NavMenuLink (optional)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Code tree */}
         <SubSection title="Component Tree">
           <Code>{`<NavMenu trigger="hover">            ← root: manages open state
   <NavMenuList>                       ← flex row + animated underline
@@ -194,9 +331,6 @@ export const Docs = {
             description="Track items"
           />
         </NavMenuGroup>
-        <NavMenuGroup>
-          ...
-        </NavMenuGroup>
         <NavMenuSeparator />         ← <hr> divider
         <NavMenuLink href="/help">   ← plain link inside dropdown
           Help
@@ -207,12 +341,13 @@ export const Docs = {
 </NavMenu>`}</Code>
         </SubSection>
 
+        {/* Parts table */}
         <SubSection title="Parts">
           <div className="overflow-x-auto mb-4">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-gray-50">
-                  {['Part', 'Role'].map((h) => (
+                  {['Part', 'Element', 'Role'].map((h) => (
                     <th
                       key={h}
                       className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
@@ -224,36 +359,56 @@ export const Docs = {
               </thead>
               <tbody>
                 {[
-                  ['NavMenu', 'Root. Provides context: activeMenu, trigger mode, closeDelay.'],
-                  ['NavMenuList', 'Horizontal flex row. Renders the animated sliding underline.'],
-                  ['NavMenuItem', 'Wrapper for one item with a dropdown. Owns hover/click logic.'],
+                  [
+                    'NavMenu',
+                    '<nav>',
+                    'Root. Provides context: activeMenu, trigger mode, closeDelay.',
+                  ],
+                  [
+                    'NavMenuList',
+                    '<div>',
+                    'Horizontal flex row. Renders the animated sliding underline.',
+                  ],
+                  [
+                    'NavMenuItem',
+                    '<div>',
+                    'Wrapper for one item with a dropdown. Owns hover/click logic.',
+                  ],
                   [
                     'NavMenuTrigger',
-                    'Clickable/hoverable label. Stamped with data-active for underline tracking.',
+                    '<button>',
+                    'Hoverable/clickable label with chevron. Stamped with data-active for underline tracking.',
                   ],
                   [
                     'NavMenuIndicator',
+                    '<div>',
                     'Animated diamond caret that points into the open dropdown.',
                   ],
                   [
                     'NavMenuContent',
+                    '<div>',
                     'Dropdown panel. columns=1 is a regular menu; 2–4 is a mega menu grid.',
                   ],
                   [
                     'NavMenuLink',
+                    '<a>',
                     'Standalone link (in list) or plain row (in dropdown). Supports as prop.',
                   ],
-                  ['NavMenuGroup', 'Column container inside a mega menu (columns ≥ 2).'],
-                  ['NavMenuGroupTitle', 'Column heading inside NavMenuGroup.'],
+                  ['NavMenuGroup', '<div>', 'Column container inside a mega menu (columns ≥ 2).'],
+                  ['NavMenuGroupTitle', '<p>', 'Column heading inside NavMenuGroup.'],
                   [
                     'NavMenuGroupItem',
+                    '<a>',
                     'Rich link row: icon box + label + description. Supports as prop.',
                   ],
-                  ['NavMenuSeparator', '<hr> divider inside NavMenuContent.'],
-                ].map(([part, role]) => (
+                  ['NavMenuSeparator', '<hr>', 'Divider inside NavMenuContent.'],
+                ].map(([part, el, role]) => (
                   <tr key={part} className="even:bg-gray-50">
                     <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
                       {part}
+                    </td>
+                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
+                      {el}
                     </td>
                     <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
                       {role}
@@ -266,87 +421,7 @@ export const Docs = {
         </SubSection>
       </Section>
 
-      {/* Usage */}
-      <Section title="Usage">
-        <SubSection title="Import">
-          <Code>{`import {
-  NavMenu,
-  NavMenuList,
-  NavMenuItem,
-  NavMenuTrigger,
-  NavMenuContent,
-  NavMenuIndicator,
-  NavMenuLink,
-  NavMenuGroup,
-  NavMenuGroupTitle,
-  NavMenuGroupItem,
-  NavMenuSeparator,
-} from '@/components/base/NavMenu/NavMenu'`}</Code>
-        </SubSection>
-
-        <SubSection title="Simple dropdown">
-          <Code>{`<NavMenu trigger="hover">
-  <NavMenuList>
-    <NavMenuLink href="/" active>Home</NavMenuLink>
-    <NavMenuItem>
-      <NavMenuTrigger icon={Settings}>Settings</NavMenuTrigger>
-      <NavMenuIndicator />
-      <NavMenuContent>
-        <NavMenuLink href="/account" icon={Users}>Account</NavMenuLink>
-        <NavMenuLink href="/notifications" icon={Bell}>Notifications</NavMenuLink>
-        <NavMenuSeparator />
-        <NavMenuLink href="/help" icon={HelpCircle}>Help</NavMenuLink>
-      </NavMenuContent>
-    </NavMenuItem>
-  </NavMenuList>
-</NavMenu>`}</Code>
-        </SubSection>
-
-        <SubSection title="Mega menu (2 columns)">
-          <Code>{`<NavMenu trigger="hover">
-  <NavMenuList>
-    <NavMenuItem>
-      <NavMenuTrigger icon={Package}>Products</NavMenuTrigger>
-      <NavMenuIndicator />
-      <NavMenuContent columns={2}>
-        <NavMenuGroup>
-          <NavMenuGroupTitle>Inventory</NavMenuGroupTitle>
-          <NavMenuGroupItem href="/inventory" icon={Package} label="Stock" description="Track items" />
-          <NavMenuGroupItem href="/analytics" icon={BarChart2} label="Analytics" description="Usage trends" />
-        </NavMenuGroup>
-        <NavMenuGroup>
-          <NavMenuGroupTitle>Trading</NavMenuGroupTitle>
-          <NavMenuGroupItem href="/trades" icon={TrendingUp} label="Trades" description="Open positions" />
-          <NavMenuGroupItem href="/portfolio" icon={Wallet} label="Portfolio" description="Holdings" />
-        </NavMenuGroup>
-      </NavMenuContent>
-    </NavMenuItem>
-  </NavMenuList>
-</NavMenu>`}</Code>
-        </SubSection>
-
-        <SubSection title="Next.js routing via as prop">
-          <Code>{`import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-
-const pathname = usePathname()
-
-<NavMenuLink as={Link} href="/inventory" active={pathname === '/inventory'}>
-  Inventory
-</NavMenuLink>
-
-<NavMenuGroupItem
-  as={Link}
-  href="/inventory"
-  icon={Package}
-  label="Stock"
-  description="Track and manage items"
-  active={pathname === '/inventory'}
-/>`}</Code>
-        </SubSection>
-      </Section>
-
-      {/* Keyboard */}
+      {/* ── Keyboard Behavior ──────────────────────────────────────────────── */}
       <Section title="Keyboard Behavior">
         <div className="overflow-x-auto mb-4">
           <table className="w-full text-sm border-collapse">
@@ -366,7 +441,7 @@ const pathname = usePathname()
               {[
                 ['Escape', 'Closes the active dropdown'],
                 [
-                  'Click (trigger mode)',
+                  'Click (trigger="click" mode)',
                   'Click NavMenuTrigger to open; click again or outside to close',
                 ],
                 ['Tab', 'Moves focus through focusable elements inside the open dropdown'],
@@ -385,371 +460,196 @@ const pathname = usePathname()
         </div>
       </Section>
 
-      {/* API */}
-      <Section title="API Reference">
-        <SubSection title="NavMenu">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['trigger', "'hover' | 'click'", "'hover'", 'How dropdowns open and close.'],
-                  ['closeDelay', 'number', '150', 'Ms before hover-close fires (hover mode only).'],
-                  ['value', 'string | null', '—', 'Controlled: id of the open NavMenuItem.'],
-                  [
-                    'onValueChange',
-                    '(id: string | null) => void',
-                    '—',
-                    'Controlled: called when active item changes.',
-                  ],
-                  ['className', 'string', '—', 'Extra classes on the <nav> element.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-
-        <SubSection title="NavMenuItem">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'id',
-                    'string',
-                    'useId()',
-                    'Override the auto-generated id. Required for controlled mode.',
-                  ],
-                  ['className', 'string', '—', 'Extra classes on the wrapper div.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-
-        <SubSection title="NavMenuContent">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'columns',
-                    '1 | 2 | 3 | 4',
-                    '1',
-                    'Number of mega menu columns. 1 = regular dropdown.',
-                  ],
-                  [
-                    'align',
-                    "'start' | 'center' | 'end'",
-                    "'start'",
-                    'Horizontal alignment relative to NavMenuItem.',
-                  ],
-                  ['className', 'string', '—', 'Extra classes on the dropdown panel.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-
-        <SubSection title="NavMenuLink">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['as', 'ElementType', "'a'", 'Polymorphic — pass Next.js Link for routing.'],
-                  ['href', 'string', '—', 'The link destination.'],
-                  ['active', 'boolean', 'false', 'Highlights the link as the current route.'],
-                  ['icon', 'LucideIcon', '—', 'Optional icon rendered before the label.'],
-                  ['className', 'string', '—', 'Extra classes.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-
-        <SubSection title="NavMenuGroupItem">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['as', 'ElementType', "'a'", 'Polymorphic — pass Next.js Link for routing.'],
-                  ['href', 'string', '—', 'The link destination.'],
-                  ['active', 'boolean', 'false', 'Highlights as the current route.'],
-                  ['icon', 'LucideIcon', '—', 'Icon rendered in a rounded square.'],
-                  ['label', 'string', '—', 'Primary text.'],
-                  ['description', 'string', '—', 'Secondary text below the label.'],
-                  ['className', 'string', '—', 'Extra classes.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-      </Section>
-
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use NavMenu when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+      {/* ── Best Practices ─────────────────────────────────────────────────── */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Desktop/tablet apps with 3–7 top-level sections',
+                  body: 'Use NavMenu when some sections have sub-pages that benefit from grouped dropdowns or mega menu panels. Best when the layout is wide and a persistent horizontal nav fits above the main content.',
+                },
+                {
+                  title: 'Keep trigger labels short — 1 to 2 words',
+                  body: 'Short labels like "Products" or "Settings" scan faster and keep the sliding underline animation crisp. Long labels crowd the nav bar.',
+                },
+                {
+                  title: 'Use NavMenuGroupTitle to label mega menu columns',
+                  body: 'Column headings give users a clear mental model of how sub-pages are organised before they scan individual items.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: 'Mobile-first apps',
+                  body: "Don't use for mobile-first apps — use bottom navigation instead. Horizontal nav bars don't adapt well to small screens.",
+                },
+                {
+                  title: '8+ sections or deeply nested hierarchies',
+                  body: "Don't use for 8+ sections or deeply nested hierarchies — use a Sidebar instead. NavMenu only supports one level of dropdowns.",
+                },
+                {
+                  title: 'In-page content switching without a route change',
+                  body: "Don't use for in-page content switching — use the Tabs component. NavMenu is designed for route-level navigation only.",
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Always pass the active prop',
+                  body: 'Pass active to NavMenuLink and NavMenuGroupItem to reflect the current route. The sliding underline and highlighted state both depend on it.',
+                },
+                {
+                  title: 'Escape closes open dropdowns',
+                  body: 'Tab moves focus through focusable elements inside the open panel. NavMenuLink renders as <a>, which is screen-reader-friendly by default.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'trigger="hover" for desktop, trigger="click" for touch/accessibility',
+                  body: 'Hover mode rewards experienced users who know the layout. Click mode is safer for touch-friendly devices and accessibility-focused contexts where mouseenter is unreliable.',
+                },
+                {
+                  title: 'Pair with usePathname() to derive the active prop',
+                  body: "Use pathname.startsWith('/inventory') for section roots with child routes — an exact match misses active state on sub-pages. Pass a stable id to NavMenuItem when using controlled mode.",
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The app has 3–7 top-level sections that benefit from horizontal grouping in a
-                      persistent nav bar
-                    </li>
-                    <li>
-                      Some sections have sub-pages that are easier to discover in a grouped dropdown
-                      or mega menu panel
-                    </li>
-                    <li>
-                      The layout is wide (desktop/tablet) and a horizontal nav bar fits naturally
-                      above the main content area
-                    </li>
-                    <li>
-                      You need hover-triggered or click-triggered dropdowns with a brief close delay
-                      for fluid mouse movement
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Sidebar</strong> when the app has many sections (8+), deep
-                      nesting, or needs to stay visible at all times for quick jumps between areas
-                    </li>
-                    <li>
-                      Use <strong>Tabs</strong> when switching between views within the same page —
-                      NavMenu is for global app navigation, not in-page content switching
-                    </li>
-                    <li>
-                      Use a simple <strong>anchor link list</strong> when the page is a single long
-                      document and navigation is scroll-based rather than route-based
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              </div>
+            </div>
+          ))}
         </div>
       </Section>
 
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Keep top-level trigger labels short — 1 to 2 words (e.g. "Products", "Settings").
-                  Long labels crowd the nav bar and make the sliding underline animation feel off.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">NavMenuGroupTitle</code>{' '}
-                  to label each column in a mega menu. It gives users a clear mental model of how
-                  the sub-pages are organised before they scan the items.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always pass the{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">active</code> prop to{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">NavMenuLink</code> and{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">NavMenuGroupItem</code> so
-                  the sliding underline and highlighted state reflect the current route.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't nest a second dropdown inside{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">NavMenuContent</code>.
-                  NavMenu only supports one level of dropdowns — deeper hierarchies should be
-                  handled by a Sidebar or a dedicated sub-navigation pattern.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't place more than 5–6 items in{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">NavMenuList</code>. Too many
-                  triggers crowd the bar and collapse awkwardly on narrower screens — move
-                  lower-priority sections behind a "More" menu instead.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use NavMenu as in-page tab navigation. If the content below changes without
-                  a route change, use the <strong>Tabs</strong> component — NavMenu is designed for
-                  route-level navigation only.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* ── API Reference ──────────────────────────────────────────────────── */}
+      <Section title="API Reference">
+        <SubSection
+          title="NavMenu"
+          description="Root component. Manages open state and trigger mode."
+        >
+          <ApiTable
+            rows={[
+              ['trigger', "'hover' | 'click'", "'hover'", 'How dropdowns open and close.'],
+              ['closeDelay', 'number', '150', 'Ms before hover-close fires (hover mode only).'],
+              ['value', 'string | null', '—', 'Controlled: id of the open NavMenuItem.'],
+              [
+                'onValueChange',
+                '(id: string | null) => void',
+                '—',
+                'Controlled: called when active item changes.',
+              ],
+              ['className', 'string', '—', 'Extra classes on the <nav> element.'],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="NavMenuItem" description="Wrapper for one item with a dropdown.">
+          <ApiTable
+            rows={[
+              [
+                'id',
+                'string',
+                'useId()',
+                'Override the auto-generated id. Required for controlled mode.',
+              ],
+              ['className', 'string', '—', 'Extra classes on the wrapper div.'],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection
+          title="NavMenuContent"
+          description="The dropdown panel. columns controls mega menu layout."
+        >
+          <ApiTable
+            rows={[
+              [
+                'columns',
+                '1 | 2 | 3 | 4',
+                '1',
+                'Number of mega menu columns. 1 = regular dropdown.',
+              ],
+              [
+                'align',
+                "'start' | 'center' | 'end'",
+                "'start'",
+                'Horizontal alignment relative to NavMenuItem.',
+              ],
+              ['className', 'string', '—', 'Extra classes on the dropdown panel.'],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection
+          title="NavMenuLink"
+          description="Standalone link in the list or a plain row inside a dropdown. Supports as prop for Next.js routing."
+        >
+          <ApiTable
+            rows={[
+              [
+                'as',
+                'ElementType',
+                "'a'",
+                'Polymorphic — pass Next.js Link for client-side routing.',
+              ],
+              ['href', 'string', '—', 'The link destination.'],
+              ['active', 'boolean', 'false', 'Highlights the link as the current route.'],
+              ['icon', 'LucideIcon', '—', 'Optional icon rendered before the label.'],
+              ['className', 'string', '—', 'Extra classes.'],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection
+          title="NavMenuGroupItem"
+          description="Rich link row with an icon box, label, and optional description. Supports as prop."
+        >
+          <ApiTable
+            rows={[
+              [
+                'as',
+                'ElementType',
+                "'a'",
+                'Polymorphic — pass Next.js Link for client-side routing.',
+              ],
+              ['href', 'string', '—', 'The link destination.'],
+              ['active', 'boolean', 'false', 'Highlights as the current route.'],
+              ['icon', 'LucideIcon', '—', 'Icon rendered in a rounded square.'],
+              ['label', 'string', '—', 'Primary text.'],
+              ['description', 'string', '—', 'Secondary text below the label.'],
+              ['className', 'string', '—', 'Extra classes.'],
+            ]}
+          />
+        </SubSection>
       </Section>
     </div>
   ),

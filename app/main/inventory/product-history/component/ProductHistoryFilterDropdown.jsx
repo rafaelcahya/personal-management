@@ -52,7 +52,6 @@ export default function ProductHistoryFilterDropdown({
         <Button
           id="filterSortBtn_productHistoryPage"
           variant="outline"
-          size="base"
           className="relative gap-2 focus-visible:ring-0 focus-visible:ring-offset-0"
           aria-label="Filter and sort product history"
         >
@@ -74,7 +73,6 @@ export default function ProductHistoryFilterDropdown({
           {filter && (
             <Button
               variant="ghost"
-              size="base"
               className="h-6 px-2 text-xs"
               onClick={(e) => {
                 e.stopPropagation()
@@ -112,7 +110,6 @@ export default function ProductHistoryFilterDropdown({
           {sortOption !== DEFAULT_SORT && (
             <Button
               variant="ghost"
-              size="base"
               className="h-6 px-2 text-xs"
               onClick={(e) => {
                 e.stopPropagation()

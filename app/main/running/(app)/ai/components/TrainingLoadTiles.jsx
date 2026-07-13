@@ -39,7 +39,7 @@ export default function TrainingLoadTiles({ trainingLoad }) {
         className={`${acwrBg(acwr)} shadow-none`}
         aria-label={`ACWR: ${acwr != null ? acwr.toFixed(2) : 'No data'}, ${acwrLabel(acwr)}`}
       >
-        <CardContent padding="none" className="p-4 flex flex-col gap-1">
+        <CardContent className="p-4 flex flex-col gap-1">
           <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">ACWR</p>
           <p className={`text-2xl font-bold leading-none ${acwrColor(acwr)}`}>
             {acwr != null ? acwr.toFixed(2) : '—'}
@@ -52,7 +52,7 @@ export default function TrainingLoadTiles({ trainingLoad }) {
         className="bg-blue-50 border-blue-200 shadow-none"
         aria-label={`ATL (Acute Training Load, 7-day): ${atl != null ? Math.round(atl) : 'No data'}`}
       >
-        <CardContent padding="none" className="p-4 flex flex-col gap-1">
+        <CardContent className="p-4 flex flex-col gap-1">
           <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">ATL · 7d</p>
           <p className="text-2xl font-bold leading-none text-blue-600">
             {atl != null ? Math.round(atl) : '—'}
@@ -65,7 +65,7 @@ export default function TrainingLoadTiles({ trainingLoad }) {
         className="bg-violet-50 border-violet-200 shadow-none"
         aria-label={`CTL (Chronic Training Load, 28-day): ${ctl != null ? Math.round(ctl) : 'No data'}`}
       >
-        <CardContent padding="none" className="p-4 flex flex-col gap-1">
+        <CardContent className="p-4 flex flex-col gap-1">
           <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">CTL · 28d</p>
           <p className="text-2xl font-bold leading-none text-violet-600">
             {ctl != null ? Math.round(ctl) : '—'}

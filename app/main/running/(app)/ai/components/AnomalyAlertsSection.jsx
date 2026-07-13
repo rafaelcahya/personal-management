@@ -78,9 +78,9 @@ function AnomalyHistoryItem({ insight }) {
   const anomalyType = insight.data_refs?.anomaly_type ?? null
 
   return (
-    <Accordion type="single" collapsible>
-      <AccordionItem value="history" className="border border-slate-200 rounded-lg !border-b">
-        <AccordionTrigger className="px-4 py-3 items-start hover:no-underline hover:bg-slate-50 rounded-lg data-[state=open]:rounded-b-none focus-visible:ring-violet-200 focus-visible:ring-inset">
+    <Accordion type="single" variant="card" collapsible>
+      <AccordionItem value="history">
+        <AccordionTrigger>
           <div className="flex flex-col gap-0.5 min-w-0">
             <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide truncate">
               {anomalyLabel(anomalyType)}
@@ -96,7 +96,7 @@ function AnomalyHistoryItem({ insight }) {
             </p>
           </div>
         </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 pt-1 border-t border-slate-100">
+        <AccordionContent>
           <p className="text-sm text-slate-700 leading-relaxed">
             {parseInline(
               insight.content ?? insight.title ?? 'Anomaly detected in your training data.'
@@ -185,7 +185,6 @@ function AnomalyCard({ insight, onAcknowledged, dimmed = false }) {
             </p>
           )}
           <Button
-            size="base"
             variant="outline"
             disabled={acknowledging}
             onClick={handleAcknowledge}
@@ -342,7 +341,6 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
                     <p className="text-sm text-slate-400">Could not load history.</p>
                     <Button
                       variant="ghost"
-                      size="base"
                       className="text-amber-600 hover:text-amber-700 px-0 h-auto font-normal text-xs"
                       onClick={loadHistory}
                     >
@@ -374,7 +372,6 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
                   <div className="flex items-center justify-between pt-2">
                     <Button
                       variant="outline"
-                      size="base"
                       disabled={page === 1}
                       onClick={() => setPage((p) => p - 1)}
                       aria-label="Previous page of anomaly history"
@@ -387,7 +384,6 @@ export default function AnomalyAlertsSection({ anomalies: initialAnomalies }) {
                     </p>
                     <Button
                       variant="outline"
-                      size="base"
                       disabled={page === totalPages}
                       onClick={() => setPage((p) => p + 1)}
                       aria-label="Next page of anomaly history"

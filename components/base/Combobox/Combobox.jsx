@@ -340,12 +340,8 @@ export default function Combobox({
           </div>
         </PopoverTrigger>
 
-        <PopoverContent
-          className="w-[var(--radix-popover-trigger-width)] p-0"
-          align={align}
-          onOpenAutoFocus={(e) => e.preventDefault()}
-        >
-          <IsolatedScroll className="max-h-[var(--radix-popover-content-available-height,240px)] overflow-y-auto p-1">
+        <PopoverContent sameWidth className="p-0" align={align}>
+          <IsolatedScroll className="max-h-[240px] overflow-y-auto p-1">
             {renderOptions()}
           </IsolatedScroll>
         </PopoverContent>
@@ -407,7 +403,8 @@ export default function Combobox({
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-[var(--radix-popover-trigger-width)] p-0 max-h-[var(--radix-popover-content-available-height,300px)] flex flex-col overflow-hidden"
+        sameWidth
+        className="p-0 max-h-[300px] flex flex-col overflow-hidden"
         align={align}
       >
         <div className="shrink-0 p-2 border-b border-slate-100">

@@ -166,13 +166,11 @@ export default function NextRace({ upcoming_races }) {
           <CardHeader>
             <CardIcon icon={Flag} />
             <CardHeaderContent>
-              <CardTitle className="text-sm font-semibold text-slate-700">Next Race</CardTitle>
-              <CardDescription className="text-xs text-slate-400">
-                Your upcoming race goals and target times.
-              </CardDescription>
+              <CardTitle>Next Race</CardTitle>
+              <CardDescription>Your upcoming race goals and target times.</CardDescription>
             </CardHeaderContent>
           </CardHeader>
-          <CardContent id="nextRaceEmptyState" className="px-5 py-0">
+          <CardContent id="nextRaceEmptyState">
             <EmptyState size="sm">
               <EmptyStateIcon
                 icon={Flag}

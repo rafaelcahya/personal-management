@@ -5,6 +5,34 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/base/Popov
 const meta = { title: 'Table/Table in Popover' }
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const positions = [
   {
     ticker: 'BBCA',
@@ -37,73 +65,125 @@ const positions = [
 export const TableInPopover = {
   name: 'Table in Popover',
   render: () => (
-    <div className="flex flex-col gap-6 w-full max-w-xl">
+    <div className="flex flex-col gap-6 w-full">
       <p className="text-sm text-gray-500 leading-relaxed">
         A <code className="font-mono bg-gray-100 px-1 rounded text-xs">Table</code> rendered inside{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">PopoverContent</code> — useful
-        for compact data breakdowns (lot detail, fee summary, price history) that don't warrant a
-        separate page or modal.
+        for compact data breakdowns (lot detail, fee summary, price history) that don&apos;t warrant
+        a separate page or modal.
       </p>
 
-      <div className="flex gap-3 flex-wrap">
-        {positions.map((pos) => {
-          const total = pos.lots.reduce((s, l) => s + l.price * l.qty, 0)
-          const totalQty = pos.lots.reduce((s, l) => s + l.qty, 0)
-          return (
-            <Popover key={pos.ticker}>
-              <PopoverTrigger asChild>
-                <button className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50 shadow-sm">
-                  <span className="font-mono font-semibold text-gray-900">{pos.ticker}</span>
-                  <span className="text-gray-400">·</span>
-                  <span className="text-gray-500">{totalQty} shares</span>
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0 overflow-hidden" align="start">
-                <div className="px-3 py-2.5 border-b border-gray-100">
-                  <p className="text-xs font-semibold text-gray-700">
-                    {pos.ticker} — Lot breakdown
-                  </p>
-                  <p className="text-xs text-gray-400">{pos.name}</p>
-                </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead align="right">Price</TableHead>
-                      <TableHead align="right">Qty</TableHead>
-                      <TableHead align="right">Value</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pos.lots.map((lot, i) => (
-                      <TableRow key={i}>
-                        <TableCell className="text-xs">{lot.date}</TableCell>
-                        <TableCell align="right" className="text-xs font-mono">
-                          Rp {lot.price.toLocaleString()}
-                        </TableCell>
-                        <TableCell align="right" className="text-xs">
-                          {lot.qty}
-                        </TableCell>
-                        <TableCell align="right" className="text-xs font-mono">
-                          Rp {(lot.price * lot.qty).toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <div className="px-4 py-2.5 border-t border-gray-100 flex justify-between items-center">
-                  <span className="text-xs text-gray-400">Total value</span>
-                  <span className="text-xs font-semibold text-gray-800 font-mono">
-                    Rp {total.toLocaleString()}
-                  </span>
-                </div>
-              </PopoverContent>
-            </Popover>
-          )
-        })}
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">
+          click a ticker button to see lot breakdown in popover
+        </span>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="flex gap-3 flex-wrap">
+            {positions.map((pos) => {
+              const total = pos.lots.reduce((s, l) => s + l.price * l.qty, 0)
+              const totalQty = pos.lots.reduce((s, l) => s + l.qty, 0)
+              return (
+                <Popover key={pos.ticker}>
+                  <PopoverTrigger asChild>
+                    <button className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50 shadow-sm">
+                      <span className="font-mono font-semibold text-gray-900">{pos.ticker}</span>
+                      <span className="text-gray-400">·</span>
+                      <span className="text-gray-500">{totalQty} shares</span>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0 overflow-hidden" align="start">
+                    <div className="px-3 py-2.5 border-b border-gray-100">
+                      <p className="text-xs font-semibold text-gray-700">
+                        {pos.ticker} — Lot breakdown
+                      </p>
+                      <p className="text-xs text-gray-400">{pos.name}</p>
+                    </div>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead align="right">Price</TableHead>
+                          <TableHead align="right">Qty</TableHead>
+                          <TableHead align="right">Value</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pos.lots.map((lot, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="text-xs">{lot.date}</TableCell>
+                            <TableCell align="right" className="text-xs font-mono">
+                              Rp {lot.price.toLocaleString()}
+                            </TableCell>
+                            <TableCell align="right" className="text-xs">
+                              {lot.qty}
+                            </TableCell>
+                            <TableCell align="right" className="text-xs font-mono">
+                              Rp {(lot.price * lot.qty).toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <div className="px-4 py-2.5 border-t border-gray-100 flex justify-between items-center">
+                      <span className="text-xs text-gray-400">Total value</span>
+                      <span className="text-xs font-semibold text-gray-800 font-mono">
+                        Rp {total.toLocaleString()}
+                      </span>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use Table (Layer 1) inside a Popover, not DataTable',
+                body: "A Popover is compact space. Sort controls, pagination, and a search bar don't fit — and users don't expect them inside a popover overlay.",
+              },
+              {
+                title: 'Pair the table with a summary footer',
+                body: 'A total value or grand total row below the table gives users a clear takeaway without having to tally the rows themselves.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't show more than 5–10 rows inside a popover table",
+                body: 'If the data is too long to scan in a small popover, the popover is the wrong pattern. Link to a full detail page or use a sheet/drawer instead.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Keep PopoverContent width between w-64 and w-80',
+                body: 'Width beyond w-80 risks overflowing on narrow viewports. Stick to 3–4 columns maximum — use abbreviated labels if needed.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use a descriptive header inside the popover',
+                body: 'The trigger button is small and may be out of view when the popover opens. A header like "BBCA — Lot breakdown" anchors the user to what they are looking at.',
+              },
+            ],
+          },
+        ]}
+      />
+
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
         <code>{`import { Popover, PopoverTrigger, PopoverContent } from '@/components/base/Popover/Popover'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/base/Table/Table'
 

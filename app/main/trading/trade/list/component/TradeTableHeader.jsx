@@ -10,11 +10,8 @@ import { TrendingUp } from 'lucide-react'
 
 export default function TradeTableHeader({ controls }) {
   return (
-    <CardHeader
-      layout={controls ? 'below' : 'beside'}
-      className={controls ? 'sticky top-0 z-10 gap-5' : undefined}
-    >
-      <div className="flex gap-2">
+    <CardHeader layout="below" className="gap-4">
+      <div className="flex gap-4">
         <CardIcon icon={TrendingUp} />
         <CardHeaderContent>
           <CardTitle>Trade Journal</CardTitle>

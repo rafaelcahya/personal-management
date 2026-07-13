@@ -109,15 +109,12 @@ export default function ZoneFilterBar({
       <div className="w-px h-4 bg-slate-200" aria-hidden="true" />
 
       <Select value={range} onValueChange={onRangeChange} disabled={!!(startDate && endDate)}>
-        <SelectTrigger
-          id="zoneRangeSelect_analyticsPage"
-          className="h-8 w-40 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
-        >
+        <SelectTrigger id="zoneRangeSelect_analyticsPage" className="w-40">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
           {RANGE_OPTIONS.map((o) => (
-            <SelectItem key={o.value} value={o.value} className="text-xs">
+            <SelectItem key={o.value} value={o.value}>
               {o.label}
             </SelectItem>
           ))}
@@ -125,15 +122,12 @@ export default function ZoneFilterBar({
       </Select>
 
       <Select value={activityType} onValueChange={onTypeChange}>
-        <SelectTrigger
-          id="zoneTypeSelect_analyticsPage"
-          className="h-8 w-36 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
-        >
+        <SelectTrigger id="zoneTypeSelect_analyticsPage" className="w-36">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
           {typeOptions.map((o) => (
-            <SelectItem key={o.value} value={o.value} className="text-xs">
+            <SelectItem key={o.value} value={o.value}>
               {o.label}
             </SelectItem>
           ))}

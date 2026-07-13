@@ -75,7 +75,7 @@ function AccordionItem({ value, className, children }) {
         className={cn(
           'border-b',
           variant === 'card' &&
-            'border-b-0 rounded-xl border shadow-sm overflow-hidden bg-card w-full',
+            'border-b-0 rounded-lg border shadow-sm overflow-hidden bg-card w-full',
           className
         )}
       >
@@ -100,9 +100,9 @@ function AccordionTrigger({ className, children, ...props }) {
       aria-expanded={open}
       onClick={() => toggle(value)}
       className={cn(
-        'flex w-full text-left items-center justify-between py-4 font-medium transition-all',
+        'flex w-full text-left items-center justify-between py-2 font-medium transition-all',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset',
-        variant === 'card' && 'px-6',
+        variant === 'card' && 'px-4',
         className
       )}
       {...props}
@@ -134,7 +134,10 @@ function AccordionContent({ className, children, ...props }) {
       )}
     >
       <div className="overflow-hidden">
-        <div className={cn('text-sm', variant === 'card' && 'pb-6', className)} {...props}>
+        <div
+          className={cn('text-sm pb-4', variant === 'card' && 'px-4 pt-2', className)}
+          {...props}
+        >
           {children}
         </div>
       </div>

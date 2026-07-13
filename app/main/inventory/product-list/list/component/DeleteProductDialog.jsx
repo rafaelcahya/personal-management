@@ -16,9 +16,22 @@ import {
 import Button from '@/components/base/Button/Button'
 import { deleteProduct } from '@/lib/api/product'
 
-export default function DeleteProductDialog({ product, onDeleted }) {
+export default function DeleteProductDialog({
+  product,
+  onDeleted,
+  open: controlledOpen,
+  onOpenChange: onControlledChange,
+}) {
+  const isControlled = controlledOpen !== undefined
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  const effectiveOpen = isControlled ? controlledOpen : open
+
+  const handleOpenChange = (isOpen) => {
+    if (!isControlled) setOpen(isOpen)
+    onControlledChange?.(isOpen)
+  }
 
   const handleDelete = async () => {
     setLoading(true)
@@ -27,7 +40,7 @@ export default function DeleteProductDialog({ product, onDeleted }) {
       await deleteProduct(product.id)
 
       toast.success(`${product.brand} deleted successfully`)
-      setOpen(false)
+      handleOpenChange(false)
       onDeleted?.()
     } catch (error) {
       console.error('Delete error:', error)
@@ -38,17 +51,18 @@ export default function DeleteProductDialog({ product, onDeleted }) {
   }
 
   return (
-    <Modal open={open} onOpenChange={setOpen}>
-      <ModalTrigger asChild>
-        <Button
-          variant="ghost"
-          size="base"
-          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-        >
-          <Trash2Icon className="h-4 w-4 mr-2" />
-          Delete Product
-        </Button>
-      </ModalTrigger>
+    <Modal open={effectiveOpen} onOpenChange={handleOpenChange}>
+      {!isControlled && (
+        <ModalTrigger asChild>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <Trash2Icon className="h-4 w-4 mr-2" />
+            Delete Product
+          </Button>
+        </ModalTrigger>
+      )}
       <ModalContent showCloseButton={false}>
         <ModalHeader>
           <ModalTitle>Delete {product.brand}?</ModalTitle>

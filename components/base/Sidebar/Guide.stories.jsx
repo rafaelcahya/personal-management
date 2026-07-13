@@ -1,15 +1,4 @@
-import { useState } from 'react'
-import {
-  BarChart2,
-  Home,
-  LayoutDashboard,
-  LogOut,
-  Package,
-  Settings,
-  ShoppingCart,
-  TrendingUp,
-  User,
-} from 'lucide-react'
+import { BarChart2, Home, LogOut, Package, Settings, TrendingUp, User } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -52,14 +41,6 @@ const SubSection = ({ title, description, children }) => (
   </div>
 )
 
-const Preview = ({ children, className }) => (
-  <div
-    className={`flex gap-4 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 ${className ?? ''}`}
-  >
-    {children}
-  </div>
-)
-
 const Code = ({ children }) => (
   <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto mb-4 leading-relaxed">
     <code>{children}</code>
@@ -82,12 +63,50 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ component, rows }) => (
+  <div className="mb-6">
+    {component && <p className="text-xs font-mono font-semibold text-gray-500 mb-2">{component}</p>}
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function OverviewDemo() {
   return (
     <SidebarProvider>
-      <div className="flex h-64 border border-gray-200 rounded-lg overflow-hidden w-full max-w-lg">
+      <div className="flex h-64 border border-gray-200 rounded-lg overflow-hidden w-full">
         <Sidebar>
           <SidebarHeader>
             <SidebarTrigger />
@@ -136,7 +155,7 @@ export const Docs = {
           the sidebar is an in-document{' '}
           <code className="font-mono text-xs bg-gray-100 px-1 rounded">{'<aside>'}</code> that
           transitions between 56px (icon-only) and 240px (expanded). On mobile it renders as a
-          dialog drawer with an overlay backdrop.
+          portal-mounted panel with scroll lock and an overlay backdrop.
         </p>
         <OverviewDemo />
       </Section>
@@ -224,13 +243,13 @@ export const Docs = {
               {[
                 [
                   'SidebarProvider',
-                  'Context + Dialog Root',
-                  'Required root. Manages open/collapsed/isMobile state. On mobile, renders as a dialog drawer.',
+                  'Context provider',
+                  'Required root. Manages open/collapsed/isMobile state. On mobile, applies scroll lock and registers Escape key handler.',
                 ],
                 [
                   'Sidebar',
-                  '<aside> / DialogContent',
-                  'Main sidebar shell. Renders as drawer (Dialog) on mobile, aside on desktop. Accepts side="left|right".',
+                  '<aside> / portal panel',
+                  'Main sidebar shell. Renders as a portal-mounted panel on mobile, aside on desktop. Accepts side="left|right".',
                 ],
                 [
                   'SidebarTrigger',
@@ -239,8 +258,8 @@ export const Docs = {
                 ],
                 [
                   'SidebarOverlay',
-                  'DialogOverlay',
-                  'Backdrop shown on mobile. Click to close the drawer.',
+                  'portal div',
+                  'Backdrop shown on mobile. Click to close the drawer. Animates opacity in/out.',
                 ],
                 ['SidebarHeader', '<header>', 'Slot for logo, title, or trigger. Pinned to top.'],
                 [
@@ -381,7 +400,7 @@ export const Docs = {
         </SubSection>
 
         <SubSection title="Mobile drawer">
-          <Code>{`{/* On screens <= 768px, Sidebar renders as a Dialog drawer */}
+          <Code>{`{/* On screens <= 768px, Sidebar renders as a portal-mounted panel */}
 <SidebarProvider>
   <SidebarOverlay />   {/* backdrop — click to close */}
   <Sidebar>
@@ -478,405 +497,205 @@ export const Docs = {
       {/* API Reference */}
       <Section title="API Reference">
         <SubSection title="SidebarProvider" description="Required root. Manages all sidebar state.">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['defaultOpen', 'boolean', 'true', 'Initial open state (used on mobile).'],
-                  [
-                    'defaultCollapsed',
-                    'boolean',
-                    'false',
-                    'Initial collapsed state (used on desktop).',
-                  ],
-                  ['children', 'ReactNode', '—', 'All sidebar parts and page content.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              ['defaultOpen', 'boolean', 'true', 'Initial open state (used on mobile).'],
+              [
+                'defaultCollapsed',
+                'boolean',
+                'false',
+                'Initial collapsed state (used on desktop).',
+              ],
+              [
+                'collapseAnimation',
+                "'slide' | 'none'",
+                "'slide'",
+                'Animation style for sidebar collapse/expand transition.',
+              ],
+              ['children', 'ReactNode', '—', 'All sidebar parts and page content.'],
+            ]}
+          />
         </SubSection>
 
         <SubSection
           title="Sidebar"
-          description="The sidebar shell. Renders as aside on desktop, dialog content on mobile."
+          description="The sidebar shell. Renders as aside on desktop, portal panel on mobile."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'side',
-                    "'left' | 'right'",
-                    "'left'",
-                    'Which side the sidebar attaches to. Controls border and slide animation direction.',
-                  ],
-                  ['className', 'string', '—', 'Extra classes merged onto the sidebar.'],
-                  ['children', 'ReactNode', '—', 'Header, Content, Footer slots.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'side',
+                "'left' | 'right'",
+                "'left'",
+                'Which side the sidebar attaches to. Controls border and slide animation direction.',
+              ],
+              ['className', 'string', '—', 'Extra classes merged onto the sidebar.'],
+              ['children', 'ReactNode', '—', 'Header, Content, Footer slots.'],
+            ]}
+          />
         </SubSection>
 
         <SubSection
           title="SidebarItem"
           description="Navigation item. Use props shortcut or sub-components directly."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'icon',
-                    'ReactNode',
-                    '—',
-                    'Icon element rendered in SidebarItemIcon slot. Gets active color when active.',
-                  ],
-                  [
-                    'label',
-                    'string',
-                    '—',
-                    'Text label. Hides with transition when collapsed. Powers tooltip text.',
-                  ],
-                  ['badge', 'ReactNode', '—', 'Badge content (e.g. number). Hides when collapsed.'],
-                  [
-                    'size',
-                    "'sm' | 'md' | 'lg'",
-                    "'md'",
-                    'Controls button padding, min-height, gap, and icon size.',
-                  ],
-                  [
-                    'active',
-                    'boolean',
-                    'false',
-                    'Marks item as current page. Adds violet background + aria-current="page".',
-                  ],
-                  ['disabled', 'boolean', 'false', 'Disables click and reduces opacity.'],
-                  [
-                    'onClick',
-                    '() => void',
-                    '—',
-                    'Click handler. Called in addition to sub-menu toggle.',
-                  ],
-                  ['children', 'ReactNode', '—', 'Optional SidebarSub component for nested items.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'icon',
+                'ReactNode',
+                '—',
+                'Icon element rendered in SidebarItemIcon slot. Gets active color when active.',
+              ],
+              [
+                'label',
+                'string',
+                '—',
+                'Text label. Hides with transition when collapsed. Powers tooltip text.',
+              ],
+              ['badge', 'ReactNode', '—', 'Badge content (e.g. number). Hides when collapsed.'],
+              [
+                'size',
+                "'xs' | 'sm' | 'base' | 'lg' | 'xl'",
+                "'base'",
+                'Controls button padding, min-height, gap, icon size, and label text size.',
+              ],
+              [
+                'active',
+                'boolean',
+                'false',
+                'Marks item as current page. Adds violet background + aria-current="page".',
+              ],
+              ['disabled', 'boolean', 'false', 'Disables click and reduces opacity.'],
+              [
+                'onClick',
+                '() => void',
+                '—',
+                'Click handler. Called in addition to sub-menu toggle.',
+              ],
+              ['children', 'ReactNode', '—', 'Optional SidebarSub component for nested items.'],
+            ]}
+          />
         </SubSection>
 
         <SubSection title="SidebarGroup" description="Groups related items with an optional label.">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'label',
-                    'string',
-                    '—',
-                    'Group heading. Collapses to zero height in collapsed mode.',
-                  ],
-                  ['children', 'ReactNode', '—', 'SidebarItem elements.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'label',
+                'string',
+                '—',
+                'Group heading. Collapses to zero height in collapsed mode.',
+              ],
+              ['children', 'ReactNode', '—', 'SidebarItem elements.'],
+            ]}
+          />
         </SubSection>
 
         <SubSection
           title="SidebarSub"
           description="Animated collapsible sub-menu. Place as a child of SidebarItem."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'open',
-                    'boolean',
-                    'false',
-                    'Controlled by parent SidebarItem automatically — no need to pass manually.',
-                  ],
-                  ['children', 'ReactNode', '—', 'Nested SidebarItem elements.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'animation',
+                "'slide' | 'none'",
+                "'slide'",
+                "Controls nested item expand/collapse animation. 'none' unmounts children when closed.",
+              ],
+              [
+                'open',
+                'boolean',
+                'false',
+                'Controlled by parent SidebarItem automatically — no need to pass manually.',
+              ],
+              ['children', 'ReactNode', '—', 'Nested SidebarItem elements.'],
+            ]}
+          />
         </SubSection>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Sidebar when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Apps with 5+ distinct pages or modules',
+                  body: 'Use Sidebar when navigation needs to persist across pages. The always-visible panel gives users a constant orientation point — especially important in multi-module apps.',
+                },
+                {
+                  title: 'Dashboard and productivity layouts',
+                  body: 'Ideal for tools where vertical space management matters and each section has an icon that remains meaningful in collapsed (icon-only) mode.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: 'Use NavMenu for 2–4 items in a top bar',
+                  body: 'A horizontal nav bar is less heavy for small apps. Sidebar adds unnecessary chrome when you only have 2–4 top-level destinations.',
+                },
+                {
+                  title: 'Use Tabs for in-page section switching',
+                  body: 'Sidebar is for page-level routing (different URLs or views). Use Tabs for toggling between views within a single page — the sidebar is the wrong abstraction for this.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Labels use opacity-0 w-0, not display:none',
+                  body: 'Collapsed labels stay in the DOM and are read by screen readers. This satisfies WCAG 2.1 AA — sighted users see only the icon, but screen reader users still hear the label.',
+                },
+                {
+                  title:
+                    'Active item gets aria-current="page"; collapsible items get aria-expanded',
+                  body: 'Escape closes the mobile drawer. SidebarOverlay provides the tap-to-close backdrop region so pointer users can dismiss the drawer without a close button.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Always wrap in SidebarProvider and always give every item an icon',
+                  body: 'SidebarProvider manages all open/collapsed/mobile state — the sidebar will not function without it. In collapsed mode only the icon is visible to sighted users, so items without icons become invisible.',
+                },
+                {
+                  title: 'Include SidebarOverlay for mobile and only mark one item active',
+                  body: 'Without SidebarOverlay, mobile users cannot tap outside to close the drawer. Only the current page should have active=true — multiple active items break both the visual highlight and aria-current="page" semantics.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The app has 5+ distinct pages or modules that users switch between frequently
-                    </li>
-                    <li>
-                      Navigation needs to persist across all pages and remain visible while content
-                      scrolls
-                    </li>
-                    <li>
-                      Items benefit from icons so they stay recognizable when the sidebar is
-                      collapsed to icon-only mode
-                    </li>
-                    <li>
-                      The layout is a dashboard or productivity tool where screen real estate is
-                      managed vertically
-                    </li>
-                    <li>You need nested navigation (parent items with collapsible sub-menus)</li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>NavMenu</strong> when navigation items are few (2–4) and a
-                      horizontal top bar fits the layout better
-                    </li>
-                    <li>
-                      Use <strong>Tabs</strong> when switching between views within a single page
-                      rather than navigating between pages
-                    </li>
-                    <li>
-                      Use <strong>Breadcrumbs</strong> when you only need to show the user's
-                      position in a hierarchy, not enable full navigation
-                    </li>
-                    <li>
-                      Use a simple <strong>dropdown menu</strong> when navigation is contextual and
-                      secondary (e.g. per-row actions in a table)
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always wrap everything inside{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">SidebarProvider</code>. It
-                  manages the open/collapsed state and mobile breakpoint detection — the sidebar
-                  will not function without it.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Include{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">SidebarOverlay</code> in
-                  your layout when supporting mobile. It renders the backdrop and handles
-                  tap-to-close — without it, mobile users have no way to dismiss the drawer.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always provide an{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">icon</code> for every{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">SidebarItem</code>. In
-                  collapsed mode only the icon is visible — items without icons become invisible and
-                  inaccessible to sighted users.
-                </p>
               </div>
             </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't place{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">SidebarSub</code> more than
-                  one level deep. The sidebar supports exactly one level of nesting — deeper nesting
-                  produces broken indentation and makes the collapsed tooltip unreadable.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't mark multiple items as{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">active</code> at the same
-                  time. Only the current page item should be active — setting multiple active items
-                  breaks the visual indication and the{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">aria-current="page"</code>{' '}
-                  semantics.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use the sidebar for in-page section switching (e.g. scrolling to an anchor).
-                  Use <strong>Tabs</strong> instead. The sidebar is a page-level navigator — routing
-                  users to different URLs or views, not scrolling within one page.
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </Section>
     </div>

@@ -1,5 +1,12 @@
 'use client'
 
+import {
+  FieldContent,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+  FieldContainer,
+} from '@/components/base/Field/Field'
 import { useState, useRef, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,10 +26,6 @@ import {
   ModalTitle,
   ModalTrigger,
 } from '@/components/base/Modal/Modal.jsx'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
-import FieldDescription from '@/components/base/Field/FieldDescription'
 import {
   Select,
   SelectContent,
@@ -136,10 +139,10 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
       <ModalContent
         variant="bordered"
         borderColor="border-slate-200"
-        className="sm:max-w-3xl flex flex-col max-h-[90vh]"
+        className="max-h-[85vh]"
         id="addNewEventForm_eventPage"
       >
-        <ModalHeader layout="beside" padding={{ x: 4 }}>
+        <ModalHeader layout="beside">
           <ModalIcon icon={CalendarDays} />
           <ModalHeaderContent>
             <ModalTitle>Add Market Event</ModalTitle>
@@ -148,205 +151,202 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
         </ModalHeader>
 
         <form onSubmit={handleSubmit(handleAddEvent)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody className="flex-1 overflow-y-auto space-y-4" padding={{ x: 4 }}>
-            {/* Title */}
-            <Controller
-              control={control}
-              name="title"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <div className="flex items-center justify-between">
-                    <FieldLabel className="font-medium">Title</FieldLabel>
-                    {titleValue.length > 0 && (
-                      <span
-                        className={`text-xs font-medium ${
-                          titleValue.length >= TITLE_WARN ? 'text-amber-500' : 'text-slate-400'
-                        }`}
-                      >
-                        {titleValue.length}/{TITLE_MAX}
-                      </span>
-                    )}
-                  </div>
-                  <Input
-                    {...field}
-                    placeholder="e.g. FOMC Rate Decision"
-                    id="eventTitleField_eventPage"
-                    maxLength={TITLE_MAX}
-                    className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                      fieldState.error ? 'border-rose-500' : ''
-                    }`}
-                  />
-                  <FieldError className="font-medium" />
-                </FieldContent>
-              )}
-            />
-
-            {/* Impact + Actual Outcome — 2-col grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-              {/* Impact Direction */}
+          <ModalBody className="overflow-y-auto">
+            <FieldContainer>
+              {/* Title */}
               <Controller
                 control={control}
-                name="impact_direction"
+                name="title"
                 render={({ field, fieldState }) => (
                   <FieldContent error={fieldState.error?.message}>
-                    <FieldLabel className="font-medium">Impact</FieldLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger
-                        id="impactDirectionField_eventPage"
-                        className={`w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 ${
-                          fieldState.error ? 'border-rose-500' : ''
-                        }`}
-                      >
-                        <SelectValue placeholder="Select impact" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="UP">Bullish</SelectItem>
-                        <SelectItem value="DOWN">Bearish</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center justify-between">
+                      <FieldLabel className="font-medium">Title</FieldLabel>
+                      {titleValue.length > 0 && (
+                        <span
+                          className={`text-xs font-medium ${
+                            titleValue.length >= TITLE_WARN ? 'text-amber-500' : 'text-slate-400'
+                          }`}
+                        >
+                          {titleValue.length}/{TITLE_MAX}
+                        </span>
+                      )}
+                    </div>
+                    <Input
+                      {...field}
+                      placeholder="e.g. FOMC Rate Decision"
+                      id="eventTitleField_eventPage"
+                      maxLength={TITLE_MAX}
+                      className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                        fieldState.error ? 'border-rose-500' : ''
+                      }`}
+                    />
                     <FieldError className="font-medium" />
                   </FieldContent>
                 )}
               />
 
-              {/* Actual Outcome */}
+              {/* Impact + Actual Outcome — 2-col grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                {/* Impact Direction */}
+                <Controller
+                  control={control}
+                  name="impact_direction"
+                  render={({ field, fieldState }) => (
+                    <FieldContent error={fieldState.error?.message}>
+                      <FieldLabel className="font-medium">Impact</FieldLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger
+                          id="impactDirectionField_eventPage"
+                          className={`font-medium ${fieldState.error ? 'border-rose-500' : ''}`}
+                        >
+                          <SelectValue placeholder="Select impact" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="UP">Bullish</SelectItem>
+                          <SelectItem value="DOWN">Bearish</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FieldError className="font-medium" />
+                    </FieldContent>
+                  )}
+                />
+
+                {/* Actual Outcome */}
+                <Controller
+                  control={control}
+                  name="actual_outcome"
+                  render={({ field, fieldState }) => (
+                    <FieldContent error={fieldState.error?.message}>
+                      <FieldLabel className="font-medium">
+                        Actual Outcome
+                        <span className="text-slate-400 ml-1 font-normal text-xs">(optional)</span>
+                      </FieldLabel>
+                      <Select
+                        value={field.value ?? 'none'}
+                        onValueChange={(val) => field.onChange(val === 'none' ? null : val)}
+                      >
+                        <SelectTrigger id="actualOutcomeField_eventPage" className="font-medium">
+                          <SelectValue placeholder="Select outcome" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Pending</SelectItem>
+                          <SelectItem value="UP">Bullish</SelectItem>
+                          <SelectItem value="DOWN">Bearish</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FieldDescription className="text-xs text-slate-400">
+                        What actually happened after the event? Leave blank if still pending.
+                      </FieldDescription>
+                    </FieldContent>
+                  )}
+                />
+              </div>
+
+              {/* Event Date */}
               <Controller
                 control={control}
-                name="actual_outcome"
+                name="event_date"
                 render={({ field, fieldState }) => (
                   <FieldContent error={fieldState.error?.message}>
-                    <FieldLabel className="font-medium">
-                      Actual Outcome
-                      <span className="text-slate-400 ml-1 font-normal text-xs">(optional)</span>
-                    </FieldLabel>
-                    <Select
-                      onValueChange={(v) => field.onChange(v === 'none' ? null : v)}
-                      value={field.value ?? 'none'}
-                    >
-                      <SelectTrigger
-                        id="actualOutcomeField_eventPage"
-                        className="w-full font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 text-sm"
-                      >
-                        <SelectValue placeholder="Select outcome" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">Pending</SelectItem>
-                        <SelectItem value="UP">Bullish</SelectItem>
-                        <SelectItem value="DOWN">Bearish</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FieldDescription className="text-xs text-slate-400">
-                      What actually happened after the event? Leave blank if still pending.
-                    </FieldDescription>
+                    <FieldLabel className="font-medium">Date</FieldLabel>
+                    <DatePicker
+                      id="eventDateField_eventPage"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                    <FieldError className="font-medium" />
                   </FieldContent>
                 )}
               />
-            </div>
 
-            {/* Event Date */}
-            <Controller
-              control={control}
-              name="event_date"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <FieldLabel className="font-medium">Date</FieldLabel>
-                  <DatePicker
-                    id="eventDateField_eventPage"
+              {/* Description */}
+              <Controller
+                control={control}
+                name="event_description"
+                render={({ field, fieldState }) => (
+                  <FieldContent error={fieldState.error?.message}>
+                    <div className="flex items-center justify-between">
+                      <FieldLabel className="font-medium">
+                        Description
+                        <span className="text-slate-400 ml-1 font-normal text-xs">(optional)</span>
+                      </FieldLabel>
+                      {descValue.length > 0 && (
+                        <span
+                          className={`text-xs font-medium ${descValue.length >= DESC_WARN ? 'text-amber-500' : 'text-slate-400'}`}
+                        >
+                          {descValue.length}/{DESC_MAX}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <MarkdownToolbar
+                        textareaRef={descriptionRef}
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
+                        previewMode={descPreview}
+                        onTogglePreview={() => setDescPreview((v) => !v)}
+                      />
+                      {descPreview ? (
+                        <div className="border border-slate-200 rounded-b-md bg-white px-3 py-2 min-h-[144px] prose prose-sm prose-slate max-w-none">
+                          {field.value ? (
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeSanitize]}
+                            >
+                              {field.value}
+                            </ReactMarkdown>
+                          ) : (
+                            <p className="text-slate-400 italic text-sm">Nothing to preview.</p>
+                          )}
+                        </div>
+                      ) : (
+                        <Textarea
+                          {...field}
+                          ref={descriptionRef}
+                          placeholder="e.g., Federal Reserve announces interest rate decision..."
+                          id="eventDescriptionField_eventPage"
+                          className={`focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium rounded-t-none ${
+                            fieldState.error ? 'border-rose-500' : ''
+                          }`}
+                          rows={16}
+                        />
+                      )}
+                    </div>
+                    <FieldDescription className="text-xs text-slate-400">
+                      The more detailed your notes, the more relevant the AI analysis. Supports
+                      markdown.
+                    </FieldDescription>
+                    <FieldError className="font-medium" />
+                  </FieldContent>
+                )}
+              />
+
+              {/* Tags */}
+              <Controller
+                control={control}
+                name="tags"
+                render={({ field }) => (
+                  <EventTagsInput
+                    value={field.value ?? []}
+                    onChange={field.onChange}
+                    id="tagsField_eventPage"
+                  />
+                )}
+              />
+
+              {/* Links */}
+              <Controller
+                control={control}
+                name="links"
+                render={({ field, fieldState }) => (
+                  <EventLinksInput
                     value={field.value}
                     onChange={field.onChange}
+                    error={fieldState.error?.message}
                   />
-                  <FieldError className="font-medium" />
-                </FieldContent>
-              )}
-            />
-
-            {/* Description */}
-            <Controller
-              control={control}
-              name="event_description"
-              render={({ field, fieldState }) => (
-                <FieldContent error={fieldState.error?.message}>
-                  <div className="flex items-center justify-between">
-                    <FieldLabel className="font-medium">
-                      Description
-                      <span className="text-slate-400 ml-1 font-normal text-xs">(optional)</span>
-                    </FieldLabel>
-                    {descValue.length > 0 && (
-                      <span
-                        className={`text-xs font-medium ${descValue.length >= DESC_WARN ? 'text-amber-500' : 'text-slate-400'}`}
-                      >
-                        {descValue.length}/{DESC_MAX}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <MarkdownToolbar
-                      textareaRef={descriptionRef}
-                      value={field.value ?? ''}
-                      onChange={field.onChange}
-                      previewMode={descPreview}
-                      onTogglePreview={() => setDescPreview((v) => !v)}
-                    />
-                    {descPreview ? (
-                      <div className="border border-slate-200 rounded-b-md bg-white px-3 py-2 min-h-[144px] prose prose-sm prose-slate max-w-none">
-                        {field.value ? (
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeSanitize]}
-                          >
-                            {field.value}
-                          </ReactMarkdown>
-                        ) : (
-                          <p className="text-slate-400 italic text-sm">Nothing to preview.</p>
-                        )}
-                      </div>
-                    ) : (
-                      <Textarea
-                        {...field}
-                        ref={descriptionRef}
-                        placeholder="e.g., Federal Reserve announces interest rate decision..."
-                        id="eventDescriptionField_eventPage"
-                        className={`focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium rounded-t-none ${
-                          fieldState.error ? 'border-rose-500' : ''
-                        }`}
-                        rows={16}
-                      />
-                    )}
-                  </div>
-                  <FieldDescription className="text-xs text-slate-400">
-                    The more detailed your notes, the more relevant the AI analysis. Supports
-                    markdown.
-                  </FieldDescription>
-                  <FieldError className="font-medium" />
-                </FieldContent>
-              )}
-            />
-
-            {/* Tags */}
-            <Controller
-              control={control}
-              name="tags"
-              render={({ field }) => (
-                <EventTagsInput
-                  value={field.value ?? []}
-                  onChange={field.onChange}
-                  id="tagsField_eventPage"
-                />
-              )}
-            />
-
-            {/* Links */}
-            <Controller
-              control={control}
-              name="links"
-              render={({ field, fieldState }) => (
-                <EventLinksInput
-                  value={field.value}
-                  onChange={field.onChange}
-                  error={fieldState.error?.message}
-                />
-              )}
-            />
+                )}
+              />
+            </FieldContainer>
           </ModalBody>
 
           <ModalFooter className="shrink-0 pt-4">

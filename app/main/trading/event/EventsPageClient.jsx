@@ -184,7 +184,6 @@ export default function EventsPageClient() {
               <div className="flex justify-end">
                 <Button
                   variant="outline"
-                  size="base"
                   onClick={() => setHistoryModalOpen(true)}
                   className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
                 >
@@ -197,7 +196,7 @@ export default function EventsPageClient() {
         />
 
         {/* Content area */}
-        <CardContent padding="none">
+        <CardContent className="p-0">
           {isLoading ? (
             <div className="flex flex-col gap-3 px-5 py-5">
               {[...Array(5)].map((_, i) => (
@@ -218,7 +217,6 @@ export default function EventsPageClient() {
                   {filter && (
                     <Button
                       variant="outline"
-                      size="base"
                       onClick={() => handleFilterChange(null)}
                       className="text-violet-600 border-violet-200 hover:bg-violet-50"
                     >

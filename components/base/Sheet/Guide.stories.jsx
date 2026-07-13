@@ -65,6 +65,44 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ component, rows }) => (
+  <div className="mb-6">
+    {component && <p className="text-xs font-mono font-semibold text-gray-500 mb-2">{component}</p>}
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)
+
 const btnClass =
   'inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium hover:bg-accent transition-colors'
 
@@ -409,284 +447,148 @@ export const Docs = {
         {/* API Reference */}
         <Section title="API Reference">
           <SubSection title="Sheet" description="Root component. Manages open state.">
-            <div className="overflow-x-auto mb-6">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="bg-gray-50">
-                    {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                      <th
-                        key={h}
-                        className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    ['open', 'boolean', '—', 'Controlled open state.'],
-                    [
-                      'onOpenChange',
-                      '(open: boolean) => void',
-                      '—',
-                      'Called when open state changes.',
-                    ],
-                    ['defaultOpen', 'boolean', 'false', 'Initial open state (uncontrolled).'],
-                  ].map(([prop, type, def, desc]) => (
-                    <tr key={prop} className="even:bg-gray-50">
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                        {prop}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                        {type}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                        {def}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                        {desc}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ApiTable
+              component="Sheet"
+              rows={[
+                ['open', 'boolean', '—', 'Controlled open state.'],
+                ['onOpenChange', '(open: boolean) => void', '—', 'Called when open state changes.'],
+                ['defaultOpen', 'boolean', 'false', 'Initial open state (uncontrolled).'],
+              ]}
+            />
           </SubSection>
 
           <SubSection title="SheetContent" description="The sliding panel rendered in a Portal.">
-            <div className="overflow-x-auto mb-6">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="bg-gray-50">
-                    {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                      <th
-                        key={h}
-                        className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    [
-                      'side',
-                      "'left' | 'right' | 'top' | 'bottom'",
-                      "'right'",
-                      'Which edge the panel slides in from.',
-                    ],
-                    [
-                      'size',
-                      "'sm' | 'default' | 'lg' | 'full'",
-                      "'default'",
-                      'Width (left/right) or height (top/bottom) of the panel.',
-                    ],
-                    [
-                      'animation',
-                      "'slide' | 'none'",
-                      "'slide'",
-                      'slide — panel transitions in from the side. none — appears instantly with no transition.',
-                    ],
-                    [
-                      'closeOnOverlayClick',
-                      'boolean',
-                      'true',
-                      'Whether clicking the backdrop overlay closes the sheet.',
-                    ],
-                    [
-                      'children',
-                      'ReactNode',
-                      '—',
-                      'Any content — forms, lists, structured layouts.',
-                    ],
-                    ['className', 'string', '—', 'Extra classes merged onto the panel.'],
-                  ].map(([prop, type, def, desc]) => (
-                    <tr key={prop} className="even:bg-gray-50">
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                        {prop}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                        {type}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                        {def}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                        {desc}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ApiTable
+              component="SheetContent"
+              rows={[
+                [
+                  'side',
+                  "'left' | 'right' | 'top' | 'bottom'",
+                  "'right'",
+                  'Which edge the panel slides in from.',
+                ],
+                [
+                  'size',
+                  "'sm' | 'default' | 'lg' | 'full'",
+                  "'default'",
+                  'Width (left/right) or height (top/bottom) of the panel.',
+                ],
+                [
+                  'animation',
+                  "'slide' | 'none'",
+                  "'slide'",
+                  'slide — panel transitions in from the side. none — appears instantly with no transition.',
+                ],
+                [
+                  'closeOnOverlayClick',
+                  'boolean',
+                  'true',
+                  'Whether clicking the backdrop overlay closes the sheet.',
+                ],
+                ['children', 'ReactNode', '—', 'Any content — forms, lists, structured layouts.'],
+                ['className', 'string', '—', 'Extra classes merged onto the panel.'],
+              ]}
+            />
           </SubSection>
 
           <SubSection title="SheetTrigger / SheetClose">
-            <div className="overflow-x-auto mb-6">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="bg-gray-50">
-                    {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                      <th
-                        key={h}
-                        className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    [
-                      'asChild',
-                      'boolean',
-                      'false',
-                      'Merge open/close handler onto the child element instead of wrapping.',
-                    ],
-                  ].map(([prop, type, def, desc]) => (
-                    <tr key={prop} className="even:bg-gray-50">
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                        {prop}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                        {type}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                        {def}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                        {desc}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ApiTable
+              component="SheetTrigger / SheetClose"
+              rows={[
+                [
+                  'asChild',
+                  'boolean',
+                  'false',
+                  'Merge open/close handler onto the child element instead of wrapping.',
+                ],
+              ]}
+            />
           </SubSection>
         </Section>
 
-        {/* When to Use */}
-        <Section title="When to Use">
-          <div className="overflow-x-auto mb-4">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Use Sheet when…', 'Consider an alternative when…'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+        {/* Best Practices */}
+        <Section title="Best Practices">
+          <div className="flex flex-col gap-8">
+            {[
+              {
+                heading: 'When to use',
+                items: [
+                  {
+                    title: 'Supplemental detail or multi-field forms without navigating away',
+                    body: 'Use Sheet for non-blocking, contextual content — edit forms, settings panels, detail views — that is too large for a Popover but does not require full page navigation.',
+                  },
+                  {
+                    title: 'side="right" for forms, side="bottom" for mobile-style action sheets',
+                    body: 'Right side matches natural read direction and feels least intrusive for desktop forms. Bottom side works well for mobile-style confirmations or action lists that reference content below.',
+                  },
+                ],
+              },
+              {
+                heading: 'When not to use',
+                items: [
+                  {
+                    title: 'Critical destructive actions — use Modal instead',
+                    body: 'Sheet feels dismissible by design. For irreversible actions (delete account, clear all data), use a Modal so the user must explicitly confirm before anything happens.',
+                  },
+                  {
+                    title: 'Small anchored content — use Popover instead',
+                    body: 'A date picker, color swatch, or short options list belongs in a Popover. Sheet panels carry visual weight (slide animation, overlay, focus trap) that should match substantial content.',
+                  },
+                  {
+                    title: "Don't open a Sheet from inside another Sheet",
+                    body: 'Nested sheets create confusing layered overlays and break the focus trap. Use a single sheet with internal step navigation instead.',
+                  },
+                ],
+              },
+              {
+                heading: 'Accessibility',
+                items: [
+                  {
+                    title: 'Always include SheetTitle inside SheetHeader',
+                    body: 'SheetTitle labels the panel for screen readers via aria-labelledby. Without it the panel has no accessible name — a critical failure for users on assistive technology.',
+                  },
+                  {
+                    title: 'Focus trap, scroll lock, and Escape are built in',
+                    body: 'SheetContent handles all three automatically. Tab and Shift+Tab cycle focus within the panel. Escape closes the sheet and restores focus to the trigger element.',
+                  },
+                ],
+              },
+              {
+                heading: 'Advice',
+                items: [
+                  {
+                    title: 'Pair SheetFooter with SheetClose (Cancel) and a primary action',
+                    body: 'Always give users a clear path to dismiss. Use SheetClose asChild on the Cancel button so it never triggers a side effect — just closes.',
+                  },
+                  {
+                    title: 'Use controlled mode for form reset and preventing close on errors',
+                    body: 'Pass open + onOpenChange when you need to reset form state each time the sheet opens, or prevent close while validation is failing. For simple trigger-and-dismiss, uncontrolled is less boilerplate.',
+                  },
+                ],
+              },
+            ].map(({ heading, items }) => (
+              <div key={heading}>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                  {heading}
+                </p>
+                <div className="flex flex-col gap-3">
+                  {items.map(({ title, body }) => (
+                    <div
+                      key={title}
+                      className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                     >
-                      {h}
-                    </th>
+                      <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                        ✓
+                      </span>
+                      <div>
+                        <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                        <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                      </div>
+                    </div>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                    <ul className="flex flex-col gap-1.5">
-                      <li>
-                        You need to show supplemental detail or a form without navigating away from
-                        the current page
-                      </li>
-                      <li>
-                        The content is too large or complex for a Popover (e.g. multi-field edit
-                        forms, long detail panels)
-                      </li>
-                      <li>
-                        The action is non-blocking — the user should still be aware of the page
-                        behind it
-                      </li>
-                    </ul>
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                    <ul className="flex flex-col gap-1.5">
-                      <li>
-                        Use <strong>Modal (Dialog)</strong> when the action is critical and must be
-                        confirmed before the user can continue (e.g. destructive delete
-                        confirmations)
-                      </li>
-                      <li>
-                        Use <strong>Popover</strong> when the content is small and contextually
-                        anchored to a specific element (e.g. date picker, color swatch, tooltip with
-                        action)
-                      </li>
-                    </ul>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </Section>
-
-        {/* Dos & Don'ts */}
-        <Section title="Dos & Don'ts">
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                  ✓
-                </span>
-                <span className="text-sm font-semibold text-green-700">Do</span>
-              </div>
-              <div className="space-y-3">
-                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                  <p className="text-xs text-green-800">
-                    Always include a <strong>SheetTitle</strong> inside SheetHeader. It labels the
-                    panel for screen readers and gives users immediate context about what the sheet
-                    contains.
-                  </p>
-                </div>
-                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                  <p className="text-xs text-green-800">
-                    Place primary action buttons in <strong>SheetFooter</strong> and always provide
-                    a clear way to close — either a Cancel button with <strong>SheetClose</strong>{' '}
-                    or the built-in X button.
-                  </p>
-                </div>
-                <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                  <p className="text-xs text-green-800">
-                    Use the <strong>controlled pattern</strong> (<code>open</code> +{' '}
-                    <code>onOpenChange</code>) when you need to prevent closing on validation errors
-                    or coordinate the sheet with other UI state.
-                  </p>
                 </div>
               </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                  ✕
-                </span>
-                <span className="text-sm font-semibold text-red-700">Don't</span>
-              </div>
-              <div className="space-y-3">
-                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                  <p className="text-xs text-red-800">
-                    Don't open a Sheet from inside another Sheet. Nested sheets create confusing
-                    layered overlays and break the focus trap. Use a single sheet with internal step
-                    navigation instead.
-                  </p>
-                </div>
-                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                  <p className="text-xs text-red-800">
-                    Don't use Sheet for critical destructive actions (e.g. "Delete account"). Sheet
-                    feels dismissible — use a <strong>Modal</strong> so the user must explicitly
-                    confirm or cancel before anything else.
-                  </p>
-                </div>
-                <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                  <p className="text-xs text-red-800">
-                    Don't put tiny, single-line content in a Sheet. A date picker or a short options
-                    list belongs in a <strong>Popover</strong> — Sheet panels carry visual weight
-                    that should match their content.
-                  </p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </Section>
       </div>

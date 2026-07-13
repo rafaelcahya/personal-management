@@ -9,7 +9,7 @@ import { useFieldControlContext } from '../Field/FieldControl'
 
 const inputVariants = cva(
   [
-    'w-full min-w-0 rounded-md border bg-background text-foreground',
+    'w-full min-w-0 h-8 px-3 rounded-md border bg-background text-foreground',
     'placeholder:text-muted-foreground',
     'transition-[color,box-shadow,border-color] duration-150',
     'outline-none',
@@ -25,41 +25,14 @@ const inputVariants = cva(
           'border-destructive focus-visible:ring-destructive/20 focus-visible:border-destructive',
         disabled: 'border-input opacity-50 cursor-not-allowed pointer-events-none bg-muted',
       },
-      size: {
-        xs: 'h-6 px-2 text-xs rounded',
-        sm: 'h-7 px-2.5 text-xs rounded-md',
-        base: 'h-8 px-3 text-sm rounded-md',
-        md: 'h-9 px-3.5 text-sm rounded-md',
-        lg: 'h-10 px-4 text-sm rounded-md',
-      },
     },
     defaultVariants: {
       variant: 'default',
-      size: 'base',
     },
   }
 )
 
-const prefixPaddingMap = {
-  xs: 'pl-7',
-  sm: 'pl-8',
-  base: 'pl-9',
-  md: 'pl-10',
-  lg: 'pl-11',
-}
-
-const suffixPaddingMap = {
-  xs: 'pr-7',
-  sm: 'pr-8',
-  base: 'pr-9',
-  md: 'pr-10',
-  lg: 'pr-11',
-}
-
-const Input = forwardRef(function Input(
-  { variant: variantProp, size: sizeProp, className, ...props },
-  ref
-) {
+const Input = forwardRef(function Input({ variant: variantProp, className, ...props }, ref) {
   const {
     id,
     descriptionId,
@@ -67,11 +40,9 @@ const Input = forwardRef(function Input(
     hasError,
     required,
     disabled: ctxDisabled,
-    size: ctxSize,
   } = useFieldContentContext()
   const { hasPrefix, hasSuffix } = useFieldControlContext()
 
-  const resolvedSize = sizeProp ?? ctxSize ?? 'base'
   const isDisabled = ctxDisabled || props.disabled || variantProp === 'disabled'
   const resolvedVariant = variantProp ?? (hasError ? 'error' : isDisabled ? 'disabled' : 'default')
 
@@ -85,9 +56,9 @@ const Input = forwardRef(function Input(
       aria-required={required || undefined}
       className={twMerge(
         clsx(
-          inputVariants({ variant: isDisabled ? 'disabled' : resolvedVariant, size: resolvedSize }),
-          hasPrefix && prefixPaddingMap[resolvedSize],
-          hasSuffix && suffixPaddingMap[resolvedSize],
+          inputVariants({ variant: isDisabled ? 'disabled' : resolvedVariant }),
+          hasPrefix && 'pl-9',
+          hasSuffix && 'pr-9',
           className
         )
       )}

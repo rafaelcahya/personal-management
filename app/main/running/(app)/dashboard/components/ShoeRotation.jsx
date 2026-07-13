@@ -1,5 +1,6 @@
 ﻿'use client'
 
+import { FieldLabel } from '@/components/base/Field/Field'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,7 +15,6 @@ import Card, {
 } from '@/components/base/Card/Card.jsx'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { fetchGear, updateGear } from '@/lib/api/running'
 import { updateGearSchema } from '@/schemas/runningGear'
@@ -151,7 +151,6 @@ function GearEditForm({ gear, onSave, onCancel }) {
       <div className="flex items-center gap-2">
         <Button
           type="submit"
-          size="base"
           disabled={isSubmitting}
           className="h-7 px-3 text-xs gap-1.5"
           id="gearSaveBtn"
@@ -166,7 +165,6 @@ function GearEditForm({ gear, onSave, onCancel }) {
         </Button>
         <Button
           type="button"
-          size="base"
           variant="secondary"
           disabled={isSubmitting}
           onClick={onCancel}

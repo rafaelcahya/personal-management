@@ -97,9 +97,9 @@ export default function RiskSection({ metrics, loading }) {
   const { bullTP, baseTP, bearTP, bullSL, baseSL, bearSL } = metrics
 
   return (
-    <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-4">
+    <Card>
       {/* Take Profit row */}
-      <CardHeader padding="none">
+      <CardHeader>
         <CardIcon icon={ArrowUpRight} />
         <CardHeaderContent>
           <CardTitle>Take Profit Targets</CardTitle>
@@ -108,7 +108,7 @@ export default function RiskSection({ metrics, loading }) {
           </CardDescription>
         </CardHeaderContent>
       </CardHeader>
-      <CardContent padding="none" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <StatCell
           label={
             <span className="flex items-center gap-1">
@@ -147,7 +147,7 @@ export default function RiskSection({ metrics, loading }) {
       <div className="border-t border-slate-100" />
 
       {/* Stop Loss row */}
-      <CardHeader padding="none">
+      <CardHeader>
         <CardIcon icon={ArrowDownRight} />
         <CardHeaderContent>
           <CardTitle>Stop Loss Levels</CardTitle>
@@ -156,7 +156,7 @@ export default function RiskSection({ metrics, loading }) {
           </CardDescription>
         </CardHeaderContent>
       </CardHeader>
-      <CardContent padding="none" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <StatCell
           label={
             <span className="flex items-center gap-1">

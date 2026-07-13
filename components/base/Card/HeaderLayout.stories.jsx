@@ -27,12 +27,40 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 export const Beside = {
   name: 'Beside (default)',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         The default{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">
           layout=&quot;beside&quot;
@@ -129,7 +157,47 @@ export const Beside = {
         </Card>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use beside (default) for a single button, badge, or icon-button',
+                body: 'beside fits naturally when CardAction has one item that can share the same row as the title. No need to pass the prop explicitly — beside is the default.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use beside for more than 2 buttons",
+                body: 'More than 2 buttons push the title off-screen or cause awkward wrapping on narrow viewports. Use layout="below" for toolbars with 3+ buttons or full-width controls.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Always wrap title + description in CardHeaderContent',
+                body: 'CardHeaderContent handles min-w-0 flex-1 so long titles truncate correctly when CardAction is present. Using a raw div instead breaks the truncation logic.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Wrap multiple buttons inside a flex div in CardAction',
+                body: "Don't pass multiple children directly to CardAction — wrap them in a flex div with gap-2. CardAction is a slot, not a flex container by default.",
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* layout="beside" is the default — no need to pass it explicitly */}
 <CardHeader>
@@ -179,9 +247,9 @@ export const Beside = {
 export const Below = {
   name: 'Below',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">layout=&quot;below&quot;</code>{' '}
         moves <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardAction</code> to a
         second row below the icon and title, spanning full width. Best for filter tab bars,
@@ -293,7 +361,47 @@ export const Below = {
         </Card>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use layout="below" for full-width toolbars and filter tab bars',
+                body: 'below is the right choice when CardAction holds filter tabs, date range pickers, or 3+ grouped buttons that need more horizontal space than beside allows.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use below for a single button",
+                body: 'below wastes vertical space when the action fits on the same line as the title. Use beside (default) for a single button, badge, or icon-button.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Ensure toolbar controls are accessible without a pointer',
+                body: 'The below row is flex-wrap and full-width — make sure all buttons and inputs in the toolbar have clear focus indicators and can be reached with Tab and navigated with keyboard.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use flex items-center gap-2 w-full inside CardAction for the below layout',
+                body: 'The below row is basis-full — use w-full on the CardAction content to fill the row. Use justify-between for a left tabs + right actions layout (e.g. filter tabs left, Export + Add right).',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* Filter tab bar below the header */}
 <CardHeader layout="below">

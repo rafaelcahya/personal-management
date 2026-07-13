@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import Card, { CardContent } from '@/components/base/Card/Card.jsx'
+import { Badge } from '@/components/base/Badge/Badge'
 
 export default function ProductSummary({ product }) {
   if (!product) return null
@@ -9,7 +10,7 @@ export default function ProductSummary({ product }) {
 
   return (
     <Card id="summarySection_productListPage" className="text-sm w-full self-start">
-      <CardContent className="space-y-3" padding="sm">
+      <CardContent className="p-3 space-y-3">
         <div className="space-y-1">
           <p className="text-slate-500 text-xs">Product</p>
           <p className="font-medium text-slate-800 leading-snug">
@@ -40,16 +41,16 @@ export default function ProductSummary({ product }) {
           </div>
           <div className="space-y-1">
             <p className="text-slate-500 text-xs">Status</p>
-            <span
+            <Badge
               className={cn(
-                'px-2 py-0.5 rounded-md text-xs font-semibold capitalize',
+                'rounded-md text-xs font-semibold capitalize',
                 product.product_status === 'active'
                   ? 'bg-green-100 text-green-700'
                   : 'bg-orange-100 text-orange-700'
               )}
             >
               {product.product_status}
-            </span>
+            </Badge>
           </div>
         </div>
         {hasActiveSession && (

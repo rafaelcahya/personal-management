@@ -27,7 +27,7 @@ export default function ProductUsageLog({ log, onUpdate }) {
       id="usageLog_productListPage"
       className="overflow-x-auto rounded-xl border border-slate-200"
     >
-      <CardContent padding="none">
+      <CardContent className="p-0">
         <Table
           id="usageLogTable_productListPage"
           className="min-w-full"

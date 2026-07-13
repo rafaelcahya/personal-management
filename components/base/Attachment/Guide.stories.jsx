@@ -21,9 +21,17 @@ const Section = ({ title, description, children }) => (
   </div>
 )
 
+const SubSection = ({ title, description, children }) => (
+  <div className="mb-8">
+    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-1">{title}</h3>
+    {description && <p className="text-xs text-gray-500 mb-3">{description}</p>}
+    {children}
+  </div>
+)
+
 const Preview = ({ children, className }) => (
   <div
-    className={`p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 ${className ?? 'max-w-lg'}`}
+    className={`flex flex-col gap-3 p-6 bg-gray-50 border border-gray-200 rounded-lg mb-3 ${className ?? ''}`}
   >
     {children}
   </div>
@@ -36,7 +44,11 @@ const Code = ({ children }) => (
 )
 
 const Tag = ({ children, color = 'gray' }) => {
-  const colors = { gray: 'bg-gray-100 text-gray-600', violet: 'bg-violet-100 text-violet-700' }
+  const colors = {
+    gray: 'bg-gray-100 text-gray-600',
+    violet: 'bg-violet-100 text-violet-700',
+    green: 'bg-green-100 text-green-700',
+  }
   return (
     <span
       className={`inline-block px-2 py-0.5 rounded text-xs font-mono font-medium ${colors[color]}`}
@@ -45,6 +57,73 @@ const Tag = ({ children, color = 'gray' }) => {
     </span>
   )
 }
+
+const ApiTable = ({ headers, rows }) => (
+  <div className="overflow-x-auto mb-4">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr key={i} className="even:bg-gray-50">
+            {row.map((cell, j) => (
+              <td
+                key={j}
+                className={`px-3 py-2 border border-gray-200 text-xs ${
+                  j === 0
+                    ? 'font-mono text-violet-700'
+                    : j <= 2
+                      ? 'font-mono text-gray-500'
+                      : 'text-gray-700'
+                }`}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 
@@ -85,12 +164,11 @@ const FILE_OTHER = { name: 'archive.zip', size: 4_100_000, type: 'application/zi
 
 function DropzoneDemo(props) {
   const [files, setFiles] = useState([])
-  const handleAdd = (newFiles) => {
+  const handleAdd = (newFiles) =>
     setFiles((prev) => [
       ...prev,
       ...newFiles.map((f) => ({ id: Math.random(), file: f, status: 'idle', progress: 0 })),
     ])
-  }
   const handleRemove = (id) => setFiles((prev) => prev.filter((f) => f.id !== id))
 
   return (
@@ -110,12 +188,11 @@ function DropzoneDemo(props) {
 
 function ButtonDemo(props) {
   const [files, setFiles] = useState([])
-  const handleAdd = (newFiles) => {
+  const handleAdd = (newFiles) =>
     setFiles((prev) => [
       ...prev,
       ...newFiles.map((f) => ({ id: Math.random(), file: f, status: 'idle', progress: 0 })),
     ])
-  }
   const handleRemove = (id) => setFiles((prev) => prev.filter((f) => f.id !== id))
 
   return (
@@ -197,7 +274,7 @@ export const Docs = {
       >
         <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4 overflow-x-auto">
           <div className="flex gap-16">
-            {/* AttachmentGroup */}
+            {/* AttachmentGroup diagram */}
             <div className="flex flex-col gap-2 shrink-0 w-80">
               <span className="text-xs font-mono text-gray-400 uppercase tracking-wide mb-1">
                 AttachmentGroup
@@ -207,7 +284,6 @@ export const Docs = {
                   AttachmentGroup
                 </span>
 
-                {/* AttachmentTrigger */}
                 <div className="relative px-3 pt-5 pb-3 border border-dashed border-blue-300 rounded mb-3">
                   <span className="absolute -top-2.5 left-2 bg-gray-50 px-0.5 text-xs font-mono text-blue-500">
                     AttachmentTrigger
@@ -218,14 +294,12 @@ export const Docs = {
                   </div>
                 </div>
 
-                {/* Attachment */}
                 <div className="relative px-3 pt-6 pb-3 border border-dashed border-green-300 rounded">
                   <span className="absolute -top-2.5 left-2 bg-gray-50 px-0.5 text-xs font-mono text-green-500">
                     Attachment
                   </span>
 
                   <div className="flex items-center gap-2">
-                    {/* AttachmentContent */}
                     <div className="relative flex-1 flex items-center gap-2 px-2 pt-5 pb-2 border border-dashed border-orange-300 rounded">
                       <span className="absolute -top-2.5 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-orange-400">
                         AttachmentContent
@@ -239,7 +313,6 @@ export const Docs = {
                         <span className="text-[8px] font-mono text-orange-400">Info</span>
                       </div>
                     </div>
-                    {/* AttachmentActions */}
                     <div className="relative px-1.5 pt-5 pb-1 border border-dashed border-pink-300 rounded shrink-0">
                       <span className="absolute -top-2.5 left-0 bg-gray-50 px-0.5 text-[10px] font-mono text-pink-400">
                         Actions
@@ -251,7 +324,6 @@ export const Docs = {
                     </div>
                   </div>
 
-                  {/* Progress */}
                   <div className="relative mt-2 px-2 pt-4 pb-2 border border-dashed border-sky-300 rounded">
                     <span className="absolute -top-2.5 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-sky-400">
                       AttachmentProgress
@@ -261,7 +333,6 @@ export const Docs = {
                     </div>
                   </div>
 
-                  {/* Preview */}
                   <div className="relative mt-2 px-2 pt-4 pb-2 border border-dashed border-teal-300 rounded">
                     <span className="absolute -top-2.5 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-teal-400">
                       AttachmentPreview
@@ -271,7 +342,6 @@ export const Docs = {
                     </div>
                   </div>
 
-                  {/* Error */}
                   <div className="relative mt-2 px-2 pt-4 pb-2 border border-dashed border-red-300 rounded">
                     <span className="absolute -top-2.5 left-1 bg-gray-50 px-0.5 text-[10px] font-mono text-red-400">
                       AttachmentError
@@ -316,10 +386,12 @@ export const Docs = {
                     ['AttachmentError', 'status="error"'],
                   ].map(([part, when]) => (
                     <tr key={part} className="even:bg-gray-50">
-                      <td className="px-3 py-1.5 border border-gray-200 font-mono text-violet-700 whitespace-nowrap">
+                      <td className="px-3 py-1.5 border border-gray-200 font-mono text-violet-700 whitespace-nowrap text-xs">
                         {part}
                       </td>
-                      <td className="px-3 py-1.5 border border-gray-200 text-gray-600">{when}</td>
+                      <td className="px-3 py-1.5 border border-gray-200 text-gray-600 text-xs">
+                        {when}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -356,15 +428,16 @@ import { AttachmentIcon, AttachmentInfo, AttachmentContent, AttachmentActions } 
 </AttachmentContent>`}</Code>
       </Section>
 
-      {/* Trigger — Dropzone */}
-      <Section
-        title="Trigger — Dropzone"
-        description='trigger="dropzone" (default) shows a dashed drop area. Click or drag files onto it. Accepts accept, maxFiles, and maxSize hints shown as a subtitle.'
-      >
-        <Preview>
-          <DropzoneDemo />
-        </Preview>
-        <Code>{`<AttachmentGroup
+      {/* Trigger Types */}
+      <Section title="Trigger Types">
+        <SubSection
+          title="Dropzone"
+          description='trigger="dropzone" (default) — dashed drop area. Click or drag files onto it.'
+        >
+          <Preview>
+            <DropzoneDemo />
+          </Preview>
+          <Code>{`<AttachmentGroup
   trigger="dropzone"
   accept="image/*, .pdf"
   maxSize={10 * 1024 * 1024}
@@ -372,81 +445,74 @@ import { AttachmentIcon, AttachmentInfo, AttachmentContent, AttachmentActions } 
 >
   {files.map(f => <Attachment key={f.id} {...f} onRemove={...} />)}
 </AttachmentGroup>`}</Code>
-      </Section>
+        </SubSection>
 
-      {/* Trigger — Button */}
-      <Section
-        title="Trigger — Button"
-        description='trigger="button" renders a compact attach button. Useful in comment boxes, inline form fields, or anywhere a dropzone is too large.'
-      >
-        <Preview>
-          <ButtonDemo />
-        </Preview>
-        <Code>{`<AttachmentGroup
-  trigger="button"
-  onFilesAdd={handleAdd}
->
+        <SubSection
+          title="Button"
+          description='trigger="button" — compact attach button. Useful in comment boxes or inline form fields.'
+        >
+          <Preview>
+            <ButtonDemo />
+          </Preview>
+          <Code>{`<AttachmentGroup trigger="button" onFilesAdd={handleAdd}>
   {files.map(f => <Attachment key={f.id} {...f} onRemove={...} />)}
 </AttachmentGroup>`}</Code>
-      </Section>
+        </SubSection>
 
-      {/* Custom Trigger Label */}
-      <Section
-        title="Custom Trigger Label"
-        description="AttachmentTrigger accepts a label prop (string or ReactNode) to override the default text. Use it directly when you need a custom trigger outside of AttachmentGroup."
-      >
-        <Preview>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">label — string</span>
-              <AttachmentTrigger
-                variant="dropzone"
-                label="Upload your documents here"
-                onClick={() => {}}
-              />
+        <SubSection
+          title="Custom Label"
+          description="AttachmentTrigger accepts a label prop (string or ReactNode) to override the default text."
+        >
+          <Preview>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-mono text-violet-700">label — string</span>
+                <AttachmentTrigger
+                  variant="dropzone"
+                  label="Upload your documents here"
+                  onClick={() => {}}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-mono text-violet-700">label — ReactNode</span>
+                <AttachmentTrigger
+                  variant="dropzone"
+                  label={
+                    <>
+                      Drag & drop atau <span className="text-violet-600">pilih file</span>
+                    </>
+                  }
+                  onClick={() => {}}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-mono text-violet-700">
+                  trigger="button" + label
+                </span>
+                <AttachmentTrigger variant="button" label="Upload lampiran" onClick={() => {}} />
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">label — ReactNode</span>
-              <AttachmentTrigger
-                variant="dropzone"
-                label={
-                  <>
-                    Drag & drop atau <span className="text-violet-600">pilih file</span>
-                  </>
-                }
-                onClick={() => {}}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">
-                trigger="button" + label
-              </span>
-              <AttachmentTrigger variant="button" label="Upload lampiran" onClick={() => {}} />
-            </div>
-          </div>
-        </Preview>
-        <Code>{`import { AttachmentTrigger } from '@/components/base/Attachment/attachmentParts'
+          </Preview>
+          <Code>{`import { AttachmentTrigger } from '@/components/base/Attachment/attachmentParts'
 
-{/* String label */}
 <AttachmentTrigger variant="dropzone" label="Upload your documents here" onClick={...} />
 
-{/* JSX label */}
 <AttachmentTrigger
   variant="dropzone"
   label={<>Drag & drop atau <span className="text-violet-600">pilih file</span></>}
   onClick={...}
 />
 
-{/* Button trigger */}
 <AttachmentTrigger variant="button" label="Upload lampiran" onClick={...} />`}</Code>
+        </SubSection>
       </Section>
 
-      {/* Status states */}
+      {/* Status */}
       <Section
         title="Status"
         description="Each Attachment row has four states. Parent owns status and updates it as the upload progresses."
       >
-        <Preview className="max-w-lg">
+        <Preview>
           <div className="flex flex-col gap-3">
             {[
               { label: 'status="idle"', file: FILE_PDF, status: 'idle', props: {} },
@@ -500,12 +566,12 @@ import { AttachmentIcon, AttachmentInfo, AttachmentContent, AttachmentActions } 
 />`}</Code>
       </Section>
 
-      {/* File type icons */}
+      {/* File Type Icons */}
       <Section
         title="File Type Icons"
         description="AttachmentIcon auto-detects the file category from the MIME type and always shows an icon — no thumbnail."
       >
-        <Preview className="max-w-lg">
+        <Preview>
           <div className="flex flex-col gap-2">
             {[
               { label: 'image', file: FILE_IMAGE },
@@ -523,21 +589,19 @@ import { AttachmentIcon, AttachmentInfo, AttachmentContent, AttachmentActions } 
             ))}
           </div>
         </Preview>
-        <Code>{`// Icon is always determined by MIME type — no thumbnail
+        <Code>{`// Icon is determined by MIME type — no thumbnail
 const imageFile = { name: 'photo.jpg', size: 2400000, type: 'image/jpeg', url: '/uploads/photo.jpg' }
 // → shows FileImage icon (violet)`}</Code>
       </Section>
 
-      {/* Image preview */}
+      {/* Image Preview */}
       <Section
         title="Image Preview"
         description="For image files with a URL, a chevron button appears in AttachmentActions. Clicking it expands an inline preview below the row."
       >
-        <Preview className="max-w-lg">
+        <Preview>
           <Attachment file={FILE_IMAGE} status="done" onRemove={() => {}} />
-          <p className="text-xs text-gray-400 mt-2">
-            ← Click the chevron button to expand the preview
-          </p>
+          <p className="text-xs text-gray-400">← Click the chevron button to expand the preview</p>
         </Preview>
         <Code>{`// Preview toggle appears automatically when:
 // file.type starts with "image/" AND file.url is set AND status is "done"
@@ -549,38 +613,54 @@ const imageFile = { name: 'photo.jpg', size: 2400000, type: 'image/jpeg', url: '
 />`}</Code>
       </Section>
 
-      {/* showTriggerAlways */}
+      {/* Constraints */}
       <Section
-        title="showTriggerAlways"
-        description="Controls whether the upload trigger remains visible after files are added. Default true. Set false to hide the trigger once files are present."
+        title="Constraints"
+        description="accept filters the native file picker. maxFiles hides the trigger when the limit is reached. maxSize silently filters oversized files before calling onFilesAdd."
       >
-        <div className="grid grid-cols-2 gap-4 mb-3">
-          <div>
-            <span className="text-[10px] font-mono text-violet-700 mb-2 block">
-              showTriggerAlways=true (default)
-            </span>
-            <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-col items-center gap-1 py-3 rounded border-2 border-dashed border-gray-200 text-gray-300">
-                  <span className="text-sm">↑</span>
-                  <span className="text-[10px] font-mono">Drop files or browse</span>
+        <SubSection title="accept + maxFiles + maxSize">
+          <Preview>
+            <DropzoneDemo accept="image/*, .pdf" maxFiles={3} maxSize={5 * 1024 * 1024} />
+          </Preview>
+          <Code>{`<AttachmentGroup
+  accept="image/*, .pdf"      // shown as hint in dropzone
+  maxFiles={3}                // trigger hidden after 3 files
+  maxSize={5 * 1024 * 1024}  // 5 MB — oversized files filtered silently
+  onFilesAdd={handleAdd}
+>
+  ...
+</AttachmentGroup>`}</Code>
+        </SubSection>
+
+        <SubSection
+          title="showTriggerAlways"
+          description="Controls whether the upload trigger remains visible after files are added. Default true. Set false to hide the trigger once files are present."
+        >
+          <div className="grid grid-cols-2 gap-4 mb-3">
+            <div>
+              <span className="text-[10px] font-mono text-violet-700 mb-2 block">
+                showTriggerAlways=true (default)
+              </span>
+              <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col items-center gap-1 py-3 rounded border-2 border-dashed border-gray-200 text-gray-300">
+                    <span className="text-sm">↑</span>
+                    <span className="text-[10px] font-mono">Drop files or browse</span>
+                  </div>
+                  <Attachment file={FILE_PDF} status="done" onRemove={() => {}} />
                 </div>
+              </div>
+            </div>
+            <div>
+              <span className="text-[10px] font-mono text-violet-700 mb-2 block">
+                showTriggerAlways=false
+              </span>
+              <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
                 <Attachment file={FILE_PDF} status="done" onRemove={() => {}} />
               </div>
             </div>
           </div>
-          <div>
-            <span className="text-[10px] font-mono text-violet-700 mb-2 block">
-              showTriggerAlways=false
-            </span>
-            <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-              <div className="flex flex-col gap-2">
-                <Attachment file={FILE_PDF} status="done" onRemove={() => {}} />
-              </div>
-            </div>
-          </div>
-        </div>
-        <Code>{`{/* Trigger stays visible after files added (default) */}
+          <Code>{`{/* Trigger stays visible after files added (default) */}
 <AttachmentGroup showTriggerAlways onFilesAdd={handleAdd}>
   ...
 </AttachmentGroup>
@@ -589,36 +669,16 @@ const imageFile = { name: 'photo.jpg', size: 2400000, type: 'image/jpeg', url: '
 <AttachmentGroup showTriggerAlways={false} onFilesAdd={handleAdd}>
   ...
 </AttachmentGroup>`}</Code>
-      </Section>
+        </SubSection>
 
-      {/* accept + maxFiles + maxSize */}
-      <Section
-        title="Constraints"
-        description="accept filters the native file picker. maxFiles hides the trigger when the limit is reached. maxSize silently filters oversized files before calling onFilesAdd."
-      >
-        <Preview>
-          <DropzoneDemo accept="image/*, .pdf" maxFiles={3} maxSize={5 * 1024 * 1024} />
-        </Preview>
-        <Code>{`<AttachmentGroup
-  accept="image/*, .pdf"      // shown as hint in dropzone
-  maxFiles={3}                // trigger hidden after 3 files
-  maxSize={5 * 1024 * 1024}  // 5 MB — oversized files filtered silently
-  onFilesAdd={handleAdd}
->
-  ...
-</AttachmentGroup>`}</Code>
-      </Section>
-
-      {/* Multiple files */}
-      <Section
-        title="Multiple Files"
-        description="multiple=true (default) allows picking several files at once. Set false to restrict to one file at a time (note: does not enforce single total — use maxFiles={1} for that)."
-      >
-        <Preview>
-          <ButtonDemo multiple maxFiles={1} showTriggerAlways={false} />
-        </Preview>
-        <Code>{`{/* Single file only */}
-<AttachmentGroup
+        <SubSection
+          title="Single File"
+          description="Use multiple={false} + maxFiles={1} + showTriggerAlways={false} to enforce a single-file replacement pattern."
+        >
+          <Preview>
+            <ButtonDemo multiple maxFiles={1} showTriggerAlways={false} />
+          </Preview>
+          <Code>{`<AttachmentGroup
   trigger="button"
   multiple={false}
   maxFiles={1}
@@ -627,12 +687,13 @@ const imageFile = { name: 'photo.jpg', size: 2400000, type: 'image/jpeg', url: '
 >
   ...
 </AttachmentGroup>`}</Code>
+        </SubSection>
       </Section>
 
       {/* react-hook-form */}
       <Section
         title="With react-hook-form"
-        description="Use a controlled state alongside Controller. Collect file metadata after upload completes and pass URLs to the form."
+        description="Use a controlled state alongside setValue/watch. Collect file URLs after upload completes and pass them to the form payload."
       >
         <Code>{`import { useForm } from 'react-hook-form'
 
@@ -667,219 +728,167 @@ const handleRemove = (id) => {
 const urls = attachments.filter(a => a.status === 'done').map(a => a.file.url)`}</Code>
       </Section>
 
-      {/* Props — AttachmentGroup */}
-      <Section title="Props — AttachmentGroup">
-        <div className="overflow-x-auto mb-8">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['trigger', '"dropzone" | "button"', '"dropzone"', 'Upload trigger style.'],
-                [
-                  'showTriggerAlways',
-                  'boolean',
-                  'true',
-                  'Keep trigger visible after files are added. Hides automatically when maxFiles is reached.',
-                ],
-                [
-                  'accept',
-                  'string',
-                  '—',
-                  'Native file picker filter. Also shown as a hint in the dropzone subtitle.',
-                ],
-                [
-                  'multiple',
-                  'boolean',
-                  'true',
-                  'Allow picking multiple files at once in the file picker.',
-                ],
-                [
-                  'maxFiles',
-                  'number',
-                  '—',
-                  'Maximum total files. Trigger hidden when limit is reached.',
-                ],
-                [
-                  'maxSize',
-                  'number',
-                  '—',
-                  'Max bytes per file. Oversized files are filtered before onFilesAdd is called.',
-                ],
-                [
-                  'onFilesAdd',
-                  '(files: File[]) => void',
-                  '—',
-                  'Fires with an array of valid File objects. Parent manages upload logic.',
-                ],
-                ['children', 'ReactNode', '—', 'Attachment rows.'],
-                ['className', 'string', '—', 'Additional classes on the wrapper.'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* API Reference */}
+      <Section title="API Reference">
+        <SubSection title="AttachmentGroup">
+          <ApiTable
+            headers={['Prop', 'Type', 'Default', 'Description']}
+            rows={[
+              ['trigger', '"dropzone" | "button"', '"dropzone"', 'Upload trigger style.'],
+              [
+                'showTriggerAlways',
+                'boolean',
+                'true',
+                'Keep trigger visible after files are added. Hides automatically when maxFiles is reached.',
+              ],
+              [
+                'accept',
+                'string',
+                '—',
+                'Native file picker filter. Also shown as a hint in the dropzone subtitle.',
+              ],
+              [
+                'multiple',
+                'boolean',
+                'true',
+                'Allow picking multiple files at once in the file picker.',
+              ],
+              [
+                'maxFiles',
+                'number',
+                '—',
+                'Maximum total files. Trigger hidden when limit is reached.',
+              ],
+              [
+                'maxSize',
+                'number',
+                '—',
+                'Max bytes per file. Oversized files are filtered before onFilesAdd is called.',
+              ],
+              [
+                'onFilesAdd',
+                '(files: File[]) => void',
+                '—',
+                'Fires with an array of valid File objects. Parent manages upload logic.',
+              ],
+              ['children', 'ReactNode', '—', 'Attachment rows.'],
+              ['className', 'string', '—', 'Additional classes on the wrapper.'],
+            ]}
+          />
+        </SubSection>
 
-        {/* Props — AttachmentTrigger */}
-        <h3 className="text-base font-semibold text-gray-900 mb-3 mt-8">
-          Props — AttachmentTrigger
-        </h3>
-        <div className="overflow-x-auto mb-8">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['variant', '"dropzone" | "button"', '"dropzone"', 'Visual style of the trigger.'],
-                [
-                  'label',
-                  'ReactNode | string',
-                  '"Drop files here or browse" / "Attach files"',
-                  'Override the default trigger label. Accepts plain text or JSX.',
-                ],
-                ['accept', 'string', '—', 'Shown as a subtitle hint below the dropzone label.'],
-                [
-                  'sizeHint',
-                  'string',
-                  '—',
-                  'Shown as a subtitle hint (e.g. "Max 10 MB per file").',
-                ],
-                ['onClick', '() => void', '—', 'Fires when the trigger is clicked.'],
-                [
-                  'onDrop',
-                  'DragEventHandler',
-                  '—',
-                  'Fires when files are dropped (dropzone only).',
-                ],
-                [
-                  'onDragOver',
-                  'DragEventHandler',
-                  '—',
-                  'Fires on drag-over to prevent default browser behavior (dropzone only).',
-                ],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SubSection title="AttachmentTrigger">
+          <ApiTable
+            headers={['Prop', 'Type', 'Default', 'Description']}
+            rows={[
+              ['variant', '"dropzone" | "button"', '"dropzone"', 'Visual style of the trigger.'],
+              [
+                'label',
+                'ReactNode | string',
+                '"Drop files here or browse"',
+                'Override the default trigger label. Accepts plain text or JSX.',
+              ],
+              ['accept', 'string', '—', 'Shown as a subtitle hint below the dropzone label.'],
+              ['sizeHint', 'string', '—', 'Shown as a subtitle hint (e.g. "Max 10 MB per file").'],
+              ['onClick', '() => void', '—', 'Fires when the trigger is clicked.'],
+              ['onDrop', 'DragEventHandler', '—', 'Fires when files are dropped (dropzone only).'],
+              [
+                'onDragOver',
+                'DragEventHandler',
+                '—',
+                'Fires on drag-over to prevent default browser behavior (dropzone only).',
+              ],
+            ]}
+          />
+        </SubSection>
 
-        {/* Props — Attachment */}
-        <h3 className="text-base font-semibold text-gray-900 mb-3">Props — Attachment</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'file',
-                  '{ name, size, type, url? } | File',
-                  '—',
-                  'File metadata. Accepts a browser File object or a plain object with name/size/type. Pass url after upload completes to enable download and image preview.',
-                ],
-                [
-                  'status',
-                  '"idle" | "uploading" | "done" | "error"',
-                  '"idle"',
-                  'Controls which parts are visible: progress bar, error block, action buttons.',
-                ],
-                [
-                  'progress',
-                  'number',
-                  '0',
-                  '0–100. Used by AttachmentProgress when status="uploading".',
-                ],
-                [
-                  'errorTitle',
-                  'string',
-                  '"Upload failed"',
-                  'Heading shown in AttachmentError when status="error".',
-                ],
-                ['errorDescription', 'string', '—', 'Detail message shown below errorTitle.'],
-                [
-                  'onRemove',
-                  '() => void',
-                  '—',
-                  'Fires when the trash button is clicked. Parent removes the item from state.',
-                ],
-                [
-                  'onRetry',
-                  '() => void',
-                  '—',
-                  'Fires when the retry button is clicked. Shown only when status="error".',
-                ],
-                ['className', 'string', '—', 'Additional classes on the row wrapper.'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SubSection title="Attachment">
+          <ApiTable
+            headers={['Prop', 'Type', 'Default', 'Description']}
+            rows={[
+              [
+                'file',
+                '{ name, size, type, url? } | File',
+                '—',
+                'File metadata. Pass url after upload to enable download and image preview.',
+              ],
+              [
+                'status',
+                '"idle" | "uploading" | "done" | "error"',
+                '"idle"',
+                'Controls which parts are visible: progress bar, error block, action buttons.',
+              ],
+              [
+                'progress',
+                'number',
+                '0',
+                '0–100. Used by AttachmentProgress when status="uploading".',
+              ],
+              [
+                'errorTitle',
+                'string',
+                '"Upload failed"',
+                'Heading shown in AttachmentError when status="error".',
+              ],
+              ['errorDescription', 'string', '—', 'Detail message shown below errorTitle.'],
+              [
+                'onRemove',
+                '() => void',
+                '—',
+                'Fires when the trash button is clicked. Parent removes the item from state.',
+              ],
+              [
+                'onRetry',
+                '() => void',
+                '—',
+                'Fires when the retry button is clicked. Shown only when status="error".',
+              ],
+              ['className', 'string', '—', 'Additional classes on the row wrapper.'],
+            ]}
+          />
+        </SubSection>
+      </Section>
+
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <BestPractices
+          items={[
+            {
+              heading: 'When to use',
+              cards: [
+                {
+                  title: 'Use AttachmentGroup + Attachment for all file upload flows',
+                  body: 'AttachmentGroup handles the trigger and file picking. Attachment handles the row UI. Never build a custom file row from scratch — compose with these instead.',
+                },
+                {
+                  title: 'Use dropzone for primary upload, button for inline fields',
+                  body: 'A dashed drop area emphasizes the upload as a key action. Reserve the button trigger for compact contexts where a large drop area would dominate the layout.',
+                },
+                {
+                  title: 'Always set accept and maxSize to set clear expectations',
+                  body: 'Users should not discover file restrictions by hitting an error. Surface type and size limits in the dropzone subtitle before they pick a file.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              cards: [
+                {
+                  title: 'Start upload in onFilesAdd — do not wait for form submit',
+                  body: 'Users expect immediate feedback when they select files. Begin uploading and set status to "uploading" right away. Attach the resulting URL to the file object and let the form submit collect it.',
+                },
+                {
+                  title: 'Always provide onRetry for network errors',
+                  body: 'Network failures are temporary. A retry button lets users recover without re-selecting the file. Omit onRetry only when the failure is permanent (e.g. invalid file type).',
+                },
+                {
+                  title: 'Never auto-remove rows on done — keep them visible',
+                  body: 'The "Uploaded" label in done state is the user\'s confirmation. Auto-removing the row on success removes that feedback and can feel like the file was lost.',
+                },
+              ],
+            },
+          ]}
+        />
       </Section>
     </div>
   ),

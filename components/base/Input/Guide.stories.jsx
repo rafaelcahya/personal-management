@@ -63,6 +63,44 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ component, rows }) => (
+  <div className="mb-6">
+    {component && <p className="text-xs font-mono font-semibold text-gray-500 mb-2">{component}</p>}
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)
+
 const PasswordDemo = () => {
   const [show, setShow] = useState(false)
   return (
@@ -74,6 +112,7 @@ const PasswordDemo = () => {
       <FieldSuffix
         className="pointer-events-auto cursor-pointer hover:text-foreground transition-colors"
         onClick={() => setShow((s) => !s)}
+        aria-label={show ? 'Hide password' : 'Show password'}
       >
         {show ? <EyeOff /> : <Eye />}
       </FieldSuffix>
@@ -87,35 +126,37 @@ export const Docs = {
   name: 'Docs',
   render: () => (
     <div className="p-8 max-w-4xl font-sans text-gray-900">
-      {/* Header */}
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-2">
           <h1 className="text-3xl font-bold text-gray-900">Input</h1>
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A flexible text input with three variants and five sizes. Reads context from{' '}
+          A flexible single-line text input with three variants and five sizes. Reads context from{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
-          accessible IDs, error state, and size — works standalone too.
+          accessible IDs, error state, required, and disabled — works standalone too. Pair with{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldControl</code> to add a{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldPrefix</code> or{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldSuffix</code> without
+          manual padding.
         </p>
       </div>
 
-      {/* Overview */}
+      {/* ── Overview ───────────────────────────────────────────────────────── */}
       <Section title="Overview">
         <Preview>
-          <FieldContent size="base" required>
+          <FieldContent required>
             <FieldLabel>Email</FieldLabel>
+            <FieldDescription>We will never share your email.</FieldDescription>
             <FieldControl>
               <FieldPrefix>
                 <Mail />
               </FieldPrefix>
-              <Input placeholder="you@example.com" />
+              <Input type="email" placeholder="you@example.com" />
             </FieldControl>
-            <FieldDescription className="text-xs text-slate-400">
-              We'll never share your email.
-            </FieldDescription>
           </FieldContent>
-          <FieldContent size="base">
+          <FieldContent>
             <FieldLabel>Website</FieldLabel>
             <FieldControl>
               <FieldPrefix>
@@ -125,29 +166,35 @@ export const Docs = {
               <FieldSuffix>.com</FieldSuffix>
             </FieldControl>
           </FieldContent>
-          <FieldContent size="base" required error="Enter a valid email address.">
-            <FieldLabel>Password</FieldLabel>
+          <FieldContent required error="Enter a valid email address.">
+            <FieldLabel>Confirm email</FieldLabel>
             <FieldControl>
-              <Input defaultValue="123" />
+              <Input type="email" defaultValue="not-an-email" />
             </FieldControl>
             <FieldError />
           </FieldContent>
         </Preview>
+        <Code>{`<FieldContent required>
+  <FieldLabel>Email</FieldLabel>
+  <FieldDescription>We will never share your email.</FieldDescription>
+  <FieldControl>
+    <FieldPrefix><Mail /></FieldPrefix>
+    <Input type="email" placeholder="you@example.com" />
+  </FieldControl>
+</FieldContent>`}</Code>
       </Section>
 
-      {/* Anatomy */}
+      {/* ── Anatomy ────────────────────────────────────────────────────────── */}
       <Section
         title="Anatomy"
-        description="Input composes with the Field system. FieldControl handles prefix/suffix positioning; FieldContent wires up accessible IDs, error state, and size."
+        description="Input composes with the Field system. FieldControl handles prefix/suffix positioning; FieldContent wires up accessible IDs, error state, and disabled."
       >
-        {/* Box diagram */}
         <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
           <div className="relative p-4 border-2 border-dashed border-violet-400 rounded-xl">
             <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
               FieldContent
             </span>
 
-            {/* FieldLabel */}
             <div className="relative px-3 py-1.5 border border-dashed border-slate-300 rounded mb-2">
               <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-slate-400">
                 FieldLabel
@@ -155,7 +202,6 @@ export const Docs = {
               <span className="text-[10px] text-slate-400 font-mono">Email</span>
             </div>
 
-            {/* FieldControl */}
             <div className="relative pt-4 pb-2 px-2 border border-dashed border-blue-300 rounded mb-2">
               <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-blue-500">
                 FieldControl
@@ -176,17 +222,15 @@ export const Docs = {
               </div>
             </div>
 
-            {/* FieldDescription */}
             <div className="relative px-3 py-1.5 border border-dashed border-green-300 rounded mb-2">
               <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
                 FieldDescription
               </span>
               <span className="text-[10px] text-slate-400 font-mono">
-                We'll never share your email.
+                We will never share your email.
               </span>
             </div>
 
-            {/* FieldError */}
             <div className="relative px-3 py-1.5 border border-dashed border-green-300 rounded">
               <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
                 FieldError
@@ -215,13 +259,13 @@ export const Docs = {
                 [
                   'FieldContent',
                   '<div>',
-                  'Root wrapper. Provides accessible IDs, error state, disabled, and size via context.',
+                  'Root wrapper. Provides accessible IDs, error state, disabled, and required via context.',
                 ],
                 ['FieldLabel', '<label>', 'Accessible label linked to the input via context ID.'],
                 [
                   'FieldControl',
                   '<div>',
-                  'Positioning wrapper for prefix/suffix overlays. Required when using FieldPrefix or FieldSuffix.',
+                  'Relative positioning wrapper for prefix/suffix overlays. Required when using FieldPrefix or FieldSuffix.',
                 ],
                 [
                   'Input',
@@ -230,23 +274,23 @@ export const Docs = {
                 ],
                 [
                   'FieldPrefix',
-                  '<div>',
+                  '<span>',
                   'Optional overlay anchored to the left edge of the input. Icon or short text.',
                 ],
                 [
                   'FieldSuffix',
-                  '<div>',
+                  '<span>',
                   'Optional overlay anchored to the right edge of the input. Icon, unit, or action.',
                 ],
                 [
                   'FieldDescription',
                   '<p>',
-                  'Helper text shown below the input. Linked via aria-describedby.',
+                  'Helper text shown below the label. Linked to Input via aria-describedby.',
                 ],
                 [
                   'FieldError',
                   '<p>',
-                  'Renders the error message from FieldContent. Only visible when error prop is set.',
+                  'Error message with role="alert". Reads from FieldContent context or from children.',
                 ],
               ].map(([part, el, desc]) => (
                 <tr key={part} className="even:bg-gray-50">
@@ -263,19 +307,18 @@ export const Docs = {
           </table>
         </div>
 
-        <Code>{`<FieldContent size="base" required error={errors.email?.message}>
+        <Code>{`<FieldContent required error={errors.email?.message}>
   <FieldLabel>Email</FieldLabel>
   <FieldControl>
-    <FieldPrefix>@</FieldPrefix>
-    <Input placeholder="you@example.com" />
-    <FieldSuffix>.com</FieldSuffix>
+    <FieldPrefix><Mail /></FieldPrefix>
+    <Input type="email" placeholder="you@example.com" />
   </FieldControl>
-  <FieldDescription className="text-xs text-slate-400">We'll never share your email.</FieldDescription>
+  <FieldDescription>We will never share your email.</FieldDescription>
   <FieldError />
 </FieldContent>`}</Code>
       </Section>
 
-      {/* Variants */}
+      {/* ── Variants ───────────────────────────────────────────────────────── */}
       <Section
         title="Variants"
         description="Three variants covering normal, error, and disabled states."
@@ -307,7 +350,7 @@ export const Docs = {
             className="flex items-start gap-4 mb-4 p-4 border border-gray-100 rounded-lg hover:border-gray-200 transition-colors"
           >
             <div className="w-52 shrink-0">
-              <Input variant={variant} size="base" defaultValue={value} />
+              <Input variant={variant} defaultValue={value} />
             </div>
             <div>
               <p className="text-xs font-mono font-medium text-violet-700 mb-1">
@@ -317,129 +360,69 @@ export const Docs = {
             </div>
           </div>
         ))}
+        <Code>{`{/* Auto-derived from FieldContent — no variant prop needed */}
+<FieldContent error="Enter a valid email.">
+  <FieldControl><Input /></FieldControl>
+  <FieldError />
+</FieldContent>
+
+{/* Explicit override for standalone usage */}
+<Input variant="error" defaultValue="wrong@" />
+<Input variant="disabled" defaultValue="read only" />`}</Code>
       </Section>
 
-      {/* Sizes */}
-      <Section title="Sizes" description="Five sizes to match context density.">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-xs border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Size', 'Height', 'Padding', 'Best for', 'Preview'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-600"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['xs', '24px', 'px-2', 'Dense tables, compact filters'],
-                ['sm', '28px', 'px-2.5', 'Secondary fields in tight layouts'],
-                ['base', '32px', 'px-3', 'Default for most form fields'],
-                ['md', '36px', 'px-3.5', 'Prominent fields, modals'],
-                ['lg', '40px', 'px-4', 'Hero fields, search bars'],
-              ].map(([size, h, p, use]) => (
-                <tr key={size} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700">
-                    {size}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-gray-600">{h}</td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-gray-600">{p}</td>
-                  <td className="px-3 py-2 border border-gray-200 text-gray-500">{use}</td>
-                  <td className="px-3 py-2 border border-gray-200">
-                    <Input size={size} placeholder={size} className="w-32" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Input Props */}
-      <Section title="Input Props">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'variant',
-                  '"default" | "error" | "disabled"',
-                  'auto',
-                  'Visual state — auto-derived from FieldContent (error prop → "error", disabled prop → "disabled"). Override explicitly when used standalone.',
-                ],
-                [
-                  'size',
-                  '"xs" | "sm" | "base" | "md" | "lg"',
-                  'ctx or "base"',
-                  'Overrides FieldContent context size when set explicitly',
-                ],
-                ['className', 'string', '—', 'CSS classes applied to the <input> element'],
-                [
-                  '...props',
-                  'HTMLInputProps',
-                  '—',
-                  'All native input attributes (type, placeholder, etc.)',
-                ],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Usage Examples */}
+      {/* ── Usage Examples ─────────────────────────────────────────────────── */}
       <Section title="Usage Examples" description="Copy-ready code for common scenarios.">
         <SubSection title="With Label & Description">
-          <Code>{`<FieldContent size="base" required>
+          <Preview>
+            <FieldContent required>
+              <FieldLabel>Email</FieldLabel>
+              <FieldDescription>We will never share your email.</FieldDescription>
+              <FieldControl>
+                <Input type="email" placeholder="you@example.com" />
+              </FieldControl>
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent required>
   <FieldLabel>Email</FieldLabel>
+  <FieldDescription>We will never share your email.</FieldDescription>
   <FieldControl>
     <Input type="email" placeholder="you@example.com" />
   </FieldControl>
-  <FieldDescription className="text-xs text-slate-400">We'll never share your email.</FieldDescription>
 </FieldContent>`}</Code>
         </SubSection>
 
         <SubSection title="Error State">
-          <Code>{`<FieldContent size="base" required error="Enter a valid email address.">
+          <Preview>
+            <FieldContent required error="Enter a valid email address.">
+              <FieldLabel>Email</FieldLabel>
+              <FieldControl>
+                <Input type="email" defaultValue="wrong@" />
+              </FieldControl>
+              <FieldError />
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent required error="Enter a valid email address.">
   <FieldLabel>Email</FieldLabel>
   <FieldControl>
-    <Input defaultValue="wrong@" />
+    <Input type="email" />
   </FieldControl>
   <FieldError />
 </FieldContent>`}</Code>
         </SubSection>
 
-        <SubSection title="Currency Field (with affix)">
-          <Code>{`<FieldContent size="base">
+        <SubSection title="Currency Field (prefix + suffix)">
+          <Preview>
+            <FieldContent>
+              <FieldLabel>Amount</FieldLabel>
+              <FieldControl>
+                <FieldPrefix>Rp</FieldPrefix>
+                <Input type="number" placeholder="0" />
+                <FieldSuffix>IDR</FieldSuffix>
+              </FieldControl>
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent>
   <FieldLabel>Amount</FieldLabel>
   <FieldControl>
     <FieldPrefix>Rp</FieldPrefix>
@@ -449,28 +432,39 @@ export const Docs = {
 </FieldContent>`}</Code>
         </SubSection>
 
-        <SubSection title="Search Field (standalone — no label)">
-          <Code>{`<FieldControl className="w-72">
+        <SubSection title="Search Bar (standalone — no label)">
+          <Preview>
+            <FieldControl>
+              <FieldPrefix>
+                <Search />
+              </FieldPrefix>
+              <Input placeholder="Search items…" aria-label="Search" />
+            </FieldControl>
+          </Preview>
+          <Code>{`<FieldControl>
   <FieldPrefix><Search /></FieldPrefix>
-  <Input size="md" placeholder="Search items..." />
+  <Input placeholder="Search items…" aria-label="Search" />
 </FieldControl>`}</Code>
         </SubSection>
 
         <SubSection title="Password Toggle">
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg w-80 mb-3">
-            <FieldContent size="base">
+          <Preview>
+            <FieldContent>
+              <FieldLabel>Password</FieldLabel>
               <PasswordDemo />
             </FieldContent>
-          </div>
+          </Preview>
           <Code>{`const [show, setShow] = useState(false)
 
-<FieldContent size="base">
+<FieldContent>
+  <FieldLabel>Password</FieldLabel>
   <FieldControl>
     <FieldPrefix><Lock /></FieldPrefix>
-    <Input type={show ? 'text' : 'password'} placeholder="Password" />
+    <Input type={show ? 'text' : 'password'} placeholder="••••••••" />
     <FieldSuffix
-      className="pointer-events-auto cursor-pointer hover:text-foreground"
+      className="pointer-events-auto cursor-pointer hover:text-foreground transition-colors"
       onClick={() => setShow(s => !s)}
+      aria-label={show ? 'Hide password' : 'Show password'}
     >
       {show ? <EyeOff /> : <Eye />}
     </FieldSuffix>
@@ -479,130 +473,125 @@ export const Docs = {
         </SubSection>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Input Field when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+      {/* ── Best Practices ─────────────────────────────────────────────────── */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use Input for short, free-form single-line values',
+                  body: 'Names, emails, URLs, amounts, usernames — any value the user types freely on one line. Input is the default choice for form fields without a fixed set of options.',
+                },
+                {
+                  title: 'Use a prefix or suffix to show format context inline',
+                  body: 'When the value must be a currency amount, URL, or percentage, FieldPrefix and FieldSuffix make the expected format visible without adding text outside the field. Input auto-pads to prevent overlap.',
+                },
+                {
+                  title:
+                    'Use a standalone FieldControl for search bars and filter inputs without labels',
+                  body: 'Search inputs in toolbars and table headers do not need a FieldContent wrapper. Use FieldControl directly and add aria-label to the Input for the accessible name.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: 'Use Textarea for multi-line content — notes, descriptions, comments',
+                  body: 'Input is a single line. If the expected value spans multiple lines, use Textarea so the full content stays visible while the user edits and the component grows with the text.',
+                },
+                {
+                  title: 'Use Select when the user must pick from a fixed enumerated list',
+                  body: 'A text input with a fixed list of valid values leads to user errors and inconsistent data. If the options are finite and known, use Select so users can only pick valid values.',
+                },
+                {
+                  title: 'Use DatePicker or TimePicker for date and time input',
+                  body: 'Typing dates as free text is error-prone and locale-sensitive. DatePicker and TimePicker give users a structured, guided experience and produce a consistent value format.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Always pair Input with a FieldLabel — never rely on placeholder alone',
+                  body: 'Placeholder text disappears when the user starts typing and is not reliably announced by all screen readers. FieldLabel provides a persistent accessible name that stays visible and is always read.',
+                },
+                {
+                  title: 'Always include <FieldError /> when validation is possible',
+                  body: 'FieldError renders with role="alert" and is linked to the Input via aria-errormessage. Even with no current error, including it in the tree means screen readers announce the message immediately when it appears.',
+                },
+                {
+                  title: 'Add aria-label when using FieldControl without FieldContent',
+                  body: 'Standalone FieldControl has no FieldLabel to auto-wire. Without aria-label on the Input, the field has no accessible name and assistive technologies cannot announce what the field is for.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Write specific, actionable error messages',
+                  body: '"Enter a valid email address" tells users exactly what to fix. "Invalid input" does not. Always write errors from the user\'s perspective: what the value should look like and what format is expected.',
+                },
+                {
+                  title: 'Set input type correctly for mobile keyboards and browser autofill',
+                  body: 'type="email" triggers the @ keyboard on mobile and enables browser autofill for email fields. type="tel" shows a numeric keypad. type="password" hides the value. Always set type to match the expected value.',
+                },
+                {
+                  title: 'Set input type correctly for mobile keyboards and browser autofill',
+                  body: 'type="email" triggers the @ keyboard on mobile and enables browser autofill for email fields. type="tel" shows a numeric keypad. type="password" hides the value. Always set type to match the expected value.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The user needs to type a short, free-form value — name, email, URL, or amount
-                    </li>
-                    <li>
-                      The input is a single line and the expected value has no fixed set of options
-                    </li>
-                    <li>You need a search field, filter box, or inline lookup</li>
-                    <li>
-                      The field requires a prefix or suffix — currency symbol, unit, icon, or toggle
-                      (e.g. password reveal)
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Textarea</strong> when the value spans multiple lines — notes,
-                      descriptions, or comments
-                    </li>
-                    <li>
-                      Use <strong>Select</strong> when the user must pick from a fixed, enumerated
-                      list of options
-                    </li>
-                    <li>
-                      Use a <strong>DatePicker</strong> when the value is a calendar date or time
-                      range
-                    </li>
-                    <li>
-                      Use a <strong>NumberInput</strong> or stepper when the value is numeric with
-                      increment/decrement controls
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              </div>
+            </div>
+          ))}
         </div>
       </Section>
 
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always pair an Input with a <strong>FieldLabel</strong>. Labels give the field an
-                  accessible name and help users understand what to enter — never rely on
-                  placeholder text alone.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use <strong>placeholder</strong> to show an example value or format hint (e.g.
-                  "you@example.com", "YYYY-MM-DD"). Keep it concise — it disappears once the user
-                  starts typing.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Surface validation errors via <strong>FieldError</strong> and the{' '}
-                  <strong>error</strong> prop on FieldContent. The error variant ring and the error
-                  message together give both visual and assistive-technology feedback.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use placeholder text as a substitute for a label. Placeholders vanish on
-                  focus and are not announced reliably by screen readers — users lose context the
-                  moment they start typing.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use an Input for content that wraps across multiple lines — notes,
-                  addresses, or long descriptions. Use a <strong>Textarea</strong> instead so the
-                  full value stays visible while the user edits.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't set the <strong>error</strong> variant without also providing a FieldError
-                  message. A red ring alone doesn't tell the user what went wrong or how to fix it.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* ── API Reference ──────────────────────────────────────────────────── */}
+      <Section title="API Reference">
+        <ApiTable
+          component="Input"
+          rows={[
+            [
+              'variant',
+              '"default" | "error" | "disabled"',
+              'auto',
+              'Visual state. Auto-derived from FieldContent context (error → "error", disabled → "disabled"). Override explicitly for standalone usage.',
+            ],
+            ['className', 'string', '—', 'Additional CSS classes applied to the <input> element.'],
+            [
+              '...props',
+              'HTMLInputElement',
+              '—',
+              'All native input attributes — type, placeholder, defaultValue, value, onChange, etc.',
+            ],
+          ]}
+        />
       </Section>
     </div>
   ),

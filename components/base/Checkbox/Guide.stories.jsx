@@ -1,6 +1,7 @@
 import { Checkbox } from './Checkbox'
 import FieldContent from '../Field/FieldContent'
 import FieldLabel from '../Field/FieldLabel'
+import FieldDescription from '../Field/FieldDescription'
 import FieldError from '../Field/FieldError'
 
 /** @type {import('@storybook/nextjs').Meta} */
@@ -10,7 +11,7 @@ const meta = {
 
 export default meta
 
-// ─── Primitives ───────────────────────────────────────────────────────────────
+// ─── Primitives ──────────────────────────────────────────────────────────────
 
 const Section = ({ title, description, children }) => (
   <div className="mb-12">
@@ -57,7 +58,48 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
-// ─── Story ────────────────────────────────────────────────────────────────────
+const ApiTable = ({ headers = ['Prop', 'Type', 'Default', 'Description'], rows }) => (
+  <div className="mb-6 overflow-x-auto">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, ri) => (
+          <tr key={ri} className="even:bg-gray-50">
+            {row.map((cell, ci) => (
+              <td
+                key={ci}
+                className={`px-3 py-2 border border-gray-200 text-xs ${
+                  ci === 0
+                    ? 'font-mono text-violet-700 whitespace-nowrap'
+                    : ci === 1
+                      ? 'font-mono text-gray-500 max-w-xs'
+                      : ci === 2
+                        ? 'font-mono text-gray-400 whitespace-nowrap'
+                        : 'text-gray-700'
+                }`}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+// ─── Story ───────────────────────────────────────────────────────────────────
 
 export const Docs = {
   name: 'Docs',
@@ -70,43 +112,48 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A binary toggle for boolean values — checked, unchecked, or indeterminate. Pairs with{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
-          accessible labels and error messages.
+          A binary toggle for boolean values — checked, unchecked, or indeterminate. Built from
+          scratch with full keyboard support and screen-reader accessibility. Pairs with{' '}
+          <code className="font-mono text-sm">FieldContent</code> for validation error display.
         </p>
       </div>
 
       {/* Overview */}
       <Section title="Overview">
         <Preview>
-          <div className="flex items-center gap-2">
-            <Checkbox id="overview-terms" defaultChecked />
-            <label
-              htmlFor="overview-terms"
-              className="text-sm font-medium cursor-pointer select-none"
-            >
+          <div className="flex items-center gap-3">
+            <Checkbox id="ov-terms" defaultChecked />
+            <label htmlFor="ov-terms" className="text-sm font-medium cursor-pointer select-none">
               I agree to the terms and conditions
             </label>
           </div>
-          <div className="flex items-center gap-2">
-            <Checkbox id="overview-marketing" />
+          <div className="flex items-center gap-3">
+            <Checkbox id="ov-marketing" />
             <label
-              htmlFor="overview-marketing"
+              htmlFor="ov-marketing"
               className="text-sm font-medium cursor-pointer select-none"
             >
               Receive marketing emails
             </label>
           </div>
-          <FieldContent size="base" error="You must accept the terms to continue.">
-            <div className="flex items-center gap-2">
-              <Checkbox id="overview-error" aria-invalid />
-              <FieldLabel htmlFor="overview-error" className="cursor-pointer select-none">
+          <FieldContent error="You must accept the terms to continue.">
+            <div className="flex items-center gap-3">
+              <Checkbox id="ov-error" aria-invalid />
+              <FieldLabel htmlFor="ov-error" className="cursor-pointer select-none">
                 Accept privacy policy
               </FieldLabel>
             </div>
             <FieldError />
           </FieldContent>
         </Preview>
+        <Code>{`import { Checkbox } from '@/components/base/Checkbox/Checkbox'
+
+<div className="flex items-center gap-3">
+  <Checkbox id="terms" onCheckedChange={setTerms} />
+  <label htmlFor="terms" className="text-sm font-medium cursor-pointer select-none">
+    I agree to the terms and conditions
+  </label>
+</div>`}</Code>
       </Section>
 
       {/* Anatomy */}
@@ -114,20 +161,17 @@ export const Docs = {
         title="Anatomy"
         description="Checkbox is a single self-contained element. Pair it with FieldContent for accessible labeling and error state."
       >
-        {/* Box diagram */}
         <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
           <div className="relative p-4 border-2 border-dashed border-violet-400 rounded-xl inline-block">
             <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
               FieldContent <span className="text-slate-400 font-normal">(optional)</span>
             </span>
-
-            <div className="relative px-3 py-1.5 border border-dashed border-green-300 rounded mb-2">
-              <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
+            <div className="relative px-3 py-1.5 border border-dashed border-slate-300 rounded mb-2">
+              <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-slate-400">
                 FieldLabel
               </span>
               <span className="text-[10px] text-slate-400 font-mono">Accept terms</span>
             </div>
-
             <div className="flex flex-col gap-0.5 p-2 border-2 border-dashed border-blue-300 rounded inline-block">
               <span className="text-[10px] font-mono text-blue-500">Checkbox</span>
               <div className="size-4 rounded-sm border-2 border-violet-600 bg-violet-600 flex items-center justify-center mt-0.5">
@@ -142,7 +186,6 @@ export const Docs = {
                 </svg>
               </div>
             </div>
-
             <div className="relative px-3 py-1.5 border border-dashed border-green-300 rounded mt-2">
               <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
                 FieldError
@@ -171,18 +214,22 @@ export const Docs = {
                 [
                   'FieldContent',
                   '<div>',
-                  'Optional wrapper. Provides accessible ID, error state, disabled, and size via context.',
+                  'Optional wrapper. Provides accessible ID, error state, and disabled state via context.',
                 ],
-                ['FieldLabel', '<label>', 'Optional label linked to the Checkbox via context ID.'],
+                [
+                  'FieldLabel',
+                  '<label>',
+                  'Optional accessible label linked to the Checkbox via htmlFor.',
+                ],
                 [
                   'Checkbox',
-                  '<button>',
-                  'Core toggle element. Reads disabled from FieldContent context.',
+                  '<button role="checkbox">',
+                  'Core toggle element. Reads disabled from FieldContent context. Contains a hidden <input type="checkbox"> for form submission.',
                 ],
                 [
                   'FieldError',
-                  '<p>',
-                  'Optional error message. Only renders when FieldContent has an error prop.',
+                  '<p role="alert">',
+                  'Optional error message. Only renders when FieldContent has an error prop set.',
                 ],
               ].map(([part, el, desc]) => (
                 <tr key={part} className="even:bg-gray-50">
@@ -198,187 +245,193 @@ export const Docs = {
             </tbody>
           </table>
         </div>
-
-        <Code>{`import { Checkbox } from '@/components/base/Checkbox/Checkbox'
-
-<Checkbox
-  id="my-checkbox"
-  checked={checked}
-  onCheckedChange={setChecked}
-/>`}</Code>
       </Section>
 
-      {/* States */}
-      <Section
-        title="States"
-        description="Checkbox supports three visual states: unchecked, checked, and indeterminate."
-      >
-        <div className="flex items-center gap-8 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3">
-          {[
-            { id: 'state-unchecked', label: 'unchecked', props: {} },
-            { id: 'state-checked', label: 'checked', props: { defaultChecked: true } },
-            {
-              id: 'state-indeterminate',
-              label: 'indeterminate',
-              props: { checked: 'indeterminate' },
-            },
-            { id: 'state-disabled', label: 'disabled', props: { disabled: true } },
-            {
-              id: 'state-disabled-checked',
-              label: 'disabled checked',
-              props: { disabled: true, defaultChecked: true },
-            },
-          ].map(({ id, label, props }) => (
-            <div key={id} className="flex flex-col items-center gap-2">
-              <Checkbox id={id} {...props} />
-              <span className="text-xs text-gray-400 font-mono">{label}</span>
-            </div>
-          ))}
-        </div>
-        <Code>{`{/* Unchecked (default) */}
-<Checkbox />
-
-{/* Checked */}
-<Checkbox defaultChecked />
-
-{/* Indeterminate */}
-<Checkbox checked="indeterminate" />
-
-{/* Disabled */}
-<Checkbox disabled />
-
-{/* Disabled + checked */}
+      {/* Usage */}
+      <Section title="Usage">
+        <SubSection title="States">
+          <p className="text-xs text-gray-500 mb-3">
+            Three visual states:{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">unchecked</code>,{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">checked</code>, and{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">indeterminate</code>. All support
+            disabled variants.
+          </p>
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4 flex items-center gap-8 flex-wrap">
+            {[
+              { id: 'st-uncheck', label: 'unchecked', props: {} },
+              { id: 'st-check', label: 'checked', props: { defaultChecked: true } },
+              { id: 'st-indet', label: 'indeterminate', props: { checked: 'indeterminate' } },
+              { id: 'st-dis', label: 'disabled', props: { disabled: true } },
+              {
+                id: 'st-dis-ch',
+                label: 'disabled checked',
+                props: { disabled: true, defaultChecked: true },
+              },
+            ].map(({ id, label, props }) => (
+              <div key={id} className="flex flex-col items-center gap-2">
+                <Checkbox id={id} {...props} />
+                <span className="text-[10px] text-gray-400 font-mono">{label}</span>
+              </div>
+            ))}
+          </div>
+          <Code>{`<Checkbox />                              {/* unchecked */}
+<Checkbox defaultChecked />              {/* checked */}
+<Checkbox checked="indeterminate" />     {/* indeterminate */}
+<Checkbox disabled />                    {/* disabled */}
 <Checkbox disabled defaultChecked />`}</Code>
-      </Section>
+        </SubSection>
 
-      {/* With Label */}
-      <Section
-        title="With Label"
-        description="Always pair a Checkbox with a label. Use id on the Checkbox and htmlFor on the label to make it clickable."
-      >
-        <Preview>
-          <div className="flex items-center gap-2">
-            <Checkbox id="label-terms" />
-            <label htmlFor="label-terms" className="text-sm font-medium cursor-pointer select-none">
-              I agree to the terms and conditions
-            </label>
-          </div>
-          <div className="flex items-center gap-2">
-            <Checkbox id="label-marketing" defaultChecked />
-            <label
-              htmlFor="label-marketing"
-              className="text-sm font-medium cursor-pointer select-none"
-            >
-              Receive marketing emails
-            </label>
-          </div>
-          <div className="flex items-center gap-2 opacity-50">
-            <Checkbox id="label-disabled" disabled />
-            <label
-              htmlFor="label-disabled"
-              className="text-sm font-medium cursor-not-allowed select-none"
-            >
-              This option is unavailable
-            </label>
-          </div>
-        </Preview>
-        <Code>{`<div className="flex items-center gap-2">
+        <SubSection title="With Label">
+          <p className="text-xs text-gray-500 mb-3">
+            Always pair with a visible label. Link via{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">id</code> on Checkbox and{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">htmlFor</code> on the label so
+            clicking the label toggles the checkbox.
+          </p>
+          <Preview>
+            <div className="flex items-center gap-3">
+              <Checkbox id="lbl-terms" />
+              <label htmlFor="lbl-terms" className="text-sm font-medium cursor-pointer select-none">
+                I agree to the terms and conditions
+              </label>
+            </div>
+            <div className="flex items-center gap-3">
+              <Checkbox id="lbl-marketing" defaultChecked />
+              <label
+                htmlFor="lbl-marketing"
+                className="text-sm font-medium cursor-pointer select-none"
+              >
+                Receive marketing emails
+              </label>
+            </div>
+            <div className="flex items-center gap-3 opacity-50">
+              <Checkbox id="lbl-disabled" disabled />
+              <label
+                htmlFor="lbl-disabled"
+                className="text-sm font-medium cursor-not-allowed select-none"
+              >
+                This option is unavailable
+              </label>
+            </div>
+          </Preview>
+          <Code>{`<div className="flex items-center gap-3">
   <Checkbox id="terms" />
   <label htmlFor="terms" className="text-sm font-medium cursor-pointer select-none">
     I agree to the terms and conditions
   </label>
-</div>`}</Code>
-      </Section>
+</div>
 
-      {/* Group */}
-      <Section
-        title="Group"
-        description="Render multiple checkboxes as a list. Each checkbox manages its own state independently."
-      >
-        <Preview>
-          <fieldset className="flex flex-col gap-2.5">
-            <legend className="text-sm font-medium mb-2">Notification preferences</legend>
-            {['Email', 'Push notification', 'SMS', 'In-app'].map((label) => (
-              <div key={label} className="flex items-center gap-2">
-                <Checkbox
-                  id={`group-${label}`}
-                  defaultChecked={label === 'Email' || label === 'Push notification'}
-                />
-                <label
-                  htmlFor={`group-${label}`}
-                  className="text-sm font-medium cursor-pointer select-none"
-                >
-                  {label}
-                </label>
-              </div>
-            ))}
-          </fieldset>
-        </Preview>
-        <Code>{`<fieldset className="flex flex-col gap-2.5">
+{/* Disabled row — opacity on wrapper, cursor-not-allowed on label */}
+<div className="flex items-center gap-3 opacity-50">
+  <Checkbox id="option" disabled />
+  <label htmlFor="option" className="text-sm font-medium cursor-not-allowed select-none">
+    This option is unavailable
+  </label>
+</div>`}</Code>
+        </SubSection>
+
+        <SubSection title="Group">
+          <p className="text-xs text-gray-500 mb-3">
+            Wrap multiple checkboxes in a{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">fieldset</code> with a{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">legend</code> for semantic
+            grouping. Each checkbox manages its own state independently.
+          </p>
+          <Preview>
+            <fieldset className="flex flex-col gap-2.5">
+              <legend className="text-sm font-medium mb-2">Notification preferences</legend>
+              {['Email', 'Push notification', 'SMS', 'In-app'].map((label, i) => (
+                <div key={label} className="flex items-center gap-3">
+                  <Checkbox id={`grp-${label}`} defaultChecked={i < 2} />
+                  <label
+                    htmlFor={`grp-${label}`}
+                    className="text-sm font-medium cursor-pointer select-none"
+                  >
+                    {label}
+                  </label>
+                </div>
+              ))}
+            </fieldset>
+          </Preview>
+          <Code>{`<fieldset className="flex flex-col gap-2.5">
   <legend className="text-sm font-medium mb-3">Notification preferences</legend>
-  <div className="flex items-center gap-2">
+  <div className="flex items-center gap-3">
     <Checkbox id="email" defaultChecked />
-    <label htmlFor="email" className="text-sm font-medium cursor-pointer select-none">Email</label>
+    <label htmlFor="email" className="text-sm font-medium cursor-pointer select-none">
+      Email
+    </label>
   </div>
-  <div className="flex items-center gap-2">
+  <div className="flex items-center gap-3">
     <Checkbox id="sms" />
-    <label htmlFor="sms" className="text-sm font-medium cursor-pointer select-none">SMS</label>
+    <label htmlFor="sms" className="text-sm font-medium cursor-pointer select-none">
+      SMS
+    </label>
   </div>
 </fieldset>`}</Code>
-      </Section>
+        </SubSection>
 
-      {/* Error State */}
-      <Section
-        title="Error State"
-        description="Wrap in FieldContent with an error prop to show validation feedback via FieldError."
-      >
-        <Preview>
-          <FieldContent size="base" error="You must accept the terms to continue.">
-            <div className="flex items-center gap-2">
-              <Checkbox id="error-terms" aria-invalid />
-              <FieldLabel htmlFor="error-terms" className="cursor-pointer select-none font-medium">
-                I agree to the terms and conditions
-              </FieldLabel>
-            </div>
-            <FieldError />
-          </FieldContent>
-        </Preview>
-        <Code>{`<FieldContent size="base" error={errors.terms?.message}>
-  <div className="flex items-center gap-2">
+        <SubSection title="Error State">
+          <p className="text-xs text-gray-500 mb-3">
+            Wrap in <code className="font-mono bg-gray-100 px-1 rounded">FieldContent</code> with an{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">error</code> prop. Add{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">aria-invalid</code> on the Checkbox
+            so screen readers announce the invalid state.
+          </p>
+          <Preview>
+            <FieldContent error="You must accept the terms to continue.">
+              <div className="flex items-center gap-3">
+                <Checkbox id="err-ov-terms" aria-invalid />
+                <FieldLabel
+                  htmlFor="err-ov-terms"
+                  className="cursor-pointer select-none font-medium"
+                >
+                  I agree to the terms and conditions
+                </FieldLabel>
+              </div>
+              <FieldError />
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent error={errors.terms?.message}>
+  <div className="flex items-center gap-3">
     <Checkbox
       id="terms"
       aria-invalid={!!errors.terms}
-      onCheckedChange={(v) => setValue('terms', v)}
+      checked={field.value}
+      onCheckedChange={field.onChange}
     />
-    <FieldLabel htmlFor="terms" className="cursor-pointer">
+    <FieldLabel htmlFor="terms" className="cursor-pointer select-none font-medium">
       I agree to the terms and conditions
     </FieldLabel>
   </div>
   <FieldError />
 </FieldContent>`}</Code>
-      </Section>
+        </SubSection>
 
-      {/* react-hook-form */}
-      <Section
-        title="With react-hook-form"
-        description="Use Controller to integrate Checkbox — onCheckedChange returns a boolean, not a native event, so register() alone does not work."
-      >
-        <Code>{`import { Controller } from 'react-hook-form'
+        <SubSection title="With react-hook-form">
+          <p className="text-xs text-gray-500 mb-3">
+            Use <code className="font-mono bg-gray-100 px-1 rounded">Controller</code> —{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">onCheckedChange</code> returns a
+            boolean, not a native event, so{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">register()</code> cannot capture it
+            directly.
+          </p>
+          <Code>{`import { Controller } from 'react-hook-form'
 
 <Controller
   name="terms"
   control={control}
   rules={{ required: 'You must accept the terms.' }}
-  render={({ field }) => (
-    <FieldContent size="base" error={errors.terms?.message}>
-      <div className="flex items-center gap-2">
+  render={({ field, fieldState }) => (
+    <FieldContent error={fieldState.error?.message}>
+      <div className="flex items-center gap-3">
         <Checkbox
           id="terms"
           checked={field.value}
           onCheckedChange={field.onChange}
-          aria-invalid={!!errors.terms}
+          aria-invalid={!!fieldState.error}
         />
-        <FieldLabel htmlFor="terms" className="cursor-pointer">
+        <FieldLabel htmlFor="terms" className="cursor-pointer select-none font-medium">
           I agree to the terms and conditions
         </FieldLabel>
       </div>
@@ -386,191 +439,155 @@ export const Docs = {
     </FieldContent>
   )}
 />`}</Code>
+        </SubSection>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Checkbox when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use Checkbox for boolean opt-in fields submitted with a form',
+                  body: 'Terms acceptance, newsletter subscription, and feature flags that take effect on submit are correct Checkbox use cases.',
+                },
+                {
+                  title: 'Use the indeterminate state for "select all" parent controls',
+                  body: 'When a parent checkbox controls a list where only some children are checked, use checked="indeterminate" to communicate partial selection clearly.',
+                },
+                {
+                  title: 'Use fieldset + legend for any group of related checkboxes',
+                  body: "Screen readers announce the legend before each checkbox — users know which group they're in without needing it repeated in every label.",
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't use Checkbox for mutually exclusive choices — use RadioGroup",
+                  body: 'If selecting one option should deselect others, RadioGroup is the correct component. Checkboxes imply independent, additive selection.',
+                },
+                {
+                  title:
+                    "Don't use Checkbox for settings that take effect immediately — use Switch",
+                  body: 'Dark mode, notifications on/off, and similar instant-effect toggles should use Switch. Checkbox implies the value is buffered until form submission.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Always link a visible label via id and htmlFor',
+                  body: 'A Checkbox with no label is inaccessible to screen reader users. Every checkbox must have a visible, clickable label associated via htmlFor.',
+                },
+                {
+                  title: 'Add aria-invalid on the Checkbox when there is a validation error',
+                  body: 'FieldContent provides the error message via FieldError, but Checkbox needs aria-invalid explicitly so screen readers announce the field as invalid.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: "Don't use register() from react-hook-form directly on Checkbox",
+                  body: 'onCheckedChange returns a boolean, not a native event. Always use Controller to bridge the value correctly to react-hook-form.',
+                },
+                {
+                  title:
+                    'Apply opacity-50 to the wrapper row, not just the Checkbox, when disabled',
+                  body: 'Both the checkbox and label must visually dim. Applying opacity only to the Checkbox leaves the label looking active and confuses users.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The user must confirm agreement — e.g. "I accept the terms and conditions"
-                    </li>
-                    <li>
-                      Multiple independent options can each be selected or deselected (multi-select
-                      list)
-                    </li>
-                    <li>
-                      The boolean value is submitted as part of a form and takes effect only on
-                      submit
-                    </li>
-                    <li>
-                      A partial group selection needs to be represented with an indeterminate state
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Switch</strong> when toggling a setting that takes effect
-                      immediately — no form submit required (e.g. dark mode, notifications on/off)
-                    </li>
-                    <li>
-                      Use <strong>RadioGroup</strong> when only one option from a list can be active
-                      at a time (mutually exclusive choices)
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              </div>
+            </div>
+          ))}
         </div>
       </Section>
 
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always pair every Checkbox with a visible, clickable label linked via{' '}
-                  <code className="font-mono">id</code> and{' '}
-                  <code className="font-mono">htmlFor</code>. A lone checkbox with no label is
-                  inaccessible to screen readers.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Wrap in <code className="font-mono">FieldContent</code> and add{' '}
-                  <code className="font-mono">FieldError</code> when the field is required — this
-                  surfaces validation errors in an accessible way tied to the same ID context.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use the <code className="font-mono">indeterminate</code> state for a "select all"
-                  parent checkbox when only some children are checked — it clearly communicates
-                  partial selection to the user.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use Checkbox for mutually exclusive choices. If only one option should be
-                  selected at a time, use <strong>RadioGroup</strong> instead — checkboxes imply
-                  independent, additive selection.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use Checkbox for settings that take effect the moment the user toggles them
-                  (e.g. enabling dark mode). Use <strong>Switch</strong> for immediate-effect
-                  toggles that don't require form submission.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use <code className="font-mono">register()</code> from react-hook-form
-                  directly on Checkbox — <code className="font-mono">onCheckedChange</code> returns
-                  a boolean, not a native event. Always use{' '}
-                  <code className="font-mono">Controller</code> to bridge the value correctly.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* Props */}
-      <Section title="Props">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'checked',
-                  `boolean | 'indeterminate'`,
-                  '—',
-                  'Controlled checked state. Use indeterminate for partial selection.',
-                ],
-                ['defaultChecked', 'boolean', 'false', 'Initial checked state when uncontrolled.'],
-                [
-                  'onCheckedChange',
-                  '(checked: boolean | "indeterminate") => void',
-                  '—',
-                  'Callback fired when state changes.',
-                ],
-                ['disabled', 'boolean', 'false', 'Prevents interaction and applies opacity.'],
-                [
-                  'required',
-                  'boolean',
-                  'false',
-                  'Marks the checkbox as required for form submission.',
-                ],
-                ['name', 'string', '—', 'Name submitted with the form.'],
-                ['value', 'string', 'on', 'Value submitted with the form when checked.'],
-                ['aria-invalid', 'boolean', '—', 'Applies error styling when true.'],
-                ['className', 'string', '—', 'Additional Tailwind classes.'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* API Reference */}
+      <Section title="API Reference">
+        <SubSection title="Checkbox">
+          <ApiTable
+            rows={[
+              [
+                'checked',
+                `boolean | 'indeterminate'`,
+                '—',
+                'Controlled checked state. Use "indeterminate" for partial group selection.',
+              ],
+              [
+                'defaultChecked',
+                'boolean',
+                'false',
+                'Initial checked state for uncontrolled usage.',
+              ],
+              [
+                'onCheckedChange',
+                '(checked: boolean) => void',
+                '—',
+                'Called when the state changes. Receives boolean (or true from indeterminate toggle).',
+              ],
+              [
+                'disabled',
+                'boolean',
+                'false',
+                'Prevents interaction. Also auto-applied from FieldContent context.',
+              ],
+              [
+                'required',
+                'boolean',
+                'false',
+                'Marks the hidden input as required for native form validation.',
+              ],
+              ['name', 'string', '—', 'Name of the hidden input submitted with the form.'],
+              ['value', 'string', '"on"', 'Value of the hidden input submitted when checked.'],
+              [
+                'aria-invalid',
+                'boolean',
+                '—',
+                'Applies red error border. Set to true when there is a validation error.',
+              ],
+              [
+                'id',
+                'string',
+                'auto',
+                'ID for the button element. Auto-generated from useId() if omitted.',
+              ],
+              [
+                'className',
+                'string',
+                '—',
+                'Additional Tailwind classes applied to the button element.',
+              ],
+            ]}
+          />
+        </SubSection>
       </Section>
     </div>
   ),

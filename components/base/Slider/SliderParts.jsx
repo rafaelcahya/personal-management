@@ -1,52 +1,29 @@
 'use client'
 
-import { clsx } from 'clsx'
+import { cn } from '@/lib/utils'
 import { useSliderContext } from './Slider'
-
-const labelSizeMap = {
-  xs: 'text-[10px]',
-  sm: 'text-xs',
-  base: 'text-xs',
-  md: 'text-sm',
-  lg: 'text-sm',
-  xl: 'text-sm',
-}
 
 // ─── SliderStartLabel ─────────────────────────────────────────────────────────
 
-export const SliderStartLabel = ({ children, className }) => {
-  const { size } = useSliderContext()
-  return (
-    <span className={clsx('shrink-0 text-muted-foreground', labelSizeMap[size], className)}>
-      {children}
-    </span>
-  )
-}
+export const SliderStartLabel = ({ children, className }) => (
+  <span className={cn('shrink-0 text-muted-foreground text-xs', className)}>{children}</span>
+)
 SliderStartLabel.displayName = 'SliderStartLabel'
 
 // ─── SliderEndLabel ───────────────────────────────────────────────────────────
 
-export const SliderEndLabel = ({ children, className }) => {
-  const { size } = useSliderContext()
-  return (
-    <span className={clsx('shrink-0 text-muted-foreground', labelSizeMap[size], className)}>
-      {children}
-    </span>
-  )
-}
+export const SliderEndLabel = ({ children, className }) => (
+  <span className={cn('shrink-0 text-muted-foreground text-xs', className)}>{children}</span>
+)
 SliderEndLabel.displayName = 'SliderEndLabel'
 
 // ─── SliderMark ───────────────────────────────────────────────────────────────
 
 export const SliderMark = ({ value, children, className }) => {
-  const { size, min, max } = useSliderContext()
+  const { min, max } = useSliderContext()
   return (
     <span
-      className={clsx(
-        'absolute -translate-x-1/2 text-muted-foreground',
-        labelSizeMap[size],
-        className
-      )}
+      className={cn('absolute -translate-x-1/2 text-muted-foreground text-xs', className)}
       style={{ left: `${((value - min) / (max - min)) * 100}%` }}
     >
       {children}

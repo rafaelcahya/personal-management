@@ -75,7 +75,6 @@ export default function DeleteEvent({ event, onDeleted, onClose, redirectTo, ope
       <ModalTrigger asChild>
         <Button
           variant="ghost"
-          size="base"
           className="justify-start text-red-600 hover:text-red-600 hover:bg-red-50 font-medium"
         >
           <Trash2 className="h-4 w-4 mr-2" />

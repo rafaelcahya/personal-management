@@ -1,5 +1,6 @@
 'use client'
 
+import { FieldContent, FieldLabel, FieldError } from '@/components/base/Field/Field'
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
@@ -24,9 +25,6 @@ import {
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
 import {
   saveOnboardingBiometric,
   completeOnboarding,

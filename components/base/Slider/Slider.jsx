@@ -1,17 +1,22 @@
 'use client'
 
-import { createContext, useContext, useState, Children, isValidElement } from 'react'
-import * as SliderPrimitive from '@radix-ui/react-slider'
+import {
+  createContext,
+  useContext,
+  useState,
+  useRef,
+  useCallback,
+  Children,
+  isValidElement,
+} from 'react'
 import { cva } from 'class-variance-authority'
-import { clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { cn } from '@/lib/utils'
 import { useFieldContentContext } from '../Field/FieldContent'
 
 // ─── Contexts ─────────────────────────────────────────────────────────────────
 
 export const SliderContext = createContext({
   values: [0],
-  size: 'base',
   variant: 'default',
   min: 0,
   max: 100,
@@ -21,35 +26,17 @@ export const SliderThumbContext = createContext({ value: 0, index: 0 })
 export const useSliderContext = () => useContext(SliderContext)
 export const useSliderThumbContext = () => useContext(SliderThumbContext)
 
-// ─── CVA ─────────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const trackRootVariants = cva('relative flex w-full touch-none select-none items-center', {
-  variants: {
-    size: {
-      xs: 'py-2',
-      sm: 'py-2.5',
-      base: 'py-3',
-      md: 'py-3.5',
-      lg: 'py-4',
-      xl: 'py-5',
-    },
-  },
-  defaultVariants: { size: 'base' },
-})
+const snapToStep = (val, min, step) => Math.round((val - min) / step) * step + min
+const clampVal = (val, min, max) => Math.max(min, Math.min(max, val))
+const toPct = (val, min, max) => ((val - min) / (max - min)) * 100
 
-const trackBarVariants = cva('relative w-full grow overflow-hidden rounded-full bg-input', {
-  variants: {
-    size: {
-      xs: 'h-[2px]',
-      sm: 'h-[3px]',
-      base: 'h-1',
-      md: 'h-1.5',
-      lg: 'h-2',
-      xl: 'h-2.5',
-    },
-  },
-  defaultVariants: { size: 'base' },
-})
+// ─── CVA ──────────────────────────────────────────────────────────────────────
+
+const trackRootClass = 'relative flex w-full touch-none select-none items-center py-3'
+
+const trackBarClass = 'relative w-full grow overflow-hidden rounded-full bg-input h-1'
 
 const rangeVariants = cva('absolute h-full', {
   variants: {
@@ -64,22 +51,12 @@ const rangeVariants = cva('absolute h-full', {
 
 const thumbVariants = cva(
   [
-    'relative block',
-    'bg-white rounded-full border border-slate-200 shadow-sm',
-    'transition-[box-shadow,border-color] duration-150',
-    'outline-none',
-    'disabled:pointer-events-none disabled:opacity-50',
+    'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 size-4',
+    'block bg-white rounded-full border border-slate-200 shadow-sm',
+    'transition-[box-shadow,border-color] duration-150 outline-none',
   ],
   {
     variants: {
-      size: {
-        xs: 'size-3',
-        sm: 'size-3.5',
-        base: 'size-4',
-        md: 'size-[18px]',
-        lg: 'size-5',
-        xl: 'size-6',
-      },
       variant: {
         default:
           'border-slate-200 focus-visible:border-violet-500 focus-visible:ring-2 focus-visible:ring-violet-200',
@@ -87,7 +64,7 @@ const thumbVariants = cva(
         disabled: 'border-slate-100 shadow-none cursor-not-allowed opacity-60',
       },
     },
-    defaultVariants: { size: 'base', variant: 'default' },
+    defaultVariants: { variant: 'default' },
   }
 )
 
@@ -102,19 +79,13 @@ const thumbConnectClasses = (thumbConnect, variant) => {
   return ''
 }
 
-const labelSizeMap = {
-  xs: 'text-[10px]',
-  sm: 'text-xs',
-  base: 'text-xs',
-  md: 'text-sm',
-  lg: 'text-sm',
-  xl: 'text-sm',
-}
-
-// ─── Inline tooltip (used when showTooltip prop is set) ───────────────────────
+// ─── Inline tooltip ───────────────────────────────────────────────────────────
 
 const InlineTooltip = ({ content }) => (
-  <div className="absolute bottom-full left-1/2 mb-2.5 -translate-x-1/2" role="tooltip">
+  <div
+    className="absolute bottom-full left-1/2 mb-2.5 -translate-x-1/2 pointer-events-none"
+    role="tooltip"
+  >
     <div className="rounded-xl bg-white border border-slate-200 shadow-sm px-2.5 py-1 text-xs font-medium text-slate-700 whitespace-nowrap">
       {content}
     </div>
@@ -126,7 +97,6 @@ const InlineTooltip = ({ content }) => (
 
 const Slider = ({
   variant: variantProp,
-  size: sizeProp,
   className,
   thumbConnect = 'both',
   showTooltip = false,
@@ -139,30 +109,96 @@ const Slider = ({
   onValueChange,
   min = 0,
   max = 100,
+  step = 1,
+  disabled: disabledProp,
   children,
   ...props
 }) => {
-  const {
-    id,
-    descriptionId,
-    errorId,
-    hasError,
-    disabled: ctxDisabled,
-    size: ctxSize,
-  } = useFieldContentContext()
+  const { id, descriptionId, errorId, hasError, disabled: ctxDisabled } = useFieldContentContext()
 
-  const resolvedSize = sizeProp ?? ctxSize ?? 'base'
-  const isDisabled = ctxDisabled || props.disabled
+  const isDisabled = ctxDisabled || disabledProp
   const resolvedVariant = variantProp ?? (hasError ? 'error' : isDisabled ? 'disabled' : 'default')
   const isControlled = value !== undefined
 
-  // Track current values to feed into context (for tooltip sub-component)
-  const [trackedValues, setTrackedValues] = useState(isControlled ? value : defaultValue)
+  const [internalValues, setInternalValues] = useState(defaultValue)
+  const currentValues = isControlled ? value : internalValues
+  const valuesRef = useRef(currentValues)
+  valuesRef.current = currentValues
 
-  const handleValueChange = (newValues) => {
-    setTrackedValues(newValues)
-    onValueChange?.(newValues)
-  }
+  const rootRef = useRef(null)
+
+  const updateValues = useCallback(
+    (newVals) => {
+      if (!isControlled) setInternalValues(newVals)
+      onValueChange?.(newVals)
+    },
+    [isControlled, onValueChange]
+  )
+
+  const getValueFromClientX = useCallback(
+    (clientX) => {
+      const rect = rootRef.current?.getBoundingClientRect()
+      if (!rect) return min
+      const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width))
+      const raw = min + pct * (max - min)
+      return clampVal(snapToStep(raw, min, step), min, max)
+    },
+    [min, max, step]
+  )
+
+  const startDrag = useCallback(
+    (idx, e) => {
+      if (isDisabled) return
+      e.preventDefault()
+      document.body.style.cursor = 'grabbing'
+
+      const onMove = (moveEvent) => {
+        const clientX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX
+        const newVal = getValueFromClientX(clientX)
+        const newVals = [...valuesRef.current]
+        newVals[idx] = newVal
+        if (idx > 0) newVals[idx] = Math.max(newVals[idx], newVals[idx - 1])
+        if (idx < newVals.length - 1) newVals[idx] = Math.min(newVals[idx], newVals[idx + 1])
+        updateValues(newVals)
+      }
+
+      const onUp = () => {
+        document.body.style.cursor = ''
+        document.removeEventListener('mousemove', onMove)
+        document.removeEventListener('mouseup', onUp)
+        document.removeEventListener('touchmove', onMove)
+        document.removeEventListener('touchend', onUp)
+      }
+
+      document.addEventListener('mousemove', onMove)
+      document.addEventListener('mouseup', onUp)
+      document.addEventListener('touchmove', onMove, { passive: false })
+      document.addEventListener('touchend', onUp)
+    },
+    [isDisabled, getValueFromClientX, updateValues]
+  )
+
+  const handleKeyDown = useCallback(
+    (idx, e) => {
+      if (isDisabled) return
+      const cur = valuesRef.current[idx]
+      let next = cur
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') next = cur - step
+      else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') next = cur + step
+      else if (e.key === 'PageDown') next = cur - step * 10
+      else if (e.key === 'PageUp') next = cur + step * 10
+      else if (e.key === 'Home') next = min
+      else if (e.key === 'End') next = max
+      else return
+      e.preventDefault()
+      const newVals = [...valuesRef.current]
+      newVals[idx] = clampVal(snapToStep(next, min, step), min, max)
+      if (idx > 0) newVals[idx] = Math.max(newVals[idx], newVals[idx - 1])
+      if (idx < newVals.length - 1) newVals[idx] = Math.min(newVals[idx], newVals[idx + 1])
+      updateValues(newVals)
+    },
+    [isDisabled, step, min, max, updateValues]
+  )
 
   // Scan children for sub-components
   let tooltipChild = null
@@ -179,77 +215,81 @@ const Slider = ({
     else if (name === 'SliderMark') markChildren.push(child)
   })
 
-  const currentValues = isControlled ? value : trackedValues
+  const rangeStyle =
+    currentValues.length === 1
+      ? { left: '0%', width: `${toPct(currentValues[0], min, max)}%` }
+      : {
+          left: `${toPct(currentValues[0], min, max)}%`,
+          width: `${toPct(currentValues[currentValues.length - 1], min, max) - toPct(currentValues[0], min, max)}%`,
+        }
 
   return (
-    <SliderContext.Provider
-      value={{ values: currentValues, size: resolvedSize, variant: resolvedVariant, min, max }}
-    >
-      <div className={twMerge(clsx('flex flex-col gap-1', className))}>
+    <SliderContext.Provider value={{ values: currentValues, variant: resolvedVariant, min, max }}>
+      <div className={cn('flex flex-col gap-1', className)}>
         <div className="flex items-center gap-2">
-          {/* Start label */}
           {(startLabelChild || startLabel != null) && (
-            <span className={clsx('shrink-0 text-muted-foreground', labelSizeMap[resolvedSize])}>
+            <span className="shrink-0 text-muted-foreground text-xs">
               {startLabelChild ?? startLabel}
             </span>
           )}
 
-          <SliderPrimitive.Root
+          <div
+            ref={rootRef}
             id={id}
-            className={trackRootVariants({ size: resolvedSize })}
-            value={isControlled ? value : undefined}
-            defaultValue={!isControlled ? defaultValue : undefined}
-            min={min}
-            max={max}
-            disabled={isDisabled}
-            onValueChange={handleValueChange}
+            className={trackRootClass}
             aria-describedby={[descriptionId, errorId].filter(Boolean).join(' ') || undefined}
             aria-invalid={hasError || undefined}
             {...props}
           >
-            <SliderPrimitive.Track className={trackBarVariants({ size: resolvedSize })}>
-              <SliderPrimitive.Range className={rangeVariants({ variant: resolvedVariant })} />
-            </SliderPrimitive.Track>
+            <div className={trackBarClass}>
+              <div className={rangeVariants({ variant: resolvedVariant })} style={rangeStyle} />
+            </div>
 
             {currentValues.map((thumbVal, idx) => (
               <SliderThumbContext.Provider key={idx} value={{ value: thumbVal, index: idx }}>
-                <SliderPrimitive.Thumb
-                  className={twMerge(
-                    thumbVariants({ size: resolvedSize, variant: resolvedVariant }),
-                    thumbConnectClasses(thumbConnect, resolvedVariant)
+                <div
+                  role="slider"
+                  aria-valuemin={min}
+                  aria-valuemax={max}
+                  aria-valuenow={thumbVal}
+                  aria-orientation="horizontal"
+                  aria-disabled={isDisabled || undefined}
+                  tabIndex={isDisabled ? -1 : 0}
+                  className={cn(
+                    thumbVariants({ variant: resolvedVariant }),
+                    thumbConnectClasses(thumbConnect, resolvedVariant),
+                    !isDisabled && 'cursor-grab'
                   )}
+                  style={{ left: `${toPct(thumbVal, min, max)}%` }}
+                  onMouseDown={!isDisabled ? (e) => startDrag(idx, e) : undefined}
+                  onTouchStart={!isDisabled ? (e) => startDrag(idx, e) : undefined}
+                  onKeyDown={(e) => handleKeyDown(idx, e)}
                 >
-                  {/* Sub-component tooltip takes priority over props */}
                   {tooltipChild ??
                     (showTooltip && (
                       <InlineTooltip
                         content={tooltipFormat ? tooltipFormat(thumbVal) : String(thumbVal)}
                       />
                     ))}
-                </SliderPrimitive.Thumb>
+                </div>
               </SliderThumbContext.Provider>
             ))}
-          </SliderPrimitive.Root>
+          </div>
 
-          {/* End label */}
           {(endLabelChild || endLabel != null) && (
-            <span className={clsx('shrink-0 text-muted-foreground', labelSizeMap[resolvedSize])}>
+            <span className="shrink-0 text-muted-foreground text-xs">
               {endLabelChild ?? endLabel}
             </span>
           )}
         </div>
 
-        {/* Marks row */}
         {(markChildren.length > 0 || marks?.length > 0) && (
           <div className="relative w-full" style={{ paddingLeft: '8px', paddingRight: '8px' }}>
             {marks?.map((mark) => (
               <span
                 key={mark.value}
-                className={clsx(
-                  'absolute -translate-x-1/2 text-muted-foreground',
-                  labelSizeMap[resolvedSize]
-                )}
-                style={{ left: `${((mark.value - min) / (max - min)) * 100}%` }}
+                className="absolute -translate-x-1/2 text-muted-foreground text-xs"
+                style={{ left: `${toPct(mark.value, min, max)}%` }}
               >
                 {mark.label}
               </span>

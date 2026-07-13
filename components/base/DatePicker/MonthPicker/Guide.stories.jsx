@@ -51,6 +51,75 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ headers, rows }) => (
+  <div className="overflow-x-auto mb-4">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr key={i} className="even:bg-gray-50">
+            {row.map((cell, j) => (
+              <td
+                key={j}
+                className={`px-3 py-2 border border-gray-200 text-xs ${
+                  j === 0
+                    ? 'font-mono text-violet-700 whitespace-nowrap'
+                    : j === 1
+                      ? 'font-mono text-gray-500 max-w-xs'
+                      : j === 2
+                        ? 'font-mono text-gray-400 whitespace-nowrap'
+                        : 'text-gray-700'
+                }`}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 // ─── Stateful demo helpers ────────────────────────────────────────────────────
 
 function MonthDemo(props) {
@@ -61,7 +130,7 @@ function MonthDemo(props) {
 function MonthFieldDemo({ error, description, label = 'Birth month', required = false, ...props }) {
   const [month, setMonth] = useState(null)
   return (
-    <FieldContent size="base" error={error}>
+    <FieldContent error={error}>
       <FieldLabel required={required}>{label}</FieldLabel>
       <MonthPicker value={month} onChange={setMonth} {...props} />
       {description && (
@@ -216,56 +285,27 @@ export const MonthPickerDocs = {
         </div>
 
         {/* Parts table */}
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Part', 'Element', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'Trigger',
-                  '<button>',
-                  'Opens and closes the popover. Displays the selected month name or placeholder.',
-                ],
-                [
-                  'Placeholder',
-                  '<span>',
-                  'Text shown inside the trigger when no month is selected.',
-                ],
-                [
-                  'Icon',
-                  'ReactNode',
-                  'Right-side icon of the trigger. Defaults to CalendarIcon. Customizable via the icon prop.',
-                ],
-                [
-                  'MonthGrid',
-                  '<div>',
-                  '3×4 grid of 12 month buttons. Selecting a month closes the popover and fires onChange.',
-                ],
-              ].map(([part, el, desc]) => (
-                <tr key={part} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {part}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {el}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ApiTable
+          headers={['Part', 'Element', 'Description']}
+          rows={[
+            [
+              'Trigger',
+              '<button>',
+              'Opens and closes the popover. Displays the selected month name or placeholder.',
+            ],
+            ['Placeholder', '<span>', 'Text shown inside the trigger when no month is selected.'],
+            [
+              'Icon',
+              'ReactNode',
+              'Right-side icon of the trigger. Defaults to CalendarIcon. Customizable via the icon prop.',
+            ],
+            [
+              'MonthGrid',
+              '<div>',
+              '3×4 grid of 12 month buttons. Selecting a month closes the popover and fires onChange.',
+            ],
+          ]}
+        />
 
         <Code>{`import MonthPicker from '@/components/base/DatePicker/MonthPicker/MonthPicker'
 
@@ -291,26 +331,6 @@ export const MonthPickerDocs = {
   value={month}
   onChange={setMonth}
 />`}</Code>
-      </Section>
-
-      {/* Sizes */}
-      <Section
-        title="Sizes"
-        description="Six sizes following the same scale as DatePicker and Input."
-      >
-        <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 max-w-xs">
-          {['xs', 'sm', 'base', 'md', 'lg'].map((size) => (
-            <div key={size} className="flex items-center gap-3">
-              <span className="text-xs font-mono text-gray-400 w-8 shrink-0">{size}</span>
-              <MonthDemo size={size} />
-            </div>
-          ))}
-        </div>
-        <Code>{`<MonthPicker size="xs"   value={month} onChange={setMonth} />
-<MonthPicker size="sm"   value={month} onChange={setMonth} />
-<MonthPicker size="base" value={month} onChange={setMonth} />  {/* default */}
-<MonthPicker size="md"   value={month} onChange={setMonth} />
-<MonthPicker size="lg"   value={month} onChange={setMonth} />`}</Code>
       </Section>
 
       {/* valueFormat */}
@@ -378,7 +398,7 @@ const [month, setMonth] = useState(null)  // e.g. "June"
         <Preview>
           <MonthFieldDemo label="Birth month" required error="Month is required." />
         </Preview>
-        <Code>{`<FieldContent size="base" error={errors.birth_month?.message}>
+        <Code>{`<FieldContent error={errors.birth_month?.message}>
   <FieldLabel required>Birth month</FieldLabel>
   <MonthPicker value={month} onChange={setMonth} />
   <FieldError />
@@ -397,7 +417,7 @@ const [month, setMonth] = useState(null)  // e.g. "June"
             description="Leave blank to use the current month."
           />
         </Preview>
-        <Code>{`<FieldContent size="base">
+        <Code>{`<FieldContent>
   <FieldLabel required>Birth month</FieldLabel>
   <MonthPicker value={month} onChange={setMonth} />
   <FieldDescription className="text-xs text-slate-400">The month you were born in.</FieldDescription>
@@ -416,7 +436,7 @@ const [month, setMonth] = useState(null)  // e.g. "June"
   control={control}
   rules={{ required: 'Month is required.' }}
   render={({ field }) => (
-    <FieldContent size="base" error={errors.birth_month?.message}>
+    <FieldContent error={errors.birth_month?.message}>
       <FieldLabel required>Birth month</FieldLabel>
       <MonthPicker
         valueFormat="number"
@@ -429,91 +449,82 @@ const [month, setMonth] = useState(null)  // e.g. "June"
 />`}</Code>
       </Section>
 
-      {/* Props */}
-      <Section title="Props">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'value',
-                  'number | string | null',
-                  'null',
-                  'Controlled value. Format must match valueFormat.',
-                ],
-                [
-                  'onChange',
-                  '(value: number | string) => void',
-                  '—',
-                  'Fires with a number (1–12) or name string depending on valueFormat.',
-                ],
-                [
-                  'valueFormat',
-                  '"number" | "name"',
-                  '"number"',
-                  'Output format. "number" = 1–12, "name" = "January"–"December".',
-                ],
-                [
-                  'placeholder',
-                  'string',
-                  '"Pick a month"',
-                  'Text shown when no month is selected.',
-                ],
-                ['disabled', 'boolean', 'false', 'Prevents interaction and applies opacity.'],
-                [
-                  'variant',
-                  '"default" | "error" | "disabled"',
-                  '—',
-                  'Override the auto-detected visual variant.',
-                ],
-                [
-                  'size',
-                  '"xs" | "sm" | "base" | "md" | "lg"',
-                  '"base"',
-                  'Trigger button height. Inherits from FieldContent if not set.',
-                ],
-                [
-                  'icon',
-                  'ReactNode',
-                  '<CalendarIcon />',
-                  'Icon on the right of the trigger. Pass null to remove.',
-                ],
-                [
-                  'align',
-                  '"start" | "center" | "end"',
-                  '"start"',
-                  'Popover alignment relative to the trigger.',
-                ],
-                ['className', 'string', '—', 'Additional Tailwind classes on the trigger button.'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <BestPractices
+          items={[
+            {
+              heading: 'When to use',
+              cards: [
+                {
+                  title: 'Use MonthPicker when only a month is needed — not a full date',
+                  body: 'Birth month, report month, subscription month — fields where the specific day does not matter.',
+                },
+                {
+                  title: 'Match valueFormat to your storage format',
+                  body: 'Use "number" when storing 1–12. Use "name" when your API expects "January"–"December" strings. Mismatching formats causes display issues.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              cards: [
+                {
+                  title: 'Use Controller from react-hook-form — not register',
+                  body: 'MonthPicker calls onChange(number | string), not a native input event. register will not capture the value. Always wrap with Controller.',
+                },
+              ],
+            },
+          ]}
+        />
+      </Section>
+
+      {/* API Reference */}
+      <Section title="API Reference">
+        <ApiTable
+          headers={['Prop', 'Type', 'Default', 'Description']}
+          rows={[
+            [
+              'value',
+              'number | string | null',
+              'null',
+              'Controlled value. Format must match valueFormat.',
+            ],
+            [
+              'onChange',
+              '(value: number | string) => void',
+              '—',
+              'Fires with a number (1–12) or name string depending on valueFormat.',
+            ],
+            [
+              'valueFormat',
+              '"number" | "name"',
+              '"number"',
+              'Output format. "number" = 1–12, "name" = "January"–"December".',
+            ],
+            ['placeholder', 'string', '"Pick a month"', 'Text shown when no month is selected.'],
+            ['disabled', 'boolean', 'false', 'Prevents interaction and applies opacity.'],
+            [
+              'variant',
+              '"default" | "error" | "disabled"',
+              '—',
+              'Override the auto-detected visual variant.',
+            ],
+            [
+              'icon',
+              'ReactNode',
+              '<CalendarIcon />',
+              'Icon on the right of the trigger. Pass null to remove.',
+            ],
+            [
+              'align',
+              '"start" | "center" | "end"',
+              '"start"',
+              'Popover alignment relative to the trigger.',
+            ],
+            ['className', 'string', '—', 'Additional Tailwind classes on the trigger button.'],
+          ]}
+        />
       </Section>
     </div>
   ),

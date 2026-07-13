@@ -40,36 +40,37 @@ import {
   EmptyStateDescription,
   EmptyStateActions,
 } from '@/components/base/EmptyState/EmptyState'
+import { Badge } from '@/components/base/Badge/Badge'
 
 function UrgencyBadge({ quantity, daysUntilEmpty }) {
   if (quantity === 0)
     return (
-      <span className="text-xs font-medium px-2 py-0.5 rounded-full border bg-red-100 text-red-700 border-red-200 whitespace-nowrap">
+      <Badge className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700 whitespace-nowrap">
         Out of Stock
-      </span>
+      </Badge>
     )
   if (daysUntilEmpty <= 7)
     return (
-      <span className="text-xs font-medium px-2 py-0.5 rounded-full border bg-red-100 text-red-700 border-red-200 whitespace-nowrap">
+      <Badge className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700 whitespace-nowrap">
         Critical
-      </span>
+      </Badge>
     )
   if (daysUntilEmpty <= 14)
     return (
-      <span className="text-xs font-medium px-2 py-0.5 rounded-full border bg-orange-100 text-orange-700 border-orange-200 whitespace-nowrap">
+      <Badge className="text-xs font-medium px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 whitespace-nowrap">
         Soon
-      </span>
+      </Badge>
     )
   if (daysUntilEmpty <= 30)
     return (
-      <span className="text-xs font-medium px-2 py-0.5 rounded-full border bg-yellow-100 text-yellow-700 border-yellow-200 whitespace-nowrap">
+      <Badge className="text-xs font-medium px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 whitespace-nowrap">
         This Month
-      </span>
+      </Badge>
     )
   return (
-    <span className="text-xs font-medium px-2 py-0.5 rounded-full border bg-green-100 text-green-700 border-green-200">
+    <Badge className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700 whitespace-nowrap">
       6+ Months
-    </span>
+    </Badge>
   )
 }
 
@@ -117,10 +118,10 @@ function PredictionTable({ items, startIndex = 0 }) {
               </TableCell>
               <TableCell>
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                <div className="flex items-center gap-1.5 mt-0.5">
+                <div className="flex flex-col">
                   <p className="font-semibold text-slate-900">{item.product}</p>
                   {item.type && (
-                    <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
+                    <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0 w-max">
                       {item.type}
                     </span>
                   )}
@@ -222,7 +223,7 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
               <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
                 <EmptyStateActions>
-                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                  <Button variant="outline" onClick={onRetry} className="min-w-11">
                     Try again
                   </Button>
                 </EmptyStateActions>
@@ -254,20 +255,21 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
         <ModalContent
           variant="bordered"
           borderColor="border-slate-200"
-          className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
+          className="max-h-[85vh]"
+          size="lg"
         >
-          <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalHeader layout="beside">
             <ModalIcon icon={Sparkles} />
             <ModalHeaderContent>
               <ModalTitle>All Products — Restock Prediction</ModalTitle>
               <ModalDescription>Sorted by most urgent first</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
+          <ModalBody className="p-0">
             <PredictionTable items={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
           {modalTotalPages > 1 && (
-            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+            <ModalFooter>
               <Pagination
                 page={modalPage}
                 totalPages={modalTotalPages}

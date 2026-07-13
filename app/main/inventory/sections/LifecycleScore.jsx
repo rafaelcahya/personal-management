@@ -41,30 +41,31 @@ import {
   EmptyStateDescription,
   EmptyStateActions,
 } from '@/components/base/EmptyState/EmptyState'
+import { Badge } from '@/components/base/Badge/Badge'
 
 function TierBadge({ score }) {
   if (score >= 80)
     return (
-      <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-violet-100 text-violet-700 border-violet-200">
+      <Badge className="text-xs font-bold px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 ">
         S
-      </span>
+      </Badge>
     )
   if (score >= 60)
     return (
-      <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-green-100 text-green-700 border-green-200">
+      <Badge className="text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 ">
         A
-      </span>
+      </Badge>
     )
   if (score >= 40)
     return (
-      <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-yellow-100 text-yellow-700 border-yellow-200">
+      <Badge className="text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 ">
         B
-      </span>
+      </Badge>
     )
   return (
-    <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-slate-100 text-slate-500 border-slate-200">
+    <Badge className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
       C
-    </span>
+    </Badge>
   )
 }
 
@@ -247,7 +248,7 @@ export default function LifecycleScore({ items, loading, error, onRetry }) {
               <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
                 <EmptyStateActions>
-                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                  <Button variant="outline" onClick={onRetry} className="min-w-11">
                     Try again
                   </Button>
                 </EmptyStateActions>
@@ -279,20 +280,21 @@ export default function LifecycleScore({ items, loading, error, onRetry }) {
         <ModalContent
           variant="bordered"
           borderColor="border-slate-200"
-          className="w-[calc(100vw-2rem)] md:w-full md:max-w-3xl max-h-[85vh] flex flex-col p-0 gap-0"
+          className="max-h-[85vh]"
+          size="xl"
         >
-          <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalHeader layout="beside">
             <ModalIcon icon={Trophy} />
             <ModalHeaderContent>
               <ModalTitle>All Products — Lifecycle Score</ModalTitle>
               <ModalDescription>Sorted by highest score</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
+          <ModalBody className="p-0">
             <ScoreTable items={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
           {modalTotalPages > 1 && (
-            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+            <ModalFooter>
               <Pagination
                 page={modalPage}
                 totalPages={modalTotalPages}

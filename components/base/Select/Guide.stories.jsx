@@ -9,11 +9,9 @@ import {
   SelectValue,
 } from './Select'
 import FieldContent from '../Field/FieldContent'
-import FieldControl from '../Field/FieldControl'
 import FieldLabel from '../Field/FieldLabel'
 import FieldDescription from '../Field/FieldDescription'
 import FieldError from '../Field/FieldError'
-import FieldContainer from '../Field/FieldContainer'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
@@ -41,10 +39,8 @@ const SubSection = ({ title, description, children }) => (
   </div>
 )
 
-const Preview = ({ children, className = 'w-80' }) => (
-  <div
-    className={`flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 ${className}`}
-  >
+const Preview = ({ children }) => (
+  <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 w-80">
     {children}
   </div>
 )
@@ -71,6 +67,47 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ headers = ['Prop', 'Type', 'Default', 'Description'], rows }) => (
+  <div className="mb-6 overflow-x-auto">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, ri) => (
+          <tr key={ri} className="even:bg-gray-50">
+            {row.map((cell, ci) => (
+              <td
+                key={ci}
+                className={`px-3 py-2 border border-gray-200 text-xs ${
+                  ci === 0
+                    ? 'font-mono text-violet-700 whitespace-nowrap'
+                    : ci === 1
+                      ? 'font-mono text-gray-500 max-w-xs'
+                      : ci === 2
+                        ? 'font-mono text-gray-400 whitespace-nowrap'
+                        : 'text-gray-700'
+                }`}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
 // ─── Story ───────────────────────────────────────────────────────────────────
 
 export const Docs = {
@@ -84,119 +121,62 @@ export const Docs = {
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          An accessible dropdown menu for selecting a single value from a list of options. Keyboard
-          navigable, screen-reader friendly, and fully composable. Combine with{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> and{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldLabel</code> for
-          accessible form fields.
+          A custom dropdown built from compound sub-components —{' '}
+          <code className="font-mono text-sm">SelectTrigger</code>,{' '}
+          <code className="font-mono text-sm">SelectContent</code>, and{' '}
+          <code className="font-mono text-sm">SelectItem</code>. Fully keyboard-navigable and
+          screen-reader friendly. Integrates with{' '}
+          <code className="font-mono text-sm">FieldContent</code> for accessible form fields with
+          automatic error and disabled state propagation.
         </p>
       </div>
 
       {/* Overview */}
       <Section title="Overview">
         <Preview>
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Fruits</SelectLabel>
-                <SelectItem value="apple">Apple</SelectItem>
-                <SelectItem value="banana">Banana</SelectItem>
-                <SelectItem value="mango">Mango</SelectItem>
-              </SelectGroup>
-              <SelectSeparator />
-              <SelectGroup>
-                <SelectLabel>Vegetables</SelectLabel>
-                <SelectItem value="broccoli">Broccoli</SelectItem>
-                <SelectItem value="carrot">Carrot</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <FieldContent required>
+            <FieldLabel>Category</FieldLabel>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="food">Food</SelectItem>
+                <SelectItem value="transport">Transport</SelectItem>
+                <SelectItem value="health">Health</SelectItem>
+                <SelectItem value="entertainment">Entertainment</SelectItem>
+              </SelectContent>
+            </Select>
+          </FieldContent>
         </Preview>
+        <Code>{`<FieldContent required>
+  <FieldLabel>Category</FieldLabel>
+  <Select onValueChange={setValue}>
+    <SelectTrigger>
+      <SelectValue placeholder="Select a category" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="food">Food</SelectItem>
+      <SelectItem value="transport">Transport</SelectItem>
+      <SelectItem value="health">Health</SelectItem>
+      <SelectItem value="entertainment">Entertainment</SelectItem>
+    </SelectContent>
+  </Select>
+</FieldContent>`}</Code>
       </Section>
 
       {/* Anatomy */}
-      <Section title="Anatomy" description="All exported sub-components and how they compose.">
-        {/* Box diagram */}
-        <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
-          <div className="flex gap-6 flex-wrap">
-            {/* Closed state */}
-            <div>
-              <p className="text-[10px] font-mono text-gray-400 mb-2">Closed</p>
-              <div className="relative p-3 border-2 border-dashed border-violet-400 rounded-xl inline-block min-w-52">
-                <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
-                  Select
-                </span>
-                {/* SelectTrigger */}
-                <div className="flex flex-col gap-0.5 p-2 border border-dashed border-blue-300 rounded">
-                  <span className="text-[10px] font-mono text-blue-500">SelectTrigger</span>
-                  <div className="flex items-center justify-between gap-2 mt-1">
-                    {/* SelectValue */}
-                    <div className="flex flex-col gap-0.5 px-2 py-1 border border-dashed border-slate-300 rounded flex-1">
-                      <span className="text-[10px] font-mono text-slate-400">SelectValue</span>
-                      <span className="text-[10px] text-slate-400 font-mono">Pick one</span>
-                    </div>
-                    <svg className="size-3 text-slate-400 shrink-0" fill="none" viewBox="0 0 12 12">
-                      <path
-                        d="M3 4.5l3 3 3-3"
-                        stroke="currentColor"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Open state */}
-            <div>
-              <p className="text-[10px] font-mono text-gray-400 mb-2">Open (dropdown)</p>
-              <div className="relative p-3 border-2 border-dashed border-violet-400 rounded-xl inline-block min-w-52">
-                <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
-                  SelectContent
-                </span>
-
-                {/* SelectGroup 1 */}
-                <div className="flex flex-col gap-1 p-2 border border-dashed border-blue-300 rounded mb-2">
-                  <span className="text-[10px] font-mono text-blue-500">SelectGroup</span>
-                  {/* SelectLabel */}
-                  <div className="flex flex-col gap-0.5 px-2 py-1 border border-dashed border-slate-300 rounded">
-                    <span className="text-[10px] font-mono text-slate-400">SelectLabel</span>
-                    <span className="text-[10px] text-slate-400 font-mono">Group A</span>
-                  </div>
-                  {['Option A', 'Option B'].map((o) => (
-                    <div
-                      key={o}
-                      className="flex flex-col gap-0.5 px-2 py-1 border border-dashed border-slate-300 rounded"
-                    >
-                      <span className="text-[10px] font-mono text-slate-400">SelectItem</span>
-                      <span className="text-[10px] text-slate-500 font-mono">{o}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* SelectSeparator */}
-                <div className="flex flex-col gap-1 px-2 py-1.5 border border-dashed border-green-300 rounded mb-2">
-                  <span className="text-[10px] font-mono text-green-500">SelectSeparator</span>
-                  <div className="h-px bg-slate-200" />
-                </div>
-
-                {/* SelectGroup 2 */}
-                <div className="flex flex-col gap-1 p-2 border border-dashed border-blue-300 rounded">
-                  <span className="text-[10px] font-mono text-blue-500">SelectGroup</span>
-                  <div className="flex flex-col gap-0.5 px-2 py-1 border border-dashed border-slate-300 rounded">
-                    <span className="text-[10px] font-mono text-slate-400">SelectItem</span>
-                    <span className="text-[10px] text-slate-500 font-mono">Option C</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <Section title="Anatomy">
+        <pre className="bg-gray-50 border border-gray-200 rounded-lg px-5 py-4 text-xs text-gray-700 leading-relaxed mb-4 w-full overflow-x-auto">{`Select                           ← root — context provider (value, open, labelMap)
+├── SelectTrigger                ← <button> — opens/closes the dropdown
+│   └── SelectValue              ← shows selected label or placeholder
+└── SelectContent                ← portaled dropdown panel
+    ├── SelectGroup              ← <div role="group"> — groups related items
+    │   ├── SelectLabel          ← group heading label
+    │   ├── SelectItem           ← <div role="option"> — selectable item
+    │   └── SelectItem
+    ├── SelectSeparator          ← visual divider between groups
+    └── SelectItem               ← flat item outside a group`}</pre>
 
         <div className="overflow-x-auto mb-4">
           <table className="w-full text-sm border-collapse">
@@ -216,36 +196,44 @@ export const Docs = {
               {[
                 [
                   'Select',
-                  '<div>',
-                  'Root — controls open/close state and selected value. Accepts value, defaultValue, onValueChange, disabled.',
+                  'Context Provider',
+                  'Root. Manages open state, selected value, and label map. Provides context to all sub-components.',
                 ],
                 [
                   'SelectTrigger',
                   '<button>',
-                  'The clickable button that opens the dropdown. Renders the chevron icon. Accepts size.',
+                  'Opens and closes the dropdown. Reads error, disabled, and id from FieldContent context automatically.',
                 ],
                 [
                   'SelectValue',
                   '<span>',
-                  'Renders the selected item label inside the trigger. Shows placeholder when nothing is selected.',
+                  'Displays the selected item label or placeholder when no value is selected.',
                 ],
                 [
                   'SelectContent',
-                  '<div>',
-                  'The dropdown panel — rendered in a portal above the rest of the page.',
+                  'Portal <div role="listbox">',
+                  'Portaled dropdown panel. Positions itself below the trigger and closes on click outside or scroll.',
                 ],
                 [
                   'SelectGroup',
-                  '<div>',
-                  'Optional wrapper to group related items. Always pair with SelectLabel.',
+                  '<div role="group">',
+                  'Wraps a set of related SelectItem components. Used with SelectLabel for accessible grouping.',
                 ],
-                ['SelectLabel', '<div>', 'Non-selectable heading above a group of options.'],
+                [
+                  'SelectLabel',
+                  '<div>',
+                  'Muted label heading rendered above a SelectGroup to name the group.',
+                ],
                 [
                   'SelectItem',
-                  '<div>',
-                  'Individual option. Requires a unique value prop. Accepts disabled.',
+                  '<div role="option">',
+                  'Selectable item. Shows a checkmark when selected. Supports disabled prop to block interaction.',
                 ],
-                ['SelectSeparator', '<div>', 'A thin horizontal rule to visually separate groups.'],
+                [
+                  'SelectSeparator',
+                  '<div>',
+                  'Horizontal visual divider used between groups or sections inside SelectContent.',
+                ],
               ].map(([part, el, desc]) => (
                 <tr key={part} className="even:bg-gray-50">
                   <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
@@ -260,89 +248,151 @@ export const Docs = {
             </tbody>
           </table>
         </div>
+      </Section>
 
-        <Code>{`<Select>
+      {/* Usage */}
+      <Section title="Usage">
+        <SubSection title="Basic — flat list">
+          <Preview>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
+              </SelectContent>
+            </Select>
+          </Preview>
+          <Code>{`<Select onValueChange={setValue}>
   <SelectTrigger>
-    <SelectValue placeholder="Pick one" />
+    <SelectValue placeholder="Select a status" />
   </SelectTrigger>
-
   <SelectContent>
-    <SelectGroup>
-      <SelectLabel>Group A</SelectLabel>
-      <SelectItem value="a">Option A</SelectItem>
-      <SelectItem value="b">Option B</SelectItem>
-    </SelectGroup>
-
-    <SelectSeparator />
-
-    <SelectGroup>
-      <SelectLabel>Group B</SelectLabel>
-      <SelectItem value="c">Option C</SelectItem>
-    </SelectGroup>
+    <SelectItem value="active">Active</SelectItem>
+    <SelectItem value="pending">Pending</SelectItem>
+    <SelectItem value="draft">Draft</SelectItem>
+    <SelectItem value="archived">Archived</SelectItem>
   </SelectContent>
 </Select>`}</Code>
-      </Section>
+        </SubSection>
 
-      {/* Sizes */}
-      <Section title="Sizes" description="SelectTrigger supports two sizes via the size prop.">
-        <div className="flex flex-col gap-4 max-w-xs mb-4">
-          {[
-            { size: 'sm', label: 'sm — h-8', desc: 'Compact — tight layouts, table rows' },
-            { size: 'default', label: 'default — h-9', desc: 'Standard — form fields, modals' },
-          ].map(({ size, label, desc }) => (
-            <div key={size} className="flex items-center gap-4">
-              <div className="w-52 shrink-0">
-                <Select>
-                  <SelectTrigger size={size} className="w-full">
-                    <SelectValue placeholder={label} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="a">Option A</SelectItem>
-                    <SelectItem value="b">Option B</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="text-xs font-mono font-medium text-violet-700">{`size="${size}"`}</p>
-                <p className="text-xs text-gray-500">{desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <SubSection title="With FieldContent">
+          <p className="text-xs text-gray-500 mb-3">
+            Wrap in <code className="font-mono bg-gray-100 px-1 rounded">FieldContent</code> to wire
+            up the label, description, error message, and disabled state. SelectTrigger reads all of
+            these from context — no manual prop passing needed.
+          </p>
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4 w-80 flex flex-col gap-4">
+            <FieldContent required>
+              <FieldLabel>Status</FieldLabel>
+              <FieldDescription>Choose the current lifecycle status.</FieldDescription>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                </SelectContent>
+              </Select>
+            </FieldContent>
+            <FieldContent required error="Please select a category.">
+              <FieldLabel>Category</FieldLabel>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="food">Food</SelectItem>
+                  <SelectItem value="transport">Transport</SelectItem>
+                </SelectContent>
+              </Select>
+              <FieldError />
+            </FieldContent>
+            <FieldContent disabled>
+              <FieldLabel>Region</FieldLabel>
+              <FieldDescription>Auto-assigned — cannot be changed.</FieldDescription>
+              <Select defaultValue="asia">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="asia">Asia</SelectItem>
+                  <SelectItem value="europe">Europe</SelectItem>
+                </SelectContent>
+              </Select>
+            </FieldContent>
+          </div>
+          <Code>{`{/* Normal */}
+<FieldContent required>
+  <FieldLabel>Status</FieldLabel>
+  <FieldDescription>Choose the current lifecycle status.</FieldDescription>
+  <Select onValueChange={setValue}>
+    <SelectTrigger>
+      <SelectValue placeholder="Select a status" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="active">Active</SelectItem>
+      <SelectItem value="inactive">Inactive</SelectItem>
+    </SelectContent>
+  </Select>
+</FieldContent>
 
-        <Code>{`<SelectTrigger size="sm">...</SelectTrigger>
-<SelectTrigger size="default">...</SelectTrigger>`}</Code>
-      </Section>
+{/* Error — trigger turns red automatically */}
+<FieldContent required error={errors.category?.message}>
+  <FieldLabel>Category</FieldLabel>
+  <Select onValueChange={setValue}>
+    <SelectTrigger>
+      <SelectValue placeholder="Select a category" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="food">Food</SelectItem>
+    </SelectContent>
+  </Select>
+  <FieldError />
+</FieldContent>
 
-      {/* Grouped options */}
-      <Section
-        title="Grouped Options"
-        description="Use SelectGroup + SelectLabel to organize related items under a named heading."
-      >
-        <Preview>
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a timezone" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Asia</SelectLabel>
-                <SelectItem value="wib">WIB — Jakarta</SelectItem>
-                <SelectItem value="wita">WITA — Makassar</SelectItem>
-                <SelectItem value="wit">WIT — Jayapura</SelectItem>
-              </SelectGroup>
-              <SelectSeparator />
-              <SelectGroup>
-                <SelectLabel>Europe</SelectLabel>
-                <SelectItem value="gmt">GMT — London</SelectItem>
-                <SelectItem value="cet">CET — Paris</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </Preview>
+{/* Disabled — trigger and label both dim */}
+<FieldContent disabled>
+  <FieldLabel>Region</FieldLabel>
+  <Select defaultValue="asia">
+    <SelectTrigger>
+      <SelectValue />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="asia">Asia</SelectItem>
+    </SelectContent>
+  </Select>
+</FieldContent>`}</Code>
+        </SubSection>
 
-        <Code>{`<Select>
-  <SelectTrigger className="w-full">
+        <SubSection title="Grouped + Labels">
+          <Preview>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a timezone" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Asia</SelectLabel>
+                  <SelectItem value="wib">WIB — Jakarta</SelectItem>
+                  <SelectItem value="wita">WITA — Makassar</SelectItem>
+                  <SelectItem value="wit">WIT — Jayapura</SelectItem>
+                </SelectGroup>
+                <SelectGroup>
+                  <SelectLabel>Europe</SelectLabel>
+                  <SelectItem value="gmt">GMT — London</SelectItem>
+                  <SelectItem value="cet">CET — Paris</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Preview>
+          <Code>{`<Select onValueChange={setValue}>
+  <SelectTrigger>
     <SelectValue placeholder="Select a timezone" />
   </SelectTrigger>
   <SelectContent>
@@ -351,456 +401,84 @@ export const Docs = {
       <SelectItem value="wib">WIB — Jakarta</SelectItem>
       <SelectItem value="wita">WITA — Makassar</SelectItem>
     </SelectGroup>
-    <SelectSeparator />
     <SelectGroup>
       <SelectLabel>Europe</SelectLabel>
       <SelectItem value="gmt">GMT — London</SelectItem>
+      <SelectItem value="cet">CET — Paris</SelectItem>
     </SelectGroup>
   </SelectContent>
 </Select>`}</Code>
-      </Section>
-
-      {/* Disabled */}
-      <Section title="Disabled" description="Disable the whole trigger or individual items.">
-        <SubSection
-          title="Disabled trigger — entire select"
-          description="Pass disabled to Select (root) or SelectTrigger."
-        >
-          <Preview>
-            <Select disabled>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Entire select is disabled" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="a">Option A</SelectItem>
-              </SelectContent>
-            </Select>
-          </Preview>
-          <Code>{`<Select disabled>
-  <SelectTrigger className="w-full">
-    <SelectValue placeholder="Disabled" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="a">Option A</SelectItem>
-  </SelectContent>
-</Select>`}</Code>
         </SubSection>
 
-        <SubSection
-          title="Disabled items — individual options"
-          description="Pass disabled to SelectItem to make specific options unselectable."
-        >
+        <SubSection title="With Separator">
           <Preview>
             <Select>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Some options are disabled" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="pending" disabled>
-                  Pending (unavailable)
-                </SelectItem>
-                <SelectItem value="archived" disabled>
-                  Archived (unavailable)
-                </SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-              </SelectContent>
-            </Select>
-          </Preview>
-          <Code>{`<SelectItem value="pending" disabled>Pending (unavailable)</SelectItem>`}</Code>
-        </SubSection>
-      </Section>
-
-      {/* Error state */}
-      <Section
-        title="Error State"
-        description="Pass error to FieldContent — SelectTrigger reads error state from context automatically and applies the red border, just like Input."
-      >
-        <Preview>
-          <FieldContent size="base" required error="Please select a category.">
-            <FieldLabel>Category</FieldLabel>
-            <Select>
-              <SelectTrigger className="w-full">
+              <SelectTrigger>
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="food">Food</SelectItem>
-                <SelectItem value="transport">Transport</SelectItem>
+                <SelectGroup>
+                  <SelectLabel>Essentials</SelectLabel>
+                  <SelectItem value="food">Food</SelectItem>
+                  <SelectItem value="transport">Transport</SelectItem>
+                  <SelectItem value="health">Health</SelectItem>
+                </SelectGroup>
+                <SelectSeparator />
+                <SelectGroup>
+                  <SelectLabel>Lifestyle</SelectLabel>
+                  <SelectItem value="entertainment">Entertainment</SelectItem>
+                  <SelectItem value="shopping">Shopping</SelectItem>
+                </SelectGroup>
               </SelectContent>
             </Select>
-            <FieldError />
-          </FieldContent>
-        </Preview>
-
-        <Code>{`<FieldContent size="base" required error={errors.category?.message}>
-  <FieldLabel>Category</FieldLabel>
-  <Select onValueChange={(v) => setValue('category', v)}>
-    <SelectTrigger className="w-full">
-      <SelectValue placeholder="Select a category" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="food">Food</SelectItem>
-      <SelectItem value="transport">Transport</SelectItem>
-    </SelectContent>
-  </Select>
-  <FieldError />
-</FieldContent>`}</Code>
-      </Section>
-
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Select when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>You have 5 or more options that would clutter the UI if shown inline</li>
-                    <li>Only one value can be selected at a time (single-choice)</li>
-                    <li>
-                      Options are well-known and don't need side-by-side comparison (e.g. category,
-                      status, timezone)
-                    </li>
-                    <li>
-                      Space is limited — a collapsed trigger fits better than expanded radio buttons
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>RadioGroup</strong> when there are 2–4 options and comparing them
-                      side-by-side helps the user decide (e.g. "Weekly / Monthly / Yearly")
-                    </li>
-                    <li>
-                      Use <strong>Command</strong> when the list is long (20+ items) and the user
-                      needs to type to filter down quickly (e.g. searching a country or stock
-                      ticker)
-                    </li>
-                    <li>
-                      Use <strong>Checkbox</strong> or a multi-select variant when the user must be
-                      able to pick more than one value
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always provide a descriptive placeholder such as "Select a category" — never leave
-                  SelectValue blank. The placeholder is the only hint the user gets before opening
-                  the dropdown.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Group related options with SelectGroup + SelectLabel when the list mixes distinct
-                  concepts (e.g. separating "Income" items from "Expense" items). Add
-                  SelectSeparator between groups for visual clarity.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Wrap Select inside FieldContent when used in a form. This wires up label
-                  association, error state, and size automatically — no manual variant or size prop
-                  needed on SelectTrigger.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use Select for binary choices like "Yes / No" or "Enable / Disable" — two
-                  options inside a hidden dropdown adds unnecessary clicks. Use a Toggle, Switch, or
-                  RadioGroup instead.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't mix unrelated items in a flat, ungrouped list when the options span multiple
-                  categories. A flat list of 15+ mixed items is hard to scan — group them or switch
-                  to Command with search.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't rely on SelectItem's children alone to convey the selected value when labels
-                  are ambiguous (e.g. "Option 1", "Option 2"). The value prop is internal — use
-                  clear, human-readable labels as children so the trigger displays something
-                  meaningful after selection.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* Props */}
-      <Section title="Props">
-        <SubSection title="Select (Root)">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['value', 'string', '—', 'Controlled selected value'],
-                  ['defaultValue', 'string', '—', 'Uncontrolled initial value'],
-                  [
-                    'onValueChange',
-                    '(value: string) => void',
-                    '—',
-                    'Fires whenever the user picks a new option',
-                  ],
-                  [
-                    'disabled',
-                    'boolean',
-                    'false',
-                    'Disables the entire select — trigger becomes non-interactive',
-                  ],
-                  [
-                    'required',
-                    'boolean',
-                    'false',
-                    'Marks the select as required for form validation',
-                  ],
-                  ['open', 'boolean', '—', 'Controlled open state'],
-                  [
-                    'onOpenChange',
-                    '(open: boolean) => void',
-                    '—',
-                    'Fires when the dropdown opens or closes',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-
-        <SubSection title="SelectTrigger">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'variant',
-                    '"default" | "error" | "disabled"',
-                    'auto',
-                    'Auto-derived from FieldContent context. Override explicitly when used standalone.',
-                  ],
-                  [
-                    'size',
-                    '"xs" | "sm" | "base" | "md" | "lg"',
-                    'ctx or "base"',
-                    'Auto-derived from FieldContent context size. Override when used standalone.',
-                  ],
-                  [
-                    'className',
-                    'string',
-                    '—',
-                    'Additional CSS classes — use w-full to stretch to parent width',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-
-        <SubSection title="SelectItem">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'value',
-                    'string',
-                    '—',
-                    'Required — the value committed to form state when this item is selected',
-                  ],
-                  [
-                    'disabled',
-                    'boolean',
-                    'false',
-                    'Makes this item non-selectable — renders dimmed',
-                  ],
-                  ['className', 'string', '—', 'Additional CSS classes on the item'],
-                  ['children', 'ReactNode', '—', 'Label displayed to the user'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-      </Section>
-
-      {/* Usage Examples */}
-      <Section title="Usage Examples" description="Copy-ready code for common scenarios.">
-        <SubSection title="With FieldContent (recommended for forms)">
-          <Preview>
-            <FieldContainer gap="base">
-              <FieldContent size="base" required>
-                <FieldLabel>Category</FieldLabel>
-                <Select>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="food">Food</SelectItem>
-                    <SelectItem value="transport">Transport</SelectItem>
-                    <SelectItem value="health">Health</SelectItem>
-                    <SelectItem value="entertainment">Entertainment</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FieldDescription className="text-xs text-slate-400">
-                  Choose the category that best fits.
-                </FieldDescription>
-              </FieldContent>
-            </FieldContainer>
           </Preview>
-          <Code>{`<FieldContent size="base" required>
-  <FieldLabel>Category</FieldLabel>
-  <Select onValueChange={field.onChange} value={field.value}>
-    <SelectTrigger className="w-full">
-      <SelectValue placeholder="Select a category" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="food">Food</SelectItem>
-      <SelectItem value="transport">Transport</SelectItem>
-    </SelectContent>
-  </Select>
-  <FieldDescription className="text-xs text-slate-400">Choose the category that best fits.</FieldDescription>
-</FieldContent>`}</Code>
+          <Code>{`<SelectContent>
+  <SelectGroup>
+    <SelectLabel>Essentials</SelectLabel>
+    <SelectItem value="food">Food</SelectItem>
+    <SelectItem value="transport">Transport</SelectItem>
+  </SelectGroup>
+  <SelectSeparator />
+  <SelectGroup>
+    <SelectLabel>Lifestyle</SelectLabel>
+    <SelectItem value="entertainment">Entertainment</SelectItem>
+  </SelectGroup>
+</SelectContent>`}</Code>
         </SubSection>
 
-        <SubSection title="Controlled — with react-hook-form">
-          <Code>{`const { control } = useForm()
+        <SubSection title="Controlled">
+          <p className="text-xs text-gray-500 mb-3">
+            Pass <code className="font-mono bg-gray-100 px-1 rounded">value</code> and{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">onValueChange</code> to control the
+            selected value externally. Without these, the component manages its own state via{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">defaultValue</code>.
+          </p>
+          <Code>{`const [value, setValue] = useState('')
 
+<Select value={value} onValueChange={setValue}>
+  <SelectTrigger>
+    <SelectValue placeholder="Select a status" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="active">Active</SelectItem>
+    <SelectItem value="inactive">Inactive</SelectItem>
+  </SelectContent>
+</Select>
+
+{/* With react-hook-form */}
 <Controller
   control={control}
-  name="category"
+  name="status"
   render={({ field, fieldState }) => (
-    <FieldContent size="base" required error={fieldState.error?.message}>
-      <FieldLabel>Category</FieldLabel>
-      <Select onValueChange={field.onChange} value={field.value}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Select a category" />
+    <FieldContent required error={fieldState.error?.message}>
+      <FieldLabel>Status</FieldLabel>
+      <Select value={field.value} onValueChange={field.onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select a status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="food">Food</SelectItem>
-          <SelectItem value="transport">Transport</SelectItem>
+          <SelectItem value="active">Active</SelectItem>
+          <SelectItem value="inactive">Inactive</SelectItem>
         </SelectContent>
       </Select>
       <FieldError />
@@ -808,18 +486,202 @@ export const Docs = {
   )}
 />`}</Code>
         </SubSection>
+      </Section>
 
-        <SubSection title="Flat list (no groups)">
-          <Code>{`<Select>
-  <SelectTrigger className="w-full">
-    <SelectValue placeholder="Select status" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="active">Active</SelectItem>
-    <SelectItem value="pending">Pending</SelectItem>
-    <SelectItem value="archived">Archived</SelectItem>
-  </SelectContent>
-</Select>`}</Code>
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use Select when you have 5 or more mutually exclusive options',
+                  body: 'A collapsed dropdown fits better than a row of radio buttons when the list is long. Use it for categories, statuses, timezones, and other enumerated values where compact presentation saves space.',
+                },
+                {
+                  title: 'Use SelectGroup + SelectLabel when options span distinct categories',
+                  body: 'Grouping keeps the list scannable. Asia / Europe / Americas as group labels beat a flat alphabetical list of 20 timezones.',
+                },
+                {
+                  title: 'Wrap in FieldContent with FieldLabel for all form usage',
+                  body: 'FieldContent auto-wires the accessible id, error state, and disabled state to SelectTrigger. Without this, you lose label association and screen reader support.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't use Select for 2–4 options when side-by-side comparison helps",
+                  body: '"Weekly / Monthly / Yearly" is better as a RadioGroup — users can see all choices at once without opening a dropdown. Reserve Select for longer lists.',
+                },
+                {
+                  title: "Don't use Select when the user must pick more than one value",
+                  body: 'This Select does not support multi-select. Use Checkbox, a tag input, or a dedicated multi-select component instead.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Always include FieldError when validation is possible',
+                  body: 'FieldError renders with role="alert" and is linked via aria-errormessage. This triggers an immediate screen reader announcement when the error message appears.',
+                },
+                {
+                  title: 'Always provide a placeholder on SelectValue',
+                  body: 'A placeholder like "Select a category" tells the user the field has not been filled. Without it, the trigger is blank and users may miss that interaction is needed.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: "Don't manually set variant on SelectTrigger when inside FieldContent",
+                  body: 'FieldContent derives the error and disabled variant from context automatically. Manually overriding can cause the visual and semantic states to diverge.',
+                },
+                {
+                  title: 'Prefer onValueChange over onChange for value handling',
+                  body: 'onValueChange receives the selected value string directly — no need to extract e.target.value. This is the idiomatic pattern for compound selects and works cleanly with react-hook-form.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* API Reference */}
+      <Section title="API Reference">
+        <SubSection title="Select">
+          <ApiTable
+            rows={[
+              ['value', 'string', '—', 'Controlled selected value.'],
+              ['defaultValue', 'string', '""', 'Initial value for uncontrolled usage.'],
+              [
+                'onValueChange',
+                '(value: string) => void',
+                '—',
+                'Called when the user selects an item.',
+              ],
+              [
+                'disabled',
+                'boolean',
+                'false',
+                'Disables the entire select. Also auto-applied from FieldContent context.',
+              ],
+              ['open', 'boolean', '—', 'Controlled open state.'],
+              [
+                'onOpenChange',
+                '(open: boolean) => void',
+                '—',
+                'Called when the dropdown opens or closes.',
+              ],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="SelectTrigger">
+          <ApiTable
+            rows={[
+              [
+                'variant',
+                '"default" | "error" | "disabled"',
+                'auto',
+                'Auto-derived from FieldContent context. Override explicitly only for standalone usage.',
+              ],
+              ['className', 'string', '—', 'Extra CSS classes on the trigger button.'],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="SelectValue">
+          <ApiTable
+            rows={[
+              [
+                'placeholder',
+                'string',
+                '—',
+                'Text shown when no value is selected. Rendered in muted color.',
+              ],
+              [
+                'children',
+                'ReactNode',
+                '—',
+                'Override the displayed label entirely. If omitted, the label is derived from the matching SelectItem children.',
+              ],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="SelectContent">
+          <ApiTable
+            rows={[
+              ['className', 'string', '—', 'Extra CSS classes on the dropdown panel.'],
+              [
+                'position',
+                '"popper"',
+                '"popper"',
+                'Positioning strategy. Currently fixed below the trigger via getBoundingClientRect.',
+              ],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="SelectItem">
+          <ApiTable
+            rows={[
+              ['value', 'string', '—', 'Required. The value stored when this item is selected.'],
+              ['disabled', 'boolean', 'false', 'Blocks selection and dims the item visually.'],
+              ['className', 'string', '—', 'Extra CSS classes on the item div.'],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="SelectGroup · SelectLabel · SelectSeparator">
+          <ApiTable
+            headers={['Component', 'Props', 'Description']}
+            rows={[
+              [
+                'SelectGroup',
+                'className, children',
+                'Wraps a set of SelectItem components. Renders with role="group".',
+              ],
+              [
+                'SelectLabel',
+                'className',
+                'Muted heading above a SelectGroup. No interactive role — purely presentational.',
+              ],
+              [
+                'SelectSeparator',
+                'className',
+                'Horizontal 1px divider. Use between groups or sections inside SelectContent.',
+              ],
+            ]}
+          />
         </SubSection>
       </Section>
     </div>

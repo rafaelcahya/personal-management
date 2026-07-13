@@ -52,9 +52,7 @@ export default function YtdStats({ ytd_stats }) {
           <CardIcon icon={CalendarDays} />
           <CardHeaderContent>
             <CardTitle>Year to Date</CardTitle>
-            <CardDescription className="text-xs text-slate-400">
-              Your cumulative running stats for this year.
-            </CardDescription>
+            <CardDescription>Your cumulative running stats for this year.</CardDescription>
           </CardHeaderContent>
         </CardHeader>
         <CardContent>

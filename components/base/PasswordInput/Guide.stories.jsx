@@ -12,7 +12,7 @@ import Button from '@/components/base/Button/Button'
 const meta = { title: 'Input/Password Input' }
 export default meta
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Primitives ──────────────────────────────────────────────────────────────
 
 const Section = ({ title, description, children }) => (
   <div className="mb-12">
@@ -32,7 +32,7 @@ const SubSection = ({ title, description, children }) => (
 )
 
 const Preview = ({ children }) => (
-  <div className="flex flex-col gap-4 p-6 bg-gray-50 border border-gray-200 rounded-lg mb-4 w-80">
+  <div className="flex flex-col gap-4 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4 w-80">
     {children}
   </div>
 )
@@ -47,6 +47,8 @@ const Tag = ({ children, color = 'gray' }) => {
   const colors = {
     gray: 'bg-gray-100 text-gray-600',
     violet: 'bg-violet-100 text-violet-700',
+    green: 'bg-green-100 text-green-700',
+    red: 'bg-red-100 text-red-700',
   }
   return (
     <span
@@ -56,6 +58,44 @@ const Tag = ({ children, color = 'gray' }) => {
     </span>
   )
 }
+
+const ApiTable = ({ component, rows }) => (
+  <div className="mb-6">
+    {component && <p className="text-xs font-mono font-semibold text-gray-500 mb-2">{component}</p>}
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)
 
 // ─── Demo components ──────────────────────────────────────────────────────────
 
@@ -71,7 +111,7 @@ const PIN_RULES = [
 function StrengthDemo({ meterVariant = 'bars' }) {
   const [value, setValue] = useState('')
   return (
-    <FieldContent size="base" required>
+    <FieldContent required>
       <FieldLabel>Password</FieldLabel>
       <PasswordInput
         value={value}
@@ -80,9 +120,7 @@ function StrengthDemo({ meterVariant = 'bars' }) {
         strengthMeter
         meterVariant={meterVariant}
       />
-      <FieldDescription className="text-xs text-slate-400">
-        Use 12+ characters with uppercase, numbers, and symbols.
-      </FieldDescription>
+      <FieldDescription>Use 12+ characters with uppercase, numbers, and symbols.</FieldDescription>
     </FieldContent>
   )
 }
@@ -104,7 +142,7 @@ function RHFDemo() {
           minLength: { value: 8, message: 'At least 8 characters' },
         }}
         render={({ field }) => (
-          <FieldContent size="base" required error={errors.password?.message}>
+          <FieldContent required error={errors.password?.message}>
             <FieldLabel>Password</FieldLabel>
             <PasswordInput {...field} strengthMeter placeholder="Enter password" />
             <FieldError />
@@ -124,28 +162,39 @@ export const Docs = {
   name: 'Docs',
   render: () => (
     <div className="p-8 max-w-4xl font-sans text-gray-900">
-      {/* Header */}
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-2">
           <h1 className="text-3xl font-bold text-gray-900">PasswordInput</h1>
           <Tag color="violet">Base Component</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A password field with a show/hide toggle and an optional strength meter. Composes with the{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-sm">Field</code> system for
-          accessible labels, descriptions, and error messages. Works with react-hook-form out of the
-          box via <code className="font-mono bg-gray-100 px-1 rounded text-sm">Controller</code>.
+          A password field with a built-in show/hide toggle and an optional strength meter. Composes
+          with the <code className="font-mono bg-gray-100 px-1 rounded text-sm">Field</code> system
+          for accessible labels, descriptions, and error messages. Works with react-hook-form out of
+          the box via <code className="font-mono bg-gray-100 px-1 rounded text-sm">Controller</code>
+          .
         </p>
       </div>
 
-      {/* Overview */}
+      {/* ── Overview ───────────────────────────────────────────────────────── */}
       <Section title="Overview">
         <Preview>
           <StrengthDemo />
         </Preview>
+        <Code>{`<FieldContent required>
+  <FieldLabel>Password</FieldLabel>
+  <PasswordInput
+    value={value}
+    onChange={e => setValue(e.target.value)}
+    strengthMeter
+    placeholder="Type to see strength"
+  />
+  <FieldDescription>Use 12+ characters with uppercase, numbers, and symbols.</FieldDescription>
+</FieldContent>`}</Code>
       </Section>
 
-      {/* Anatomy */}
+      {/* ── Anatomy ────────────────────────────────────────────────────────── */}
       <Section
         title="Anatomy"
         description="PasswordInput wraps FieldControl + Input + FieldSuffix internally. Callers only need to place it inside FieldContent — no extra wrapping needed."
@@ -165,7 +214,7 @@ export const Docs = {
 
             <div className="relative pt-4 pb-2 px-2 border border-dashed border-violet-300 rounded mb-2">
               <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-violet-500">
-                PasswordInput
+                PasswordInput (internal)
               </span>
 
               <div className="relative pt-4 pb-2 px-2 border border-dashed border-blue-300 rounded mb-2">
@@ -218,198 +267,11 @@ export const Docs = {
           </div>
         </div>
 
-        <Code>{`<FieldContent size="base" required error={errors.password?.message}>
-  <FieldLabel>Password</FieldLabel>
-  <PasswordInput placeholder="Enter password" strengthMeter />
-  <FieldDescription className="text-xs text-slate-400">Use 12+ characters with symbols.</FieldDescription>
-  <FieldError />
-</FieldContent>`}</Code>
-      </Section>
-
-      {/* Usage */}
-      <Section title="Usage">
-        <SubSection
-          title="Basic"
-          description="Minimal usage — no FieldContent required. ID and aria props won't be wired up, so prefer using inside FieldContent for real forms."
-        >
-          <Preview>
-            <PasswordInput placeholder="Enter password" />
-          </Preview>
-          <Code>{`<PasswordInput placeholder="Enter password" />`}</Code>
-        </SubSection>
-
-        <SubSection title="Inside FieldContent">
-          <Preview>
-            <FieldContent size="base" required>
-              <FieldLabel>Password</FieldLabel>
-              <PasswordInput placeholder="Enter password" />
-              <FieldDescription className="text-xs text-slate-400">
-                Must be at least 8 characters.
-              </FieldDescription>
-            </FieldContent>
-          </Preview>
-          <Code>{`<FieldContent size="base" required>
-  <FieldLabel>Password</FieldLabel>
-  <PasswordInput placeholder="Enter password" />
-  <FieldDescription className="text-xs text-slate-400">Must be at least 8 characters.</FieldDescription>
-</FieldContent>`}</Code>
-        </SubSection>
-
-        <SubSection
-          title="Strength Meter — bars (default)"
-          description="Add strengthMeter to show a 5-segment indicator as the user types. Score is based on length, uppercase, numbers, and symbols."
-        >
-          <Preview>
-            <StrengthDemo meterVariant="bars" />
-          </Preview>
-          <Code>{`<PasswordInput value={value} onChange={e => setValue(e.target.value)} strengthMeter />`}</Code>
-        </SubSection>
-
-        <SubSection
-          title="Strength Meter — full"
-          description="meterVariant=full renders a single continuous bar that expands and changes color smoothly as the score increases."
-        >
-          <Preview>
-            <StrengthDemo meterVariant="full" />
-          </Preview>
-          <Code>{`<PasswordInput value={value} onChange={e => setValue(e.target.value)} strengthMeter meterVariant="full" />`}</Code>
-        </SubSection>
-
-        <SubSection
-          title="Custom strengthRules"
-          description="Pass an array of test functions. Each rule that passes adds to the score. The total is scaled to 0–5 automatically — so 3 rules or 10 rules both work."
-        >
-          <div className="flex gap-6 flex-wrap mb-4">
-            <div className="flex flex-col gap-2 w-72">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                Simple (3 rules)
-              </p>
-              <FieldContent size="base">
-                <PasswordInput
-                  placeholder="Min 6, uppercase, number"
-                  strengthMeter
-                  strengthRules={SIMPLE_RULES}
-                />
-              </FieldContent>
-            </div>
-            <div className="flex flex-col gap-2 w-72">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                Digits only (4 rules)
-              </p>
-              <FieldContent size="base">
-                <PasswordInput
-                  placeholder="Digits only PIN"
-                  strengthMeter
-                  strengthRules={PIN_RULES}
-                />
-              </FieldContent>
-            </div>
-          </div>
-          <Code>{`import PasswordInput, { DEFAULT_STRENGTH_RULES } from '@/components/base/PasswordInput/PasswordInput'
-
-// simple — 3 rules
-const SIMPLE_RULES = [
-  (v) => v.length >= 6,
-  (v) => /[A-Z]/.test(v),
-  (v) => /[0-9]/.test(v),
-]
-
-// extend the defaults with an extra rule
-const EXTENDED_RULES = [
-  ...DEFAULT_STRENGTH_RULES,
-  (v) => v.length >= 16,
-]
-
-<PasswordInput strengthMeter strengthRules={SIMPLE_RULES} />
-<PasswordInput strengthMeter strengthRules={EXTENDED_RULES} />`}</Code>
-        </SubSection>
-
-        <SubSection
-          title="With react-hook-form"
-          description="Use Controller and spread the field object — forwardRef ensures the ref lands on the input element."
-        >
-          <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg mb-4 w-80">
-            <RHFDemo />
-          </div>
-          <Code>{`const { control, handleSubmit, formState: { errors } } = useForm()
-
-<Controller
-  name="password"
-  control={control}
-  rules={{ required: 'Password is required', minLength: { value: 8, message: 'At least 8 characters' } }}
-  render={({ field }) => (
-    <FieldContent size="base" required error={errors.password?.message}>
-      <FieldLabel>Password</FieldLabel>
-      <PasswordInput {...field} strengthMeter placeholder="Enter password" />
-      <FieldError />
-    </FieldContent>
-  )}
-/>`}</Code>
-        </SubSection>
-
-        <SubSection title="Error State">
-          <Preview>
-            <FieldContent size="base" required error="Password must be at least 8 characters.">
-              <FieldLabel>Password</FieldLabel>
-              <PasswordInput defaultValue="123" />
-              <FieldError />
-            </FieldContent>
-          </Preview>
-          <Code>{`<FieldContent size="base" required error="Password must be at least 8 characters.">
-  <FieldLabel>Password</FieldLabel>
-  <PasswordInput defaultValue="123" />
-  <FieldError />
-</FieldContent>`}</Code>
-        </SubSection>
-
-        <SubSection title="Disabled">
-          <Preview>
-            <FieldContent size="base" disabled>
-              <FieldLabel>Password</FieldLabel>
-              <PasswordInput defaultValue="secret123" />
-            </FieldContent>
-          </Preview>
-          <Code>{`<FieldContent size="base" disabled>
-  <FieldLabel>Password</FieldLabel>
-  <PasswordInput defaultValue="secret123" />
-</FieldContent>`}</Code>
-        </SubSection>
-      </Section>
-
-      {/* When to use */}
-      <Section title="When to use">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 border border-emerald-200 rounded-lg bg-emerald-50">
-            <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-2">
-              Use PasswordInput when
-            </p>
-            <ul className="text-xs text-emerald-800 space-y-1.5 list-disc list-inside">
-              <li>The field accepts a user password or secret</li>
-              <li>Users benefit from seeing what they typed (toggle)</li>
-              <li>You want to guide users toward stronger passwords (strengthMeter)</li>
-              <li>Building sign-up, change-password, or reset-password forms</li>
-            </ul>
-          </div>
-          <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
-              Use plain Input when
-            </p>
-            <ul className="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
-              <li>The field is not a password (use type="text" or type="email")</li>
-              <li>You need a PIN or OTP field — use a separate component</li>
-              <li>You want custom suffix content (use FieldSuffix directly)</li>
-            </ul>
-          </div>
-        </div>
-      </Section>
-
-      {/* API Reference */}
-      <Section title="API Reference">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto mb-4">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+                {['Part', 'Who renders it', 'Description'].map((h) => (
                   <th
                     key={h}
                     className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
@@ -421,63 +283,53 @@ const EXTENDED_RULES = [
             </thead>
             <tbody>
               {[
-                ['value', 'string', '—', 'Controlled value. Omit to use uncontrolled mode.'],
-                ['onChange', '(e) => void', '—', 'Change handler. Receives a native input event.'],
-                ['defaultValue', 'string', '—', 'Initial value for uncontrolled mode.'],
                 [
-                  'strengthMeter',
-                  'boolean',
-                  'false',
-                  'Show strength indicator below the field. Only visible when the field has a value.',
+                  'FieldContent',
+                  'Caller',
+                  'Root wrapper — provides accessible IDs, error state, required, and disabled via context.',
                 ],
                 [
-                  'meterVariant',
-                  '"bars" | "full"',
-                  '"bars"',
-                  'bars = 5 discrete segments. full = single continuous bar with animated width and color transition.',
+                  'FieldLabel',
+                  'Caller',
+                  'Accessible label auto-linked to the input via context ID.',
                 ],
                 [
-                  'strengthRules',
-                  '((v: string) => boolean)[]',
-                  'DEFAULT_STRENGTH_RULES',
-                  'Array of test functions. Each passing rule adds to the score; total is scaled to 0–5. Import DEFAULT_STRENGTH_RULES to extend the defaults.',
+                  'FieldControl',
+                  'PasswordInput internally',
+                  'Relative positioning wrapper for the suffix toggle.',
                 ],
                 [
-                  'size',
-                  '"xs" | "sm" | "base" | "md" | "lg"',
-                  'ctx or "base"',
-                  'Overrides FieldContent context size when set explicitly.',
+                  'Input',
+                  'PasswordInput internally',
+                  'Core input element. Reads error/disabled from FieldContent context.',
                 ],
                 [
-                  'variant',
-                  '"default" | "error" | "disabled"',
-                  'auto',
-                  'Visual state — auto-derived from FieldContent (error → "error", disabled → "disabled").',
+                  'FieldSuffix (toggle)',
+                  'PasswordInput internally',
+                  'Eye/EyeOff button that switches between password and text type.',
                 ],
                 [
-                  'disabled',
-                  'boolean',
-                  'false',
-                  'Disables the field directly without needing FieldContent.',
+                  'StrengthMeter',
+                  'PasswordInput internally',
+                  'Optional bars or full-bar indicator. Shown only when strengthMeter=true and field has a value.',
                 ],
-                ['placeholder', 'string', '—', 'Placeholder text for the input.'],
-                ['className', 'string', '—', 'CSS classes applied to the inner Input element.'],
                 [
-                  '...props',
-                  'HTMLInputProps',
-                  '—',
-                  'All other native input attributes are forwarded to the Input element.',
+                  'FieldDescription',
+                  'Caller',
+                  'Hint text linked to the input via aria-describedby.',
                 ],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
+                [
+                  'FieldError',
+                  'Caller',
+                  'Error message with role="alert". Reads from FieldContent context.',
+                ],
+              ].map(([part, who, desc]) => (
+                <tr key={part} className="even:bg-gray-50">
                   <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
+                    {part}
                   </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
+                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-400 whitespace-nowrap">
+                    {who}
                   </td>
                   <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
                 </tr>
@@ -485,16 +337,330 @@ const EXTENDED_RULES = [
             </tbody>
           </table>
         </div>
+      </Section>
 
-        <div className="mt-6">
-          <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-3">
-            Strength Score Reference
-          </p>
+      {/* ── Usage ──────────────────────────────────────────────────────────── */}
+      <Section title="Usage">
+        <SubSection
+          title="Basic"
+          description="Minimal — just the show/hide toggle, no label or strength meter."
+        >
+          <Preview>
+            <PasswordInput placeholder="Enter password" aria-label="Password" />
+          </Preview>
+          <Code>{`<PasswordInput placeholder="Enter password" aria-label="Password" />`}</Code>
+        </SubSection>
+
+        <SubSection title="Inside FieldContent">
+          <Preview>
+            <FieldContent required>
+              <FieldLabel>Password</FieldLabel>
+              <PasswordInput placeholder="Enter password" />
+              <FieldDescription>Must be at least 8 characters.</FieldDescription>
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent required>
+  <FieldLabel>Password</FieldLabel>
+  <PasswordInput placeholder="Enter password" />
+  <FieldDescription>Must be at least 8 characters.</FieldDescription>
+</FieldContent>`}</Code>
+        </SubSection>
+
+        <SubSection
+          title="Strength Meter — bars (default)"
+          description="Add strengthMeter to show a 5-segment indicator. Score is based on the strengthRules array."
+        >
+          <Preview>
+            <StrengthDemo meterVariant="bars" />
+          </Preview>
+          <Code>{`<PasswordInput
+  value={value}
+  onChange={e => setValue(e.target.value)}
+  strengthMeter
+/>`}</Code>
+        </SubSection>
+
+        <SubSection
+          title="Strength Meter — full"
+          description="meterVariant=full renders a single animated bar that expands and changes color as the score increases."
+        >
+          <Preview>
+            <StrengthDemo meterVariant="full" />
+          </Preview>
+          <Code>{`<PasswordInput
+  value={value}
+  onChange={e => setValue(e.target.value)}
+  strengthMeter
+  meterVariant="full"
+/>`}</Code>
+        </SubSection>
+
+        <SubSection
+          title="Custom strengthRules"
+          description="Pass an array of test functions. Each passing rule adds to the score, which is scaled to 0–5 automatically."
+        >
+          <div className="flex gap-5 flex-wrap mb-4">
+            <div className="flex flex-col gap-2 w-72">
+              <span className="text-xs text-gray-400">Simple — 3 rules</span>
+              <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                {(() => {
+                  const [v, setV] = useState('')
+                  return (
+                    <FieldContent>
+                      <PasswordInput
+                        value={v}
+                        onChange={(e) => setV(e.target.value)}
+                        placeholder="Min 6, uppercase, number"
+                        strengthMeter
+                        strengthRules={SIMPLE_RULES}
+                      />
+                    </FieldContent>
+                  )
+                })()}
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 w-72">
+              <span className="text-xs text-gray-400">PIN — digits only, 4 rules</span>
+              <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                {(() => {
+                  const [v, setV] = useState('')
+                  return (
+                    <FieldContent>
+                      <PasswordInput
+                        value={v}
+                        onChange={(e) => setV(e.target.value)}
+                        placeholder="Digits only PIN"
+                        strengthMeter
+                        strengthRules={PIN_RULES}
+                      />
+                    </FieldContent>
+                  )
+                })()}
+              </div>
+            </div>
+          </div>
+          <Code>{`import PasswordInput, { DEFAULT_STRENGTH_RULES } from '@/components/base/PasswordInput/PasswordInput'
+
+const SIMPLE_RULES = [
+  (v) => v.length >= 6,
+  (v) => /[A-Z]/.test(v),
+  (v) => /[0-9]/.test(v),
+]
+
+const EXTENDED_RULES = [
+  ...DEFAULT_STRENGTH_RULES,
+  (v) => v.length >= 16,
+]
+
+<PasswordInput strengthMeter strengthRules={SIMPLE_RULES} />
+<PasswordInput strengthMeter strengthRules={EXTENDED_RULES} />`}</Code>
+        </SubSection>
+
+        <SubSection
+          title="With react-hook-form"
+          description="Use Controller and spread the field object — forwardRef ensures the ref lands on the underlying input element."
+        >
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4 w-80">
+            <RHFDemo />
+          </div>
+          <Code>{`const { control, handleSubmit, formState: { errors } } = useForm()
+
+<Controller
+  name="password"
+  control={control}
+  rules={{
+    required: 'Password is required',
+    minLength: { value: 8, message: 'At least 8 characters' },
+  }}
+  render={({ field }) => (
+    <FieldContent required error={errors.password?.message}>
+      <FieldLabel>Password</FieldLabel>
+      <PasswordInput {...field} strengthMeter placeholder="Enter password" />
+      <FieldError />
+    </FieldContent>
+  )}
+/>`}</Code>
+        </SubSection>
+
+        <SubSection title="Error State">
+          <Preview>
+            <FieldContent required error="Password must be at least 8 characters.">
+              <FieldLabel>Password</FieldLabel>
+              <PasswordInput defaultValue="123" />
+              <FieldError />
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent required error="Password must be at least 8 characters.">
+  <FieldLabel>Password</FieldLabel>
+  <PasswordInput defaultValue="123" />
+  <FieldError />
+</FieldContent>`}</Code>
+        </SubSection>
+
+        <SubSection title="Disabled">
+          <Preview>
+            <FieldContent disabled>
+              <FieldLabel>Password</FieldLabel>
+              <PasswordInput defaultValue="secret123" />
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent disabled>
+  <FieldLabel>Password</FieldLabel>
+  <PasswordInput defaultValue="secret123" />
+</FieldContent>`}</Code>
+        </SubSection>
+      </Section>
+
+      {/* ── Best Practices ─────────────────────────────────────────────────── */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title:
+                    'Use PasswordInput for every field that accepts a password or secret token',
+                  body: 'The show/hide toggle reduces transcription errors and helps users verify what they typed. It is especially important on mobile where typing accuracy is lower.',
+                },
+                {
+                  title: 'Enable strengthMeter on sign-up and change-password forms',
+                  body: 'Real-time feedback motivates users to create stronger passwords. The meter appears only when the field has a value, so empty fields are not cluttered with an empty indicator.',
+                },
+                {
+                  title: 'Use react-hook-form Controller and spread the field object',
+                  body: 'PasswordInput uses forwardRef — spreading the field object from Controller wires up value, onChange, onBlur, and ref correctly in one line.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't use PasswordInput for non-secret fields",
+                  body: 'A show/hide toggle on an email or username field confuses users — they expect the toggle only on password fields. Use a plain Input for any field that is not a secret.',
+                },
+                {
+                  title: "Don't enable strengthMeter on login forms",
+                  body: 'Strength feedback is only meaningful when the user is creating or changing a password. On a login form, the meter is irrelevant and adds visual noise.',
+                },
+                {
+                  title: "Don't use PasswordInput for PIN or OTP fields",
+                  body: 'Short numeric codes have different UX requirements — separate digit boxes, numeric keyboard, auto-advance. Use a dedicated PinInput component instead.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Always wrap in FieldContent with a FieldLabel',
+                  body: 'FieldContent auto-generates the id and wires it to FieldLabel via htmlFor. Without this, the input has no accessible name and screen readers cannot announce what the field is for.',
+                },
+                {
+                  title: 'Always include <FieldError /> when validation is possible',
+                  body: 'FieldError renders with role="alert" and is linked to the Input via aria-errormessage. Including it in the tree means screen readers announce the message immediately when it appears.',
+                },
+                {
+                  title: 'Document password requirements in FieldDescription',
+                  body: 'The strength meter is visual-only. Add a FieldDescription listing the password requirements so screen reader users know what they need to satisfy without relying on the meter.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: "Don't pass type as a prop",
+                  body: 'PasswordInput manages type internally, toggling between "password" and "text" for show/hide. Passing a type prop overrides this logic and breaks the toggle behavior.',
+                },
+                {
+                  title:
+                    'Use controlled mode (value + onChange) when the strength meter is enabled',
+                  body: 'The strength score is calculated from the current value. In uncontrolled mode (defaultValue only), the score cannot update as the user types — the meter stays at 0.',
+                },
+                {
+                  title: 'Extend DEFAULT_STRENGTH_RULES rather than replacing them',
+                  body: 'The default rules cover the most common requirements. Spreading them and appending one or two extra rules is easier to maintain and avoids rewriting the base logic.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ── API Reference ──────────────────────────────────────────────────── */}
+      <Section title="API Reference">
+        <ApiTable
+          component="PasswordInput"
+          rows={[
+            ['value', 'string', '—', 'Controlled value. Omit to use uncontrolled mode.'],
+            ['onChange', '(e) => void', '—', 'Change handler. Receives a native input event.'],
+            ['defaultValue', 'string', '—', 'Initial value for uncontrolled mode.'],
+            [
+              'strengthMeter',
+              'boolean',
+              'false',
+              'Show strength indicator below the field. Only visible when the field has a value.',
+            ],
+            [
+              'meterVariant',
+              '"bars" | "full"',
+              '"bars"',
+              'bars = 5 discrete segments. full = single animated bar with color transition.',
+            ],
+            [
+              'strengthRules',
+              '((v: string) => boolean)[]',
+              'DEFAULT_STRENGTH_RULES',
+              'Array of test functions. Each passing rule adds to the score; total is scaled to 0–5. Import DEFAULT_STRENGTH_RULES to extend the defaults.',
+            ],
+            [
+              'variant',
+              '"default" | "error" | "disabled"',
+              'auto',
+              'Visual state — auto-derived from FieldContent context (error → "error", disabled → "disabled").',
+            ],
+            ['disabled', 'boolean', 'false', 'Disables the field directly without FieldContent.'],
+            ['placeholder', 'string', '—', 'Placeholder text for the input.'],
+            ['className', 'string', '—', 'CSS classes applied to the inner Input element.'],
+            [
+              '...props',
+              'HTMLInputElement',
+              '—',
+              'All other native input attributes forwarded to the Input element.',
+            ],
+          ]}
+        />
+
+        <SubSection title="Strength Score Reference">
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-gray-50">
-                  {['Score', 'Label', 'Triggered by'].map((h) => (
+                  {['Score', 'Label', 'Color', 'Triggered by'].map((h) => (
                     <th
                       key={h}
                       className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
@@ -506,17 +672,21 @@ const EXTENDED_RULES = [
               </thead>
               <tbody>
                 {[
-                  ['1–2', 'Weak', 'Short password — fewer than 2 of the criteria met'],
-                  ['3', 'Fair', 'Length ≥ 8 + one of: uppercase, number, or symbol'],
-                  ['4', 'Strong', 'Length ≥ 8 + two or more of: uppercase, number, symbol'],
-                  ['5', 'Very Strong', 'Length ≥ 12 + uppercase + number + symbol'],
-                ].map(([score, label, trigger]) => (
+                  ['0', '—', 'hidden', 'No value entered'],
+                  ['1–3', 'Weak', 'red', 'Fewer than 3 of the 5 default rules pass'],
+                  ['4', 'Fair', 'amber', 'Exactly 3 of 5 rules pass'],
+                  ['5', 'Strong', 'emerald', 'Exactly 4 of 5 rules pass'],
+                  ['5 (max)', 'Very Strong', 'dark emerald', 'All 5 rules pass'],
+                ].map(([score, label, color, trigger]) => (
                   <tr key={score} className="even:bg-gray-50">
                     <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-600">
                       {score}
                     </td>
                     <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-violet-700">
                       {label}
+                    </td>
+                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-500">
+                      {color}
                     </td>
                     <td className="px-3 py-2 border border-gray-200 text-xs text-gray-600">
                       {trigger}
@@ -526,122 +696,7 @@ const EXTENDED_RULES = [
               </tbody>
             </table>
           </div>
-        </div>
-      </Section>
-
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Password Input when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>The field collects a user password, passphrase, or secret token</li>
-                    <li>You want to give users the option to reveal what they typed</li>
-                    <li>
-                      You want to show real-time password strength feedback during sign-up or
-                      password change
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Input type="text"</strong> when the field is not a secret (e.g.
-                      username, email, search)
-                    </li>
-                    <li>
-                      Use a dedicated <strong>OTP / PIN input</strong> when collecting numeric codes
-                      — separate digit boxes give better UX for short codes
-                    </li>
-                    <li>
-                      Use <strong>Input</strong> with a custom <strong>FieldSuffix</strong> when you
-                      need non-toggle suffix content (e.g. copy button, unit label)
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always wrap PasswordInput inside <strong>FieldContent</strong> for real forms —
-                  this wires up the accessible label, description, and error message automatically
-                  via context.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Enable <strong>strengthMeter</strong> on sign-up and change-password forms so
-                  users get real-time feedback and are guided toward stronger passwords.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use <strong>Controller</strong> from react-hook-form and spread the field object —
-                  forwardRef ensures the ref lands on the underlying input element correctly.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use PasswordInput for non-secret fields like username, email, or search — it
-                  adds an unnecessary visibility toggle that confuses users.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't enable <strong>strengthMeter</strong> on login forms — strength feedback is
-                  only meaningful when the user is creating or changing a password, not when signing
-                  in.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't pass <strong>type</strong> as a prop — PasswordInput manages type internally
-                  ("password" / "text") to handle the show/hide toggle. Overriding it will break the
-                  toggle behavior.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        </SubSection>
       </Section>
     </div>
   ),

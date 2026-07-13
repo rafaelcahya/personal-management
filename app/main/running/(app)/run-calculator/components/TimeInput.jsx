@@ -1,7 +1,7 @@
 'use client'
 
+import { FieldLabel } from '@/components/base/Field/Field'
 import Input from '@/components/base/Input/Input'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 
 export default function TimeInput({ hours, minutes, seconds, onChange, idPrefix }) {
   function handleBlur(field, value) {

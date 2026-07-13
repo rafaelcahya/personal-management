@@ -24,34 +24,24 @@ const cardBorderClasses = {
   muted: 'border border-border',
 }
 
-const headerVariants = {
-  shell: 'px-5 py-4 border-b border-slate-100',
-  transparent: 'pb-3',
-  info: 'px-5 py-4 border-b border-blue-100 dark:border-blue-900',
-  success: 'px-5 py-4 border-b border-emerald-100 dark:border-emerald-900',
-  warning: 'px-5 py-4 border-b border-amber-100 dark:border-amber-900',
-  danger: 'px-5 py-4 border-b border-red-100 dark:border-red-900',
-  muted: 'px-5 py-4 border-b border-border',
+const headerBorderClasses = {
+  shell: 'border-b border-slate-100',
+  transparent: '',
+  info: 'border-b border-blue-100 dark:border-blue-900',
+  success: 'border-b border-emerald-100 dark:border-emerald-900',
+  warning: 'border-b border-amber-100 dark:border-amber-900',
+  danger: 'border-b border-red-100 dark:border-red-900',
+  muted: 'border-b border-border',
 }
 
-const contentVariants = {
-  shell: 'px-5 py-4',
-  transparent: 'px-5 pt-3',
-  info: 'px-5 py-4',
-  success: 'px-5 py-4',
-  warning: 'px-5 py-4',
-  danger: 'px-5 py-4',
-  muted: 'px-5 py-4',
-}
-
-const footerVariants = {
-  shell: 'px-5 py-4 border-t border-slate-100',
-  transparent: 'px-5 pt-3',
-  info: 'px-5 py-4 border-t border-blue-100 dark:border-blue-900',
-  success: 'px-5 py-4 border-t border-emerald-100 dark:border-emerald-900',
-  warning: 'px-5 py-4 border-t border-amber-100 dark:border-amber-900',
-  danger: 'px-5 py-4 border-t border-red-100 dark:border-red-900',
-  muted: 'px-5 py-4 border-t border-border',
+const footerBorderClasses = {
+  shell: 'border-t border-slate-100',
+  transparent: '',
+  info: 'border-t border-blue-100 dark:border-blue-900',
+  success: 'border-t border-emerald-100 dark:border-emerald-900',
+  warning: 'border-t border-amber-100 dark:border-amber-900',
+  danger: 'border-t border-red-100 dark:border-red-900',
+  muted: 'border-t border-border',
 }
 
 const iconVariants = {
@@ -68,16 +58,6 @@ const iconVariants = {
   },
   danger: { wrapper: 'bg-red-100 dark:bg-red-900', icon: 'text-red-600 dark:text-red-400' },
   muted: { wrapper: 'bg-muted/60', icon: 'text-muted-foreground' },
-}
-
-const paddingSizes = {
-  none: 'p-0',
-  xs: 'p-2',
-  sm: 'p-3',
-  base: 'p-4',
-  md: 'p-5',
-  lg: 'p-6',
-  xl: 'p-8',
 }
 
 export default function Card({
@@ -103,7 +83,6 @@ export default function Card({
 
 export function CardHeader({
   className,
-  padding,
   layout = 'beside',
   id,
   children,
@@ -111,14 +90,12 @@ export function CardHeader({
   ...rest
 }) {
   const { variant } = useContext(CardContext)
-  const paddingClass = padding
-    ? paddingSizes[padding]
-    : (headerVariants[variant] ?? headerVariants.shell)
+  const borderClass = headerBorderClasses[variant] ?? headerBorderClasses.shell
   const layoutClass =
     layout === 'below' ? 'flex flex-wrap items-start gap-x-3 gap-y-2' : 'flex items-center gap-3'
   return (
     <CardHeaderContext.Provider value={{ layout }}>
-      <Tag id={id} className={cn(layoutClass, paddingClass, className)} {...rest}>
+      <Tag id={id} className={cn(layoutClass, 'p-4', borderClass, className)} {...rest}>
         {children}
       </Tag>
     </CardHeaderContext.Provider>
@@ -160,13 +137,9 @@ export function CardDescription({ children, className, id, ...rest }) {
   )
 }
 
-export function CardContent({ children, className, padding, id, as: Tag = 'div', ...rest }) {
-  const { variant } = useContext(CardContext)
-  const paddingClass = padding
-    ? paddingSizes[padding]
-    : (contentVariants[variant] ?? contentVariants.shell)
+export function CardContent({ children, className, id, as: Tag = 'div', ...rest }) {
   return (
-    <Tag id={id} className={cn(paddingClass, 'flex-1', className)} {...rest}>
+    <Tag id={id} className={cn('p-4 flex-1', className)} {...rest}>
       {children}
     </Tag>
   )
@@ -199,26 +172,17 @@ const footerAlign = {
   end: 'justify-end',
 }
 
-export function CardFooter({
-  children,
-  className,
-  padding,
-  align = 'start',
-  id,
-  as: Tag = 'div',
-  ...rest
-}) {
+export function CardFooter({ children, className, align = 'start', id, as: Tag = 'div', ...rest }) {
   const { variant } = useContext(CardContext)
-  const paddingClass = padding
-    ? paddingSizes[padding]
-    : (footerVariants[variant] ?? footerVariants.shell)
+  const borderClass = footerBorderClasses[variant] ?? footerBorderClasses.shell
   return (
     <Tag
       id={id}
       className={cn(
-        paddingClass,
+        'p-4',
         'flex items-center',
         footerAlign[align] ?? footerAlign.start,
+        borderClass,
         className
       )}
       {...rest}

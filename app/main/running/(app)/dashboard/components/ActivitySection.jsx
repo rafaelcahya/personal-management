@@ -617,7 +617,7 @@ export default function ActivitySection({ calendarActivities, recentActivities, 
             <CardDescription>Monthly calendar and your most recent activities.</CardDescription>
           </CardHeaderContent>
         </CardHeader>
-        <CardContent className="px-5 py-5">
+        <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x md:divide-slate-100">
             <CalendarColumn
               initialActivities={calendarActivities}

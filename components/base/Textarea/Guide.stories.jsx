@@ -1,6 +1,5 @@
 import Textarea from './Textarea'
 import FieldContent from '../Field/FieldContent'
-import FieldControl from '../Field/FieldControl'
 import FieldError from '../Field/FieldError'
 import FieldLabel from '../Field/FieldLabel'
 import FieldDescription from '../Field/FieldDescription'
@@ -59,6 +58,69 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ rows }) => (
+  <div className="overflow-x-auto mb-4">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(([prop, type, def, desc]) => (
+          <tr key={prop} className="even:bg-gray-50">
+            <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+              {prop}
+            </td>
+            <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+              {type}
+            </td>
+            <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
+              {def}
+            </td>
+            <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 // ─── Story ───────────────────────────────────────────────────────────────────
 
 export const Docs = {
@@ -75,21 +137,26 @@ export const Docs = {
           A multi-line text input with the same variant system as{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">Input</code>. Reads context
           from <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> for
-          error state and disabled state — works standalone too.
+          error and disabled state — works standalone too. No prefix/suffix support; use{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-sm">Input</code> when you need
+          affixes.
         </p>
       </div>
 
       {/* Overview */}
       <Section title="Overview">
         <Preview>
-          <FieldContent size="base" required>
+          <FieldContent required>
             <FieldLabel>Notes</FieldLabel>
+            <FieldDescription>Max 500 characters.</FieldDescription>
             <Textarea rows={4} placeholder="Write something..." />
-            <FieldDescription className="text-xs text-slate-400">
-              Max 500 characters.
-            </FieldDescription>
           </FieldContent>
         </Preview>
+        <Code>{`<FieldContent required>
+  <FieldLabel>Notes</FieldLabel>
+  <FieldDescription>Max 500 characters.</FieldDescription>
+  <Textarea rows={4} placeholder="Write something..." />
+</FieldContent>`}</Code>
       </Section>
 
       {/* Anatomy */}
@@ -97,7 +164,6 @@ export const Docs = {
         title="Anatomy"
         description="Textarea composes with the Field system — same as Input but without prefix/suffix overlays."
       >
-        {/* Box diagram */}
         <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
           <div className="relative p-4 border-2 border-dashed border-violet-400 rounded-xl">
             <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
@@ -111,6 +177,13 @@ export const Docs = {
               <span className="text-[10px] text-slate-400 font-mono">Notes</span>
             </div>
 
+            <div className="relative px-3 py-1.5 border border-dashed border-green-300 rounded mb-2">
+              <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
+                FieldDescription
+              </span>
+              <span className="text-[10px] text-slate-400 font-mono">Max 500 characters.</span>
+            </div>
+
             <div className="relative p-2 border border-dashed border-blue-300 rounded mb-2">
               <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-blue-500">
                 Textarea
@@ -118,13 +191,6 @@ export const Docs = {
               <div className="h-8 flex items-start pt-1">
                 <span className="text-[10px] text-slate-300 font-mono">Write something...</span>
               </div>
-            </div>
-
-            <div className="relative px-3 py-1.5 border border-dashed border-green-300 rounded mb-2">
-              <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-green-500">
-                FieldDescription
-              </span>
-              <span className="text-[10px] text-slate-400 font-mono">Max 500 characters.</span>
             </div>
 
             <div className="relative px-3 py-1.5 border border-dashed border-green-300 rounded">
@@ -155,7 +221,7 @@ export const Docs = {
                 [
                   'FieldContent',
                   '<div>',
-                  'Root wrapper. Provides accessible IDs, error state, disabled, and size via context.',
+                  'Root wrapper. Provides accessible IDs, error state, and disabled via context.',
                 ],
                 [
                   'FieldLabel',
@@ -163,14 +229,14 @@ export const Docs = {
                   'Accessible label linked to the textarea via context ID.',
                 ],
                 [
-                  'Textarea',
-                  '<textarea>',
-                  'Core textarea element. Reads variant, size, error, and disabled from FieldContent context.',
-                ],
-                [
                   'FieldDescription',
                   '<p>',
-                  'Helper text shown below the textarea. Linked via aria-describedby.',
+                  'Helper text shown below the label. Linked via aria-describedby.',
+                ],
+                [
+                  'Textarea',
+                  '<textarea>',
+                  'Core textarea element. Reads variant, error, and disabled from FieldContent context.',
                 ],
                 [
                   'FieldError',
@@ -192,10 +258,10 @@ export const Docs = {
           </table>
         </div>
 
-        <Code>{`<FieldContent size="base" required error={errors.notes?.message}>
+        <Code>{`<FieldContent required error={errors.notes?.message}>
   <FieldLabel>Notes</FieldLabel>
+  <FieldDescription>Max 500 characters.</FieldDescription>
   <Textarea placeholder="Write something..." rows={4} />
-  <FieldDescription className="text-xs text-slate-400">Max 500 characters.</FieldDescription>
   <FieldError />
 </FieldContent>`}</Code>
       </Section>
@@ -262,231 +328,132 @@ export const Docs = {
 <Textarea rows={6} placeholder="Long description" />`}</Code>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Textarea when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The user needs to enter multiple lines of free-form text (notes, descriptions,
-                      comments)
-                    </li>
-                    <li>
-                      Content length is open-ended or unpredictable — you don't know how much the
-                      user will write
-                    </li>
-                    <li>Line breaks and paragraph structure matter to the reader</li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Input</strong> when the answer is a single line — name, email,
-                      search query, or a short value
-                    </li>
-                    <li>
-                      Use a <strong>rich text editor</strong> when the user needs formatting
-                      controls such as bold, lists, or headings
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <BestPractices
+          items={[
+            {
+              heading: 'When to use',
+              cards: [
+                {
+                  title: 'Use Textarea when the value naturally spans multiple lines',
+                  body: 'Notes, descriptions, comments, and feedback are multi-line by nature. Textarea grows vertically and lets users resize — unlike Input which is always a single line.',
+                },
+                {
+                  title: 'Set rows to match the expected content length',
+                  body: 'Use rows={2} for short notes, rows={4} for standard fields, and rows={6} for long descriptions. A well-sized textarea signals how much the user is expected to write.',
+                },
+                {
+                  title: 'Pair with FieldDescription to communicate constraints',
+                  body: 'Add hints like "Max 500 characters" or "One item per line" via FieldDescription. This sets expectations before the user starts typing and reduces validation errors.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              cards: [
+                {
+                  title: "Don't use Textarea for single-line values — use Input instead",
+                  body: 'Names, emails, URLs, and amounts are single-line by nature. A tall textarea for a name field looks oversized and confuses users about how much to write.',
+                },
+                {
+                  title: "Don't use Textarea when the user needs formatting controls",
+                  body: 'Bold, lists, headings, and links require a rich text editor. Textarea is plain text only — if the output will be rendered as HTML, use a dedicated rich text component instead.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              cards: [
+                {
+                  title: 'Always wrap in FieldContent with a FieldLabel',
+                  body: 'FieldContent generates the id and wires it to FieldLabel via htmlFor, and to FieldDescription via aria-describedby. Without this wiring the textarea has no accessible name for screen readers.',
+                },
+                {
+                  title: 'Include FieldError in the field tree when validation is possible',
+                  body: 'FieldError renders with role="alert" and is linked via aria-errormessage. This triggers an immediate screen reader announcement when the error appears — the user does not have to refocus the field.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              cards: [
+                {
+                  title: "Don't manually set variant when inside FieldContent",
+                  body: 'FieldContent derives variant from context automatically. Manually setting variant="error" or variant="disabled" when the textarea is inside FieldContent can cause the visual and semantic states to diverge.',
+                },
+                {
+                  title: 'Use defaultValue for edit forms, value + onChange for controlled forms',
+                  body: 'Pre-populating from server data is cleanest with defaultValue (uncontrolled). If you need live character counts, validation feedback, or derived state, use value + onChange instead.',
+                },
+              ],
+            },
+          ]}
+        />
       </Section>
 
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Set <code className="font-mono bg-green-100 px-0.5 rounded">rows</code> to match
-                  the expected content length — use{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">rows=2</code> for short
-                  notes and <code className="font-mono bg-green-100 px-0.5 rounded">rows=6</code>{' '}
-                  for longer descriptions so the field feels appropriately sized.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Pair with{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldDescription</code> to
-                  communicate constraints like character limits or formatting hints (e.g. "Max 500
-                  characters" or "One item per line").
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Wrap inside{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldContent</code> so
-                  error state, disabled state, and accessible label linkage are handled
-                  automatically by context.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use Textarea for single-line inputs like names, emails, or numbers — use{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">Input</code> instead so the
-                  field height matches user expectations.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't skip <code className="font-mono bg-red-100 px-0.5 rounded">FieldLabel</code>{' '}
-                  — an unlabelled textarea is inaccessible. Always provide a visible label or at
-                  minimum an <code className="font-mono bg-red-100 px-0.5 rounded">aria-label</code>
-                  .
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't manually set{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">variant="error"</code> or{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">variant="disabled"</code>{' '}
-                  when the textarea is inside{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">FieldContent</code> — those
-                  states are derived from context automatically.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* Props */}
-      <Section title="Props">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'variant',
-                  '"default" | "error" | "disabled"',
-                  'auto',
-                  'Auto-derived from FieldContent context. Override explicitly when used standalone.',
-                ],
-                [
-                  'rows',
-                  'number',
-                  '4',
-                  'Number of visible text rows — controls the initial height.',
-                ],
-                ['className', 'string', '—', 'CSS classes applied to the <textarea> element.'],
-                [
-                  '...props',
-                  'HTMLTextareaProps',
-                  '—',
-                  'All native textarea attributes (maxLength, placeholder, etc.)',
-                ],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Usage Examples */}
-      <Section title="Usage Examples" description="Copy-ready code for common scenarios.">
-        <SubSection title="With Label & Description">
-          <Code>{`<FieldContent size="base" required>
-  <FieldLabel>Notes</FieldLabel>
-  <Textarea rows={4} placeholder="Write something..." />
-  <FieldDescription className="text-xs text-slate-400">Max 500 characters.</FieldDescription>
-</FieldContent>`}</Code>
+      {/* API Reference */}
+      <Section title="API Reference">
+        <SubSection title="Textarea">
+          <ApiTable
+            rows={[
+              [
+                'variant',
+                '"default" | "error" | "disabled"',
+                'auto',
+                'Auto-derived from FieldContent context. Override explicitly when used standalone.',
+              ],
+              ['rows', 'number', '4', 'Number of visible text rows — controls the initial height.'],
+              ['className', 'string', '—', 'CSS classes applied to the <textarea> element.'],
+              [
+                '...props',
+                'HTMLTextareaProps',
+                '—',
+                'All native textarea attributes (maxLength, placeholder, defaultValue, value, onChange, etc.)',
+              ],
+            ]}
+          />
         </SubSection>
 
-        <SubSection title="Error State">
-          <Preview>
-            <FieldContent size="base" required error="Notes must be at least 20 characters.">
-              <FieldLabel>Notes</FieldLabel>
-              <FieldControl>
-                <Textarea rows={4} defaultValue="too short" />
-              </FieldControl>
-              <FieldError />
-            </FieldContent>
-          </Preview>
-          <Code>{`<FieldContent size="base" required error="Notes must be at least 20 characters.">
+        <SubSection title="Usage Examples">
+          <SubSection title="With Label & Description">
+            <Code>{`<FieldContent required>
   <FieldLabel>Notes</FieldLabel>
-  <FieldControl>
-    <Textarea rows={4} defaultValue="too short" />
-  </FieldControl>
+  <FieldDescription>Max 500 characters.</FieldDescription>
+  <Textarea rows={4} placeholder="Write something..." />
+</FieldContent>`}</Code>
+          </SubSection>
+
+          <SubSection title="Error State">
+            <Preview>
+              <FieldContent required error="Notes must be at least 20 characters.">
+                <FieldLabel>Notes</FieldLabel>
+                <Textarea rows={4} defaultValue="too short" />
+                <FieldError />
+              </FieldContent>
+            </Preview>
+            <Code>{`<FieldContent required error="Notes must be at least 20 characters.">
+  <FieldLabel>Notes</FieldLabel>
+  <Textarea rows={4} defaultValue="too short" />
   <FieldError />
 </FieldContent>`}</Code>
-        </SubSection>
+          </SubSection>
 
-        <SubSection title="Disabled">
-          <Code>{`{/* Via variant prop */}
-<Textarea rows={3} variant="disabled" placeholder="..." />
+          <SubSection title="Disabled">
+            <Code>{`{/* Via variant prop */}
+<Textarea rows={3} variant="disabled" defaultValue="Cannot be edited." />
 
 {/* Via FieldContent context */}
-<FieldContent size="base" disabled>
+<FieldContent disabled>
   <FieldLabel>Notes</FieldLabel>
-  <FieldControl>
-    <Textarea rows={3} defaultValue="Cannot be edited." />
-  </FieldControl>
+  <FieldDescription>Auto-generated — cannot be edited manually.</FieldDescription>
+  <Textarea rows={3} defaultValue="Generated by the system." />
 </FieldContent>`}</Code>
-        </SubSection>
+          </SubSection>
 
-        <SubSection title="Standalone (no FieldContent)">
-          <Code>{`<Textarea rows={6} placeholder="Write your message..." />`}</Code>
+          <SubSection title="Standalone (no FieldContent)">
+            <Code>{`<Textarea rows={6} placeholder="Write your message..." />`}</Code>
+          </SubSection>
         </SubSection>
       </Section>
     </div>

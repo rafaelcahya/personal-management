@@ -350,6 +350,92 @@ export const Docs = {
         </p>
       </Section>
 
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use Collapsible for a single toggleable panel',
+                  body: 'Filter sections, "show more" details, mobile summary rows — anywhere you need a smooth height animation for one panel without reaching for a third-party library.',
+                },
+                {
+                  title: 'Use it when open state needs to be controlled from outside',
+                  body: 'When you need to programmatically expand all, close on route change, or conditionally render other UI based on open — controlled state from the parent is the right model.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't use Collapsible for mutually-exclusive panels",
+                  body: 'Use Accordion instead — it manages exclusive open state across multiple items. Collapsible is for one panel.',
+                },
+                {
+                  title: "Don't use it for tab-style navigation",
+                  body: 'Tabs is the right component for switching between views. Collapsible is for revealing hidden content in place, not navigating between sections.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'CollapsibleTrigger renders aria-expanded automatically',
+                  body: 'Screen readers announce open/closed state without extra work. When using asChild, ensure the child is a focusable, keyboard-activatable element — a <button> or role="button".',
+                },
+                {
+                  title: 'Pass id on CollapsibleContent if the content needs explicit linking',
+                  body: "Reference CollapsibleContent's id via aria-controls on the trigger for assistive technologies that need to navigate from trigger to content directly.",
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: "Don't add overflow-hidden to CollapsibleContent's className",
+                  body: 'The outer grid div handles the transition. Adding overflow-hidden externally breaks the CSS grid height animation.',
+                },
+                {
+                  title: 'Use asChild when the trigger is an existing styled element',
+                  body: 'Card header rows, list items, custom buttons — asChild merges the click handler in and avoids nesting a <button> inside another interactive element.',
+                },
+                {
+                  title: 'Use className="sm:hidden" on Collapsible for mobile-only sections',
+                  body: 'Show the expandable version only on mobile while the same content stays always-visible on desktop — no duplicate markup needed.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       {/* API Reference */}
       <Section title="API Reference">
         <SubSection title="Collapsible" description="Root context provider.">
@@ -526,86 +612,6 @@ export const Docs = {
             </table>
           </div>
         </SubSection>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Keep state in the parent — pass{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">open</code> and{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">onOpenChange</code> from a{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">useState</code> hook. This
-                  makes the open state accessible for conditional rendering elsewhere in the same
-                  component.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use <code className="font-mono bg-green-100 px-1 rounded">asChild</code> when the
-                  trigger should be a styled button or any other existing component — it avoids
-                  nesting a button inside a button.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always pass <code className="font-mono bg-green-100 px-1 rounded">id</code> on
-                  Collapsible and CollapsibleContent when the component needs to be targeted by
-                  Cypress tests.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't put{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">overflow-hidden</code> on
-                  CollapsibleContent's{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">className</code> — that outer
-                  div already handles the grid transition. The internal{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">overflow-hidden</code> on the
-                  inner div is what clips during animation.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use Collapsible for multi-item accordion behavior — use the{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">Accordion</code> base
-                  component instead, which handles exclusive open state across items.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't nest a{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">&lt;button&gt;</code> directly
-                  inside{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">CollapsibleTrigger</code>{' '}
-                  without <code className="font-mono bg-red-100 px-1 rounded">asChild</code> — it
-                  renders its own{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">&lt;button&gt;</code> which
-                  would create invalid nested interactive elements.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
       </Section>
     </div>
   ),

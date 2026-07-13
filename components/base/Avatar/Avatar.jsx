@@ -149,18 +149,37 @@ export function AvatarFallback({ children, className, ...props }) {
 
 // ─── AvatarStatus ─────────────────────────────────────────────────────────────
 
-export function AvatarStatus({ status = 'online', className, ...props }) {
+export function AvatarStatus({ status = 'online', ping = false, className, ...props }) {
   const { size } = useAvatar()
+  const dotSize = statusDotSizeMap[size] ?? statusDotSizeMap.default
+  const color = statusColorMap[status] ?? statusColorMap.online
+
+  if (!ping) {
+    return (
+      <span
+        className={cn(
+          'absolute bottom-0 right-0 z-20 block rounded-full ring-2 ring-white',
+          dotSize,
+          color,
+          className
+        )}
+        {...props}
+      />
+    )
+  }
+
   return (
     <span
-      className={cn(
-        'absolute bottom-0 right-0 z-20 block rounded-full ring-2 ring-white',
-        statusDotSizeMap[size] ?? statusDotSizeMap.default,
-        statusColorMap[status] ?? statusColorMap.online,
-        className
-      )}
+      className={cn('absolute bottom-0 right-0 z-20 inline-flex', dotSize, className)}
       {...props}
-    />
+    >
+      <span
+        className={cn('animate-ping absolute inline-flex size-full rounded-full opacity-75', color)}
+      />
+      <span
+        className={cn('relative inline-flex size-full rounded-full ring-2 ring-white', color)}
+      />
+    </span>
   )
 }
 

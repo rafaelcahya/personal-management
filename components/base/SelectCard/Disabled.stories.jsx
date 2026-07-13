@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Zap, Shield, Package } from 'lucide-react'
+import { SelectCard, SelectCardIcon, SelectCardTitle, SelectCardDescription } from './SelectCard'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
@@ -8,101 +9,119 @@ const meta = {
 
 export default meta
 
-const cn = (...classes) => classes.filter(Boolean).join(' ')
-
-const MockCard = ({
-  layout = 'vertical',
-  indicator = 'badge',
-  selected = false,
-  disabled = false,
-  onClick,
-  icon,
-  title,
-  description,
-}) => {
-  const isH = layout === 'horizontal'
-  const isBadge = indicator === 'badge'
-  return (
-    <div
-      onClick={!disabled ? onClick : undefined}
-      className={cn(
-        'relative rounded-lg transition-all select-none',
-        isH
-          ? cn('flex items-center gap-4', isBadge && 'pr-12')
-          : cn('flex flex-col gap-2.5', isBadge && 'pr-8'),
-        selected
-          ? 'border border-violet-600 ring-2 ring-violet-200 bg-violet-50/40 p-4'
-          : 'border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm',
-        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-      )}
-    >
-      {isBadge && (
-        <div
-          className={cn(
-            'absolute size-5 rounded-full flex items-center justify-center transition-all bg-white',
-            isH ? 'right-4 top-1/2 -translate-y-1/2' : 'top-3 right-3',
-            selected ? 'bg-violet-600' : 'border-2 border-gray-300'
-          )}
-        >
-          {selected && <span className="size-2 rounded-full bg-white block" />}
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
-      {icon && (
-        <div
-          className={cn(
-            'flex items-center justify-center rounded-md shrink-0 size-9',
-            selected ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-500'
-          )}
-        >
-          {icon}
-        </div>
-      )}
-      <div className={cn(isH && 'flex-1', 'flex flex-col gap-0.5')}>
-        <p className="text-sm font-medium leading-snug text-gray-900">{title}</p>
-        {description && <p className="text-xs text-muted-foreground leading-snug">{description}</p>}
       </div>
-    </div>
-  )
-}
+    ))}
+  </div>
+)
 
 export const Disabled = {
   name: 'Disabled',
   render: () => {
     const [selected, setSelected] = useState('pro')
     return (
-      <div className="flex flex-col items-center gap-6 w-full">
-        <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <div className="flex flex-col gap-6 w-full">
+        <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
           Pass <code className="font-mono bg-gray-100 px-1 rounded text-xs">disabled</code> to
-          prevent interaction. Disabled cards are dimmed and non-clickable — selected or unselected
-          state is preserved visually.
+          prevent interaction. The card dims and cursor becomes{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">not-allowed</code>. The
+          selected state is preserved visually — a disabled selected card stays highlighted.
         </p>
 
-        <div className="grid grid-cols-3 gap-3 w-full max-w-lg">
-          <MockCard
-            icon={<Package className="size-5" />}
-            title="Starter"
-            description="For individuals."
-            selected={false}
-            disabled
-          />
-          <MockCard
-            icon={<Zap className="size-5" />}
-            title="Pro"
-            description="For growing teams."
-            selected={true}
-            disabled
-          />
-          <MockCard
-            icon={<Shield className="size-5" />}
-            title="Enterprise"
-            description="Custom scale."
-            selected={false}
-            onClick={() => setSelected('enterprise')}
-          />
+        <div className="flex flex-col gap-2">
+          <span className="text-xs text-gray-400">
+            disabled unselected, disabled selected, active
+          </span>
+          <div className="grid grid-cols-3 gap-3 max-w-lg">
+            <SelectCard value="starter" selected={false} onSelect={setSelected} disabled>
+              <SelectCardIcon>
+                <Package className="size-5" />
+              </SelectCardIcon>
+              <SelectCardTitle>Starter</SelectCardTitle>
+              <SelectCardDescription>For individuals.</SelectCardDescription>
+            </SelectCard>
+            <SelectCard value="pro" selected={true} onSelect={setSelected} disabled>
+              <SelectCardIcon>
+                <Zap className="size-5" />
+              </SelectCardIcon>
+              <SelectCardTitle>Pro</SelectCardTitle>
+              <SelectCardDescription>For growing teams.</SelectCardDescription>
+            </SelectCard>
+            <SelectCard
+              value="enterprise"
+              selected={selected === 'enterprise'}
+              onSelect={setSelected}
+            >
+              <SelectCardIcon>
+                <Shield className="size-5" />
+              </SelectCardIcon>
+              <SelectCardTitle>Enterprise</SelectCardTitle>
+              <SelectCardDescription>Custom scale.</SelectCardDescription>
+            </SelectCard>
+          </div>
         </div>
 
+        <BestPractices
+          items={[
+            {
+              heading: 'When to use',
+              cards: [
+                {
+                  title:
+                    'Disable a card when the option exists but is not available in the current context',
+                  body: "A locked plan tier, an out-of-stock shipping method, or an option restricted by the user's region should be visible but non-interactive. This shows what exists without hiding it.",
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              cards: [
+                {
+                  title: "Don't disable a card the user is expected to select to proceed",
+                  body: 'If the user must pick an option to continue, show it enabled. Disabling the only viable path traps users.',
+                },
+                {
+                  title: "Don't hide unavailable options when seeing them is informative",
+                  body: 'A disabled "Enterprise" card tells users the tier exists but is locked. Hiding it entirely removes context that might help the user understand what to upgrade to.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              cards: [
+                {
+                  title: 'Explain why the option is disabled if it may surprise the user',
+                  body: 'A tooltip or nearby helper text ("Not available in your region" or "Upgrade to unlock") prevents confusion when users see a dimmed card they cannot click.',
+                },
+              ],
+            },
+          ]}
+        />
+
         <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
-          <code>{`{/* Disabled — cannot be clicked */}
+          <code>{`{/* Disabled — cannot be clicked, unselected */}
 <SelectCard value="starter" disabled selected={false} onSelect={setSelected}>
   <SelectCardIcon><Package /></SelectCardIcon>
   <SelectCardTitle>Starter</SelectCardTitle>

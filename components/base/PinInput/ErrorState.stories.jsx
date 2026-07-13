@@ -1,134 +1,116 @@
 import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
 import PinInput from './PinInput'
 import FieldContent from '../Field/FieldContent'
 import FieldLabel from '../Field/FieldLabel'
 import FieldError from '../Field/FieldError'
 
 /** @type {import('@storybook/nextjs').Meta} */
-const meta = { title: 'Input/Pin Input/Error State' }
-export default meta
-
-function ValidationDemo() {
-  const [value, setValue] = useState('')
-  const [submitted, setSubmitted] = useState(false)
-  const error = submitted && value.length < 6 ? 'Please enter all 6 digits.' : undefined
-  const wrongCode = submitted && value === '000000' ? 'Invalid code. Please try again.' : undefined
-
-  return (
-    <div className="flex flex-col gap-3">
-      <FieldContent size="base" error={error ?? wrongCode}>
-        <FieldLabel>Verification code</FieldLabel>
-        <PinInput length={6} value={value} onChange={setValue} />
-        <FieldError />
-      </FieldContent>
-      <button
-        onClick={() => setSubmitted(true)}
-        className="px-4 py-2 text-sm font-medium bg-violet-500 hover:bg-violet-600 text-white rounded-lg transition-colors w-fit"
-      >
-        Verify
-      </button>
-    </div>
-  )
+const meta = {
+  title: 'Input/Pin Input/Error State',
 }
 
-function RHFErrorDemo() {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ defaultValues: { pin: '' } })
+export default meta
 
-  return (
-    <form onSubmit={handleSubmit(() => alert('Valid!'))}>
-      <div className="flex flex-col gap-3">
-        <FieldContent size="base" error={errors.pin?.message}>
-          <FieldLabel>PIN</FieldLabel>
-          <Controller
-            name="pin"
-            control={control}
-            rules={{
-              required: 'PIN is required.',
-              minLength: { value: 6, message: 'PIN must be 6 digits.' },
-            }}
-            render={({ field }) => (
-              <PinInput
-                length={6}
-                value={field.value ?? ''}
-                onChange={field.onChange}
-                ref={field.ref}
-              />
-            )}
-          />
-          <FieldError />
-        </FieldContent>
-        <button
-          type="submit"
-          className="px-4 py-2 text-sm font-medium bg-violet-500 hover:bg-violet-600 text-white rounded-lg transition-colors w-fit"
-        >
-          Submit
-        </button>
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </form>
+    ))}
+  </div>
+)
+
+function FieldDemo() {
+  const [value, setValue] = useState('')
+  return (
+    <FieldContent error="Invalid verification code.">
+      <FieldLabel required>Verification code</FieldLabel>
+      <PinInput length={6} value={value} onChange={setValue} />
+      <FieldError />
+    </FieldContent>
   )
 }
 
 export const ErrorState = {
   name: 'Error State',
   render: () => (
-    <div className="flex flex-col gap-10 w-full max-w-xl">
-      <p className="text-sm text-gray-500 leading-relaxed">
-        Pass <code className="font-mono bg-gray-100 px-1 rounded text-xs">error</code> to{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">FieldContent</code> — cells
-        switch to the error variant automatically and{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">FieldError</code> shows the
-        message below.
-      </p>
+    <div className="flex flex-col gap-10 p-8 max-w-2xl w-full">
+      <span className="text-xs text-gray-400">
+        Pass <code className="font-mono bg-gray-100 px-1 rounded">variant="error"</code> for
+        explicit styling, or let{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded">FieldContent</code> inject the error
+        variant automatically when its{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded">error</code> prop is set. Pair with{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded">FieldError</code> to display the
+        message below the cells.
+      </span>
 
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <span className="text-xs text-gray-400">static error</span>
-          <FieldContent size="base" error="Invalid verification code.">
-            <FieldLabel>Verification code</FieldLabel>
-            <PinInput length={6} value="123456" onChange={() => {}} />
-            <FieldError />
-          </FieldContent>
+      <div className="w-80 flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] font-mono text-violet-700">variant="error" (explicit)</span>
+          <PinInput length={6} value="123" variant="error" onChange={() => {}} />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <span className="text-xs text-gray-400">
-            validation on submit — try clicking Verify with empty or "000000"
-          </span>
-          <ValidationDemo />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-xs text-gray-400">
-            react-hook-form — click Submit with empty or partial PIN
-          </span>
-          <RHFErrorDemo />
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] font-mono text-violet-700">Via FieldContent error prop</span>
+          <FieldDemo />
         </div>
       </div>
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-        <code>{`{/* Static error */}
-<FieldContent size="base" error="Invalid code.">
-  <FieldLabel>PIN</FieldLabel>
-  <PinInput length={6} value={pin} onChange={setPin} />
-  <FieldError />
-</FieldContent>
+      <BestPractices
+        items={[
+          {
+            heading: 'How to trigger error state',
+            cards: [
+              {
+                title: 'Pass error to FieldContent — the cells inherit it automatically',
+                body: 'FieldContent broadcasts the error to all child field components via context. The cells turn red and FieldError renders the message below.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Always pair error state with a FieldError message',
+                body: 'Red cells signal something is wrong, but without a message the user cannot know what to fix. Always include a FieldError explaining the constraint.',
+              },
+              {
+                title: 'Clear and refocus on error — do not leave stale digits',
+                body: 'After a failed verification, clear the value and focus the first cell. Leaving stale digits in error state makes it harder for users to re-enter the correct code.',
+              },
+            ],
+          },
+        ]}
+      />
 
-{/* react-hook-form */}
-<FieldContent size="base" error={errors.pin?.message}>
-  <FieldLabel>PIN</FieldLabel>
-  <Controller
-    name="pin"
-    control={control}
-    rules={{ required: 'Required.', minLength: { value: 6, message: 'Must be 6 digits.' } }}
-    render={({ field }) => (
-      <PinInput length={6} value={field.value ?? ''} onChange={field.onChange} ref={field.ref} />
-    )}
-  />
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
+        <code>{`{/* Explicit variant */}
+<PinInput variant="error" length={6} value={pin} onChange={setPin} />
+
+{/* Via FieldContent — error variant + message injected automatically */}
+<FieldContent error="Invalid verification code.">
+  <FieldLabel required>Verification code</FieldLabel>
+  <PinInput length={6} value={pin} onChange={setPin} />
   <FieldError />
 </FieldContent>`}</code>
       </pre>

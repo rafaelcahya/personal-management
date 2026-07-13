@@ -1,10 +1,9 @@
 'use client'
 
+import { FieldContent, FieldLabel } from '@/components/base/Field/Field'
 import { Loader2 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 
 export default function RouteStats({
   distanceM,
@@ -41,7 +40,6 @@ export default function RouteStats({
         <Button
           id="undoWaypointBtn_routeBuilderPage"
           variant="outline"
-          size="base"
           onClick={onUndo}
           disabled={waypointCount === 0}
           className="flex-1 text-sm"
@@ -51,7 +49,6 @@ export default function RouteStats({
         <Button
           id="clearRouteBtn_routeBuilderPage"
           variant="outline"
-          size="base"
           onClick={onClear}
           disabled={waypointCount === 0}
           className="flex-1 text-sm text-red-600 border-red-200 hover:bg-red-50"
@@ -77,7 +74,6 @@ export default function RouteStats({
 
         <Button
           id="saveRouteBtn_routeBuilderPage"
-          size="base"
           disabled={!canSave || saving}
           onClick={onSave}
           className="w-full bg-violet-600 hover:bg-violet-700"

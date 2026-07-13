@@ -196,7 +196,6 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
               {selected && (
                 <Button
                   variant="ghost"
-                  size="base"
                   onClick={() => setSelected(null)}
                   className="gap-1 text-xs text-slate-500"
                 >
@@ -204,7 +203,7 @@ export default function EventAnalysisHistoryModal({ open, onClose }) {
                 </Button>
               )}
             </div>
-            <Button variant="outline" size="base" onClick={handleClose}>
+            <Button variant="outline" onClick={handleClose}>
               Close
             </Button>
           </div>

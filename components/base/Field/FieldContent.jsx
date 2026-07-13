@@ -12,7 +12,6 @@ export const FieldContentContext = createContext({
   required: false,
   disabled: false,
   name: undefined,
-  size: 'base',
   error: undefined,
   orientation: 'vertical',
 })
@@ -21,7 +20,6 @@ export const useFieldContentContext = () => useContext(FieldContentContext)
 
 const FieldContent = ({
   as: Comp = 'div',
-  size = 'base',
   required = false,
   disabled = false,
   error,
@@ -46,7 +44,6 @@ const FieldContent = ({
         required,
         disabled,
         name,
-        size,
         error,
         orientation,
       }}

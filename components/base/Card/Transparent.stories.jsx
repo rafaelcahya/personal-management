@@ -26,6 +26,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const AddButton = () => (
   <Button
     size="md"
@@ -40,9 +68,9 @@ const AddButton = () => (
 export const FullContent = {
   name: 'Full Content',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         The <code className="font-mono bg-gray-100 px-1 rounded text-xs">transparent</code> variant
         has no background or border — it acts as a page-level section wrapper. Use it as the outer
         card in the card-in-card pattern:{' '}
@@ -264,7 +292,47 @@ export const FullContent = {
         </div>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use transparent as the page-level section wrapper only',
+                body: 'transparent provides the header structure without adding a white box. Inner content should be in shell cards — transparent outer + shell inner is the standard page layout pattern.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't nest a transparent card inside a shell",
+                body: 'The invisible border makes the inner layout look unstructured and confuses the visual hierarchy. transparent is always the outer wrapper — never an inner card.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Use CardTitle with the correct heading level for section structure',
+                body: 'Transparent cards act as section wrappers — use as="h2" or as="h3" on CardTitle so screen readers understand the document hierarchy, especially on multi-section pages.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Always pass CardContent className="p-0" on the transparent outer',
+                body: 'Without p-0, inner shell cards or tables start with an extra p-4 offset. Always remove the default padding on the transparent wrapper so inner content starts flush.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* transparent — no bg/border, just structure */}
 <Card variant="transparent">
@@ -290,9 +358,9 @@ export const FullContent = {
 export const ScrollableContent = {
   name: 'Scrollable Content',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         Same scrollable pattern as the shell variant — wrap the list in{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">max-h-* overflow-y-auto</code>{' '}
         inside{' '}
@@ -355,7 +423,47 @@ export const ScrollableContent = {
         </Card>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use transparent scrollable when the page background is already styled',
+                body: 'The transparent scrollable pattern gives a section-title feel with no box — ideal when the page background is styled and a white card would look out of place.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use transparent with a scroll list on plain white pages",
+                body: 'Without a background, the scroll container has no visual edge and looks like a disconnected list. Use a shell card instead so the scroll region has a visible boundary.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Pin column headers outside the scroll container',
+                body: 'Column headers become visually sticky without position: sticky since they sit in a sibling div above the scroll region. This also ensures they are read before list items by screen readers.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Pair with CardAction for the Add button',
+                body: 'The Add button anchors to the title row and stays pinned regardless of scroll position — giving users consistent access to the create action even when the list is scrolled.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`<Card variant="transparent">
   <CardHeader>...</CardHeader>
@@ -379,9 +487,9 @@ export const ScrollableContent = {
 export const Grid = {
   name: 'Grid',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         Transparent cards in a grid give each stat a section title without the white box. Use when
         the background is already styled (e.g., inside a page layout) and you don&apos;t want double
         borders.
@@ -459,7 +567,47 @@ export const Grid = {
         </div>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use transparent tiles in a grid when the page already has a background',
+                body: 'The absence of white boxes and double borders gives a clean, minimal stat layout — ideal when the page background is styled and extra card boxes would feel heavy.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use transparent tiles on plain white pages",
+                body: 'Transparent tiles on white have no visual separation between them — the grid looks like a list of numbers. Use shell tiles instead so each stat has a visible boundary.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Transparent card grids have no visual boundary per tile',
+                body: 'Add aria-label or role="region" to each tile to communicate its purpose to screen readers — the absence of a visual box means grouping cues must come from the markup.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Keep to 3–4 columns max for transparent stat grids',
+                body: 'Transparent tiles have no box shadow to define boundaries, so wide grids look like undifferentiated lists of numbers. 3 columns is the sweet spot for readability.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`<div className="grid grid-cols-3 gap-3">
   {stats.map(s => (
@@ -485,9 +633,9 @@ export const Grid = {
 export const FooterAlignment = {
   name: 'Footer Alignment',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         The <code className="font-mono bg-gray-100 px-1 rounded text-xs">align</code> prop on{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardFooter</code> works
         identically in the transparent variant. The footer has no top border in this variant — just
@@ -580,7 +728,47 @@ export const FooterAlignment = {
         </div>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use align="start" or justify-between for transparent footers',
+                body: 'align="start" (default) works for forms. For "N items · last updated" + Export button layouts common in transparent section footers, use className="justify-between gap-3" instead.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: 'Don\'t use align="center" in a transparent footer',
+                body: 'Without a border or background, centered buttons look unanchored. Left-align or justify-between are the right choices for transparent CardFooter.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Transparent CardFooter has no border-t — ensure spacing is clear',
+                body: 'Unlike shell, the transparent footer has no visual divider above it — just top padding. If the footer content feels too close to the body, add extra spacing via className on CardContent.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'The align prop works identically in transparent but without border-t',
+                body: 'Shell CardFooter has a visible divider line above it; transparent has no border-t. This makes footer content feel part of the card body — account for spacing accordingly.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`<Card variant="transparent">
   <CardHeader>...</CardHeader>
@@ -599,103 +787,12 @@ export const FooterAlignment = {
   ),
 }
 
-export const Padding = {
-  name: 'Padding',
-  render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
-      {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
-        In the transparent variant, the default padding for{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardHeader</code> is{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">pb-3</code> (bottom-only, no
-        horizontal padding). Use the{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">padding</code> prop to override
-        when needed.
-      </p>
-
-      {/* 2. Live preview */}
-      <div className="w-full max-w-2xl space-y-4">
-        {[
-          { size: 'none', label: 'none · p-0 · 0px' },
-          { size: 'xs', label: 'xs · p-2 · 8px' },
-          { size: 'sm', label: 'sm · p-3 · 12px' },
-          { size: 'base', label: 'base · p-4 · 16px' },
-          { size: 'md', label: 'md · p-5 · 20px' },
-          { size: 'lg', label: 'lg · p-6 · 24px' },
-          { size: 'xl', label: 'xl · p-8 · 32px' },
-        ].map(({ size, label }) => (
-          <Card key={size} variant="transparent">
-            <CardHeader padding={size}>
-              <CardIcon icon={ShoppingCart} />
-              <div className="min-w-0 flex-1">
-                <CardTitle>Products</CardTitle>
-                <CardDescription>All active items in your inventory</CardDescription>
-              </div>
-              <CardAction>
-                <span className="text-xs font-mono text-violet-600 bg-violet-50 px-2 py-0.5 rounded">
-                  {label}
-                </span>
-              </CardAction>
-            </CardHeader>
-            <CardContent padding={size}>
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Product
-                    </th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Stock
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { name: 'Moisturizer', stock: 3 },
-                    { name: 'Vitamin C Serum', stock: 1 },
-                    { name: 'Shampoo', stock: 8 },
-                  ].map((row) => (
-                    <tr key={row.name} className="bg-white border-b border-slate-100 last:border-0">
-                      <td className="px-3 py-2 font-medium text-slate-900">{row.name}</td>
-                      <td className="px-3 py-2 text-right text-slate-700">{row.stock}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-            <CardFooter padding={size}>
-              <p className="text-xs text-slate-500">3 items · last updated today</p>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-
-      {/* 3. Code snippet */}
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
-        <code>{`{/* transparent default: CardHeader → pb-3, CardContent → px-5 pt-3 */}
-<Card variant="transparent">
-  <CardHeader>...</CardHeader>
-  <CardContent>...</CardContent>
-</Card>
-
-{/* override with padding prop */}
-<Card variant="transparent">
-  <CardHeader padding="md">...</CardHeader>
-  <CardContent padding="none">
-    <table>...</table>
-  </CardContent>
-</Card>`}</code>
-      </pre>
-    </div>
-  ),
-}
-
 export const HeaderOnly = {
   name: 'Header Only',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         A transparent card with only a header — the standard pattern for page section titles. The
         title + description + action appear without any container box, sitting cleanly above the
         content below it.
@@ -717,7 +814,48 @@ export const HeaderOnly = {
         </Card>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'This is the go-to pattern for page section headings',
+                body: 'Transparent header-only gives the title and action without any visual container box cluttering the layout — use it above shell inner cards, tables, or grids.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title:
+                  "Don't add CardContent or CardFooter to the transparent outer when content lives outside it",
+                body: 'If content sits in sibling shell cards below the transparent outer, keep the outer as header-only. Adding CardContent with p-0 creates an unnecessary wrapper around the sibling layout.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Use CardTitle with the correct heading level for the page hierarchy',
+                body: 'This pattern is typically the page or section header — set as="h1" or as="h2" on CardTitle. Defaulting to h3 can break the document outline for screen reader users.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use CardHeaderContent to wrap title + description inside the header',
+                body: 'CardHeaderContent handles min-w-0 flex-1 so the title truncates correctly when a CardAction Add button is present. Using a raw div breaks this truncation logic.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* transparent header-only — standard section title pattern */}
 <Card variant="transparent">

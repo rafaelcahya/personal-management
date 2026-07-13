@@ -263,7 +263,6 @@ export default function EventAnalysisModal({
                 <Button
                   id="analysisRetryBtn_eventDetailPage"
                   variant="outline"
-                  size="base"
                   onClick={handleRetry}
                   className="self-start border-red-300 text-red-600 hover:bg-red-100"
                 >
@@ -281,7 +280,6 @@ export default function EventAnalysisModal({
                 <Button
                   id="refreshAnalysisBtn_eventDetailPage"
                   variant="outline"
-                  size="base"
                   onClick={handleRetry}
                   className="h-7 gap-1.5 text-xs"
                 >
@@ -298,14 +296,12 @@ export default function EventAnalysisModal({
                 <Button
                   id="cancelAnalysisBtn_eventAnalysisModal"
                   variant="outline"
-                  size="base"
                   onClick={handleClose}
                 >
                   Cancel
                 </Button>
                 <Button
                   id="analyzeConfirmBtn_eventAnalysisModal"
-                  size="base"
                   disabled={noDescNoContext}
                   onClick={handleAnalyze}
                   className="bg-violet-600 hover:bg-violet-700 text-white gap-1.5"
@@ -316,12 +312,12 @@ export default function EventAnalysisModal({
               </>
             )}
             {status === 'streaming' && (
-              <Button size="base" disabled className="gap-1.5">
+              <Button disabled className="gap-1.5">
                 <Loader2 className="size-3.5 animate-spin" /> Analyzing…
               </Button>
             )}
             {(status === 'complete' || status === 'error') && (
-              <Button variant="outline" size="base" onClick={handleClose}>
+              <Button variant="outline" onClick={handleClose}>
                 Close
               </Button>
             )}

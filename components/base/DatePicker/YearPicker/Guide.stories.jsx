@@ -51,6 +51,75 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ headers, rows }) => (
+  <div className="overflow-x-auto mb-4">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr key={i} className="even:bg-gray-50">
+            {row.map((cell, j) => (
+              <td
+                key={j}
+                className={`px-3 py-2 border border-gray-200 text-xs ${
+                  j === 0
+                    ? 'font-mono text-violet-700 whitespace-nowrap'
+                    : j === 1
+                      ? 'font-mono text-gray-500 max-w-xs'
+                      : j === 2
+                        ? 'font-mono text-gray-400 whitespace-nowrap'
+                        : 'text-gray-700'
+                }`}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 // ─── Stateful demo helpers ────────────────────────────────────────────────────
 
 function YearDemo(props) {
@@ -61,7 +130,7 @@ function YearDemo(props) {
 function YearFieldDemo({ error, description, label = 'Year', required = false, ...props }) {
   const [year, setYear] = useState(null)
   return (
-    <FieldContent size="base" error={error}>
+    <FieldContent error={error}>
       <FieldLabel required={required}>{label}</FieldLabel>
       <YearPicker value={year} onChange={setYear} {...props} />
       {description && (
@@ -206,56 +275,27 @@ export const YearPickerDocs = {
         </div>
 
         {/* Parts table */}
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Part', 'Element', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'Trigger',
-                  '<button>',
-                  'Opens and closes the popover. Displays the selected year or placeholder.',
-                ],
-                [
-                  'Placeholder',
-                  '<span>',
-                  'Text shown inside the trigger when no year is selected.',
-                ],
-                [
-                  'Icon',
-                  'ReactNode',
-                  'Right-side icon of the trigger. Defaults to CalendarIcon. Customizable via the icon prop.',
-                ],
-                [
-                  'YearList',
-                  '<div>',
-                  'Scrollable list of year buttons from fromYear to toYear. Auto-scrolls to selected year (or current year) on open.',
-                ],
-              ].map(([part, el, desc]) => (
-                <tr key={part} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {part}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {el}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ApiTable
+          headers={['Part', 'Element', 'Description']}
+          rows={[
+            [
+              'Trigger',
+              '<button>',
+              'Opens and closes the popover. Displays the selected year or placeholder.',
+            ],
+            ['Placeholder', '<span>', 'Text shown inside the trigger when no year is selected.'],
+            [
+              'Icon',
+              'ReactNode',
+              'Right-side icon of the trigger. Defaults to CalendarIcon. Customizable via the icon prop.',
+            ],
+            [
+              'YearList',
+              '<div>',
+              'Scrollable list of year buttons from fromYear to toYear. Auto-scrolls to selected year (or current year) on open.',
+            ],
+          ]}
+        />
 
         <Code>{`import YearPicker from '@/components/base/DatePicker/YearPicker/YearPicker'
 
@@ -281,26 +321,6 @@ export const YearPickerDocs = {
   value={year}
   onChange={setYear}
 />`}</Code>
-      </Section>
-
-      {/* Sizes */}
-      <Section
-        title="Sizes"
-        description="Six sizes following the same scale as DatePicker and Input."
-      >
-        <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 max-w-xs">
-          {['xs', 'sm', 'base', 'md', 'lg'].map((size) => (
-            <div key={size} className="flex items-center gap-3">
-              <span className="text-xs font-mono text-gray-400 w-8 shrink-0">{size}</span>
-              <YearDemo size={size} />
-            </div>
-          ))}
-        </div>
-        <Code>{`<YearPicker size="xs"   value={year} onChange={setYear} />
-<YearPicker size="sm"   value={year} onChange={setYear} />
-<YearPicker size="base" value={year} onChange={setYear} />  {/* default */}
-<YearPicker size="md"   value={year} onChange={setYear} />
-<YearPicker size="lg"   value={year} onChange={setYear} />`}</Code>
       </Section>
 
       {/* Year Range */}
@@ -375,7 +395,7 @@ export const YearPickerDocs = {
         <Preview>
           <YearFieldDemo label="Birth year" required error="Year is required." />
         </Preview>
-        <Code>{`<FieldContent size="base" error={errors.birth_year?.message}>
+        <Code>{`<FieldContent error={errors.birth_year?.message}>
   <FieldLabel required>Birth year</FieldLabel>
   <YearPicker value={year} onChange={setYear} />
   <FieldError />
@@ -394,7 +414,7 @@ export const YearPickerDocs = {
             description="Defaults to current year if left blank."
           />
         </Preview>
-        <Code>{`<FieldContent size="base">
+        <Code>{`<FieldContent>
   <FieldLabel required>Birth year</FieldLabel>
   <YearPicker value={year} onChange={setYear} />
   <FieldDescription className="text-xs text-slate-400">The year you were born.</FieldDescription>
@@ -413,7 +433,7 @@ export const YearPickerDocs = {
   control={control}
   rules={{ required: 'Year is required.' }}
   render={({ field }) => (
-    <FieldContent size="base" error={errors.birth_year?.message}>
+    <FieldContent error={errors.birth_year?.message}>
       <FieldLabel required>Birth year</FieldLabel>
       <YearPicker
         value={field.value ?? null}
@@ -425,72 +445,68 @@ export const YearPickerDocs = {
 />`}</Code>
       </Section>
 
-      {/* Props */}
-      <Section title="Props">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['value', 'number | null', 'null', 'Controlled selected year.'],
-                ['onChange', '(year: number) => void', '—', 'Fires with the selected year number.'],
-                ['fromYear', 'number', '1970', 'First year in the list.'],
-                ['toYear', 'number', 'current + 20', 'Last year in the list.'],
-                ['placeholder', 'string', '"Pick a year"', 'Text shown when no year is selected.'],
-                ['disabled', 'boolean', 'false', 'Prevents interaction and applies opacity.'],
-                [
-                  'variant',
-                  '"default" | "error" | "disabled"',
-                  '—',
-                  'Override the auto-detected visual variant.',
-                ],
-                [
-                  'size',
-                  '"xs" | "sm" | "base" | "md" | "lg"',
-                  '"base"',
-                  'Trigger button height. Inherits from FieldContent if not set.',
-                ],
-                [
-                  'icon',
-                  'ReactNode',
-                  '<CalendarIcon />',
-                  'Icon on the right of the trigger. Pass null to remove.',
-                ],
-                [
-                  'align',
-                  '"start" | "center" | "end"',
-                  '"start"',
-                  'Popover alignment relative to the trigger.',
-                ],
-                ['className', 'string', '—', 'Additional Tailwind classes on the trigger button.'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <BestPractices
+          items={[
+            {
+              heading: 'When to use',
+              cards: [
+                {
+                  title: 'Use YearPicker when only a year is needed — not a full date',
+                  body: 'Birth year, fiscal year, graduation year — fields where only the year matters, not a specific month or day.',
+                },
+                {
+                  title: 'Always constrain the range with fromYear / toYear',
+                  body: 'The default range (1970 – current+20) is very wide. Set fromYear/toYear to the meaningful range for your domain so users find the right year faster.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              cards: [
+                {
+                  title: 'Use Controller from react-hook-form — not register',
+                  body: 'YearPicker calls onChange(number), not a native input event. register will not capture the value. Always wrap with Controller.',
+                },
+              ],
+            },
+          ]}
+        />
+      </Section>
+
+      {/* API Reference */}
+      <Section title="API Reference">
+        <ApiTable
+          headers={['Prop', 'Type', 'Default', 'Description']}
+          rows={[
+            ['value', 'number | null', 'null', 'Controlled selected year.'],
+            ['onChange', '(year: number) => void', '—', 'Fires with the selected year number.'],
+            ['fromYear', 'number', '1970', 'First year in the list.'],
+            ['toYear', 'number', 'current + 20', 'Last year in the list.'],
+            ['placeholder', 'string', '"Pick a year"', 'Text shown when no year is selected.'],
+            ['disabled', 'boolean', 'false', 'Prevents interaction and applies opacity.'],
+            [
+              'variant',
+              '"default" | "error" | "disabled"',
+              '—',
+              'Override the auto-detected visual variant.',
+            ],
+            [
+              'icon',
+              'ReactNode',
+              '<CalendarIcon />',
+              'Icon on the right of the trigger. Pass null to remove.',
+            ],
+            [
+              'align',
+              '"start" | "center" | "end"',
+              '"start"',
+              'Popover alignment relative to the trigger.',
+            ],
+            ['className', 'string', '—', 'Additional Tailwind classes on the trigger button.'],
+          ]}
+        />
       </Section>
     </div>
   ),

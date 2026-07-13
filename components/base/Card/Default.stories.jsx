@@ -26,6 +26,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const AddButton = () => (
   <Button
     size="md"
@@ -40,9 +68,9 @@ const AddButton = () => (
 export const FullContent = {
   name: 'Full Content',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         The <code className="font-mono bg-gray-100 px-1 rounded text-xs">shell</code> variant
         (default) works for any content type — tables, forms, stats, alerts. Combine{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardHeader</code>,{' '}
@@ -356,7 +384,47 @@ export const FullContent = {
         </div>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use shell (default) for all neutral containers',
+                body: 'Tables, forms, stats, and alerts all fit in shell without needing a different variant. Only switch to a status variant when the card communicates a real semantic state.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't manually set background or border on the card root",
+                body: 'Let variant control the visual style — overriding bg or border via className bypasses the variant system and breaks consistency across the app.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Always wrap CardTitle and CardDescription in CardHeaderContent',
+                body: 'CardHeaderContent handles min-w-0 flex-1 so long titles truncate correctly when CardAction is present. Using a raw div breaks this truncation.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use CardContent className="p-0" for tables and charts',
+                body: 'The default p-4 padding breaks table row alignment at the card edge. Always override to p-0 for flush content, then let the table cells control their own padding.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* Table card — flush content */}
 <Card>
@@ -385,9 +453,9 @@ export const FullContent = {
 export const ScrollableContent = {
   name: 'Scrollable Content',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         For long lists inside a card, wrap the list in a div with{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">max-h-* overflow-y-auto</code>{' '}
         inside{' '}
@@ -450,7 +518,47 @@ export const ScrollableContent = {
         </Card>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use max-h-* overflow-y-auto for long lists inside CardContent',
+                body: 'When the list is too long to show in full, wrap it in a scroll container inside CardContent className="p-0". The CardHeader and CardFooter stay pinned while the body scrolls.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't wrap the entire card in a scroll container",
+                body: 'Only scroll the list inside CardContent — the header and footer must remain fixed. Wrapping the whole card hides the header as the user scrolls and breaks the sticky action button pattern.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Ensure the scroll container is keyboard accessible',
+                body: 'Users should be able to focus into the list with Tab and scroll with arrow keys. Test that focus does not get trapped inside the scroll region.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Pin column headers outside the scroll div',
+                body: 'Place headers in a sibling div with border-b before the scroll container — they become visually sticky without needing position: sticky since they sit above the scroll region.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`<Card>
   <CardHeader>...</CardHeader>
@@ -480,9 +588,9 @@ export const ScrollableContent = {
 export const Grid = {
   name: 'Grid',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         Cards work in CSS Grid at any column count. Use{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">grid grid-cols-N gap-3</code>{' '}
         on the parent. Cards stretch equally — no extra props needed.
@@ -577,7 +685,47 @@ export const Grid = {
         </div>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use grid grid-cols-N gap-3 for uniform stat or summary card layouts',
+                body: 'Cards stretch equally in a grid — no extra props needed. Use grid-cols-2 for pairs, grid-cols-3 for summary stats, grid-cols-4 max on desktop.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't exceed 4 columns on desktop",
+                body: 'More than 4 columns makes stat values too small to scan quickly and they collapse poorly on mobile. Stick to 3–4 columns max for readability across screen sizes.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Keep variant consistent across all tiles in a grid',
+                body: 'Mixing variants (shell + warning + danger) in a uniform stat grid creates visual inconsistency and confuses users about which cards have semantic meaning. Use text color for semantic emphasis instead.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use col-span-N on individual cards to span multiple columns',
+                body: 'A table card can span col-span-2 or col-span-3 above a row of stat tiles in the same grid. Cards stretch equally — the grid handles height alignment automatically.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* 3-column stat grid */}
 <div className="grid grid-cols-3 gap-3">
@@ -604,9 +752,9 @@ export const Grid = {
 export const FooterAlignment = {
   name: 'Footer Alignment',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         Pass <code className="font-mono bg-gray-100 px-1 rounded text-xs">align</code> to{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardFooter</code> to control
         horizontal alignment:{' '}
@@ -714,7 +862,47 @@ export const FooterAlignment = {
         </div>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use align="start" for forms and align="end" for destructive actions',
+                body: 'align="start" (default) for forms with Cancel + Save follows LTR reading flow. align="end" for destructive flows (Delete, Remove) follows iOS/Android and web modal conventions.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: 'Don\'t use align="center" for multiple buttons',
+                body: 'Centering a button group looks disconnected from the card content. Use start or end instead — centering works only for a single confirmation action.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Destructive buttons should come after Cancel in DOM order',
+                body: 'Screen readers and keyboard users encounter buttons in source order. Place Cancel before Delete regardless of visual alignment — this ensures the safer action is always reached first.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use className="justify-between gap-3" for a description + action layout',
+                body: 'For "N items · last updated" + Export button layouts, use className="justify-between gap-3" with min-w-0 on the text and shrink-0 on the button — more reliable than an align prop.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`<CardFooter align="start" className="gap-2">   {/* default */}
   <Button variant="outline">Cancel</Button>
@@ -740,110 +928,12 @@ export const FooterAlignment = {
   ),
 }
 
-export const Padding = {
-  name: 'Padding',
-  render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
-      {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
-        Pass <code className="font-mono bg-gray-100 px-1 rounded text-xs">padding</code> to{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardHeader</code>,{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardContent</code>, or{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardFooter</code> to override
-        the default spacing. When omitted, shell uses{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">px-5 py-4</code>. Use{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">padding=&quot;none&quot;</code>{' '}
-        or{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">
-          className=&quot;p-0&quot;
-        </code>{' '}
-        for flush content like tables.
-      </p>
-
-      {/* 2. Live preview */}
-      <div className="w-full max-w-2xl space-y-4">
-        {[
-          { size: 'none', label: 'none · p-0 · 0px' },
-          { size: 'xs', label: 'xs · p-2 · 8px' },
-          { size: 'sm', label: 'sm · p-3 · 12px' },
-          { size: 'base', label: 'base · p-4 · 16px' },
-          { size: 'md', label: 'md · p-5 · 20px' },
-          { size: 'lg', label: 'lg · p-6 · 24px' },
-          { size: 'xl', label: 'xl · p-8 · 32px' },
-        ].map(({ size, label }) => (
-          <Card key={size}>
-            <CardHeader padding={size}>
-              <CardIcon icon={ShoppingCart} />
-              <div className="min-w-0 flex-1">
-                <CardTitle>Products</CardTitle>
-                <CardDescription>All active items in your inventory</CardDescription>
-              </div>
-              <CardAction>
-                <span className="text-xs font-mono text-violet-600 bg-violet-50 px-2 py-0.5 rounded">
-                  {label}
-                </span>
-              </CardAction>
-            </CardHeader>
-            <CardContent padding={size}>
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Product
-                    </th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Stock
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { name: 'Moisturizer', stock: 3 },
-                    { name: 'Vitamin C Serum', stock: 1 },
-                    { name: 'Shampoo', stock: 8 },
-                  ].map((row) => (
-                    <tr key={row.name} className="bg-white border-b border-slate-100 last:border-0">
-                      <td className="px-3 py-2 font-medium text-slate-900">{row.name}</td>
-                      <td className="px-3 py-2 text-right text-slate-700">{row.stock}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-            <CardFooter padding={size}>
-              <p className="text-xs text-slate-500">3 items · last updated today</p>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-
-      {/* 3. Code snippet */}
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
-        <code>{`{/* default padding (px-5 py-4) — omit the prop */}
-<CardHeader>...</CardHeader>
-<CardContent>...</CardContent>
-<CardFooter>...</CardFooter>
-
-{/* override with named size */}
-<CardHeader padding="sm">...</CardHeader>
-<CardContent padding="lg">...</CardContent>
-<CardFooter padding="xl">...</CardFooter>
-
-{/* flush — no padding */}
-<CardContent padding="none">
-  <table>...</table>
-</CardContent>`}</code>
-      </pre>
-    </div>
-  ),
-}
-
 export const HeaderOnly = {
   name: 'Header Only',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         A card with only a{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardHeader</code> — no body or
         footer. Use for section titles with an action button, or as the top band of a card that
@@ -866,7 +956,47 @@ export const HeaderOnly = {
         </Card>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use when content loads dynamically below the header',
+                body: 'The header appears immediately while the body skeleton or error state renders below — this prevents layout shift from an empty card and gives users immediate context.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use HeaderOnly for static body content",
+                body: 'If you always have static body content, render the full card with CardContent and CardFooter instead of hiding them. HeaderOnly is for dynamic loading patterns, not just a header preference.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Set the right aria attributes if the header-only card is a landmark',
+                body: 'Even with no CardContent, the Card still renders a div. Add the appropriate role or aria-label if this header-only pattern is used as a region landmark on the page.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Combine with CardAction for a persistent Add button',
+                body: 'The header + action button stays visible regardless of the loading, empty, or error state of the body below. This is the correct pattern for all data table section headers in this app.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`<Card>
   <CardHeader>

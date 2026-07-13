@@ -118,48 +118,46 @@ function ProductListSummary({ summary, loading, onFilterChange }) {
       </div>
 
       {/* Mobile View - Accordion */}
-      <Card className="sm:hidden py-0 overflow-hidden">
-        <Accordion type="single" collapsible>
-          <AccordionItem value="product-summary" className="border-0">
-            <AccordionTrigger className="px-4 py-3 items-center hover:no-underline hover:bg-slate-50 focus-visible:ring-violet-200 focus-visible:ring-inset">
-              <div className="flex items-center gap-3 min-w-0 flex-1">
-                <div className="p-2 rounded-lg bg-violet-50 shrink-0">
-                  <PackageIcon className="size-4 text-violet-600" />
-                </div>
-                <div className="text-left min-w-0">
-                  <p className="text-sm font-semibold truncate">Product Summary</p>
-                  <p className="text-xs text-slate-500 truncate">
-                    {data.totalProducts} total products
-                  </p>
-                </div>
+      <Accordion type="single" variant="card" className="sm:hidden overflow-hidden" collapsible>
+        <AccordionItem value="product-summary">
+          <AccordionTrigger>
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="p-2 rounded-lg bg-violet-50 shrink-0">
+                <PackageIcon className="size-4 text-violet-600" />
               </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-4 pb-4 pt-2 border-t border-slate-100">
-              <div className="grid grid-cols-2 gap-3">
-                {stats.map((stat, index) => {
-                  const Icon = stat.icon
-                  const isClickable = stat.filterValue !== undefined && onFilterChange
-                  return (
-                    <div
-                      key={index}
-                      className={`p-3 rounded-lg border bg-slate-50/50${isClickable ? ' cursor-pointer hover:shadow-md transition-shadow' : ''}`}
-                      onClick={isClickable ? () => onFilterChange(stat.filterValue) : undefined}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className={`p-1.5 rounded-md ${stat.bgColor}`}>
-                          <Icon className={`size-3.5 ${stat.color}`} />
-                        </div>
-                        <p className="text-xs font-medium text-slate-600">{stat.title}</p>
+              <div className="text-left min-w-0">
+                <p className="text-sm font-semibold truncate">Product Summary</p>
+                <p className="text-xs text-slate-500 truncate">
+                  {data.totalProducts} total products
+                </p>
+              </div>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="grid grid-cols-2 gap-3">
+              {stats.map((stat, index) => {
+                const Icon = stat.icon
+                const isClickable = stat.filterValue !== undefined && onFilterChange
+                return (
+                  <div
+                    key={index}
+                    className="p-3 rounded-lg border bg-slate-50/50"
+                    onClick={isClickable ? () => onFilterChange(stat.filterValue) : undefined}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`p-1.5 rounded-md ${stat.bgColor}`}>
+                        <Icon className={`size-3.5 ${stat.color}`} />
                       </div>
-                      <p className="text-xl font-bold ml-0.5">{stat.value}</p>
+                      <p className="text-xs font-medium text-slate-600">{stat.title}</p>
                     </div>
-                  )
-                })}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </Card>
+                    <p className="text-xl font-bold ml-0.5">{stat.value}</p>
+                  </div>
+                )
+              })}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </>
   )
 }

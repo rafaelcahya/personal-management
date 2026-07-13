@@ -50,6 +50,7 @@ const Tag = ({ children, color = 'gray' }) => {
     gray: 'bg-gray-100 text-gray-600',
     violet: 'bg-violet-100 text-violet-700',
     green: 'bg-green-100 text-green-700',
+    red: 'bg-red-100 text-red-700',
   }
   return (
     <span
@@ -59,6 +60,44 @@ const Tag = ({ children, color = 'gray' }) => {
     </span>
   )
 }
+
+const ApiTable = ({ component, rows }) => (
+  <div className="mb-6">
+    {component && <p className="text-xs font-mono font-semibold text-gray-500 mb-2">{component}</p>}
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)
 
 // ─── Story ────────────────────────────────────────────────────────────────────
 
@@ -308,353 +347,159 @@ export const Docs = {
           title="Skeleton"
           description="Base component. Shape fully controlled by className."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['animation', "'pulse' | 'wave' | 'none'", "'pulse'", 'Loading animation style.'],
-                  ['className', 'string', '—', 'Controls shape — h-*, w-*, rounded-*, etc.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              ['animation', "'pulse' | 'wave' | 'none'", "'pulse'", 'Loading animation style.'],
+              ['className', 'string', '—', 'Controls shape — h-*, w-*, rounded-*, etc.'],
+            ]}
+          />
         </SubSection>
 
         <SubSection
           title="SkeletonText"
           description="Stacked text-line placeholders. Last line is 60% of width."
         >
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['lines', 'number', '3', 'Number of text line placeholders to render.'],
-                  [
-                    'width',
-                    'string',
-                    "'100%'",
-                    'Width of all lines except the last. Last line = 60% of this.',
-                  ],
-                  [
-                    'animation',
-                    "'pulse' | 'wave' | 'none'",
-                    "'pulse'",
-                    'Animation passed down to each Skeleton.',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              ['lines', 'number', '3', 'Number of text line placeholders to render.'],
+              [
+                'width',
+                'string',
+                "'100%'",
+                'Width of all lines except the last. Last line = 60% of this.',
+              ],
+              [
+                'animation',
+                "'pulse' | 'wave' | 'none'",
+                "'pulse'",
+                'Animation passed down to each Skeleton.',
+              ],
+            ]}
+          />
         </SubSection>
 
         <SubSection title="SkeletonAvatar" description="Circular avatar placeholder.">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'size',
-                    "'sm' | 'default' | 'lg' | 'xl'",
-                    "'default'",
-                    'Avatar size: sm=24px, default=32px, lg=40px, xl=56px.',
-                  ],
-                  ['animation', "'pulse' | 'wave' | 'none'", "'pulse'", 'Animation.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'size',
+                "'sm' | 'default' | 'lg' | 'xl'",
+                "'default'",
+                'Avatar size: sm=24px, default=32px, lg=40px, xl=56px.',
+              ],
+              ['animation', "'pulse' | 'wave' | 'none'", "'pulse'", 'Animation.'],
+            ]}
+          />
         </SubSection>
 
         <SubSection title="SkeletonButton" description="Button-proportioned placeholder.">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'size',
-                    "'sm' | 'default' | 'lg'",
-                    "'default'",
-                    'Button size: sm=h-8, default=h-9, lg=h-10.',
-                  ],
-                  ['animation', "'pulse' | 'wave' | 'none'", "'pulse'", 'Animation.'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'size',
+                "'sm' | 'default' | 'lg'",
+                "'default'",
+                'Button size: sm=h-8, default=h-9, lg=h-10.',
+              ],
+              ['animation', "'pulse' | 'wave' | 'none'", "'pulse'", 'Animation.'],
+            ]}
+          />
         </SubSection>
 
         <SubSection title="SkeletonCard" description="Ready-made card skeleton.">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['lines', 'number', '3', 'Number of body text lines below the header.'],
-                  [
-                    'animation',
-                    "'pulse' | 'wave' | 'none'",
-                    "'pulse'",
-                    'Animation passed to all internal Skeleton elements.',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              ['lines', 'number', '3', 'Number of body text lines below the header.'],
+              [
+                'animation',
+                "'pulse' | 'wave' | 'none'",
+                "'pulse'",
+                'Animation passed to all internal Skeleton elements.',
+              ],
+            ]}
+          />
         </SubSection>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Skeleton when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Content has a known, predictable shape',
+                  body: 'Use Skeleton when the content shape (card, list row, text block) can be mirrored as a placeholder and the fetch takes 200ms or longer — it prevents layout shift and gives users a sense of progress.',
+                },
+                {
+                  title: 'Match the skeleton shape to the real element',
+                  body: 'Pass the same h-*, w-*, and rounded-* classes as the real element so there is no layout shift when data loads. Even small mismatches cause a jarring reflow.',
+                },
+                {
+                  title: 'Prefer presets over freeform shapes',
+                  body: 'Use SkeletonCard, SkeletonText, SkeletonAvatar for common shapes. Only reach for the base Skeleton when no preset covers the exact shape you need.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: 'Use Spinner when content shape is unknown',
+                  body: 'If the content shape is unpredictable (file upload, background job), use a Spinner instead. Skeleton requires a known layout to mirror.',
+                },
+                {
+                  title: 'Skip Skeleton for sub-200ms operations',
+                  body: 'A skeleton that flashes and immediately disappears is more disorienting than waiting. Only show a skeleton when the fetch reliably takes 200ms or longer.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'All Skeleton divs are aria-hidden',
+                  body: 'Never place interactive elements (buttons, links) inside a skeleton block. Skeletons are purely decorative placeholders — users must never be able to interact with them.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Always pair with a conditional render',
+                  body: '{isLoading ? <SkeletonCard /> : <RealCard />}. The skeleton shape should match the real component exactly — same h-*, w-*, and rounded-* — to avoid layout shift.',
+                },
+                {
+                  title: 'Keep animation consistent on one surface',
+                  body: 'Pick either pulse or wave for all skeletons in the same loading state. Mixing them looks unpolished and suggests multiple unrelated load phases.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The content has a known, predictable shape (card, list row, text block) that
-                      can be mirrored as a placeholder
-                    </li>
-                    <li>
-                      The data fetch takes 200 ms or longer — skeleton prevents layout shift and
-                      gives users a sense of progress
-                    </li>
-                    <li>
-                      You are loading a list of items and want to reserve the correct amount of
-                      space before data arrives
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Spinner</strong> when the load time is indeterminate or the
-                      content shape is unknown (e.g. a file upload, a background job)
-                    </li>
-                    <li>
-                      Use <strong>nothing</strong> (no placeholder at all) when the operation
-                      consistently resolves in under 200 ms — flashing a skeleton for that duration
-                      is worse than showing nothing
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Match the skeleton shape to the real content — use the same width, height, and
-                  border-radius as the element it replaces so there is no layout shift when data
-                  loads.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use a preset (SkeletonCard, SkeletonText, SkeletonAvatar) for common shapes and
-                  only reach for the base Skeleton when you need a freeform size that no preset
-                  covers.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Keep animation consistent within a single loading state — pick either pulse or
-                  wave for all skeletons on the same surface so they feel like one cohesive
-                  placeholder.
-                </p>
               </div>
             </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use Skeleton for operations under 200 ms — showing a brief flash of
-                  placeholder before immediately replacing it with content is more disorienting than
-                  simply waiting for the data.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't place interactive elements (buttons, links) inside a skeleton block —
-                  skeletons are purely decorative placeholders and must be aria-hidden; users should
-                  never be able to interact with them.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't mix pulse and wave on the same screen — inconsistent animation styles within
-                  a single loading state look unpolished and suggest multiple unrelated loading
-                  phases.
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </Section>
     </div>

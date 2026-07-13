@@ -15,6 +15,89 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/base/Popov
 const meta = { title: 'Table' }
 export default meta
 
+// ─── Primitives ──────────────────────────────────────────────────────────────
+
+const Section = ({ title, description, children }) => (
+  <div className="mb-12">
+    <h2 className="text-xl font-semibold text-gray-900 mb-1">{title}</h2>
+    {description && <p className="text-sm text-gray-500 mb-4">{description}</p>}
+    <hr className="mb-5 border-gray-200" />
+    {children}
+  </div>
+)
+
+const SubSection = ({ title, description, children }) => (
+  <div className="mb-8">
+    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-1">{title}</h3>
+    {description && <p className="text-xs text-gray-500 mb-3">{description}</p>}
+    {children}
+  </div>
+)
+
+const Code = ({ children }) => (
+  <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto mb-4 leading-relaxed w-full">
+    <code>{children}</code>
+  </pre>
+)
+
+const Tag = ({ children, color = 'gray' }) => {
+  const colors = {
+    gray: 'bg-gray-100 text-gray-600',
+    violet: 'bg-violet-100 text-violet-700',
+    green: 'bg-green-100 text-green-700',
+    red: 'bg-red-100 text-red-700',
+  }
+  return (
+    <span
+      className={`inline-block px-2 py-0.5 rounded text-xs font-mono font-medium ${colors[color]}`}
+    >
+      {children}
+    </span>
+  )
+}
+
+const colStyles = [
+  'font-mono text-violet-700 whitespace-nowrap',
+  'font-mono text-gray-500 max-w-xs',
+  'font-mono text-gray-400',
+  'text-gray-700',
+]
+
+const ApiTable = ({ headers = ['Prop', 'Type', 'Default', 'Description'], rows }) => (
+  <div className="mb-6 overflow-x-auto">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, ri) => (
+          <tr key={ri} className="even:bg-gray-50">
+            {row.map((cell, ci) => (
+              <td
+                key={ci}
+                className={`px-3 py-2 border border-gray-200 text-xs ${colStyles[ci] || 'text-gray-700'}`}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+// ─── Data ────────────────────────────────────────────────────────────────────
+
 const sampleData = [
   { id: 1, ticker: 'BBCA', name: 'Bank Central Asia', price: 9250, qty: 100, type: 'Buy' },
   { id: 2, ticker: 'TLKM', name: 'Telkom Indonesia', price: 3120, qty: 200, type: 'Sell' },
@@ -41,47 +124,51 @@ const columns = [
   { id: 'type', header: 'Type', cell: (row) => row.type },
 ]
 
+// ─── Story ───────────────────────────────────────────────────────────────────
+
 export const Docs = {
   name: 'Docs',
   render: () => (
-    <div className="flex flex-col gap-10 w-full max-w-4xl py-6 px-2">
+    <div className="p-8 max-w-4xl font-sans text-gray-900">
       {/* Header */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-gray-900">Table & DataTable</h1>
-        <p className="text-base text-gray-500 leading-relaxed">
+      <div className="mb-10">
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900">Table & DataTable</h1>
+          <Tag color="violet">Base Component</Tag>
+        </div>
+        <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
           A two-layer table system built from scratch. Layer 1 provides pure presentational HTML
-          wrappers ( <code className="font-mono bg-gray-100 px-1 rounded text-xs">Table</code>,{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-xs">TableHeader</code>,{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-xs">TableBody</code>, etc.).
-          Layer 2 wraps them into{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-xs">DataTable</code> — a
-          feature-rich compound component with sorting, search, selection, expand, pagination,
-          loading skeleton, and empty state.
+          wrappers (<code className="font-mono text-sm">Table</code>,{' '}
+          <code className="font-mono text-sm">TableHeader</code>,{' '}
+          <code className="font-mono text-sm">TableBody</code>, etc.). Layer 2 wraps them into{' '}
+          <code className="font-mono text-sm">DataTable</code> — a feature-rich compound component
+          with sorting, search, selection, expand, pagination, loading skeleton, and empty state.
         </p>
       </div>
 
       {/* Overview */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Overview</h2>
-        <DataTable
-          data={sampleData}
-          rowId="id"
-          columns={columns}
-          searchable
-          searchKeys={['ticker', 'name']}
-          sortable
-          selectable
-          expandable
-          expandContent={(row) => (
-            <div className="text-xs text-gray-500">
-              Full name: <strong>{row.name}</strong> · Type: <strong>{row.type}</strong>
-            </div>
-          )}
-          pagination
-          pageSize={5}
-        />
-        <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-          <code>{`import { DataTable } from '@/components/base/Table/DataTable'
+      <Section title="Overview">
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4">
+          <span className="text-xs text-gray-400 block mb-3">DataTable — all features enabled</span>
+          <DataTable
+            data={sampleData}
+            rowId="id"
+            columns={columns}
+            searchable
+            searchKeys={['ticker', 'name']}
+            sortable
+            selectable
+            expandable
+            expandContent={(row) => (
+              <div className="text-xs text-gray-500">
+                Full name: <strong>{row.name}</strong> · Type: <strong>{row.type}</strong>
+              </div>
+            )}
+            pagination
+            pageSize={5}
+          />
+        </div>
+        <Code>{`import { DataTable } from '@/components/base/Table/DataTable'
 
 const columns = [
   { id: 'ticker', header: 'Ticker', cell: (row) => row.ticker, sortable: true },
@@ -101,17 +188,13 @@ const columns = [
   expandContent={(row) => <TradeDetail trade={row} />}
   pagination
   pageSize={15}
-/>`}</code>
-        </pre>
-      </section>
+/>`}</Code>
+      </Section>
 
-      {/* Anatomy — Layer 1 */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">
-          Anatomy — Layer 1 (Base)
-        </h2>
-        <pre className="bg-gray-50 border border-gray-200 rounded-lg px-5 py-4 text-xs text-gray-700 leading-relaxed">
-          <code>{`<Table>                             ← overflow wrapper + <table>
+      {/* Anatomy */}
+      <Section title="Anatomy">
+        <SubSection title="Layer 1 — Base Components">
+          <pre className="bg-gray-50 border border-gray-200 rounded-lg px-5 py-4 text-xs text-gray-700 leading-relaxed mb-4 w-full overflow-x-auto">{`<Table>                             ← overflow wrapper + <table>
   <TableHeader sticky?>              ← <thead>, optional sticky
     <TableRow>
       <TableHead align? width?>      ← <th>, uppercase tracking-wide
@@ -128,83 +211,49 @@ const columns = [
     </TableRow>
   </TableFooter>
   <TableCaption />                   ← <caption>
-</Table>`}</code>
-        </pre>
+</Table>`}</pre>
 
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Ticker</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead align="right">Price</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sampleData.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>
-                    <span className="font-mono font-semibold">{row.ticker}</span>
-                  </TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell align="right">Rp {row.price.toLocaleString()}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell className="font-medium">Total</TableCell>
-                <TableCell />
-                <TableCell align="right">
-                  Rp {sampleData.reduce((s, r) => s + r.price, 0).toLocaleString()}
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-            <TableCaption>All amounts in Indonesian Rupiah (IDR)</TableCaption>
-          </Table>
-        </div>
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4">
+            <span className="text-xs text-gray-400 block mb-3">
+              Table with header, body, footer, caption
+            </span>
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ticker</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead align="right">Price</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sampleData.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell>
+                        <span className="font-mono font-semibold">{row.ticker}</span>
+                      </TableCell>
+                      <TableCell>{row.name}</TableCell>
+                      <TableCell align="right">Rp {row.price.toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell className="font-medium">Total</TableCell>
+                    <TableCell />
+                    <TableCell align="right">
+                      Rp {sampleData.reduce((s, r) => s + r.price, 0).toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
+                <TableCaption>All amounts in Indonesian Rupiah (IDR)</TableCaption>
+              </Table>
+            </div>
+          </div>
+        </SubSection>
 
-        <table className="w-full text-sm border-collapse">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-40">
-                Part
-              </th>
-              <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
-                Description
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {[
-              ['Table', 'Overflow wrapper + <table>. Use inside any container.'],
-              ['TableHeader', 'Renders <thead>. Pass sticky to pin on scroll.'],
-              ['TableBody', 'Renders <tbody> with divide-y between rows.'],
-              ['TableFooter', 'Renders <tfoot> with gray-50 background.'],
-              [
-                'TableRow',
-                'Renders <tr>. selected adds violet-50 bg. clickable adds pointer cursor.',
-              ],
-              ['TableHead', 'Renders <th>. Uppercase tracking-wide. Accepts align and width.'],
-              ['TableCell', 'Renders <td>. Accepts align prop (left | right | center).'],
-              ['TableCaption', 'Renders <caption> below the table.'],
-            ].map(([part, desc]) => (
-              <tr key={part}>
-                <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{part}</td>
-                <td className="py-2.5 text-xs text-gray-600">{desc}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      {/* Anatomy — Layer 2 */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">
-          Anatomy — Layer 2 (DataTable)
-        </h2>
-        <pre className="bg-gray-50 border border-gray-200 rounded-lg px-5 py-4 text-xs text-gray-700 leading-relaxed">
-          <code>{`DataTable
+        <SubSection title="Layer 2 — DataTable">
+          <pre className="bg-gray-50 border border-gray-200 rounded-lg px-5 py-4 text-xs text-gray-700 leading-relaxed w-full overflow-x-auto">{`DataTable
 ├── search bar              (searchable prop)
 ├── Table
 │   ├── TableHeader
@@ -218,36 +267,35 @@ const columns = [
 │           ├── TableCell (chevron)    (expandable)
 │           ├── TableCell per column
 │           └── expand row (colspan)  (expandable)
-└── pagination controls     (pagination prop)`}</code>
-        </pre>
-      </section>
+└── pagination controls     (pagination prop)`}</pre>
+        </SubSection>
+      </Section>
 
       {/* Usage */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Usage</h2>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-gray-700">Minimal — just data + columns</span>
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Ticker</TableHead>
-                  <TableHead>Name</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sampleData.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>{row.ticker}</TableCell>
-                    <TableCell>{row.name}</TableCell>
+      <Section title="Usage">
+        <SubSection title="Minimal — just data + columns">
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4">
+            <span className="text-xs text-gray-400 block mb-3">Layer 1 — read-only table</span>
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ticker</TableHead>
+                    <TableHead>Name</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {sampleData.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell>{row.ticker}</TableCell>
+                      <TableCell>{row.name}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`<Table>
+          <Code>{`<Table>
   <TableHeader>
     <TableRow>
       <TableHead>Ticker</TableHead>
@@ -262,26 +310,26 @@ const columns = [
       </TableRow>
     ))}
   </TableBody>
-</Table>`}</code>
-          </pre>
-        </div>
+</Table>`}</Code>
+        </SubSection>
 
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-gray-700">
-            DataTable — sort + search + pagination
-          </span>
-          <DataTable
-            data={sampleData}
-            rowId="id"
-            columns={columns}
-            searchable
-            searchKeys={['ticker', 'name']}
-            sortable
-            pagination
-            pageSize={5}
-          />
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`<DataTable
+        <SubSection title="DataTable — sort + search + pagination">
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4">
+            <span className="text-xs text-gray-400 block mb-3">
+              Layer 2 — sort, search, pagination
+            </span>
+            <DataTable
+              data={sampleData}
+              rowId="id"
+              columns={columns}
+              searchable
+              searchKeys={['ticker', 'name']}
+              sortable
+              pagination
+              pageSize={5}
+            />
+          </div>
+          <Code>{`<DataTable
   data={trades}
   rowId="id"
   columns={columns}
@@ -290,173 +338,146 @@ const columns = [
   sortable
   pagination
   pageSize={10}
-/>`}</code>
-          </pre>
-        </div>
+/>`}</Code>
+        </SubSection>
 
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-gray-700">Column alignment</span>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            Both <code className="font-mono bg-gray-100 px-1 rounded text-xs">TableHead</code> and{' '}
-            <code className="font-mono bg-gray-100 px-1 rounded text-xs">TableCell</code> accept an{' '}
-            <code className="font-mono bg-gray-100 px-1 rounded text-xs">align</code> prop:{' '}
-            <code className="font-mono bg-gray-100 px-1 rounded text-xs">&quot;left&quot;</code>{' '}
-            (default),{' '}
-            <code className="font-mono bg-gray-100 px-1 rounded text-xs">&quot;right&quot;</code>,
-            or{' '}
-            <code className="font-mono bg-gray-100 px-1 rounded text-xs">&quot;center&quot;</code>.
-            In <code className="font-mono bg-gray-100 px-1 rounded text-xs">DataTable</code>, set{' '}
-            <code className="font-mono bg-gray-100 px-1 rounded text-xs">align</code> on the column
-            definition and it applies to both header and cell automatically.
+        <SubSection title="Column alignment">
+          <p className="text-xs text-gray-500 mb-3">
+            Both <code className="font-mono bg-gray-100 px-1 rounded">TableHead</code> and{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">TableCell</code> accept an{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">align</code> prop:{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">&quot;left&quot;</code> (default),{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">&quot;right&quot;</code>, or{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">&quot;center&quot;</code>. In
+            DataTable, set <code className="font-mono bg-gray-100 px-1 rounded">align</code> on the
+            column definition and it applies to both header and cell automatically.
           </p>
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Ticker</TableHead>
-                  <TableHead align="center">Type</TableHead>
-                  <TableHead align="right">Price (IDR)</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sampleData.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>
-                      <span className="font-mono font-semibold">{row.ticker}</span>
-                    </TableCell>
-                    <TableCell align="center">{row.type}</TableCell>
-                    <TableCell align="right">Rp {row.price.toLocaleString()}</TableCell>
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4">
+            <span className="text-xs text-gray-400 block mb-3">
+              left (default) · center · right
+            </span>
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ticker</TableHead>
+                    <TableHead align="center">Type</TableHead>
+                    <TableHead align="right">Price (IDR)</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {sampleData.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell>
+                        <span className="font-mono font-semibold">{row.ticker}</span>
+                      </TableCell>
+                      <TableCell align="center">{row.type}</TableCell>
+                      <TableCell align="right">Rp {row.price.toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`{/* Layer 1 — TableHead + TableCell */}
-<TableHead>Ticker</TableHead>          {/* left (default) */}
+          <Code>{`{/* Layer 1 */}
 <TableHead align="center">Type</TableHead>
 <TableHead align="right">Price</TableHead>
-
-<TableCell>{row.ticker}</TableCell>    {/* left (default) */}
 <TableCell align="center">{row.type}</TableCell>
 <TableCell align="right">{row.price}</TableCell>
 
-{/* Layer 2 — via column definition */}
+{/* Layer 2 — column definition */}
 const columns = [
-  { id: 'ticker', header: 'Ticker', cell: (row) => row.ticker },
-  { id: 'type',   header: 'Type',   cell: (row) => row.type,  align: 'center' },
-  { id: 'price',  header: 'Price',  cell: (row) => row.price, align: 'right' },
-]`}</code>
-          </pre>
-        </div>
+  { id: 'type',  header: 'Type',  cell: (row) => row.type,  align: 'center' },
+  { id: 'price', header: 'Price', cell: (row) => row.price, align: 'right' },
+]`}</Code>
+        </SubSection>
 
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-gray-700">Table inside Popover</span>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            Use <code className="font-mono bg-gray-100 px-1 rounded text-xs">Table</code> (Layer 1)
-            inside a Popover to show a compact data breakdown — e.g. lot detail, price history, or a
-            breakdown of totals — without navigating away from the current view.
+        <SubSection title="Table inside Popover">
+          <p className="text-xs text-gray-500 mb-3">
+            Use <code className="font-mono bg-gray-100 px-1 rounded">Table</code> (Layer 1) inside a
+            Popover to show compact data breakdowns — lot detail, price history, or fee summaries —
+            without navigating away from the current view.
           </p>
-          <div className="flex gap-3 flex-wrap">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 shadow-sm">
-                  BBCA · 3 lots
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0 overflow-hidden" align="start">
-                <div className="px-3 py-2.5 border-b border-gray-100">
-                  <p className="text-xs font-semibold text-gray-700">BBCA — Lot breakdown</p>
-                  <p className="text-xs text-gray-400">Bank Central Asia</p>
-                </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead align="right">Price</TableHead>
-                      <TableHead align="right">Qty</TableHead>
-                      <TableHead align="right">Value</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {[
-                      { date: '12 Jan', price: 8900, qty: 100 },
-                      { date: '3 Mar', price: 9100, qty: 50 },
-                      { date: '18 Jun', price: 9250, qty: 75 },
-                    ].map((lot, i) => (
-                      <TableRow key={i}>
-                        <TableCell>{lot.date}</TableCell>
-                        <TableCell align="right">Rp {lot.price.toLocaleString()}</TableCell>
-                        <TableCell align="right">{lot.qty}</TableCell>
-                        <TableCell align="right">
-                          Rp {(lot.price * lot.qty).toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <div className="px-4 py-2.5 border-t border-gray-100 flex justify-between text-xs">
-                  <span className="text-gray-400">Total</span>
-                  <span className="font-semibold text-gray-700">
-                    Rp {(8900 * 100 + 9100 * 50 + 9250 * 75).toLocaleString()}
-                  </span>
-                </div>
-              </PopoverContent>
-            </Popover>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 shadow-sm">
-                  TLKM · 2 lots
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0 overflow-hidden" align="start">
-                <div className="px-3 py-2.5 border-b border-gray-100">
-                  <p className="text-xs font-semibold text-gray-700">TLKM — Lot breakdown</p>
-                  <p className="text-xs text-gray-400">Telkom Indonesia</p>
-                </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead align="right">Price</TableHead>
-                      <TableHead align="right">Qty</TableHead>
-                      <TableHead align="right">Value</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {[
-                      { date: '5 Feb', price: 3300, qty: 100 },
-                      { date: '20 May', price: 3120, qty: 100 },
-                    ].map((lot, i) => (
-                      <TableRow key={i}>
-                        <TableCell>{lot.date}</TableCell>
-                        <TableCell align="right">Rp {lot.price.toLocaleString()}</TableCell>
-                        <TableCell align="right">{lot.qty}</TableCell>
-                        <TableCell align="right">
-                          Rp {(lot.price * lot.qty).toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <div className="px-4 py-2.5 border-t border-gray-100 flex justify-between text-xs">
-                  <span className="text-gray-400">Total</span>
-                  <span className="font-semibold text-gray-700">
-                    Rp {(3300 * 100 + 3120 * 100).toLocaleString()}
-                  </span>
-                </div>
-              </PopoverContent>
-            </Popover>
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4">
+            <span className="text-xs text-gray-400 block mb-3">
+              click a button to open the lot breakdown
+            </span>
+            <div className="flex gap-3 flex-wrap">
+              {[
+                {
+                  ticker: 'BBCA',
+                  name: 'Bank Central Asia',
+                  lots: [
+                    { date: '12 Jan', price: 8900, qty: 100 },
+                    { date: '3 Mar', price: 9100, qty: 50 },
+                    { date: '18 Jun', price: 9250, qty: 75 },
+                  ],
+                },
+                {
+                  ticker: 'TLKM',
+                  name: 'Telkom Indonesia',
+                  lots: [
+                    { date: '5 Feb', price: 3300, qty: 100 },
+                    { date: '20 May', price: 3120, qty: 100 },
+                  ],
+                },
+              ].map((pos) => {
+                const total = pos.lots.reduce((s, l) => s + l.price * l.qty, 0)
+                const totalQty = pos.lots.reduce((s, l) => s + l.qty, 0)
+                return (
+                  <Popover key={pos.ticker}>
+                    <PopoverTrigger asChild>
+                      <button className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 shadow-sm">
+                        {pos.ticker} · {totalQty} shares
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-0 overflow-hidden" align="start">
+                      <div className="px-3 py-2.5 border-b border-gray-100">
+                        <p className="text-xs font-semibold text-gray-700">
+                          {pos.ticker} — Lot breakdown
+                        </p>
+                        <p className="text-xs text-gray-400">{pos.name}</p>
+                      </div>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Date</TableHead>
+                            <TableHead align="right">Price</TableHead>
+                            <TableHead align="right">Qty</TableHead>
+                            <TableHead align="right">Value</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {pos.lots.map((lot, i) => (
+                            <TableRow key={i}>
+                              <TableCell>{lot.date}</TableCell>
+                              <TableCell align="right">Rp {lot.price.toLocaleString()}</TableCell>
+                              <TableCell align="right">{lot.qty}</TableCell>
+                              <TableCell align="right">
+                                Rp {(lot.price * lot.qty).toLocaleString()}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                      <div className="px-4 py-2.5 border-t border-gray-100 flex justify-between text-xs">
+                        <span className="text-gray-400">Total</span>
+                        <span className="font-semibold text-gray-700">
+                          Rp {total.toLocaleString()}
+                        </span>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                )
+              })}
+            </div>
           </div>
-
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`import { Popover, PopoverTrigger, PopoverContent } from '@/components/base/Popover/Popover'
+          <Code>{`import { Popover, PopoverTrigger, PopoverContent } from '@/components/base/Popover/Popover'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/base/Table/Table'
 
 <Popover>
   <PopoverTrigger asChild>
-    <button>BBCA · 3 lots</button>
+    <button>BBCA · 225 shares</button>
   </PopoverTrigger>
   <PopoverContent className="w-80 p-0 overflow-hidden" align="start">
     <div className="px-3 py-2.5 border-b border-gray-100">
@@ -485,504 +506,312 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
       <span className="font-semibold">{total}</span>
     </div>
   </PopoverContent>
-</Popover>`}</code>
-          </pre>
-        </div>
+</Popover>`}</Code>
+        </SubSection>
 
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-gray-700">Popover inside Table</span>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            Place a <code className="font-mono bg-gray-100 px-1 rounded text-xs">Popover</code>{' '}
-            inside a <code className="font-mono bg-gray-100 px-1 rounded text-xs">TableCell</code>{' '}
-            to surface inline detail or actions without leaving the row — e.g. a price history
-            tooltip, a note preview, or a quick-edit form triggered from the row itself.
+        <SubSection title="Popover inside Table">
+          <p className="text-xs text-gray-500 mb-3">
+            Place a <code className="font-mono bg-gray-100 px-1 rounded">Popover</code> inside a{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">TableCell</code> to surface inline
+            detail or actions without leaving the row — price history, notes, or a quick-edit form.
           </p>
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Ticker</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead align="right">Price</TableHead>
-                  <TableHead align="right">Qty</TableHead>
-                  <TableHead align="right">History</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  {
-                    id: 1,
-                    ticker: 'BBCA',
-                    name: 'Bank Central Asia',
-                    price: 9250,
-                    qty: 100,
-                    history: [
-                      { date: 'Jun 18', price: 9250 },
-                      { date: 'Mar 3', price: 9100 },
-                      { date: 'Jan 12', price: 8900 },
-                    ],
-                  },
-                  {
-                    id: 2,
-                    ticker: 'TLKM',
-                    name: 'Telkom Indonesia',
-                    price: 3120,
-                    qty: 200,
-                    history: [
-                      { date: 'May 20', price: 3120 },
-                      { date: 'Feb 5', price: 3300 },
-                    ],
-                  },
-                  {
-                    id: 3,
-                    ticker: 'ASII',
-                    name: 'Astra International',
-                    price: 5400,
-                    qty: 150,
-                    history: [
-                      { date: 'Jun 1', price: 5400 },
-                      { date: 'Apr 10', price: 5100 },
-                      { date: 'Jan 20', price: 4950 },
-                    ],
-                  },
-                ].map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>
-                      <span className="font-mono font-semibold text-gray-900">{row.ticker}</span>
-                    </TableCell>
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell align="right">Rp {row.price.toLocaleString()}</TableCell>
-                    <TableCell align="right">{row.qty}</TableCell>
-                    <TableCell align="right">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <button className="text-xs text-violet-600 hover:text-violet-800 hover:underline underline-offset-2 font-medium">
-                            {row.history.length} entries
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-64 p-0 overflow-hidden" align="end">
-                          <div className="px-3 py-2.5 border-b border-gray-100">
-                            <p className="text-xs font-semibold text-gray-700">
-                              {row.ticker} — Price history
-                            </p>
-                          </div>
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Date</TableHead>
-                                <TableHead align="right">Price</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {row.history.map((h, i) => (
-                                <TableRow key={i}>
-                                  <TableCell className="text-xs">{h.date}</TableCell>
-                                  <TableCell align="right" className="text-xs font-mono">
-                                    Rp {h.price.toLocaleString()}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </PopoverContent>
-                      </Popover>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`<Table>
-  <TableHeader>
-    <TableRow>
-      <TableHead>Ticker</TableHead>
-      <TableHead align="right">History</TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody>
-    {rows.map((row) => (
-      <TableRow key={row.id}>
-        <TableCell>{row.ticker}</TableCell>
-        <TableCell align="right">
-          <Popover>
-            <PopoverTrigger asChild>
-              <button className="text-xs text-violet-600 hover:underline">
-                {row.history.length} entries
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64 p-0 overflow-hidden" align="end">
-              <div className="px-3 py-2.5 border-b border-gray-100">
-                <p className="text-xs font-semibold">{row.ticker} — Price history</p>
-              </div>
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4">
+            <span className="text-xs text-gray-400 block mb-3">
+              click &quot;N entries&quot; to open the price history popover
+            </span>
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
+                    <TableHead>Ticker</TableHead>
+                    <TableHead>Name</TableHead>
                     <TableHead align="right">Price</TableHead>
+                    <TableHead align="right">Qty</TableHead>
+                    <TableHead align="right">History</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {row.history.map((h) => (
-                    <TableRow key={h.date}>
-                      <TableCell>{h.date}</TableCell>
-                      <TableCell align="right">{h.price}</TableCell>
+                  {[
+                    {
+                      id: 1,
+                      ticker: 'BBCA',
+                      name: 'Bank Central Asia',
+                      price: 9250,
+                      qty: 100,
+                      history: [
+                        { date: 'Jun 18', price: 9250 },
+                        { date: 'Mar 3', price: 9100 },
+                        { date: 'Jan 12', price: 8900 },
+                      ],
+                    },
+                    {
+                      id: 2,
+                      ticker: 'TLKM',
+                      name: 'Telkom Indonesia',
+                      price: 3120,
+                      qty: 200,
+                      history: [
+                        { date: 'May 20', price: 3120 },
+                        { date: 'Feb 5', price: 3300 },
+                      ],
+                    },
+                    {
+                      id: 3,
+                      ticker: 'ASII',
+                      name: 'Astra International',
+                      price: 5400,
+                      qty: 150,
+                      history: [
+                        { date: 'Jun 1', price: 5400 },
+                        { date: 'Apr 10', price: 5100 },
+                        { date: 'Jan 20', price: 4950 },
+                      ],
+                    },
+                  ].map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell>
+                        <span className="font-mono font-semibold text-gray-900">{row.ticker}</span>
+                      </TableCell>
+                      <TableCell>{row.name}</TableCell>
+                      <TableCell align="right">Rp {row.price.toLocaleString()}</TableCell>
+                      <TableCell align="right">{row.qty}</TableCell>
+                      <TableCell align="right">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="text-xs text-violet-600 hover:text-violet-800 hover:underline underline-offset-2 font-medium">
+                              {row.history.length} entries
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-64 p-0 overflow-hidden" align="end">
+                            <div className="px-3 py-2.5 border-b border-gray-100">
+                              <p className="text-xs font-semibold text-gray-700">
+                                {row.ticker} — Price history
+                              </p>
+                            </div>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Date</TableHead>
+                                  <TableHead align="right">Price</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {row.history.map((h, i) => (
+                                  <TableRow key={i}>
+                                    <TableCell className="text-xs">{h.date}</TableCell>
+                                    <TableCell align="right" className="text-xs font-mono">
+                                      Rp {h.price.toLocaleString()}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </PopoverContent>
+                        </Popover>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </PopoverContent>
-          </Popover>
-        </TableCell>
-      </TableRow>
-    ))}
-  </TableBody>
-</Table>`}</code>
-          </pre>
-        </div>
-      </section>
-
-      {/* When to use */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to use</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-3 p-4 rounded-xl border border-gray-200 bg-gray-50">
-            <p className="text-sm font-semibold text-gray-800">
-              Use{' '}
-              <code className="font-mono bg-white border border-gray-200 px-1.5 py-0.5 rounded text-xs">
-                Table
-              </code>{' '}
-              (Layer 1) when…
-            </p>
-            <ul className="flex flex-col gap-1.5 text-xs text-gray-600 leading-relaxed list-none">
-              {[
-                'The data is static or already fully prepared — no sorting, filtering, or pagination needed.',
-                'You need full control over every row and cell, such as custom row spanning, merged cells, or complex nesting.',
-                'The table is purely presentational — a summary card, a receipt, a comparison grid.',
-                'You want to build your own feature layer on top (e.g. a custom controlled sort outside the table).',
-              ].map((item, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="text-violet-400 shrink-0">·</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
+            </div>
           </div>
-          <div className="flex flex-col gap-3 p-4 rounded-xl border border-violet-200 bg-violet-50">
-            <p className="text-sm font-semibold text-gray-800">
-              Use{' '}
-              <code className="font-mono bg-white border border-violet-200 px-1.5 py-0.5 rounded text-xs">
-                DataTable
-              </code>{' '}
-              (Layer 2) when…
-            </p>
-            <ul className="flex flex-col gap-1.5 text-xs text-gray-600 leading-relaxed list-none">
-              {[
-                'Users need to sort, search, or page through a list — any interactive data table in the app.',
-                'You want row selection (bulk actions, delete, export) without managing the state yourself.',
-                'Rows have detail content that can be expanded inline without navigating to a new page.',
-                'You need a loading skeleton and empty state that are consistent with the rest of the app.',
-              ].map((item, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="text-violet-500 shrink-0">·</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <p className="text-xs text-gray-400 leading-relaxed">
-          <strong className="text-gray-500">Rule of thumb:</strong> start with{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded">DataTable</code>. Drop down to{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded">Table</code> only when you need
-          structure that <code className="font-mono bg-gray-100 px-1 rounded">DataTable</code>{' '}
-          cannot express — merged cells, custom footers, or a fully controlled feature layer.
-        </p>
-      </section>
+          <Code>{`<TableCell align="right">
+  <Popover>
+    <PopoverTrigger asChild>
+      <button className="text-xs text-violet-600 hover:underline">
+        {row.history.length} entries
+      </button>
+    </PopoverTrigger>
+    <PopoverContent className="w-64 p-0 overflow-hidden" align="end">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date</TableHead>
+            <TableHead align="right">Price</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {row.history.map((h) => (
+            <TableRow key={h.date}>
+              <TableCell>{h.date}</TableCell>
+              <TableCell align="right">{h.price}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </PopoverContent>
+  </Popover>
+</TableCell>`}</Code>
+        </SubSection>
+      </Section>
 
-      {/* When to Use */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Table when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use Table (Layer 1) for static, read-only data',
+                  body: 'No sorting, filtering, or pagination needed. Use it when you need a footer, caption, full cell control (custom spanning, merged cells), or when embedding a table inside a Popover.',
+                },
+                {
+                  title: 'Use DataTable (Layer 2) for interactive data tables',
+                  body: 'When users need to sort, search, page through, select rows, or expand inline detail. DataTable handles loading skeleton and empty state consistently without extra state management.',
+                },
+                {
+                  title: 'Use pagination when the dataset can grow beyond 20–30 rows',
+                  body: 'Pagination keeps page height predictable and avoids overwhelming the user with a long scrollable list.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't nest Table inside a TableCell for layout",
+                  body: 'Use CSS grid or flexbox instead. Nested tables break column alignment and screen-reader accessibility.',
+                },
+                {
+                  title: "Don't put more than 7–8 columns in a single table",
+                  body: 'More columns than this becomes unreadable on standard screen widths. Move secondary attributes into an expandable detail row using expandContent.',
+                },
+                {
+                  title: "Don't recreate sort or search on top of raw Table",
+                  body: 'If you find yourself building these features manually on Layer 1, switch to DataTable instead — it handles all of this out of the box.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Always use TableHead for column labels, never TableCell',
+                  body: 'Table renders semantic HTML (table, thead, th). Using TableCell as a header breaks screen reader navigation.',
+                },
+                {
+                  title: 'Always right-align numeric columns',
+                  body: 'Price, quantity, P&L — right-alignment makes values scannable by magnitude and aligns decimal points vertically.',
+                },
+                {
+                  title: 'Always provide a meaningful emptyState when data may be empty',
+                  body: 'Explain WHY the table is empty and offer a next action ("No trades yet — add your first trade"). Screen reader users rely on this to understand the state.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Start with DataTable, drop to Table only when needed',
+                  body: 'Drop down to Layer 1 only when you need structure DataTable cannot express — merged cells, custom footers, or embedding inside a Popover.',
+                },
+                {
+                  title: 'Always provide rowId with a unique value',
+                  body: 'Missing or duplicate IDs break row selection, expand state, and React reconciliation. Use the actual database ID, never a derived or non-unique value.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Displaying multi-column structured data where users need to compare values
-                      across rows — e.g. a trade list, stock portfolio, or inventory log.
-                    </li>
-                    <li>
-                      Users need to sort by a column, search/filter rows, or page through a long
-                      dataset.
-                    </li>
-                    <li>
-                      Rows have uniform structure and each column has a clear label — the header row
-                      is meaningful.
-                    </li>
-                    <li>
-                      Bulk actions (select + delete, export) are needed across multiple rows at
-                      once.
-                    </li>
-                    <li>
-                      Rows contain expandable detail that should be revealed inline without
-                      navigating away.
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use a plain <strong>ul / li list</strong> when data is single-column and no
-                      comparison across attributes is needed — e.g. a notification feed or tag list.
-                    </li>
-                    <li>
-                      Use a <strong>definition list (dl/dt/dd)</strong> or a key-value card when
-                      showing properties of a single entity — e.g. a detail panel or summary card.
-                    </li>
-                    <li>
-                      Use a <strong>stat card grid</strong> when the goal is to highlight aggregated
-                      numbers at a glance rather than browse rows of raw data.
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              </div>
+            </div>
+          ))}
         </div>
-      </section>
-
-      {/* Dos & Don'ts */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Dos & Don'ts</h2>
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always right-align numeric columns (price, quantity, P&L) — it makes values
-                  scannable by magnitude and aligns decimal points vertically.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use <code className="font-mono bg-green-100 px-1 rounded">DataTable</code> with{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">pagination</code> when the
-                  dataset can grow beyond 20–30 rows. This keeps the page height predictable and
-                  avoids overwhelming the user.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Provide a meaningful{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">emptyState</code> node when
-                  the data array may be empty — explain why it's empty and offer a next action (e.g.
-                  "No trades yet — add your first trade").
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't nest a <code className="font-mono bg-red-100 px-1 rounded">Table</code>{' '}
-                  inside a <code className="font-mono bg-red-100 px-1 rounded">TableCell</code> for
-                  layout purposes — use CSS grid or flexbox instead. Nested tables break column
-                  alignment and screen-reader accessibility.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't omit the <code className="font-mono bg-red-100 px-1 rounded">rowId</code>{' '}
-                  prop or use a non-unique value as the key. Missing or duplicate IDs break row
-                  selection, expand state, and React reconciliation.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't put too many columns in a single table — more than 7–8 columns becomes
-                  unreadable on standard screen widths. Split secondary attributes into an
-                  expandable detail row using{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">expandContent</code> instead.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      </Section>
 
       {/* API Reference */}
-      <section className="flex flex-col gap-6">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">API Reference</h2>
+      <Section title="API Reference">
+        <SubSection title="DataTable">
+          <ApiTable
+            rows={[
+              ['data', 'object[]', '[]', 'Array of row objects.'],
+              ['rowId', 'string', '"id"', 'Key of the unique row identifier.'],
+              ['columns', 'ColumnDef[]', '[]', 'Column definitions — see ColumnDef below.'],
+              ['searchable', 'boolean', 'false', 'Show search bar and filter rows.'],
+              ['searchKeys', 'string[]', '[]', 'Row fields to search across.'],
+              ['sortable', 'boolean', 'false', 'Enable column sort on TableHead click.'],
+              ['selectable', 'boolean', 'false', 'Add checkbox column + select-all.'],
+              ['expandable', 'boolean', 'false', 'Make rows clickable; show expandContent below.'],
+              ['expandContent', '(row) => ReactNode', '—', 'Content rendered in the expand row.'],
+              ['pagination', 'boolean', 'false', 'Enable page controls below the table.'],
+              ['pageSize', 'number', '10', 'Rows per page.'],
+              [
+                'paginationVariant',
+                '"full" | "center" | "left" | "right"',
+                '"full"',
+                'Layout of pagination controls. full = prev far left, page centered, next far right.',
+              ],
+              [
+                'stickyHeader',
+                'boolean',
+                'false',
+                'Pin the header on scroll (max-h-96 container).',
+              ],
+              ['loading', 'boolean', 'false', 'Show skeleton rows instead of data.'],
+              ['emptyState', 'ReactNode', '—', 'Node shown when data is empty.'],
+              ['sort', '{ column, direction } | null', '—', 'Controlled sort state.'],
+              ['onSortChange', '(sort) => void', '—', 'Called when sort changes.'],
+              ['selectedRows', 'string[] | number[]', '—', 'Controlled selected row IDs.'],
+              ['onSelectionChange', '(ids[]) => void', '—', 'Called when selection changes.'],
+            ]}
+          />
+        </SubSection>
 
-        {/* DataTable */}
-        <div className="flex flex-col gap-3">
-          <h3 className="text-sm font-semibold text-gray-800">DataTable</h3>
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-40">
-                  Prop
-                </th>
-                <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-56">
-                  Type
-                </th>
-                <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-20">
-                  Default
-                </th>
-                <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
-                  Description
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {[
-                ['data', 'object[]', '[]', 'Array of row objects.'],
-                ['rowId', 'string', '"id"', 'Key of the unique row identifier.'],
-                ['columns', 'ColumnDef[]', '[]', 'Column definitions — see ColumnDef below.'],
-                ['searchable', 'boolean', 'false', 'Show search bar and filter rows.'],
-                ['searchKeys', 'string[]', '[]', 'Row fields to search across.'],
-                ['sortable', 'boolean', 'false', 'Enable column sort on TableHead click.'],
-                ['selectable', 'boolean', 'false', 'Add checkbox column + select-all.'],
-                [
-                  'expandable',
-                  'boolean',
-                  'false',
-                  'Make rows clickable; show expandContent below.',
-                ],
-                ['expandContent', '(row) => ReactNode', '—', 'Content rendered in the expand row.'],
-                ['pagination', 'boolean', 'false', 'Enable page controls below the table.'],
-                ['pageSize', 'number', '10', 'Rows per page.'],
-                [
-                  'paginationVariant',
-                  '"full" | "center" | "left" | "right"',
-                  '"full"',
-                  'Layout of pagination controls. full = prev far left, page centered, next far right. center/left/right = all controls together.',
-                ],
-                [
-                  'stickyHeader',
-                  'boolean',
-                  'false',
-                  'Pin the header on scroll (max-h-96 container).',
-                ],
-                ['loading', 'boolean', 'false', 'Show skeleton rows instead of data.'],
-                ['emptyState', 'ReactNode', '—', 'Node shown when data is empty.'],
-                ['sort', '{ column, direction } | null', '—', 'Controlled sort state.'],
-                ['onSortChange', '(sort) => void', '—', 'Called when sort changes.'],
-                ['selectedRows', 'string[] | number[]', '—', 'Controlled selected row IDs.'],
-                ['onSelectionChange', '(ids[]) => void', '—', 'Called when selection changes.'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop}>
-                  <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{prop}</td>
-                  <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">{type}</td>
-                  <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">{def}</td>
-                  <td className="py-2.5 text-xs text-gray-600">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SubSection title="ColumnDef">
+          <ApiTable
+            headers={['Key', 'Type', 'Default', 'Description']}
+            rows={[
+              ['id', 'string', '—', 'Unique column identifier — used as sort key.'],
+              ['header', 'ReactNode', '—', 'Column header label.'],
+              ['cell', '(row) => ReactNode', '—', 'Cell renderer — receives the row object.'],
+              [
+                'sortable',
+                'boolean',
+                '—',
+                'Whether this column is sortable (requires sortable prop on DataTable).',
+              ],
+              ['align', '"left" | "right" | "center"', '"left"', 'Cell and header text alignment.'],
+              ['width', 'number | string', '—', 'Fixed column width (CSS value).'],
+            ]}
+          />
+        </SubSection>
 
-        {/* ColumnDef */}
-        <div className="flex flex-col gap-3">
-          <h3 className="text-sm font-semibold text-gray-800">ColumnDef</h3>
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-24">
-                  Key
-                </th>
-                <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-40">
-                  Type
-                </th>
-                <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
-                  Description
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {[
-                ['id', 'string', 'Unique column identifier — used as sort key.'],
-                ['header', 'ReactNode', 'Column header label.'],
-                ['cell', '(row) => ReactNode', 'Cell renderer — receives the row object.'],
-                [
-                  'sortable',
-                  'boolean',
-                  'Whether this column is sortable (requires sortable prop on DataTable).',
-                ],
-                ['align', '"left" | "right" | "center"', 'Cell and header text alignment.'],
-                ['width', 'number | string', 'Fixed column width (CSS value).'],
-              ].map(([key, type, desc]) => (
-                <tr key={key}>
-                  <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{key}</td>
-                  <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">{type}</td>
-                  <td className="py-2.5 text-xs text-gray-600">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Layer 1 quick ref */}
-        <div className="flex flex-col gap-3">
-          <h3 className="text-sm font-semibold text-gray-800">Layer 1 — Base Components</h3>
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-36">
-                  Component
-                </th>
-                <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
-                  Notable Props
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {[
-                ['Table', 'className'],
-                ['TableHeader', 'sticky (boolean) — pins header on scroll'],
-                ['TableBody', 'className'],
-                ['TableFooter', 'className'],
-                ['TableRow', 'selected (boolean), clickable (boolean)'],
-                ['TableHead', 'align ("left"|"right"|"center"), width'],
-                ['TableCell', 'align ("left"|"right"|"center")'],
-                ['TableCaption', 'className'],
-              ].map(([comp, props]) => (
-                <tr key={comp}>
-                  <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{comp}</td>
-                  <td className="py-2.5 text-xs text-gray-600">{props}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+        <SubSection title="Layer 1 — Base Components">
+          <ApiTable
+            headers={['Component', 'Notable Props']}
+            rows={[
+              ['Table', 'className'],
+              ['TableHeader', 'sticky (boolean) — pins header on scroll'],
+              ['TableBody', 'className'],
+              ['TableFooter', 'className'],
+              ['TableRow', 'selected (boolean), clickable (boolean)'],
+              ['TableHead', 'align ("left" | "right" | "center"), width'],
+              ['TableCell', 'align ("left" | "right" | "center")'],
+              ['TableCaption', 'className'],
+            ]}
+          />
+        </SubSection>
+      </Section>
     </div>
   ),
 }

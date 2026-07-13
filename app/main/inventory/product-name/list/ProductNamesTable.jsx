@@ -111,7 +111,7 @@ export default function ProductNamesTable({
           <p className="text-sm font-semibold text-slate-600">No results found</p>
           <p className="text-xs text-slate-400">{emptySubtext}</p>
         </div>
-        <Button variant="outline" size="base" onClick={handleClearAll} className="text-xs h-8">
+        <Button variant="outline" onClick={handleClearAll} className="text-xs h-8">
           {clearLabel}
         </Button>
       </div>
@@ -129,7 +129,6 @@ export default function ProductNamesTable({
           <span className="text-sm font-medium text-violet-700">{selectedIds.length} selected</span>
           <div className="flex items-center gap-2 ml-auto">
             <Button
-              size="base"
               variant="outline"
               id="bulkSetActiveBtn_productNamePage"
               className="h-7 text-xs border-green-300 text-green-700 hover:bg-green-50"
@@ -139,7 +138,6 @@ export default function ProductNamesTable({
               Set Active
             </Button>
             <Button
-              size="base"
               variant="outline"
               id="bulkSetInactiveBtn_productNamePage"
               className="h-7 text-xs border-orange-300 text-orange-700 hover:bg-orange-50"
@@ -149,7 +147,6 @@ export default function ProductNamesTable({
               Set Inactive
             </Button>
             <Button
-              size="base"
               variant="ghost"
               id="bulkDeselectAllBtn_productNamePage"
               className="h-7 text-xs text-slate-500 hover:text-slate-700"

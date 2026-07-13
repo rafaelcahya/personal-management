@@ -1,8 +1,8 @@
 'use client'
 
+import { FieldLabel } from '@/components/base/Field/Field'
 import { useState, useEffect, useRef } from 'react'
 import Input from '@/components/base/Input/Input'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 import { X } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { fetchEventTags } from '@/lib/api/event'

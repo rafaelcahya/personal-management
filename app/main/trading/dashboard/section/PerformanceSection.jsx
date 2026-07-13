@@ -186,9 +186,9 @@ export default function PerformanceSection({ metrics, loading }) {
           : { label: 'Very High', className: 'bg-red-100 text-red-700' }
 
   return (
-    <Card className="border border-slate-200/70 shadow-sm px-5 py-5 gap-4">
+    <Card>
       {/* Performance Ratios */}
-      <CardHeader className="p-0 border-0">
+      <CardHeader>
         <CardIcon icon={Zap} />
         <CardHeaderContent>
           <CardTitle>Performance Ratios</CardTitle>
@@ -197,7 +197,7 @@ export default function PerformanceSection({ metrics, loading }) {
           </CardDescription>
         </CardHeaderContent>
       </CardHeader>
-      <CardContent padding="none" className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
+      <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
         <StatCell
           label={
             <span className="flex items-center gap-1">
@@ -244,7 +244,7 @@ export default function PerformanceSection({ metrics, loading }) {
       <div className="border-t border-slate-100" />
 
       {/* Trade Efficiency */}
-      <CardHeader className="p-0 border-0">
+      <CardHeader>
         <CardIcon icon={BarChart3} />
         <CardHeaderContent>
           <CardTitle>Trade Efficiency</CardTitle>
@@ -254,7 +254,7 @@ export default function PerformanceSection({ metrics, loading }) {
           </CardDescription>
         </CardHeaderContent>
       </CardHeader>
-      <CardContent padding="none">
+      <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
           <StatCell
             label={
@@ -303,24 +303,23 @@ export default function PerformanceSection({ metrics, loading }) {
             value={`Rp ${Math.floor(stdDevRupiah).toLocaleString('id-ID')}`}
             sub={stdDevComment}
           />
+          <StatCell
+            label={
+              <span className="flex items-center gap-1">
+                Expected Value/Trade <TrendingUpDown className="size-3 text-slate-400" />
+              </span>
+            }
+            value={`${expectedValue >= 0 ? '+' : ''}Rp ${Math.floor(expectedValue).toLocaleString('id-ID')}`}
+            valueClassName={expectedValue >= 0 ? 'text-green-600' : 'text-red-500'}
+            sub="(Win% × Avg Win) − (Loss% × Avg Loss)"
+          />
         </div>
-        <StatCell
-          label={
-            <span className="flex items-center gap-1">
-              Expected Value/Trade <TrendingUpDown className="size-3 text-slate-400" />
-            </span>
-          }
-          value={`${expectedValue >= 0 ? '+' : ''}Rp ${Math.floor(expectedValue).toLocaleString('id-ID')}`}
-          valueClassName={expectedValue >= 0 ? 'text-green-600' : 'text-red-500'}
-          sub="(Win% × Avg Win) − (Loss% × Avg Loss)"
-          className="bg-slate-50 rounded-lg px-4 py-3"
-        />
       </CardContent>
 
       <div className="border-t border-slate-100" />
 
       {/* Risk */}
-      <CardHeader className="p-0 border-0">
+      <CardHeader>
         <CardIcon icon={Shield} />
         <CardHeaderContent>
           <CardTitle>Risk</CardTitle>
@@ -338,7 +337,7 @@ export default function PerformanceSection({ metrics, loading }) {
         </CardAction>
       </CardHeader>
 
-      <CardContent padding="none">
+      <CardContent>
         <div className="space-y-2 pb-2">
           <div className="flex justify-between text-xs text-slate-500">
             <span>Risk</span>
