@@ -129,7 +129,7 @@ export default function ActivityCalendar({ activities, activityType }) {
     } else {
       loadMonth(viewMonth, activityType)
     }
-  }, [activityType])
+  }, [activityType, activities])
 
   function prevMonth() {
     const d = new Date(viewMonth.getFullYear(), viewMonth.getMonth() - 1, 1)
