@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { startOfMonth, endOfMonth, format, parseISO, isValid } from 'date-fns'
+import { startOfMonth, endOfMonth, parseISO, isValid } from 'date-fns'
 
 export async function GET(request) {
   try {
@@ -46,7 +46,7 @@ export async function GET(request) {
 
     const activities = (data ?? []).map((a) => ({
       id: a.id,
-      date: format(new Date(a.started_at), 'yyyy-MM-dd'),
+      started_at: a.started_at,
       activity_type: a.activity_type,
       name: a.name ?? null,
       distance_m: a.distance_m ?? null,

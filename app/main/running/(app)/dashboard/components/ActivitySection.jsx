@@ -195,8 +195,9 @@ function toMonthKey(date) {
 function groupByDate(activities) {
   const map = new Map()
   for (const a of activities) {
-    if (!map.has(a.date)) map.set(a.date, [])
-    map.get(a.date).push(a)
+    const key = toLocalDateStr(a.started_at)
+    if (!map.has(key)) map.set(key, [])
+    map.get(key).push(a)
   }
   return map
 }
@@ -223,7 +224,7 @@ function ActivityDot({ activity }) {
     <Tooltip>
       <TooltipTrigger asChild>
         <span
-          className={`w-1.5 h-1.5 rounded-full ${cfg.dot} ${effortOpacity(activity.relative_effort)} cursor-default`}
+          className={`inline-block w-1.5 h-1.5 rounded-full ${cfg.dot} ${effortOpacity(activity.relative_effort)} cursor-default`}
           aria-hidden="true"
         />
       </TooltipTrigger>
@@ -276,7 +277,7 @@ function CalendarColumn({ initialActivities, activityType, selectedDate }) {
     } else {
       loadMonth(viewMonth, activityType)
     }
-  }, [activityType])
+  }, [activityType, initialActivities])
 
   useEffect(() => {
     if (!selectedDate) return
