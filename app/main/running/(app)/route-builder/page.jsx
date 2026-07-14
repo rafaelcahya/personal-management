@@ -27,6 +27,7 @@ import {
 } from '@/components/base/Modal/Modal'
 import { totalDistance } from '@/lib/running/geo'
 import { fetchSavedRoutes, saveRoute, deleteSavedRoute, updateSavedRoute } from '@/lib/api/running'
+import PageHeader from '@/app/main/components/PageHeader'
 
 const RouteBuilderMap = dynamic(() => import('./components/RouteBuilderMap'), {
   ssr: false,
@@ -267,6 +268,14 @@ export default function RouteBuilderPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <PageHeader
+        title="Route Builder"
+        description="Draw custom routes by clicking the map, then save them for future runs"
+        breadcrumbs={[
+          { label: 'Running', href: '/main/running/dashboard' },
+          { label: 'Route Builder' },
+        ]}
+      />
       {/* Builder */}
       <Card as="section" aria-label="Route Builder" id="routeBuilderCard_routeBuilderPage">
         <CardHeader>
@@ -278,7 +287,7 @@ export default function RouteBuilderPage() {
         </CardHeader>
         <CardContent className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 min-w-0">
-            <RouteBuilderMap waypoints={waypoints} onChange={setWaypoints} />
+            <RouteBuilderMap waypoints={waypoints} onChange={setWaypoints} onUndo={handleUndo} />
           </div>
           <div className="lg:w-64 shrink-0">
             <RouteStats

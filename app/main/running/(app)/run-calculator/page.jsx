@@ -3,6 +3,7 @@
 import { FieldContent, FieldLabel } from '@/components/base/Field/Field'
 import { useState, useMemo, useEffect } from 'react'
 import { Timer, AlertTriangle } from 'lucide-react'
+import PageHeader from '@/app/main/components/PageHeader'
 import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import Input from '@/components/base/Input/Input'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/base/Tabs/Tabs.jsx'
@@ -215,18 +216,14 @@ export default function RunCalculatorPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-violet-100 shrink-0">
-          <Timer className="size-5 text-violet-600" aria-hidden="true" />
-        </div>
-        <div>
-          <h1 className="text-lg font-semibold text-slate-800">Run Calculator</h1>
-          <p className="text-sm text-slate-500">
-            Calculate pace, project race times, and view splits
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Run Calculator"
+        description="Calculate pace, project race times, and view splits"
+        breadcrumbs={[
+          { label: 'Running', href: '/main/running/dashboard' },
+          { label: 'Run Calculator' },
+        ]}
+      />
 
       {/* Unit toggle */}
       <Card className="border border-slate-200/70 py-0">
