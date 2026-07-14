@@ -1,25 +1,60 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Undo2 } from 'lucide-react'
+import { Undo2, Maximize2, Minimize2, Loader2, ArrowLeft } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
+import Card, { CardContent } from '@/components/base/Card/Card'
+import { fmtDuration } from '@/app/main/running/(app)/dashboard/utils/format'
 
 const TILE_STYLE = `https://tile.jawg.io/jawg-lagoon.json?access-token=${process.env.NEXT_PUBLIC_JAWG_ACCESS_TOKEN}`
 
 const DEFAULT_CENTER = [106.8456, -6.2088] // Jakarta [lng, lat]
 const DEFAULT_ZOOM = 13
 
-export default function RouteBuilderMap({ waypoints, onChange, onUndo }) {
+export default function RouteBuilderMap({
+  waypoints,
+  onChange,
+  onUndo,
+  onClear,
+  onSave,
+  distanceM = 0,
+  waypointCount = 0,
+  estimatedSec = null,
+  saving = false,
+  canSave = false,
+  routeName = '',
+  onRouteNameChange,
+}) {
   const containerRef = useRef(null)
   const mapRef = useRef(null)
   const mlRef = useRef(null)
   const markersRef = useRef([])
   const waypointsRef = useRef(waypoints)
   const [showDeleteHint, setShowDeleteHint] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   useEffect(() => {
     waypointsRef.current = waypoints
   }, [waypoints])
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') setIsFullscreen(false)
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  useEffect(() => {
+    document.body.style.overflow = isFullscreen ? 'hidden' : ''
+    if (mapRef.current) {
+      requestAnimationFrame(() => mapRef.current?.resize())
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isFullscreen])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -124,7 +159,6 @@ export default function RouteBuilderMap({ waypoints, onChange, onUndo }) {
     markersRef.current.push(marker)
   }
 
-  // Sync external waypoint changes (undo / clear) → redraw markers + line
   useEffect(() => {
     const map = mapRef.current
     const maplibregl = mlRef.current
@@ -143,15 +177,31 @@ export default function RouteBuilderMap({ waypoints, onChange, onUndo }) {
     })
   }, [waypoints])
 
+  const distKm = (distanceM / 1000).toFixed(2)
+
   return (
-    <div className="relative">
+    <div className={isFullscreen ? 'fixed inset-0 z-50 bg-white overflow-hidden' : 'relative'}>
+      {/* Fullscreen toggle */}
+      <Button
+        id="fullscreenBtn_routeBuilderPage"
+        variant="ghost"
+        onClick={() => setIsFullscreen((v) => !v)}
+        className="absolute bottom-3 right-3 z-10 size-8 bg-white/90 hover:bg-white border border-slate-200 shadow-sm rounded-lg p-0 flex items-center justify-center"
+        aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+      >
+        {isFullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+      </Button>
+
+      {/* Map canvas */}
       <div
         ref={containerRef}
         id="routeBuilderMap_routeBuilderPage"
-        className="w-full rounded-xl overflow-hidden cursor-crosshair"
-        style={{ height: 420 }}
+        className={`w-full cursor-crosshair overflow-hidden ${isFullscreen ? 'h-full' : 'rounded-xl'}`}
+        style={isFullscreen ? undefined : { height: 420 }}
         aria-label="Route builder map — click to add waypoints"
       />
+
+      {/* Hint pills */}
       {waypoints.length === 0 && (
         <div
           id="mapHintPill_routeBuilderPage"
@@ -168,16 +218,114 @@ export default function RouteBuilderMap({ waypoints, onChange, onUndo }) {
           Right-click any waypoint to remove it
         </div>
       )}
-      <Button
-        id="undoFloatingBtn_routeBuilderPage"
-        variant="ghost"
-        onClick={onUndo}
-        disabled={waypoints.length === 0}
-        className="absolute bottom-3 right-12 z-10 lg:hidden size-11 bg-white/90 hover:bg-white border border-slate-200 shadow-sm rounded-lg p-0 flex items-center justify-center"
-        aria-label="Undo last waypoint"
-      >
-        <Undo2 className="size-5 text-slate-600" />
-      </Button>
+
+      {/* Mobile undo (non-fullscreen, hidden on lg+) */}
+      {!isFullscreen && (
+        <Button
+          id="undoFloatingBtn_routeBuilderPage"
+          variant="ghost"
+          onClick={onUndo}
+          disabled={waypoints.length === 0}
+          className="absolute bottom-3 right-12 z-10 lg:hidden size-11 bg-white/90 hover:bg-white border border-slate-200 shadow-sm rounded-lg p-0 flex items-center justify-center"
+          aria-label="Undo last waypoint"
+        >
+          <Undo2 className="size-5 text-slate-600" />
+        </Button>
+      )}
+
+      {/* Back button — top-left, fullscreen only */}
+      {isFullscreen && (
+        <Button
+          id="fullscreenBackBtn_routeBuilderPage"
+          variant="ghost"
+          onClick={() => setIsFullscreen(false)}
+          className="absolute top-4 left-4 z-10 h-9 px-3 bg-white/95 backdrop-blur-sm hover:bg-white border border-slate-200 shadow-sm rounded-lg flex items-center gap-1.5 text-sm font-medium text-slate-700"
+          aria-label="Exit fullscreen"
+        >
+          <ArrowLeft className="size-4" />
+          Back
+        </Button>
+      )}
+
+      {/* Fullscreen overlays — stacked bottom-left */}
+      {isFullscreen && (
+        <div className="absolute bottom-4 left-4 z-10 flex flex-col gap-3 w-56">
+          {/* Stats card */}
+          <Card
+            id="fullscreenStatsOverlay_routeBuilderPage"
+            className="backdrop-blur-sm bg-white/95"
+          >
+            <CardContent className="space-y-2">
+              <div>
+                <p className="text-xs text-slate-400 uppercase tracking-wide font-medium">
+                  Distance
+                </p>
+                <p className="text-base font-bold text-slate-800 tabular-nums">
+                  {distKm}
+                  <span className="text-xs font-medium text-slate-400 ml-1">km</span>
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 uppercase tracking-wide font-medium">
+                  Waypoints
+                </p>
+                <p className="text-base font-bold text-slate-800 tabular-nums">{waypointCount}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 uppercase tracking-wide font-medium">
+                  Est. Time
+                </p>
+                <p className="text-base font-bold text-slate-800 tabular-nums">
+                  {estimatedSec != null ? fmtDuration(estimatedSec) : '—'}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Controls card */}
+          <Card
+            id="fullscreenControlsOverlay_routeBuilderPage"
+            className="backdrop-blur-sm bg-white/95"
+          >
+            <CardContent className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={onUndo}
+                  disabled={waypointCount === 0}
+                  className="flex-1 text-sm"
+                >
+                  Undo
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={onClear}
+                  disabled={waypointCount === 0}
+                  className="flex-1 text-sm text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  Clear
+                </Button>
+              </div>
+              <Input
+                type="text"
+                placeholder="Route name"
+                value={routeName}
+                onChange={(e) => onRouteNameChange(e.target.value)}
+                maxLength={100}
+                className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+              />
+              <Button
+                disabled={!canSave || saving}
+                onClick={onSave}
+                className="w-full bg-violet-600 hover:bg-violet-700"
+              >
+                {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
+                {saving ? 'Saving…' : 'Save Route'}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }
