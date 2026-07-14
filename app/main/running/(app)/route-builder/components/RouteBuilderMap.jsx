@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { getDirections } from '@/lib/api/maps'
 
 const TILE_STYLE = `https://tile.jawg.io/jawg-lagoon.json?access-token=${process.env.NEXT_PUBLIC_JAWG_ACCESS_TOKEN}`
 
@@ -14,7 +13,6 @@ export default function RouteBuilderMap({ waypoints, onChange }) {
   const mlRef = useRef(null)
   const markersRef = useRef([])
   const waypointsRef = useRef(waypoints)
-  const abortRef = useRef(null)
 
   useEffect(() => {
     waypointsRef.current = waypoints
@@ -67,7 +65,6 @@ export default function RouteBuilderMap({ waypoints, onChange }) {
 
     return () => {
       isMounted = false
-      abortRef.current?.abort()
       if (mapRef.current) {
         mapRef.current.remove()
         mapRef.current = null
@@ -84,7 +81,7 @@ export default function RouteBuilderMap({ waypoints, onChange }) {
     markersRef.current.push(marker)
   }
 
-  // Sync external waypoint changes (undo / clear) → redraw markers + get routed polyline
+  // Sync external waypoint changes (undo / clear) → redraw markers + straight line
   useEffect(() => {
     const map = mapRef.current
     const maplibregl = mlRef.current
@@ -97,29 +94,10 @@ export default function RouteBuilderMap({ waypoints, onChange }) {
     const routeSource = map.getSource('route')
     if (!routeSource) return
 
-    if (waypoints.length < 2) {
-      routeSource.setData({
-        type: 'Feature',
-        geometry: { type: 'LineString', coordinates: waypoints },
-      })
-      return
-    }
-
-    // Cancel previous in-flight request
-    abortRef.current?.abort()
-    const controller = new AbortController()
-    abortRef.current = controller
-
-    getDirections(waypoints, controller.signal).then(({ data }) => {
-      if (controller.signal.aborted) return
-      const coords = data?.coordinates ?? waypoints
-      routeSource.setData({
-        type: 'Feature',
-        geometry: { type: 'LineString', coordinates: coords },
-      })
+    routeSource.setData({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: waypoints },
     })
-
-    return () => controller.abort()
   }, [waypoints])
 
   return (
