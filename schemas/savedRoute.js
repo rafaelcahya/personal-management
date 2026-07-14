@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const waypointSchema = z.tuple([z.number().min(-90).max(90), z.number().min(-180).max(180)])
+const waypointSchema = z.tuple([z.number().min(-180).max(180), z.number().min(-90).max(90)])
 
 export const updateRouteSchema = z.object({
   name: z.string().trim().min(1, 'Route name is required').max(100, 'Name too long'),
