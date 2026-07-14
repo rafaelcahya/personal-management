@@ -38,26 +38,9 @@ export async function POST(request) {
     const body = await request.json()
     const { type, monthly_budget } = body
 
-    if (!type || monthly_budget == null)
+    if (!type || typeof type !== 'string' || type.trim().length === 0 || monthly_budget == null)
       return NextResponse.json(
         { success: false, error: 'type and monthly_budget are required' },
-        { status: 400 }
-      )
-
-    const { data: typeExists, error: typeError } = await supabase
-      .from('product_list')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('type', type)
-      .is('deleted_at', null)
-      .limit(1)
-      .maybeSingle()
-
-    if (typeError) throw new Error(typeError.message)
-
-    if (!typeExists)
-      return NextResponse.json(
-        { success: false, error: `Type "${type}" not found in your product list` },
         { status: 400 }
       )
 
