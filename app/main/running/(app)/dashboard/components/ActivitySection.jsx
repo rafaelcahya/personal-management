@@ -33,7 +33,7 @@ import Card, {
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { fetchCalendarActivities } from '@/lib/api/running'
 import { fmtDistance, fmtDuration, fmtPace, fmtDate } from '../utils/format'
 
@@ -221,15 +221,15 @@ function ActivityDot({ activity }) {
   const cfg = getCfg(activity.activity_type)
   const Icon = cfg.icon
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <span
           className={`inline-block w-1.5 h-1.5 rounded-full ${cfg.dot} ${effortOpacity(activity.relative_effort)} cursor-default`}
           aria-hidden="true"
         />
-      </TooltipTrigger>
-      <TooltipContent className="max-w-48">
-        <div className="flex flex-col gap-1 text-xs">
+      </PopoverTrigger>
+      <PopoverContent side="top" className="w-auto max-w-48 p-3 text-xs leading-relaxed">
+        <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5 font-medium">
             <Icon className="size-3 shrink-0" aria-hidden="true" />
             <span>{activity.name || cfg.label || 'Activity'}</span>
@@ -241,8 +241,8 @@ function ActivityDot({ activity }) {
             <span className="text-slate-400">Effort: {activity.relative_effort}</span>
           )}
         </div>
-      </TooltipContent>
-    </Tooltip>
+      </PopoverContent>
+    </Popover>
   )
 }
 

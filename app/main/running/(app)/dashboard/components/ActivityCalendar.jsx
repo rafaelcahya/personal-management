@@ -12,7 +12,7 @@ import {
   CalendarDays,
 } from 'lucide-react'
 import Card, { CardContent } from '@/components/base/Card/Card.jsx'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { fetchCalendarActivities } from '@/lib/api/running'
 
 const SPORT_COLORS = {
@@ -88,15 +88,17 @@ function ActivityDot({ activity }) {
   )
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <span
           className={`w-1.5 h-1.5 rounded-full ${dotColor} ${opacity} cursor-default`}
           aria-hidden="true"
         />
-      </TooltipTrigger>
-      <TooltipContent className="max-w-48">{tooltipContent}</TooltipContent>
-    </Tooltip>
+      </PopoverTrigger>
+      <PopoverContent side="top" className="w-auto max-w-48 p-3 text-xs leading-relaxed">
+        {tooltipContent}
+      </PopoverContent>
+    </Popover>
   )
 }
 

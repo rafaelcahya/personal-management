@@ -20,11 +20,7 @@ import {
   ReferenceDot,
 } from 'recharts'
 import { AlertCircle, Activity, Info } from 'lucide-react'
-import {
-  Tooltip as UITooltip,
-  TooltipContent as UITooltipContent,
-  TooltipTrigger as UITooltipTrigger,
-} from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { fetchActivityStreams } from '@/lib/api/running'
 
 function SectionLabel({ children }) {
@@ -201,8 +197,8 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
             {isSpeed ? 'Speed' : 'Pace'}
           </p>
-          <UITooltip>
-            <UITooltipTrigger asChild>
+          <Popover>
+            <PopoverTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon-xs"
@@ -212,8 +208,8 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
               >
                 <Info className="size-3.5" aria-hidden="true" />
               </Button>
-            </UITooltipTrigger>
-            <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-auto max-w-64 p-3 text-xs leading-relaxed">
               <p className="font-semibold mb-1">Pace vs Speed</p>
               <p>
                 <span className="text-violet-300 font-medium">Pace (min/km)</span> — standard runner
@@ -225,8 +221,8 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
                 higher = faster. Better for spotting acceleration and deceleration patterns at a
                 glance.
               </p>
-            </UITooltipContent>
-          </UITooltip>
+            </PopoverContent>
+          </Popover>
         </div>
         <Tabs
           id="paceSpeedToggle_activityDetailPage"
@@ -792,8 +788,8 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
     <div>
       <div className="flex items-center gap-2 mb-1">
         <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Cadence</p>
-        <UITooltip>
-          <UITooltipTrigger asChild>
+        <Popover>
+          <PopoverTrigger asChild>
             <Button
               variant="ghost"
               size="icon-xs"
@@ -803,15 +799,15 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
             >
               <Info className="size-3.5" aria-hidden="true" />
             </Button>
-          </UITooltipTrigger>
-          <UITooltipContent
-            side="top"
-            className="max-w-72 text-xs leading-relaxed"
+          </PopoverTrigger>
+          <PopoverContent
             id={`cadenceInfoTooltip_${pagePrefix}`}
+            side="top"
+            className="w-auto max-w-72 p-3 text-xs leading-relaxed"
           >
             {CADENCE_INFO}
-          </UITooltipContent>
-        </UITooltip>
+          </PopoverContent>
+        </Popover>
         {stabilityScore != null && (
           <span
             id={`cadenceStabilityScore_${pagePrefix}`}

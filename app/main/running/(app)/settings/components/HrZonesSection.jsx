@@ -21,11 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
-import {
-  Tooltip as UITooltip,
-  TooltipContent as UITooltipContent,
-  TooltipTrigger as UITooltipTrigger,
-} from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { getHrZones, updateHrZones, detectMaxHr } from '@/lib/api/running'
 
 const METHOD_OPTIONS = [
@@ -261,8 +257,8 @@ export default function HrZonesSection() {
                   <FieldLabel htmlFor="thresholdHrInput_settingsPage">
                     Threshold HR (bpm)
                   </FieldLabel>
-                  <UITooltip>
-                    <UITooltipTrigger asChild>
+                  <Popover>
+                    <PopoverTrigger asChild>
                       <Button
                         variant="ghost"
                         size="icon-xs"
@@ -271,8 +267,11 @@ export default function HrZonesSection() {
                       >
                         <Info className="size-3.5" aria-hidden="true" />
                       </Button>
-                    </UITooltipTrigger>
-                    <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+                    </PopoverTrigger>
+                    <PopoverContent
+                      side="top"
+                      className="w-auto max-w-64 p-3 text-xs leading-relaxed"
+                    >
                       <p className="font-semibold mb-1">Threshold HR (LTHR)</p>
                       <p>
                         Your heart rate at lactate threshold — the hardest effort you can sustain
@@ -282,8 +281,8 @@ export default function HrZonesSection() {
                         A common estimate is <span className="font-medium">85% of Max HR</span>, but
                         a 30-min all-out time trial gives more accurate results.
                       </p>
-                    </UITooltipContent>
-                  </UITooltip>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="flex gap-2">
                   <Input
