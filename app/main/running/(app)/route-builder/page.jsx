@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import dynamic from 'next/dynamic'
-import { Map, Trash2, AlertCircle, Eye, Pencil, Check, X as XIcon } from 'lucide-react'
+import { Map, Trash2, AlertCircle, Eye, Pencil, Check, X as XIcon, Download } from 'lucide-react'
 import { toast } from 'sonner'
 import polyline from '@mapbox/polyline'
 import Card, {
@@ -63,6 +63,27 @@ function SavedRouteRow({ route, onDelete, onView, onRename }) {
   const [editing, setEditing] = useState(false)
   const [editName, setEditName] = useState(route.name)
   const [saving, setSaving] = useState(false)
+  const [exporting, setExporting] = useState(false)
+
+  async function handleExport() {
+    setExporting(true)
+    try {
+      const res = await fetch(`/api/running/v1/routes/${route.id}/export/gpx`)
+      if (!res.ok) throw new Error('Export failed')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${route.name}.gpx`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast.success('GPX downloaded')
+    } catch {
+      toast.error('Export failed')
+    } finally {
+      setExporting(false)
+    }
+  }
 
   async function handleDelete() {
     setDeleting(true)
@@ -166,6 +187,17 @@ function SavedRouteRow({ route, onDelete, onView, onRename }) {
               <Eye className="size-4" />
             </Button>
             <Button
+              id={`exportGpxBtn_${route.id}_routeBuilderPage`}
+              variant="ghost"
+              size="xs"
+              onClick={handleExport}
+              disabled={exporting}
+              className="text-slate-400 hover:text-violet-600 hover:bg-violet-50"
+              aria-label={`Export GPX for ${route.name}`}
+            >
+              <Download className="size-4" />
+            </Button>
+            <Button
               id={`renameRouteBtn_${route.id}_routeBuilderPage`}
               variant="ghost"
               size="xs"
@@ -248,7 +280,7 @@ export default function RouteBuilderPage() {
     if (waypoints.length < 2 || !routeName.trim()) return
     setSaving(true)
     try {
-      const encoded = polyline.encode(waypoints)
+      const encoded = polyline.encode(waypoints.map(([lng, lat]) => [lat, lng]))
       const saved = await saveRoute({
         name: routeName.trim(),
         waypoints,
