@@ -9,7 +9,7 @@ import Card, {
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
 import Button from '@/components/base/Button/Button'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   TrendingUp,
   TrendingDown,
@@ -281,8 +281,8 @@ const TIPS = {
 
 function InfoTip({ content }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <Button
           variant="ghost"
           size="icon-xs"
@@ -291,11 +291,11 @@ function InfoTip({ content }) {
         >
           <Info className="size-3.5" aria-hidden="true" />
         </Button>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+      </PopoverTrigger>
+      <PopoverContent side="top" className="w-auto max-w-64 p-3 text-xs leading-relaxed">
         {content}
-      </TooltipContent>
-    </Tooltip>
+      </PopoverContent>
+    </Popover>
   )
 }
 

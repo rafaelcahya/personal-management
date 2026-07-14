@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Heart, Info } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   BarChart,
   Bar,
@@ -362,13 +362,13 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
             {cardiacDrift} bpm
           </span>
           <span className="text-xs text-slate-300">(split 1 → last split)</span>
-          <Tooltip>
-            <TooltipTrigger asChild>
+          <Popover>
+            <PopoverTrigger asChild>
               <Button variant="ghost" size="icon-xs" aria-label="Cardiac drift information">
                 <Info className="size-3.5" aria-hidden="true" />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-auto max-w-64 p-3 text-xs leading-relaxed">
               <p className="font-semibold mb-1">What is Cardiac Drift?</p>
               <p>
                 HR increase from your first split to your last split at the same pace — a sign of
@@ -379,8 +379,8 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                 <span className="text-amber-400 font-medium">6–10</span> Moderate ·{' '}
                 <span className="text-red-400 font-medium">&gt;10</span> High
               </p>
-            </TooltipContent>
-          </Tooltip>
+            </PopoverContent>
+          </Popover>
         </div>
       )}
     </div>

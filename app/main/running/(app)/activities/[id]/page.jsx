@@ -26,7 +26,7 @@ import {
   Mountain,
   RefreshCw,
 } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Button from '@/components/base/Button/Button'
 import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
@@ -836,8 +836,8 @@ export default function ActivityDetailPage() {
                                     }
                                   : { color: 'text-red-700', bg: 'bg-red-50', label: 'High drift' }
                             return (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
+                              <Popover>
+                                <PopoverTrigger asChild>
                                   <div
                                     id="aeroDrift_activityDetailPage"
                                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium cursor-help ${bg} ${color}`}
@@ -853,10 +853,10 @@ export default function ActivityDetailPage() {
                                       {label}
                                     </span>
                                   </div>
-                                </TooltipTrigger>
-                                <TooltipContent
+                                </PopoverTrigger>
+                                <PopoverContent
                                   side="top"
-                                  className="max-w-64 text-xs leading-relaxed"
+                                  className="w-auto max-w-64 p-3 text-xs leading-relaxed"
                                 >
                                   <p className="font-semibold mb-1">What is Aerobic Decoupling?</p>
                                   <p>
@@ -870,8 +870,8 @@ export default function ActivityDetailPage() {
                                     <span className="text-red-400 font-medium">&gt; 10%</span> High
                                     drift
                                   </p>
-                                </TooltipContent>
-                              </Tooltip>
+                                </PopoverContent>
+                              </Popover>
                             )
                           })()}
                       </div>

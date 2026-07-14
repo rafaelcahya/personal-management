@@ -34,7 +34,7 @@ import {
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import packageJson from '@/package.json'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 const INVENTORY_ITEMS = [
   {
@@ -136,10 +136,12 @@ function NavItem({ item, collapsed, onClick }) {
   if (!collapsed) return link
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>{link}</TooltipTrigger>
-      <TooltipContent side="right">{item.tooltip ?? item.name}</TooltipContent>
-    </Tooltip>
+    <Popover>
+      <PopoverTrigger asChild>{link}</PopoverTrigger>
+      <PopoverContent side="right" className="w-auto p-2 text-xs">
+        {item.tooltip ?? item.name}
+      </PopoverContent>
+    </Popover>
   )
 }
 
@@ -168,10 +170,12 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
       </Button>
     )
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-        <TooltipContent side="right">{label}</TooltipContent>
-      </Tooltip>
+      <Popover>
+        <PopoverTrigger asChild>{trigger}</PopoverTrigger>
+        <PopoverContent side="right" className="w-auto p-2 text-xs">
+          {label}
+        </PopoverContent>
+      </Popover>
     )
   }
 

@@ -2,11 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Info, ChevronDown, ChevronUp } from 'lucide-react'
-import {
-  Tooltip as UITooltip,
-  TooltipContent as UITooltipContent,
-  TooltipTrigger as UITooltipTrigger,
-} from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
 import { updateActivity } from '@/lib/api/running'
@@ -96,8 +92,8 @@ export default function PerceivedEffortSection({
         <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
           Borg CR10
         </span>
-        <UITooltip>
-          <UITooltipTrigger asChild>
+        <Popover>
+          <PopoverTrigger asChild>
             <Button
               id="rpeInfoTrigger_activityDetailPage"
               variant="ghost"
@@ -107,15 +103,15 @@ export default function PerceivedEffortSection({
             >
               <Info className="size-3.5" />
             </Button>
-          </UITooltipTrigger>
-          <UITooltipContent
+          </PopoverTrigger>
+          <PopoverContent
             id="rpeInfoTooltip_activityDetailPage"
             side="top"
-            className="max-w-72 text-xs leading-relaxed"
+            className="w-auto max-w-72 p-3 text-xs leading-relaxed"
           >
             {BORG_CR10_COPY}
-          </UITooltipContent>
-        </UITooltip>
+          </PopoverContent>
+        </Popover>
         {savedMsg && (
           <span
             id="rpeSavedMsg_activityDetailPage"
@@ -193,8 +189,8 @@ export default function PerceivedEffortSection({
 
       {/* Session Load */}
       {sessionLoad != null && (
-        <UITooltip>
-          <UITooltipTrigger asChild>
+        <Popover>
+          <PopoverTrigger asChild>
             <Button
               id="rpeSessionLoad_activityDetailPage"
               variant="ghost"
@@ -203,14 +199,14 @@ export default function PerceivedEffortSection({
               <span className="text-xs text-violet-700 font-semibold">{sessionLoad}</span>
               <span className="text-xs text-violet-500">Session Load</span>
             </Button>
-          </UITooltipTrigger>
-          <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+          </PopoverTrigger>
+          <PopoverContent side="top" className="w-auto max-w-64 p-3 text-xs leading-relaxed">
             <p className="font-semibold mb-1">Session Load (Foster&apos;s method)</p>
             <p>
               RPE × moving time (min). Validated proxy for training load — r=0.90 vs HR-based TRIMP.
             </p>
-          </UITooltipContent>
-        </UITooltip>
+          </PopoverContent>
+        </Popover>
       )}
 
       {/* Expandable guide */}

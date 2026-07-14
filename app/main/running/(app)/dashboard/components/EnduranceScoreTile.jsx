@@ -12,7 +12,7 @@ import Card, {
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 const TOOLTIP_TEXT =
   'Composite score (0–100) from three signals: VO₂max fitness (40%), 28-day training load (30%), and longest run in the last 8 weeks (30%). Requires at least 4 qualifying runs with HR + VO₂max data.'
@@ -83,8 +83,8 @@ export default function EnduranceScoreTile({ enduranceScore, viewTrendHref }) {
                 </div>
               )}
             </div>
-            <Tooltip>
-              <TooltipTrigger asChild>
+            <Popover>
+              <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon-xs"
@@ -93,11 +93,11 @@ export default function EnduranceScoreTile({ enduranceScore, viewTrendHref }) {
                 >
                   <Info className="size-4" aria-hidden="true" />
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-72 text-xs leading-relaxed">
+              </PopoverTrigger>
+              <PopoverContent side="top" className="w-auto max-w-72 p-3 text-xs leading-relaxed">
                 {TOOLTIP_TEXT}
-              </TooltipContent>
-            </Tooltip>
+              </PopoverContent>
+            </Popover>
           </div>
         </CardContent>
       </Card>
