@@ -5,21 +5,27 @@ import Button from '@/components/base/Button/Button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import { Maximize2, X } from 'lucide-react'
 import polyline from '@mapbox/polyline'
+import { fmtPace, fmtDuration } from '../../dashboard/utils/format'
 
-const TILE_CONFIGS = {
-  map: {
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png',
-    options: { subdomains: 'abcd', maxZoom: 20 },
-  },
-  satellite: {
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    options: { minZoom: 0, maxZoom: 20 },
-  },
+const JAWG_TOKEN = process.env.NEXT_PUBLIC_JAWG_ACCESS_TOKEN
+
+const TILE_STYLES = {
+  default: `https://tile.jawg.io/jawg-lagoon.json?access-token=${JAWG_TOKEN}`,
+  street: `https://tile.jawg.io/jawg-matrix.json?access-token=${JAWG_TOKEN}`,
+  dark: 'https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json',
 }
 
-const POLYLINE_COLORS = { map: '#7c3aed', satellite: '#ffffff' }
+const POLYLINE_COLORS = { default: '#8b5cf6', street: '#ffffff', dark: '#a78bfa' }
+const BORDER_COLORS = { default: '#000000', street: null, dark: null }
 
-function LeafletMap({
+const esc = (s) =>
+  String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+
+function MapLibreRouteMap({
   encodedPolyline,
   height,
   className = '',
@@ -34,9 +40,10 @@ function LeafletMap({
 }) {
   const containerRef = useRef(null)
   const mapRef = useRef(null)
-  const tileLayerRef = useRef(null)
-  const routeLineRef = useRef(null)
+  const mlRef = useRef(null)
+  const coordsRef = useRef([])
   const animFrameRef = useRef(null)
+  const markersRef = useRef([])
   const markersDataRef = useRef({
     laps,
     bestEfforts,
@@ -62,202 +69,89 @@ function LeafletMap({
 
     let isMounted = true
 
-    import('leaflet').then((L) => {
-      import('leaflet/dist/leaflet.css')
+    import('maplibre-gl').then((maplibregl) => {
+      import('maplibre-gl/dist/maplibre-gl.css')
+      if (!isMounted || !containerRef.current || mapRef.current) return
 
-      if (!isMounted || !containerRef.current) return
-      if (containerRef.current._leaflet_id) return
-      if (mapRef.current) return
+      const coords = polyline.decode(encodedPolyline).map(([lat, lng]) => [lng, lat])
+      if (!coords?.length) return
 
-      const coords = polyline.decode(encodedPolyline)
-      if (!coords || coords.length === 0) return
+      coordsRef.current = coords
+      mlRef.current = maplibregl
 
-      delete L.default.Icon.Default.prototype._getIconUrl
-      L.default.Icon.Default.mergeOptions({
-        iconRetinaUrl:
-          'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-      })
-
-      const map = L.default.map(containerRef.current, {
-        zoomControl: interactive,
-        scrollWheelZoom: interactive,
-        dragging: interactive,
+      const map = new maplibregl.Map({
+        container: containerRef.current,
+        style: TILE_STYLES[mapStyle] ?? TILE_STYLES.map,
+        center: coords[0],
+        zoom: 13,
+        interactive,
         attributionControl: false,
       })
 
-      const config = TILE_CONFIGS[mapStyle] ?? TILE_CONFIGS.map
-      const tileLayer = L.default.tileLayer(config.url, config.options).addTo(map)
+      if (interactive) {
+        map.addControl(new maplibregl.NavigationControl())
+      }
 
-      // Fit to full bounds before animation so camera stays fixed
-      const tempLine = L.default.polyline(coords)
-      map.fitBounds(tempLine.getBounds(), { padding: [12, 12] })
-
-      const routeLine = L.default
-        .polyline([], {
-          color: POLYLINE_COLORS[mapStyle] ?? POLYLINE_COLORS.map,
-          weight: 4,
-          opacity: 0.85,
-        })
-        .addTo(map)
-
-      const DURATION = 5000
-      const startTime = performance.now()
-
-      function animate(now) {
+      map.on('load', () => {
         if (!isMounted) return
-        const progress = Math.min((now - startTime) / DURATION, 1)
-        const count = Math.max(Math.floor(progress * coords.length), 1)
-        routeLine.setLatLngs(coords.slice(0, count))
 
-        if (progress < 1) {
-          animFrameRef.current = requestAnimationFrame(animate)
-        } else {
-          routeLine.setLatLngs(coords)
+        const bounds = coords.reduce(
+          (b, c) => b.extend(c),
+          new maplibregl.LngLatBounds(coords[0], coords[0])
+        )
+        map.fitBounds(bounds, { padding: 12, animate: false })
 
-          if (!document.getElementById('route-marker-styles')) {
-            const style = document.createElement('style')
-            style.id = 'route-marker-styles'
-            style.textContent = `
-              @keyframes routePing {
-                0% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; }
-                100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
-              }
-              .route-marker-label {
-                opacity: 0;
-                transition: opacity 0.15s ease;
-                pointer-events: none;
-              }
-              .route-marker-wrapper:hover .route-marker-label {
-                opacity: 1;
-              }
-            `
-            document.head.appendChild(style)
-          }
+        map.addSource('route', {
+          type: 'geojson',
+          data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } },
+        })
+        if (BORDER_COLORS[mapStyle]) {
+          map.addLayer({
+            id: 'route-border',
+            type: 'line',
+            source: 'route',
+            paint: {
+              'line-color': BORDER_COLORS[mapStyle],
+              'line-width': 6,
+              'line-opacity': 0.5,
+            },
+          })
+        }
+        map.addLayer({
+          id: 'route-line',
+          type: 'line',
+          source: 'route',
+          paint: {
+            'line-color': POLYLINE_COLORS[mapStyle] ?? POLYLINE_COLORS.default,
+            'line-width': 4,
+            'line-opacity': 0.9,
+          },
+        })
 
-          const esc = (s) =>
-            String(s)
-              .replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
+        const routeSource = map.getSource('route')
+        const DURATION = 5000
+        const startTime = performance.now()
 
-          const makeIcon = (color, label) =>
-            L.default.divIcon({
-              html: `<div class="route-marker-wrapper" style="position:relative;width:0;height:0;cursor:pointer;">
-                <div style="position:absolute;width:18px;height:18px;border-radius:50%;background:${esc(color)};transform:translate(-50%,-50%);animation:routePing 1.6s ease-out infinite;pointer-events:none;"></div>
-                <div style="position:absolute;width:11px;height:11px;border-radius:50%;background:${esc(color)};transform:translate(-50%,-50%);"></div>
-                <div class="route-marker-label" style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:#fff;color:#334155;border:1px solid #e2e8f0;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">${esc(label)}</div>
-              </div>`,
-              className: '',
-              iconSize: [0, 0],
-              iconAnchor: [0, 0],
-            })
+        function animate(now) {
+          if (!isMounted) return
+          const progress = Math.min((now - startTime) / DURATION, 1)
+          const count = Math.max(Math.floor(progress * coords.length), 1)
+          routeSource.setData({
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: coords.slice(0, count) },
+          })
 
-          const {
-            laps: mLaps,
-            bestEfforts: mEfforts,
-            activityStartedAt: mStartedAt,
-            totalDistanceM: mTotalDist,
-            streams: mStreams,
-            pagePrefix: mPrefix,
-          } = markersDataRef.current
-
-          const finishLabel = mLaps?.length > 0 ? `Lap ${mLaps.length} · Finish` : 'Finish'
-
-          const startMarker = L.default
-            .marker(coords[0], { icon: makeIcon('#16a34a', 'Start') })
-            .addTo(map)
-          const endMarker = L.default
-            .marker(coords[coords.length - 1], { icon: makeIcon('#dc2626', finishLabel) })
-            .addTo(map)
-          startMarker.getElement()?.setAttribute('id', `routeStartMarker_${mPrefix}`)
-          endMarker.getElement()?.setAttribute('id', `routeEndMarker_${mPrefix}`)
-
-          // Lap boundary markers — skip last (merged into Finish marker above)
-          if (mLaps?.length > 1 && mTotalDist > 0) {
-            const makeLapIcon = (num) =>
-              L.default.divIcon({
-                html: `<div style="position:relative;width:0;height:0;">
-                  <div style="position:absolute;width:22px;height:22px;border-radius:50%;background:#7c3aed;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25);font-family:system-ui,sans-serif;">${num}</div>
-                </div>`,
-                className: '',
-                iconSize: [0, 0],
-                iconAnchor: [0, 0],
-              })
-
-            let cumDist = 0
-            for (let i = 0; i < mLaps.length - 1; i++) {
-              cumDist += mLaps[i].distance_m
-              const frac = cumDist / mTotalDist
-              if (frac <= 0 || frac >= 1) continue
-              const idx = Math.round(frac * (coords.length - 1))
-              const lapNum = i + 1
-              const m = L.default.marker(coords[idx], { icon: makeLapIcon(lapNum) }).addTo(map)
-              m.getElement()?.setAttribute('id', `lapMarker_${lapNum}_${mPrefix}`)
-            }
-          }
-
-          // Best effort PR markers
-          const prEfforts = mEfforts?.filter((e) => e.pr_rank != null) ?? []
-          const gpsStreams = mStreams?.filter((s) => s.lat != null && s.lng != null) ?? []
-
-          if (prEfforts.length > 0 && gpsStreams.length > 0 && mStartedAt) {
-            const actStartMs = new Date(mStartedAt).getTime()
-
-            const makePrIcon = (label) =>
-              L.default.divIcon({
-                html: `<div class="route-marker-wrapper" style="position:relative;width:0;height:0;cursor:pointer;">
-                  <div style="position:absolute;width:13px;height:13px;border-radius:50%;background:#d97706;transform:translate(-50%,-50%);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
-                  <div class="route-marker-label" style="position:absolute;bottom:13px;left:50%;transform:translateX(-50%);background:#fff;color:#334155;border:1px solid #e2e8f0;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 2px 4px rgba(0,0,0,0.08);">${esc(label)}</div>
-                </div>`,
-                className: '',
-                iconSize: [0, 0],
-                iconAnchor: [0, 0],
-              })
-
-            for (const effort of prEfforts) {
-              const relStartSec = (new Date(effort.started_at).getTime() - actStartMs) / 1000
-              const relEndSec = relStartSec + effort.elapsed_time_sec
-              const safeName = effort.name?.replace(/[^a-zA-Z0-9]/g, '') ?? 'PR'
-
-              const nearest = (targetSec) =>
-                gpsStreams.reduce(
-                  (best, s) => {
-                    const diff = Math.abs(s.t - targetSec)
-                    return diff < best.diff ? { diff, lat: s.lat, lng: s.lng } : best
-                  },
-                  { diff: Infinity, lat: null, lng: null }
-                )
-
-              const startPt = nearest(relStartSec)
-              const endPt = nearest(relEndSec)
-
-              if (startPt.lat != null) {
-                const sm = L.default
-                  .marker([startPt.lat, startPt.lng], {
-                    icon: makePrIcon(`${effort.name ?? 'PR'} start`),
-                  })
-                  .addTo(map)
-                sm.getElement()?.setAttribute('id', `prEffortStart_${safeName}_${mPrefix}`)
-              }
-              if (endPt.lat != null) {
-                const em = L.default
-                  .marker([endPt.lat, endPt.lng], { icon: makePrIcon(effort.name ?? 'PR') })
-                  .addTo(map)
-                em.getElement()?.setAttribute('id', `prEffortEnd_${safeName}_${mPrefix}`)
-              }
-            }
+          if (progress < 1) {
+            animFrameRef.current = requestAnimationFrame(animate)
+          } else {
+            drawMarkers(maplibregl, map, coords)
           }
         }
-      }
-      animFrameRef.current = requestAnimationFrame(animate)
+        animFrameRef.current = requestAnimationFrame(animate)
+      })
 
       if (isMounted) {
         mapRef.current = map
-        tileLayerRef.current = tileLayer
-        routeLineRef.current = routeLine
       }
     })
 
@@ -265,33 +159,217 @@ function LeafletMap({
       isMounted = false
       cancelAnimationFrame(animFrameRef.current)
       if (mapRef.current) {
+        markersRef.current.forEach((m) => m.remove())
+        markersRef.current = []
         mapRef.current.remove()
         mapRef.current = null
-        tileLayerRef.current = null
-        routeLineRef.current = null
       }
     }
   }, [encodedPolyline, interactive])
 
-  // Swap tile layer and polyline color on mapStyle change — CF-1/WF-4 fix:
-  // capture refs before async, use cancellation flag to guard unmount writes
+  function drawMarkers(maplibregl, map, coords) {
+    if (!document.getElementById('route-marker-styles')) {
+      const style = document.createElement('style')
+      style.id = 'route-marker-styles'
+      style.textContent = `
+        @keyframes routePing {
+          0% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; }
+          100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
+        }
+        .route-marker-label {
+          opacity: 0;
+          transition: opacity 0.15s ease;
+          pointer-events: none;
+        }
+        .route-marker-wrapper:hover .route-marker-label {
+          opacity: 1;
+        }
+      `
+      document.head.appendChild(style)
+    }
+
+    function makeMarkerEl(color, label, id) {
+      const el = document.createElement('div')
+      el.id = id
+      el.className = 'route-marker-wrapper'
+      el.style.cssText = 'position:relative;width:0;height:0;cursor:pointer;'
+      el.innerHTML = `
+        <div style="position:absolute;width:18px;height:18px;border-radius:50%;background:${esc(color)};transform:translate(-50%,-50%);animation:routePing 1.6s ease-out infinite;pointer-events:none;"></div>
+        <div style="position:absolute;width:11px;height:11px;border-radius:50%;background:${esc(color)};transform:translate(-50%,-50%);"></div>
+        <div class="route-marker-label" style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:#fff;color:#334155;border:1px solid #e2e8f0;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">${esc(label)}</div>
+      `
+      return el
+    }
+
+    const {
+      laps: mLaps,
+      bestEfforts: mEfforts,
+      activityStartedAt: mStartedAt,
+      totalDistanceM: mTotalDist,
+      streams: mStreams,
+      pagePrefix: mPrefix,
+    } = markersDataRef.current
+
+    const finishLabel = mLaps?.length > 0 ? `Lap ${mLaps.length} · Finish` : 'Finish'
+
+    markersRef.current.push(
+      new maplibregl.Marker({
+        element: makeMarkerEl('#16a34a', 'Start', `routeStartMarker_${mPrefix}`),
+      })
+        .setLngLat(coords[0])
+        .addTo(map),
+      new maplibregl.Marker({
+        element: makeMarkerEl('#dc2626', finishLabel, `routeEndMarker_${mPrefix}`),
+      })
+        .setLngLat(coords[coords.length - 1])
+        .addTo(map)
+    )
+
+    // Lap boundary markers — skip last (merged into Finish marker above)
+    if (mLaps?.length > 1 && mTotalDist > 0) {
+      let cumDist = 0
+      for (let i = 0; i < mLaps.length - 1; i++) {
+        cumDist += mLaps[i].distance_m
+        const frac = cumDist / mTotalDist
+        if (frac <= 0 || frac >= 1) continue
+        const idx = Math.round(frac * (coords.length - 1))
+        const lapNum = i + 1
+
+        const lap = mLaps[i]
+        const lapPaceSec =
+          lap.moving_time_sec > 0 && lap.distance_m > 0
+            ? Math.round(lap.moving_time_sec / (lap.distance_m / 1000))
+            : null
+        const distStr = cumDist ? `${(cumDist / 1000).toFixed(2)} km` : '—'
+        const paceStr = lapPaceSec ? `${fmtPace(lapPaceSec)}/km` : '—'
+        const timeStr = lap.moving_time_sec ? fmtDuration(lap.moving_time_sec) : '—'
+
+        const lapEl = document.createElement('div')
+        lapEl.id = `lapMarker_${lapNum}_${mPrefix}`
+        lapEl.className = 'route-marker-wrapper'
+        lapEl.style.cssText = 'position:relative;width:0;height:0;cursor:pointer;'
+        lapEl.innerHTML = `
+          <div style="position:absolute;width:22px;height:22px;border-radius:50%;background:#7c3aed;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25);font-family:system-ui,sans-serif;">${esc(String(lapNum))}</div>
+          <div class="route-marker-label" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:#fff;color:#334155;border:1px solid #e2e8f0;padding:6px 10px;border-radius:8px;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">
+            <div style="font-size:11px;font-weight:700;color:#7c3aed;margin-bottom:4px;">Lap ${esc(String(lapNum))}</div>
+            <div style="display:grid;grid-template-columns:auto auto;gap:1px 10px;font-size:11px;">
+              <span style="color:#94a3b8;">Dist</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">${esc(distStr)}</span>
+              <span style="color:#94a3b8;">Pace</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">${esc(paceStr)}</span>
+              <span style="color:#94a3b8;">Time</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">${esc(timeStr)}</span>
+            </div>
+          </div>`
+
+        markersRef.current.push(
+          new maplibregl.Marker({ element: lapEl }).setLngLat(coords[idx]).addTo(map)
+        )
+      }
+    }
+
+    // Best effort PR markers
+    const prEfforts = mEfforts?.filter((e) => e.pr_rank != null) ?? []
+    const gpsStreams = mStreams?.filter((s) => s.lat != null && s.lng != null) ?? []
+
+    if (prEfforts.length > 0 && gpsStreams.length > 0 && mStartedAt) {
+      const actStartMs = new Date(mStartedAt).getTime()
+
+      function makePrEl(label, id) {
+        const el = document.createElement('div')
+        el.id = id
+        el.className = 'route-marker-wrapper'
+        el.style.cssText = 'position:relative;width:0;height:0;cursor:pointer;'
+        el.innerHTML = `
+          <div style="position:absolute;width:13px;height:13px;border-radius:50%;background:#d97706;transform:translate(-50%,-50%);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
+          <div class="route-marker-label" style="position:absolute;bottom:13px;left:50%;transform:translateX(-50%);background:#fff;color:#334155;border:1px solid #e2e8f0;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 2px 4px rgba(0,0,0,0.08);">${esc(label)}</div>
+        `
+        return el
+      }
+
+      const nearest = (targetSec) =>
+        gpsStreams.reduce(
+          (best, s) => {
+            const diff = Math.abs(s.t - targetSec)
+            return diff < best.diff ? { diff, lat: s.lat, lng: s.lng } : best
+          },
+          { diff: Infinity, lat: null, lng: null }
+        )
+
+      for (const effort of prEfforts) {
+        const relStartSec = (new Date(effort.started_at).getTime() - actStartMs) / 1000
+        const relEndSec = relStartSec + effort.elapsed_time_sec
+        const safeName = effort.name?.replace(/[^a-zA-Z0-9]/g, '') ?? 'PR'
+
+        const startPt = nearest(relStartSec)
+        const endPt = nearest(relEndSec)
+
+        if (startPt.lat != null) {
+          markersRef.current.push(
+            new maplibregl.Marker({
+              element: makePrEl(
+                `${effort.name ?? 'PR'} start`,
+                `prEffortStart_${safeName}_${mPrefix}`
+              ),
+            })
+              .setLngLat([startPt.lng, startPt.lat])
+              .addTo(map)
+          )
+        }
+        if (endPt.lat != null) {
+          markersRef.current.push(
+            new maplibregl.Marker({
+              element: makePrEl(effort.name ?? 'PR', `prEffortEnd_${safeName}_${mPrefix}`),
+            })
+              .setLngLat([endPt.lng, endPt.lat])
+              .addTo(map)
+          )
+        }
+      }
+    }
+  }
+
+  // Swap tile style + route color when user toggles map/satellite
+  // CF-1/WF-4 fix: setStyle wipes all custom sources/layers — re-add after style.load
   useEffect(() => {
-    if (!mapRef.current || !tileLayerRef.current || !routeLineRef.current) return
-
+    if (!mapRef.current) return
     let cancelled = false
-    const currentMap = mapRef.current
-    const currentTile = tileLayerRef.current
-    const currentRoute = routeLineRef.current
+    const map = mapRef.current
 
-    import('leaflet').then((L) => {
-      if (cancelled || !currentMap || !currentTile || !currentRoute) return
+    map.setStyle(TILE_STYLES[mapStyle] ?? TILE_STYLES.map)
 
-      currentTile.remove()
-      const config = TILE_CONFIGS[mapStyle] ?? TILE_CONFIGS.map
-      const newTile = L.default.tileLayer(config.url, config.options).addTo(currentMap)
-      currentRoute.setStyle({ color: POLYLINE_COLORS[mapStyle] ?? POLYLINE_COLORS.map })
+    map.once('style.load', () => {
+      if (cancelled || !mlRef.current) return
+      const coords = coordsRef.current
+      if (!coords.length) return
 
-      if (!cancelled) tileLayerRef.current = newTile
+      map.addSource('route', {
+        type: 'geojson',
+        data: { type: 'Feature', geometry: { type: 'LineString', coordinates: coords } },
+      })
+      if (BORDER_COLORS[mapStyle]) {
+        map.addLayer({
+          id: 'route-border',
+          type: 'line',
+          source: 'route',
+          paint: {
+            'line-color': BORDER_COLORS[mapStyle],
+            'line-width': 6,
+            'line-opacity': 0.5,
+          },
+        })
+      }
+      map.addLayer({
+        id: 'route-line',
+        type: 'line',
+        source: 'route',
+        paint: {
+          'line-color': POLYLINE_COLORS[mapStyle] ?? POLYLINE_COLORS.default,
+          'line-width': 4,
+          'line-opacity': 0.9,
+        },
+      })
+
+      markersRef.current.forEach((m) => m.remove())
+      markersRef.current = []
+      drawMarkers(mlRef.current, map, coords)
     })
 
     return () => {
@@ -318,11 +396,14 @@ function StyleToggle({ mapStyle, onStyleChange }) {
       className="shrink-0 self-start"
     >
       <TabsList variant="pill" size="sm">
-        <TabsTrigger id="mapStyleMap_activityDetailPage" value="map">
+        <TabsTrigger id="mapStyleDefault_activityDetailPage" value="default">
           Map
         </TabsTrigger>
-        <TabsTrigger id="mapStyleSatellite_activityDetailPage" value="satellite">
-          Satellite
+        <TabsTrigger id="mapStyleStreet_activityDetailPage" value="street">
+          Street
+        </TabsTrigger>
+        <TabsTrigger id="mapStyleDark_activityDetailPage" value="dark">
+          Dark
         </TabsTrigger>
       </TabsList>
     </Tabs>
@@ -341,10 +422,9 @@ export default function RouteMap({
   pagePrefix = 'activityDetailPage',
 }) {
   const [expanded, setExpanded] = useState(false)
-  const [mapStyle, setMapStyle] = useState('map')
+  const [mapStyle, setMapStyle] = useState('default')
   const modalRef = useRef(null)
 
-  // CF-2: focus modal on open, close on Escape
   useEffect(() => {
     if (!expanded) return
     modalRef.current?.focus()
@@ -371,10 +451,10 @@ export default function RouteMap({
     <>
       <div className={`${className}`}>
         <div className="relative rounded-t-lg overflow-hidden isolate" style={{ height }}>
-          <LeafletMap
+          <MapLibreRouteMap
             encodedPolyline={encodedPolyline}
             height={height}
-            interactive={false}
+            interactive={true}
             mapStyle={mapStyle}
             laps={laps}
             bestEfforts={bestEfforts}
@@ -386,7 +466,7 @@ export default function RouteMap({
           <Button
             onClick={() => setExpanded(true)}
             variant="ghost"
-            className="absolute top-2 right-2 z-[1000] bg-white/90 hover:bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm transition-colors"
+            className="absolute bottom-2 right-2 z-[1000] bg-white/90 hover:bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm transition-colors"
             aria-label="Expand map"
           >
             <Maximize2 className="size-4 text-slate-600" aria-hidden="true" />
@@ -413,7 +493,7 @@ export default function RouteMap({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative flex-1 overflow-hidden">
-              <LeafletMap
+              <MapLibreRouteMap
                 encodedPolyline={encodedPolyline}
                 height="100%"
                 className="w-full h-full"
