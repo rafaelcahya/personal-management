@@ -26,7 +26,14 @@ import {
   ModalBody,
 } from '@/components/base/Modal/Modal'
 import { totalDistance } from '@/lib/running/geo'
-import { fetchSavedRoutes, saveRoute, deleteSavedRoute, updateSavedRoute } from '@/lib/api/running'
+import {
+  fetchSavedRoutes,
+  saveRoute,
+  deleteSavedRoute,
+  updateSavedRoute,
+  fetchActivities,
+} from '@/lib/api/running'
+import { fmtPace } from '@/app/main/running/(app)/dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
 
 const RouteBuilderMap = dynamic(() => import('./components/RouteBuilderMap'), {
@@ -190,6 +197,7 @@ export default function RouteBuilderPage() {
   const [waypoints, setWaypoints] = useState([])
   const [routeName, setRouteName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [defaultPaceMmss, setDefaultPaceMmss] = useState(null)
 
   const [routes, setRoutes] = useState(null)
   const [routesLoading, setRoutesLoading] = useState(true)
@@ -197,6 +205,19 @@ export default function RouteBuilderPage() {
   const [viewingRoute, setViewingRoute] = useState(null)
 
   const distanceM = useMemo(() => Math.round(totalDistance(waypoints)), [waypoints])
+
+  useEffect(() => {
+    fetchActivities({ limit: 10 })
+      .then(({ data }) => {
+        const valid = (data ?? []).filter((a) => a.distance_m > 0 && a.moving_time_sec > 0)
+        if (!valid.length) return
+        const totalDist = valid.reduce((s, a) => s + a.distance_m, 0)
+        const totalTime = valid.reduce((s, a) => s + a.moving_time_sec, 0)
+        const avgPaceSec = Math.round(totalTime / (totalDist / 1000))
+        setDefaultPaceMmss(fmtPace(avgPaceSec))
+      })
+      .catch(() => {})
+  }, [])
 
   const loadRoutes = useCallback(async () => {
     setRoutesLoading(true)
@@ -299,6 +320,7 @@ export default function RouteBuilderPage() {
               onUndo={handleUndo}
               onClear={handleClear}
               saving={saving}
+              defaultPaceMmss={defaultPaceMmss}
             />
           </div>
         </CardContent>
@@ -340,12 +362,18 @@ export default function RouteBuilderPage() {
           )}
 
           {!routesLoading && !routesError && routes?.length === 0 && (
-            <p
+            <div
               id="savedRoutesEmpty_routeBuilderPage"
-              className="text-sm text-slate-400 text-center py-6"
+              className="flex flex-col items-center gap-2 py-6 text-center"
             >
-              No saved routes yet. Build and save your first route above.
-            </p>
+              <p className="text-sm text-slate-400">No saved routes yet — build one above!</p>
+              <a
+                href="#routeBuilderMap_routeBuilderPage"
+                className="text-sm font-medium text-violet-600 hover:text-violet-700 transition-colors"
+              >
+                Start Building
+              </a>
+            </div>
           )}
 
           {!routesLoading && !routesError && routes && routes.length > 0 && (
