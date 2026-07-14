@@ -26,6 +26,7 @@ export default function RouteStats({
   onClear,
   saving,
   defaultPaceMmss,
+  onEstimatedSecChange,
 }) {
   const distanceKm = (distanceM / 1000).toFixed(2)
   const canSave = waypointCount >= 2 && routeName.trim().length > 0
@@ -50,6 +51,10 @@ export default function RouteStats({
     paceSec != null && paceSec > 0 && distanceM > 0
       ? Math.round(paceSec * (distanceM / 1000))
       : null
+
+  useEffect(() => {
+    onEstimatedSecChange?.(estimatedSec)
+  }, [estimatedSec, onEstimatedSecChange])
 
   return (
     <div className="flex flex-col gap-4 p-4 bg-white rounded-xl border border-slate-200">

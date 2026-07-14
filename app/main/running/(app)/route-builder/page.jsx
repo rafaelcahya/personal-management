@@ -230,6 +230,7 @@ export default function RouteBuilderPage() {
   const [routeName, setRouteName] = useState('')
   const [saving, setSaving] = useState(false)
   const [defaultPaceMmss, setDefaultPaceMmss] = useState(null)
+  const [estimatedSec, setEstimatedSec] = useState(null)
 
   const [routes, setRoutes] = useState(null)
   const [routesLoading, setRoutesLoading] = useState(true)
@@ -340,7 +341,20 @@ export default function RouteBuilderPage() {
         </CardHeader>
         <CardContent className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 min-w-0">
-            <RouteBuilderMap waypoints={waypoints} onChange={setWaypoints} onUndo={handleUndo} />
+            <RouteBuilderMap
+              waypoints={waypoints}
+              onChange={setWaypoints}
+              onUndo={handleUndo}
+              onClear={handleClear}
+              onSave={handleSave}
+              distanceM={distanceM}
+              waypointCount={waypoints.length}
+              estimatedSec={estimatedSec}
+              saving={saving}
+              canSave={waypoints.length >= 2 && routeName.trim().length > 0}
+              routeName={routeName}
+              onRouteNameChange={setRouteName}
+            />
           </div>
           <div className="lg:w-64 shrink-0">
             <RouteStats
@@ -353,6 +367,7 @@ export default function RouteBuilderPage() {
               onClear={handleClear}
               saving={saving}
               defaultPaceMmss={defaultPaceMmss}
+              onEstimatedSecChange={setEstimatedSec}
             />
           </div>
         </CardContent>
