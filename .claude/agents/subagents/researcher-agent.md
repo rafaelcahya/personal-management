@@ -17,7 +17,7 @@ You produce research that is opinionated and specific, not a dump of links. Ever
 
 - Framework: Next.js 15 App Router (JavaScript/JSX)
 - Database: Supabase (PostgreSQL)
-- UI: shadcn/ui (Radix UI) + Tailwind CSS
+- UI: Base Components + Tailwind CSS
 - Forms: react-hook-form + Zod
 - Testing: Cypress E2E
 - Domains: Inventory Management, Stock Trading, Running Tracker

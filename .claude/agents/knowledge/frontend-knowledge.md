@@ -10,7 +10,7 @@
 - **Framework**: Next.js 15 App Router
 - **Language**: JavaScript/JSX (no TypeScript in app code)
 - **Styling**: Tailwind CSS + CSS variables
-- **UI Primitives**: shadcn/ui (`components/ui/`)
+- **UI Primitives**: Base Components (`components/base/`)
 - **Forms**: react-hook-form + Zod (schemas from `schemas/`)
 - **API Client**: `lib/api/` (never fetch directly in components)
 - **Path alias**: `@/*` → project root
@@ -26,7 +26,7 @@ Next.js 15 App Router renders everything as **Server Component by default**. Onl
 - React hooks (`useState`, `useEffect`, `useCallback`, `useMemo`, `useRef`)
 - Browser APIs (`window`, `localStorage`, `document`)
 - Event handlers (`onClick`, `onChange`, `onSubmit`)
-- shadcn/ui or Radix UI interactive components (they use hooks internally)
+- Base Components or Radix UI interactive components (they use hooks internally)
 - Context providers that wrap client state
 
 ### Do NOT add `'use client'` when the component:
@@ -61,14 +61,14 @@ export default function InventoryPage() { ... }
 
 ### Component boundary cheatsheet
 
-| Component Type        | `'use client'`?     | Example                                                       |
-| --------------------- | ------------------- | ------------------------------------------------------------- |
-| Page (`page.jsx`)     | No (default server) | `app/main/inventory/page.jsx`                                 |
-| Layout                | No                  | `app/layout.jsx`                                              |
-| Static section        | No                  | `InventoryHeader` with no interactivity                       |
-| Interactive component | Yes                 | `AddItemForm`, `InventoryTable`                               |
-| shadcn/ui wrapper     | Yes                 | Any component using `<Dialog>`, `<Sheet>`, `<Button onClick>` |
-| Custom hook consumer  | Yes                 | Any component calling `useInventory()`                        |
+| Component Type         | `'use client'`?     | Example                                                      |
+| ---------------------- | ------------------- | ------------------------------------------------------------ |
+| Page (`page.jsx`)      | No (default server) | `app/main/inventory/page.jsx`                                |
+| Layout                 | No                  | `app/layout.jsx`                                             |
+| Static section         | No                  | `InventoryHeader` with no interactivity                      |
+| Interactive component  | Yes                 | `AddItemForm`, `InventoryTable`                              |
+| Base component wrapper | Yes                 | Any component using `<Modal>`, `<Sheet>`, `<Button onClick>` |
+| Custom hook consumer   | Yes                 | Any component calling `useInventory()`                       |
 
 ---
 
@@ -105,7 +105,7 @@ Rules:
 'use client'
 
 import { useInventory } from '@/hooks/useInventory'
-import { DataTable } from '@/components/ui/data-table'
+import { DataTable } from '@/components/base/Table/Table'
 import { columns } from './columns'
 
 export function InventoryTable() {
@@ -171,16 +171,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { addInventoryItemSchema } from '@/schemas/inventory'
 import { createInventoryItem } from '@/lib/api/inventory'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { FieldContainer, FieldLabel, FieldControl, FieldError } from '@/components/base/Field/Field'
 
 export function AddItemForm({ onSuccess }) {
   const form = useForm({
@@ -264,7 +257,7 @@ Skeleton must match the shape of the content it replaces:
 
 ```jsx
 // components/inventory/InventoryTableSkeleton.jsx
-import { Skeleton } from '@/components/ui/skeleton'
+import Skeleton from '@/components/base/Skeleton/Skeleton'
 
 export function InventoryTableSkeleton() {
   return (
@@ -286,7 +279,7 @@ Always: icon + message + CTA:
 ```jsx
 // components/inventory/InventoryEmptyState.jsx
 import { PackageOpen } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Button from '@/components/base/Button/Button'
 
 export function InventoryEmptyState({ onAdd }) {
   return (
@@ -309,32 +302,32 @@ Use `<Dialog>` for confirmations and short focused tasks (max 2 fields):
 
 ```jsx
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalFooter,
+} from '@/components/base/Modal/Modal'
+import Button from '@/components/base/Button/Button'
 
 export function DeleteConfirmDialog({ open, onOpenChange, onConfirm, itemName }) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Delete {itemName}?</DialogTitle>
-        </DialogHeader>
+    <Modal open={open} onOpenChange={onOpenChange}>
+      <ModalContent>
+        <ModalHeader>
+          <ModalTitle>Delete {itemName}?</ModalTitle>
+        </ModalHeader>
         <p className="text-sm text-[var(--color-tertiary)]">This action cannot be undone.</p>
-        <DialogFooter>
+        <ModalFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button variant="destructive" onClick={onConfirm}>
             Delete
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }
 ```
@@ -346,7 +339,7 @@ export function DeleteConfirmDialog({ open, onOpenChange, onConfirm, itemName })
 Use `<Sheet>` for complex forms or detail views:
 
 ```jsx
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/base/Sheet/Sheet'
 
 export function ItemDetailDrawer({ open, onOpenChange, item }) {
   return (
