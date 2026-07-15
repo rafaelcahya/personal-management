@@ -8,7 +8,7 @@
 ## Stack Identity
 
 - **Styling**: Tailwind CSS + project CSS variables (tokens)
-- **Components**: shadcn/ui (Radix UI primitives) in `components/ui/`
+- **Components**: Base Components in `components/base/`
 - **Pages**: `app/main/{landing, inventory, trading}/`
 - **Design target**: Desktop-primary, mobile-responsive
 - **Domains**: Inventory Management, Stock Trading
@@ -52,9 +52,9 @@ Every design output must follow this format exactly:
 | Empty          | No data            | icon + message + CTA                        |
 | Error          | Failed operation   | inline message + retry CTA                  |
 
-### Component Mapping (shadcn/ui)
+### Component Mapping (Base Components)
 
-- Use `<Dialog>` for: ...
+- Use `<Modal>` for: ...
 - Use `<Sheet>` for: ...
 - Use `<Table>` for: ...
 - Use `<Badge>` for: ...
@@ -101,21 +101,20 @@ Every design output must follow this format exactly:
 
 ---
 
-## 3. Component → shadcn Mapping
+## 3. Component → Base Component Mapping
 
-| Use Case                              | shadcn Component                    | Notes                                               |
-| ------------------------------------- | ----------------------------------- | --------------------------------------------------- |
-| Confirmation / short form (≤2 fields) | `<Dialog>`                          | Center on all screen sizes                          |
-| Complex form / detail view            | `<Sheet>`                           | Slide from right, 400px desktop / full-width mobile |
-| Data list                             | `<Table>`                           | Add `overflow-x-auto` wrapper for mobile            |
-| Status indicators                     | `<Badge>`                           | Use trade tokens for financial status               |
-| Inline notifications                  | `<Alert>`                           | Use for persistent page-level messages              |
-| Transient notifications               | Toast (`sonner`)                    | Success 4s auto-dismiss, error persists             |
-| Navigation (desktop)                  | `<NavigationMenu>`                  | Sidebar layout on lg+                               |
-| Form inputs                           | `<Input>`, `<Select>`, `<Checkbox>` | Always with `<FormLabel>` and `<FormMessage>`       |
-| Data actions                          | `<DropdownMenu>`                    | For row-level actions (edit, delete, view)          |
-| Page sections                         | `<Card>`                            | For grouping related content                        |
-| Long content                          | `<Tabs>`                            | When one screen has multiple views                  |
+| Use Case                              | Base Component                                                   | Notes                                               |
+| ------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------- |
+| Confirmation / short form (≤2 fields) | `<Modal>` (`@/components/base/Modal/Modal`)                      | Center on all screen sizes                          |
+| Complex form / detail view            | `<Sheet>` (`@/components/base/Sheet/Sheet`)                      | Slide from right, 400px desktop / full-width mobile |
+| Data list                             | `<Table>` (`@/components/base/Table/Table`)                      | Add `overflow-x-auto` wrapper for mobile            |
+| Status indicators                     | `<Badge>` (`@/components/base/Badge/Badge`)                      | Use trade tokens for financial status               |
+| Transient notifications               | `<Toast>` (`@/components/base/Toast/Toast`)                      | Success 4s auto-dismiss, error persists             |
+| Navigation (desktop)                  | `<NavMenu>` (`@/components/base/NavMenu/NavMenu`)                | Sidebar layout on lg+                               |
+| Form inputs                           | `<Input>`, `<Select>`, `<Checkbox>`                              | Always with `<FieldLabel>` and `<FieldError>`       |
+| Data actions                          | `<DropdownMenu>` (`@/components/base/DropdownMenu/DropdownMenu`) | For row-level actions (edit, delete, view)          |
+| Page sections                         | `<Card>` (`@/components/base/Card/Card`)                         | For grouping related content                        |
+| Long content                          | `<Tabs>` (`@/components/base/Tabs/Tabs`)                         | When one screen has multiple views                  |
 
 ---
 

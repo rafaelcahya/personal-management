@@ -18,11 +18,11 @@
 
 ## Component Pattern Library
 
-<!-- Patterns established for this project beyond what shadcn/ui provides out-of-the-box -->
+<!-- Patterns established for this project using Base Components from @/components/base/ -->
 
-| Pattern               | Component Used            | Where Applied        | Notes                            |
-| --------------------- | ------------------------- | -------------------- | -------------------------------- |
-| <!-- pattern name --> | <!-- shadcn component --> | <!-- module/page --> | <!-- any variant or override --> |
+| Pattern               | Component Used                 | Where Applied        | Notes                            |
+| --------------------- | ------------------------------ | -------------------- | -------------------------------- |
+| <!-- pattern name --> | <!-- base component + path --> | <!-- module/page --> | <!-- any variant or override --> |
 
 ---
 

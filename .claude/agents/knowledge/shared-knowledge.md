@@ -25,7 +25,7 @@ Single-user app (no multi-tenant). Every data record is scoped to `user_id`.
 | Database         | Supabase (PostgreSQL)             | hosted                                                                                                                      |
 | Auth             | Supabase SSR + JWT                | `middleware.js`, `lib/supabase/`                                                                                            |
 | Styling          | Tailwind CSS + CSS variables      | `app/globals.css`                                                                                                           |
-| UI Components    | shadcn/ui (Radix UI)              | `components/ui/`                                                                                                            |
+| UI Components    | Base Components                   | `components/base/`                                                                                                          |
 | Forms            | react-hook-form + Zod             | `schemas/`                                                                                                                  |
 | API Client       | custom fetch functions            | `lib/api/`                                                                                                                  |
 | AI Integration   | Claude Sonnet 4.6 (Anthropic SDK) | `lib/ai/` or `app/api/chat/`                                                                                                |
@@ -48,7 +48,7 @@ app/
 └── layout.jsx
 
 components/
-├── ui/                                   ← shadcn/ui primitives (do not modify)
+├── base/                                 ← base component library (Radix UI)
 └── [feature]/                            ← feature-specific components
 
 lib/
@@ -207,8 +207,8 @@ Feature: [feature name]
 Design doc: [path/to/design-doc.md]
 Components to build:
   - [ComponentName] — [state: default/hover/loading/empty/error]
-Shadcn/ui mapping:
-  - [component] → [shadcn component]
+Base component mapping:
+  - [component] → [base component + import path]
 Notes: [any implementation gotchas]
 ```
 

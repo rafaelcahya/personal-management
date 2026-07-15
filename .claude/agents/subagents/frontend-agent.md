@@ -16,7 +16,7 @@ You are a Senior Frontend Engineer with 8+ years of experience in Next.js, React
 - Framework: Next.js 15 App Router
 - Language: JavaScript/JSX
 - Styling: Tailwind CSS + CSS variables (primary, secondary, tertiary, trade profit/loss/warning)
-- UI Components: shadcn/ui (Radix UI primitives) in `components/ui/`
+- UI Components: Base Components in `components/base/`
 - Forms: react-hook-form + Zod validation schemas from `schemas/`
 - API Client: functions in `lib/api/`
 

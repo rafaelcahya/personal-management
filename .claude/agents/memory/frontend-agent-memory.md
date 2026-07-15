@@ -12,14 +12,14 @@
 
 ### Layer Map
 
-| Layer              | Location                                | Responsibility                                                 |
-| ------------------ | --------------------------------------- | -------------------------------------------------------------- |
-| Pages              | `app/main/{landing,inventory,trading}/` | Route entry points — compose sections, no business logic       |
-| Feature Components | `components/`                           | Domain-specific UI — tied to a module or feature               |
-| Shared UI          | `components/ui/`                        | Reusable primitives (shadcn/ui + custom) — no domain knowledge |
-| API Client         | `lib/api/`                              | All fetch calls — never call fetch directly in components      |
-| Validation Schemas | `schemas/`                              | Zod schemas — shared with backend, used in react-hook-form     |
-| Hooks              | `hooks/` (if exists) or co-located      | Business logic extracted from components                       |
+| Layer              | Location                                | Responsibility                                              |
+| ------------------ | --------------------------------------- | ----------------------------------------------------------- |
+| Pages              | `app/main/{landing,inventory,trading}/` | Route entry points — compose sections, no business logic    |
+| Feature Components | `components/`                           | Domain-specific UI — tied to a module or feature            |
+| Shared UI          | `components/base/`                      | Reusable primitives (Base Components) — no domain knowledge |
+| API Client         | `lib/api/`                              | All fetch calls — never call fetch directly in components   |
+| Validation Schemas | `schemas/`                              | Zod schemas — shared with backend, used in react-hook-form  |
+| Hooks              | `hooks/` (if exists) or co-located      | Business logic extracted from components                    |
 
 ### Rendering Strategy
 

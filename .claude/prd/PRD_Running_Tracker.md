@@ -5,7 +5,7 @@
 **Version:** 3.2
 **Last Updated:** 2026-06-17
 **Owner:** Rafael Cahya
-**Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · shadcn/ui · Claude AI (Sonnet 4.6) · Strava API
+**Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · Base Components · Claude AI (Sonnet 4.6) · Strava API
 
 ---
 
@@ -448,22 +448,22 @@ The Settings page must have a "Strava Connection" section that handles both stat
 
 ## 6. Tech Stack
 
-| Layer           | Technology                | Notes                                                               |
-| --------------- | ------------------------- | ------------------------------------------------------------------- |
-| Framework       | Next.js 15 App Router     | JavaScript/JSX — matches Personal Management                        |
-| UI              | Tailwind CSS + shadcn/ui  | Matches Personal Management for visual consistency                  |
-| Charts          | Recharts (Phase 1)        | Visx for correlation view in Phase 2                                |
-| Map             | Leaflet + OpenStreetMap   | Renders activity routes                                             |
-| Database        | PostgreSQL 16             | Standard PG with proper indexing — no TimescaleDB                   |
-| ORM             | Drizzle ORM               | Lightweight, well-suited to Next.js API routes                      |
-| Auth            | Supabase SSR              | Shared project with Personal Management                             |
-| Data sync       | Strava API                | OAuth + webhook + polling fallback                                  |
-| AI              | Claude API (Sonnet 4.6)   | Running coach, tool use, streaming SSE — Sonnet for all queries     |
-| Background jobs | Inngest                   | Serverless-native job queue — backfill, sync, AI insight generation |
-| Cache           | Redis (Upstash)           | Rate limit counter, AI context cache                                |
-| File storage    | Cloudflare R2             | GPX/FIT file upload + backup                                        |
-| Deployment      | Vercel                    | Web app + API routes — serverless                                   |
-| Monitoring      | Sentry + Vercel Analytics |                                                                     |
+| Layer           | Technology                     | Notes                                                               |
+| --------------- | ------------------------------ | ------------------------------------------------------------------- |
+| Framework       | Next.js 15 App Router          | JavaScript/JSX — matches Personal Management                        |
+| UI              | Tailwind CSS + Base Components | Matches Personal Management for visual consistency                  |
+| Charts          | Recharts (Phase 1)             | Visx for correlation view in Phase 2                                |
+| Map             | Leaflet + OpenStreetMap        | Renders activity routes                                             |
+| Database        | PostgreSQL 16                  | Standard PG with proper indexing — no TimescaleDB                   |
+| ORM             | Drizzle ORM                    | Lightweight, well-suited to Next.js API routes                      |
+| Auth            | Supabase SSR                   | Shared project with Personal Management                             |
+| Data sync       | Strava API                     | OAuth + webhook + polling fallback                                  |
+| AI              | Claude API (Sonnet 4.6)        | Running coach, tool use, streaming SSE — Sonnet for all queries     |
+| Background jobs | Inngest                        | Serverless-native job queue — backfill, sync, AI insight generation |
+| Cache           | Redis (Upstash)                | Rate limit counter, AI context cache                                |
+| File storage    | Cloudflare R2                  | GPX/FIT file upload + backup                                        |
+| Deployment      | Vercel                         | Web app + API routes — serverless                                   |
+| Monitoring      | Sentry + Vercel Analytics      |                                                                     |
 
 ---
 
@@ -473,13 +473,13 @@ These rules apply to all components in Running Tracker. Frontend and UI/UX agent
 
 ### Input Focus Ring
 
-All `<Input>` elements (shadcn) and `<textarea>` elements **must** use the violet focus ring, not the default gray from the CSS variable `--ring`:
+All `<Input>` elements (base) and `<textarea>` elements **must** use the violet focus ring, not the default gray from the CSS variable `--ring`:
 
 ```
 focus-visible:ring-violet-200 focus-visible:border-violet-600
 ```
 
-For native `<textarea>` (not shadcn):
+For native `<textarea>` (not base Input):
 
 ```
 focus:outline-none focus:ring-2 focus:ring-violet-500
@@ -2031,7 +2031,7 @@ There are 6 AI cards on the Analytics page, each placed below its corresponding 
 - **Empty:** "No analysis yet. Your next activity will be analysed automatically."
 - **Stale badge:** if `insight.created_at` is older than the latest activity → show "Before last run" badge
 
-**History modal:** shadcn Dialog/Sheet, lists all `rt_ai_insights` with `insight_type = 'analytics_summary'`, sorted newest first, grouped by month. Each entry: date, section coverage, expandable to see full content.
+**History modal:** base `<Modal>` / `<Sheet>` from `@/components/base/Modal/Modal` and `@/components/base/Sheet/Sheet`, lists all `rt_ai_insights` with `insight_type = 'analytics_summary'`, sorted newest first, grouped by month. Each entry: date, section coverage, expandable to see full content.
 
 **Phase 1 (initial):** Weekly Distance, Pace Trend, Training Load + staleness check logic
 **Phase 2:** VO2max Trend, EF Trend, Race Predictor + history modal
@@ -2585,7 +2585,7 @@ Race Log has its own page at `/running/race-log`.
 | Empty    | Medal icon + "No races logged yet" text + "Log your first race" CTA button |
 | Has data | Table of race entries, ordered race_date DESC                              |
 
-**Table layout (implemented as shadcn `<Table>`):**
+**Table layout (implemented as base `<Table>` from `@/components/base/Table/Table`):**
 
 Columns: Race (title + distance label + DNF badge) | Date | Dist | Time | Pace | Place | Male
 
@@ -3636,21 +3636,21 @@ When `waypoints.length === 0`, overlay a centered hint pill on the map:
 
 Add pace input and estimated time to `RouteStats.jsx`.
 
-- Default pace: `6:00/km` (360 sec/km)
-- Pace input (`id="paceInput_routeBuilderPage"`): accepts `mm:ss` format, validates 1:00–15:00/km
-- Persisted to `localStorage` key `routeBuilder_pace`
-- Est. Time: `Math.round(distanceKm * paceSec / 60)` minutes, displayed as `X min` or `X h Y min`
-- Est. Time test ID: `estTime_routeBuilderPage`
+- Default pace: computed from last 10 activities — `sum(moving_time_sec) / sum(distance_km)` (state only, resets on mount — not persisted)
+- Pace input (`id="paceInput_routeBuilderPage"`): accepts `mm:ss` format, regex `/^[0-9]{1,2}:[0-5][0-9]$/`; `0:00` is invalid (shows `—`)
+- Est. Time: displayed via `fmtDuration(sec)` — format `M:SS` or `H:MM:SS`
+- Est. Time test ID: `estimatedTime_routeBuilderPage`
 - Stats grid: 2x2 layout — Distance / Waypoints / Pace / Est. Time
 
 #### 23.5.3 Distance Disclaimer
 
-Add an `Info` icon (size-3, text-slate-300) next to the "Distance" label. On hover/focus:
+Add a `<button>` wrapping an `Info` icon (size-3, text-slate-300) next to the "Distance" label. On click:
 
-> "Straight-line distance between waypoints — actual road distance may be higher."
+> "Straight-line estimate; actual road distance will be longer"
 
-- Tooltip: shadcn `<Tooltip>` / `<TooltipContent>`
-- Test ID: `distanceInfoIcon_routeBuilderPage`
+- Component: custom `<Popover>` / `<PopoverContent>` (click to open, not hover) from `@/components/base/Popover/Popover`
+- Trigger element: `<button>` wrapping `<Info>` — keyboard accessible
+- Test ID: `distanceTooltip_routeBuilderPage`
 
 #### 23.5.4 Delete Individual Waypoint (Right-click)
 

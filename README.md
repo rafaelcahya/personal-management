@@ -45,7 +45,7 @@ Route handlers never contain database queries directly — all SQL lives in serv
 
 ### Base Component System
 
-`components/base/` is the primary UI component library — built from scratch with React and Tailwind CSS. It includes Button, Input, Select, Modal, Tooltip, DatePicker, Combobox, and more. No Radix or shadcn/ui dependency. All components are documented in Storybook (port 6006, run with `npm run storybook`).
+`components/base/` is the primary UI component library — built from scratch with React and Tailwind CSS. It includes Button, Input, Select, Modal, Tooltip, DatePicker, Combobox, and more. No Radix or shadcn/ui dependency. All components are documented in Storybook.
 
 ### Auth
 
