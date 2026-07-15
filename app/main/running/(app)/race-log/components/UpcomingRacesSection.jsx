@@ -50,7 +50,7 @@ export default function UpcomingRacesSection({
         <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
           <AlertTriangle className="size-6 text-red-400" aria-hidden="true" />
           <p className="text-sm text-slate-600">{error}</p>
-          <Button variant="outline" size="base" onClick={onRetry}>
+          <Button variant="outline" onClick={onRetry}>
             Try again
           </Button>
         </div>
@@ -68,11 +68,7 @@ export default function UpcomingRacesSection({
             Add a race you&apos;re planning to run and track your progress.
           </EmptyStateDescription>
           <EmptyStateActions>
-            <Button
-              size="base"
-              onClick={() => setFormOpen(true)}
-              className="flex items-center gap-1.5"
-            >
+            <Button onClick={() => setFormOpen(true)} className="flex items-center gap-1.5">
               <Plus className="size-4" aria-hidden="true" />
               Add upcoming race
             </Button>

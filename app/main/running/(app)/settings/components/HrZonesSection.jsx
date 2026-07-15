@@ -1,5 +1,6 @@
 'use client'
 
+import { FieldContent, FieldLabel, FieldDescription } from '@/components/base/Field/Field'
 import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, Zap, Info, Heart } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
@@ -9,11 +10,9 @@ import Card, {
   CardIcon,
   CardTitle,
   CardDescription,
+  CardContent,
 } from '@/components/base/Card/Card'
 import Input from '@/components/base/Input/Input'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldDescription from '@/components/base/Field/FieldDescription'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import {
   Select,
@@ -22,11 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
-import {
-  Tooltip as UITooltip,
-  TooltipContent as UITooltipContent,
-  TooltipTrigger as UITooltipTrigger,
-} from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { getHrZones, updateHrZones, detectMaxHr } from '@/lib/api/running'
 
 const METHOD_OPTIONS = [
@@ -173,211 +168,201 @@ export default function HrZonesSection() {
         </CardHeaderContent>
       </CardHeader>
 
-      {loading ? (
-        <div id="hrZonesLoading_settingsPage" className="px-5 py-4 flex flex-col gap-3">
-          <Skeleton className="h-4 w-40 rounded" />
-          <Skeleton className="h-9 w-full rounded" />
-          <Skeleton className="h-9 w-full rounded" />
-        </div>
-      ) : loadError ? (
-        <div className="px-5 py-4">
-          <p className="text-sm text-red-700">{loadError}</p>
-        </div>
-      ) : (
-        <div className="px-5 py-5 flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-4">
-            {/* Max HR */}
-            <FieldContent>
-              <FieldLabel htmlFor="maxHrInput_settingsPage">Max HR (bpm)</FieldLabel>
-              <div className="flex gap-2">
+      <CardContent className="p-0">
+        {loading ? (
+          <div id="hrZonesLoading_settingsPage" className="px-5 py-4 flex flex-col gap-3">
+            <Skeleton className="h-4 w-40 rounded" />
+            <Skeleton className="h-9 w-full rounded" />
+            <Skeleton className="h-9 w-full rounded" />
+          </div>
+        ) : loadError ? (
+          <div className="px-5 py-4">
+            <p className="text-sm text-red-700">{loadError}</p>
+          </div>
+        ) : (
+          <div className="px-5 py-5 flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Max HR */}
+              <FieldContent>
+                <FieldLabel htmlFor="maxHrInput_settingsPage">Max HR (bpm)</FieldLabel>
+                <div className="flex gap-2">
+                  <Input
+                    id="maxHrInput_settingsPage"
+                    type="number"
+                    min={60}
+                    max={250}
+                    value={maxHr}
+                    onChange={(e) => setMaxHr(e.target.value)}
+                    placeholder="e.g. 190"
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  />
+                  <Button
+                    id="detectMaxHrBtn_settingsPage"
+                    type="button"
+                    variant="outline"
+                    disabled={detecting}
+                    onClick={handleDetectMaxHr}
+                    className="shrink-0 gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
+                  >
+                    <Zap className="size-3.5" aria-hidden="true" />
+                    {detecting ? 'Detecting…' : 'Detect'}
+                  </Button>
+                </div>
+                {typeof detectSuccess === 'number' && (
+                  <p
+                    id="maxHrDetectedHint_settingsPage"
+                    className="text-xs text-green-700 flex items-center gap-1"
+                  >
+                    <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
+                    Detected: {detectSuccess} bpm — from your highest recorded activity
+                  </p>
+                )}
+                {detectSuccess === 'no_data' && (
+                  <p id="maxHrNoDataHint_settingsPage" className="text-xs text-slate-500">
+                    No heart rate data found in your activities
+                  </p>
+                )}
+                {detectError && (
+                  <p id="maxHrDetectError_settingsPage" className="text-xs text-red-600">
+                    Could not detect Max HR — please try again
+                  </p>
+                )}
+                <FieldDescription className="leading-relaxed">
+                  The highest heart rate your heart can reach during maximum effort. Used to
+                  calculate HR training zones.
+                </FieldDescription>
+              </FieldContent>
+
+              {/* Resting HR */}
+              <FieldContent>
+                <FieldLabel htmlFor="restingHrInput_settingsPage">Resting HR (bpm)</FieldLabel>
                 <Input
-                  id="maxHrInput_settingsPage"
+                  id="restingHrInput_settingsPage"
                   type="number"
-                  min={60}
-                  max={250}
-                  value={maxHr}
-                  onChange={(e) => setMaxHr(e.target.value)}
-                  placeholder="e.g. 190"
+                  min={30}
+                  max={120}
+                  value={restingHr}
+                  onChange={(e) => setRestingHr(e.target.value)}
+                  placeholder="e.g. 55"
                   className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                 />
-                <Button
-                  id="detectMaxHrBtn_settingsPage"
-                  type="button"
-                  variant="outline"
-                  size="base"
-                  disabled={detecting}
-                  onClick={handleDetectMaxHr}
-                  className="shrink-0 gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
-                >
-                  <Zap className="size-3.5" aria-hidden="true" />
-                  {detecting ? 'Detecting…' : 'Detect'}
-                </Button>
-              </div>
-              {typeof detectSuccess === 'number' && (
-                <p
-                  id="maxHrDetectedHint_settingsPage"
-                  className="text-xs text-green-700 flex items-center gap-1"
-                >
-                  <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
-                  Detected: {detectSuccess} bpm — from your highest recorded activity
-                </p>
-              )}
-              {detectSuccess === 'no_data' && (
-                <p id="maxHrNoDataHint_settingsPage" className="text-xs text-slate-500">
-                  No heart rate data found in your activities
-                </p>
-              )}
-              {detectError && (
-                <p id="maxHrDetectError_settingsPage" className="text-xs text-red-600">
-                  Could not detect Max HR — please try again
-                </p>
-              )}
-              <FieldDescription className="leading-relaxed">
-                The highest heart rate your heart can reach during maximum effort. Used to calculate
-                HR training zones.
-              </FieldDescription>
-            </FieldContent>
+                <FieldDescription>
+                  Your heart rate first thing in the morning — required for Karvonen method.
+                </FieldDescription>
+              </FieldContent>
 
-            {/* Resting HR */}
-            <FieldContent>
-              <FieldLabel htmlFor="restingHrInput_settingsPage">Resting HR (bpm)</FieldLabel>
-              <Input
-                id="restingHrInput_settingsPage"
-                type="number"
-                min={30}
-                max={120}
-                value={restingHr}
-                onChange={(e) => setRestingHr(e.target.value)}
-                placeholder="e.g. 55"
-                className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-              />
-              <FieldDescription>
-                Your heart rate first thing in the morning — required for Karvonen method.
-              </FieldDescription>
-            </FieldContent>
-
-            {/* Threshold HR */}
-            <FieldContent>
-              <div className="flex items-center gap-1.5">
-                <FieldLabel htmlFor="thresholdHrInput_settingsPage">Threshold HR (bpm)</FieldLabel>
-                <UITooltip>
-                  <UITooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      aria-label="What is Threshold HR?"
-                      className="text-slate-300 hover:text-slate-500"
+              {/* Threshold HR */}
+              <FieldContent>
+                <div className="flex items-center gap-1.5">
+                  <FieldLabel htmlFor="thresholdHrInput_settingsPage">
+                    Threshold HR (bpm)
+                  </FieldLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        aria-label="What is Threshold HR?"
+                        className="text-slate-300 hover:text-slate-500"
+                      >
+                        <Info className="size-3.5" aria-hidden="true" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      side="top"
+                      className="w-auto max-w-64 p-3 text-xs leading-relaxed"
                     >
-                      <Info className="size-3.5" aria-hidden="true" />
-                    </Button>
-                  </UITooltipTrigger>
-                  <UITooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
-                    <p className="font-semibold mb-1">Threshold HR (LTHR)</p>
-                    <p>
-                      Your heart rate at lactate threshold — the hardest effort you can sustain for
-                      ~60 minutes. Used by the Lactate Threshold zone method.
-                    </p>
-                    <p className="mt-1">
-                      A common estimate is <span className="font-medium">85% of Max HR</span>, but a
-                      30-min all-out time trial gives more accurate results.
-                    </p>
-                  </UITooltipContent>
-                </UITooltip>
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  id="thresholdHrInput_settingsPage"
-                  type="number"
-                  min={100}
-                  max={220}
-                  value={thresholdHr}
-                  onChange={(e) => setThresholdHr(e.target.value)}
-                  placeholder="e.g. 165"
-                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                />
-                <Button
-                  id="thresholdHrAutoFillBtn_settingsPage"
-                  type="button"
-                  variant="outline"
-                  size="base"
-                  disabled={!hasValidMaxHr}
-                  onClick={handleAutoFillThresholdHr}
-                  className="shrink-0 text-xs text-violet-600 border-violet-200 hover:bg-violet-50 disabled:opacity-50"
+                      <p className="font-semibold mb-1">Threshold HR (LTHR)</p>
+                      <p>
+                        Your heart rate at lactate threshold — the hardest effort you can sustain
+                        for ~60 minutes. Used by the Lactate Threshold zone method.
+                      </p>
+                      <p className="mt-1">
+                        A common estimate is <span className="font-medium">85% of Max HR</span>, but
+                        a 30-min all-out time trial gives more accurate results.
+                      </p>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    id="thresholdHrInput_settingsPage"
+                    type="number"
+                    min={100}
+                    max={220}
+                    value={thresholdHr}
+                    onChange={(e) => setThresholdHr(e.target.value)}
+                    placeholder="e.g. 165"
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                  />
+                  <Button
+                    id="thresholdHrAutoFillBtn_settingsPage"
+                    type="button"
+                    variant="outline"
+                    disabled={!hasValidMaxHr}
+                    onClick={handleAutoFillThresholdHr}
+                    className="shrink-0 text-xs text-violet-600 border-violet-200 hover:bg-violet-50 disabled:opacity-50"
+                  >
+                    85% of Max HR
+                  </Button>
+                </div>
+                {!hasValidMaxHr && (
+                  <p id="thresholdHrNoMaxHr_settingsPage" className="text-xs text-red-500">
+                    Set Max HR first to use the auto-fill
+                  </p>
+                )}
+              </FieldContent>
+
+              {/* Calculation Method */}
+              <FieldContent>
+                <FieldLabel htmlFor="hrZonesMethodSelect_settingsPage">
+                  Calculation Method
+                </FieldLabel>
+                <Select value={method} onValueChange={setMethod}>
+                  <SelectTrigger id="hrZonesMethodSelect_settingsPage">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {METHOD_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FieldContent>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-1">
+              {saveSuccess && (
+                <div
+                  id="hrZonesSaveSuccess_settingsPage"
+                  className="flex items-center gap-1.5 text-sm text-green-700"
+                  role="status"
+                  aria-live="polite"
                 >
-                  85% of Max HR
-                </Button>
-              </div>
-              {!hasValidMaxHr && (
-                <p id="thresholdHrNoMaxHr_settingsPage" className="text-xs text-red-500">
-                  Set Max HR first to use the auto-fill
-                </p>
+                  <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
+                  Saved
+                </div>
               )}
-            </FieldContent>
-
-            {/* Calculation Method */}
-            <FieldContent>
-              <FieldLabel htmlFor="hrZonesMethodSelect_settingsPage">Calculation Method</FieldLabel>
-              <Select value={method} onValueChange={setMethod}>
-                <SelectTrigger
-                  id="hrZonesMethodSelect_settingsPage"
-                  className="w-full text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600"
+              {saveError && (
+                <div
+                  id="hrZonesSaveError_settingsPage"
+                  className="flex items-center gap-1.5 text-sm text-red-600"
+                  role="alert"
+                  aria-live="assertive"
                 >
-                  <SelectValue>{METHOD_OPTIONS.find((o) => o.value === method)?.label}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {METHOD_OPTIONS.map((opt) => (
-                    <SelectItem
-                      key={opt.value}
-                      value={opt.value}
-                      className="items-start py-2.5 focus:ring-0 focus:outline-none cursor-pointer"
-                    >
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-sm font-medium">{opt.label}</span>
-                        <span className="text-xs text-slate-400 font-normal leading-snug whitespace-normal">
-                          {opt.description}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FieldContent>
+                  <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+                  {saveError}
+                </div>
+              )}
+              <Button id="hrZonesSaveBtn_settingsPage" onClick={handleSave} disabled={saving}>
+                {saving ? 'Saving…' : 'Save'}
+              </Button>
+            </div>
           </div>
-
-          <div className="flex items-center justify-end gap-3 pt-1">
-            {saveSuccess && (
-              <div
-                id="hrZonesSaveSuccess_settingsPage"
-                className="flex items-center gap-1.5 text-sm text-green-700"
-                role="status"
-                aria-live="polite"
-              >
-                <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
-                Saved
-              </div>
-            )}
-            {saveError && (
-              <div
-                id="hrZonesSaveError_settingsPage"
-                className="flex items-center gap-1.5 text-sm text-red-600"
-                role="alert"
-                aria-live="assertive"
-              >
-                <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
-                {saveError}
-              </div>
-            )}
-            <Button
-              id="hrZonesSaveBtn_settingsPage"
-              onClick={handleSave}
-              disabled={saving}
-              size="base"
-            >
-              {saving ? 'Saving…' : 'Save'}
-            </Button>
-          </div>
-        </div>
-      )}
+        )}
+      </CardContent>
     </Card>
   )
 }

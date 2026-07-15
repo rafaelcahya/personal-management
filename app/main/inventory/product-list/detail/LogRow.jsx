@@ -5,6 +5,7 @@ import { format, differenceInDays } from 'date-fns'
 import UsageCompletionForm from './UsageCompletionForm'
 import { TableRow, TableCell } from '@/components/base/Table/Table.jsx'
 import Card, { CardContent } from '@/components/base/Card/Card'
+import { Badge } from '@/components/base/Badge/Badge'
 
 function getDuration(startDate, endDate) {
   const start = new Date(startDate)
@@ -60,14 +61,14 @@ export default function LogRow({ item, onUpdate }) {
           )}
         </TableCell>
         <TableCell className="whitespace-nowrap">
-          <span
+          <Badge
             className={cn(
-              'px-2 py-0.5 rounded-md text-xs font-semibold capitalize',
+              'rounded-md text-xs font-semibold capitalize',
               isActive ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
             )}
           >
             {item.status}
-          </span>
+          </Badge>
         </TableCell>
         <TableCell className="text-right font-mono">
           <div className="flex flex-col items-end gap-0.5 whitespace-nowrap">
@@ -80,10 +81,10 @@ export default function LogRow({ item, onUpdate }) {
       </TableRow>
 
       {isOpen && (
-        <TableRow>
+        <TableRow className="hover:bg-transparent">
           <TableCell colSpan={6} className="px-5 py-4 space-y-3">
             <Card>
-              <CardContent padding="sm">
+              <CardContent className="p-3">
                 {item.note && (
                   <div>
                     <p className="text-xs font-medium text-slate-500 mb-1">Note</p>

@@ -1,5 +1,6 @@
 'use client'
 
+import { FieldContent, FieldLabel } from '@/components/base/Field/Field'
 import { useState } from 'react'
 import { AlertTriangle, CheckCircle2, AlertCircle } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
@@ -12,8 +13,6 @@ import Card, {
   CardDescription,
 } from '@/components/base/Card/Card'
 import Input from '@/components/base/Input/Input'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 import {
   Modal,
   ModalContent,
@@ -85,7 +84,6 @@ export default function DangerZoneSection() {
             <Button
               id="dangerZoneDeleteBtn_settingsPage"
               onClick={openDialog}
-              size="base"
               variant="outline"
               className="shrink-0 border-red-300 text-red-700 hover:bg-red-100 hover:text-red-800 focus-visible:ring-2 focus-visible:ring-red-300"
             >

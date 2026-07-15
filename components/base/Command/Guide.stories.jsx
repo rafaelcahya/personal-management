@@ -1,5 +1,13 @@
-import { useState } from 'react'
-import { LayoutDashboard, Package, TrendingUp, Settings, Search, User, LogOut } from 'lucide-react'
+import {
+  LayoutDashboard,
+  Package,
+  TrendingUp,
+  Settings,
+  Search,
+  Plus,
+  RefreshCw,
+  LogOut,
+} from 'lucide-react'
 import {
   Command,
   CommandTrigger,
@@ -52,6 +60,7 @@ const Tag = ({ children, color = 'gray' }) => {
     gray: 'bg-gray-100 text-gray-600',
     violet: 'bg-violet-100 text-violet-700',
     green: 'bg-green-100 text-green-700',
+    red: 'bg-red-100 text-red-700',
   }
   return (
     <span
@@ -59,6 +68,47 @@ const Tag = ({ children, color = 'gray' }) => {
     >
       {children}
     </span>
+  )
+}
+
+// ─── API table helper ─────────────────────────────────────────────────────────
+
+const HEADERS = ['Prop', 'Type', 'Default', 'Description']
+
+function ApiTable({ rows }) {
+  return (
+    <div className="overflow-x-auto mb-6">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {HEADERS.map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 whitespace-nowrap">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
@@ -77,11 +127,17 @@ export const Docs = {
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
           A keyboard-driven command palette triggered by{' '}
           <kbd className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
-            ⌘K
+            ⌘
+          </kbd>{' '}
+          <kbd className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
+            K
           </kbd>{' '}
           /{' '}
           <kbd className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
-            Ctrl+K
+            Ctrl
+          </kbd>{' '}
+          <kbd className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
+            K
           </kbd>
           . Supports real-time filtering, grouped items, keyboard navigation, and empty state.
         </p>
@@ -92,9 +148,13 @@ export const Docs = {
         <p className="text-sm text-gray-600 leading-relaxed mb-4">
           Press{' '}
           <kbd className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
-            ⌘K
+            ⌘
           </kbd>{' '}
-          anywhere on this page or click the trigger below to open the palette.
+          <kbd className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
+            K
+          </kbd>{' '}
+          anywhere on this page or click the trigger below to open the palette. Type to filter, use
+          arrow keys to navigate.
         </p>
         <Preview>
           <Command>
@@ -204,12 +264,12 @@ export const Docs = {
                 [
                   'Command',
                   '<div> (Context Root)',
-                  'Root. Provides query/open state + global Cmd+K listener.',
+                  'Root. Provides query/open state + global ⌘K listener.',
                 ],
                 [
                   'CommandTrigger',
                   '<button>',
-                  'Opens the dialog on click. Renders a default search button if no children passed.',
+                  'Opens the dialog on click. Renders a styled search button with optional shortcut hint.',
                 ],
                 [
                   'CommandDialog',
@@ -229,19 +289,15 @@ export const Docs = {
                 [
                   'CommandGroup',
                   '<div>',
-                  'Labeled group. Hides itself (display: none) when all its items are filtered out.',
+                  'Labeled group. Hides itself when all its items are filtered out.',
                 ],
                 [
                   'CommandItem',
                   '<div data-command-item>',
-                  "Result row. Hidden (HTML hidden attr) when label doesn't match query. Calls onSelect + closes on click/Enter.",
+                  "Result row. Hidden when label doesn't match query. Calls onSelect + closes on click/Enter.",
                 ],
                 ['CommandSeparator', '<hr>', 'Visual divider between groups.'],
-                [
-                  'CommandEmpty',
-                  '<div>',
-                  'Shown when no CommandItem in the list is visible. Hidden otherwise.',
-                ],
+                ['CommandEmpty', '<div>', 'Shown when no CommandItem in the list is visible.'],
               ].map(([part, el, desc]) => (
                 <tr key={part} className="even:bg-gray-50">
                   <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
@@ -258,49 +314,7 @@ export const Docs = {
         </div>
       </Section>
 
-      {/* Usage */}
-      <Section title="Usage">
-        <SubSection title="Import">
-          <Code>{`import {
-  Command, CommandTrigger, CommandDialog,
-  CommandInput, CommandList, CommandGroup,
-  CommandItem, CommandSeparator, CommandEmpty,
-} from '@/components/base/Command/Command'`}</Code>
-        </SubSection>
-
-        <SubSection title="Uncontrolled (default)">
-          <Code>{`<Command>
-  <CommandTrigger />         {/* click or press ⌘K */}
-  <CommandDialog>
-    <CommandInput placeholder="Search…" />
-    <CommandList>
-      <CommandGroup label="Navigation">
-        <CommandItem icon={LayoutDashboard} label="Dashboard" onSelect={() => router.push('/')} />
-        <CommandItem icon={Package} label="Inventory" shortcut="G I" onSelect={() => {}} />
-      </CommandGroup>
-      <CommandEmpty />
-    </CommandList>
-  </CommandDialog>
-</Command>`}</Code>
-        </SubSection>
-
-        <SubSection title="Controlled">
-          <Code>{`const [open, setOpen] = useState(false)
-
-<Command open={open} onOpenChange={setOpen}>
-  <button onClick={() => setOpen(true)}>Open</button>
-  <CommandDialog>
-    <CommandInput />
-    <CommandList>
-      <CommandItem label="Dashboard" onSelect={() => {}} />
-      <CommandEmpty />
-    </CommandList>
-  </CommandDialog>
-</Command>`}</Code>
-        </SubSection>
-      </Section>
-
-      {/* Keyboard */}
+      {/* Keyboard Navigation */}
       <Section title="Keyboard Navigation">
         <div className="overflow-x-auto mb-4">
           <table className="w-full text-sm border-collapse">
@@ -318,7 +332,7 @@ export const Docs = {
             </thead>
             <tbody>
               {[
-                ['⌘K / Ctrl+K', 'Open the command palette from anywhere on the page'],
+                ['⌘K / Ctrl+K', 'Open the palette from anywhere on the page'],
                 ['↑ / ↓', 'Move focus between visible (non-filtered) items'],
                 ['Enter', 'Select the focused item — calls onSelect and closes the palette'],
                 ['Escape', 'Close the palette and clear the search query'],
@@ -341,279 +355,363 @@ export const Docs = {
         </div>
       </Section>
 
-      {/* API */}
-      <Section title="API Reference">
-        <SubSection title="Command" description="Root component.">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['open', 'boolean', '—', 'Controlled open state.'],
-                  [
-                    'onOpenChange',
-                    '(open: boolean) => void',
-                    '—',
-                    'Called when open state changes.',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
+      {/* Shortcut Variant */}
+      <Section title="Shortcut Variants">
+        <p className="text-sm text-gray-600 leading-relaxed mb-4">
+          Both <code className="font-mono bg-gray-100 px-1 rounded text-xs">CommandTrigger</code>{' '}
+          and <code className="font-mono bg-gray-100 px-1 rounded text-xs">CommandItem</code>{' '}
+          support a{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">shortcutVariant</code> prop.
+          When a key is held down while the palette is open, matching shortcuts highlight in violet.
+        </p>
+        <SubSection
+          title="chip (default)"
+          description="Each key token renders as an individual <kbd> chip with border and background."
+        >
+          <Preview>
+            <Command>
+              <CommandTrigger className="w-64" shortcutVariant="chip" />
+              <CommandDialog>
+                <CommandInput placeholder="Search…" />
+                <CommandList>
+                  <CommandGroup label="Go to">
+                    <CommandItem
+                      icon={LayoutDashboard}
+                      label="Dashboard"
+                      shortcut="G H"
+                      onSelect={() => {}}
+                    />
+                    <CommandItem
+                      icon={Package}
+                      label="Inventory"
+                      shortcut="G I"
+                      onSelect={() => {}}
+                    />
+                    <CommandItem
+                      icon={TrendingUp}
+                      label="Trades"
+                      shortcut="G T"
+                      onSelect={() => {}}
+                    />
+                  </CommandGroup>
+                  <CommandSeparator />
+                  <CommandGroup label="Actions">
+                    <CommandItem icon={Plus} label="Add stock" shortcut="N S" onSelect={() => {}} />
+                    <CommandItem
+                      icon={RefreshCw}
+                      label="Refresh data"
+                      shortcut="⌘ R"
+                      onSelect={() => {}}
+                    />
+                  </CommandGroup>
+                  <CommandEmpty />
+                </CommandList>
+              </CommandDialog>
+            </Command>
+          </Preview>
+        </SubSection>
+
+        <SubSection
+          title="text"
+          description="Shortcut is shown as plain monospace text with letter-spacing. Less visual weight — useful in compact contexts."
+        >
+          <Preview>
+            <Command>
+              <CommandTrigger className="w-64" shortcutVariant="text" />
+              <CommandDialog>
+                <CommandInput placeholder="Search…" />
+                <CommandList>
+                  <CommandGroup label="Go to">
+                    <CommandItem
+                      icon={LayoutDashboard}
+                      label="Dashboard"
+                      shortcut="G H"
+                      shortcutVariant="text"
+                      onSelect={() => {}}
+                    />
+                    <CommandItem
+                      icon={Package}
+                      label="Inventory"
+                      shortcut="G I"
+                      shortcutVariant="text"
+                      onSelect={() => {}}
+                    />
+                    <CommandItem
+                      icon={TrendingUp}
+                      label="Trades"
+                      shortcut="G T"
+                      shortcutVariant="text"
+                      onSelect={() => {}}
+                    />
+                  </CommandGroup>
+                  <CommandSeparator />
+                  <CommandGroup label="Actions">
+                    <CommandItem
+                      icon={Plus}
+                      label="Add stock"
+                      shortcut="N S"
+                      shortcutVariant="text"
+                      onSelect={() => {}}
+                    />
+                    <CommandItem
+                      icon={RefreshCw}
+                      label="Refresh data"
+                      shortcut="⌘ R"
+                      shortcutVariant="text"
+                      onSelect={() => {}}
+                    />
+                  </CommandGroup>
+                  <CommandEmpty />
+                </CommandList>
+              </CommandDialog>
+            </Command>
+          </Preview>
+        </SubSection>
+      </Section>
+
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use Command for a global ⌘K palette that works from any page',
+                  body: 'Navigation, quick-create actions, account options — heterogeneous commands that are hard to reach from the current page but easy to invoke via keyboard.',
+                },
+                {
+                  title: 'Use it when the action list is long or dynamic and needs filtering',
+                  body: 'Power users expect to type and narrow down — if there are 10+ commands, real-time filtering and keyboard navigation make the palette far faster than a menu.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: 'Use Select for choosing a single value from a short, stable list',
+                  body: 'Status, category, product type — these are value-pickers, not command dispatchers. Select is simpler and semantically correct for single-value choices.',
+                },
+                {
+                  title: 'Use DropdownMenu for contextual actions tied to a specific element',
+                  body: 'Row actions, avatar menus, inline edit controls — these are anchored to an element on the page. Command is for global, context-free actions.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'CommandDialog renders in a portal with focus trapped inside',
+                  body: 'Focus stays inside the dialog while it is open. Escape always closes and restores focus to the trigger. Items navigate with ↑ ↓ and select with Enter — no mouse required.',
+                },
+                {
+                  title: 'Always include CommandEmpty — never leave the list silently blank',
+                  body: 'CommandEmpty provides a visible "No results" state for both sighted users and screen readers. A blank dialog looks broken and gives users no signal.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title:
+                    'Show shortcut hints that actually work — keep palette and global keybinds in sync',
+                  body: 'If G I appears as a shortcut hint in the palette, pressing G I anywhere on the page should also open Inventory. Hints that only work inside the palette mislead users.',
+                },
+                {
+                  title:
+                    'Separate destructive items with CommandSeparator and place them at the bottom',
+                  body: 'Log out, delete — these need visual distance from safe navigation. A separator + bottom placement makes destructive actions intentional, not accidental.',
+                },
+                {
+                  title: 'Keep item labels short and action-oriented',
+                  body: '"Add stock", "Open trades" — not "Navigate to the inventory management page". Dense labels defeat the purpose of a power-user tool.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* API Reference */}
+      <Section title="API Reference">
+        <SubSection
+          title="Command"
+          description="Root component. Provides open state + global ⌘K listener."
+        >
+          <ApiTable
+            rows={[
+              ['open', 'boolean', '—', 'Controlled open state. Omit for uncontrolled.'],
+              [
+                'onOpenChange',
+                '(open: boolean) => void',
+                '—',
+                'Called when open state changes — required when using controlled mode.',
+              ],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="CommandTrigger" description="Button that opens the dialog on click.">
+          <ApiTable
+            rows={[
+              [
+                'children',
+                'ReactNode',
+                '—',
+                'Custom trigger content. When omitted, renders a default search button.',
+              ],
+              [
+                'shortcutVariant',
+                '"chip" | "text"',
+                '"chip"',
+                'How the ⌘K hint is displayed — styled kbd chips or plain monospace text.',
+              ],
+              ['className', 'string', '—', 'Extra classes merged onto the trigger button.'],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="CommandInput" description="Controlled search input inside the dialog.">
+          <ApiTable
+            rows={[
+              [
+                'placeholder',
+                'string',
+                '"Type to search…"',
+                'Placeholder text shown when the input is empty.',
+              ],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection
+          title="CommandGroup"
+          description="Labeled group of items. Auto-hides when all its children are filtered out."
+        >
+          <ApiTable
+            rows={[
+              [
+                'label',
+                'string',
+                '—',
+                'Group heading shown above items. Omit for an unlabeled group.',
+              ],
+            ]}
+          />
         </SubSection>
 
         <SubSection title="CommandItem" description="Individual result row.">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'label',
-                    'string',
-                    '—',
-                    'Display text and filter target. Required for filtering.',
-                  ],
-                  ['icon', 'LucideIcon', '—', 'Optional leading icon.'],
-                  [
-                    'shortcut',
-                    'string',
-                    '—',
-                    'Keyboard shortcut hint shown on the right. Space-separated keys: "G I".',
-                  ],
-                  [
-                    'onSelect',
-                    '() => void',
-                    '—',
-                    'Called when item is clicked or activated via Enter.',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-
-        <SubSection title="CommandGroup" description="Labeled group of items.">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'label',
-                    'string',
-                    '—',
-                    'Group heading text shown above items. Omit for an unlabeled group.',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ApiTable
+            rows={[
+              [
+                'label',
+                'string',
+                '—',
+                'Display text and filter target. Required for filtering to work.',
+              ],
+              ['icon', 'LucideIcon', '—', 'Optional leading icon component.'],
+              [
+                'shortcut',
+                'string',
+                '—',
+                'Keyboard shortcut hint — space-separated tokens: "G I", "⌘ R".',
+              ],
+              [
+                'shortcutVariant',
+                '"chip" | "text"',
+                '"chip"',
+                'How shortcut tokens are displayed. Active keys highlight in violet while held.',
+              ],
+              [
+                'onSelect',
+                '() => void',
+                '—',
+                'Called when the item is clicked or activated via Enter. Dialog closes automatically.',
+              ],
+            ]}
+          />
         </SubSection>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Command when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      You need a global shortcut (⌘K) that works from any page without navigating
-                      away
-                    </li>
-                    <li>
-                      The action list is long or dynamic and users need to filter it by typing
-                    </li>
-                    <li>
-                      You want to group heterogeneous actions — navigation, account, quick-create —
-                      in one unified surface
-                    </li>
-                    <li>
-                      Power users expect keyboard-first interaction with shortcut hints per item
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Select</strong> when choosing a single value from a short, stable
-                      list (e.g. status, category)
-                    </li>
-                    <li>
-                      Use <strong>DropdownMenu</strong> when showing contextual actions tied to a
-                      specific element (row actions, avatar menu)
-                    </li>
-                    <li>
-                      Use a plain <strong>search input</strong> when filtering a visible list on the
-                      page rather than dispatching a global action
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
+      {/* Usage Examples */}
+      <Section title="Usage Examples">
+        <SubSection title="Import">
+          <Code>{`import {
+  Command, CommandTrigger, CommandDialog,
+  CommandInput, CommandList, CommandGroup,
+  CommandItem, CommandSeparator, CommandEmpty,
+} from '@/components/base/Command/Command'`}</Code>
+        </SubSection>
 
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always include a <strong>CommandEmpty</strong> inside CommandList so users see a
-                  "No results" message when their query matches nothing — never leave the list
-                  silently blank.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Group related actions with <strong>CommandGroup</strong> and a descriptive label
-                  (e.g. "Navigation", "Account") so the palette stays scannable as the item count
-                  grows.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use the <strong>shortcut</strong> prop to surface keyboard shortcuts that also
-                  work elsewhere in the app (e.g. <code>G I</code> for Inventory). Keep them
-                  consistent with the app-wide keybind map.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't put destructive actions (delete, log out) alongside safe navigation items
-                  without visual separation — use a <strong>CommandSeparator</strong> and place
-                  destructive items at the bottom of their own group.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't overload the palette with every possible action. Limit items to globally
-                  relevant commands; page-specific actions belong in contextual menus or inline
-                  controls.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't omit the <strong>icon</strong> prop when mixing icon-bearing and icon-less
-                  items in the same group — inconsistent leading alignment makes the list feel
-                  unpolished.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SubSection title="Uncontrolled (default)">
+          <Code>{`<Command>
+  <CommandTrigger className="w-64" />   {/* ⌘K also works globally */}
+  <CommandDialog>
+    <CommandInput placeholder="Search commands…" />
+    <CommandList>
+      <CommandGroup label="Navigation">
+        <CommandItem icon={LayoutDashboard} label="Dashboard" onSelect={() => router.push('/')} />
+        <CommandItem icon={Package} label="Inventory" shortcut="G I" onSelect={() => router.push('/inventory')} />
+      </CommandGroup>
+      <CommandEmpty />
+    </CommandList>
+  </CommandDialog>
+</Command>`}</Code>
+        </SubSection>
+
+        <SubSection title="Controlled">
+          <Code>{`const [open, setOpen] = useState(false)
+
+<Command open={open} onOpenChange={setOpen}>
+  <button onClick={() => setOpen(true)}>Open palette</button>
+  <CommandDialog>
+    <CommandInput placeholder="Search…" />
+    <CommandList>
+      <CommandItem label="Dashboard" onSelect={() => { router.push('/'); setOpen(false) }} />
+      <CommandEmpty />
+    </CommandList>
+  </CommandDialog>
+</Command>`}</Code>
+        </SubSection>
+
+        <SubSection title="Text shortcut variant">
+          <Code>{`{/* trigger shows ⌘K as plain text */}
+<CommandTrigger className="w-64" shortcutVariant="text" />
+
+{/* items show shortcut as plain text with letter-spacing */}
+<CommandItem
+  icon={Package}
+  label="Inventory"
+  shortcut="G I"
+  shortcutVariant="text"
+  onSelect={() => {}}
+/>`}</Code>
+        </SubSection>
       </Section>
     </div>
   ),

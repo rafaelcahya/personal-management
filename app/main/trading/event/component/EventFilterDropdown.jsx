@@ -60,7 +60,6 @@ export default function EventFilterDropdown({ filter, onFilterChange, events }) 
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          size="base"
           id="filterBtn_eventPage"
           className="gap-2 focus-visible:ring-0 focus-visible:ring-offset-0 relative"
         >
@@ -80,7 +79,6 @@ export default function EventFilterDropdown({ filter, onFilterChange, events }) 
           {hasActiveFilter && (
             <Button
               variant="ghost"
-              size="base"
               className="h-6 px-2 text-xs hover:bg-violet-100 text-violet-500 hover:text-violet-500"
               onClick={(e) => {
                 e.stopPropagation()

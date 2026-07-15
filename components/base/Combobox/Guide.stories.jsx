@@ -23,6 +23,13 @@ const Section = ({ title, description, children }) => (
   </div>
 )
 
+const SubSection = ({ title, children }) => (
+  <div className="mb-6">
+    <h3 className="text-sm font-semibold text-gray-700 mb-3">{title}</h3>
+    {children}
+  </div>
+)
+
 const Preview = ({ children, wide }) => (
   <div
     className={`flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 ${wide ? 'max-w-lg' : 'w-80'}`}
@@ -50,6 +57,71 @@ const Tag = ({ children, color = 'gray' }) => {
     </span>
   )
 }
+
+const cellClass = (j, len) => {
+  const base = 'px-3 py-2 border border-gray-200 text-xs'
+  if (j === 0) return `${base} font-mono text-violet-700 whitespace-nowrap`
+  if (j === len - 1) return `${base} text-gray-700`
+  return `${base} font-mono text-gray-500 whitespace-nowrap`
+}
+
+const ApiTable = ({ headers, rows }) => (
+  <div className="overflow-x-auto mb-4">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr key={i} className="even:bg-gray-50">
+            {row.map((cell, j) => (
+              <td key={j} className={cellClass(j, row.length)}>
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 
@@ -121,6 +193,24 @@ function FieldDemo({ error, description, label = 'Favourite fruit', required = f
       )}
       {error && <FieldError />}
     </FieldContent>
+  )
+}
+
+function GroupDemo() {
+  const [val, setVal] = useState(null)
+  return <Combobox value={val} onChange={setVal} options={GROUPED} placeholder="Select food..." />
+}
+
+function AsyncDemo() {
+  const [val, setVal] = useState(null)
+  return (
+    <Combobox
+      value={val}
+      onChange={setVal}
+      onSearch={mockSearch}
+      placeholder="Type to search..."
+      emptyText="No fruits found."
+    />
   )
 }
 
@@ -210,7 +300,7 @@ export const Docs = {
                       <span className="opacity-0">✓</span> Banana
                     </div>
                     <div className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] text-violet-600 border border-dashed border-violet-200">
-                      <span className="opacity-0">✓</span> Create "mango" ← creatable
+                      <span className="opacity-0">✓</span> Create &quot;mango&quot; ← creatable
                     </div>
                   </div>
                 </div>
@@ -261,72 +351,42 @@ export const Docs = {
           </div>
         </div>
 
-        {/* Parts table */}
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Part', 'Element', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'Trigger',
-                  'div / button',
-                  'The clickable area. Input div (inputTrigger) or button (button trigger).',
-                ],
-                [
-                  'ComboTag',
-                  'span',
-                  'Selected item badge shown inside the trigger (multi-select only).',
-                ],
-                [
-                  'SearchInput',
-                  'input',
-                  'Filters options as user types. Inside trigger (inputTrigger) or inside Popover (button trigger).',
-                ],
-                [
-                  'ClearButton',
-                  'button',
-                  'Removes all selections. Shown when clearable=true and a value is selected.',
-                ],
-                [
-                  'Popover',
-                  'div',
-                  'Floating container. Contains the option list (and search input for button trigger).',
-                ],
-                [
-                  'ComboOption',
-                  'button',
-                  'A single selectable item. Shows a checkmark when selected.',
-                ],
-                [
-                  'ComboGroup',
-                  'div',
-                  'A labeled group of ComboOptions. Rendered when options use the group+items shape.',
-                ],
-              ].map(([part, el, desc]) => (
-                <tr key={part} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {part}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {el}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ApiTable
+          headers={['Part', 'Element', 'Description']}
+          rows={[
+            [
+              'Trigger',
+              'div / button',
+              'The clickable area. Input div (inputTrigger) or button (button trigger).',
+            ],
+            [
+              'ComboTag',
+              'span',
+              'Selected item badge shown inside the trigger (multi-select only).',
+            ],
+            [
+              'SearchInput',
+              'input',
+              'Filters options as user types. Inside trigger (inputTrigger) or inside Popover (button trigger).',
+            ],
+            [
+              'ClearButton',
+              'button',
+              'Removes all selections. Shown when clearable=true and a value is selected.',
+            ],
+            [
+              'Popover',
+              'div',
+              'Floating container. Contains the option list (and search input for button trigger).',
+            ],
+            ['ComboOption', 'button', 'A single selectable item. Shows a checkmark when selected.'],
+            [
+              'ComboGroup',
+              'div',
+              'A labeled group of ComboOptions. Rendered when options use the group+items shape.',
+            ],
+          ]}
+        />
 
         <Code>{`import Combobox from '@/components/base/Combobox/Combobox'
 
@@ -390,17 +450,7 @@ const options = [
         description="Pass options in the { group, items[] } shape to render labeled groups. Flat and grouped options cannot be mixed in the same array."
       >
         <Preview>
-          {(() => {
-            const [val, setVal] = useState(null)
-            return (
-              <Combobox
-                value={val}
-                onChange={setVal}
-                options={GROUPED}
-                placeholder="Select food..."
-              />
-            )
-          })()}
+          <GroupDemo />
         </Preview>
         <Code>{`const options = [
   {
@@ -452,18 +502,7 @@ const options = [
         description="Pass onSearch to delegate filtering to the server. The component debounces 300ms, shows a spinner while loading, and replaces the option list with the returned results."
       >
         <Preview>
-          {(() => {
-            const [val, setVal] = useState(null)
-            return (
-              <Combobox
-                value={val}
-                onChange={setVal}
-                onSearch={mockSearch}
-                placeholder="Type to search..."
-                emptyText="No fruits found."
-              />
-            )
-          })()}
+          <AsyncDemo />
         </Preview>
         <Code>{`const searchFruits = async (query) => {
   const res = await fetch(\`/api/fruits?q=\${query}\`)
@@ -548,23 +587,6 @@ const options = [
 ]`}</Code>
       </Section>
 
-      {/* Sizes */}
-      <Section title="Sizes" description="Five sizes following the same scale as Input and Select.">
-        <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 max-w-xs">
-          {['xs', 'sm', 'base', 'md', 'lg'].map((size) => (
-            <div key={size} className="flex items-center gap-3">
-              <span className="text-xs font-mono text-gray-400 w-8 shrink-0">{size}</span>
-              <Demo size={size} />
-            </div>
-          ))}
-        </div>
-        <Code>{`<Combobox size="xs"   value={val} onChange={setVal} options={options} />
-<Combobox size="sm"   value={val} onChange={setVal} options={options} />
-<Combobox size="base" value={val} onChange={setVal} options={options} />  {/* default */}
-<Combobox size="md"   value={val} onChange={setVal} options={options} />
-<Combobox size="lg"   value={val} onChange={setVal} options={options} />`}</Code>
-      </Section>
-
       {/* Disabled */}
       <Section
         title="Disabled"
@@ -611,15 +633,24 @@ const options = [
         title="With FieldContent"
         description="Pair with FieldLabel, FieldDescription, and FieldError for fully accessible form fields."
       >
-        <Preview>
-          <FieldDemo label="Favourite fruit" required description="Type to filter." />
-          <FieldDemo label="Optional pick" description="Leave blank to skip." />
-        </Preview>
-        <Code>{`<FieldContent size="base">
+        <SubSection title="Import">
+          <Code>{`import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldDescription from '@/components/base/Field/FieldDescription'
+import FieldError from '@/components/base/Field/FieldError'`}</Code>
+        </SubSection>
+
+        <SubSection title="Controlled with FieldContent">
+          <Preview>
+            <FieldDemo label="Favourite fruit" required description="Type to filter." />
+            <FieldDemo label="Optional pick" description="Leave blank to skip." />
+          </Preview>
+          <Code>{`<FieldContent size="base">
   <FieldLabel required>Favourite fruit</FieldLabel>
   <Combobox value={val} onChange={setVal} options={options} />
   <FieldDescription className="text-xs text-slate-400">Type to filter.</FieldDescription>
 </FieldContent>`}</Code>
+        </SubSection>
       </Section>
 
       {/* react-hook-form */}
@@ -652,127 +683,117 @@ const payload = { fruit: formData.fruit?.value }`}</Code>
 
       {/* Props */}
       <Section title="Props">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'value',
-                  '{ value, label } | { value, label }[] | null',
-                  'null',
-                  'Controlled value. Object for single, array for multiple.',
-                ],
-                [
-                  'onChange',
-                  '(val) => void',
-                  '—',
-                  'Fires with the selected option object or array.',
-                ],
-                [
-                  'options',
-                  '{ value, label, disabled? }[] | { group, items[] }[]',
-                  '[]',
-                  'Flat or grouped option list.',
-                ],
-                [
-                  'onSearch',
-                  '(query: string) => Promise<options[]>',
-                  '—',
-                  'Async search. Overrides client-side filtering. Debounced 300ms.',
-                ],
-                ['multiple', 'boolean', 'false', 'Enable multi-select. value becomes an array.'],
-                [
-                  'inputTrigger',
-                  'boolean',
-                  'true',
-                  'Render inline search input (true) or button + popover search (false).',
-                ],
-                ['clearable', 'boolean', 'true', 'Show × button to clear selection.'],
-                [
-                  'creatable',
-                  'boolean',
-                  'false',
-                  'Allow user to create new options not in the list.',
-                ],
-                ['max', 'number', '—', 'Maximum number of selections (multiple only).'],
-                [
-                  'placeholder',
-                  'string',
-                  '"Select..."',
-                  'Placeholder text when nothing is selected.',
-                ],
-                [
-                  'searchPlaceholder',
-                  'string',
-                  '"Search..."',
-                  'Placeholder inside the search input.',
-                ],
-                [
-                  'emptyText',
-                  'string',
-                  '"No results."',
-                  'Text shown when no options match the query.',
-                ],
-                [
-                  'createLabel',
-                  '(value: string) => string',
-                  'Create "xxx"',
-                  'Label for the creatable option row.',
-                ],
-                [
-                  'disabled',
-                  'boolean',
-                  'false',
-                  'Prevents interaction. Also inherits from FieldContent.',
-                ],
-                [
-                  'variant',
-                  '"default" | "error" | "disabled"',
-                  '—',
-                  'Override the auto-detected visual variant.',
-                ],
-                [
-                  'size',
-                  '"xs" | "sm" | "base" | "md" | "lg"',
-                  '"base"',
-                  'Trigger height. Inherits from FieldContent if not set.',
-                ],
-                [
-                  'align',
-                  '"start" | "center" | "end"',
-                  '"start"',
-                  'Popover alignment relative to the trigger.',
-                ],
-                ['className', 'string', '—', 'Additional classes on the trigger element.'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ApiTable
+          headers={['Prop', 'Type', 'Default', 'Description']}
+          rows={[
+            [
+              'value',
+              '{ value, label } | { value, label }[] | null',
+              'null',
+              'Controlled value. Object for single, array for multiple.',
+            ],
+            ['onChange', '(val) => void', '—', 'Fires with the selected option object or array.'],
+            [
+              'options',
+              '{ value, label, disabled? }[] | { group, items[] }[]',
+              '[]',
+              'Flat or grouped option list.',
+            ],
+            [
+              'onSearch',
+              '(query: string) => Promise<options[]>',
+              '—',
+              'Async search. Overrides client-side filtering. Debounced 300ms.',
+            ],
+            ['multiple', 'boolean', 'false', 'Enable multi-select. value becomes an array.'],
+            [
+              'inputTrigger',
+              'boolean',
+              'true',
+              'Render inline search input (true) or button + popover search (false).',
+            ],
+            ['clearable', 'boolean', 'true', 'Show × button to clear selection.'],
+            ['creatable', 'boolean', 'false', 'Allow user to create new options not in the list.'],
+            ['max', 'number', '—', 'Maximum number of selections (multiple only).'],
+            ['placeholder', 'string', '"Select..."', 'Placeholder text when nothing is selected.'],
+            ['searchPlaceholder', 'string', '"Search..."', 'Placeholder inside the search input.'],
+            ['emptyText', 'string', '"No results."', 'Text shown when no options match the query.'],
+            [
+              'createLabel',
+              '(value: string) => string',
+              'Create "xxx"',
+              'Label for the creatable option row.',
+            ],
+            [
+              'disabled',
+              'boolean',
+              'false',
+              'Prevents interaction. Also inherits from FieldContent.',
+            ],
+            [
+              'variant',
+              '"default" | "error" | "disabled"',
+              '—',
+              'Override the auto-detected visual variant.',
+            ],
+            [
+              'size',
+              '"xs" | "sm" | "base" | "md" | "lg"',
+              '"base"',
+              'Trigger height. Inherits from FieldContent if not set.',
+            ],
+            [
+              'align',
+              '"start" | "center" | "end"',
+              '"start"',
+              'Popover alignment relative to the trigger.',
+            ],
+            ['className', 'string', '—', 'Additional classes on the trigger element.'],
+          ]}
+        />
+      </Section>
+
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <BestPractices
+          items={[
+            {
+              heading: 'Value shape',
+              cards: [
+                {
+                  title: 'Value is always an object — never a raw string or ID',
+                  body: 'onChange fires { value, label } for single-select and [{ value, label }, ...] for multiple. Always extract .value before sending to the server.',
+                },
+                {
+                  title: 'Initialize multiple mode with an empty array, not null',
+                  body: 'multiple mode expects value to be an array. useState([]) is correct; useState(null) causes a runtime error on the first render.',
+                },
+              ],
+            },
+            {
+              heading: 'Forms',
+              cards: [
+                {
+                  title: 'Always use Controller from react-hook-form — not register',
+                  body: 'onChange passes an object, not a native DOM event. register cannot capture it. Wrap with Controller and pass value={field.value ?? null} to handle the null initial state.',
+                },
+                {
+                  title: 'Wrap in FieldContent for accessible form fields',
+                  body: 'FieldContent provides the accessible ID link, error context, size, and disabled state. A standalone Combobox without FieldContent has no accessible label.',
+                },
+              ],
+            },
+            {
+              heading: 'Performance',
+              cards: [
+                {
+                  title: 'Use onSearch for large option lists — do not load everything upfront',
+                  body: 'Thousands of options slow down rendering and search. Use onSearch to fetch results on demand. The component debounces 300ms automatically.',
+                },
+              ],
+            },
+          ]}
+        />
       </Section>
     </div>
   ),

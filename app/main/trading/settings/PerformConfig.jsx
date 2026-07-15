@@ -1,15 +1,17 @@
 'use client'
 
+import {
+  FieldContent,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+} from '@/components/base/Field/Field'
 import { useCallback, useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
-import FieldDescription from '@/components/base/Field/FieldDescription'
 import { toast } from 'sonner'
 import { Info, Loader2, Settings, AlertCircle } from 'lucide-react'
 import { tradeSettingsSchema } from '@/schemas/tradeSettings'
@@ -48,7 +50,6 @@ function SettingsErrorState({ onRetry }) {
       </div>
       <Button
         variant="outline"
-        size="base"
         onClick={onRetry}
         id="settingsRetryBtn_settingsPage"
         className="min-w-11"

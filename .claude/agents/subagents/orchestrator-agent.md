@@ -51,7 +51,7 @@ Spawn both agents simultaneously:
 
 - Layout and hierarchy
 - All component states (default, hover, loading, empty, error)
-- Component mapping (shadcn/ui)
+- Component mapping (Base Components)
 - Tailwind implementation notes
 
 **Backend Agent** — build API layer:

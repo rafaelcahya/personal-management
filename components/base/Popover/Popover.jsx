@@ -115,7 +115,9 @@ export function PopoverContent({
   side = 'bottom',
   align = 'start',
   sideOffset = 6,
+  sameWidth = false,
   className,
+  style,
   ...props
 }) {
   const { open, setOpen, triggerRef } = usePopover()
@@ -159,12 +161,17 @@ export function PopoverContent({
 
   if (!open) return null
 
+  const widthStyle =
+    sameWidth && triggerRef?.current
+      ? { width: triggerRef.current.getBoundingClientRect().width }
+      : {}
+
   return createPortal(
     <div
       ref={contentRef}
       role="dialog"
       data-popover-portal=""
-      style={floatStyle}
+      style={{ ...floatStyle, ...widthStyle, ...style }}
       className={cn(
         'rounded-xl border border-slate-200 bg-white shadow-sm outline-none',
         'animate-in fade-in-0 zoom-in-95 pointer-events-auto',

@@ -12,11 +12,7 @@ import {
   Cell,
 } from 'recharts'
 import { Info } from 'lucide-react'
-import {
-  Tooltip as UITooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ACWR_COLORS } from './utils'
 import { EmptyState, EmptyStateTitle } from '@/components/base/EmptyState/EmptyState'
 
@@ -64,16 +60,16 @@ const TRAINING_STATUS_CONFIG = {
 
 function StatusInfoTip({ content }) {
   return (
-    <UITooltip>
-      <TooltipTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <Button variant="ghost" size="icon-xs" aria-label="More information">
           <Info className="size-3" aria-hidden="true" />
         </Button>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="max-w-56 text-xs leading-relaxed">
+      </PopoverTrigger>
+      <PopoverContent side="top" className="w-auto max-w-56 p-3 text-xs leading-relaxed">
         {content}
-      </TooltipContent>
-    </UITooltip>
+      </PopoverContent>
+    </Popover>
   )
 }
 

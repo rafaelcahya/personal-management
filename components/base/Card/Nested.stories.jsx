@@ -16,6 +16,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
 const FakeField = ({ label, value }) => (
@@ -32,9 +60,9 @@ const FakeField = ({ label, value }) => (
 export const PageSections = {
   name: 'Page Sections (transparent + shell)',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         The most common nesting pattern.{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">variant="transparent"</code>{' '}
         acts as the page-level wrapper (no bg/border) and each feature section is a{' '}
@@ -101,7 +129,47 @@ export const PageSections = {
         </Card>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'This is the primary page layout pattern',
+                body: 'transparent outer provides the page-level title without a visual box; shell inner provides the visual container for each feature section. Always start here for page layouts.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't nest a shell section card inside another shell",
+                body: 'Two nested boxes with borders creates a heavy double-box look. Transparent outer is always the right wrapper at page level — never shell inside shell for page sections.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Use as="h1" on the outer CardTitle since it is the page heading',
+                body: 'Inner section cards default to h3. Setting as="h1" on the outer card gives screen readers a correct document hierarchy: h1 (page) → h3 (section).',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use CardContent className="flex flex-col gap-4 pt-2" on the outer card',
+                body: 'This stacks inner sections with consistent spacing and a small top offset from the header border. pt-2 prevents the first inner card from sitting directly against the transparent header border.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* transparent outer — no bg/border, just a page-level wrapper */}
 <Card variant="transparent">
@@ -146,9 +214,9 @@ export const PageSections = {
 export const AlertInSection = {
   name: 'Alert in Section (status card in shell)',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         Use a status Card (
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">variant="danger"</code>,{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">variant="warning"</code>)
@@ -232,7 +300,47 @@ export const AlertInSection = {
         </Card>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use a status card inside a shell section to surface inline alerts',
+                body: 'Nesting danger or warning cards inside a shell CardContent keeps the alert visually associated with the section — ideal for destructive zones, low-stock rows, or recoverable issues within a settings page.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't nest more than 3 alert items in a single shell section",
+                body: 'If you have many alerts, consider a separate page section or change the outer card to the matching variant instead of listing many nested status cards.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Add role="alert" or role="status" on the inner status card content',
+                body: 'Status cards nested inside a shell are not automatically announced on insertion. Add the appropriate ARIA role to the inner card or its CardContent so screen readers announce them when they appear.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Always add className="shadow-none rounded-lg" to inner status cards',
+                body: "Without shadow-none, the inner card's shadow creates a floating look inside the outer shell. Override the outer border color (e.g. border-red-200) rather than switching the outer card's variant — keeps the section neutral while the alert pops.",
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* outer shell with red border override */}
 <Card className="border-red-200">
@@ -274,9 +382,9 @@ export const AlertInSection = {
 export const StatGridInSection = {
   name: 'Stat Grid in Section (shell in shell)',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         Embed a grid of stat tiles inside a shell Card's{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">CardContent</code>. The outer
         card provides the section header; inner cards are small stat tiles with{' '}
@@ -323,7 +431,7 @@ export const StatGridInSection = {
                 },
               ].map((s) => (
                 <Card key={s.label} className={`${s.bg} ${s.border} shadow-none`}>
-                  <CardContent padding="none" className="p-4 flex flex-col gap-1">
+                  <CardContent className="p-4 flex flex-col gap-1">
                     <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
                       {s.label}
                     </p>
@@ -342,7 +450,47 @@ export const StatGridInSection = {
         </Card>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Embed stat tiles in a shell section for grouped summary data',
+                body: 'When a section needs a header above a row of statistics, use a shell outer card for the header and embed inner stat tiles in a grid inside CardContent — the outer card provides context; inner tiles show the data.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use more than 4 columns for inner stat tiles",
+                body: 'More than 4 columns makes values too small to scan quickly on desktop, and they collapse poorly on mobile. Stick to 2–3 columns for most stat grids inside a shell section.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Pair each stat value with a text label in CardContent',
+                body: 'Screen readers need context for numbers — ensure each tile has both a visible label (e.g. "Total Products") and the value so users can scan the data without visual cues.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Always add shadow-none to inner stat tiles',
+                body: 'The outer card already provides the visual box. A second shadow on inner tiles creates unnecessary noise. Use a custom bg + border per tile (e.g. bg-violet-50 border-violet-200) to semantically color-code stats instead.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* outer section card */}
 <Card>
@@ -358,7 +506,7 @@ export const StatGridInSection = {
     {/* inner stat tiles — shadow-none to reduce visual weight */}
     <div className="grid grid-cols-3 gap-3">
       <Card className="bg-violet-50 border-violet-200 shadow-none">
-        <CardContent padding="none" className="p-4 flex flex-col gap-1">
+        <CardContent className="p-4 flex flex-col gap-1">
           <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
             Total Products
           </p>

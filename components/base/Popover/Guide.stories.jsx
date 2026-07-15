@@ -1,5 +1,3 @@
-'use client'
-import { useState } from 'react'
 import { Filter, Info, Pencil, X } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent, PopoverClose } from './Popover'
 import Button from '@/components/base/Button/Button'
@@ -8,88 +6,160 @@ import Button from '@/components/base/Button/Button'
 const meta = { title: 'Popover' }
 export default meta
 
+// ─── Primitives ───────────────────────────────────────────────────────────────
+
+const Section = ({ title, children }) => (
+  <section className="flex flex-col gap-4">
+    <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">{title}</h2>
+    {children}
+  </section>
+)
+
+const SubSection = ({ title, children }) => (
+  <div className="flex flex-col gap-3">
+    <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
+    {children}
+  </div>
+)
+
+const Code = ({ children }) => (
+  <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full">
+    <code>{children}</code>
+  </pre>
+)
+
+const Tag = ({ children }) => (
+  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-violet-100 text-violet-700">
+    {children}
+  </span>
+)
+
+const ApiTable = ({ rows }) => (
+  <table className="w-full text-sm border-collapse">
+    <thead>
+      <tr className="border-b">
+        <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-36">
+          Prop
+        </th>
+        <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-52">
+          Type
+        </th>
+        <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-20">
+          Default
+        </th>
+        <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
+          Description
+        </th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-gray-100">
+      {rows.map(([prop, type, def, desc]) => (
+        <tr key={prop}>
+          <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{prop}</td>
+          <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">{type}</td>
+          <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">{def}</td>
+          <td className="py-2.5 text-xs text-gray-600">{desc}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+)
+
+// ─── Overview Demo ────────────────────────────────────────────────────────────
+
+function OverviewDemo() {
+  return (
+    <div className="flex gap-3 flex-wrap">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline">Info</Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-64 p-4">
+          <div className="flex gap-2 items-start">
+            <Info className="size-4 text-violet-500 shrink-0 mt-0.5" />
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-semibold text-gray-800">Did you know?</p>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Popover content can be anything — text, forms, tables, or custom components.
+              </p>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline">
+            <Filter className="size-3.5" />
+            Filter
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-48 p-3">
+          <p className="text-xs font-semibold text-gray-700 mb-2">Filter by type</p>
+          {['Buy', 'Sell', 'Dividend'].map((t) => (
+            <label
+              key={t}
+              className="flex items-center gap-2 text-xs text-gray-600 py-1 cursor-pointer"
+            >
+              <input type="checkbox" className="accent-violet-600" />
+              {t}
+            </label>
+          ))}
+        </PopoverContent>
+      </Popover>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="icon-sm" aria-label="Edit">
+            <Pencil className="size-3.5" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-56 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-semibold text-gray-800">Quick edit</p>
+            <PopoverClose>
+              <X className="size-4" />
+            </PopoverClose>
+          </div>
+          <div className="flex flex-col gap-2">
+            <input
+              className="h-8 rounded border border-gray-200 px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600"
+              defaultValue="BBCA"
+            />
+            <Button size="sm">Save</Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  )
+}
+
+// ─── Docs ─────────────────────────────────────────────────────────────────────
+
 export const Docs = {
   name: 'Docs',
   render: () => (
     <div className="flex flex-col gap-10 w-full max-w-3xl py-6 px-2">
       {/* Header */}
       <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <Tag>Base Component</Tag>
+        </div>
         <h1 className="text-3xl font-bold text-gray-900">Popover</h1>
         <p className="text-base text-gray-500 leading-relaxed">
           A floating panel anchored to a trigger element. Unlike{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-xs">DropdownMenu</code>, the
-          content is fully open — any ReactNode can go inside. Built from scratch with Portal
-          rendering, auto-flip positioning, click-outside and Escape-to-close.
+          content is fully open — any ReactNode can go inside. Renders via Portal so it is never
+          clipped by overflow. Closes on click-outside and Escape.
         </p>
       </div>
 
       {/* Overview */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Overview</h2>
-        <div className="flex gap-3 flex-wrap py-4 justify-center">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">Info</Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64 p-4">
-              <div className="flex gap-2 items-start">
-                <Info className="size-4 text-violet-500 shrink-0 mt-0.5" />
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm font-semibold text-gray-800">Did you know?</p>
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    Popover content can be anything — text, forms, tables, or custom components.
-                  </p>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">
-                <Filter className="size-3.5" />
-                Filter
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-48 p-3">
-              <p className="text-xs font-semibold text-gray-700 mb-2">Filter by type</p>
-              {['Buy', 'Sell', 'Dividend'].map((t) => (
-                <label
-                  key={t}
-                  className="flex items-center gap-2 text-xs text-gray-600 py-1 cursor-pointer"
-                >
-                  <input type="checkbox" className="accent-violet-600" />
-                  {t}
-                </label>
-              ))}
-            </PopoverContent>
-          </Popover>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon-sm" aria-label="Edit">
-                <Pencil className="size-3.5" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56 p-4">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-semibold text-gray-800">Quick edit</p>
-                <PopoverClose>
-                  <X className="size-4" />
-                </PopoverClose>
-              </div>
-              <div className="flex flex-col gap-2">
-                <input
-                  className="h-8 rounded border border-gray-200 px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600"
-                  defaultValue="BBCA"
-                />
-                <Button size="sm">Save</Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+      <Section title="Overview">
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <OverviewDemo />
         </div>
-        <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-          <code>{`import { Popover, PopoverTrigger, PopoverContent, PopoverClose } from '@/components/base/Popover/Popover'
+        <Code>{`import { Popover, PopoverTrigger, PopoverContent, PopoverClose } from '@/components/base/Popover/Popover'
 
 <Popover>
   <PopoverTrigger asChild>
@@ -99,404 +169,267 @@ export const Docs = {
     <p>Content goes here.</p>
     <PopoverClose><X className="size-4" /></PopoverClose>
   </PopoverContent>
-</Popover>`}</code>
-        </pre>
-      </section>
+</Popover>`}</Code>
+      </Section>
 
       {/* Anatomy */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Anatomy</h2>
-        <pre className="bg-gray-50 border border-gray-200 rounded-lg px-5 py-4 text-xs text-gray-700 leading-relaxed">
-          <code>{`<Popover open? onOpenChange? defaultOpen?>   ← root — manages open state
-  <PopoverTrigger asChild?>                   ← wraps trigger; toggles open on click
+      <Section title="Anatomy">
+        <div className="flex flex-col gap-6">
+          {/* Visual box */}
+          <div className="p-5 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-4 font-mono text-xs text-gray-600 leading-relaxed">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] uppercase tracking-widest text-gray-400">
+                Popover (root)
+              </span>
+              <div className="pl-4 border-l-2 border-gray-200 flex flex-col gap-3">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase tracking-widest text-gray-400">
+                    PopoverTrigger
+                  </span>
+                  <div className="pl-4 border-l-2 border-violet-200">
+                    <span className="inline-flex px-3 py-1.5 bg-white border border-gray-300 rounded text-gray-700 shadow-sm">
+                      Button — click to open
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase tracking-widest text-gray-400">
+                    PopoverContent (Portal — floats above page)
+                  </span>
+                  <div className="pl-4 border-l-2 border-violet-200">
+                    <div className="bg-white border border-gray-200 rounded-lg shadow-md p-3 flex flex-col gap-2 w-56">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-700 text-xs font-medium">Any content here</span>
+                        <span className="text-[10px] text-gray-400 border border-dashed border-gray-300 rounded px-1 py-0.5">
+                          PopoverClose
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-gray-400">
+                        form · filter · info · table
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Code tree */}
+          <Code>{`<Popover open? onOpenChange? defaultOpen?>    ← root — manages open state
+  <PopoverTrigger asChild?>                    ← toggles open on click
     <Button>Open</Button>
   </PopoverTrigger>
-  <PopoverContent side? align? sideOffset?>   ← floating panel (Portal)
+  <PopoverContent side? align? sideOffset?>    ← floating panel via Portal
     {/* any content */}
-    <PopoverClose asChild?>                   ← closes the popover on click
+    <PopoverClose asChild?>                    ← closes popover on click
       <button>×</button>
     </PopoverClose>
   </PopoverContent>
-</Popover>`}</code>
-        </pre>
+</Popover>`}</Code>
 
-        <table className="w-full text-sm border-collapse">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-40">
-                Part
-              </th>
-              <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
-                Description
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {[
-              [
-                'Popover',
-                'Root. Holds open state. Supports controlled (open + onOpenChange) and uncontrolled (defaultOpen).',
-              ],
-              [
-                'PopoverTrigger',
-                'Toggles the panel on click. Pass asChild to forward props onto a custom element.',
-              ],
-              [
-                'PopoverContent',
-                'The floating panel. Rendered via Portal — never clipped by overflow. Flips near viewport edges.',
-              ],
-              [
-                'PopoverClose',
-                'Closes the popover when clicked. Pass asChild to use a custom element as the close trigger.',
-              ],
-            ].map(([part, desc]) => (
-              <tr key={part}>
-                <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{part}</td>
-                <td className="py-2.5 text-xs text-gray-600">{desc}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      {/* Positioning */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Positioning</h2>
-        <p className="text-sm text-gray-500 leading-relaxed">
-          <code className="font-mono bg-gray-100 px-1 rounded text-xs">side</code> controls which
-          side the panel appears on.{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-xs">align</code> controls how it
-          aligns along that axis.{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-xs">sideOffset</code> sets the
-          gap in pixels. The panel flips automatically when it would overflow the viewport.
-        </p>
-        <table className="w-full text-sm border-collapse">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-32">
-                Prop
-              </th>
-              <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-48">
-                Values
-              </th>
-              <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-20">
-                Default
-              </th>
-              <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
-                Description
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {[
-              [
-                'side',
-                '"top" | "right" | "bottom" | "left"',
-                '"bottom"',
-                'Which side of the trigger to render on.',
-              ],
-              ['align', '"start" | "center" | "end"', '"start"', 'Alignment along the side axis.'],
-              ['sideOffset', 'number', '6', 'Gap in px between trigger and panel.'],
-            ].map(([prop, type, def, desc]) => (
-              <tr key={prop}>
-                <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{prop}</td>
-                <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">{type}</td>
-                <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">{def}</td>
-                <td className="py-2.5 text-xs text-gray-600">{desc}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      {/* Usage */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Usage</h2>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-gray-700">Uncontrolled (default)</span>
-          <div className="py-6 flex justify-center border border-gray-200 rounded-xl">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline">Open</Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-52 p-4">
-                <p className="text-sm text-gray-700">Uncontrolled popover.</p>
-              </PopoverContent>
-            </Popover>
-          </div>
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`<Popover>
-  <PopoverTrigger asChild>
-    <Button variant="outline">Open</Button>
-  </PopoverTrigger>
-  <PopoverContent className="w-52 p-4">
-    <p>Content.</p>
-  </PopoverContent>
-</Popover>`}</code>
-          </pre>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-gray-700">Controlled</span>
-          <ControlledInline />
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`const [open, setOpen] = useState(false)
-
-<Popover open={open} onOpenChange={setOpen}>
-  <PopoverTrigger asChild>
-    <Button>Open</Button>
-  </PopoverTrigger>
-  <PopoverContent>...</PopoverContent>
-</Popover>`}</code>
-          </pre>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-gray-700">
-            PopoverClose — close from inside content
-          </span>
-          <div className="py-6 flex justify-center border border-gray-200 rounded-xl">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline">Open</Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-56 p-4">
-                <div className="flex flex-col gap-3">
-                  <p className="text-sm text-gray-700">Confirm this action?</p>
-                  <div className="flex gap-2">
-                    <PopoverClose asChild>
-                      <Button size="sm" className="flex-1">
-                        Confirm
-                      </Button>
-                    </PopoverClose>
-                    <PopoverClose asChild>
-                      <Button size="sm" variant="ghost" className="flex-1">
-                        Cancel
-                      </Button>
-                    </PopoverClose>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`<PopoverContent>
-  <PopoverClose asChild>
-    <Button size="sm">Confirm</Button>
-  </PopoverClose>
-  <PopoverClose asChild>
-    <Button size="sm" variant="ghost">Cancel</Button>
-  </PopoverClose>
-</PopoverContent>`}</code>
-          </pre>
-        </div>
-      </section>
-
-      {/* When to use */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to use</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-3 p-4 rounded-xl border border-violet-200 bg-violet-50">
-            <p className="text-sm font-semibold text-gray-800">
-              Use{' '}
-              <code className="font-mono bg-white border border-violet-200 px-1.5 py-0.5 rounded text-xs">
-                Popover
-              </code>{' '}
-              when…
-            </p>
-            <ul className="flex flex-col gap-1.5 text-xs text-gray-600 leading-relaxed list-none">
-              {[
-                'Content is freeform — a form, a table, a date picker, a filter panel.',
-                'You need a floating info bubble or tooltip-like panel with rich content.',
-                'You need programmatic open/close control from outside the trigger.',
-                'Content should not close when the user clicks inside it.',
-              ].map((item, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="text-violet-500 shrink-0">·</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex flex-col gap-3 p-4 rounded-xl border border-gray-200 bg-gray-50">
-            <p className="text-sm font-semibold text-gray-800">
-              Use{' '}
-              <code className="font-mono bg-white border border-gray-200 px-1.5 py-0.5 rounded text-xs">
-                DropdownMenu
-              </code>{' '}
-              instead when…
-            </p>
-            <ul className="flex flex-col gap-1.5 text-xs text-gray-600 leading-relaxed list-none">
-              {[
-                'Content is a list of actions, links, or menu items.',
-                'You need keyboard navigation between items (Arrow keys, Enter).',
-                'You need checkbox items, radio groups, or nested submenus.',
-                'Clicking an item should close the menu automatically.',
-              ].map((item, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="text-gray-400 shrink-0">·</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* When to Use */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
-        <div className="overflow-x-auto mb-4">
+          {/* Parts table */}
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="bg-gray-50">
-                {['Use Popover when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
+              <tr className="border-b">
+                <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-40">
+                  Part
+                </th>
+                <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                  Description
+                </th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The content is freeform — a form, date picker, filter panel, or rich layout
-                      that cannot fit in a menu item.
-                    </li>
-                    <li>
-                      The user must interact with the content (type, check, click buttons) without
-                      the panel closing.
-                    </li>
-                    <li>
-                      You need programmatic control over open/close state from outside the trigger
-                      element.
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Tooltip</strong> when the content is read-only and no user
-                      interaction is needed inside the panel.
-                    </li>
-                    <li>
-                      Use <strong>DropdownMenu</strong> when the content is a list of actions or
-                      links that close the panel on selection.
-                    </li>
-                    <li>
-                      Use <strong>Dialog</strong> when the content is complex enough to warrant a
-                      modal — blocking focus and requiring an explicit dismiss.
-                    </li>
-                  </ul>
-                </td>
-              </tr>
+            <tbody className="divide-y divide-gray-100">
+              {[
+                [
+                  'Popover',
+                  'Root. Manages open state. Supports controlled (open + onOpenChange) and uncontrolled (defaultOpen).',
+                ],
+                [
+                  'PopoverTrigger',
+                  'Toggles the panel on click. Use asChild to forward props onto a custom element instead of adding a wrapper.',
+                ],
+                [
+                  'PopoverContent',
+                  'The floating panel. Rendered via Portal — never clipped by parent overflow. Flips automatically near viewport edges.',
+                ],
+                [
+                  'PopoverClose',
+                  'Closes the popover when clicked. Use asChild to use any element as the close trigger.',
+                ],
+              ].map(([part, desc]) => (
+                <tr key={part}>
+                  <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{part}</td>
+                  <td className="py-2.5 text-xs text-gray-600">{desc}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
-      </section>
+      </Section>
 
-      {/* Dos & Don'ts */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Dos & Don'ts</h2>
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
+      {/* Keyboard Behavior */}
+      <Section title="Keyboard Behavior">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-36">
+                Key
+              </th>
+              <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                Behavior
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {[
+              ['Enter / Space', 'Opens or closes the popover when focus is on the trigger.'],
+              ['Escape', 'Closes the popover and returns focus to the trigger.'],
+              [
+                'Tab',
+                'Moves focus through interactive elements inside the panel. Focus does not trap — Tab out closes nothing.',
+              ],
+              ['Click outside', 'Closes the popover (click-outside detection via Portal).'],
+            ].map(([key, behavior]) => (
+              <tr key={key}>
+                <td className="py-2.5 pr-4">
+                  <kbd className="font-mono text-xs bg-gray-100 border border-gray-200 rounded px-1.5 py-0.5">
+                    {key}
+                  </kbd>
+                </td>
+                <td className="py-2.5 text-xs text-gray-600">{behavior}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Section>
+
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Content is freeform — form, filter panel, date picker, or rich layout',
+                  body: 'Use Popover when the content is not just a list of links or actions. Any ReactNode can go inside — the panel stays open while the user interacts.',
+                },
+                {
+                  title: 'The user must interact inside the panel without it closing',
+                  body: 'Typing in a field, checking checkboxes, or clicking buttons inside the panel should not dismiss it. Popover keeps open until click-outside, Escape, or an explicit close.',
+                },
+                {
+                  title: 'Need programmatic open/close control from outside the trigger',
+                  body: 'Use controlled mode (open + onOpenChange) when sibling components, form submits, or route changes need to open or close the panel.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: 'Content is a list of actions or links → use DropdownMenu',
+                  body: 'DropdownMenu has built-in keyboard navigation (arrow keys), auto-close on select, and proper ARIA roles for action lists. Popover has none of that.',
+                },
+                {
+                  title: 'Content is read-only text → use Tooltip',
+                  body: 'Tooltip is hover-triggered and requires no interaction — the right choice for labels, hints, and descriptions that need no user input.',
+                },
+                {
+                  title: 'Content needs blocking focus → use Dialog',
+                  body: 'Popover does not trap focus. If the user must complete the interaction before continuing, use Dialog which traps focus and blocks the rest of the page.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Focus does NOT trap — Tab moves normally through the panel',
+                  body: 'This is intentional. Use Dialog if you need a focus trap. Tab out of the panel does not close it — only click-outside, Escape, or PopoverClose does.',
+                },
+                {
+                  title: 'Always provide a close mechanism inside multi-step panels',
+                  body: 'Keyboard users rely on PopoverClose — add it on a Cancel or × button so they can always dismiss without reaching for Escape.',
+                },
+                {
+                  title: 'Use aria-label on icon-only triggers',
+                  body: 'A pencil icon button with no text label is meaningless to screen readers. Add aria-label="Edit" so the action is announced correctly.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Keep content focused — one task per Popover',
+                  body: 'Use Popover for a quick edit, a filter set, or a detail peek — not as a catch-all drawer. If the content is complex enough to need a title bar and full scroll, use a Sheet or Dialog instead.',
+                },
+                {
+                  title: 'Set an explicit width on PopoverContent',
+                  body: 'Without a width class (e.g. className="w-64") the panel collapses to the narrowest child\'s width. Always set it explicitly.',
+                },
+                {
+                  title: 'Use asChild on PopoverTrigger and never nest floating panels',
+                  body: 'asChild avoids an extra wrapper span and preserves trigger semantics. Never nest a Popover or DropdownMenu inside a Popover — overlapping floating panels break click-outside detection.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Keep popover content focused and scoped. Use it for a single task — a quick edit
-                  form, a filter set, or a detail peek — not as a catch-all drawer.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Provide a clear close mechanism inside the panel when interactions are multi-step.
-                  Use <code className="font-mono bg-green-100 px-1 rounded">PopoverClose</code> on a
-                  Cancel or X button so the user always knows how to dismiss.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Set an explicit width via{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">className="w-64"</code> on{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">PopoverContent</code>.
-                  Without a width the panel will collapse to the width of its narrowest child.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't nest another Popover or DropdownMenu inside a Popover. Overlapping floating
-                  panels create z-index conflicts and confuse click-outside detection — flatten the
-                  hierarchy instead.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use Popover for a list of navigation links or action items. Keyboard users
-                  expect arrow-key navigation in those cases — reach for DropdownMenu which provides
-                  that out of the box.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't rely solely on click-outside to dismiss when the panel contains a form with
-                  unsaved data. Warn the user or disable click-outside by controlling the open state
-                  manually.
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-      </section>
+      </Section>
 
       {/* API Reference */}
-      <section className="flex flex-col gap-6">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">API Reference</h2>
-
-        {[
-          {
-            name: 'Popover',
-            rows: [
+      <Section title="API Reference">
+        <SubSection title="Popover">
+          <ApiTable
+            rows={[
               ['open', 'boolean', '—', 'Controlled open state.'],
               ['onOpenChange', '(open: boolean) => void', '—', 'Called when open state changes.'],
               ['defaultOpen', 'boolean', 'false', 'Initial open state for uncontrolled mode.'],
-            ],
-          },
-          {
-            name: 'PopoverTrigger',
-            rows: [
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="PopoverTrigger">
+          <ApiTable
+            rows={[
               [
                 'asChild',
                 'boolean',
                 'false',
                 'Forward props onto the single child element instead of wrapping in a span.',
               ],
-            ],
-          },
-          {
-            name: 'PopoverContent',
-            rows: [
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="PopoverContent">
+          <ApiTable
+            rows={[
               [
                 'side',
                 '"top" | "right" | "bottom" | "left"',
@@ -505,12 +438,19 @@ export const Docs = {
               ],
               ['align', '"start" | "center" | "end"', '"start"', 'Alignment along the side axis.'],
               ['sideOffset', 'number', '6', 'Gap in pixels between trigger and panel.'],
-              ['className', 'string', '—', 'Additional classes on the panel div.'],
-            ],
-          },
-          {
-            name: 'PopoverClose',
-            rows: [
+              [
+                'className',
+                'string',
+                '—',
+                'Additional classes on the panel div. Always include a width (e.g. w-64).',
+              ],
+            ]}
+          />
+        </SubSection>
+
+        <SubSection title="PopoverClose">
+          <ApiTable
+            rows={[
               [
                 'asChild',
                 'boolean',
@@ -518,64 +458,10 @@ export const Docs = {
                 'Forward the close handler onto the single child element.',
               ],
               ['className', 'string', '—', 'Additional classes on the default close button.'],
-            ],
-          },
-        ].map(({ name, rows }) => (
-          <div key={name} className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold text-gray-800">{name}</h3>
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-36">
-                    Prop
-                  </th>
-                  <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-56">
-                    Type
-                  </th>
-                  <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-20">
-                    Default
-                  </th>
-                  <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
-                    Description
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {rows.map(([prop, type, def, desc]) => (
-                  <tr key={prop}>
-                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{prop}</td>
-                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">{type}</td>
-                    <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">{def}</td>
-                    <td className="py-2.5 text-xs text-gray-600">{desc}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ))}
-      </section>
+            ]}
+          />
+        </SubSection>
+      </Section>
     </div>
   ),
-}
-
-function ControlledInline() {
-  const [open, setOpen] = useState(false)
-  return (
-    <div className="py-6 flex items-center gap-3 justify-center border border-gray-200 rounded-xl">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="outline">{open ? 'Close' : 'Open'}</Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-52 p-4">
-          <p className="text-sm text-gray-700">Controlled popover.</p>
-        </PopoverContent>
-      </Popover>
-      <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
-        Force open
-      </Button>
-      <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>
-        Force close
-      </Button>
-    </div>
-  )
 }

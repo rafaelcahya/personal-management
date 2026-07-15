@@ -1,11 +1,20 @@
 'use client'
 
 import { cloneElement, forwardRef, isValidElement, useMemo } from 'react'
-import { Slot } from '@radix-ui/react-slot'
 import { cva } from 'class-variance-authority'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Loader2, Plus } from 'lucide-react'
+
+const Slot = forwardRef(function Slot({ children, ...slotProps }, ref) {
+  if (!isValidElement(children)) return children ?? null
+  return cloneElement(children, {
+    ...slotProps,
+    ...children.props,
+    className: twMerge(clsx(slotProps.className, children.props.className)),
+    ref,
+  })
+})
 
 const buttonVariants = cva(
   [
@@ -30,22 +39,20 @@ const buttonVariants = cva(
       size: {
         xs: 'h-6 rounded px-2 text-xs gap-1',
         sm: 'h-7 rounded-md px-3 text-xs gap-1.5',
-        base: 'h-8 rounded-md px-3.5 text-sm gap-1.5',
-        md: 'h-9 px-4 py-2 gap-2',
-        lg: 'h-10 rounded-md px-6 text-sm gap-2',
-        xl: 'h-12 rounded-md px-8 text-base gap-3',
+        md: 'h-8 rounded-md px-3.5 text-sm gap-1.5',
+        lg: 'h-9 px-4 py-2 gap-2',
+        xl: 'h-10 rounded-md px-6 text-sm gap-2',
         icon: 'size-9',
         'icon-xs': 'size-6',
         'icon-sm': 'size-7',
-        'icon-base': 'size-8',
-        'icon-md': 'size-9',
-        'icon-lg': 'size-10',
-        'icon-xl': 'size-12',
+        'icon-md': 'size-8',
+        'icon-lg': 'size-9',
+        'icon-xl': 'size-10',
       },
     },
     defaultVariants: {
       variant: 'default',
-      size: 'base',
+      size: 'md',
     },
   }
 )
@@ -53,17 +60,15 @@ const buttonVariants = cva(
 const iconSizeMap = {
   xs: 'size-3',
   sm: 'size-3',
-  base: 'size-3.5',
-  md: 'size-4',
+  md: 'size-3.5',
   lg: 'size-4',
-  xl: 'size-5',
+  xl: 'size-4',
   icon: 'size-4',
   'icon-xs': 'size-3',
   'icon-sm': 'size-3.5',
-  'icon-base': 'size-4',
   'icon-md': 'size-4',
-  'icon-lg': 'size-5',
-  'icon-xl': 'size-6',
+  'icon-lg': 'size-4',
+  'icon-xl': 'size-5',
 }
 
 const isIconOnlySize = (size) => size === 'icon' || size?.startsWith('icon-')
@@ -71,13 +76,13 @@ const isIconOnlySize = (size) => size === 'icon' || size?.startsWith('icon-')
 /**
  * @param {object} props
  * @param {'default'|'secondary'|'outline'|'ghost'|'destructive'|'link'} [props.variant='default']
- * @param {'xs'|'sm'|'base'|'md'|'lg'|'xl'|'icon'|'icon-xs'|'icon-sm'|'icon-base'|'icon-md'|'icon-lg'|'icon-xl'} [props.size='base']
+ * @param {'xs'|'sm'|'md'|'lg'|'xl'|'icon'|'icon-xs'|'icon-sm'|'icon-md'|'icon-lg'|'icon-xl'} [props.size='md']
  * @param {boolean|React.ReactElement} [props.useIcon=false] - true uses default Plus icon; pass a React element for a custom icon
  * @param {'left'|'right'} [props.iconPosition='left']
  * @param {boolean} [props.isLoading=false]
  * @param {string} [props.loadingText='Loading'] - Visually-hidden text announced by screen readers during loading
  * @param {boolean} [props.fullWidth=false] - Stretch button to fill its container width
- * @param {boolean} [props.asChild=false] - Merge button props onto the single child element via Radix Slot
+ * @param {boolean} [props.asChild=false] - Merge button props onto the single child element
  * @param {React.ElementType} [props.as='button']
  * @param {string} [props.className]
  * @param {React.ReactNode} [props.children]
@@ -85,7 +90,7 @@ const isIconOnlySize = (size) => size === 'icon' || size?.startsWith('icon-')
 const Button = forwardRef(function Button(
   {
     variant,
-    size = 'base',
+    size = 'md',
     isLoading = false,
     loadingText = 'Loading',
     useIcon = false,

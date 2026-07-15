@@ -12,7 +12,7 @@ import PageHeader from '../../components/PageHeader'
 import FeeTableHeader from './list/component/FeeTableHeader'
 import FeesTable from './list/FeesTable'
 import AddFee from './AddFee'
-import Card, { CardContent } from '@/components/base/Card/Card'
+import Card, { CardContent, CardFooter } from '@/components/base/Card/Card'
 
 export default function FeesPageClient() {
   const [listFee, setListFee] = useState([])
@@ -97,7 +97,7 @@ export default function FeesPageClient() {
       <Card className="flex-1 min-h-0 relative bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
         <FeeTableHeader action={<AddFee onAdded={handleAdded} />} />
 
-        <CardContent padding="none" className="pb-4">
+        <CardContent className="p-0">
           <div className="px-5 pt-3">
             <FeeMetricStrip feeCount={summary.feeCount} totalFee={summary.totalFee} />
           </div>
@@ -120,7 +120,8 @@ export default function FeesPageClient() {
               <FeesTable fees={listFee} onFeesChange={setListFee} onRefresh={handleRefresh} />
             </div>
           )}
-
+        </CardContent>
+        <CardFooter>
           <Pagination
             id="feePagination_feePage"
             prevId="feePaginationPrevBtn_feePage"
@@ -132,7 +133,7 @@ export default function FeesPageClient() {
             onPrev={() => handlePageChange(page - 1)}
             onNext={() => handlePageChange(page + 1)}
           />
-        </CardContent>
+        </CardFooter>
       </Card>
     </div>
   )

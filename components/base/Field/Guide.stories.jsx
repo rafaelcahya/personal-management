@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { Search, Mail, DollarSign, Globe, Lock, Eye, EyeOff } from 'lucide-react'
+import { Search, Mail, Globe, Eye, EyeOff } from 'lucide-react'
 import { Switch } from '@/components/base/Switch/Switch'
-import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import FieldContent from './FieldContent'
 import FieldControl from './FieldControl'
 import FieldError from './FieldError'
@@ -69,31 +68,51 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
-const PasswordDemo = () => {
-  const [show, setShow] = useState(false)
-  return (
-    <FieldControl>
-      <FieldPrefix>
-        <Lock />
-      </FieldPrefix>
-      <Input type={show ? 'text' : 'password'} placeholder="Password" />
-      <FieldSuffix
-        className="pointer-events-auto cursor-pointer hover:text-foreground transition-colors"
-        onClick={() => setShow((s) => !s)}
-      >
-        {show ? <EyeOff /> : <Eye />}
-      </FieldSuffix>
-    </FieldControl>
-  )
-}
+const ApiTable = ({ component, rows }) => (
+  <div className="mb-6">
+    {component && <p className="text-xs font-mono font-semibold text-gray-500 mb-2">{component}</p>}
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)
 
-// ─── Story ───────────────────────────────────────────────────────────────────
+// ─── Story ────────────────────────────────────────────────────────────────────
 
 export const Docs = {
   name: 'Docs',
   render: () => (
     <div className="p-8 max-w-4xl font-sans text-gray-900">
-      {/* Header */}
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-2">
           <h1 className="text-3xl font-bold text-gray-900">Field</h1>
@@ -103,32 +122,31 @@ export const Docs = {
           A set of composable layout and context primitives for building accessible form fields.
           Wrap inputs with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContent</code> to wire
-          up a11y context, organize multiple fields with{' '}
+          up a11y context automatically, organize multiple fields with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldContainer</code> and{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldGroup</code>, and use{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldLabel</code>,{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldDescription</code>, and{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldError</code> for
+          <code className="font-mono bg-gray-100 px-1 rounded text-sm">FieldError</code> for the
           complete field anatomy.
         </p>
       </div>
 
-      {/* Overview */}
+      {/* ── Overview ───────────────────────────────────────────────────────── */}
       <Section title="Overview">
         <Preview>
-          <FieldContent size="base" required>
+          <FieldContent required>
             <FieldLabel>Email</FieldLabel>
+            <FieldDescription>We will never share your email.</FieldDescription>
             <FieldControl>
               <FieldPrefix>
                 <Mail />
               </FieldPrefix>
-              <Input placeholder="you@example.com" />
+              <Input type="email" placeholder="you@example.com" />
             </FieldControl>
-            <FieldDescription className="text-xs text-slate-400">
-              We'll never share your email.
-            </FieldDescription>
+            <FieldError />
           </FieldContent>
-          <FieldContent size="base">
+          <FieldContent>
             <FieldLabel>Website</FieldLabel>
             <FieldControl>
               <FieldPrefix>
@@ -138,95 +156,90 @@ export const Docs = {
               <FieldSuffix>.com</FieldSuffix>
             </FieldControl>
           </FieldContent>
-          <FieldContent size="base" required error="Enter a valid email address.">
-            <FieldLabel>Password</FieldLabel>
+          <FieldContent required error="Enter a valid email address.">
+            <FieldLabel>Confirm email</FieldLabel>
             <FieldControl>
-              <Input defaultValue="123" />
+              <Input type="email" defaultValue="not-an-email" />
             </FieldControl>
             <FieldError />
           </FieldContent>
         </Preview>
+        <Code>{`<FieldContent required>
+  <FieldLabel>Email</FieldLabel>
+  <FieldDescription>We will never share your email.</FieldDescription>
+  <FieldControl>
+    <FieldPrefix><Mail /></FieldPrefix>
+    <Input type="email" placeholder="you@example.com" />
+  </FieldControl>
+  <FieldError />
+</FieldContent>`}</Code>
       </Section>
 
-      {/* Anatomy */}
+      {/* ── Anatomy ────────────────────────────────────────────────────────── */}
       <Section
         title="Anatomy"
-        description="Full component hierarchy from outermost wrapper down to the input element."
+        description="Full component hierarchy from the outermost wrapper down to the input row."
       >
-        <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg mb-4 w-full max-w-2xl">
+        <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4 w-full max-w-3xl overflow-x-auto">
           {/* FieldContainer */}
-          <div className="border-2 border-dashed border-slate-400 rounded-md p-3 bg-slate-50">
-            <div className="text-xs font-mono text-slate-500 mb-3 px-0.5">
-              FieldContainer (flex-col gap-*)
-            </div>
-
+          <div className="border-2 border-dashed border-slate-400 rounded-md p-3 bg-white min-w-[500px]">
+            <span className="text-[10px] font-mono text-slate-500 block mb-2">FieldContainer</span>
             {/* FieldGroup */}
-            <div className="border-2 border-dashed border-teal-300 rounded-md p-2 bg-teal-50">
-              <div className="text-xs font-mono text-teal-600 mb-1.5 px-0.5">
+            <div className="border-2 border-dashed border-teal-300 rounded-md p-2 bg-teal-50/40 mb-2">
+              <span className="text-[10px] font-mono text-teal-600 block mb-2">
                 FieldGroup (grid cols=2)
-              </div>
+              </span>
               <div className="grid grid-cols-2 gap-2">
-                <div className="col-span-2 border border-dashed border-amber-300 rounded px-2 py-0.5 bg-amber-50">
-                  <span className="text-xs font-mono text-amber-600">FieldTitle</span>
+                {/* FieldTitle */}
+                <div className="col-span-2 border border-dashed border-amber-300 rounded px-2 py-1 bg-amber-50">
+                  <span className="text-[10px] font-mono text-amber-600">FieldTitle</span>
                 </div>
+                {/* FieldContent (×2) */}
                 {[0, 1].map((i) => (
                   <div
                     key={i}
-                    className="border-2 border-dashed border-blue-300 rounded p-1.5 bg-blue-50"
+                    className="border-2 border-dashed border-blue-300 rounded p-2 bg-blue-50/40"
                   >
-                    <div className="text-xs font-mono text-blue-500 mb-1">
-                      FieldContent (flex-col gap-1.5)
-                    </div>
-                    <div className="border border-dashed border-green-400 rounded px-1.5 py-0.5 bg-green-50 text-xs font-mono text-green-600 w-fit mb-1">
+                    <span className="text-[10px] font-mono text-blue-500 block mb-1">
+                      FieldContent
+                    </span>
+                    <div className="border border-dashed border-green-400 rounded px-1.5 py-0.5 bg-green-50 text-[10px] font-mono text-green-600 mb-1 w-fit">
                       FieldLabel
                     </div>
-                    <div className="border border-dashed border-indigo-300 rounded p-0.5 bg-indigo-50/60 mb-1">
-                      <div
-                        className="text-xs font-mono text-indigo-400 mb-0.5 px-0.5"
-                        style={{ fontSize: 10 }}
-                      >
-                        FieldControl (relative flex)
-                      </div>
-                      <div className="flex items-stretch gap-1">
-                        <div className="border border-dashed border-orange-300 rounded px-1.5 py-0.5 bg-orange-50 flex items-center">
-                          <span
-                            className="text-xs font-mono text-orange-500"
-                            style={{ fontSize: 10 }}
-                          >
-                            FieldPrefix
-                          </span>
-                        </div>
-                        <div
-                          className="flex-1 border border-dashed border-violet-300 rounded h-5 bg-violet-50 flex items-center justify-center font-mono text-violet-400"
-                          style={{ fontSize: 10 }}
-                        >
-                          Input / Textarea
-                        </div>
-                        <div className="border border-dashed border-orange-300 rounded px-1.5 py-0.5 bg-orange-50 flex items-center">
-                          <span
-                            className="text-xs font-mono text-orange-500"
-                            style={{ fontSize: 10 }}
-                          >
-                            FieldSuffix
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      className="border border-dashed border-gray-300 rounded px-1.5 py-0.5 bg-white font-mono text-gray-400 w-fit mb-1"
-                      style={{ fontSize: 10 }}
-                    >
+                    <div className="border border-dashed border-purple-300 rounded px-1.5 py-0.5 bg-purple-50 text-[10px] font-mono text-purple-500 mb-1 w-fit">
                       FieldDescription
                     </div>
-                    <div
-                      className="border border-dashed border-red-300 rounded px-1.5 py-0.5 bg-red-50 font-mono text-red-400 w-fit"
-                      style={{ fontSize: 10 }}
-                    >
+                    {/* FieldControl */}
+                    <div className="border border-dashed border-violet-400 rounded p-1.5 bg-violet-50/40 mb-1">
+                      <span className="text-[10px] font-mono text-violet-500 block mb-1">
+                        FieldControl
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <div className="border border-dashed border-orange-300 rounded px-1 py-0.5 bg-orange-50 text-[10px] font-mono text-orange-500">
+                          FieldPrefix
+                        </div>
+                        <div className="border border-dashed border-gray-300 rounded px-2 py-0.5 bg-white text-[10px] font-mono text-gray-400 flex-1 text-center">
+                          Input
+                        </div>
+                        <div className="border border-dashed border-orange-300 rounded px-1 py-0.5 bg-orange-50 text-[10px] font-mono text-orange-500">
+                          FieldSuffix
+                        </div>
+                      </div>
+                    </div>
+                    <div className="border border-dashed border-red-300 rounded px-1.5 py-0.5 bg-red-50 text-[10px] font-mono text-red-400 w-fit">
                       FieldError
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
+            {/* FieldSeparator */}
+            <div className="border border-dashed border-gray-300 rounded px-2 py-1 bg-gray-50 mb-2">
+              <span className="text-[10px] font-mono text-gray-400">FieldSeparator</span>
+            </div>
+            <div className="border-2 border-dashed border-blue-300 rounded p-2 bg-blue-50/40">
+              <span className="text-[10px] font-mono text-blue-500 block mb-1">FieldContent</span>
+              <div className="text-[10px] font-mono text-gray-400 italic">…</div>
             </div>
           </div>
         </div>
@@ -250,43 +263,57 @@ export const Docs = {
                 [
                   'FieldContainer',
                   '<div>',
-                  'Outer wrapper. Stacks all fields vertically with consistent gap.',
+                  'Outer flex-col stack. Controls vertical gap between all children.',
                 ],
                 [
                   'FieldGroup',
                   '<div>',
-                  'CSS grid for multi-column layouts. Use inside FieldContainer.',
+                  'CSS grid for multi-column field rows. Accepts cols (number or responsive object) and gap.',
                 ],
                 [
                   'FieldTitle',
                   '<p>',
-                  'col-span-full label for a group of fields inside FieldGroup.',
+                  'Section heading inside FieldGroup. Spans all columns via col-span-full.',
+                ],
+                [
+                  'FieldSeparator',
+                  '<hr>',
+                  'Visual horizontal rule between sections inside FieldContainer.',
                 ],
                 [
                   'FieldContent',
                   '<div>',
-                  'Single field unit. Provides accessible IDs, required, disabled, and error state via context.',
-                ],
-                ['FieldLabel', '<label>', 'Accessible label linked to the input via context ID.'],
-                [
-                  'FieldControl',
-                  '<div>',
-                  'Input row wrapper. Handles prefix/suffix positioning. Required when using FieldPrefix or FieldSuffix.',
+                  'Root per-field wrapper. Generates ids and distributes a11y context to all children.',
                 ],
                 [
-                  'FieldPrefix / FieldSuffix',
-                  '<div>',
-                  'Absolutely-positioned overlays inside FieldControl. Left or right edge of the input.',
+                  'FieldLabel',
+                  '<label>',
+                  'Auto-linked to the input via htmlFor from context. Shows asterisk when required.',
                 ],
                 [
                   'FieldDescription',
                   '<p>',
-                  'Helper text below the input. Linked via aria-describedby.',
+                  'Hint text auto-linked to the input via aria-describedby from context.',
+                ],
+                [
+                  'FieldControl',
+                  '<div>',
+                  'Relative flex row for the input. Detects FieldPrefix/FieldSuffix and tells Input to pad.',
+                ],
+                [
+                  'FieldPrefix',
+                  '<span>',
+                  'Absolute left affix (icon or text). pointer-events-none by default.',
+                ],
+                [
+                  'FieldSuffix',
+                  '<span>',
+                  'Absolute right affix (icon or text). Add pointer-events-auto for interactive suffixes.',
                 ],
                 [
                   'FieldError',
                   '<p>',
-                  'Error message with role="alert". Only renders when FieldContent has an error prop.',
+                  'Error message with role="alert". Reads error from context or from children.',
                 ],
               ].map(([part, el, desc]) => (
                 <tr key={part} className="even:bg-gray-50">
@@ -302,826 +329,177 @@ export const Docs = {
             </tbody>
           </table>
         </div>
-
-        <Code>{`<FieldContainer>
-  <FieldGroup cols={2}>
-    <FieldTitle>Personal Info</FieldTitle>
-    <FieldContent size="base" required>
-      <FieldLabel>First Name</FieldLabel>
-      <FieldControl>
-        <Input placeholder="John" />
-      </FieldControl>
-    </FieldContent>
-    <FieldContent size="base" required error={errors.email?.message}>
-      <FieldLabel>Email</FieldLabel>
-      <FieldControl>
-        <FieldPrefix>@</FieldPrefix>
-        <Input placeholder="you@example.com" />
-      </FieldControl>
-      <FieldDescription className="text-xs text-slate-400">We'll never share your email.</FieldDescription>
-      <FieldError />
-    </FieldContent>
-  </FieldGroup>
-</FieldContainer>`}</Code>
       </Section>
 
-      {/* FieldContainer */}
-      <Section
-        title="FieldContainer"
-        description="Outer wrapper that stacks all form fields vertically with consistent spacing. Use it as the form body — wrap all your fields inside one FieldContainer instead of a bare div."
-      >
-        <SubSection
-          title="Basic"
-          description="Wraps multiple fields with a consistent vertical gap."
-        >
-          <div className="max-w-sm mb-3">
-            <FieldContainer>
-              <FieldContent size="base" required>
-                <FieldLabel>Email</FieldLabel>
-                <FieldControl>
-                  <Input placeholder="you@example.com" />
-                </FieldControl>
-              </FieldContent>
-              <FieldContent size="base" required>
-                <FieldLabel>Password</FieldLabel>
-                <FieldControl>
-                  <Input type="password" placeholder="••••••••" />
-                </FieldControl>
-              </FieldContent>
-            </FieldContainer>
-          </div>
-        </SubSection>
-
-        <SubSection
-          title="With FieldGroup"
-          description="FieldContainer wraps the whole form; FieldGroup handles grid layout inside."
-        >
-          <div className="max-w-lg mb-3">
-            <FieldContainer gap="md">
-              <FieldGroup cols={2}>
-                <FieldContent size="base" required>
-                  <FieldLabel>First Name</FieldLabel>
-                  <FieldControl>
-                    <Input placeholder="John" />
-                  </FieldControl>
-                </FieldContent>
-                <FieldContent size="base" required>
-                  <FieldLabel>Last Name</FieldLabel>
-                  <FieldControl>
-                    <Input placeholder="Doe" />
-                  </FieldControl>
-                </FieldContent>
-              </FieldGroup>
-              <FieldContent size="base" required>
-                <FieldLabel>Email</FieldLabel>
-                <FieldControl>
-                  <Input type="email" placeholder="john@example.com" />
-                </FieldControl>
-              </FieldContent>
-              <FieldGroup cols={2}>
-                <FieldContent size="base">
-                  <FieldLabel>City</FieldLabel>
-                  <FieldControl>
-                    <Input placeholder="Jakarta" />
-                  </FieldControl>
-                </FieldContent>
-                <FieldContent size="base">
-                  <FieldLabel>Postal Code</FieldLabel>
-                  <FieldControl>
-                    <Input placeholder="12345" />
-                  </FieldControl>
-                </FieldContent>
-              </FieldGroup>
-            </FieldContainer>
-          </div>
-        </SubSection>
-
-        <SubSection
-          title="Nested FieldContainer"
-          description="Use nested FieldContainers to separate form sections with different gaps."
-        >
-          <div className="max-w-sm mb-3">
-            <FieldContainer gap="lg">
-              <div>
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  Account
-                </p>
-                <FieldContainer gap="base">
-                  <FieldContent size="base" required>
-                    <FieldLabel>Email</FieldLabel>
-                    <FieldControl>
-                      <Input placeholder="you@example.com" />
-                    </FieldControl>
-                  </FieldContent>
-                  <FieldContent size="base" required>
-                    <FieldLabel>Password</FieldLabel>
-                    <FieldControl>
-                      <Input type="password" placeholder="••••••••" />
-                    </FieldControl>
-                  </FieldContent>
-                </FieldContainer>
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  Profile
-                </p>
-                <FieldContainer gap="base">
-                  <FieldContent size="base">
-                    <FieldLabel>Display Name</FieldLabel>
-                    <FieldControl>
-                      <Input placeholder="Cahya" />
-                    </FieldControl>
-                  </FieldContent>
-                  <FieldContent size="base">
-                    <FieldLabel>Bio</FieldLabel>
-                    <FieldControl>
-                      <Input placeholder="Tell us about yourself" />
-                    </FieldControl>
-                  </FieldContent>
-                </FieldContainer>
-              </div>
-            </FieldContainer>
-          </div>
-        </SubSection>
-
-        <SubSection title="Props — FieldContainer">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'gap',
-                    '"sm" | "base" | "md" | "lg"',
-                    '"base"',
-                    'Vertical gap between children — sm→gap-3, base→gap-4, md→gap-5, lg→gap-6',
-                  ],
-                  ['className', 'string', '—', 'Additional CSS classes on the wrapper div'],
-                  [
-                    'children',
-                    'ReactNode',
-                    '—',
-                    'Form fields — FieldContent, FieldGroup, or any node',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-      </Section>
-
-      {/* FieldGroup */}
-      <Section
-        title="FieldGroup"
-        description="Grid layout wrapper for grouping multiple form fields. Use FieldTitle inside to label a section of fields. Supports responsive cols via breakpoint object."
-      >
-        <SubSection title="Fixed Columns">
-          <div className="flex flex-col gap-6 max-w-2xl mb-3">
-            {[1, 2, 3, 4].map((n) => (
-              <div key={n}>
-                <p className="text-xs font-mono text-violet-700 mb-2">cols={`{${n}}`}</p>
-                <FieldGroup cols={n}>
-                  {Array.from({ length: n }).map((_, i) => (
-                    <FieldContent key={i} size="base">
-                      <FieldLabel>{`Field ${i + 1}`}</FieldLabel>
-                      <FieldControl>
-                        <Input placeholder={`Field ${i + 1}`} />
-                      </FieldControl>
-                    </FieldContent>
-                  ))}
-                </FieldGroup>
-              </div>
-            ))}
-          </div>
-        </SubSection>
-
-        <SubSection
-          title="Responsive Columns"
-          description="Pass an object with breakpoint keys. xs is mobile-first (no prefix), xxl maps to Tailwind 2xl. Resize the window to see columns change."
-        >
-          <div className="max-w-2xl mb-4">
-            <p className="text-xs font-mono text-violet-700 mb-2">
-              {'cols={{ xs: 1, md: 2, lg: 3 }}'}
-            </p>
-            <FieldGroup cols={{ xs: 1, md: 2, lg: 3 }}>
-              {['First Name', 'Last Name', 'Email', 'Phone', 'City', 'Postal Code'].map((label) => (
-                <FieldContent key={label} size="base">
-                  <FieldLabel>{label}</FieldLabel>
-                  <FieldControl>
-                    <Input placeholder={label} />
-                  </FieldControl>
-                </FieldContent>
-              ))}
-            </FieldGroup>
-          </div>
-
-          <div className="overflow-x-auto mb-3">
-            <table className="w-full text-xs border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Breakpoint', 'Key', 'Tailwind prefix', 'Viewport'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-600"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['Extra Small', 'xs', '(none)', '0px+'],
-                  ['Small', 'sm', 'sm:', '640px+'],
-                  ['Medium', 'md', 'md:', '768px+'],
-                  ['Large', 'lg', 'lg:', '1024px+'],
-                  ['Extra Large', 'xl', 'xl:', '1280px+'],
-                  ['2X Large', 'xxl', '2xl:', '1536px+'],
-                ].map(([name, key, prefix, vp]) => (
-                  <tr key={key} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 text-gray-600">{name}</td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700">
-                      {key}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-gray-500">
-                      {prefix}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-gray-500">{vp}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-
-        <SubSection title="Props — FieldGroup">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'cols',
-                    'number | { xs?, sm?, md?, lg?, xl?, xxl? }',
-                    '1',
-                    'Fixed number or responsive object — xs is mobile-first, xxl maps to 2xl',
-                  ],
-                  [
-                    'gap',
-                    '"sm" | "base" | "lg"',
-                    '"base"',
-                    'Gap between items — sm → gap-3, base → gap-4, lg → gap-6',
-                  ],
-                  ['className', 'string', '—', 'Additional CSS classes on the grid wrapper'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-      </Section>
-
-      {/* FieldTitle */}
-      <Section
-        title="FieldTitle"
-        description="Section label inside FieldGroup. Always spans all columns — use it to separate groups of fields with a named heading."
-      >
-        <SubSection title="Basic">
-          <div className="max-w-lg mb-4">
-            <FieldGroup cols={2}>
-              <FieldTitle>Personal Info</FieldTitle>
-              <FieldContent size="base" required>
-                <FieldLabel>First Name</FieldLabel>
-                <FieldControl>
-                  <Input placeholder="John" />
-                </FieldControl>
-              </FieldContent>
-              <FieldContent size="base" required>
-                <FieldLabel>Last Name</FieldLabel>
-                <FieldControl>
-                  <Input placeholder="Doe" />
-                </FieldControl>
-              </FieldContent>
-
-              <FieldTitle>Address</FieldTitle>
-              <FieldContent size="base">
-                <FieldLabel>City</FieldLabel>
-                <FieldControl>
-                  <Input placeholder="Jakarta" />
-                </FieldControl>
-              </FieldContent>
-              <FieldContent size="base">
-                <FieldLabel>Postal Code</FieldLabel>
-                <FieldControl>
-                  <Input placeholder="12345" />
-                </FieldControl>
-              </FieldContent>
-            </FieldGroup>
-          </div>
-        </SubSection>
-
-        <SubSection title="Props — FieldTitle">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'className',
-                    'string',
-                    '—',
-                    'Additional CSS classes — col-span-full is always applied',
-                  ],
-                  ['children', 'ReactNode', '—', 'Section label text'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-      </Section>
-
-      {/* FieldSeparator */}
-      <Section
-        title="FieldSeparator"
-        description="A simple hr divider for visually separating sections inside a form. Drop it anywhere between fields."
-      >
-        <SubSection title="Basic">
-          <div className="max-w-sm mb-4">
-            <FieldContainer gap="md">
-              <FieldContent size="base" required>
-                <FieldLabel>Email</FieldLabel>
-                <FieldControl>
-                  <Input placeholder="you@example.com" />
-                </FieldControl>
-              </FieldContent>
-              <FieldContent size="base" required>
-                <FieldLabel>Password</FieldLabel>
-                <FieldControl>
-                  <Input type="password" placeholder="••••••••" />
-                </FieldControl>
-              </FieldContent>
-              <FieldSeparator />
-              <FieldContent size="base">
-                <FieldLabel>Display Name</FieldLabel>
-                <FieldControl>
-                  <Input placeholder="Cahya" />
-                </FieldControl>
-              </FieldContent>
-            </FieldContainer>
-          </div>
-        </SubSection>
-
-        <SubSection title="Props — FieldSeparator">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[['className', 'string', '—', 'Additional CSS classes on the hr element']].map(
-                  ([prop, type, def, desc]) => (
-                    <tr key={prop} className="even:bg-gray-50">
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                        {prop}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                        {type}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                        {def}
-                      </td>
-                      <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                        {desc}
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          </div>
-        </SubSection>
-      </Section>
-
-      {/* FieldContent */}
+      {/* ── FieldContent ───────────────────────────────────────────────────── */}
       <Section
         title="FieldContent"
-        description="The single-field unit. Provides a React context that wires up accessible IDs, required, disabled, and error state to all children — FieldLabel, Input, FieldDescription, and FieldError all read from this context automatically."
+        description="Root wrapper for a single labelled field. Generates a unique id and distributes it via context to every child component."
       >
-        <SubSection title="With Label & Description">
+        <SubSection title="Vertical (Default)">
           <Preview>
-            <FieldContent size="base" required>
-              <FieldLabel>Email</FieldLabel>
+            <FieldContent>
+              <FieldLabel>Username</FieldLabel>
+              <FieldDescription>3–20 characters, letters and numbers only.</FieldDescription>
               <FieldControl>
-                <Input placeholder="you@example.com" />
-              </FieldControl>
-              <FieldDescription className="text-xs text-slate-400">
-                We'll never share your email.
-              </FieldDescription>
-            </FieldContent>
-          </Preview>
-        </SubSection>
-
-        <SubSection
-          title="Error State"
-          description="Pass an error string — FieldError reads it from context and renders automatically."
-        >
-          <Preview>
-            <FieldContent size="base" required error="Enter a valid email address.">
-              <FieldLabel>Email</FieldLabel>
-              <FieldControl>
-                <Input defaultValue="wrong@" />
+                <Input placeholder="your_username" />
               </FieldControl>
               <FieldError />
             </FieldContent>
           </Preview>
+          <Code>{`<FieldContent>
+  <FieldLabel>Username</FieldLabel>
+  <FieldDescription>3–20 characters, letters and numbers only.</FieldDescription>
+  <FieldControl>
+    <Input placeholder="your_username" />
+  </FieldControl>
+  <FieldError />
+</FieldContent>`}</Code>
         </SubSection>
 
         <SubSection
-          title="Disabled"
-          description="Disabled flows to Input (cursor-not-allowed, opacity-50) and FieldLabel automatically."
+          title="Horizontal"
+          description="Label and description on the left, control on the right. For settings-style rows."
         >
           <Preview>
-            <FieldContent size="base" disabled>
-              <FieldLabel>User ID</FieldLabel>
-              <FieldControl>
-                <Input defaultValue="usr_abc123" />
-              </FieldControl>
-              <FieldDescription className="text-xs text-slate-400">
-                Auto-generated. Cannot be changed.
-              </FieldDescription>
-            </FieldContent>
-          </Preview>
-        </SubSection>
-
-        <SubSection
-          title="Horizontal Orientation"
-          description="Use orientation=horizontal for settings-style rows — label and description stack on the left, the control sits on the right. FieldError spans the full width below."
-        >
-          <Preview>
-            <FieldContent orientation="horizontal" size="base" required>
-              <FieldLabel>Push notifications</FieldLabel>
-              <FieldDescription className="text-xs text-slate-400">
-                Receive alerts for new messages and activity.
-              </FieldDescription>
-              <FieldControl>
-                <Switch defaultChecked />
-              </FieldControl>
-            </FieldContent>
-
-            <FieldContent orientation="horizontal" size="base" disabled>
-              <FieldLabel>SMS alerts</FieldLabel>
-              <FieldDescription className="text-xs text-slate-400">
-                Not available in your region.
-              </FieldDescription>
-              <FieldControl>
-                <Switch disabled />
-              </FieldControl>
-            </FieldContent>
-
-            <FieldContent
-              orientation="horizontal"
-              size="base"
-              required
-              error="This field is required."
-            >
-              <FieldLabel>Data processing agreement</FieldLabel>
-              <FieldDescription className="text-xs text-slate-400">
-                You must accept to continue.
-              </FieldDescription>
+            <FieldContent orientation="horizontal">
+              <FieldLabel>Email notifications</FieldLabel>
+              <FieldDescription>Receive emails for new activity.</FieldDescription>
               <FieldControl>
                 <Switch />
               </FieldControl>
-              <FieldError />
             </FieldContent>
           </Preview>
-
-          <Code>{`{/* Basic */}
-<FieldContent orientation="horizontal" size="base" required>
-  <FieldLabel>Push notifications</FieldLabel>
-  <FieldDescription className="text-xs text-slate-400">Receive alerts for new messages and activity.</FieldDescription>
-  <FieldControl>
-    <Switch />
-  </FieldControl>
-</FieldContent>
-
-{/* With error */}
-<FieldContent orientation="horizontal" size="base" required error="This field is required.">
-  <FieldLabel>Data processing agreement</FieldLabel>
-  <FieldDescription className="text-xs text-slate-400">You must accept to continue.</FieldDescription>
-  <FieldControl>
-    <Switch />
-  </FieldControl>
-  <FieldError />
-</FieldContent>
-
-{/* Disabled */}
-<FieldContent orientation="horizontal" size="base" disabled>
-  <FieldLabel>SMS alerts</FieldLabel>
-  <FieldDescription className="text-xs text-slate-400">Not available in your region.</FieldDescription>
+          <Code>{`<FieldContent orientation="horizontal">
+  <FieldLabel>Email notifications</FieldLabel>
+  <FieldDescription>Receive emails for new activity.</FieldDescription>
   <FieldControl>
     <Switch />
   </FieldControl>
 </FieldContent>`}</Code>
-
-          <SubSection
-            title="Grid layout"
-            description="How children map to the 2-column grid when orientation is horizontal."
-          >
-            <div className="p-5 bg-gray-50 border border-gray-200 rounded-lg mb-3 w-full max-w-md">
-              <div className="grid grid-cols-[1fr_80px] gap-x-4 gap-y-1 text-xs font-mono">
-                <div className="border border-dashed border-green-400 rounded px-2 py-1.5 bg-green-50 text-green-700">
-                  FieldLabel
-                </div>
-                <div className="border border-dashed border-indigo-300 rounded px-2 py-1.5 bg-indigo-50 text-indigo-600 row-span-2 flex items-center justify-center text-center leading-snug">
-                  Field­Control
-                </div>
-                <div className="border border-dashed border-gray-300 rounded px-2 py-1.5 bg-white text-gray-500">
-                  FieldDescription
-                </div>
-                <div className="col-span-2 border border-dashed border-red-300 rounded px-2 py-1.5 bg-red-50 text-red-500">
-                  FieldError (col-span-2)
-                </div>
-              </div>
-            </div>
-          </SubSection>
-
-          <SubSection
-            title="Works with any control"
-            description="Not limited to Switch — any control that fits the right column works: Checkbox, a small button, a badge."
-          >
-            <Preview>
-              <FieldContent orientation="horizontal" size="base" required>
-                <FieldLabel>Accept terms</FieldLabel>
-                <FieldDescription className="text-xs text-slate-400">
-                  I agree to the Terms of Service.
-                </FieldDescription>
-                <FieldControl>
-                  <Checkbox />
-                </FieldControl>
-              </FieldContent>
-            </Preview>
-            <Code>{`{/* Checkbox */}
-<FieldContent orientation="horizontal" size="base" required>
-  <FieldLabel>Accept terms</FieldLabel>
-  <FieldDescription className="text-xs text-slate-400">I agree to the Terms of Service.</FieldDescription>
-  <FieldControl>
-    <Checkbox />
-  </FieldControl>
-</FieldContent>`}</Code>
-          </SubSection>
-
-          <SubSection
-            title="Settings list pattern"
-            description="Wrap multiple horizontal FieldContent rows in a FieldContainer for a clean settings page."
-          >
-            <div className="max-w-sm mb-3 divide-y divide-gray-100 border border-gray-200 rounded-lg overflow-hidden">
-              {[
-                {
-                  label: 'Push notifications',
-                  desc: 'Receive alerts for new messages.',
-                  checked: true,
-                },
-                {
-                  label: 'Dark mode',
-                  desc: 'Use a dark background across the app.',
-                  checked: false,
-                },
-                {
-                  label: 'SMS alerts',
-                  desc: 'Not available in your region.',
-                  checked: false,
-                  disabled: true,
-                },
-              ].map(({ label, desc, checked, disabled }) => (
-                <div key={label} className="px-4 py-3">
-                  <FieldContent orientation="horizontal" size="base" disabled={disabled}>
-                    <FieldLabel className={disabled ? 'cursor-not-allowed' : 'cursor-pointer'}>
-                      {label}
-                    </FieldLabel>
-                    <FieldDescription className="text-xs text-slate-400">{desc}</FieldDescription>
-                    <FieldControl>
-                      <Switch defaultChecked={checked} disabled={disabled} />
-                    </FieldControl>
-                  </FieldContent>
-                </div>
-              ))}
-            </div>
-            <Code>{`<FieldContainer>
-  <FieldContent orientation="horizontal" size="base">
-    <FieldLabel>Push notifications</FieldLabel>
-    <FieldDescription className="text-xs text-slate-400">Receive alerts for new messages.</FieldDescription>
-    <FieldControl><Switch defaultChecked /></FieldControl>
-  </FieldContent>
-  <FieldContent orientation="horizontal" size="base">
-    <FieldLabel>Dark mode</FieldLabel>
-    <FieldDescription className="text-xs text-slate-400">Use a dark background across the app.</FieldDescription>
-    <FieldControl><Switch /></FieldControl>
-  </FieldContent>
-  <FieldContent orientation="horizontal" size="base" disabled>
-    <FieldLabel>SMS alerts</FieldLabel>
-    <FieldDescription className="text-xs text-slate-400">Not available in your region.</FieldDescription>
-    <FieldControl><Switch /></FieldControl>
-  </FieldContent>
-</FieldContainer>`}</Code>
-          </SubSection>
         </SubSection>
 
         <SubSection
-          title="Size via Context"
-          description="Set size once on FieldContent — Input, FieldPrefix, and FieldSuffix all inherit it automatically."
+          title="Row"
+          description="Inline flex row — control and label on the same line. For checkbox and radio button patterns."
         >
-          <div className="flex flex-col gap-4 max-w-xs mb-3">
-            {['xs', 'sm', 'base', 'md', 'lg'].map((size) => (
-              <FieldContent key={size} size={size}>
-                <FieldLabel>size="{size}"</FieldLabel>
-                <FieldControl>
-                  <FieldPrefix>
-                    <Mail />
-                  </FieldPrefix>
-                  <Input placeholder={`size ${size}`} />
-                  <FieldSuffix>.com</FieldSuffix>
-                </FieldControl>
-              </FieldContent>
-            ))}
-          </div>
+          <Preview>
+            <FieldContent orientation="row">
+              <FieldControl>
+                <Switch />
+              </FieldControl>
+              <FieldLabel>Agree to terms</FieldLabel>
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent orientation="row">
+  <FieldControl>
+    <Switch />
+  </FieldControl>
+  <FieldLabel>Agree to terms</FieldLabel>
+</FieldContent>`}</Code>
         </SubSection>
 
-        <SubSection title="Props — FieldContent">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'orientation',
-                    '"vertical" | "horizontal"',
-                    '"vertical"',
-                    'Layout mode — vertical stacks label above control; horizontal puts label+description on the left and control on the right.',
-                  ],
-                  [
-                    'size',
-                    '"xs" | "sm" | "base" | "md" | "lg"',
-                    '"base"',
-                    'Shared via context — sets height for Input, FieldPrefix, and FieldSuffix. Set it once here instead of on every child.',
-                  ],
-                  [
-                    'required',
-                    'boolean',
-                    'false',
-                    'Flows to FieldLabel (shows red *) and Input (aria-required)',
-                  ],
-                  [
-                    'disabled',
-                    'boolean',
-                    'false',
-                    'Flows to Input (disabled + disabled variant) and FieldLabel',
-                  ],
-                  [
-                    'error',
-                    'string',
-                    '—',
-                    'Error message — flows to FieldError and Input (error variant + aria-invalid)',
-                  ],
-                  [
-                    'name',
-                    'string',
-                    '—',
-                    'Optional — informational only, does not wire to Input automatically',
-                  ],
-                  [
-                    'as',
-                    'React.ElementType',
-                    '"div"',
-                    'Rendered HTML element for the outer wrapper',
-                  ],
-                  ['className', 'string', '—', 'Additional CSS classes on the outer wrapper'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <SubSection title="Required">
+          <Preview>
+            <FieldContent required>
+              <FieldLabel>Full name</FieldLabel>
+              <FieldControl>
+                <Input placeholder="John Doe" />
+              </FieldControl>
+              <FieldError />
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent required>
+  <FieldLabel>Full name</FieldLabel>
+  <FieldControl>
+    <Input placeholder="John Doe" />
+  </FieldControl>
+  <FieldError />
+</FieldContent>`}</Code>
+        </SubSection>
+
+        <SubSection title="Disabled">
+          <Preview>
+            <FieldContent disabled>
+              <FieldLabel>Account ID</FieldLabel>
+              <FieldDescription>Set automatically after account creation.</FieldDescription>
+              <FieldControl>
+                <Input placeholder="auto-generated" />
+              </FieldControl>
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent disabled>
+  <FieldLabel>Account ID</FieldLabel>
+  <FieldDescription>Set automatically after account creation.</FieldDescription>
+  <FieldControl>
+    <Input placeholder="auto-generated" />
+  </FieldControl>
+</FieldContent>`}</Code>
+        </SubSection>
+
+        <SubSection title="Error">
+          <Preview>
+            <FieldContent required error="Enter a valid email address.">
+              <FieldLabel>Email</FieldLabel>
+              <FieldControl>
+                <Input type="email" defaultValue="not-an-email" />
+              </FieldControl>
+              <FieldError />
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent required error="Enter a valid email address.">
+  <FieldLabel>Email</FieldLabel>
+  <FieldControl>
+    <Input type="email" />
+  </FieldControl>
+  <FieldError />
+</FieldContent>`}</Code>
+        </SubSection>
+
+        <SubSection title="API Reference — FieldContent">
+          <ApiTable
+            component="FieldContent"
+            rows={[
+              [
+                'orientation',
+                '"vertical" | "horizontal" | "row"',
+                '"vertical"',
+                'Layout mode. Vertical stacks label above control; horizontal puts label+description left and control right; row places all children in a flex row.',
+              ],
+              [
+                'required',
+                'boolean',
+                'false',
+                'Flows to FieldLabel (shows red asterisk) and Input (aria-required).',
+              ],
+              [
+                'disabled',
+                'boolean',
+                'false',
+                'Flows to Input (disabled + disabled variant) and FieldLabel.',
+              ],
+              [
+                'error',
+                'string',
+                '—',
+                'Error message — flows to FieldError and Input (error variant + aria-invalid).',
+              ],
+              ['name', 'string', '—', 'Informational only, does not wire to Input automatically.'],
+              ['as', 'React.ElementType', '"div"', 'Rendered HTML element for the outer wrapper.'],
+              ['className', 'string', '—', 'Additional CSS classes on the outer wrapper.'],
+            ]}
+          />
         </SubSection>
       </Section>
 
-      {/* FieldControl */}
+      {/* ── FieldControl ───────────────────────────────────────────────────── */}
       <Section
         title="FieldControl"
-        description="The input row wrapper. Renders as relative flex items-center and detects FieldPrefix/FieldSuffix children — telling Input to add left or right padding automatically. Use FieldControl inside FieldContent, or standalone for bare input rows."
+        description="The input row wrapper. Renders as relative flex items-center and detects FieldPrefix/FieldSuffix children — telling Input to add left or right padding automatically."
       >
-        <SubSection title="With Affix">
+        <SubSection title="With Prefix and Suffix">
           <Preview>
-            <FieldContent size="base">
+            <FieldContent>
               <FieldLabel>Amount</FieldLabel>
               <FieldControl>
                 <FieldPrefix>Rp</FieldPrefix>
@@ -1130,10 +508,15 @@ export const Docs = {
               </FieldControl>
             </FieldContent>
           </Preview>
+          <Code>{`<FieldControl>
+  <FieldPrefix>Rp</FieldPrefix>
+  <Input type="number" placeholder="0" />
+  <FieldSuffix>IDR</FieldSuffix>
+</FieldControl>`}</Code>
         </SubSection>
 
         <SubSection
-          title="Standalone — no FieldContent"
+          title="Standalone"
           description="FieldControl works without FieldContent for bare input rows like search bars."
         >
           <Preview>
@@ -1141,680 +524,656 @@ export const Docs = {
               <FieldPrefix>
                 <Search />
               </FieldPrefix>
-              <Input placeholder="Search..." />
-            </FieldControl>
-            <FieldControl>
-              <Input placeholder="Inline field" />
+              <Input placeholder="Search..." aria-label="Search" />
             </FieldControl>
           </Preview>
+          <Code>{`<FieldControl>
+  <FieldPrefix><Search /></FieldPrefix>
+  <Input placeholder="Search..." aria-label="Search" />
+</FieldControl>`}</Code>
         </SubSection>
 
-        <SubSection title="Props — FieldControl">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'as',
-                    'React.ElementType',
-                    '"div"',
-                    'Rendered HTML element for the input row wrapper',
-                  ],
-                  ['className', 'string', '—', 'Additional CSS classes on the wrapper'],
-                  [
-                    'children',
-                    'ReactNode',
-                    '—',
-                    'FieldPrefix, Input, FieldSuffix — any combination',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <SubSection title="API Reference — FieldControl">
+          <ApiTable
+            component="FieldControl"
+            rows={[
+              [
+                'as',
+                'React.ElementType',
+                '"div"',
+                'Rendered HTML element for the input row wrapper.',
+              ],
+              ['className', 'string', '—', 'Additional CSS classes.'],
+            ]}
+          />
         </SubSection>
       </Section>
 
-      {/* FieldPrefix & FieldSuffix */}
+      {/* ── FieldLabel ─────────────────────────────────────────────────────── */}
       <Section
-        title="FieldPrefix & FieldSuffix"
-        description="Absolutely-positioned slots inside FieldControl's input row. Pointer-events-none by default — clicks pass through to the input. Add pointer-events-auto when the affix needs to be interactive."
+        title="FieldLabel"
+        description="Renders a <label> element automatically wired to its paired Input via FieldContent context. No manual htmlFor needed."
       >
-        <SubSection title="Text Affix" description="Short strings like currency or unit symbols.">
+        <SubSection title="Auto-Wired">
           <Preview>
-            <FieldContent size="base">
+            <FieldContent>
+              <FieldLabel>Email address</FieldLabel>
               <FieldControl>
-                <FieldPrefix>Rp</FieldPrefix>
-                <Input placeholder="0" />
-              </FieldControl>
-            </FieldContent>
-            <FieldContent size="base">
-              <FieldControl>
-                <Input placeholder="0" />
-                <FieldSuffix>%</FieldSuffix>
-              </FieldControl>
-            </FieldContent>
-            <FieldContent size="base">
-              <FieldControl>
-                <FieldPrefix>$</FieldPrefix>
-                <Input placeholder="0.00" />
-                <FieldSuffix>USD</FieldSuffix>
+                <Input type="email" placeholder="you@example.com" />
               </FieldControl>
             </FieldContent>
           </Preview>
-        </SubSection>
-
-        <SubSection title="Icon Affix" description="Lucide icons or any ReactNode.">
-          <Preview>
-            <FieldContent size="base">
-              <FieldControl>
-                <FieldPrefix>
-                  <Search />
-                </FieldPrefix>
-                <Input placeholder="Search..." />
-              </FieldControl>
-            </FieldContent>
-            <FieldContent size="base">
-              <FieldControl>
-                <FieldPrefix>
-                  <Mail />
-                </FieldPrefix>
-                <Input placeholder="you@example.com" />
-              </FieldControl>
-            </FieldContent>
-            <FieldContent size="base">
-              <FieldControl>
-                <FieldPrefix>
-                  <Globe />
-                </FieldPrefix>
-                <Input placeholder="yoursite" />
-                <FieldSuffix>.com</FieldSuffix>
-              </FieldControl>
-            </FieldContent>
-          </Preview>
-        </SubSection>
-
-        <SubSection title="Affix + Variants" description="Affixes work with all Input variants.">
-          <Preview>
-            <FieldContent size="base">
-              <FieldControl>
-                <FieldPrefix>
-                  <Mail />
-                </FieldPrefix>
-                <Input placeholder="Normal" />
-              </FieldControl>
-            </FieldContent>
-            <FieldContent size="base" error="Invalid email.">
-              <FieldControl>
-                <FieldPrefix>
-                  <Mail />
-                </FieldPrefix>
-                <Input defaultValue="wrong@" />
-              </FieldControl>
-            </FieldContent>
-            <FieldContent size="base" disabled>
-              <FieldControl>
-                <FieldPrefix>
-                  <Mail />
-                </FieldPrefix>
-                <Input defaultValue="Disabled" />
-              </FieldControl>
-            </FieldContent>
-          </Preview>
-        </SubSection>
-
-        <SubSection
-          title="Interactive Affix"
-          description="Add pointer-events-auto to make the affix clickable. The example below shows a password toggle."
-        >
-          <div className="flex flex-col gap-2 mb-3">
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">
-              Default — click on icon focuses the input
-            </p>
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg w-80">
-              <FieldContent size="base">
-                <FieldControl>
-                  <FieldPrefix>
-                    <Search />
-                  </FieldPrefix>
-                  <Input placeholder="Click the icon — input gets focus" />
-                </FieldControl>
-              </FieldContent>
-            </div>
-
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mt-2">
-              Interactive — suffix is clickable
-            </p>
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg w-80">
-              <FieldContent size="base">
-                <PasswordDemo />
-              </FieldContent>
-            </div>
-          </div>
-          <Code>{`{/* Default — pointer-events-none, click passes through to input */}
-<FieldContent size="base">
+          <Code>{`<FieldContent>
+  <FieldLabel>Email address</FieldLabel>
   <FieldControl>
-    <FieldPrefix><Search /></FieldPrefix>
-    <Input placeholder="Search..." />
-  </FieldControl>
-</FieldContent>
-
-{/* Interactive — add pointer-events-auto to the suffix */}
-<FieldContent size="base">
-  <FieldControl>
-    <Input type="password" placeholder="Password" />
-    <FieldSuffix className="pointer-events-auto cursor-pointer hover:text-foreground">
-      <button onClick={toggleShow}>
-        {show ? <EyeOff /> : <Eye />}
-      </button>
-    </FieldSuffix>
+    <Input type="email" placeholder="you@example.com" />
   </FieldControl>
 </FieldContent>`}</Code>
         </SubSection>
 
-        <SubSection title="Props — FieldPrefix & FieldSuffix">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    'className',
-                    'string',
-                    '—',
-                    'Override styles — use pointer-events-auto to make the affix interactive',
-                  ],
-                  [
-                    'children',
-                    'ReactNode',
-                    '—',
-                    'Text, icon, or any element to render inside the slot',
-                  ],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <SubSection title="API Reference — FieldLabel">
+          <ApiTable
+            component="FieldLabel"
+            rows={[
+              [
+                'required',
+                'boolean',
+                'ctx.required',
+                'Override context required. Shows red asterisk when true.',
+              ],
+              ['htmlFor', 'string', 'ctx.id', 'Override context id for the htmlFor attribute.'],
+              ['as', 'React.ElementType', '"label"', 'Rendered HTML element.'],
+              ['className', 'string', '—', 'Additional CSS classes.'],
+            ]}
+          />
         </SubSection>
       </Section>
 
-      {/* FieldLabel */}
-      <Section
-        title="FieldLabel"
-        description="Standalone label component. When inside FieldContent, htmlFor and required are wired automatically from context. Polymorphic via the as prop."
-      >
-        <SubSection title="Basic">
-          <Preview>
-            <FieldLabel htmlFor="demo-1">Email address</FieldLabel>
-            <FieldLabel htmlFor="demo-2" required>
-              Password
-            </FieldLabel>
-          </Preview>
-        </SubSection>
-
-        <SubSection
-          title="Auto-wired inside FieldContent"
-          description="htmlFor and required come from FieldContent context — no manual props needed."
-        >
-          <Preview>
-            <FieldContent size="base" required>
-              <FieldLabel>Auto-linked label</FieldLabel>
-              <FieldControl>
-                <Input placeholder="Click label to focus" />
-              </FieldControl>
-            </FieldContent>
-          </Preview>
-        </SubSection>
-
-        <SubSection
-          title="Polymorphic — as prop"
-          description='Default is "label". Change when label semantics dont apply.'
-        >
-          <Preview>
-            <FieldLabel as="span">Rendered as span</FieldLabel>
-            <FieldLabel as="legend">Rendered as legend</FieldLabel>
-            <FieldLabel as="div">Rendered as div</FieldLabel>
-          </Preview>
-        </SubSection>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['as', 'React.ElementType', '"label"', 'Rendered HTML element'],
-                [
-                  'required',
-                  'boolean',
-                  'ctx.required',
-                  'Appends a red * indicator — auto-derived from FieldContent context',
-                ],
-                [
-                  'htmlFor',
-                  'string',
-                  'ctx.id',
-                  'Native for attribute — auto-derived from FieldContent context',
-                ],
-                ['className', 'string', '—', 'Additional CSS classes'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* FieldDescription */}
+      {/* ── FieldDescription ───────────────────────────────────────────────── */}
       <Section
         title="FieldDescription"
-        description="Hint text below the field. When inside FieldContent, its id is auto-set and Input wires aria-describedby automatically. Polymorphic via the as prop."
+        description="Muted hint text rendered below the label. Auto-linked to the Input via aria-describedby through FieldContent context."
       >
-        <SubSection title="Variants">
+        <SubSection title="Default">
           <Preview>
-            <FieldDescription variant="default">We'll never share your email.</FieldDescription>
-            <FieldDescription variant="error">This field is required.</FieldDescription>
+            <FieldContent>
+              <FieldLabel>Password</FieldLabel>
+              <FieldDescription>At least 8 characters with one uppercase letter.</FieldDescription>
+              <FieldControl>
+                <Input type="password" placeholder="••••••••" />
+              </FieldControl>
+            </FieldContent>
           </Preview>
+          <Code>{`<FieldContent>
+  <FieldLabel>Password</FieldLabel>
+  <FieldDescription>At least 8 characters with one uppercase letter.</FieldDescription>
+  <FieldControl>
+    <Input type="password" placeholder="••••••••" />
+  </FieldControl>
+</FieldContent>`}</Code>
         </SubSection>
 
-        <SubSection title="Polymorphic — as prop">
-          <Preview>
-            <FieldDescription as="span">Rendered as span</FieldDescription>
-            <FieldDescription as="div">Rendered as div</FieldDescription>
-          </Preview>
+        <SubSection title="API Reference — FieldDescription">
+          <ApiTable
+            component="FieldDescription"
+            rows={[
+              [
+                'variant',
+                '"default" | "error"',
+                '"default"',
+                'Color style. "default" is muted; "error" is destructive red.',
+              ],
+              ['as', 'React.ElementType', '"p"', 'Rendered HTML element.'],
+              ['className', 'string', '—', 'Additional CSS classes.'],
+            ]}
+          />
         </SubSection>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['as', 'React.ElementType', '"p"', 'Rendered HTML element'],
-                [
-                  'variant',
-                  '"default" | "error"',
-                  '"default"',
-                  'Text color — muted for default, red for error',
-                ],
-                ['className', 'string', '—', 'Additional CSS classes'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </Section>
 
-      {/* FieldError */}
+      {/* ── FieldError ─────────────────────────────────────────────────────── */}
       <Section
         title="FieldError"
-        description="Error message below the field. Has role='alert' so screen readers announce it immediately. Reads the error message from FieldContent context — just drop <FieldError /> inside FieldContent and pass error prop to FieldContent. Only renders when error exists."
+        description="Error message with role=alert. Reads from FieldContent context (error prop) or from children. Renders nothing when neither source has a message."
+      >
+        <SubSection title="Via Context">
+          <Preview>
+            <FieldContent required error="Enter a valid email address.">
+              <FieldLabel>Email</FieldLabel>
+              <FieldControl>
+                <Input type="email" defaultValue="not-an-email" />
+              </FieldControl>
+              <FieldError />
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent required error="Enter a valid email address.">
+  <FieldLabel>Email</FieldLabel>
+  <FieldControl>
+    <Input type="email" />
+  </FieldControl>
+  <FieldError />
+</FieldContent>`}</Code>
+        </SubSection>
+
+        <SubSection
+          title="Inline Children"
+          description="Pass a message directly as children to override the context error."
+        >
+          <Preview>
+            <FieldContent required error="Required">
+              <FieldLabel>Password</FieldLabel>
+              <FieldControl>
+                <Input type="password" defaultValue="short" />
+              </FieldControl>
+              <FieldError>Must be at least 8 characters with one uppercase letter.</FieldError>
+            </FieldContent>
+          </Preview>
+          <Code>{`<FieldContent required error="Required">
+  <FieldLabel>Password</FieldLabel>
+  <FieldControl>
+    <Input type="password" />
+  </FieldControl>
+  <FieldError>Must be at least 8 characters with one uppercase letter.</FieldError>
+</FieldContent>`}</Code>
+        </SubSection>
+
+        <SubSection title="API Reference — FieldError">
+          <ApiTable
+            component="FieldError"
+            rows={[
+              [
+                'children',
+                'ReactNode',
+                '—',
+                'Custom message. Takes precedence over the context error message.',
+              ],
+              ['as', 'React.ElementType', '"p"', 'Rendered HTML element.'],
+              ['className', 'string', '—', 'Additional CSS classes.'],
+            ]}
+          />
+        </SubSection>
+      </Section>
+
+      {/* ── FieldPrefix & FieldSuffix ──────────────────────────────────────── */}
+      <Section
+        title="FieldPrefix &amp; FieldSuffix"
+        description="Absolute-positioned affixes inside FieldControl. FieldControl detects them and tells Input to add matching left/right padding automatically."
       >
         <SubSection
-          title="Via context (recommended)"
-          description="Pass error to FieldContent — FieldError renders it automatically."
+          title="Text Affix"
+          description="Short strings like currency symbols, URL schemes, or unit labels."
         >
           <Preview>
-            <FieldContent size="base" required error="Enter a valid email address.">
-              <FieldLabel>Email</FieldLabel>
+            <FieldContent>
+              <FieldLabel>Website</FieldLabel>
               <FieldControl>
-                <Input defaultValue="wrong@" />
+                <FieldPrefix>https://</FieldPrefix>
+                <Input placeholder="yoursite.com" />
               </FieldControl>
-              <FieldError />
+            </FieldContent>
+            <FieldContent>
+              <FieldLabel>Interest rate</FieldLabel>
+              <FieldControl>
+                <Input type="number" placeholder="0" />
+                <FieldSuffix>%</FieldSuffix>
+              </FieldControl>
             </FieldContent>
           </Preview>
+          <Code>{`<FieldControl>
+  <FieldPrefix>https://</FieldPrefix>
+  <Input placeholder="yoursite.com" />
+</FieldControl>
+
+<FieldControl>
+  <Input type="number" placeholder="0" />
+  <FieldSuffix>%</FieldSuffix>
+</FieldControl>`}</Code>
         </SubSection>
 
         <SubSection
-          title="Custom message"
-          description="Pass children to FieldError to override the context error message."
+          title="Icon Affix"
+          description="Lucide icons or any ReactNode. Sized and centered automatically."
         >
           <Preview>
-            <FieldContent size="base" required error="Context error (not shown)">
-              <FieldLabel>Amount</FieldLabel>
+            <FieldContent>
+              <FieldLabel>Email</FieldLabel>
               <FieldControl>
-                <FieldPrefix>Rp</FieldPrefix>
-                <Input defaultValue="-1" />
+                <FieldPrefix>
+                  <Mail />
+                </FieldPrefix>
+                <Input type="email" placeholder="you@example.com" />
               </FieldControl>
-              <FieldError>Amount must be greater than zero.</FieldError>
             </FieldContent>
           </Preview>
+          <Code>{`<FieldControl>
+  <FieldPrefix><Mail /></FieldPrefix>
+  <Input type="email" placeholder="you@example.com" />
+</FieldControl>`}</Code>
         </SubSection>
 
         <SubSection
-          title="Null render — no error"
-          description="When no error exists, FieldError renders nothing."
+          title="Interactive Suffix"
+          description="Add pointer-events-auto for clickable suffixes like password toggle."
         >
-          <Preview>
-            <FieldContent size="base">
-              <FieldLabel>Email</FieldLabel>
-              <FieldControl>
-                <Input placeholder="No error — FieldError renders nothing" />
-              </FieldControl>
-              <FieldError />
-            </FieldContent>
-          </Preview>
-        </SubSection>
-
-        <SubSection title="Props — FieldError">
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-50">
-                  {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
+          {(() => {
+            const [show, setShow] = useState(false)
+            return (
+              <Preview>
+                <FieldContent>
+                  <FieldLabel>Password</FieldLabel>
+                  <FieldControl>
+                    <Input type={show ? 'text' : 'password'} placeholder="••••••••" />
+                    <FieldSuffix
+                      className="pointer-events-auto cursor-pointer hover:text-foreground transition-colors"
+                      onClick={() => setShow((s) => !s)}
+                      aria-label={show ? 'Hide password' : 'Show password'}
                     >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['as', 'React.ElementType', '"p"', 'Rendered HTML element'],
-                  [
-                    'children',
-                    'ReactNode',
-                    'ctx.error',
-                    'Error message — overrides the context error when provided',
-                  ],
-                  ['className', 'string', '—', 'Additional CSS classes'],
-                ].map(([prop, type, def, desc]) => (
-                  <tr key={prop} className="even:bg-gray-50">
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                      {prop}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                      {type}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
-                      {def}
-                    </td>
-                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">
-                      {desc}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      {show ? <EyeOff /> : <Eye />}
+                    </FieldSuffix>
+                  </FieldControl>
+                </FieldContent>
+              </Preview>
+            )
+          })()}
+          <Code>{`const [show, setShow] = useState(false)
+
+<FieldControl>
+  <Input type={show ? 'text' : 'password'} />
+  <FieldSuffix
+    className="pointer-events-auto cursor-pointer hover:text-foreground transition-colors"
+    onClick={() => setShow(s => !s)}
+    aria-label={show ? 'Hide password' : 'Show password'}
+  >
+    {show ? <EyeOff /> : <Eye />}
+  </FieldSuffix>
+</FieldControl>`}</Code>
+        </SubSection>
+
+        <SubSection title="API Reference — FieldPrefix &amp; FieldSuffix">
+          <ApiTable
+            component="FieldPrefix / FieldSuffix"
+            rows={[
+              [
+                'className',
+                'string',
+                '—',
+                'Additional CSS classes. Add pointer-events-auto to make interactive.',
+              ],
+              ['children', 'ReactNode', '—', 'Text string or icon component.'],
+            ]}
+          />
         </SubSection>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Field / FieldContent when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      You need an accessible form field with a label linked to its input via{' '}
-                      <code className="font-mono bg-gray-100 px-1 rounded">htmlFor</code> /{' '}
-                      <code className="font-mono bg-gray-100 px-1 rounded">id</code> automatically.
-                    </li>
-                    <li>
-                      You want inline validation — pass an{' '}
-                      <code className="font-mono bg-gray-100 px-1 rounded">error</code> string and{' '}
-                      <code className="font-mono bg-gray-100 px-1 rounded">FieldError</code> renders
-                      itself with{' '}
-                      <code className="font-mono bg-gray-100 px-1 rounded">role="alert"</code>.
-                    </li>
-                    <li>
-                      You need prefix/suffix icons or text inside an input (currency, unit, search
-                      icon, password toggle).
-                    </li>
-                    <li>
-                      You are building a multi-column form layout and need consistent spacing via{' '}
-                      <code className="font-mono bg-gray-100 px-1 rounded">FieldContainer</code> +{' '}
-                      <code className="font-mono bg-gray-100 px-1 rounded">FieldGroup</code>.
-                    </li>
-                    <li>
-                      You need a horizontal settings-row layout (label left, control right) — use{' '}
-                      <code className="font-mono bg-gray-100 px-1 rounded">
-                        orientation="horizontal"
-                      </code>
-                      .
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use{' '}
-                      <strong>
-                        a bare{' '}
-                        <code className="font-mono bg-gray-100 px-1 rounded">&lt;label&gt;</code> +{' '}
-                        <code className="font-mono bg-gray-100 px-1 rounded">&lt;input&gt;</code>
-                      </strong>{' '}
-                      when you need a completely custom one-off element outside the design system.
-                    </li>
-                    <li>
-                      Use{' '}
-                      <strong>
-                        shadcn/ui{' '}
-                        <code className="font-mono bg-gray-100 px-1 rounded">FormField</code>
-                      </strong>{' '}
-                      (react-hook-form integration) when you are already wiring up an RHF{' '}
-                      <code className="font-mono bg-gray-100 px-1 rounded">useForm</code> and want
-                      automatic controller binding — FieldContent is schema-agnostic and does not
-                      connect to RHF internally.
-                    </li>
-                    <li>
-                      Use{' '}
-                      <strong>
-                        a standalone{' '}
-                        <code className="font-mono bg-gray-100 px-1 rounded">FieldControl</code>{' '}
-                        only
-                      </strong>{' '}
-                      (no FieldContent wrapper) when you need a bare input row without a label,
-                      description, or error — e.g. an inline search bar in a toolbar.
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      {/* ── FieldContainer ─────────────────────────────────────────────────── */}
+      <Section
+        title="FieldContainer"
+        description="Outer flex-col wrapper that stacks fields with consistent vertical gap."
+      >
+        <SubSection
+          title="Gap Variants"
+          description="Use gap to control vertical spacing between children."
+        >
+          <div className="flex gap-6 mb-3 flex-wrap">
+            {[
+              { gap: 'sm', label: 'gap="sm" — gap-3' },
+              { gap: 'base', label: 'gap="base" — gap-4 (default)' },
+              { gap: 'lg', label: 'gap="lg" — gap-6' },
+            ].map(({ gap, label }) => (
+              <div key={gap} className="flex flex-col gap-2">
+                <span className="text-xs text-gray-400">{label}</span>
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg w-64">
+                  <FieldContainer gap={gap}>
+                    <FieldContent>
+                      <FieldLabel>First Name</FieldLabel>
+                      <FieldControl>
+                        <Input placeholder="John" />
+                      </FieldControl>
+                    </FieldContent>
+                    <FieldContent>
+                      <FieldLabel>Last Name</FieldLabel>
+                      <FieldControl>
+                        <Input placeholder="Doe" />
+                      </FieldControl>
+                    </FieldContent>
+                  </FieldContainer>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Code>{`<FieldContainer gap="sm">...</FieldContainer>
+<FieldContainer>...</FieldContainer>
+<FieldContainer gap="lg">...</FieldContainer>`}</Code>
+        </SubSection>
+
+        <SubSection title="API Reference — FieldContainer">
+          <ApiTable
+            component="FieldContainer"
+            rows={[
+              [
+                'gap',
+                '"sm" | "base" | "md" | "lg"',
+                '"base"',
+                'Vertical gap between children. sm=gap-3, base=gap-4, md=gap-5, lg=gap-6.',
+              ],
+              ['className', 'string', '—', 'Additional CSS classes.'],
+            ]}
+          />
+        </SubSection>
       </Section>
 
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always wrap inputs in{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">FieldContent</code> so
-                  label, description, and error are automatically linked via accessible IDs. Never
-                  hand-wire <code className="font-mono bg-green-100 px-1 rounded">htmlFor</code>,{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">aria-describedby</code>, or{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">aria-invalid</code> manually
-                  when using this system.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Pass <code className="font-mono bg-green-100 px-1 rounded">size</code> once on{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">FieldContent</code> and let
-                  context distribute it to{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">Input</code>,{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">FieldPrefix</code>, and{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">FieldSuffix</code>{' '}
-                  automatically. Avoid repeating the same size prop on every child.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use <code className="font-mono bg-green-100 px-1 rounded">FieldControl</code>{' '}
-                  whenever you add a{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">FieldPrefix</code> or{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">FieldSuffix</code>. The
-                  control wrapper handles absolute positioning and automatically adds the correct
-                  left/right padding to the input so text is never obscured by the affix.
-                </p>
-              </div>
+      {/* ── FieldGroup ─────────────────────────────────────────────────────── */}
+      <Section
+        title="FieldGroup"
+        description="CSS grid for multi-column field layouts. Accepts a fixed number or a responsive breakpoint object for cols."
+      >
+        <SubSection title="Fixed Columns">
+          <div className="flex flex-col gap-2 mb-3">
+            <span className="text-xs text-gray-400">cols={2} — first name and last name</span>
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg max-w-lg">
+              <FieldGroup cols={2}>
+                <FieldContent required>
+                  <FieldLabel>First Name</FieldLabel>
+                  <FieldControl>
+                    <Input placeholder="John" />
+                  </FieldControl>
+                </FieldContent>
+                <FieldContent required>
+                  <FieldLabel>Last Name</FieldLabel>
+                  <FieldControl>
+                    <Input placeholder="Doe" />
+                  </FieldControl>
+                </FieldContent>
+              </FieldGroup>
             </div>
           </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't render <code className="font-mono bg-red-100 px-1 rounded">FieldError</code>{' '}
-                  outside of a{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">FieldContent</code> wrapper
-                  expecting it to show anything — it reads{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">error</code> from context and
-                  will silently render nothing when no context is present.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't place <code className="font-mono bg-red-100 px-1 rounded">FieldPrefix</code>{' '}
-                  or <code className="font-mono bg-red-100 px-1 rounded">FieldSuffix</code> directly
-                  inside <code className="font-mono bg-red-100 px-1 rounded">FieldContent</code>{' '}
-                  without a <code className="font-mono bg-red-100 px-1 rounded">FieldControl</code>{' '}
-                  wrapper — the affixes use absolute positioning relative to{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">FieldControl</code>, so they
-                  will misplace without it.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">
-                    orientation="horizontal"
-                  </code>{' '}
-                  with a full-width text input — the horizontal layout is designed for compact
-                  controls like <code className="font-mono bg-red-100 px-1 rounded">Switch</code> or{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">Checkbox</code> in the right
-                  column. A wide input will overflow the grid and break the settings-row pattern.
-                </p>
-              </div>
+          <Code>{`<FieldGroup cols={2}>
+  <FieldContent required>
+    <FieldLabel>First Name</FieldLabel>
+    <FieldControl><Input placeholder="John" /></FieldControl>
+  </FieldContent>
+  <FieldContent required>
+    <FieldLabel>Last Name</FieldLabel>
+    <FieldControl><Input placeholder="Doe" /></FieldControl>
+  </FieldContent>
+</FieldGroup>`}</Code>
+        </SubSection>
+
+        <SubSection
+          title="Responsive Columns"
+          description="Pass a breakpoint object to stack on small screens and expand on larger ones."
+        >
+          <div className="flex flex-col gap-2 mb-3">
+            <span className="text-xs text-gray-400">
+              cols={'{ xs: 1, md: 3 }'} — stacks on mobile, 3 columns on md+
+            </span>
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg max-w-xl">
+              <FieldGroup cols={{ xs: 1, md: 3 }}>
+                <FieldContent>
+                  <FieldLabel>City</FieldLabel>
+                  <FieldControl>
+                    <Input placeholder="Jakarta" />
+                  </FieldControl>
+                </FieldContent>
+                <FieldContent>
+                  <FieldLabel>Province</FieldLabel>
+                  <FieldControl>
+                    <Input placeholder="DKI Jakarta" />
+                  </FieldControl>
+                </FieldContent>
+                <FieldContent>
+                  <FieldLabel>Postal Code</FieldLabel>
+                  <FieldControl>
+                    <Input placeholder="12345" />
+                  </FieldControl>
+                </FieldContent>
+              </FieldGroup>
             </div>
           </div>
+          <Code>{`<FieldGroup cols={{ xs: 1, md: 3 }}>
+  <FieldContent>
+    <FieldLabel>City</FieldLabel>
+    <FieldControl><Input placeholder="Jakarta" /></FieldControl>
+  </FieldContent>
+  ...
+</FieldGroup>`}</Code>
+        </SubSection>
+
+        <SubSection
+          title="With FieldTitle"
+          description="FieldTitle spans all columns and acts as a section label inside the grid."
+        >
+          <div className="flex flex-col gap-2 mb-3">
+            <span className="text-xs text-gray-400">
+              FieldTitle breaks to a new row and spans all columns
+            </span>
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg max-w-lg">
+              <FieldGroup cols={2}>
+                <FieldTitle>Personal Info</FieldTitle>
+                <FieldContent required>
+                  <FieldLabel>First Name</FieldLabel>
+                  <FieldControl>
+                    <Input placeholder="John" />
+                  </FieldControl>
+                </FieldContent>
+                <FieldContent required>
+                  <FieldLabel>Last Name</FieldLabel>
+                  <FieldControl>
+                    <Input placeholder="Doe" />
+                  </FieldControl>
+                </FieldContent>
+                <FieldTitle>Contact</FieldTitle>
+                <FieldContent>
+                  <FieldLabel>Email</FieldLabel>
+                  <FieldControl>
+                    <Input type="email" placeholder="john@example.com" />
+                  </FieldControl>
+                </FieldContent>
+                <FieldContent>
+                  <FieldLabel>Phone</FieldLabel>
+                  <FieldControl>
+                    <Input type="tel" placeholder="+62 812 3456 7890" />
+                  </FieldControl>
+                </FieldContent>
+              </FieldGroup>
+            </div>
+          </div>
+          <Code>{`<FieldGroup cols={2}>
+  <FieldTitle>Personal Info</FieldTitle>
+  <FieldContent required>...</FieldContent>
+  <FieldTitle>Contact</FieldTitle>
+  <FieldContent>...</FieldContent>
+</FieldGroup>`}</Code>
+        </SubSection>
+
+        <SubSection title="API Reference — FieldGroup">
+          <ApiTable
+            component="FieldGroup"
+            rows={[
+              [
+                'cols',
+                'number | { xs?, sm?, md?, lg?, xl?, xxl? }',
+                '1',
+                'Column count. Pass a number for fixed cols or a breakpoint object for responsive.',
+              ],
+              [
+                'gap',
+                '"sm" | "base" | "lg"',
+                '"base"',
+                'Gap between grid cells. sm=gap-3, base=gap-4, lg=gap-6.',
+              ],
+              ['className', 'string', '—', 'Additional CSS classes.'],
+            ]}
+          />
+        </SubSection>
+      </Section>
+
+      {/* ── FieldTitle ─────────────────────────────────────────────────────── */}
+      <Section
+        title="FieldTitle"
+        description="Small uppercase section heading designed for use inside FieldGroup. Spans all columns via col-span-full."
+      >
+        <SubSection title="Inside FieldGroup">
+          <Preview>
+            <FieldTitle>Personal Info</FieldTitle>
+          </Preview>
+          <Code>{`<FieldGroup cols={2}>
+  <FieldTitle>Personal Info</FieldTitle>
+  {/* fields ... */}
+</FieldGroup>`}</Code>
+        </SubSection>
+
+        <SubSection title="API Reference — FieldTitle">
+          <ApiTable
+            component="FieldTitle"
+            rows={[
+              ['className', 'string', '—', 'Additional CSS classes.'],
+              ['children', 'ReactNode', '—', 'Section label text.'],
+            ]}
+          />
+        </SubSection>
+      </Section>
+
+      {/* ── FieldSeparator ─────────────────────────────────────────────────── */}
+      <Section
+        title="FieldSeparator"
+        description="A decorative horizontal rule that divides sections inside FieldContainer."
+      >
+        <SubSection title="In Form">
+          <div className="flex flex-col gap-2 mb-3">
+            <span className="text-xs text-gray-400">separator dividing two field groups</span>
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg w-80">
+              <FieldContainer>
+                <FieldContent>
+                  <FieldLabel>First Name</FieldLabel>
+                  <FieldControl>
+                    <Input placeholder="John" />
+                  </FieldControl>
+                </FieldContent>
+                <FieldContent>
+                  <FieldLabel>Last Name</FieldLabel>
+                  <FieldControl>
+                    <Input placeholder="Doe" />
+                  </FieldControl>
+                </FieldContent>
+                <FieldSeparator />
+                <FieldContent>
+                  <FieldLabel>Email</FieldLabel>
+                  <FieldControl>
+                    <Input type="email" placeholder="john@example.com" />
+                  </FieldControl>
+                </FieldContent>
+              </FieldContainer>
+            </div>
+          </div>
+          <Code>{`<FieldContainer>
+  <FieldContent>...</FieldContent>
+  <FieldSeparator />
+  <FieldContent>...</FieldContent>
+</FieldContainer>`}</Code>
+        </SubSection>
+
+        <SubSection title="API Reference — FieldSeparator">
+          <ApiTable
+            component="FieldSeparator"
+            rows={[['className', 'string', '—', 'Additional CSS classes on the <hr> element.']]}
+          />
+        </SubSection>
+      </Section>
+
+      {/* ── Best Practices ─────────────────────────────────────────────────── */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use FieldContent as the root wrapper for every labelled form field',
+                  body: 'FieldContent manages id, aria-describedby, aria-errormessage, required, and disabled context for the entire field. You get correct accessibility wiring with zero manual configuration.',
+                },
+                {
+                  title: 'Use FieldContainer + FieldGroup for multi-column form layouts',
+                  body: 'FieldContainer owns vertical spacing between rows. FieldGroup owns horizontal column layout inside a row. Composing them gives you consistent rhythm across the entire form without custom CSS.',
+                },
+                {
+                  title: 'Use orientation="horizontal" for settings-style rows',
+                  body: 'Horizontal layout with label+description on the left and a compact control (switch, checkbox) on the right is the standard pattern for settings pages. It keeps the layout scannable and the control easily reachable.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title:
+                    "Don't use FieldContent for inputs that need no label, description, or error",
+                  body: 'For bare search bars or filter inputs that only need a prefix icon, FieldControl standalone is lighter. FieldContent adds context overhead that is only useful when you have label/description/error wiring.',
+                },
+                {
+                  title: "Don't nest FieldContainer inside FieldContainer",
+                  body: 'Nesting containers doubles the gap and creates inconsistent spacing. Use a single FieldContainer and add FieldSeparator or FieldTitle between sections instead.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title:
+                    'Never add aria-describedby, aria-errormessage, or htmlFor manually inside FieldContent',
+                  body: 'FieldContent generates all a11y ids and distributes them via context. Adding them manually duplicates or conflicts with the automatic wiring. Trust the context.',
+                },
+                {
+                  title:
+                    'Always include <FieldError /> in the field tree when validation is possible',
+                  body: 'Even when there is no error yet, include <FieldError /> so that when error is set, the role="alert" announcement fires immediately when the component mounts with content.',
+                },
+                {
+                  title: 'Use aria-label on standalone inputs outside FieldContent',
+                  body: 'When using FieldControl without FieldContent and FieldLabel, the input has no accessible name. Add aria-label directly to the Input.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Write specific, actionable error messages',
+                  body: '"Enter a valid email address" tells users exactly what to fix. "Invalid input" does not. Always write error messages from the user\'s perspective: what happened and what they should do next.',
+                },
+                {
+                  title: 'Use gap="base" for most forms, gap="lg" between sections',
+                  body: 'gap="base" (gap-4) is the standard for individual field rows. When nesting a FieldGroup or FieldSeparator inside FieldContainer, use gap="lg" to create a clear visual break between sections.',
+                },
+                {
+                  title: 'Use responsive cols for FieldGroup to ensure mobile readability',
+                  body: 'Three columns side by side on mobile is too cramped. Pass cols={{ xs: 1, md: 2 }} or cols={{ xs: 1, md: 3 }} to stack fields on small screens and expand the grid at wider breakpoints.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </Section>
     </div>

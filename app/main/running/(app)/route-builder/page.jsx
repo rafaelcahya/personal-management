@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import dynamic from 'next/dynamic'
-import { Map, Trash2, AlertCircle, Eye, Pencil, Check, X as XIcon } from 'lucide-react'
+import { Map, Trash2, AlertCircle, Eye, Pencil, Check, X as XIcon, Download } from 'lucide-react'
 import { toast } from 'sonner'
 import polyline from '@mapbox/polyline'
 import Card, {
@@ -26,7 +26,16 @@ import {
   ModalBody,
 } from '@/components/base/Modal/Modal'
 import { totalDistance } from '@/lib/running/geo'
-import { fetchSavedRoutes, saveRoute, deleteSavedRoute, updateSavedRoute } from '@/lib/api/running'
+import {
+  fetchSavedRoutes,
+  saveRoute,
+  deleteSavedRoute,
+  updateSavedRoute,
+  fetchActivities,
+  exportRouteGpx,
+} from '@/lib/api/running'
+import { fmtPace } from '@/app/main/running/(app)/dashboard/utils/format'
+import PageHeader from '@/app/main/components/PageHeader'
 
 const RouteBuilderMap = dynamic(() => import('./components/RouteBuilderMap'), {
   ssr: false,
@@ -55,6 +64,25 @@ function SavedRouteRow({ route, onDelete, onView, onRename }) {
   const [editing, setEditing] = useState(false)
   const [editName, setEditName] = useState(route.name)
   const [saving, setSaving] = useState(false)
+  const [exporting, setExporting] = useState(false)
+
+  async function handleExport() {
+    setExporting(true)
+    try {
+      const blob = await exportRouteGpx(route.id)
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${route.name}.gpx`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast.success('GPX downloaded')
+    } catch (err) {
+      toast.error(err.message || 'Export failed')
+    } finally {
+      setExporting(false)
+    }
+  }
 
   async function handleDelete() {
     setDeleting(true)
@@ -158,6 +186,17 @@ function SavedRouteRow({ route, onDelete, onView, onRename }) {
               <Eye className="size-4" />
             </Button>
             <Button
+              id={`exportGpxBtn_${route.id}_routeBuilderPage`}
+              variant="ghost"
+              size="xs"
+              onClick={handleExport}
+              disabled={exporting}
+              className="text-slate-400 hover:text-violet-600 hover:bg-violet-50"
+              aria-label={`Export GPX for ${route.name}`}
+            >
+              <Download className="size-4" />
+            </Button>
+            <Button
               id={`renameRouteBtn_${route.id}_routeBuilderPage`}
               variant="ghost"
               size="xs"
@@ -189,6 +228,8 @@ export default function RouteBuilderPage() {
   const [waypoints, setWaypoints] = useState([])
   const [routeName, setRouteName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [defaultPaceMmss, setDefaultPaceMmss] = useState(null)
+  const [estimatedSec, setEstimatedSec] = useState(null)
 
   const [routes, setRoutes] = useState(null)
   const [routesLoading, setRoutesLoading] = useState(true)
@@ -196,6 +237,19 @@ export default function RouteBuilderPage() {
   const [viewingRoute, setViewingRoute] = useState(null)
 
   const distanceM = useMemo(() => Math.round(totalDistance(waypoints)), [waypoints])
+
+  useEffect(() => {
+    fetchActivities({ limit: 10 })
+      .then(({ data }) => {
+        const valid = (data ?? []).filter((a) => a.distance_m > 0 && a.moving_time_sec > 0)
+        if (!valid.length) return
+        const totalDist = valid.reduce((s, a) => s + a.distance_m, 0)
+        const totalTime = valid.reduce((s, a) => s + a.moving_time_sec, 0)
+        const avgPaceSec = Math.round(totalTime / (totalDist / 1000))
+        setDefaultPaceMmss(fmtPace(avgPaceSec))
+      })
+      .catch(() => {})
+  }, [])
 
   const loadRoutes = useCallback(async () => {
     setRoutesLoading(true)
@@ -226,7 +280,8 @@ export default function RouteBuilderPage() {
     if (waypoints.length < 2 || !routeName.trim()) return
     setSaving(true)
     try {
-      const encoded = polyline.encode(waypoints)
+      // Polyline encoding expects [lat, lng]; GeoJSON/MapLibre uses [lng, lat] — swap required
+      const encoded = polyline.encode(waypoints.map(([lng, lat]) => [lat, lng]))
       const saved = await saveRoute({
         name: routeName.trim(),
         waypoints,
@@ -266,7 +321,15 @@ export default function RouteBuilderPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <main id="routeBuilderPage" className="space-y-6">
+      <PageHeader
+        title="Route Builder"
+        description="Draw custom routes by clicking the map, then save them for future runs"
+        breadcrumbs={[
+          { label: 'Running', href: '/main/running/dashboard' },
+          { label: 'Route Builder' },
+        ]}
+      />
       {/* Builder */}
       <Card as="section" aria-label="Route Builder" id="routeBuilderCard_routeBuilderPage">
         <CardHeader>
@@ -278,7 +341,20 @@ export default function RouteBuilderPage() {
         </CardHeader>
         <CardContent className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 min-w-0">
-            <RouteBuilderMap waypoints={waypoints} onChange={setWaypoints} />
+            <RouteBuilderMap
+              waypoints={waypoints}
+              onChange={setWaypoints}
+              onUndo={handleUndo}
+              onClear={handleClear}
+              onSave={handleSave}
+              distanceM={distanceM}
+              waypointCount={waypoints.length}
+              estimatedSec={estimatedSec}
+              saving={saving}
+              canSave={waypoints.length >= 2 && routeName.trim().length > 0}
+              routeName={routeName}
+              onRouteNameChange={setRouteName}
+            />
           </div>
           <div className="lg:w-64 shrink-0">
             <RouteStats
@@ -290,6 +366,8 @@ export default function RouteBuilderPage() {
               onUndo={handleUndo}
               onClear={handleClear}
               saving={saving}
+              defaultPaceMmss={defaultPaceMmss}
+              onEstimatedSecChange={setEstimatedSec}
             />
           </div>
         </CardContent>
@@ -324,19 +402,25 @@ export default function RouteBuilderPage() {
             >
               <AlertCircle className="size-5 text-red-400" />
               <p className="text-sm text-slate-500">{routesError}</p>
-              <Button variant="ghost" size="base" onClick={loadRoutes} className="text-violet-600">
+              <Button variant="ghost" onClick={loadRoutes} className="text-violet-600">
                 Retry
               </Button>
             </div>
           )}
 
           {!routesLoading && !routesError && routes?.length === 0 && (
-            <p
+            <div
               id="savedRoutesEmpty_routeBuilderPage"
-              className="text-sm text-slate-400 text-center py-6"
+              className="flex flex-col items-center gap-2 py-6 text-center"
             >
-              No saved routes yet. Build and save your first route above.
-            </p>
+              <p className="text-sm text-slate-400">No saved routes yet — build one above!</p>
+              <a
+                href="#routeBuilderCard_routeBuilderPage"
+                className="text-sm font-medium text-violet-600 hover:text-violet-700 transition-colors"
+              >
+                Start Building
+              </a>
+            </div>
           )}
 
           {!routesLoading && !routesError && routes && routes.length > 0 && (
@@ -383,6 +467,6 @@ export default function RouteBuilderPage() {
           )}
         </ModalContent>
       </Modal>
-    </div>
+    </main>
   )
 }

@@ -1,5 +1,12 @@
 'use client'
 
+import {
+  FieldContent,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+  FieldContainer,
+} from '@/components/base/Field/Field'
 import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,10 +22,6 @@ import {
   ModalIcon,
   ModalTitle,
 } from '@/components/base/Modal/Modal.jsx'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
-import FieldDescription from '@/components/base/Field/FieldDescription'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
@@ -178,12 +181,8 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
 
   return (
     <Modal open={!!trade} onOpenChange={onClose}>
-      <ModalContent
-        className="sm:max-w-xl flex flex-col max-h-[60vh]"
-        variant="bordered"
-        borderColor="border-slate-200"
-      >
-        <ModalHeader layout="beside" padding={{ x: 4 }}>
+      <ModalContent className="max-h-[85vh]" variant="bordered" borderColor="border-slate-200">
+        <ModalHeader layout="beside">
           <ModalIcon icon={Pencil} />
           <ModalHeaderContent>
             <ModalTitle>Update Trade</ModalTitle>
@@ -200,105 +199,94 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
           </div>
         ) : (
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-            <ModalBody className="space-y-4 pr-2" padding={{ x: 4 }}>
-              {/* Trade Date */}
-              <Controller
-                control={control}
-                name="trade_date"
-                render={({ field, fieldState }) => (
-                  <FieldContent error={fieldState.error?.message}>
-                    <FieldLabel className="font-medium">Trade Date</FieldLabel>
-                    <DatePicker value={field.value} onChange={field.onChange} />
-                    <FieldError className="font-medium" />
-                  </FieldContent>
-                )}
-              />
-
-              {/* Ticker */}
-              <Controller
-                control={control}
-                name="ticker"
-                render={({ field, fieldState }) => (
-                  <FieldContent error={fieldState.error?.message}>
-                    <FieldLabel className="font-medium">Ticker</FieldLabel>
-                    <Input
-                      {...field}
-                      placeholder="e.g., BBCA, GOTO"
-                      className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
-                        fieldState.error ? 'border-rose-500' : ''
-                      }`}
-                    />
-                    <FieldError className="font-medium" />
-                  </FieldContent>
-                )}
-              />
-
-              {/* Margin & Proceeds Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <CurrencyField
-                  control={control}
-                  name="margin"
-                  label="Margin (Capital)"
-                  placeholder="e.g., 1000000"
-                />
-
-                <CurrencyField
-                  control={control}
-                  name="proceeds"
-                  label="Proceeds (Return)"
-                  placeholder="e.g., 1200000"
-                />
-              </div>
-
-              {/* Auto-calculated fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ModalBody>
+              <FieldContainer>
+                {/* Trade Date */}
                 <Controller
                   control={control}
-                  name="realized_gain"
-                  render={({ field }) => (
-                    <FieldContent>
-                      <FieldLabel className="font-medium">Realized Gain/Loss</FieldLabel>
+                  name="trade_date"
+                  render={({ field, fieldState }) => (
+                    <FieldContent error={fieldState.error?.message}>
+                      <FieldLabel className="font-medium">Trade Date</FieldLabel>
+                      <DatePicker value={field.value} onChange={field.onChange} />
+                      <FieldError className="font-medium" />
+                    </FieldContent>
+                  )}
+                />
+
+                {/* Ticker */}
+                <Controller
+                  control={control}
+                  name="ticker"
+                  render={({ field, fieldState }) => (
+                    <FieldContent error={fieldState.error?.message}>
+                      <FieldLabel className="font-medium">Ticker</FieldLabel>
                       <Input
-                        value={formatRupiah(field.value)}
-                        disabled
-                        className="font-medium bg-slate-50"
+                        {...field}
+                        placeholder="e.g., BBCA, GOTO"
+                        className={`uppercase text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${
+                          fieldState.error ? 'border-rose-500' : ''
+                        }`}
                       />
-                      <FieldDescription className="text-xs text-slate-400">
-                        Auto-calculated 🧮
-                      </FieldDescription>
+                      <FieldError className="font-medium" />
                     </FieldContent>
                   )}
                 />
 
-                <Controller
-                  control={control}
-                  name="return_percent"
-                  render={({ field }) => (
-                    <FieldContent>
-                      <FieldLabel className="font-medium">Return %</FieldLabel>
-                      <Input value={field.value} disabled className="font-medium bg-slate-50" />
-                      <FieldDescription className="text-xs text-slate-400">
-                        Auto-calculated 📊
-                      </FieldDescription>
-                    </FieldContent>
-                  )}
-                />
-              </div>
+                {/* Margin & Proceeds Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <CurrencyField
+                    control={control}
+                    name="margin"
+                    label="Margin (Capital)"
+                    placeholder="e.g., 1000000"
+                  />
 
-              {/* Dynamic Select Fields */}
-              {SELECT_CONFIG.slice(0, 1).map(({ name, label, apiKey, displayField }) => (
-                <DynamicSelectField
-                  key={name}
-                  control={control}
-                  name={name}
-                  label={label}
-                  options={options[apiKey]}
-                  loading={false}
-                  displayField={displayField}
-                />
-              ))}
-              <div className="grid grid-cols-2 gap-4">
-                {SELECT_CONFIG.slice(1, 3).map(({ name, label, apiKey, displayField }) => (
+                  <CurrencyField
+                    control={control}
+                    name="proceeds"
+                    label="Proceeds (Return)"
+                    placeholder="e.g., 1200000"
+                  />
+                </div>
+
+                {/* Auto-calculated fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Controller
+                    control={control}
+                    name="realized_gain"
+                    render={({ field }) => (
+                      <FieldContent>
+                        <FieldLabel className="font-medium">Realized Gain/Loss</FieldLabel>
+                        <Input
+                          value={formatRupiah(field.value)}
+                          disabled
+                          className="font-medium bg-slate-50"
+                        />
+                        <FieldDescription className="text-xs text-slate-400">
+                          Auto-calculated 🧮
+                        </FieldDescription>
+                      </FieldContent>
+                    )}
+                  />
+
+                  <Controller
+                    control={control}
+                    name="return_percent"
+                    render={({ field }) => (
+                      <FieldContent>
+                        <FieldLabel className="font-medium">Return %</FieldLabel>
+                        <Input value={field.value} disabled className="font-medium bg-slate-50" />
+                        <FieldDescription className="text-xs text-slate-400">
+                          Auto-calculated 📊
+                        </FieldDescription>
+                      </FieldContent>
+                    )}
+                  />
+                </div>
+
+                {/* Dynamic Select Fields */}
+                {SELECT_CONFIG.slice(0, 1).map(({ name, label, apiKey, displayField }) => (
                   <DynamicSelectField
                     key={name}
                     control={control}
@@ -309,34 +297,47 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
                     displayField={displayField}
                   />
                 ))}
-              </div>
-              {SELECT_CONFIG.slice(3).map(({ name, label, apiKey, displayField }) => (
-                <DynamicSelectField
-                  key={name}
-                  control={control}
-                  name={name}
-                  label={label}
-                  options={options[apiKey]}
-                  loading={false}
-                  displayField={displayField}
-                />
-              ))}
-
-              {/* Notes */}
-              <Controller
-                control={control}
-                name="notes"
-                render={({ field }) => (
-                  <FieldContent>
-                    <FieldLabel className="font-medium">Notes (Optional)</FieldLabel>
-                    <Textarea
-                      {...field}
-                      placeholder="Trade insights, emotions, market conditions..."
-                      className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium min-h-[80px]"
+                <div className="grid grid-cols-2 gap-4">
+                  {SELECT_CONFIG.slice(1, 3).map(({ name, label, apiKey, displayField }) => (
+                    <DynamicSelectField
+                      key={name}
+                      control={control}
+                      name={name}
+                      label={label}
+                      options={options[apiKey]}
+                      loading={false}
+                      displayField={displayField}
                     />
-                  </FieldContent>
-                )}
-              />
+                  ))}
+                </div>
+                {SELECT_CONFIG.slice(3).map(({ name, label, apiKey, displayField }) => (
+                  <DynamicSelectField
+                    key={name}
+                    control={control}
+                    name={name}
+                    label={label}
+                    options={options[apiKey]}
+                    loading={false}
+                    displayField={displayField}
+                  />
+                ))}
+
+                {/* Notes */}
+                <Controller
+                  control={control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FieldContent>
+                      <FieldLabel className="font-medium">Notes (Optional)</FieldLabel>
+                      <Textarea
+                        {...field}
+                        placeholder="Trade insights, emotions, market conditions..."
+                        className="focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium min-h-[80px]"
+                      />
+                    </FieldContent>
+                  )}
+                />
+              </FieldContainer>
             </ModalBody>
 
             <ModalFooter className="shrink-0 pt-4">

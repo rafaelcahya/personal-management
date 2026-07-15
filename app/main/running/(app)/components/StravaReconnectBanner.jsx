@@ -23,7 +23,6 @@ export default function StravaReconnectBanner({ needsReconnect }) {
         </div>
         <Button
           id="stravaReconnectBtn"
-          size="base"
           onClick={redirectToStravaConnect}
           className="bg-amber-600 hover:bg-amber-700 text-white shrink-0 min-w-11 focus-visible:ring-2 focus-visible:ring-amber-300"
         >

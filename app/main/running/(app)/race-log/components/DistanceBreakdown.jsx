@@ -114,7 +114,7 @@ export default function DistanceBreakdown({
       <div className="grid grid-cols-2 gap-3 mb-3">
         {/* Official segment */}
         <Card className="bg-violet-50 border-violet-100/60 shadow-none">
-          <CardContent padding="none" className="flex flex-col gap-3 p-3">
+          <CardContent className="flex flex-col gap-3 p-3">
             <span className="text-[10px] font-semibold text-violet-500 uppercase tracking-wide">
               Official · {fmtDistance(officialDistM)} km
             </span>
@@ -136,7 +136,7 @@ export default function DistanceBreakdown({
 
         {/* Excess segment */}
         <Card className="bg-amber-50 border-amber-100/60 shadow-none">
-          <CardContent padding="none" className="flex flex-col gap-3 p-3">
+          <CardContent className="flex flex-col gap-3 p-3">
             <span className="text-[10px] font-semibold text-amber-600 uppercase tracking-wide">
               Excess · +{fmtDistance(excessDistM)} km
             </span>

@@ -54,7 +54,8 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
     <Modal open={!!product} onOpenChange={onClose}>
       <ModalContent
         id="stockAdjustmentDialog_productListPage"
-        className="sm:max-w-2xl flex flex-col max-h-[90vh]"
+        className="max-h-[90vh]"
+        size="lg"
         variant="bordered"
         borderColor="border-slate-200"
         onPointerDownOutside={(e) => {
@@ -63,7 +64,7 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
           }
         }}
       >
-        <ModalHeader layout="beside" padding={{ x: 4 }}>
+        <ModalHeader layout="beside">
           <ModalIcon icon={Activity} />
           <ModalHeaderContent>
             <ModalTitle>Track Product Usage</ModalTitle>
@@ -73,25 +74,17 @@ export default function StockAdjustment({ product, onClose, onUpdated }) {
           </ModalHeaderContent>
         </ModalHeader>
 
-        <ModalBody padding={{ x: 4 }}>
+        <ModalBody>
           <div className="flex flex-col gap-5 w-full">
             {/* Product Summary */}
             <ProductSummary product={product} />
 
-            <Tabs defaultValue="recordNewUsage" className="w-full gap-5">
-              <TabsList className="flex w-full" variant="pill">
-                <TabsTrigger
-                  value="recordNewUsage"
-                  id="recordNewUsageTab"
-                  className="text-sm flex-1 justify-center"
-                >
+            <Tabs defaultValue="recordNewUsage" className="gap-5">
+              <TabsList variant="pill">
+                <TabsTrigger value="recordNewUsage" id="recordNewUsageTab">
                   Record Usage
                 </TabsTrigger>
-                <TabsTrigger
-                  value="productUsageLog"
-                  id="productUsageLogTab"
-                  className="text-sm flex-1 justify-center"
-                >
+                <TabsTrigger value="productUsageLog" id="productUsageLogTab">
                   Usage Log
                 </TabsTrigger>
               </TabsList>

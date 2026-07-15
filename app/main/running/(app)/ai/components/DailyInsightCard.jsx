@@ -189,13 +189,12 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
           </span>
         </CardAction>
       </CardHeader>
-      <CardContent padding="none" className="p-4 space-y-3">
+      <CardContent className="p-4 space-y-3">
         {loadError && (
           <div className="flex items-center gap-2" role="alert">
             <p className="text-sm text-slate-400">Could not load today&apos;s insight.</p>
             <Button
               variant="ghost"
-              size="base"
               className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal text-xs"
               onClick={() => {
                 setLoadError(false)
@@ -221,7 +220,6 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
             )}
             <Button
               id="dailyInsightGenerateBtn_aiCoachPage"
-              size="base"
               disabled={generating}
               onClick={() => handleGenerate(false)}
               className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 focus-visible:ring-2 focus-visible:ring-violet-200"
@@ -302,7 +300,6 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
               />
               <Button
                 id="dailyInsightAskBtn_aiCoachPage"
-                size="base"
                 disabled={!freeText.trim() || followUpLoading}
                 onClick={handleFreeTextSubmit}
                 className="bg-violet-600 hover:bg-violet-700 text-white h-8 px-3 focus-visible:ring-2 focus-visible:ring-violet-200"
@@ -401,7 +398,6 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
               <Button
                 id="dailyInsightRegenerateBtn_aiCoachPage"
                 variant="ghost"
-                size="base"
                 disabled={generating || isPending}
                 onClick={() => handleGenerate(true)}
                 className="text-violet-600 hover:text-violet-700 px-0 h-auto text-xs font-normal focus-visible:ring-2 focus-visible:ring-violet-200"
@@ -441,7 +437,6 @@ export default function DailyInsightCard({ initialInsight, trainingLoad }) {
             )}
             <Button
               id="dailyInsightGenerateFromStaleBtn_aiCoachPage"
-              size="base"
               disabled={generating}
               onClick={() => handleGenerate(false)}
               className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 focus-visible:ring-2 focus-visible:ring-violet-200"

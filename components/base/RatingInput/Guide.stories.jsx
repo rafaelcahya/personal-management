@@ -23,9 +23,16 @@ const Section = ({ title, description, children }) => (
   </div>
 )
 
-const Preview = ({ children, className }) => (
+const SubSection = ({ title, children }) => (
+  <div className="mb-6">
+    <h3 className="text-sm font-semibold text-gray-700 mb-3">{title}</h3>
+    {children}
+  </div>
+)
+
+const Preview = ({ children, wide }) => (
   <div
-    className={`p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 ${className ?? 'max-w-lg'}`}
+    className={`flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 ${wide ? 'max-w-lg' : 'w-fit'}`}
   >
     {children}
   </div>
@@ -47,6 +54,71 @@ const Tag = ({ children, color = 'gray' }) => {
     </span>
   )
 }
+
+const cellClass = (j, len) => {
+  const base = 'px-3 py-2 border border-gray-200 text-xs'
+  if (j === 0) return `${base} font-mono text-violet-700 whitespace-nowrap`
+  if (j === len - 1) return `${base} text-gray-700`
+  return `${base} font-mono text-gray-500 whitespace-nowrap`
+}
+
+const ApiTable = ({ headers, rows }) => (
+  <div className="overflow-x-auto mb-4">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr key={i} className="even:bg-gray-50">
+            {row.map((cell, j) => (
+              <td key={j} className={cellClass(j, row.length)}>
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
 
 // ─── Demo helpers ─────────────────────────────────────────────────────────────
 
@@ -104,17 +176,15 @@ export const Docs = {
 
       {/* Overview */}
       <Section title="Overview">
-        <Preview>
-          <div className="flex flex-col gap-4">
-            <Demo style="star" />
-            <Demo style="star" allowHalf />
-            <Demo style="number" />
-            <FieldDemo
-              label="Run effort (RPE)"
-              required
-              description="Rate your perceived exertion."
-            />
-          </div>
+        <Preview wide>
+          <Demo style="star" />
+          <Demo style="star" allowHalf />
+          <Demo style="number" />
+          <FieldDemo
+            label="Run effort (RPE)"
+            required
+            description="Rate your perceived exertion."
+          />
         </Preview>
       </Section>
 
@@ -128,7 +198,7 @@ export const Docs = {
             {/* Star style */}
             <div className="flex flex-col gap-3 shrink-0">
               <span className="text-xs font-mono text-gray-400 uppercase tracking-wide">
-                style="star"
+                style=&quot;star&quot;
               </span>
               <div className="relative px-4 pt-6 pb-4 border-2 border-dashed border-violet-400 rounded-xl">
                 <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-xs font-mono font-semibold text-violet-600">
@@ -162,7 +232,7 @@ export const Docs = {
             {/* Number style */}
             <div className="flex flex-col gap-3 shrink-0">
               <span className="text-xs font-mono text-gray-400 uppercase tracking-wide">
-                style="number"
+                style=&quot;number&quot;
               </span>
               <div className="relative px-4 pt-6 pb-4 border-2 border-dashed border-violet-400 rounded-xl">
                 <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-xs font-mono font-semibold text-violet-600">
@@ -188,33 +258,13 @@ export const Docs = {
             {/* Parts */}
             <div className="flex flex-col gap-2 shrink-0">
               <span className="text-xs font-mono text-gray-400 uppercase tracking-wide">Parts</span>
-              <table className="text-xs border-collapse">
-                <thead>
-                  <tr className="bg-gray-100">
-                    {['Part', 'Used when'].map((h) => (
-                      <th
-                        key={h}
-                        className="text-left px-3 py-1.5 border border-gray-200 font-semibold text-gray-600 uppercase tracking-wide text-[10px]"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    ['StarItem', 'style="star"'],
-                    ['NumberItem', 'style="number"'],
-                  ].map(([part, when]) => (
-                    <tr key={part} className="even:bg-gray-50">
-                      <td className="px-3 py-1.5 border border-gray-200 font-mono text-violet-700 whitespace-nowrap">
-                        {part}
-                      </td>
-                      <td className="px-3 py-1.5 border border-gray-200 text-gray-600">{when}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <ApiTable
+                headers={['Part', 'Used when']}
+                rows={[
+                  ['StarItem', 'style="star"'],
+                  ['NumberItem', 'style="number"'],
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -232,13 +282,15 @@ const [val, setVal] = useState(null)
         description='Two styles via the style prop. "star" uses filled star icons. "number" uses numbered buttons up to max.'
       >
         <Preview>
-          <div className="flex flex-col gap-5">
-            {['star', 'number'].map((s) => (
-              <div key={s} className="flex flex-col gap-1.5">
-                <span className="text-[10px] font-mono text-violet-700">style="{s}"</span>
-                <Demo style={s} />
-              </div>
-            ))}
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">
+              style=&quot;star&quot; (default)
+            </span>
+            <Demo style="star" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">style=&quot;number&quot;</span>
+            <Demo style="number" />
           </div>
         </Preview>
         <Code>{`<RatingInput style="star"   value={val} onChange={setVal} />
@@ -251,17 +303,13 @@ const [val, setVal] = useState(null)
         description='allowHalf enables 0.5-step selection on star style. Hover or click the left half of a star to select x.5. Has no effect on style="number".'
       >
         <Preview>
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">
-                allowHalf=false (default)
-              </span>
-              <Demo style="star" />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">allowHalf=true</span>
-              <Demo style="star" allowHalf />
-            </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">allowHalf=false (default)</span>
+            <Demo style="star" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">allowHalf=true</span>
+            <Demo style="star" allowHalf />
           </div>
         </Preview>
         <Code>{`{/* Integer steps only */}
@@ -277,17 +325,17 @@ const [val, setVal] = useState(null)
         description="Controls the number of stars or the highest number button. Default 5."
       >
         <Preview>
-          <div className="flex flex-col gap-4">
-            {[
-              { max: 5, label: 'max=5 (default)' },
-              { max: 10, label: 'max=10' },
-              { max: 3, label: 'max=3' },
-            ].map(({ max, label }) => (
-              <div key={max} className="flex flex-col gap-1.5">
-                <span className="text-[10px] font-mono text-violet-700">{label}</span>
-                <Demo max={max} />
-              </div>
-            ))}
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">max=5 (default)</span>
+            <Demo max={5} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">max=10</span>
+            <Demo max={10} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">max=3</span>
+            <Demo max={3} />
           </div>
         </Preview>
         <Code>{`<RatingInput max={5}  value={val} onChange={setVal} />  {/* default */}
@@ -301,19 +349,17 @@ const [val, setVal] = useState(null)
         description="clearable=true (default) allows the user to reset the value to null by clicking the currently selected rating again."
       >
         <Preview>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">
-                clearable=true (default) — click selected star again to clear
-              </span>
-              <Demo />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">
-                clearable=false — selection is permanent
-              </span>
-              <Demo clearable={false} />
-            </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">
+              clearable=true (default) — click selected again to clear
+            </span>
+            <Demo />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">
+              clearable=false — selection is permanent
+            </span>
+            <Demo clearable={false} />
           </div>
         </Preview>
         <Code>{`<RatingInput clearable value={val} onChange={setVal} />           {/* default */}
@@ -326,41 +372,18 @@ const [val, setVal] = useState(null)
         description="readOnly renders the rating as a display-only element. No hover or click interaction."
       >
         <Preview>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">readOnly — star</span>
-              <RatingInput readOnly value={3.5} allowHalf />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">readOnly — number</span>
-              <RatingInput readOnly style="number" value={7} max={10} />
-            </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">readOnly — star</span>
+            <RatingInput readOnly value={3.5} allowHalf />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">readOnly — number</span>
+            <RatingInput readOnly style="number" value={7} max={10} />
           </div>
         </Preview>
         <Code>{`{/* Display only — no interaction */}
 <RatingInput readOnly value={3.5} allowHalf />
 <RatingInput readOnly style="number" value={7} max={10} />`}</Code>
-      </Section>
-
-      {/* Sizes */}
-      <Section
-        title="Sizes"
-        description="Three sizes. Inherits from FieldContent when not set explicitly."
-      >
-        <Preview>
-          <div className="flex flex-col gap-4">
-            {['sm', 'base', 'md'].map((size) => (
-              <div key={size} className="flex items-center gap-4">
-                <span className="text-xs font-mono text-gray-400 w-8 shrink-0">{size}</span>
-                <RatingInput size={size} value={3} />
-                <RatingInput size={size} style="number" value={3} />
-              </div>
-            ))}
-          </div>
-        </Preview>
-        <Code>{`<RatingInput size="sm"   value={val} onChange={setVal} />
-<RatingInput size="base" value={val} onChange={setVal} />  {/* default */}
-<RatingInput size="md"   value={val} onChange={setVal} />`}</Code>
       </Section>
 
       {/* Disabled */}
@@ -369,28 +392,20 @@ const [val, setVal] = useState(null)
         description="Muted and non-interactive. Also inherits from FieldContent context."
       >
         <Preview>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">
-                disabled — star no value
-              </span>
-              <RatingInput disabled />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">
-                disabled — star with value
-              </span>
-              <RatingInput disabled value={3} />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[10px] font-mono text-violet-700">
-                Via FieldContent disabled prop
-              </span>
-              <FieldContent size="base" disabled>
-                <FieldLabel>Run effort</FieldLabel>
-                <RatingInput value={3} />
-              </FieldContent>
-            </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">disabled — no value</span>
+            <RatingInput disabled />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">disabled — with value</span>
+            <RatingInput disabled value={3} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-violet-700">Via FieldContent disabled</span>
+            <FieldContent size="base" disabled>
+              <FieldLabel>Run effort</FieldLabel>
+              <RatingInput value={3} />
+            </FieldContent>
           </div>
         </Preview>
         <Code>{`<RatingInput disabled value={val} onChange={setVal} />
@@ -406,8 +421,15 @@ const [val, setVal] = useState(null)
         title="With FieldContent"
         description="Pair with FieldLabel, FieldDescription, and FieldError for accessible form fields."
       >
-        <Preview>
-          <div className="flex flex-col gap-4">
+        <SubSection title="Import">
+          <Code>{`import FieldContent from '@/components/base/Field/FieldContent'
+import FieldLabel from '@/components/base/Field/FieldLabel'
+import FieldDescription from '@/components/base/Field/FieldDescription'
+import FieldError from '@/components/base/Field/FieldError'`}</Code>
+        </SubSection>
+
+        <SubSection title="Controlled with FieldContent">
+          <Preview wide>
             <FieldDemo
               label="Run effort (RPE)"
               required
@@ -420,9 +442,8 @@ const [val, setVal] = useState(null)
               description="How confident are you in this trade?"
             />
             <FieldDemo label="Required rating" required error="Please provide a rating." />
-          </div>
-        </Preview>
-        <Code>{`<FieldContent size="base">
+          </Preview>
+          <Code>{`<FieldContent size="base">
   <FieldLabel required>Run effort (RPE)</FieldLabel>
   <RatingInput value={val} onChange={setVal} />
   <FieldDescription className="text-xs text-slate-400">Rate your perceived exertion from 1–5.</FieldDescription>
@@ -433,16 +454,22 @@ const [val, setVal] = useState(null)
   <RatingInput value={val} onChange={setVal} />
   <FieldError />
 </FieldContent>`}</Code>
+        </SubSection>
       </Section>
 
       {/* react-hook-form */}
-      <Section title="With react-hook-form">
+      <Section
+        title="With react-hook-form"
+        description="Use Controller. RatingInput's onChange passes a number or null, not a native event."
+      >
         <Code>{`import { Controller } from 'react-hook-form'
 
 <Controller
   name="effort"
   control={control}
-  rules={{ required: 'Please provide a rating.', validate: v => v !== null || 'Please provide a rating.' }}
+  rules={{
+    validate: (v) => v !== null || 'Please provide a rating.',
+  }}
   render={({ field }) => (
     <FieldContent size="base" error={errors.effort?.message}>
       <FieldLabel required>Run effort (RPE)</FieldLabel>
@@ -458,74 +485,78 @@ const [val, setVal] = useState(null)
 
       {/* Props */}
       <Section title="Props">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'value',
-                  'number | null',
-                  'null',
-                  'Controlled value. null means nothing is selected.',
-                ],
-                [
-                  'onChange',
-                  '(val: number | null) => void',
-                  '—',
-                  'Fires with the selected rating, or null when cleared.',
-                ],
-                ['style', '"star" | "number"', '"star"', 'Visual style of the rating items.'],
-                ['max', 'number', '5', 'Number of stars or highest number button.'],
-                ['allowHalf', 'boolean', 'false', 'Enable 0.5-step selection. Star style only.'],
-                ['readOnly', 'boolean', 'false', 'Render as display-only. No hover or click.'],
-                [
-                  'clearable',
-                  'boolean',
-                  'true',
-                  'Allow clicking the active rating again to reset value to null.',
-                ],
-                [
-                  'disabled',
-                  'boolean',
-                  'false',
-                  'Muted and non-interactive. Also inherits from FieldContent.',
-                ],
-                [
-                  'size',
-                  '"sm" | "base" | "md"',
-                  '"base"',
-                  'Size of stars or number buttons. Inherits from FieldContent.',
-                ],
-                ['className', 'string', '—', 'Additional classes on the wrapper.'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ApiTable
+          headers={['Prop', 'Type', 'Default', 'Description']}
+          rows={[
+            ['value', 'number | null', 'null', 'Controlled value. null means nothing is selected.'],
+            [
+              'onChange',
+              '(val: number | null) => void',
+              '—',
+              'Fires with the selected rating, or null when cleared.',
+            ],
+            ['style', '"star" | "number"', '"star"', 'Visual style of the rating items.'],
+            ['max', 'number', '5', 'Number of stars or highest number button.'],
+            ['allowHalf', 'boolean', 'false', 'Enable 0.5-step selection. Star style only.'],
+            ['readOnly', 'boolean', 'false', 'Render as display-only. No hover or click.'],
+            [
+              'clearable',
+              'boolean',
+              'true',
+              'Allow clicking the active rating again to reset value to null.',
+            ],
+            [
+              'disabled',
+              'boolean',
+              'false',
+              'Muted and non-interactive. Also inherits from FieldContent.',
+            ],
+            ['className', 'string', '—', 'Additional classes on the wrapper.'],
+          ]}
+        />
+      </Section>
+
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <BestPractices
+          items={[
+            {
+              heading: 'Value handling',
+              cards: [
+                {
+                  title: 'Value is null when nothing is selected — not 0',
+                  body: 'An empty rating returns null, not 0. If the field is required, validate that val !== null in your validation rules. Checking val > 0 also works but be explicit.',
+                },
+                {
+                  title: 'Use Controller from react-hook-form — not register',
+                  body: 'onChange fires a number or null, not a native DOM event. register cannot capture it. Wrap with Controller and pass value={field.value ?? null}.',
+                },
+              ],
+            },
+            {
+              heading: 'Style choice',
+              cards: [
+                {
+                  title: 'Use star for subjective quality or effort ratings',
+                  body: 'Stars are universally understood as a rating scale — good for run effort, food quality, satisfaction. Keep max at 5 for star style.',
+                },
+                {
+                  title: 'Use number for precise scores with a known scale',
+                  body: 'Trade confidence 1–10, pain scale, RPE — any case where the specific number matters and users need to read it clearly. Keep number max at 10 or below.',
+                },
+              ],
+            },
+            {
+              heading: 'Display vs interaction',
+              cards: [
+                {
+                  title: 'Use readOnly for display — not disabled',
+                  body: 'disabled implies the field was interactive and is now locked. readOnly means it was never meant to be interactive. Use the semantically correct one.',
+                },
+              ],
+            },
+          ]}
+        />
       </Section>
     </div>
   ),

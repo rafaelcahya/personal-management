@@ -14,7 +14,6 @@ export default function FeeErrorState({ onRetry }) {
       <Button
         id="feeRetryBtn_feePage"
         variant="outline"
-        size="base"
         onClick={onRetry}
         className="text-violet-600 border-violet-200 hover:bg-violet-50"
       >

@@ -2,7 +2,7 @@
 
 import { Info } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 export function StatTile({
   id,
@@ -23,8 +23,8 @@ export function StatTile({
           {label}
         </span>
         {tooltip && (
-          <Tooltip>
-            <TooltipTrigger asChild>
+          <Popover>
+            <PopoverTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon-xs"
@@ -33,11 +33,11 @@ export function StatTile({
               >
                 <Info className="size-3.5" aria-hidden="true" />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-64 text-xs leading-relaxed">
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-auto max-w-64 p-3 text-xs leading-relaxed">
               {tooltip}
-            </TooltipContent>
-          </Tooltip>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
       <div className="flex items-baseline gap-1">

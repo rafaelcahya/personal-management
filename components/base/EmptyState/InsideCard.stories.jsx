@@ -15,6 +15,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 export const InsideCard = {
   name: 'Inside Card',
   render: () => (
@@ -104,6 +132,47 @@ export const InsideCard = {
           </div>
         </div>
       </div>
+
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Always keep the card header visible when body is EmptyState',
+                body: "The header tells users which section is empty and confirms they're in the right place. Never hide or remove the card header just because the body has no data.",
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: 'Don\'t use size="lg" in compact cards',
+                body: 'size="lg" stretches the layout beyond the card\'s container height. Use size="default" for standard section cards and size="lg" only for prominent full-section cards that are the page\'s primary focus.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Keep the card header minimal when body is EmptyState',
+                body: "Heavy headers — multiple actions, tabs, filters — compete visually with the EmptyState's call to action and fragment the user's attention. A simple title icon is enough.",
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'size="default" for standard cards, size="lg" for primary-focus sections',
+                body: 'Use "default" for inventory, trades, or any card that shares the page with other cards. Use "lg" only when the card is the page\'s sole focus and EmptyState is the entire primary content area.',
+              },
+            ],
+          },
+        ]}
+      />
 
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`<div className="border rounded-xl overflow-hidden">

@@ -11,7 +11,7 @@ Personal productivity web app for one user, two domains: **Inventory Management*
 | Database      | Supabase (PostgreSQL)        | hosted                           |
 | Auth          | Supabase SSR + JWT           | `middleware.js`, `lib/supabase/` |
 | Styling       | Tailwind CSS + CSS variables | `app/globals.css`                |
-| UI Components | shadcn/ui (Radix UI)         | `components/ui/`                 |
+| UI Components | Base Components              | `components/base/`               |
 | Forms         | react-hook-form + Zod        | `schemas/`                       |
 | API Client    | custom fetch functions       | `lib/api/`                       |
 | E2E Testing   | Cypress                      | `cypress/`                       |

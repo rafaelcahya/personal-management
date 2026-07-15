@@ -190,7 +190,7 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
               <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               {onRetry && (
                 <EmptyStateActions>
-                  <Button variant="outline" size="base" onClick={onRetry} className="min-w-11">
+                  <Button variant="outline" onClick={onRetry} className="min-w-11">
                     Try again
                   </Button>
                 </EmptyStateActions>
@@ -220,20 +220,20 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
         <ModalContent
           variant="bordered"
           borderColor="border-slate-200"
-          className="w-[calc(100vw-2rem)] md:w-full md:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0"
+          className="min-h-[50vh] max-h-[50vh]"
         >
-          <ModalHeader layout="beside" padding={{ x: 4 }}>
+          <ModalHeader layout="beside">
             <ModalIcon icon={AlertTriangle} />
             <ModalHeaderContent>
               <ModalTitle>All Low Stock Products</ModalTitle>
               <ModalDescription>Sorted by lowest stock first</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
+          <ModalBody className="p-0">
             <LowStockTable items={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
           {modalTotalPages > 1 && (
-            <ModalFooter className="border-t border-slate-100 p-0 pb-4">
+            <ModalFooter>
               <Pagination
                 page={modalPage}
                 totalPages={modalTotalPages}

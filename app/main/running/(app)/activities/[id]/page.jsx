@@ -26,7 +26,7 @@ import {
   Mountain,
   RefreshCw,
 } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Button from '@/components/base/Button/Button'
 import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
@@ -60,6 +60,86 @@ import {
   BannerContent,
   BannerDescription,
 } from '@/components/base/Banner/Banner'
+import { Badge } from '@/components/base/Badge/Badge'
+
+// ─── zone classification ──────────────────────────────────────────────────────
+
+const PACE_ZONE_DEFS = [
+  { name: 'Z1', label: 'Recovery', loMult: 1.29, hiMult: null, cls: 'bg-sky-100 text-sky-700' },
+  { name: 'Z2', label: 'Endurance', loMult: 1.14, hiMult: 1.29, cls: 'bg-blue-100 text-blue-700' },
+  { name: 'Z3', label: 'Tempo', loMult: 1.06, hiMult: 1.14, cls: 'bg-indigo-100 text-indigo-700' },
+  {
+    name: 'Z4',
+    label: 'Threshold',
+    loMult: 0.99,
+    hiMult: 1.06,
+    cls: 'bg-violet-100 text-violet-700',
+  },
+  { name: 'Z5', label: 'VO₂max', loMult: null, hiMult: 0.99, cls: 'bg-purple-100 text-purple-700' },
+]
+
+const HR_ZONE_DEFS = [
+  { name: 'Z1', label: 'Recovery', cls: 'bg-green-100 text-green-700' },
+  { name: 'Z2', label: 'Aerobic', cls: 'bg-yellow-100 text-yellow-700' },
+  { name: 'Z3', label: 'Tempo', cls: 'bg-orange-100 text-orange-700' },
+  { name: 'Z4', label: 'Threshold', cls: 'bg-red-100 text-red-700' },
+  { name: 'Z5', label: 'VO₂max', cls: 'bg-rose-100 text-rose-700' },
+]
+
+function getPaceZone(avgPaceSec, thresholdPaceSec) {
+  if (!avgPaceSec || !thresholdPaceSec || thresholdPaceSec <= 0) return null
+  for (const z of PACE_ZONE_DEFS) {
+    const lo = z.loMult != null ? z.loMult * thresholdPaceSec : 0
+    const hi = z.hiMult != null ? z.hiMult * thresholdPaceSec : Infinity
+    if (avgPaceSec >= lo && avgPaceSec < hi) return z
+  }
+  return PACE_ZONE_DEFS[PACE_ZONE_DEFS.length - 1]
+}
+
+function getHrZone(avgHr, method, maxHr, restingHr, thresholdHr) {
+  if (!avgHr) return null
+  let zones = null
+  if (method === 'karvonen' && maxHr && restingHr && maxHr > restingHr) {
+    const hrr = maxHr - restingHr
+    zones = [
+      [0.5, 0.6],
+      [0.6, 0.7],
+      [0.7, 0.8],
+      [0.8, 0.9],
+      [0.9, Infinity],
+    ].map(([lo, hi]) => [restingHr + lo * hrr, hi === Infinity ? Infinity : restingHr + hi * hrr])
+  } else if (method === 'threshold' && thresholdHr) {
+    zones = [
+      [0, 0.68],
+      [0.68, 0.83],
+      [0.83, 0.94],
+      [0.94, 1.05],
+      [1.05, Infinity],
+    ].map(([lo, hi]) => [lo * thresholdHr, hi === Infinity ? Infinity : hi * thresholdHr])
+  } else if (maxHr) {
+    zones = [
+      [0, 0.6],
+      [0.6, 0.7],
+      [0.7, 0.8],
+      [0.8, 0.9],
+      [0.9, Infinity],
+    ].map(([lo, hi]) => [lo * maxHr, hi === Infinity ? Infinity : hi * maxHr])
+  }
+  if (!zones) return null
+  for (let i = 0; i < zones.length; i++) {
+    if (avgHr >= zones[i][0] && avgHr < zones[i][1]) return HR_ZONE_DEFS[i]
+  }
+  return HR_ZONE_DEFS[HR_ZONE_DEFS.length - 1]
+}
+
+function ZoneBadge({ zone }) {
+  if (!zone) return null
+  return (
+    <Badge className={`inline-flex w-fit text-[10px] rounded-full mt-0.5 ${zone.cls}`}>
+      {zone.name} {zone.label}
+    </Badge>
+  )
+}
 
 // ─── skeleton ─────────────────────────────────────────────────────────────────
 
@@ -391,6 +471,14 @@ export default function ActivityDetailPage() {
                               ? `Best ${fmtPace(activity.max_pace_sec_per_km)}/km`
                               : undefined
                           }
+                          footer={
+                            <ZoneBadge
+                              zone={getPaceZone(
+                                activity.avg_pace_sec_per_km,
+                                activity.threshold_pace_sec
+                              )}
+                            />
+                          }
                         />
                       )}
                       <StatTile
@@ -410,6 +498,17 @@ export default function ActivityDetailPage() {
                           value={activity.avg_hr}
                           unit="bpm"
                           sub={activity.max_hr ? `Max ${activity.max_hr} bpm` : undefined}
+                          footer={
+                            <ZoneBadge
+                              zone={getHrZone(
+                                activity.avg_hr,
+                                activity.hr_zones_method ?? 'max_hr',
+                                activity.user_max_hr,
+                                activity.user_resting_hr,
+                                activity.threshold_hr
+                              )}
+                            />
+                          }
                         />
                       )}
                       {cadenceSpm != null && (
@@ -737,8 +836,8 @@ export default function ActivityDetailPage() {
                                     }
                                   : { color: 'text-red-700', bg: 'bg-red-50', label: 'High drift' }
                             return (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
+                              <Popover>
+                                <PopoverTrigger asChild>
                                   <div
                                     id="aeroDrift_activityDetailPage"
                                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium cursor-help ${bg} ${color}`}
@@ -754,10 +853,10 @@ export default function ActivityDetailPage() {
                                       {label}
                                     </span>
                                   </div>
-                                </TooltipTrigger>
-                                <TooltipContent
+                                </PopoverTrigger>
+                                <PopoverContent
                                   side="top"
-                                  className="max-w-64 text-xs leading-relaxed"
+                                  className="w-auto max-w-64 p-3 text-xs leading-relaxed"
                                 >
                                   <p className="font-semibold mb-1">What is Aerobic Decoupling?</p>
                                   <p>
@@ -771,8 +870,8 @@ export default function ActivityDetailPage() {
                                     <span className="text-red-400 font-medium">&gt; 10%</span> High
                                     drift
                                   </p>
-                                </TooltipContent>
-                              </Tooltip>
+                                </PopoverContent>
+                              </Popover>
                             )
                           })()}
                       </div>
@@ -865,7 +964,6 @@ export default function ActivityDetailPage() {
                           <Button
                             id="notesCancelBtn_activityDetailPage"
                             variant="secondary"
-                            size="base"
                             onClick={() => setNotesEditing(false)}
                             disabled={notesSaving}
                             className="text-violet-600 font-medium"
@@ -874,7 +972,6 @@ export default function ActivityDetailPage() {
                           </Button>
                           <Button
                             id="notesSaveBtn_activityDetailPage"
-                            size="base"
                             onClick={handleSaveNotes}
                             disabled={notesSaving}
                             className="min-w-[60px]"

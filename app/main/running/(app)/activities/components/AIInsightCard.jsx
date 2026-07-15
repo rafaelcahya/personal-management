@@ -366,7 +366,6 @@ export default function AIInsightCard({ activityId }) {
           <Button
             id="aiInsightRetry_activityDetailPage"
             variant="ghost"
-            size="base"
             className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal"
             onClick={() => {
               setInsight(undefined)
@@ -454,7 +453,6 @@ export default function AIInsightCard({ activityId }) {
               <p className="text-xs text-slate-400">This is taking longer than usual.</p>
               <Button
                 variant="ghost"
-                size="base"
                 className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal text-xs"
                 onClick={handleRefresh}
               >

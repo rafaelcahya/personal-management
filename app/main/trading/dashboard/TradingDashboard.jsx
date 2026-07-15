@@ -43,7 +43,7 @@ export default function TradingDashboard() {
           <p className="text-red-600 font-semibold mb-1">Error Loading Dashboard</p>
           <p className="text-sm text-slate-500">Failed to load dashboard. Please try again.</p>
         </div>
-        <Button size="base" variant="outline" onClick={fetchDashboardMetrics}>
+        <Button variant="outline" onClick={fetchDashboardMetrics}>
           <RefreshCw className="size-4" />
           Try Again
         </Button>

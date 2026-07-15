@@ -6,19 +6,20 @@ A personal productivity web app with three modules: **Inventory Management**, **
 
 ## Tech Stack
 
-| Layer           | Technology                                     |
-| --------------- | ---------------------------------------------- |
-| Framework       | Next.js 15 (App Router)                        |
-| Language        | JavaScript / JSX                               |
-| Database        | Supabase (PostgreSQL)                          |
-| Auth            | Supabase SSR + JWT (cookie-based)              |
-| Styling         | Tailwind CSS v4 + CSS variables                |
-| UI Components   | shadcn/ui (Radix UI primitives)                |
-| Forms           | react-hook-form + Zod                          |
-| Background Jobs | Inngest (event-driven functions)               |
-| External API    | Strava API (OAuth 2.0 + webhook)               |
-| AI              | Anthropic Claude API (via `@anthropic-ai/sdk`) |
-| Testing         | Cypress E2E                                    |
+| Layer           | Technology                                        |
+| --------------- | ------------------------------------------------- |
+| Framework       | Next.js 15 (App Router)                           |
+| Language        | JavaScript / JSX                                  |
+| Database        | Supabase (PostgreSQL)                             |
+| Auth            | Supabase SSR + JWT (cookie-based)                 |
+| Styling         | Tailwind CSS v3 + CSS variables                   |
+| UI Components   | Custom base component system (`components/base/`) |
+| Forms           | react-hook-form + Zod                             |
+| Component Docs  | Storybook 10 (`npm run storybook`)                |
+| Background Jobs | Inngest (event-driven functions)                  |
+| External API    | Strava API (OAuth 2.0 + webhook)                  |
+| AI              | Anthropic Claude API (via `@anthropic-ai/sdk`)    |
+| Testing         | Cypress E2E                                       |
 
 ---
 
@@ -41,6 +42,10 @@ Route handlers never contain database queries directly — all SQL lives in serv
 ### Client API Layer
 
 `lib/api/` contains thin fetch wrappers used by React components. Each function maps to one API endpoint, handles `401` by throwing `'UNAUTHORIZED'`, and throws on `!res.ok`.
+
+### Base Component System
+
+`components/base/` is the primary UI component library — built from scratch with React and Tailwind CSS. It includes Button, Input, Select, Modal, Tooltip, DatePicker, Combobox, and more. No Radix or shadcn/ui dependency. All components are documented in Storybook.
 
 ### Auth
 

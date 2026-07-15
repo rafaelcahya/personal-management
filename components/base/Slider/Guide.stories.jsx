@@ -61,6 +61,73 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ headers, rows }) => (
+  <div className="overflow-x-auto mb-4">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr key={i} className="even:bg-gray-50">
+            {row.map((cell, j) => (
+              <td
+                key={j}
+                className={`px-3 py-2 border border-gray-200 text-xs ${
+                  j === 0
+                    ? 'font-mono text-violet-700 whitespace-nowrap'
+                    : j === 1
+                      ? 'font-mono text-gray-500 max-w-xs'
+                      : j === 2
+                        ? 'font-mono text-gray-400 whitespace-nowrap'
+                        : 'text-gray-700'
+                }`}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+const BestPractices = ({ heading, cards }) => (
+  <div className="mb-6">
+    {heading && (
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{heading}</p>
+    )}
+    <div className="flex flex-col gap-3">
+      {cards.map(({ title, body }) => (
+        <div
+          key={title}
+          className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+        >
+          <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+            ✓
+          </span>
+          <div>
+            <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+            <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)
+
+// ─── Interactive demos ────────────────────────────────────────────────────────
+
 const ControlledDemo = () => {
   const [value, setValue] = useState([40])
   return (
@@ -129,13 +196,10 @@ export const Docs = {
         title="Anatomy"
         description="All parts of the Slider component — each part can be composed independently."
       >
-        {/* Box diagram */}
         <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
-          {/* Slider root */}
           <div className="flex flex-col gap-2 p-4 border-2 border-dashed border-violet-400 rounded-xl">
             <span className="text-[10px] font-mono font-semibold text-violet-600">Slider</span>
 
-            {/* Tooltip row */}
             <div className="flex flex-col gap-1 px-3 py-2 border border-dashed border-green-300 rounded self-center w-24">
               <span className="text-[10px] font-mono text-green-500">SliderTooltip</span>
               <div className="bg-white border border-slate-200 shadow-sm rounded-lg px-2 py-0.5 self-start">
@@ -143,40 +207,32 @@ export const Docs = {
               </div>
             </div>
 
-            {/* Track row */}
             <div className="flex items-stretch gap-2">
-              {/* StartLabel */}
               <div className="flex flex-col gap-1 px-3 py-2 border border-dashed border-green-300 rounded shrink-0 justify-center">
                 <span className="text-[10px] font-mono text-green-500">SliderStartLabel</span>
                 <span className="text-xs text-slate-400 font-mono">0</span>
               </div>
 
-              {/* Track */}
               <div className="flex flex-col gap-1 flex-1 p-3 border border-dashed border-slate-300 rounded">
                 <span className="text-[10px] font-mono text-slate-400">Track</span>
                 <div className="flex items-stretch gap-1 mt-1">
-                  {/* Range */}
                   <div className="flex flex-col gap-1 flex-1 px-2 py-2 border border-dashed border-blue-300 rounded">
                     <span className="text-[10px] font-mono text-blue-500">Range</span>
                   </div>
-                  {/* Thumb */}
                   <div className="flex flex-col items-center gap-1.5 px-3 py-2 border border-dashed border-blue-300 rounded shrink-0">
                     <span className="text-[10px] font-mono text-blue-500">Thumb</span>
                     <div className="size-4 rounded-full bg-white border-2 border-violet-500 shadow-sm" />
                   </div>
-                  {/* Remaining track space */}
                   <div className="flex-1 border border-dashed border-transparent rounded" />
                 </div>
               </div>
 
-              {/* EndLabel */}
               <div className="flex flex-col gap-1 px-3 py-2 border border-dashed border-green-300 rounded shrink-0 justify-center">
                 <span className="text-[10px] font-mono text-green-500">SliderEndLabel</span>
                 <span className="text-xs text-slate-400 font-mono">100</span>
               </div>
             </div>
 
-            {/* Marks row */}
             <div className="flex flex-col gap-1.5 px-3 py-2 border border-dashed border-green-300 rounded">
               <span className="text-[10px] font-mono text-green-500">SliderMark</span>
               <div className="flex justify-between px-1">
@@ -190,68 +246,43 @@ export const Docs = {
           </div>
         </div>
 
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Part', 'Element', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'Slider',
-                  '<span>',
-                  'Root component. Manages value, range, keyboard interaction, and context.',
-                ],
-                ['Track', '<span>', 'Full horizontal bar. Height scales with size prop.'],
-                [
-                  'Range',
-                  '<span>',
-                  'Filled portion of the track. Color follows the variant (violet / destructive / muted).',
-                ],
-                ['Thumb', '<span>', 'Draggable handle. Styled via thumbConnect prop.'],
-                [
-                  'SliderTooltip',
-                  '<div>',
-                  'Shows current value above the thumb. Props shortcut: showTooltip + tooltipFormat.',
-                ],
-                [
-                  'SliderStartLabel',
-                  '<span>',
-                  'Optional label at the left end of the track. Props shortcut: startLabel.',
-                ],
-                [
-                  'SliderEndLabel',
-                  '<span>',
-                  'Optional label at the right end of the track. Props shortcut: endLabel.',
-                ],
-                [
-                  'SliderMark',
-                  '<span>',
-                  'Tick label at a specific value. Reads min/max from context. Props shortcut: marks array.',
-                ],
-              ].map(([part, el, desc]) => (
-                <tr key={part} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {part}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {el}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ApiTable
+          headers={['Part', 'Element', 'Description']}
+          rows={[
+            [
+              'Slider',
+              '<div>',
+              'Root component. Manages value, range, keyboard interaction, and context.',
+            ],
+            ['Track', '<div>', 'Full horizontal bar.'],
+            [
+              'Range',
+              '<div>',
+              'Filled portion of the track. Color follows the variant (violet / destructive / muted).',
+            ],
+            ['Thumb', '<div role="slider">', 'Draggable handle. Styled via thumbConnect prop.'],
+            [
+              'SliderTooltip',
+              '<div>',
+              'Shows current value above the thumb. Props shortcut: showTooltip + tooltipFormat.',
+            ],
+            [
+              'SliderStartLabel',
+              '<span>',
+              'Optional label at the left end of the track. Props shortcut: startLabel.',
+            ],
+            [
+              'SliderEndLabel',
+              '<span>',
+              'Optional label at the right end of the track. Props shortcut: endLabel.',
+            ],
+            [
+              'SliderMark',
+              '<span>',
+              'Tick label at a specific value. Reads min/max from context. Props shortcut: marks array.',
+            ],
+          ]}
+        />
 
         <Code>{`import Slider from '@/components/base/Slider/Slider'
 import SliderTooltip from '@/components/base/Slider/SliderTooltip'
@@ -323,47 +354,6 @@ import { SliderStartLabel, SliderEndLabel, SliderMark } from '@/components/base/
         ))}
       </Section>
 
-      {/* Sizes */}
-      <Section title="Sizes" description="Six sizes — controls track height and thumb size.">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-xs border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Size', 'Track', 'Thumb', 'Preview'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-600"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['xs', '2px', '12px'],
-                ['sm', '3px', '14px'],
-                ['base', '4px', '16px'],
-                ['md', '6px', '18px'],
-                ['lg', '8px', '20px'],
-                ['xl', '10px', '24px'],
-              ].map(([size, track, thumb]) => (
-                <tr key={size} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700">
-                    {size}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-gray-600">{track}</td>
-                  <td className="px-3 py-2 border border-gray-200 text-gray-600">{thumb}</td>
-                  <td className="px-3 py-3 border border-gray-200 w-48">
-                    <Slider size={size} defaultValue={[50]} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
       {/* Thumb Connect */}
       <Section
         title="Thumb Connect"
@@ -417,7 +407,7 @@ import { SliderStartLabel, SliderEndLabel, SliderMark } from '@/components/base/
         ))}
 
         <SubSection title="Usage">
-          <Code>{`{/* Default — connects on hover and drag */}
+          <Code>{`{/* Default — always connected */}
 <Slider defaultValue={[50]} />
 
 {/* Connect on hover only */}
@@ -549,37 +539,35 @@ import { SliderStartLabel, SliderEndLabel, SliderMark } from '@/components/base/
         </SubSection>
       </Section>
 
-      {/* Field integration */}
+      {/* Field Integration */}
       <Section
         title="Field Integration"
         description="Wrap in FieldContent to get label, description, and error — same pattern as Input, Select, etc."
       >
         <SubSection title="With label and description">
           <Preview>
-            <FieldContent size="base">
+            <FieldContent>
               <FieldLabel>Confidence level</FieldLabel>
               <Slider defaultValue={[70]} showTooltip tooltipFormat={(v) => `${v}%`} />
-              <FieldDescription className="text-xs text-slate-400">
-                How confident are you in this estimate?
-              </FieldDescription>
+              <FieldDescription>How confident are you in this estimate?</FieldDescription>
             </FieldContent>
           </Preview>
-          <Code>{`<FieldContent size="base">
+          <Code>{`<FieldContent>
   <FieldLabel>Confidence level</FieldLabel>
   <Slider defaultValue={[70]} showTooltip tooltipFormat={(v) => \`\${v}%\`} />
-  <FieldDescription className="text-xs text-slate-400">How confident are you in this estimate?</FieldDescription>
+  <FieldDescription>How confident are you in this estimate?</FieldDescription>
 </FieldContent>`}</Code>
         </SubSection>
 
         <SubSection title="Error state via FieldContent">
           <Preview>
-            <FieldContent size="base" error="Value must be at least 50%.">
+            <FieldContent error="Value must be at least 50%.">
               <FieldLabel>Minimum threshold</FieldLabel>
               <Slider defaultValue={[20]} showTooltip tooltipFormat={(v) => `${v}%`} />
               <FieldError />
             </FieldContent>
           </Preview>
-          <Code>{`<FieldContent size="base" error="Value must be at least 50%.">
+          <Code>{`<FieldContent error="Value must be at least 50%.">
   <FieldLabel>Minimum threshold</FieldLabel>
   <Slider defaultValue={[20]} showTooltip tooltipFormat={(v) => \`\${v}%\`} />
   <FieldError />
@@ -588,297 +576,143 @@ import { SliderStartLabel, SliderEndLabel, SliderMark } from '@/components/base/
 
         <SubSection title="Disabled via FieldContent">
           <Preview>
-            <FieldContent size="base" disabled>
+            <FieldContent disabled>
               <FieldLabel>Budget allocation</FieldLabel>
               <Slider defaultValue={[60]} />
-              <FieldDescription className="text-xs text-slate-400">
-                Cannot be changed after submission.
-              </FieldDescription>
+              <FieldDescription>Cannot be changed after submission.</FieldDescription>
             </FieldContent>
           </Preview>
-          <Code>{`<FieldContent size="base" disabled>
+          <Code>{`<FieldContent disabled>
   <FieldLabel>Budget allocation</FieldLabel>
   <Slider defaultValue={[60]} />
-  <FieldDescription className="text-xs text-slate-400">Cannot be changed after submission.</FieldDescription>
+  <FieldDescription>Cannot be changed after submission.</FieldDescription>
 </FieldContent>`}</Code>
         </SubSection>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Slider when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The value is continuous and the exact number is less important than the
-                      relative position (e.g. volume, brightness, confidence level)
-                    </li>
-                    <li>
-                      You want to let the user explore a range interactively by dragging rather than
-                      typing
-                    </li>
-                    <li>
-                      You need to select a range between two values, such as a price filter or date
-                      window
-                    </li>
-                    <li>
-                      The acceptable values span a bounded numeric range with a known min and max
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Input type=number</strong> when the user needs to enter a precise
-                      value (e.g. a dollar amount or exact quantity) — sliders make precision entry
-                      difficult
-                    </li>
-                    <li>
-                      Use <strong>Select</strong> when the options are a small set of named discrete
-                      steps (e.g. Low / Medium / High) rather than a continuous range
-                    </li>
-                    <li>
-                      Use <strong>Input type=number</strong> when the range is very large (e.g.
-                      0–10,000) and fine-grained precision matters — dragging a slider across
-                      thousands of values is error-prone
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <BestPractices
+          heading="When to use"
+          cards={[
+            {
+              title:
+                'Use a slider when the value is continuous and relative position matters more than precision',
+              body: 'Volume, brightness, confidence level — the user wants to drag to "roughly 70%" rather than type an exact number. Sliders are fast for this.',
+            },
+            {
+              title: 'Use a range slider for two-bound filters like price or date',
+              body: 'Pass defaultValue={[lo, hi]} to enable two thumbs. Each thumb clamps against the other so they cannot cross.',
+            },
+            {
+              title: 'Always show the current value — use showTooltip or a nearby readout',
+              body: 'A slider with no visible current value leaves the user guessing. showTooltip is the fastest option; add tooltipFormat to display units like "%" or "km/h".',
+            },
+            {
+              title: 'Anchor the scale with startLabel, endLabel, or marks',
+              body: 'Labels like "0" and "100" or "Slow" and "Fast" tell the user what the extremes mean. Without them, the range is ambiguous.',
+            },
+          ]}
+        />
+        <BestPractices
+          heading="When not to use"
+          cards={[
+            {
+              title: 'Use Input type=number when the user needs to enter a precise value',
+              body: 'Typing "10000" is faster and more accurate than dragging a slider to an exact pixel. Sliders make precision entry difficult on large ranges.',
+            },
+            {
+              title: 'Use Select or RadioGroup for small named discrete options',
+              body: '"Low / Medium / High" belongs in a Select or radio group — a slider implies continuous values, which misleads users into thinking intermediate positions are valid.',
+            },
+          ]}
+        />
       </Section>
 
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always show the current value — use{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">showTooltip</code> or a
-                  visible readout near the slider so the user knows exactly what they have selected.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Anchor the scale with start/end labels or marks when the min and max values carry
-                  meaning (e.g. "0%" and "100%", or "Slow" and "Fast"). This makes the range
-                  immediately understandable without guessing.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Wrap in{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldContent</code> with a{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldLabel</code> and{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">FieldDescription</code> to
-                  give context about what the slider controls and what the chosen value means.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use a slider when the user needs to enter a precise number. A slider with a
-                  range of 0–10,000 forces the user to drag to an exact pixel — use an Input
-                  type=number instead, or pair the slider with a numeric input for fine-tuning.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't omit the tooltip or value readout. A slider with no visible current value
-                  leaves the user guessing — they cannot confirm the selected number without an
-                  indicator.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use a slider for a small set of named choices (e.g. Small / Medium / Large).
-                  Discrete named options belong in a Select or radio group — a slider implies
-                  continuous values, which misleads users into thinking intermediate positions are
-                  valid.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
+      {/* API Reference */}
+      <Section title="API Reference">
+        <SubSection title="Slider">
+          <ApiTable
+            headers={['Prop', 'Type', 'Default', 'Description']}
+            rows={[
+              [
+                'variant',
+                '"default" | "error" | "disabled"',
+                'auto',
+                'Visual state — auto-derived from FieldContent context. Override explicitly when used standalone.',
+              ],
+              [
+                'thumbConnect',
+                '"both" | "hover" | "drag" | "none"',
+                '"both"',
+                'Controls when the thumb border matches the track accent color. "both" = always connected, "hover" = on hover only, "drag" = on drag only, "none" = never.',
+              ],
+              [
+                'showTooltip',
+                'boolean',
+                'false',
+                'Props shortcut to show a tooltip above the thumb. Use tooltipFormat to format the value.',
+              ],
+              [
+                'tooltipFormat',
+                '(value: number) => string',
+                '—',
+                'Format function for the tooltip content when using showTooltip.',
+              ],
+              ['startLabel', 'string', '—', 'Text label at the start (left) of the track.'],
+              ['endLabel', 'string', '—', 'Text label at the end (right) of the track.'],
+              [
+                'marks',
+                '{ value: number, label: string }[]',
+                '—',
+                'Array of tick marks with labels positioned along the track.',
+              ],
+              ['min', 'number', '0', 'Minimum value.'],
+              ['max', 'number', '100', 'Maximum value.'],
+              ['step', 'number', '1', 'Step increment.'],
+              [
+                'defaultValue',
+                'number[]',
+                '[50]',
+                'Initial value(s) for uncontrolled usage. Array length determines number of thumbs.',
+              ],
+              ['value', 'number[]', '—', 'Controlled value. Must match length of defaultValue.'],
+              [
+                'onValueChange',
+                '(values: number[]) => void',
+                '—',
+                'Callback fired on every value change.',
+              ],
+              [
+                'disabled',
+                'boolean',
+                '—',
+                'Disables the slider. Also inherited from FieldContent context.',
+              ],
+              ['className', 'string', '—', 'Additional classes on the outer wrapper.'],
+            ]}
+          />
+        </SubSection>
 
-      {/* Props table */}
-      <Section title="Slider Props">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'variant',
-                  '"default" | "error" | "disabled"',
-                  'auto',
-                  'Visual state — auto-derived from FieldContent context. Override explicitly when used standalone.',
-                ],
-                [
-                  'size',
-                  '"xs" | "sm" | "base" | "md" | "lg" | "xl"',
-                  'ctx or "base"',
-                  'Controls track height and thumb size. Inherits FieldContent context size.',
-                ],
-                [
-                  'thumbConnect',
-                  '"both" | "hover" | "drag" | "none"',
-                  '"both"',
-                  'Controls when the thumb border matches the track accent color. "both" = always connected, "hover" = on hover only, "drag" = on drag only, "none" = never.',
-                ],
-                [
-                  'showTooltip',
-                  'boolean',
-                  'false',
-                  'Props shortcut to show a tooltip above the thumb. Use tooltipFormat to format the value.',
-                ],
-                [
-                  'tooltipFormat',
-                  '(value: number) => string',
-                  '—',
-                  'Format function for the tooltip content when using showTooltip.',
-                ],
-                ['startLabel', 'string', '—', 'Text label at the start (left) of the track.'],
-                ['endLabel', 'string', '—', 'Text label at the end (right) of the track.'],
-                [
-                  'marks',
-                  '{ value: number, label: string }[]',
-                  '—',
-                  'Array of tick marks with labels positioned along the track.',
-                ],
-                ['min', 'number', '0', 'Minimum value.'],
-                ['max', 'number', '100', 'Maximum value.'],
-                ['step', 'number', '1', 'Step increment.'],
-                [
-                  'defaultValue',
-                  'number[]',
-                  '[50]',
-                  'Initial value(s) for uncontrolled usage. Array length determines number of thumbs.',
-                ],
-                ['value', 'number[]', '—', 'Controlled value. Must match length of defaultValue.'],
-                [
-                  'onValueChange',
-                  '(values: number[]) => void',
-                  '—',
-                  'Callback fired on every value change.',
-                ],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Sub-components table */}
-      <Section title="Sub-components">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Component', 'Props', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'SliderTooltip',
-                  'children: (value) => ReactNode',
-                  'Custom tooltip rendered above each thumb. Reads current thumb value via context.',
-                ],
-                [
-                  'SliderStartLabel',
-                  'children: ReactNode',
-                  'Label placed to the left of the track. Reads size from context.',
-                ],
-                [
-                  'SliderEndLabel',
-                  'children: ReactNode',
-                  'Label placed to the right of the track. Reads size from context.',
-                ],
-                [
-                  'SliderMark',
-                  'value: number, children: ReactNode',
-                  'Tick mark label positioned at a specific value. Reads min/max from context for positioning.',
-                ],
-              ].map(([comp, propss, desc]) => (
-                <tr key={comp} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {comp}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {propss}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SubSection title="Sub-components">
+          <ApiTable
+            headers={['Component', 'Props', 'Description']}
+            rows={[
+              [
+                'SliderTooltip',
+                'children: (value: number) => ReactNode',
+                'Custom tooltip rendered above each thumb. Reads current thumb value via SliderThumbContext.',
+              ],
+              ['SliderStartLabel', 'children: ReactNode', 'Label placed to the left of the track.'],
+              ['SliderEndLabel', 'children: ReactNode', 'Label placed to the right of the track.'],
+              [
+                'SliderMark',
+                'value: number, children: ReactNode',
+                'Tick mark label at a specific value. Reads min/max from SliderContext for positioning.',
+              ],
+            ]}
+          />
+        </SubSection>
       </Section>
     </div>
   ),

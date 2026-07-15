@@ -12,7 +12,7 @@ import Card, {
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 const TOOLTIP_TEXT =
   'Fitness Age compares your estimated VO₂max against population norms from the NTNU study (Nes et al. 2011). A lower Fitness Age means your cardiovascular fitness is above average for your chronological age.'
@@ -98,8 +98,8 @@ export default function FitnessAgeTile({ fitnessAge, viewTrendHref }) {
                 </div>
               )}
             </div>
-            <Tooltip>
-              <TooltipTrigger asChild>
+            <Popover>
+              <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon-xs"
@@ -108,11 +108,11 @@ export default function FitnessAgeTile({ fitnessAge, viewTrendHref }) {
                 >
                   <Info className="size-4" aria-hidden="true" />
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-72 text-xs leading-relaxed">
+              </PopoverTrigger>
+              <PopoverContent side="top" className="w-auto max-w-72 p-3 text-xs leading-relaxed">
                 {TOOLTIP_TEXT}
-              </TooltipContent>
-            </Tooltip>
+              </PopoverContent>
+            </Popover>
           </div>
         </CardContent>
       </Card>

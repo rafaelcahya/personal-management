@@ -1,13 +1,4 @@
-import {
-  Package,
-  BarChart2,
-  TrendingUp,
-  Wallet,
-  Settings,
-  Users,
-  Bell,
-  HelpCircle,
-} from 'lucide-react'
+import { Package, BarChart2, TrendingUp, Settings, Users, Bell, HelpCircle } from 'lucide-react'
 import {
   NavMenu,
   NavMenuList,
@@ -23,12 +14,37 @@ import {
 const meta = { title: 'NavMenu/Trigger Modes' }
 export default meta
 
-const Preview = ({ label, children }) => (
-  <div className="flex flex-col gap-2">
-    {label && <span className="text-xs text-gray-400">{label}</span>}
-    <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg overflow-visible">
-      {children}
-    </div>
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
+const Preview = ({ children }) => (
+  <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg mb-3 overflow-visible">
+    {children}
   </div>
 )
 
@@ -85,73 +101,179 @@ function SampleNav({ trigger }) {
   )
 }
 
-export const TriggerModes = {
-  name: 'Trigger Modes',
+// ─── Trigger Hover ────────────────────────────────────────────────────────────
+
+export const TriggerHover = {
+  name: 'Trigger Hover',
   render: () => (
-    <div className="flex flex-col gap-10 w-full max-w-3xl">
-      <p className="text-sm text-gray-500 leading-relaxed">
-        The <code className="font-mono bg-gray-100 px-1 rounded text-xs">trigger</code> prop on{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">NavMenu</code> controls how
-        dropdowns open. Both modes close on Escape and support the animated underline indicator.
+    <div className="flex flex-col gap-6 w-full">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">
+          trigger=&quot;hover&quot;
+        </code>{' '}
+        is the default mode. Dropdowns open on{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">mouseenter</code> and close on{' '}
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">mouseleave</code> after a
+        configurable <code className="font-mono bg-gray-100 px-1 rounded text-xs">closeDelay</code>{' '}
+        (default 150ms). The delay gives the cursor time to travel from the trigger into the panel
+        without the dropdown collapsing.
       </p>
 
-      <div className="flex flex-col gap-6">
-        <Preview label='trigger="hover" (default) — open on mouseenter, close on mouseleave with 150ms delay'>
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">
+          trigger=&quot;hover&quot; — open on mouseenter, close on mouseleave after 150ms
+        </span>
+        <Preview>
           <SampleNav trigger="hover" />
         </Preview>
+      </div>
 
-        <Preview label='trigger="click" — click to open, click again or outside to close'>
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Default for desktop apps',
+                body: 'Hover mode feels faster and rewards users who already know the layout — no deliberate click required to preview a section.',
+              },
+              {
+                title: 'Best when mouse precision is assumed',
+                body: 'Hover mode suits standard productivity apps on desktop where users navigate with a mouse and expect immediate feedback on hover.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: 'Avoid for touch-only or accessibility-focused contexts',
+                body: 'mouseenter events are unreliable on touch devices. Screen-reader users also benefit from click-based navigation — use trigger="click" instead.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Hover mode is harder for keyboard and screen-reader users',
+                body: 'Hover-triggered dropdowns require mouse interaction to open. For accessibility-first apps, consider trigger="click" which responds to both mouse and keyboard focus.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Increase closeDelay if users frequently miss the dropdown',
+                body: 'Bump closeDelay to 300ms if users often close the panel while moving the cursor diagonally from trigger to dropdown. The default 150ms suits most layouts.',
+              },
+            ],
+          },
+        ]}
+      />
+
+      <Code>{`<NavMenu trigger="hover" closeDelay={150}>
+  <NavMenuList>
+    <NavMenuLink href="/" active>Home</NavMenuLink>
+
+    <NavMenuItem>
+      <NavMenuTrigger icon={Package}>Inventory</NavMenuTrigger>
+      <NavMenuIndicator />
+      <NavMenuContent>
+        <NavMenuLink href="/stock" icon={Package}>Stock</NavMenuLink>
+        <NavMenuLink href="/analytics" icon={BarChart2}>Analytics</NavMenuLink>
+      </NavMenuContent>
+    </NavMenuItem>
+  </NavMenuList>
+</NavMenu>`}</Code>
+    </div>
+  ),
+}
+
+// ─── Trigger Click ────────────────────────────────────────────────────────────
+
+export const TriggerClick = {
+  name: 'Trigger Click',
+  render: () => (
+    <div className="flex flex-col gap-6 w-full">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
+        <code className="font-mono bg-gray-100 px-1 rounded text-xs">
+          trigger=&quot;click&quot;
+        </code>{' '}
+        opens the dropdown on click and closes it on a second click, a click outside, or Escape. Use
+        this mode when hover interaction is unreliable — touch-friendly devices, hybrid laptops, or
+        contexts where deliberate intent matters.
+      </p>
+
+      <div className="flex flex-col gap-2">
+        <span className="text-xs text-gray-400">
+          trigger=&quot;click&quot; — click to open, click again or outside to close
+        </span>
+        <Preview>
           <SampleNav trigger="click" />
         </Preview>
       </div>
 
-      <div className="overflow-x-auto mb-4">
-        <table className="w-full text-sm border-collapse">
-          <thead>
-            <tr className="bg-gray-50">
-              {['Mode', 'Opens', 'Closes'].map((h) => (
-                <th
-                  key={h}
-                  className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              [
-                'hover',
-                'onMouseEnter the trigger',
-                'onMouseLeave trigger or content (after closeDelay)',
-              ],
-              [
-                'click',
-                'onClick the trigger',
-                'Click trigger again, click outside, or press Escape',
-              ],
-            ].map(([mode, opens, closes]) => (
-              <tr key={mode} className="even:bg-gray-50">
-                <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs">
-                  {mode}
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{opens}</td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{closes}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Touch-friendly and accessibility-focused apps',
+                body: 'Touchpad-heavy laptops, tablets, and screen-reader users all benefit from explicit click intent. mouseenter events are unreliable on touch devices.',
+              },
+              {
+                title: 'Natural pairing for controlled mode',
+                body: 'Click mode works cleanly with value + onValueChange — both user clicks and programmatic setActiveMenu() calls work without hover events interfering.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: 'Avoid for pure desktop apps where hover is expected',
+                body: 'Click mode adds an extra deliberate step for mouse users. On desktop-first apps where speed is a priority, hover mode is the better default.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Click mode is more predictable for screen-reader users',
+                body: "Explicit open/close on click is easier to navigate than hover — the dropdown stays put until dismissed, giving screen-reader users time to explore the panel's content.",
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title:
+                  'No closeDelay in click mode — the dropdown stays open until explicitly closed',
+                body: 'This makes click mode safer for dropdowns with interactive content the user needs time to act on, like forms or multi-step selections.',
+              },
+            ],
+          },
+        ]}
+      />
 
-      <Code>{`{/* Hover mode (default) */}
-<NavMenu trigger="hover" closeDelay={150}>
-  ...
-</NavMenu>
+      <Code>{`<NavMenu trigger="click">
+  <NavMenuList>
+    <NavMenuLink href="/" active>Home</NavMenuLink>
 
-{/* Click mode */}
-<NavMenu trigger="click">
-  ...
+    <NavMenuItem>
+      <NavMenuTrigger icon={Package}>Inventory</NavMenuTrigger>
+      <NavMenuIndicator />
+      <NavMenuContent>
+        <NavMenuLink href="/stock" icon={Package}>Stock</NavMenuLink>
+        <NavMenuLink href="/analytics" icon={BarChart2}>Analytics</NavMenuLink>
+      </NavMenuContent>
+    </NavMenuItem>
+  </NavMenuList>
 </NavMenu>`}</Code>
     </div>
   ),

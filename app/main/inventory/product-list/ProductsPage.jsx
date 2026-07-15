@@ -175,7 +175,7 @@ export default function ProductsPageClient() {
         </CardAction>
 
         {/* Table area */}
-        <CardContent padding="none">
+        <CardContent className="p-0">
           {loading ? (
             <div
               id="loadingSkeleton_productListPage"
@@ -204,12 +204,7 @@ export default function ProductsPageClient() {
               <EmptyStateTitle>Failed to load products</EmptyStateTitle>
               <EmptyStateDescription>Check your connection and try again</EmptyStateDescription>
               <EmptyStateActions>
-                <Button
-                  variant="outline"
-                  size="base"
-                  onClick={() => fetchProducts()}
-                  className="min-w-11"
-                >
+                <Button variant="outline" onClick={() => fetchProducts()} className="min-w-11">
                   Try again
                 </Button>
               </EmptyStateActions>
@@ -230,12 +225,7 @@ export default function ProductsPageClient() {
                 </EmptyStateDescription>
               )}
               <EmptyStateActions>
-                <Button
-                  variant="outline"
-                  size="base"
-                  onClick={handleClearSearch}
-                  className="min-w-11"
-                >
+                <Button variant="outline" onClick={handleClearSearch} className="min-w-11">
                   Clear search
                 </Button>
               </EmptyStateActions>

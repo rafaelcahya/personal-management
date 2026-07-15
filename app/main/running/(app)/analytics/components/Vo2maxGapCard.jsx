@@ -85,7 +85,6 @@ export default function Vo2maxGapCard({ data }) {
           </p>
           <Button
             id="setGoalBtn_analyticsPage"
-            size="base"
             asChild
             className="bg-violet-600 hover:bg-violet-700 text-white"
           >
@@ -131,7 +130,6 @@ export default function Vo2maxGapCard({ data }) {
         )}
         <Button
           id="setGoalBtn_analyticsPage"
-          size="base"
           asChild
           className="bg-violet-600 hover:bg-violet-700 text-white self-start"
         >
@@ -200,7 +198,6 @@ export default function Vo2maxGapCard({ data }) {
           <p className="text-sm text-slate-500">Your race goal date has passed.</p>
           <Button
             id="setNewGoalBtn_analyticsPage"
-            size="base"
             asChild
             className="bg-violet-600 hover:bg-violet-700 text-white"
           >

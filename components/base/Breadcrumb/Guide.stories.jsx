@@ -105,6 +105,22 @@ export const Docs = {
             </BreadcrumbList>
           </Breadcrumb>
         </Preview>
+        <Code>{`import {
+  Breadcrumb, BreadcrumbList, BreadcrumbItem,
+  BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator,
+} from '@/components/base/Breadcrumb/Breadcrumb'
+
+<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/home">Home</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Product Detail</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>`}</Code>
       </Section>
 
       {/* Anatomy */}
@@ -113,77 +129,108 @@ export const Docs = {
         description="Breadcrumb is a composite of seven sub-components. Each piece renders a specific semantic element."
       >
         {/* Diagram */}
-        <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4 overflow-x-auto">
-          {/* Breadcrumb */}
-          <div className="relative pt-6 p-4 border-2 border-dashed border-violet-400 rounded-xl inline-block min-w-max">
-            <span className="absolute top-2 left-3 text-[10px] font-mono font-semibold text-violet-600">
+        <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
+          {/* Breadcrumb — Root */}
+          <div className="relative pt-8 p-4 border-2 border-dashed border-violet-400 rounded-xl">
+            <span className="absolute -top-3 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
               Breadcrumb
             </span>
 
-            {/* BreadcrumbList */}
-            <div className="relative pt-6 p-3 border border-dashed border-blue-300 rounded-lg">
-              <span className="absolute top-1.5 left-3 text-[10px] font-mono text-blue-500">
+            {/* BreadcrumbList — Core */}
+            <div className="relative pt-8 p-4 border border-dashed border-blue-300 rounded-lg">
+              <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono text-blue-500">
                 BreadcrumbList
               </span>
 
-              <div className="flex items-center gap-4">
-                {/* BreadcrumbItem + BreadcrumbLink */}
-                <div className="relative pt-6 px-3 pb-3 border border-dashed border-green-300 rounded-lg">
-                  <span className="absolute top-1.5 left-2 text-[10px] font-mono text-green-500">
+              {/* Vertical rows — no nested absolute labels */}
+              <div className="flex flex-col gap-3">
+                {/* Row: BreadcrumbItem > BreadcrumbLink */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2 py-1 border border-dashed border-slate-300 rounded text-[10px] font-mono text-slate-500 whitespace-nowrap">
                     BreadcrumbItem
                   </span>
-                  <div className="relative pt-5 px-3 pb-2 border border-dashed border-orange-300 rounded-md">
-                    <span className="absolute top-1.5 left-2 text-[10px] font-mono text-orange-500">
-                      BreadcrumbLink
-                    </span>
-                    <span className="text-xs text-blue-500 underline font-mono">Home</span>
-                  </div>
+                  <span className="text-slate-300 text-xs">›</span>
+                  <span className="px-2 py-1 border border-dashed border-violet-300 rounded text-[10px] font-mono text-violet-600 whitespace-nowrap">
+                    BreadcrumbLink
+                  </span>
+                  <span className="text-xs text-blue-500 underline font-mono ml-1">Home</span>
                 </div>
 
-                {/* BreadcrumbSeparator */}
-                <div className="relative pt-6 px-4 pb-3 border border-dashed border-gray-300 rounded-lg">
-                  <span className="absolute top-1.5 left-2 text-[10px] font-mono text-gray-400">
+                {/* Row: BreadcrumbSeparator */}
+                <div className="flex items-center gap-2 pl-1">
+                  <span className="px-2 py-1 border border-dashed border-slate-300 rounded text-[10px] font-mono text-slate-500 whitespace-nowrap">
                     BreadcrumbSeparator
                   </span>
-                  <ChevronRight className="size-3.5 text-slate-400" />
+                  <ChevronRight className="size-3 text-slate-300" />
                 </div>
 
-                {/* BreadcrumbItem + BreadcrumbEllipsis */}
-                <div className="relative pt-6 px-3 pb-3 border border-dashed border-green-300 rounded-lg">
-                  <span className="absolute top-1.5 left-2 text-[10px] font-mono text-green-500">
+                {/* Row: BreadcrumbItem > BreadcrumbEllipsis (optional) */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2 py-1 border border-dashed border-slate-300 rounded text-[10px] font-mono text-slate-500 whitespace-nowrap">
                     BreadcrumbItem
                   </span>
-                  <div className="relative pt-5 px-3 pb-2 border border-dashed border-yellow-400 rounded-md">
-                    <span className="absolute top-1.5 left-2 text-[10px] font-mono text-yellow-500">
-                      BreadcrumbEllipsis
-                    </span>
-                    <span className="text-xs text-slate-400 font-mono">···</span>
-                  </div>
+                  <span className="text-slate-300 text-xs">›</span>
+                  <span className="px-2 py-1 border border-dashed border-green-300 rounded text-[10px] font-mono text-green-600 whitespace-nowrap">
+                    BreadcrumbEllipsis
+                  </span>
+                  <span className="text-[10px] font-mono text-green-500 bg-green-50 px-1 rounded ml-0.5">
+                    opt
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono ml-1">···</span>
                 </div>
 
-                {/* BreadcrumbSeparator */}
-                <div className="relative pt-6 px-4 pb-3 border border-dashed border-gray-300 rounded-lg">
-                  <span className="absolute top-1.5 left-2 text-[10px] font-mono text-gray-400">
+                {/* Row: BreadcrumbSeparator */}
+                <div className="flex items-center gap-2 pl-1">
+                  <span className="px-2 py-1 border border-dashed border-slate-300 rounded text-[10px] font-mono text-slate-500 whitespace-nowrap">
                     BreadcrumbSeparator
                   </span>
-                  <ChevronRight className="size-3.5 text-slate-400" />
+                  <ChevronRight className="size-3 text-slate-300" />
                 </div>
 
-                {/* BreadcrumbItem + BreadcrumbPage */}
-                <div className="relative pt-6 px-3 pb-3 border border-dashed border-green-300 rounded-lg">
-                  <span className="absolute top-1.5 left-2 text-[10px] font-mono text-green-500">
+                {/* Row: BreadcrumbItem > BreadcrumbPage */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2 py-1 border border-dashed border-slate-300 rounded text-[10px] font-mono text-slate-500 whitespace-nowrap">
                     BreadcrumbItem
                   </span>
-                  <div className="relative pt-5 px-3 pb-2 border border-dashed border-pink-300 rounded-md">
-                    <span className="absolute top-1.5 left-2 text-[10px] font-mono text-pink-500">
-                      BreadcrumbPage
-                    </span>
-                    <span className="text-xs text-slate-700 font-mono font-medium">Detail</span>
-                  </div>
+                  <span className="text-slate-300 text-xs">›</span>
+                  <span className="px-2 py-1 border border-dashed border-slate-300 rounded text-[10px] font-mono text-slate-500 whitespace-nowrap">
+                    BreadcrumbPage
+                  </span>
+                  <span className="text-xs text-slate-700 font-mono font-medium ml-1">
+                    Product Detail
+                  </span>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Legend */}
+        <div className="flex flex-wrap gap-4 mb-4">
+          {[
+            { border: 'border-violet-400', text: 'text-violet-600', label: 'Root (Breadcrumb)' },
+            {
+              border: 'border-blue-300',
+              text: 'text-blue-500',
+              label: 'Core part (BreadcrumbList)',
+            },
+            {
+              border: 'border-violet-300',
+              text: 'text-violet-500',
+              label: 'Interactive part (BreadcrumbLink)',
+            },
+            { border: 'border-slate-300', text: 'text-slate-400', label: 'Internal part' },
+            {
+              border: 'border-green-300',
+              text: 'text-green-500',
+              label: 'Optional part (BreadcrumbEllipsis)',
+            },
+          ].map(({ border, text, label }) => (
+            <div key={label} className="flex items-center gap-1.5">
+              <span className={`inline-block w-4 h-4 border-2 border-dashed rounded ${border}`} />
+              <span className={`text-[10px] font-mono ${text}`}>{label}</span>
+            </div>
+          ))}
         </div>
 
         {/* Parts table */}
@@ -208,11 +255,11 @@ export const Docs = {
                   '<nav>',
                   'Root wrapper. Renders a <nav> with aria-label="breadcrumb".',
                 ],
-                ['BreadcrumbList', '<ol>', 'Ordered list container with flex layout and gap.'],
+                ['BreadcrumbList', '<ol>', 'Ordered list container with flex layout and gap-1.5.'],
                 [
                   'BreadcrumbItem',
                   '<li>',
-                  'Wrapper for each item in the trail — link, page, or ellipsis.',
+                  'Wrapper for each trail item — link, page, or ellipsis.',
                 ],
                 [
                   'BreadcrumbLink',
@@ -222,12 +269,12 @@ export const Docs = {
                 [
                   'BreadcrumbPage',
                   '<span>',
-                  'Current page indicator — non-clickable, aria-current="page" auto-applied.',
+                  'Current page indicator — non-clickable. aria-current="page" is auto-applied.',
                 ],
                 [
                   'BreadcrumbSeparator',
                   '<li>',
-                  'Separator between items. Defaults to ChevronRight; pass children to override.',
+                  'Separator between items. Defaults to ChevronRight; pass children to override. aria-hidden="true" is auto-applied.',
                 ],
                 [
                   'BreadcrumbEllipsis',
@@ -260,28 +307,16 @@ export const Docs = {
 } from '@/components/base/Breadcrumb/Breadcrumb'`}</Code>
       </Section>
 
-      {/* Separator */}
+      {/* Custom Separator */}
       <Section
-        title="Separator"
+        title="Custom Separator"
         description="BreadcrumbSeparator defaults to a ChevronRight icon. Pass children to replace it with any icon or text character."
       >
         {[
-          {
-            label: 'default — ChevronRight',
-            sep: undefined,
-          },
-          {
-            label: 'Slash icon',
-            sep: <Slash />,
-          },
-          {
-            label: 'text "/"',
-            sep: '/',
-          },
-          {
-            label: 'dot "·"',
-            sep: '·',
-          },
+          { label: 'default — ChevronRight', sep: undefined },
+          { label: 'Slash icon', sep: <Slash /> },
+          { label: 'text "/"', sep: '/' },
+          { label: 'dot "·"', sep: '·' },
         ].map(({ label, sep }) => (
           <div
             key={label}
@@ -317,7 +352,7 @@ export const Docs = {
       {/* Collapsed */}
       <Section
         title="Collapsed Path"
-        description="Use BreadcrumbEllipsis inside a BreadcrumbItem to indicate hidden trail segments. The expand logic is left to the consumer — typically a DropdownMenu or an onClick toggle."
+        description="Use BreadcrumbEllipsis inside a BreadcrumbItem to indicate hidden trail segments. The expand logic is left to the consumer."
       >
         <SubSection title="Keep first + last">
           <Preview>
@@ -379,17 +414,131 @@ export const Docs = {
         </SubSection>
       </Section>
 
-      {/* Props */}
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Page hierarchy is 3 or more levels deep',
+                  body: 'Home → Inventory → Products → Detail. Breadcrumb earns its space when there are real parent pages to navigate back to. Fewer than 3 levels is better served by a Back button.',
+                },
+                {
+                  title: 'Users navigate frequently between deeply nested pages',
+                  body: 'If the workflow involves moving up and down a hierarchy — e.g. reviewing product details then returning to the product list — breadcrumb shortens that journey.',
+                },
+                {
+                  title: 'The URL structure mirrors a clear parent–child relationship',
+                  body: 'Breadcrumb reinforces a hierarchy that already exists in the routing. If the URL structure is flat or inconsistent, breadcrumb adds confusion rather than clarity.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't use for 1–2 level navigation",
+                  body: "A single parent level doesn't justify a breadcrumb strip. A Back link or a heading with a parent label is simpler, less visual noise, and just as navigable.",
+                },
+                {
+                  title: "Don't use for switching between sibling views",
+                  body: 'Breadcrumb is for navigating up a hierarchy, not across it. If users need to switch between Products, Orders, and Reports at the same level, use Tabs instead.',
+                },
+                {
+                  title: "Don't collapse trails shorter than 5 items",
+                  body: 'BreadcrumbEllipsis on a 3-item trail removes navigational value without solving a real space problem. Only collapse when the trail is long enough to justify it.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title:
+                    'Breadcrumb renders as <nav aria-label="breadcrumb"> — use it once per page',
+                  body: 'Screen readers announce it as a navigation landmark. Having multiple breadcrumb navs on a page creates duplicate landmark confusion — render only one.',
+                },
+                {
+                  title: 'Always use BreadcrumbPage for the last item, never BreadcrumbLink',
+                  body: 'BreadcrumbPage auto-applies aria-current="page" so screen readers announce the current location. The last item is not a navigation target — making it a link is semantically wrong.',
+                },
+                {
+                  title: 'BreadcrumbSeparator is aria-hidden="true" by default',
+                  body: 'Screen readers skip separators automatically. Don\'t add aria-hidden manually — it\'s already applied. When using BreadcrumbEllipsis, the sr-only "More" text preserves meaning for screen readers.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Place breadcrumb directly above the page title in the page header',
+                  body: 'This is the expected position — users look for breadcrumb above the heading, not in the sidebar or footer. It gives hierarchy context before they read the page title.',
+                },
+                {
+                  title: 'Keep separator style consistent across the entire app',
+                  body: 'Pick ChevronRight (default) or "/" and use it everywhere. Mixing styles on different pages breaks visual consistency. ChevronRight implies direction; "/" is better for file path–style navigation.',
+                },
+                {
+                  title: 'Use BreadcrumbLink asChild with Next.js Link for client-side navigation',
+                  body: 'Wrap BreadcrumbLink in <Link href="..."> via asChild to get client-side routing without sacrificing breadcrumb styling or aria semantics.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* API Reference */}
       <Section
-        title="Props"
+        title="API Reference"
         description="Each sub-component accepts className and spreads remaining props to its underlying element."
       >
         {[
+          {
+            name: 'Breadcrumb',
+            rows: [
+              ['children', 'ReactNode', '—', 'Should contain a BreadcrumbList.'],
+              ['className', 'string', '—', 'Additional Tailwind classes on the <nav> element.'],
+            ],
+          },
+          {
+            name: 'BreadcrumbList · BreadcrumbItem · BreadcrumbContent',
+            rows: [
+              ['children', 'ReactNode', '—', 'Content to render inside this sub-component.'],
+              ['className', 'string', '—', 'Additional Tailwind classes merged via cn().'],
+            ],
+          },
           {
             name: 'BreadcrumbLink',
             rows: [
               ['href', 'string', '—', 'URL the link navigates to.'],
               ['ref', 'React.Ref', '—', 'Forwarded to the underlying <a> element.'],
+              ['children', 'ReactNode', '—', 'Link label text.'],
               ['className', 'string', '—', 'Additional Tailwind classes.'],
             ],
           },
@@ -400,7 +549,7 @@ export const Docs = {
                 'children',
                 'ReactNode',
                 '<ChevronRight />',
-                'Custom separator content — icon or text character.',
+                'Custom separator — any icon or text character.',
               ],
               ['className', 'string', '—', 'Additional Tailwind classes.'],
             ],
@@ -475,9 +624,11 @@ export const Docs = {
         <SubSection title="With Next.js Link">
           <Code>{`import Link from 'next/link'
 
-<BreadcrumbLink asChild>
-  <Link href="/inventory">Inventory</Link>
-</BreadcrumbLink>`}</Code>
+<BreadcrumbItem>
+  <BreadcrumbLink asChild>
+    <Link href="/inventory">Inventory</Link>
+  </BreadcrumbLink>
+</BreadcrumbItem>`}</Code>
         </SubSection>
 
         <SubSection title="Dynamic trail from route">
@@ -505,176 +656,6 @@ export const Docs = {
   </BreadcrumbList>
 </Breadcrumb>`}</Code>
         </SubSection>
-      </Section>
-
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Breadcrumb when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The page hierarchy is 3 or more levels deep (e.g. Home → Inventory → Products
-                      → Detail).
-                    </li>
-                    <li>
-                      Users navigate between deeply nested pages and need a quick way to jump back
-                      up the tree.
-                    </li>
-                    <li>
-                      The URL structure mirrors a clear parent–child relationship that benefits from
-                      visual reinforcement.
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use a <strong>Back button</strong> when navigation is linear (1–2 levels) and
-                      users always return to the previous screen.
-                    </li>
-                    <li>
-                      Use <strong>Tabs</strong> when the user switches between sibling views at the
-                      same level — not up and down a hierarchy.
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-4">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <div className="mb-3">
-                  <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem>
-                        <BreadcrumbLink href="#">Home</BreadcrumbLink>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                      <BreadcrumbItem>
-                        <BreadcrumbPage>Dashboard</BreadcrumbPage>
-                      </BreadcrumbItem>
-                    </BreadcrumbList>
-                  </Breadcrumb>
-                </div>
-                <p className="text-xs text-green-800">
-                  Always use{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">BreadcrumbPage</code> for
-                  the last item — it marks the current page with{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">aria-current="page"</code>.
-                </p>
-              </div>
-
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <div className="mb-3">
-                  <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem>
-                        <BreadcrumbLink href="#">Home</BreadcrumbLink>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                      <BreadcrumbItem>
-                        <BreadcrumbEllipsis />
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                      <BreadcrumbItem>
-                        <BreadcrumbPage>Detail</BreadcrumbPage>
-                      </BreadcrumbItem>
-                    </BreadcrumbList>
-                  </Breadcrumb>
-                </div>
-                <p className="text-xs text-green-800">
-                  Use{' '}
-                  <code className="font-mono bg-green-100 px-1 rounded">BreadcrumbEllipsis</code> to
-                  collapse trails longer than 4 levels.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-4">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <div className="mb-3">
-                  <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem>
-                        <BreadcrumbLink href="#">Home</BreadcrumbLink>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                      <Breadcrumb>
-                        <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
-                      </Breadcrumb>
-                    </BreadcrumbList>
-                  </Breadcrumb>
-                </div>
-                <p className="text-xs text-red-800">
-                  Don't use{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">BreadcrumbLink</code> as the
-                  last item — it's misleading because the current page isn't a navigation target.
-                </p>
-              </div>
-
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <div className="mb-3">
-                  <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem>
-                        <BreadcrumbLink href="#">Home</BreadcrumbLink>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                      <BreadcrumbItem>
-                        <BreadcrumbPage>Products</BreadcrumbPage>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                      <BreadcrumbItem>
-                        <BreadcrumbLink href="#">Detail</BreadcrumbLink>
-                      </BreadcrumbItem>
-                    </BreadcrumbList>
-                  </Breadcrumb>
-                </div>
-                <p className="text-xs text-red-800">
-                  Don't place{' '}
-                  <code className="font-mono bg-red-100 px-1 rounded">BreadcrumbPage</code> in the
-                  middle of the trail — it must always be the final item.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
       </Section>
     </div>
   ),

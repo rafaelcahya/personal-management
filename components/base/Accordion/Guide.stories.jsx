@@ -683,6 +683,108 @@ export const Docs = {
           </div>
         </div>
       </Section>
+
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Use for 3+ sections where only one needs to be visible at a time',
+                  body: 'FAQ lists, settings groups, and help topics are ideal fits — accordion keeps the layout compact when showing all content at once would overwhelm the user.',
+                },
+                {
+                  title: 'Use when screen space is limited',
+                  body: 'Progressive disclosure reduces cognitive load — users expand only what they need instead of scrolling past irrelevant content.',
+                },
+                {
+                  title: 'Use variant="card" for visually independent sections',
+                  body: 'Good for history logs, grouped configuration blocks, or content-heavy expandable rows where each section needs its own visual boundary.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: "Don't collapse critical content",
+                  body: 'Content that must always be visible should never be hidden inside an accordion — collapsed sections are easy to miss and create an extra click to access important information.',
+                },
+                {
+                  title: "Don't use for two or three short sections",
+                  body: 'Plain always-visible headings are clearer and require no interaction. Accordion adds overhead; use it only when there are enough sections to justify hiding some.',
+                },
+                {
+                  title: "Don't use as a navigation pattern",
+                  body: 'Use Tabs instead when users switch between mutually exclusive views and all options should be visible at a glance.',
+                },
+                {
+                  title: "Don't nest accordions inside other accordions",
+                  body: 'Multi-level collapsible structures create confusing navigation and poor UX. Keep content hierarchy shallow.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'aria-expanded is set automatically on each trigger',
+                  body: 'AccordionTrigger renders as a <button> — screen readers announce open/closed state on every toggle without any extra ARIA work.',
+                },
+                {
+                  title: 'Write descriptive, meaningful trigger labels',
+                  body: '"Personal Information" is clear; "Section 1" or "Click here" is not. Labels are the only context screen reader users have before deciding to expand.',
+                },
+                {
+                  title: 'Explain why an item is disabled',
+                  body: 'Add a visible hint near the trigger when using disabled — a dimmed button with no context is confusing for all users, not just screen reader users.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Pair type="single" with collapsible in almost all cases',
+                  body: 'Without collapsible, the user cannot close the open section, which feels like a trap. Omit it only when you explicitly need one section to always be visible.',
+                },
+                {
+                  title: 'Use defaultValue to pre-open the most relevant section on mount',
+                  body: 'Avoids a blank-looking accordion where the user has to discover content through clicking. Open the section most likely to be useful on first load.',
+                },
+                {
+                  title: 'Use value + onValueChange only for external sync',
+                  body: 'Need to sync with a URL param, stepper, or external component? Use controlled mode. Otherwise prefer the simpler defaultValue uncontrolled API.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+                  >
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
     </div>
   ),
 }

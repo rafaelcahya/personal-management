@@ -59,68 +59,42 @@ const profiles = [
   },
 ]
 
+const statusDotColor = {
+  online: 'bg-green-500',
+  busy: 'bg-red-500',
+  away: 'bg-amber-400',
+  offline: 'bg-gray-400',
+}
+
 const statusLabel = { online: 'Online', busy: 'Busy', away: 'Away', offline: 'Offline' }
 
-function ProfilePopoverDemo() {
-  return (
-    <div className="flex items-center gap-5 p-5 bg-gray-50 border border-gray-200 rounded-lg flex-wrap">
-      {profiles.map((p) => (
-        <Popover key={p.id}>
-          <PopoverTrigger asChild>
-            <span className="inline-flex">
-              <Avatar size="lg">
-                <AvatarImage src={p.img} alt={p.name} />
-                <AvatarFallback>{p.initials}</AvatarFallback>
-                <AvatarStatus status={p.status} />
-              </Avatar>
-            </span>
-          </PopoverTrigger>
-          <PopoverContent
-            side="top"
-            align="center"
-            sideOffset={10}
-            className="w-60 p-0 overflow-hidden rounded-xl shadow-lg border-0"
-          >
-            <div className={`h-14 bg-gradient-to-r ${p.accent}`} />
-            <div className="px-4 pb-4">
-              <div className="-mt-7 mb-3">
-                <Avatar size="xl" className="ring-[3px] ring-white">
-                  <AvatarImage src={p.img} alt={p.name} />
-                  <AvatarFallback>{p.initials}</AvatarFallback>
-                  <AvatarStatus status={p.status} />
-                </Avatar>
-              </div>
-              <p className="font-semibold text-sm text-gray-900 leading-tight">{p.name}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{p.role}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{p.email}</p>
-              <p className="text-xs text-gray-400 mt-1">
-                <span
-                  className={`inline-block size-1.5 rounded-full mr-1 align-middle ${
-                    {
-                      online: 'bg-green-500',
-                      busy: 'bg-red-500',
-                      away: 'bg-amber-400',
-                      offline: 'bg-gray-400',
-                    }[p.status]
-                  }`}
-                />
-                {statusLabel[p.status]}
-              </p>
-              <div className="flex gap-2 mt-3">
-                <button className="flex-1 text-xs py-1.5 rounded-lg bg-violet-500 hover:bg-violet-600 text-white font-medium transition-colors">
-                  Message
-                </button>
-                <button className="flex-1 text-xs py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 font-medium transition-colors">
-                  Profile
-                </button>
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
               </div>
             </div>
-          </PopoverContent>
-        </Popover>
-      ))}
-    </div>
-  )
-}
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
 
 function ClickDemo() {
   const [selected, setSelected] = useState(null)
@@ -222,108 +196,206 @@ function SelectionDemo() {
   )
 }
 
-function GroupClickDemo() {
-  const [active, setActive] = useState(null)
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="p-5 bg-gray-50 border border-gray-200 rounded-lg">
-        <AvatarGroup max={4} size="default">
-          {people.map((p) => (
-            <Avatar
-              key={p.id}
-              onClick={() => setActive(p)}
-              className={
-                active?.id === p.id ? 'ring-2 ring-violet-500 ring-offset-1 rounded-full' : ''
-              }
-            >
-              <AvatarImage src={p.img} alt={p.name} />
-              <AvatarFallback>{p.initials}</AvatarFallback>
-            </Avatar>
-          ))}
-        </AvatarGroup>
-      </div>
-      <p className="text-xs text-gray-500">
-        {active ? `Active: ${active.name}` : 'Click an avatar in the group…'}
-      </p>
-    </div>
-  )
-}
-
-export const Interactions = {
-  name: 'Interactions',
+export const Clickable = {
+  name: 'Clickable',
   render: () => (
-    <div className="flex flex-col gap-10 w-full max-w-xl">
-      <p className="text-sm text-gray-500 leading-relaxed">
-        Pass an <code className="font-mono bg-gray-100 px-1 rounded text-xs">onClick</code> prop to
-        make an <code className="font-mono bg-gray-100 px-1 rounded text-xs">Avatar</code>{' '}
-        interactive. It gains{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">role="button"</code>,{' '}
-        <code className="font-mono bg-gray-100 px-1 rounded text-xs">tabIndex=0</code>, keyboard
-        support (Enter / Space), and a pointer cursor. All avatars scale on hover.
-      </p>
-
-      <div className="flex flex-col gap-3">
-        <span className="text-xs text-gray-400">click to select — single</span>
-        <ClickDemo />
+    <div className="flex flex-col gap-6 w-full">
+      <div className="flex flex-col gap-2 max-w-2xl">
+        <p className="text-sm text-gray-500 leading-relaxed">
+          Pass an <code className="font-mono bg-gray-100 px-1 rounded text-xs">onClick</code> prop
+          to make an <code className="font-mono bg-gray-100 px-1 rounded text-xs">Avatar</code>{' '}
+          interactive. It gains{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">role="button"</code>,{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">tabIndex=0</code>, and
+          keyboard support (Enter / Space). All avatars also scale to 110% on hover via{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">hover:scale-110</code>.
+        </p>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <span className="text-xs text-gray-400">click to toggle — multi-select</span>
-        <SelectionDemo />
-      </div>
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <span className="text-xs text-gray-400">single select — click to select</span>
+          <ClickDemo />
+        </div>
 
-      <div className="flex flex-col gap-3">
-        <span className="text-xs text-gray-400">click inside AvatarGroup</span>
-        <GroupClickDemo />
-      </div>
-
-      <div className="flex flex-col gap-3">
-        <span className="text-xs text-gray-400">
-          hover scale — all avatars scale to 110% on hover
-        </span>
-        <div className="flex items-center gap-4 p-5 bg-gray-50 border border-gray-200 rounded-lg">
-          {['xs', 'sm', 'default', 'lg', 'xl'].map((size) => (
-            <Avatar key={size} size={size}>
-              <AvatarFallback>RC</AvatarFallback>
-            </Avatar>
-          ))}
+        <div className="flex flex-col gap-2">
+          <span className="text-xs text-gray-400">multi select — click to toggle</span>
+          <SelectionDemo />
         </div>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <span className="text-xs text-gray-400">click to open profile popover</span>
-        <ProfilePopoverDemo />
-      </div>
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use onClick when the avatar triggers an action in the current context',
+                body: 'Selecting a user, toggling assignment, or opening a panel in-place. The Avatar gains role="button" and full keyboard support automatically — no extra wiring needed.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use onClick for navigation — wrap with <Link> instead",
+                body: 'A button cannot be opened in a new tab or followed by keyboard users the way a link can. Use Next.js Link as the wrapper when the avatar routes to a profile page.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Add aria-label describing the action when using onClick',
+                body: 'The avatar gains role="button" automatically but screen readers also need the action label. Use aria-label="View Cahya\'s profile" or aria-label="Select Rafael" rather than relying on the initials alone.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use ring-2 ring-violet-500 ring-offset-2 to communicate selected state',
+                body: 'This is the project standard for selection rings. Apply it conditionally via className — the ring appears outside the avatar boundary without distorting the circle shape.',
+              },
+            ],
+          },
+        ]}
+      />
 
-      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* Clickable — gains role="button" + keyboard support */}
-<Avatar size="lg" onClick={() => setSelected(user.id)}>
-  <AvatarImage src={user.avatarUrl} alt={user.name} />
-  <AvatarFallback>{user.initials}</AvatarFallback>
-</Avatar>
-
-{/* Selected ring via className */}
 <Avatar
   size="lg"
-  onClick={handleClick}
+  onClick={() => setSelected(user.id)}
+  aria-label={\`View \${user.name}'s profile\`}
   className={isSelected ? 'ring-2 ring-violet-500 ring-offset-2 rounded-full' : ''}
 >
-  <AvatarFallback>RC</AvatarFallback>
-</Avatar>
+  <AvatarImage src={user.avatarUrl} alt={user.name} />
+  <AvatarFallback>{user.initials}</AvatarFallback>
+</Avatar>`}</code>
+      </pre>
+    </div>
+  ),
+}
 
-{/* Clickable inside AvatarGroup */}
-<AvatarGroup max={4}>
-  {users.map(u => (
-    <Avatar key={u.id} onClick={() => setActive(u)}>
-      <AvatarImage src={u.avatarUrl} alt={u.name} />
-      <AvatarFallback>{u.initials}</AvatarFallback>
-    </Avatar>
-  ))}
-</AvatarGroup>
+export const WithPopover = {
+  name: 'With Popover',
+  render: () => (
+    <div className="flex flex-col gap-6 w-full">
+      <div className="flex flex-col gap-2 max-w-2xl">
+        <p className="text-sm text-gray-500 leading-relaxed">
+          Wrap <code className="font-mono bg-gray-100 px-1 rounded text-xs">Avatar</code> with a{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">PopoverTrigger</code> using{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">asChild</code> to open a
+          profile card on click. The intermediate{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">
+            &lt;span className="inline-flex"&gt;
+          </code>{' '}
+          wrapper is required because{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">Avatar</code> renders as a{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">&lt;span&gt;</code>, not a
+          button.
+        </p>
+      </div>
 
-{/* Profile popover — wrap with PopoverTrigger asChild */}
-<Popover>
+      <div className="flex items-center gap-5 p-5 bg-gray-50 border border-gray-200 rounded-lg flex-wrap">
+        {profiles.map((p) => (
+          <Popover key={p.id}>
+            <PopoverTrigger asChild>
+              <span className="inline-flex">
+                <Avatar size="lg">
+                  <AvatarImage src={p.img} alt={p.name} />
+                  <AvatarFallback>{p.initials}</AvatarFallback>
+                  <AvatarStatus status={p.status} />
+                </Avatar>
+              </span>
+            </PopoverTrigger>
+            <PopoverContent
+              side="top"
+              align="center"
+              sideOffset={10}
+              className="w-60 p-0 overflow-hidden rounded-xl shadow-lg border-0"
+            >
+              <div className={`h-14 bg-gradient-to-r ${p.accent}`} />
+              <div className="px-4 pb-4">
+                <div className="-mt-7 mb-3">
+                  <Avatar size="xl" className="ring-[3px] ring-white">
+                    <AvatarImage src={p.img} alt={p.name} />
+                    <AvatarFallback>{p.initials}</AvatarFallback>
+                    <AvatarStatus status={p.status} />
+                  </Avatar>
+                </div>
+                <p className="font-semibold text-sm text-gray-900 leading-tight">{p.name}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{p.role}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{p.email}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  <span
+                    className={`inline-block size-1.5 rounded-full mr-1 align-middle ${statusDotColor[p.status]}`}
+                  />
+                  {statusLabel[p.status]}
+                </p>
+                <div className="flex gap-2 mt-3">
+                  <button className="flex-1 text-xs py-1.5 rounded-lg bg-violet-500 hover:bg-violet-600 text-white font-medium transition-colors">
+                    Message
+                  </button>
+                  <button className="flex-1 text-xs py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 font-medium transition-colors">
+                    Profile
+                  </button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        ))}
+      </div>
+
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title:
+                  'Use a popover when clicking an avatar should reveal contextual info in-place',
+                body: 'Profile cards, quick actions (Message / Profile), and presence details are ideal popover content. The user stays in context without a full navigation.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't put forms or long content in an avatar popover",
+                body: 'Keep popover content to name, role, status, and 1–2 action buttons. Use a Sheet or Modal for complex interactions like editing a profile or sending a message with attachments.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title:
+                  'Wrap Avatar in <span className="inline-flex"> before PopoverTrigger asChild',
+                body: 'Avatar renders as a <span>, not a button — PopoverTrigger asChild needs an element it can attach focus and keyboard handlers to. The inline-flex span is the correct anchor.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Use side="top" with sideOffset={10} for profile popovers',
+                body: 'It opens above the avatar where there is typically more vertical space and the card stays close to its trigger. Adjust align to "start" or "end" when the avatar is near a viewport edge.',
+              },
+            ],
+          },
+        ]}
+      />
+
+      <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
+        <code>{`<Popover>
   <PopoverTrigger asChild>
     <span className="inline-flex">
       <Avatar size="lg">

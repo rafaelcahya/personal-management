@@ -38,7 +38,6 @@ const PasswordInput = forwardRef(function PasswordInput(
     strengthMeter = false,
     strengthRules = DEFAULT_STRENGTH_RULES,
     meterVariant = 'bars',
-    size,
     variant,
     className,
     ...props
@@ -67,7 +66,6 @@ const PasswordInput = forwardRef(function PasswordInput(
           value={isControlled ? value : undefined}
           defaultValue={!isControlled ? defaultValue : undefined}
           onChange={handleChange}
-          size={size}
           variant={variant}
           className={className}
           {...props}

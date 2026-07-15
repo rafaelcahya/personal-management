@@ -59,7 +59,12 @@ export default function TradesTable({ trades, sortKey, sortDir, onSort, onRefres
             <TableHead>Ticker</TableHead>
             <TableHead align="right">Margin</TableHead>
             <TableHead align="right">Proceeds</TableHead>
-            <SortableHead column={sortColumn} label="Return %" sortKey="return_percent" />
+            <SortableHead
+              align="right"
+              column={sortColumn}
+              label="Return %"
+              sortKey="return_percent"
+            />
             <SortableHead column={sortColumn} label="P/L" sortKey="realized_gain" align="right" />
             <TableHead>Type</TableHead>
           </TableRow>
@@ -72,7 +77,7 @@ export default function TradesTable({ trades, sortKey, sortDir, onSort, onRefres
               clickable
               onClick={() => setSelectedTrade(trade)}
             >
-              <TableCell className="text-slate-700">
+              <TableCell className="text-slate-700 whitespace-nowrap">
                 {new Date(trade.trade_date).toLocaleDateString('id-ID', {
                   day: '2-digit',
                   month: 'short',
@@ -80,19 +85,20 @@ export default function TradesTable({ trades, sortKey, sortDir, onSort, onRefres
                 })}
               </TableCell>
               <TableCell className="font-bold uppercase text-violet-600">{trade.ticker}</TableCell>
-              <TableCell className="font-mono text-slate-700" align="right">
+              <TableCell className="font-mono text-slate-700 whitespace-nowrap" align="right">
                 Rp {Number(trade.margin).toLocaleString('id-ID')}
               </TableCell>
-              <TableCell className="font-mono text-slate-700" align="right">
+              <TableCell className="font-mono text-slate-700 whitespace-nowrap" align="right">
                 Rp {Number(trade.proceeds).toLocaleString('id-ID')}
               </TableCell>
               <TableCell
+                align="right"
                 className={`font-semibold ${profitLossColor(parseFloat(trade.return_percent))}`}
               >
                 {trade.return_percent}
               </TableCell>
               <TableCell
-                className={`font-mono font-semibold ${profitLossColor(Number(trade.realized_gain))}`}
+                className={`font-mono font-semibold whitespace-nowrap ${profitLossColor(Number(trade.realized_gain))}`}
                 align="right"
               >
                 Rp {Number(trade.realized_gain).toLocaleString('id-ID')}

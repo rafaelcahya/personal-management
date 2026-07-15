@@ -67,7 +67,6 @@ export default function ProductBrandFilterDropdown({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          size="base"
           id="filterSortBtn_productBrandPage"
           className="gap-2 focus-visible:ring-0 focus-visible:ring-offset-0 relative"
         >
@@ -88,7 +87,6 @@ export default function ProductBrandFilterDropdown({
           {hasActiveFilter && (
             <Button
               variant="ghost"
-              size="base"
               id="clearFilterBtn_productBrandPage"
               className="h-6 px-2 text-xs hover:bg-violet-100 text-violet-500 hover:text-violet-500"
               onClick={(e) => {
@@ -125,7 +123,6 @@ export default function ProductBrandFilterDropdown({
           {hasNonDefaultSort && (
             <Button
               variant="ghost"
-              size="base"
               id="resetSortBtn_productBrandPage"
               className="h-6 px-2 text-xs hover:bg-violet-100 text-violet-500 hover:text-violet-500"
               onClick={(e) => {

@@ -93,7 +93,7 @@ export function TableCell({ children, className, align = 'left', ...props }) {
 
 export function TableCaption({ children, className, ...props }) {
   return (
-    <caption className={cn('mt-2 text-xs text-gray-400 text-center', className)} {...props}>
+    <caption className={cn('my-2 text-xs text-gray-400 text-center', className)} {...props}>
       {children}
     </caption>
   )

@@ -36,7 +36,7 @@ function ProgressBar({ percent }) {
   )
 }
 
-function BudgetRow({ type, actual, budget, onSave }) {
+function BudgetRow({ budgetKey, label, actual, budget, onSave }) {
   const [editing, setEditing] = useState(false)
   const [value, setValue] = useState(budget != null ? String(budget) : '')
   const [saving, setSaving] = useState(false)
@@ -54,7 +54,7 @@ function BudgetRow({ type, actual, budget, onSave }) {
     }
     setSaving(true)
     try {
-      await onSave(type, parsed)
+      await onSave(budgetKey, parsed)
       setEditing(false)
     } finally {
       setSaving(false)
@@ -67,7 +67,9 @@ function BudgetRow({ type, actual, budget, onSave }) {
     <div className="py-3 px-4 border-b border-border last:border-0">
       <div className="flex items-center justify-between gap-3 mb-1.5">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-sm font-medium text-foreground truncate">{type}</span>
+          <span className="text-sm font-medium text-foreground truncate" title={label}>
+            {label}
+          </span>
           {percent != null && (
             <span
               className={`text-xs font-medium px-1.5 py-0.5 rounded shrink-0 ${
@@ -134,6 +136,22 @@ function BudgetRow({ type, actual, budget, onSave }) {
   )
 }
 
+function makeProductKey(brand, product) {
+  return `${brand || ''}__${product}`
+}
+
+function makeProductLabel(brand, product) {
+  return brand ? `${brand} — ${product}` : product
+}
+
+function labelFromKey(key) {
+  const idx = key.indexOf('__')
+  if (idx === -1) return key
+  const brand = key.slice(0, idx)
+  const product = key.slice(idx + 2)
+  return brand ? `${brand} — ${product}` : product
+}
+
 export default function MonthlyBudgetTracker({ monthlySpendByType, loading }) {
   const [budgets, setBudgets] = useState({})
   const [budgetLoading, setBudgetLoading] = useState(true)
@@ -152,21 +170,29 @@ export default function MonthlyBudgetTracker({ monthlySpendByType, loading }) {
   }, [])
 
   const thisMonth = new Date().toISOString().slice(0, 7)
-  const spendByType = (monthlySpendByType || [])
-    .filter((i) => i.month === thisMonth)
-    .reduce((acc, i) => {
-      acc[i.type] = (acc[i.type] || 0) + i.total_spent
-      return acc
-    }, {})
 
-  const allTypes = Array.from(
-    new Set([...Object.keys(spendByType), ...Object.keys(budgets)])
+  const thisMonthItems = (monthlySpendByType || []).filter((i) => i.month === thisMonth)
+
+  const spendByProduct = thisMonthItems.reduce((acc, i) => {
+    const key = makeProductKey(i.brand, i.product)
+    acc[key] = (acc[key] || 0) + i.total_spent
+    return acc
+  }, {})
+
+  const labelByKey = thisMonthItems.reduce((acc, i) => {
+    const key = makeProductKey(i.brand, i.product)
+    if (!acc[key]) acc[key] = makeProductLabel(i.brand, i.product)
+    return acc
+  }, {})
+
+  const allProductKeys = Array.from(
+    new Set([...Object.keys(spendByProduct), ...Object.keys(budgets)])
   ).sort()
 
-  const handleSave = async (type, value) => {
-    await upsertBudget(type, value)
-    setBudgets((prev) => ({ ...prev, [type]: value }))
-    toast.success(`Budget for ${type} saved`)
+  const handleSave = async (budgetKey, value) => {
+    await upsertBudget(budgetKey, value)
+    setBudgets((prev) => ({ ...prev, [budgetKey]: value }))
+    toast.success('Budget saved')
   }
 
   const isLoading = loading || budgetLoading
@@ -178,11 +204,11 @@ export default function MonthlyBudgetTracker({ monthlySpendByType, loading }) {
         <CardHeaderContent>
           <CardTitle>Monthly Budget Tracker</CardTitle>
           <CardDescription>
-            Track this month&apos;s spend vs your budget per category
+            Track this month&apos;s spend vs your budget per product
           </CardDescription>
         </CardHeaderContent>
       </CardHeader>
-      <CardContent padding="none">
+      <CardContent className="p-0">
         {isLoading ? (
           <div className="space-y-4 px-4 py-3">
             {[...Array(4)].map((_, i) => (
@@ -195,7 +221,7 @@ export default function MonthlyBudgetTracker({ monthlySpendByType, loading }) {
               </div>
             ))}
           </div>
-        ) : allTypes.length === 0 ? (
+        ) : allProductKeys.length === 0 ? (
           <EmptyState size="sm">
             <EmptyStateIcon icon={Wallet} />
             <EmptyStateTitle>No spend data this month</EmptyStateTitle>
@@ -204,12 +230,13 @@ export default function MonthlyBudgetTracker({ monthlySpendByType, loading }) {
             </EmptyStateDescription>
           </EmptyState>
         ) : (
-          allTypes.map((type) => (
+          allProductKeys.map((key) => (
             <BudgetRow
-              key={type}
-              type={type}
-              actual={spendByType[type] || 0}
-              budget={budgets[type] ?? null}
+              key={key}
+              budgetKey={key}
+              label={labelByKey[key] ?? labelFromKey(key)}
+              actual={spendByProduct[key] || 0}
+              budget={budgets[key] ?? null}
               onSave={handleSave}
             />
           ))

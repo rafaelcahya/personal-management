@@ -14,7 +14,7 @@ import Pagination from '@/components/base/Pagination/Pagination'
 import AddTrade from './AddTrade'
 import Input from '@/components/base/Input/Input'
 import { Search, X } from 'lucide-react'
-import Card, { CardContent } from '@/components/base/Card/Card'
+import Card, { CardContent, CardFooter } from '@/components/base/Card/Card'
 
 const DEFAULT_SORT_KEY = 'trade_date'
 const DEFAULT_SORT_DIR = 'desc'
@@ -200,7 +200,7 @@ export default function TradesPageClient({
           }
         />
 
-        <CardContent padding="none" className="pb-4">
+        <CardContent className="p-0">
           {/* Table area */}
           <div className="px-5 pt-3">
             <TradeMetricStrip summary={summary} />
@@ -221,22 +221,24 @@ export default function TradesPageClient({
                 onSort={handleSort}
                 onRefresh={refresh}
               />
-              {showPagination && (
-                <Pagination
-                  id="tradePagination_tradePage"
-                  prevId="tradePaginationPrevBtn_tradePage"
-                  nextId="tradePaginationNextBtn_tradePage"
-                  infoId="tradePaginationInfo_tradePage"
-                  page={page}
-                  totalPages={totalPages}
-                  total={total}
-                  onPrev={() => handlePageChange(page - 1)}
-                  onNext={() => handlePageChange(page + 1)}
-                />
-              )}
             </>
           )}
         </CardContent>
+        <CardFooter>
+          {showPagination && (
+            <Pagination
+              id="tradePagination_tradePage"
+              prevId="tradePaginationPrevBtn_tradePage"
+              nextId="tradePaginationNextBtn_tradePage"
+              infoId="tradePaginationInfo_tradePage"
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              onPrev={() => handlePageChange(page - 1)}
+              onNext={() => handlePageChange(page + 1)}
+            />
+          )}
+        </CardFooter>
       </Card>
     </main>
   )

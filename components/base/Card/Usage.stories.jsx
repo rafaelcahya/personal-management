@@ -26,6 +26,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const AddButton = () => (
   <Button
     size="md"
@@ -40,9 +68,9 @@ const AddButton = () => (
 export const FullPage = {
   name: 'Full Page',
   render: () => (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full">
       {/* 1. Information guide */}
-      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
         The card-in-card pattern: a{' '}
         <code className="font-mono bg-gray-100 px-1 rounded text-xs">transparent</code> outer card
         acts as the page section title and layout container, while{' '}
@@ -281,7 +309,47 @@ export const FullPage = {
         </Card>
       </div>
 
-      {/* 3. Code snippet */}
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Use transparent outer + shell inner for every page section',
+                body: 'The standard page structure in this app is transparent outer (section title + layout) + shell inner (content box). transparent provides the header without a white box; shell inner cards provide the content boundaries.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use a shell outer card for page-level section wrappers",
+                body: 'A shell card wrapping other shell cards creates a box-in-box look with unnecessary visual weight. Transparent outer is always the right choice at page level — it provides structure without adding a border.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Use as="h1" or as="h2" on the outer CardTitle',
+                body: 'The outer transparent card is the page-level heading — set the correct heading level so screen readers understand the document hierarchy. Inner section cards default to h3.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Always pass CardContent className="p-0" on the outer transparent card',
+                body: 'Without p-0, inner shell cards or tables start with an extra p-4 offset from the outer card. Always remove the default padding on the transparent wrapper so inner content starts flush.',
+              },
+            ],
+          },
+        ]}
+      />
+
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* card-in-card pattern */}
 {/* transparent outer → no box, just layout + title */}

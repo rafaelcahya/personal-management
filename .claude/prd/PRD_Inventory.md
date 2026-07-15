@@ -1518,7 +1518,7 @@ While the brand list data is loading (API hasn't responded yet), the page shows 
 
 - A header row matching the real table columns
 - 5 body rows with placeholder blocks matching the real column widths
-- Built using the shadcn `Skeleton` component
+- Built using the base `Skeleton` component from `@/components/base/Skeleton/Skeleton`
 
 This replaces any generic spinner or blank state during load.
 
@@ -1839,7 +1839,7 @@ AND the modal closes
 
 **I. Loading Skeleton**
 
-While the product name list is fetching, a shadcn Skeleton table is shown instead of a blank page.
+While the product name list is fetching, a base Skeleton table is shown instead of a blank page.
 
 > As a user, I want to see a skeleton placeholder while data loads, so that the page feels responsive and I know something is happening.
 

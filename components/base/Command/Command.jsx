@@ -15,6 +15,7 @@ const useCommand = () => useContext(CommandCtx)
 export function Command({ children, open: openProp, onOpenChange }) {
   const [openState, setOpenState] = useState(false)
   const [query, setQuery] = useState('')
+  const [activeKey, setActiveKey] = useState(null)
 
   const isControlled = openProp !== undefined
   const open = isControlled ? openProp : openState
@@ -40,14 +41,32 @@ export function Command({ children, open: openProp, onOpenChange }) {
     return () => document.removeEventListener('keydown', handler)
   }, [])
 
+  useEffect(() => {
+    if (!open) return
+    function onDown(e) {
+      setActiveKey(e.key.toLowerCase())
+    }
+    function onUp() {
+      setActiveKey(null)
+    }
+    document.addEventListener('keydown', onDown)
+    document.addEventListener('keyup', onUp)
+    return () => {
+      document.removeEventListener('keydown', onDown)
+      document.removeEventListener('keyup', onUp)
+    }
+  }, [open])
+
   return (
-    <CommandCtx.Provider value={{ query, setQuery, open, setOpen }}>{children}</CommandCtx.Provider>
+    <CommandCtx.Provider value={{ query, setQuery, open, setOpen, activeKey }}>
+      {children}
+    </CommandCtx.Provider>
   )
 }
 
 // ─── CommandTrigger ───────────────────────────────────────────────────────────
 
-export function CommandTrigger({ children, className, ...props }) {
+export function CommandTrigger({ children, className, shortcutVariant = 'chip', ...props }) {
   const { setOpen } = useCommand()
   return (
     <button
@@ -63,9 +82,19 @@ export function CommandTrigger({ children, className, ...props }) {
         <>
           <Search className="size-4 shrink-0" />
           <span>Search…</span>
-          <kbd className="ml-auto text-[10px] font-mono bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-400">
-            ⌘K
-          </kbd>
+          {shortcutVariant === 'chip' && (
+            <span className="ml-auto flex items-center gap-0.5">
+              <kbd className="text-[10px] font-mono bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-400">
+                ⌘
+              </kbd>
+              <kbd className="text-[10px] font-mono bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-400">
+                K
+              </kbd>
+            </span>
+          )}
+          {shortcutVariant === 'text' && (
+            <span className="ml-auto text-[11px] font-mono text-gray-400 tracking-[0.5em]">⌘K</span>
+          )}
         </>
       )}
     </button>
@@ -219,8 +248,16 @@ export function CommandGroup({ label, children }) {
 
 // ─── CommandItem ──────────────────────────────────────────────────────────────
 
-export function CommandItem({ icon: Icon, label, shortcut, onSelect, className, ...props }) {
-  const { query, setOpen } = useCommand()
+export function CommandItem({
+  icon: Icon,
+  label,
+  shortcut,
+  shortcutVariant = 'chip',
+  onSelect,
+  className,
+  ...props
+}) {
+  const { query, setOpen, activeKey } = useCommand()
 
   const isFiltered =
     !!query &&
@@ -248,16 +285,39 @@ export function CommandItem({ icon: Icon, label, shortcut, onSelect, className, 
     >
       {Icon && <Icon className="size-4 text-gray-500 shrink-0" />}
       <span className="flex-1 truncate">{label}</span>
-      {shortcut && (
+      {shortcut && shortcutVariant === 'chip' && (
         <span className="flex items-center gap-1 shrink-0">
           {shortcut.split(' ').map((k, i) => (
             <kbd
               key={i}
-              className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono bg-gray-100 border border-gray-200 rounded text-gray-500"
+              className={cn(
+                'inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono border rounded transition-colors',
+                activeKey === k.toLowerCase()
+                  ? 'bg-violet-100 border-violet-300 text-violet-600'
+                  : 'bg-gray-100 border-gray-200 text-gray-500'
+              )}
             >
               {k}
             </kbd>
           ))}
+        </span>
+      )}
+      {shortcut && shortcutVariant === 'text' && (
+        <span className="flex shrink-0 tracking-[0.5em]">
+          {shortcut
+            .replace(/ /g, '')
+            .split('')
+            .map((char, i) => (
+              <span
+                key={i}
+                className={cn(
+                  'text-[11px] font-mono transition-colors',
+                  activeKey === char.toLowerCase() ? 'text-violet-500' : 'text-gray-400'
+                )}
+              >
+                {char}
+              </span>
+            ))}
         </span>
       )}
     </div>

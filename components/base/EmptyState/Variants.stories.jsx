@@ -15,6 +15,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const variants = [
   {
     value: 'empty',
@@ -79,6 +107,47 @@ export const Variants = {
           </div>
         ))}
       </div>
+
+      <BestPractices
+        items={[
+          {
+            heading: 'When to use',
+            cards: [
+              {
+                title: 'Match variant to the situation — not the emotion',
+                body: 'Use empty for zero data, search when a filter or query produced no results, and error when a network or server failure occurred. The wrong variant sends a misleading signal.',
+              },
+            ],
+          },
+          {
+            heading: 'When not to use',
+            cards: [
+              {
+                title: "Don't use error for zero-data situations",
+                body: 'Reserve error exclusively for failed fetches or server errors. Red tone carries weight — misusing it for empty lists trains users to ignore real failure states.',
+              },
+            ],
+          },
+          {
+            heading: 'Accessibility',
+            cards: [
+              {
+                title: 'Error variant applies red throughout — the tone carries weight',
+                body: 'The error variant colors the icon, title, and description red. Only use it when the system has genuinely failed — not for validation errors, user mistakes, or empty lists.',
+              },
+            ],
+          },
+          {
+            heading: 'Advice',
+            cards: [
+              {
+                title: 'Always pair error variant with a Retry action',
+                body: 'An error state with no recovery path is a dead end. Users expect to be able to retry when something goes wrong — add a Retry button in EmptyStateActions whenever variant="error".',
+              },
+            ],
+          },
+        ]}
+      />
 
       <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
         <code>{`{/* no data — default */}

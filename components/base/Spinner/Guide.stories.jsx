@@ -5,40 +5,127 @@ import Button from '@/components/base/Button/Button'
 const meta = { title: 'Spinner' }
 export default meta
 
+// ─── Primitives ───────────────────────────────────────────────────────────────
+
+const Section = ({ title, description, children }) => (
+  <div className="mb-12">
+    <h2 className="text-xl font-semibold text-gray-900 mb-1">{title}</h2>
+    {description && <p className="text-sm text-gray-500 mb-4">{description}</p>}
+    <hr className="mb-5 border-gray-200" />
+    {children}
+  </div>
+)
+
+const SubSection = ({ title, description, children }) => (
+  <div className="mb-8">
+    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-1">{title}</h3>
+    {description && <p className="text-xs text-gray-500 mb-3">{description}</p>}
+    {children}
+  </div>
+)
+
+const Code = ({ children }) => (
+  <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto mb-4 leading-relaxed">
+    <code>{children}</code>
+  </pre>
+)
+
+const Tag = ({ children, color = 'gray' }) => {
+  const colors = {
+    gray: 'bg-gray-100 text-gray-600',
+    violet: 'bg-violet-100 text-violet-700',
+    green: 'bg-green-100 text-green-700',
+    red: 'bg-red-100 text-red-700',
+  }
+  return (
+    <span
+      className={`inline-block px-2 py-0.5 rounded text-xs font-mono font-medium ${colors[color]}`}
+    >
+      {children}
+    </span>
+  )
+}
+
+const ApiTable = ({ component, rows }) => (
+  <div className="mb-6">
+    {component && <p className="text-xs font-mono font-semibold text-gray-500 mb-2">{component}</p>}
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            {['Prop', 'Type', 'Default', 'Description'].map((h) => (
+              <th
+                key={h}
+                className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([prop, type, def, desc]) => (
+            <tr key={prop} className="even:bg-gray-50">
+              <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                {prop}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
+                {type}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400">
+                {def}
+              </td>
+              <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)
+
+// ─── Story ────────────────────────────────────────────────────────────────────
+
 export const Docs = {
   name: 'Docs',
   render: () => (
-    <div className="flex flex-col gap-10 w-full max-w-3xl py-6 px-2">
+    <div className="p-8 max-w-4xl font-sans text-gray-900">
       {/* Header */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-gray-900">Spinner</h1>
-        <p className="text-base text-gray-500 leading-relaxed">
+      <div className="mb-10">
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900">Spinner</h1>
+          <Tag color="violet">Base Component</Tag>
+        </div>
+        <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
           A lightweight inline loading indicator built from scratch using a CSS border animation. No
           SVG, no library — just a spinning circle that inherits color via{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-sm">border-current</code>.
+          <code className="font-mono text-sm">border-current</code>.
         </p>
       </div>
 
       {/* Overview */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Overview</h2>
-        <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-xl">
-          <Spinner size="xs" />
-          <Spinner size="sm" />
-          <Spinner size="default" />
-          <Spinner size="lg" />
-          <Spinner size="xl" />
-          <Spinner variant="muted" />
-          <div className="bg-violet-600 rounded-lg p-2 flex">
-            <Spinner variant="white" />
+      <Section title="Overview">
+        <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 w-80">
+          <div className="flex items-center gap-6">
+            <Spinner size="xs" />
+            <Spinner size="sm" />
+            <Spinner size="default" />
+            <Spinner size="lg" />
+            <Spinner size="xl" />
           </div>
-          <Button disabled>
+          <div className="flex items-center gap-6">
+            <Spinner variant="default" />
+            <Spinner variant="muted" />
+            <div className="bg-violet-600 rounded-lg p-1.5 flex">
+              <Spinner variant="white" />
+            </div>
+          </div>
+          <Button disabled className="w-fit">
             <Spinner size="xs" variant="white" />
             Saving...
           </Button>
         </div>
-        <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-          <code>{`import { Spinner } from '@/components/base/Spinner/Spinner'
+        <Code>{`import { Spinner } from '@/components/base/Spinner/Spinner'
 
 <Spinner />
 <Spinner size="lg" />
@@ -48,37 +135,54 @@ export const Docs = {
 <Button disabled>
   <Spinner size="xs" variant="white" />
   Saving...
-</Button>`}</code>
-        </pre>
-      </section>
+</Button>`}</Code>
+      </Section>
 
       {/* Anatomy */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Anatomy</h2>
-        <pre className="bg-gray-50 border border-gray-200 rounded-lg px-5 py-4 text-xs text-gray-700 leading-relaxed">
-          <code>{`<span
-  role="status"
-  aria-label="Loading"
-  className="inline-block rounded-full border-current border-t-transparent animate-spin"
-/>`}</code>
-        </pre>
-        <p className="text-sm text-gray-500 leading-relaxed">
+      <Section title="Anatomy">
+        <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl mb-4">
+          <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wide block mb-3">
+            Structure
+          </span>
+          <div className="relative p-4 border-2 border-dashed border-violet-400 rounded-xl inline-block">
+            <span className="absolute -top-2.5 left-3 bg-gray-50 px-1 text-[10px] font-mono font-semibold text-violet-600">
+              Spinner
+            </span>
+            <div className="flex items-center gap-3 mt-1">
+              <Spinner />
+              <div className="relative px-3 py-2 border border-dashed border-slate-300 rounded-lg">
+                <span className="absolute -top-2 left-2 bg-gray-50 px-0.5 text-[10px] font-mono text-slate-400">
+                  span[role=status]
+                </span>
+                <p className="text-[10px] font-mono text-gray-400 mt-1">
+                  border-current · border-t-transparent · animate-spin
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="text-sm text-gray-500 leading-relaxed mb-4">
           A single <code className="font-mono bg-gray-100 px-1 rounded text-xs">span</code> with{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-xs">border-current</code> on
           three sides and{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-xs">border-t-transparent</code>{' '}
-          on the top, rotated continuously via Tailwind's{' '}
+          on the top, rotated via Tailwind&apos;s{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-xs">animate-spin</code>. Color is
-          set via <code className="font-mono bg-gray-100 px-1 rounded text-xs">text-*</code> classes
-          since <code className="font-mono bg-gray-100 px-1 rounded text-xs">border-current</code>{' '}
-          uses <code className="font-mono bg-gray-100 px-1 rounded text-xs">currentColor</code>.
+          inherited from <code className="font-mono bg-gray-100 px-1 rounded text-xs">text-*</code>{' '}
+          classes since{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">border-current</code> uses{' '}
+          <code className="font-mono bg-gray-100 px-1 rounded text-xs">currentColor</code>.
         </p>
-      </section>
+        <Code>{`<span
+  role="status"
+  aria-label="Loading"
+  className="inline-block rounded-full border-current border-t-transparent animate-spin"
+/>`}</Code>
+      </Section>
 
       {/* Sizes */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Sizes</h2>
-        <div className="flex items-end gap-8">
+      <Section title="Sizes">
+        <div className="flex items-end gap-8 mb-4">
           {[
             { size: 'xs', dim: '12px' },
             { size: 'sm', dim: '16px' },
@@ -95,155 +199,108 @@ export const Docs = {
             </div>
           ))}
         </div>
-      </section>
+        <Code>{`<Spinner size="xs" />      {/* 12px */}
+<Spinner size="sm" />      {/* 16px */}
+<Spinner size="default" /> {/* 20px — default */}
+<Spinner size="lg" />      {/* 28px */}
+<Spinner size="xl" />      {/* 40px */}`}</Code>
+      </Section>
 
-      {/* When to Use */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">When to Use</h2>
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use Spinner when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <div className="flex flex-col gap-8">
+          {[
+            {
+              heading: 'When to use',
+              items: [
+                {
+                  title: 'Content shape is unknown or loading time is unpredictable',
+                  body: 'Ideal for dynamic API responses, form submits, delete confirmations — any short background action where you just need to signal "something is happening."',
+                },
+                {
+                  title: 'Use variant="white" on dark or colored backgrounds',
+                  body: 'Filled buttons, dark overlays, colored surfaces — any background darker than midtone gray needs variant="white" to maintain sufficient contrast.',
+                },
+                {
+                  title: 'Use xs or sm inside buttons and badges',
+                  body: 'xs matches the text line height without making the button taller. sm for icon buttons. Keep size proportional to the surrounding context.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              items: [
+                {
+                  title: 'Use Skeleton when the layout is already known',
+                  body: 'Skeleton reserves space, prevents layout shift, and feels faster than a Spinner that causes the page to reflow when content arrives.',
+                },
+                {
+                  title: 'Use a progress bar for measurable operations',
+                  body: 'File uploads and multi-step wizards have a defined percentage. A spinner communicates nothing about progress when you have actual numbers.',
+                },
+                {
+                  title: "Don't place multiple large spinners on the same screen",
+                  body: 'It overwhelms the user and makes it impossible to tell which area is actually loading. Show one spinner per loading context.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              items: [
+                {
+                  title: 'Renders role="status" and aria-label="Loading" automatically',
+                  body: 'No extra ARIA attributes needed. The spinner is already accessible out of the box.',
+                },
+                {
+                  title: 'Always pair with a visible text label inside buttons',
+                  body: 'Users who cannot perceive the spinner must still understand the action in progress via the label — "Saving...", "Loading...", "Deleting...".',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              items: [
+                {
+                  title: 'Always set disabled on the button while the spinner is showing',
+                  body: 'Prevents double submission and gives the button the correct visual disabled state. Never show a spinner in an enabled button.',
+                },
+                {
+                  title: 'Always add a timeout and error fallback',
+                  body: 'If the spinner runs longer than ~10 seconds without resolving, surface an error state with a retry button — never leave the user staring at a spinner indefinitely.',
+                },
+              ],
+            },
+          ].map(({ heading, items }) => (
+            <div key={heading}>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                {heading}
+              </p>
+              <div className="flex flex-col gap-3">
+                {items.map(({ title, body }) => (
+                  <div
+                    key={title}
+                    className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
                   >
-                    {h}
-                  </th>
+                    <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                      <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+                    </div>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      The content shape is unknown ahead of time (e.g. fetching a dynamic value or
-                      API response)
-                    </li>
-                    <li>
-                      A background action is in progress and you need to block further interaction
-                      (e.g. form submit, delete confirmation)
-                    </li>
-                    <li>
-                      The loading duration is short and unpredictable — you just need to signal
-                      "something is happening"
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Skeleton</strong> when the layout of the incoming content is
-                      already known — it reduces layout shift and feels faster
-                    </li>
-                    <li>
-                      Use a <strong>progress bar</strong> when the operation has a measurable
-                      percentage (e.g. file upload, multi-step wizard)
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              </div>
+            </div>
+          ))}
         </div>
-      </section>
-
-      {/* Dos & Don'ts */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Dos & Don'ts</h2>
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Pair the Spinner with a short descriptive label (e.g. "Saving…") when placed
-                  inside a button so screen readers and sighted users both understand the action in
-                  progress.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use <code className="font-mono bg-green-100 px-0.5 rounded">variant="white"</code>{' '}
-                  on dark or colored backgrounds (e.g. inside a filled button) so the spinner
-                  remains visible with sufficient contrast.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Keep the spinner size proportional to the surrounding context — use{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">xs</code> or{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">sm</code> inside buttons
-                  and badges, reserve{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">lg</code> /{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">xl</code> for full-page or
-                  section-level loading states.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't leave the spinner running indefinitely without a timeout or error fallback —
-                  always show an error state if the request fails so the user isn't stuck watching a
-                  spinner forever.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use a Spinner for content that has a predictable layout — a Skeleton loader
-                  is less jarring because the page doesn't reflow when content arrives.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't place multiple large spinners on the same screen simultaneously — it
-                  overwhelms the user and makes it impossible to tell which area is actually
-                  loading.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      </Section>
 
       {/* API Reference */}
-      <section className="flex flex-col gap-6">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">API Reference</h2>
-        <table className="w-full text-sm border-collapse">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-28">
-                Prop
-              </th>
-              <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-56">
-                Type
-              </th>
-              <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-28">
-                Default
-              </th>
-              <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
-                Description
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {[
+      <Section title="API Reference">
+        <SubSection title="Spinner">
+          <ApiTable
+            rows={[
               [
                 'size',
                 '"xs" | "sm" | "default" | "lg" | "xl"',
@@ -262,17 +319,10 @@ export const Docs = {
                 '—',
                 'Override or extend styles. Use text-* to set a custom color.',
               ],
-            ].map(([prop, type, def, desc]) => (
-              <tr key={prop}>
-                <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{prop}</td>
-                <td className="py-2.5 pr-4 font-mono text-xs text-gray-500">{type}</td>
-                <td className="py-2.5 pr-4 font-mono text-xs text-gray-400">{def}</td>
-                <td className="py-2.5 text-xs text-gray-600">{desc}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+            ]}
+          />
+        </SubSection>
+      </Section>
     </div>
   ),
 }

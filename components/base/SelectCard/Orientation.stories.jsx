@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Zap, Shield, Package, Truck, Star } from 'lucide-react'
+import { SelectCard, SelectCardIcon, SelectCardTitle, SelectCardDescription } from './SelectCard'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = {
@@ -8,62 +9,33 @@ const meta = {
 
 export default meta
 
-const cn = (...classes) => classes.filter(Boolean).join(' ')
-
-const MockCard = ({
-  layout = 'vertical',
-  indicator = 'badge',
-  selected = false,
-  disabled = false,
-  onClick,
-  icon,
-  title,
-  description,
-}) => {
-  const isH = layout === 'horizontal'
-  const isBadge = indicator === 'badge'
-  return (
-    <div
-      onClick={!disabled ? onClick : undefined}
-      className={cn(
-        'relative rounded-lg transition-all select-none',
-        isH
-          ? cn('flex items-center gap-4', isBadge && 'pr-12')
-          : cn('flex flex-col gap-2.5', isBadge && 'pr-8'),
-        selected
-          ? 'border border-violet-600 ring-2 ring-violet-200 bg-violet-50/40 p-4'
-          : 'border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm',
-        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-      )}
-    >
-      {isBadge && (
-        <div
-          className={cn(
-            'absolute size-5 rounded-full flex items-center justify-center transition-all bg-white',
-            isH ? 'right-4 top-1/2 -translate-y-1/2' : 'top-3 right-3',
-            selected ? 'bg-violet-600' : 'border-2 border-gray-300'
-          )}
-        >
-          {selected && <span className="size-2 rounded-full bg-white block" />}
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
-      {icon && (
-        <div
-          className={cn(
-            'flex items-center justify-center rounded-md shrink-0 size-9',
-            selected ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-500'
-          )}
-        >
-          {icon}
-        </div>
-      )}
-      <div className={cn(isH && 'flex-1', 'flex flex-col gap-0.5')}>
-        <p className="text-sm font-medium leading-snug text-gray-900">{title}</p>
-        {description && <p className="text-xs text-muted-foreground leading-snug">{description}</p>}
       </div>
-    </div>
-  )
-}
+    ))}
+  </div>
+)
 
 export const Orientation = {
   name: 'Orientation',
@@ -114,70 +86,102 @@ export const Orientation = {
     ]
 
     return (
-      <div className="flex flex-col items-center gap-10 w-full">
-        <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
+      <div className="flex flex-col gap-6 w-full">
+        <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">
           Two layout orientations controlled by the{' '}
           <code className="font-mono bg-gray-100 px-1 rounded text-xs">layout</code> prop. Default
           is <code className="font-mono bg-gray-100 px-1 rounded text-xs">vertical</code>.
         </p>
 
-        {/* Vertical */}
-        <div className="flex flex-col gap-3 w-full max-w-lg">
-          <p className="text-xs font-mono text-violet-700">layout="vertical"</p>
-          <p className="text-xs text-gray-500">
-            Icon on top, title and description below. Best for grid layouts like pricing or plan
-            selection.
-          </p>
-          <div className="grid grid-cols-3 gap-3">
+        <div className="flex flex-col gap-2">
+          <span className="text-xs text-gray-400">
+            layout="vertical" — icon on top, grid layout
+          </span>
+          <div className="grid grid-cols-3 gap-3 max-w-lg">
             {plans.map((p) => (
-              <MockCard
+              <SelectCard
                 key={p.value}
                 layout="vertical"
+                value={p.value}
                 selected={verticalSelected === p.value}
-                onClick={() => setVerticalSelected(p.value)}
-                icon={p.icon}
-                title={p.title}
-                description={p.description}
-              />
+                onSelect={setVerticalSelected}
+              >
+                <SelectCardIcon>{p.icon}</SelectCardIcon>
+                <SelectCardTitle>{p.title}</SelectCardTitle>
+                <SelectCardDescription>{p.description}</SelectCardDescription>
+              </SelectCard>
             ))}
           </div>
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`<SelectCard layout="vertical" value="pro" selected={selected === 'pro'} onSelect={setSelected}>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <span className="text-xs text-gray-400">
+            layout="horizontal" — icon on left, list layout
+          </span>
+          <div className="flex flex-col gap-2 max-w-sm">
+            {methods.map((m) => (
+              <SelectCard
+                key={m.value}
+                layout="horizontal"
+                value={m.value}
+                selected={horizontalSelected === m.value}
+                onSelect={setHorizontalSelected}
+              >
+                <SelectCardIcon>{m.icon}</SelectCardIcon>
+                <SelectCardTitle>{m.title}</SelectCardTitle>
+                <SelectCardDescription>{m.description}</SelectCardDescription>
+              </SelectCard>
+            ))}
+          </div>
+        </div>
+
+        <BestPractices
+          items={[
+            {
+              heading: 'When to use',
+              cards: [
+                {
+                  title: 'Use vertical layout for grid arrangements like pricing or plan selection',
+                  body: 'Icon on top, title and description below. Works well in 2–3 column grids where cards are equally weighted and the layout is symmetrical.',
+                },
+                {
+                  title:
+                    'Use horizontal layout for list arrangements like shipping or payment methods',
+                  body: 'Icon on the left, title and description stacked on the right. Scans naturally in a vertical list and fits narrower containers like form sidebars.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              cards: [
+                {
+                  title: "Don't mix vertical and horizontal cards in the same selection group",
+                  body: 'Mixing layouts in a single group creates visual inconsistency and makes it harder for users to compare options. Pick one layout per group.',
+                },
+                {
+                  title: 'Prefer horizontal layout when descriptions are longer than 5 words',
+                  body: 'Vertical cards have less horizontal space for description text. If the description is a full sentence, horizontal layout gives it room to breathe.',
+                },
+              ],
+            },
+          ]}
+        />
+
+        <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
+          <code>{`{/* Vertical — default */}
+<SelectCard layout="vertical" value="pro" selected={selected === 'pro'} onSelect={setSelected}>
   <SelectCardIcon><Zap /></SelectCardIcon>
   <SelectCardTitle>Pro</SelectCardTitle>
   <SelectCardDescription>For growing teams.</SelectCardDescription>
-</SelectCard>`}</code>
-          </pre>
-        </div>
+</SelectCard>
 
-        {/* Horizontal */}
-        <div className="flex flex-col gap-3 w-full max-w-lg">
-          <p className="text-xs font-mono text-violet-700">layout="horizontal"</p>
-          <p className="text-xs text-gray-500">
-            Icon on the left, title and description stacked on the right. Best for list layouts like
-            shipping or payment methods.
-          </p>
-          <div className="flex flex-col gap-2 max-w-sm">
-            {methods.map((m) => (
-              <MockCard
-                key={m.value}
-                layout="horizontal"
-                selected={horizontalSelected === m.value}
-                onClick={() => setHorizontalSelected(m.value)}
-                icon={m.icon}
-                title={m.title}
-                description={m.description}
-              />
-            ))}
-          </div>
-          <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
-            <code>{`<SelectCard layout="horizontal" value="express" selected={selected === 'express'} onSelect={setSelected}>
+{/* Horizontal */}
+<SelectCard layout="horizontal" value="express" selected={selected === 'express'} onSelect={setSelected}>
   <SelectCardIcon><Truck /></SelectCardIcon>
   <SelectCardTitle>Express delivery</SelectCardTitle>
   <SelectCardDescription>1–2 business days · Rp 25.000</SelectCardDescription>
 </SelectCard>`}</code>
-          </pre>
-        </div>
+        </pre>
       </div>
     )
   },

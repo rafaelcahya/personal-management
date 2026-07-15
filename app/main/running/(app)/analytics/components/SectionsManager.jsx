@@ -1,5 +1,6 @@
 'use client'
 
+import { FieldLabel } from '@/components/base/Field/Field'
 import { useState, useEffect } from 'react'
 import { LayoutList, ArrowRight, Search, X } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/base/Popover/Popover'
@@ -14,7 +15,6 @@ import {
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import { ANALYTICS_SECTIONS } from '../sections'
 import Button from '@/components/base/Button/Button'
-import FieldLabel from '@/components/base/Field/FieldLabel'
 import Input from '@/components/base/Input/Input'
 
 function scrollToSection(id, onClose) {

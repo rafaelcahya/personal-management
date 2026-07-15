@@ -1,5 +1,11 @@
 'use client'
 
+import {
+  FieldContent,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+} from '@/components/base/Field/Field'
 import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,10 +21,6 @@ import Card, {
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card'
-import FieldContent from '@/components/base/Field/FieldContent'
-import FieldLabel from '@/components/base/Field/FieldLabel'
-import FieldError from '@/components/base/Field/FieldError'
-import FieldDescription from '@/components/base/Field/FieldDescription'
 import { toast } from 'sonner'
 import { Info, Loader2, SlidersHorizontal, X } from 'lucide-react'
 import { tradeSettingsSchema } from '@/schemas/tradeSettings'

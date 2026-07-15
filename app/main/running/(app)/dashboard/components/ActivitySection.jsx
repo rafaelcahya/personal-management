@@ -33,7 +33,7 @@ import Card, {
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip.jsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { fetchCalendarActivities } from '@/lib/api/running'
 import { fmtDistance, fmtDuration, fmtPace, fmtDate } from '../utils/format'
 
@@ -195,8 +195,9 @@ function toMonthKey(date) {
 function groupByDate(activities) {
   const map = new Map()
   for (const a of activities) {
-    if (!map.has(a.date)) map.set(a.date, [])
-    map.get(a.date).push(a)
+    const key = toLocalDateStr(a.started_at)
+    if (!map.has(key)) map.set(key, [])
+    map.get(key).push(a)
   }
   return map
 }
@@ -220,15 +221,15 @@ function ActivityDot({ activity }) {
   const cfg = getCfg(activity.activity_type)
   const Icon = cfg.icon
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <span
-          className={`w-1.5 h-1.5 rounded-full ${cfg.dot} ${effortOpacity(activity.relative_effort)} cursor-default`}
+          className={`inline-block w-1.5 h-1.5 rounded-full ${cfg.dot} ${effortOpacity(activity.relative_effort)} cursor-default`}
           aria-hidden="true"
         />
-      </TooltipTrigger>
-      <TooltipContent className="max-w-48">
-        <div className="flex flex-col gap-1 text-xs">
+      </PopoverTrigger>
+      <PopoverContent side="top" className="w-auto max-w-48 p-3 text-xs leading-relaxed">
+        <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5 font-medium">
             <Icon className="size-3 shrink-0" aria-hidden="true" />
             <span>{activity.name || cfg.label || 'Activity'}</span>
@@ -240,8 +241,8 @@ function ActivityDot({ activity }) {
             <span className="text-slate-400">Effort: {activity.relative_effort}</span>
           )}
         </div>
-      </TooltipContent>
-    </Tooltip>
+      </PopoverContent>
+    </Popover>
   )
 }
 
@@ -276,7 +277,7 @@ function CalendarColumn({ initialActivities, activityType, selectedDate }) {
     } else {
       loadMonth(viewMonth, activityType)
     }
-  }, [activityType])
+  }, [activityType, initialActivities])
 
   useEffect(() => {
     if (!selectedDate) return
@@ -617,7 +618,7 @@ export default function ActivitySection({ calendarActivities, recentActivities, 
             <CardDescription>Monthly calendar and your most recent activities.</CardDescription>
           </CardHeaderContent>
         </CardHeader>
-        <CardContent className="px-5 py-5">
+        <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x md:divide-slate-100">
             <CalendarColumn
               initialActivities={calendarActivities}

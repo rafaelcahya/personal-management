@@ -52,6 +52,75 @@ const Tag = ({ children, color = 'gray' }) => {
   )
 }
 
+const ApiTable = ({ headers, rows }) => (
+  <div className="overflow-x-auto mb-4">
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          {headers.map((h) => (
+            <th
+              key={h}
+              className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr key={i} className="even:bg-gray-50">
+            {row.map((cell, j) => (
+              <td
+                key={j}
+                className={`px-3 py-2 border border-gray-200 text-xs ${
+                  j === 0
+                    ? 'font-mono text-violet-700 whitespace-nowrap'
+                    : j === 1
+                      ? 'font-mono text-gray-500 max-w-xs'
+                      : j === 2
+                        ? 'font-mono text-gray-400 whitespace-nowrap'
+                        : 'text-gray-700'
+                }`}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 // ─── Stateful demo helpers ────────────────────────────────────────────────────
 
 function Demo(props) {
@@ -72,7 +141,7 @@ function IconDemo({ icon, label }) {
 function FieldDemo({ error, description, label = 'Trade date', required = false, ...props }) {
   const [date, setDate] = useState(null)
   return (
-    <FieldContent size="base" error={error}>
+    <FieldContent error={error}>
       <FieldLabel required={required}>{label}</FieldLabel>
       <DatePicker value={date} onChange={setDate} {...props} />
       {description && (
@@ -384,91 +453,62 @@ export const Docs = {
         </div>
 
         {/* ── Parts table ── */}
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Part', 'Element', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  'Trigger',
-                  '<button>',
-                  'Opens and closes the calendar popover. Displays the selected date or placeholder text.',
-                ],
-                [
-                  'Placeholder',
-                  '<span>',
-                  'Text shown inside the trigger when no date is selected.',
-                ],
-                [
-                  'Icon',
-                  'ReactNode',
-                  'Right-side icon of the trigger. Defaults to CalendarIcon. Customizable via the icon prop.',
-                ],
-                [
-                  'CalendarPopup',
-                  '<div>',
-                  'Popover content. Renders one of three views: Day, Month, or Year.',
-                ],
-                [
-                  'Header',
-                  '<div>',
-                  'Top bar of CalendarPopup. Contains NavButton × 2 and the clickable MonthLabel / YearLabel.',
-                ],
-                [
-                  'NavButton',
-                  '<button>',
-                  '‹ / › arrows. Navigate by month in Day view, by year in Month view, by decade in Year view.',
-                ],
-                [
-                  'MonthLabel',
-                  '<button>',
-                  'Clickable month name in Header. Clicking switches CalendarPopup to Month view.',
-                ],
-                [
-                  'YearLabel',
-                  '<button>',
-                  'Clickable year number in Header. Clicking switches CalendarPopup to Year view.',
-                ],
-                [
-                  'DayGrid',
-                  '<div>',
-                  '5×7 grid of day cells. Outside-month days shown muted. Today highlighted in violet-50.',
-                ],
-                [
-                  'MonthGrid',
-                  '<div>',
-                  '3×4 grid of month buttons. Shown when MonthLabel is clicked. Selecting returns to Day view.',
-                ],
-                [
-                  'YearGrid',
-                  '<div>',
-                  '3×4 grid of year buttons (1 decade per page). Selecting returns to Month view.',
-                ],
-              ].map(([part, el, desc]) => (
-                <tr key={part} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {part}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {el}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ApiTable
+          headers={['Part', 'Element', 'Description']}
+          rows={[
+            [
+              'Trigger',
+              '<button>',
+              'Opens and closes the calendar popover. Displays the selected date or placeholder text.',
+            ],
+            ['Placeholder', '<span>', 'Text shown inside the trigger when no date is selected.'],
+            [
+              'Icon',
+              'ReactNode',
+              'Right-side icon of the trigger. Defaults to CalendarIcon. Customizable via the icon prop.',
+            ],
+            [
+              'CalendarPopup',
+              '<div>',
+              'Popover content. Renders one of three views: Day, Month, or Year.',
+            ],
+            [
+              'Header',
+              '<div>',
+              'Top bar of CalendarPopup. Contains NavButton × 2 and the clickable MonthLabel / YearLabel.',
+            ],
+            [
+              'NavButton',
+              '<button>',
+              '‹ / › arrows. Navigate by month in Day view, by year in Month view, by decade in Year view.',
+            ],
+            [
+              'MonthLabel',
+              '<button>',
+              'Clickable month name in Header. Clicking switches CalendarPopup to Month view.',
+            ],
+            [
+              'YearLabel',
+              '<button>',
+              'Clickable year number in Header. Clicking switches CalendarPopup to Year view.',
+            ],
+            [
+              'DayGrid',
+              '<div>',
+              '5×7 grid of day cells. Outside-month days shown muted. Today highlighted in violet-50.',
+            ],
+            [
+              'MonthGrid',
+              '<div>',
+              '3×4 grid of month buttons. Shown when MonthLabel is clicked. Selecting returns to Day view.',
+            ],
+            [
+              'YearGrid',
+              '<div>',
+              '3×4 grid of year buttons (1 decade per page). Selecting returns to Month view.',
+            ],
+          ]}
+        />
 
         <Code>{`import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
 
@@ -494,23 +534,6 @@ export const Docs = {
   value={date}
   onChange={setDate}
 />`}</Code>
-      </Section>
-
-      {/* Sizes */}
-      <Section title="Sizes" description="Six sizes following the same scale as Input and Select.">
-        <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg mb-3 max-w-xs">
-          {['xs', 'sm', 'base', 'md', 'lg'].map((size) => (
-            <div key={size} className="flex items-center gap-3">
-              <span className="text-xs font-mono text-gray-400 w-8 shrink-0">{size}</span>
-              <Demo size={size} />
-            </div>
-          ))}
-        </div>
-        <Code>{`<DatePicker size="xs" value={date} onChange={setDate} />
-<DatePicker size="sm" value={date} onChange={setDate} />
-<DatePicker size="base" value={date} onChange={setDate} />  {/* default */}
-<DatePicker size="md" value={date} onChange={setDate} />
-<DatePicker size="lg" value={date} onChange={setDate} />`}</Code>
       </Section>
 
       {/* Display format */}
@@ -632,7 +655,7 @@ export const Docs = {
         <Preview>
           <FieldDemo label="Trade date" required error="Trade date is required." />
         </Preview>
-        <Code>{`<FieldContent size="base" error={errors.trade_date?.message}>
+        <Code>{`<FieldContent error={errors.trade_date?.message}>
   <FieldLabel required>Trade date</FieldLabel>
   <DatePicker value={date} onChange={setDate} />
   <FieldError />
@@ -648,7 +671,7 @@ export const Docs = {
           <FieldDemo label="Trade date" required description="When did you execute this trade?" />
           <FieldDemo label="Event date" description="Leave blank if date is not confirmed yet." />
         </Preview>
-        <Code>{`<FieldContent size="base">
+        <Code>{`<FieldContent>
   <FieldLabel required>Trade date</FieldLabel>
   <DatePicker value={date} onChange={setDate} />
   <FieldDescription className="text-xs text-slate-400">When did you execute this trade?</FieldDescription>
@@ -667,7 +690,7 @@ export const Docs = {
   control={control}
   rules={{ required: 'Trade date is required.' }}
   render={({ field }) => (
-    <FieldContent size="base" error={errors.trade_date?.message}>
+    <FieldContent error={errors.trade_date?.message}>
       <FieldLabel required>Trade date</FieldLabel>
       <DatePicker
         value={field.value ?? null}
@@ -679,221 +702,97 @@ export const Docs = {
 />`}</Code>
       </Section>
 
-      {/* When to Use */}
-      <Section title="When to Use">
-        <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Use DatePicker when…', 'Consider an alternative when…'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700 text-xs uppercase tracking-wide"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      User needs to pick a single calendar date (trade date, race date, event date)
-                    </li>
-                    <li>The form requires a friendly visual calendar — not a raw text input</li>
-                    <li>
-                      You need to restrict selectable dates via a range (
-                      <code className="font-mono bg-gray-100 px-0.5 rounded">fromDate</code> /{' '}
-                      <code className="font-mono bg-gray-100 px-0.5 rounded">toDate</code>) or
-                      custom rules (
-                      <code className="font-mono bg-gray-100 px-0.5 rounded">disabledDates</code>)
-                    </li>
-                    <li>
-                      The field is part of a form that already uses FieldContent for labeling and
-                      error display
-                    </li>
-                  </ul>
-                </td>
-                <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700 align-top">
-                  <ul className="flex flex-col gap-1.5">
-                    <li>
-                      Use <strong>Input type="date"</strong> when you need a minimal native browser
-                      date picker with no custom styling or calendar popover
-                    </li>
-                    <li>
-                      Use <strong>TimePicker</strong> when you need to collect a time value only
-                      (hours and minutes) rather than a calendar date
-                    </li>
-                    <li>
-                      Use a <strong>date range picker</strong> when the user needs to select a start
-                      and end date together (e.g. a reporting period)
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      {/* Best Practices */}
+      <Section title="Best Practices">
+        <BestPractices
+          items={[
+            {
+              heading: 'When to use',
+              cards: [
+                {
+                  title: 'Use DatePicker when the user needs to pick a single calendar date',
+                  body: 'Trade dates, race dates, event dates — any case where the user needs a visual calendar popover, not a raw text input or native browser date picker.',
+                },
+                {
+                  title: 'Restrict the calendar when the domain has date boundaries',
+                  body: 'Use fromDate / toDate to limit a trade date to the current year, or disabledDates to block weekends for business-day-only fields.',
+                },
+                {
+                  title: 'Wrap in FieldContent for any form field',
+                  body: 'FieldContent provides accessible label, description, and error state via context. Standalone DatePicker is fine for filters; form fields must use the full FieldContent composition.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              cards: [
+                {
+                  title: 'Use Controller from react-hook-form — not register',
+                  body: 'DatePicker calls onChange(Date | null), not a native input event. register will not capture the value. Always wrap with Controller.',
+                },
+                {
+                  title: 'Convert API date strings before passing as value',
+                  body: 'value must be a Date object or null. Passing a raw string (e.g. from an API response) will break the display — convert with new Date(str) first.',
+                },
+                {
+                  title: 'Use a descriptive placeholder',
+                  body: 'Replace the default "Pick a date" with context-specific text like "Select trade date" or "Race date" so the user understands what date is expected without reading the label.',
+                },
+              ],
+            },
+          ]}
+        />
       </Section>
 
-      {/* Dos & Don'ts */}
-      <Section title="Dos & Don'ts">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                ✓
-              </span>
-              <span className="text-sm font-semibold text-green-700">Do</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Always wrap DatePicker in <strong>FieldContent</strong> inside a form so it gets
-                  an accessible label, description, and error message. Standalone usage is fine for
-                  filters, but form fields must use the full FieldContent composition.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use <strong>fromDate / toDate</strong> to constrain the calendar to a valid range
-                  when the domain has date boundaries — for example, limit a trade date to the
-                  current year, or a race date to upcoming events only.
-                </p>
-              </div>
-              <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
-                <p className="text-xs text-green-800">
-                  Use <strong>Controller</strong> from react-hook-form instead of{' '}
-                  <strong>register</strong>. DatePicker calls{' '}
-                  <code className="font-mono bg-green-100 px-0.5 rounded">
-                    onChange(Date | null)
-                  </code>{' '}
-                  — not a native input event — so register will not capture the value correctly.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="size-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
-                ✕
-              </span>
-              <span className="text-sm font-semibold text-red-700">Don't</span>
-            </div>
-            <div className="space-y-3">
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't pass a raw date string as <strong>value</strong>. DatePicker expects a{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">Date</code> object or{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">null</code>. Passing a
-                  string (e.g. from an API response) will break the display — convert it first with{' '}
-                  <code className="font-mono bg-red-100 px-0.5 rounded">new Date(str)</code>.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't use DatePicker for time-only fields. If the user only needs to enter hours
-                  and minutes, use <strong>TimePicker</strong> instead. Mixing date and time
-                  concerns in a single DatePicker creates a confusing UX.
-                </p>
-              </div>
-              <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                <p className="text-xs text-red-800">
-                  Don't leave <strong>placeholder</strong> as the default "Pick a date" when context
-                  matters. Use a descriptive placeholder like "Select trade date" or "Race date" so
-                  the user understands what date is expected without reading the label.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* Props */}
-      <Section title="Props">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                {['Prop', 'Type', 'Default', 'Description'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-3 py-2 border border-gray-200 font-semibold text-gray-700"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['value', 'Date | null', 'null', 'Controlled selected date.'],
-                [
-                  'onChange',
-                  '(date: Date | null) => void',
-                  '—',
-                  'Callback fired when a date is selected or cleared.',
-                ],
-                ['placeholder', 'string', '"Pick a date"', 'Text shown when no date is selected.'],
-                [
-                  'displayFormat',
-                  'string',
-                  '"d MMM yyyy"',
-                  'date-fns format string for rendering the selected date.',
-                ],
-                ['disabled', 'boolean', 'false', 'Prevents interaction and applies opacity.'],
-                [
-                  'variant',
-                  '"default" | "error" | "disabled"',
-                  '—',
-                  'Override the auto-detected visual variant.',
-                ],
-                [
-                  'size',
-                  '"xs" | "sm" | "base" | "md" | "lg"',
-                  '"base"',
-                  'Trigger button height. Inherits from FieldContent if not set.',
-                ],
-                ['fromDate', 'Date', '—', 'Earliest selectable date.'],
-                ['toDate', 'Date', '—', 'Latest selectable date.'],
-                [
-                  'disabledDates',
-                  '(date: Date) => boolean',
-                  '—',
-                  'Function returning true to disable a specific date.',
-                ],
-                [
-                  'icon',
-                  'ReactNode',
-                  '<CalendarIcon />',
-                  'Icon rendered on the right of the trigger. Pass null to remove.',
-                ],
-                [
-                  'align',
-                  '"start" | "center" | "end"',
-                  '"start"',
-                  'Popover alignment relative to the trigger.',
-                ],
-                ['className', 'string', '—', 'Additional Tailwind classes on the trigger button.'],
-              ].map(([prop, type, def, desc]) => (
-                <tr key={prop} className="even:bg-gray-50">
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
-                    {prop}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500 max-w-xs">
-                    {type}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-400 whitespace-nowrap">
-                    {def}
-                  </td>
-                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-700">{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* API Reference */}
+      <Section title="API Reference">
+        <ApiTable
+          headers={['Prop', 'Type', 'Default', 'Description']}
+          rows={[
+            ['value', 'Date | null', 'null', 'Controlled selected date.'],
+            [
+              'onChange',
+              '(date: Date | null) => void',
+              '—',
+              'Callback fired when a date is selected or cleared.',
+            ],
+            ['placeholder', 'string', '"Pick a date"', 'Text shown when no date is selected.'],
+            [
+              'displayFormat',
+              'string',
+              '"d MMM yyyy"',
+              'date-fns format string for rendering the selected date.',
+            ],
+            ['disabled', 'boolean', 'false', 'Prevents interaction and applies opacity.'],
+            [
+              'variant',
+              '"default" | "error" | "disabled"',
+              '—',
+              'Override the auto-detected visual variant.',
+            ],
+            ['fromDate', 'Date', '—', 'Earliest selectable date.'],
+            ['toDate', 'Date', '—', 'Latest selectable date.'],
+            [
+              'disabledDates',
+              '(date: Date) => boolean',
+              '—',
+              'Function returning true to disable a specific date.',
+            ],
+            [
+              'icon',
+              'ReactNode',
+              '<CalendarIcon />',
+              'Icon rendered on the right of the trigger. Pass null to remove.',
+            ],
+            [
+              'align',
+              '"start" | "center" | "end"',
+              '"start"',
+              'Popover alignment relative to the trigger.',
+            ],
+            ['className', 'string', '—', 'Additional Tailwind classes on the trigger button.'],
+          ]}
+        />
       </Section>
     </div>
   ),

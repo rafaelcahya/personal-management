@@ -187,11 +187,7 @@ export default function WeeklyStats({ data, activityType = null }) {
   ]
 
   return (
-    <Card
-      id="weeklyStatsCard"
-      aria-label="Weekly stats"
-      className="border border-slate-200/70 shadow-sm pb-4 gap-4"
-    >
+    <Card id="weeklyStatsCard" aria-label="Weekly stats" className="pb-4 gap-4">
       <CardHeader className="flex-col md:flex-row justify-between">
         <div className="flex items-center gap-2">
           <CardIcon icon={CalendarRange} />
@@ -228,7 +224,7 @@ export default function WeeklyStats({ data, activityType = null }) {
           ))}
         </CardAction>
       </CardHeader>
-      <CardContent padding="none">
+      <CardContent className="p-0">
         <div
           className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 transition-opacity duration-150 ${loadingWeek ? 'opacity-50' : ''}`}
           aria-busy={loadingWeek}

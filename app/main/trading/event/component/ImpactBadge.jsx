@@ -8,11 +8,8 @@ export default function ImpactBadge({ value, className = '' }) {
   const isBullish = value === 'UP'
   return (
     <Badge
-      variant="outline"
       className={`font-medium text-xs ${
-        isBullish
-          ? 'bg-green-50 text-green-700 border-green-200'
-          : 'bg-red-50 text-red-700 border-red-200'
+        isBullish ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
       } ${className}`}
     >
       {isBullish ? (

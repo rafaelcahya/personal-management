@@ -18,6 +18,34 @@ const meta = {
 
 export default meta
 
+const BestPractices = ({ items }) => (
+  <div className="flex flex-col gap-8 w-full max-w-2xl">
+    {items.map(({ heading, cards }) => (
+      <div key={heading}>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {heading}
+        </p>
+        <div className="flex flex-col gap-3">
+          {cards.map(({ title, body }) => (
+            <div
+              key={title}
+              className="flex gap-3 p-4 rounded-lg border border-violet-100 bg-violet-50"
+            >
+              <span className="mt-0.5 shrink-0 size-4 rounded-full bg-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                ✓
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-violet-800 mb-0.5">{title}</p>
+                <p className="text-xs text-violet-700 leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
 const inputClass =
   'w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground'
 const labelClass = 'text-sm font-medium text-foreground'
@@ -29,10 +57,14 @@ export const Example = {
     const [discardResult, setDiscardResult] = useState(null)
 
     return (
-      <div className="flex flex-col items-center gap-6 w-full">
-        <p className="text-sm text-gray-500 leading-relaxed max-w-2xl text-center">
-          Common modal usage examples — confirmation dialogs and forms.
-        </p>
+      <div className="flex flex-col gap-6 w-full">
+        <div className="flex flex-col gap-2 max-w-2xl">
+          <p className="text-sm text-gray-500 leading-relaxed">
+            Real-world Modal usage patterns. Each example shows a distinct modal category —
+            destructive confirmation, unsaved changes guard, edit form, and data-entry form —
+            demonstrating how size, icon, and close behavior combine in practice.
+          </p>
+        </div>
 
         <div className="flex flex-col gap-5 w-full max-w-2xl">
           {/* Delete confirmation */}
@@ -266,6 +298,51 @@ export const Example = {
             </div>
           </div>
         </div>
+
+        <BestPractices
+          items={[
+            {
+              heading: 'When to use',
+              cards: [
+                {
+                  title: 'Use size="sm" + showCloseButton={false} for delete confirmations',
+                  body: 'Forces the user to choose between Cancel and Delete explicitly. The warning icon reinforces the severity and prevents accidental dismissal.',
+                },
+                {
+                  title: 'Use size="lg" for 2-column data-entry forms',
+                  body: 'More columns means more room needed. A 2-column trade form (symbol + type, lot + price) needs lg at 672px to avoid cramped inputs.',
+                },
+              ],
+            },
+            {
+              heading: 'When not to use',
+              cards: [
+                {
+                  title: 'Avoid size="md" for short binary confirmations',
+                  body: 'A confirmation dialog with only a title and two buttons looks unbalanced at 512px. Use size="sm" to match the content weight.',
+                },
+              ],
+            },
+            {
+              heading: 'Accessibility',
+              cards: [
+                {
+                  title: 'Warning icons reinforce severity for users who may miss the text',
+                  body: 'Color and iconography communicate danger before the user reads the text. Pair a warning icon with a strong destructive button color for maximum clarity.',
+                },
+              ],
+            },
+            {
+              heading: 'Advice',
+              cards: [
+                {
+                  title: 'Invert button priority on discard-changes dialogs',
+                  body: 'Make Keep Editing the primary action and Discard the secondary with a destructive text color. This reduces accidental data loss by making the safe choice the default.',
+                },
+              ],
+            },
+          ]}
+        />
 
         <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed w-full max-w-2xl">
           <code>{`<Modal>

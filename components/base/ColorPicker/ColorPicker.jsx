@@ -1,7 +1,6 @@
 'use client'
 
-import { useRef, useState, useCallback, forwardRef } from 'react'
-import * as PopoverPrimitive from '@radix-ui/react-popover'
+import { useRef, useState, useCallback, useEffect, forwardRef } from 'react'
 import { cva } from 'class-variance-authority'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -219,9 +218,21 @@ const ColorPicker = forwardRef(function ColorPicker(
   const hsva = isControlled ? fromInput(value, format) : internalHsva
   const { h, s, v, a } = hsva
 
+  const [open, setOpen] = useState(false)
+  const containerRef = useRef(null)
+
   const [formatMode, setFormatMode] = useState(format)
   const [inputFocused, setInputFocused] = useState(false)
   const [inputText, setInputText] = useState('')
+
+  useEffect(() => {
+    if (!open) return
+    const handle = (e) => {
+      if (!containerRef.current?.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handle)
+    return () => document.removeEventListener('mousedown', handle)
+  }, [open])
 
   const fireChange = useCallback(
     (newHsva) => {
@@ -260,42 +271,34 @@ const ColorPicker = forwardRef(function ColorPicker(
   }
 
   return (
-    <PopoverPrimitive.Root>
-      <PopoverPrimitive.Trigger asChild>
-        <button
-          ref={ref}
-          type="button"
-          id={ctx.id}
-          disabled={isDisabled}
-          aria-invalid={ctx.hasError || undefined}
-          aria-required={ctx.required || undefined}
-          aria-describedby={[ctx.descriptionId, ctx.errorId].filter(Boolean).join(' ') || undefined}
-          className={twMerge(
-            clsx(triggerVariants({ variant: resolvedVariant, size: resolvedSize }), className)
-          )}
-          {...props}
-        >
-          <span
-            className="shrink-0 size-4 rounded border border-black/10"
-            style={{ background: swatchBg }}
-          />
-          <span className="font-mono text-xs truncate">
-            {displayText(h, s, v, a, 'hex', false).toUpperCase()}
-          </span>
-        </button>
-      </PopoverPrimitive.Trigger>
+    <div ref={containerRef} className="relative w-full">
+      <button
+        ref={ref}
+        type="button"
+        id={ctx.id}
+        disabled={isDisabled}
+        aria-invalid={ctx.hasError || undefined}
+        aria-required={ctx.required || undefined}
+        aria-describedby={[ctx.descriptionId, ctx.errorId].filter(Boolean).join(' ') || undefined}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        onClick={() => setOpen((v) => !v)}
+        className={twMerge(
+          clsx(triggerVariants({ variant: resolvedVariant, size: resolvedSize }), className)
+        )}
+        {...props}
+      >
+        <span
+          className="shrink-0 size-4 rounded border border-black/10"
+          style={{ background: swatchBg }}
+        />
+        <span className="font-mono text-xs truncate">
+          {displayText(h, s, v, a, 'hex', false).toUpperCase()}
+        </span>
+      </button>
 
-      <PopoverPrimitive.Portal>
-        <PopoverPrimitive.Content
-          sideOffset={6}
-          align="start"
-          className={clsx(
-            'z-50 w-60 rounded-lg border border-border bg-popover shadow-xl p-3',
-            'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
-            'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
-            'data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2'
-          )}
-        >
+      {open && (
+        <div className="absolute top-full left-0 mt-1.5 z-50 w-60 rounded-lg border border-border bg-popover shadow-xl p-3">
           <SatValPicker
             h={h}
             s={s}
@@ -374,9 +377,9 @@ const ColorPicker = forwardRef(function ColorPicker(
               ))}
             </div>
           )}
-        </PopoverPrimitive.Content>
-      </PopoverPrimitive.Portal>
-    </PopoverPrimitive.Root>
+        </div>
+      )}
+    </div>
   )
 })
 
