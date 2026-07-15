@@ -47,6 +47,8 @@ export default function RouteStats({
   }
 
   const paceSec = parsePaceToSec(pace)
+  // Pace below 2:00/km (120 sec) is physically impossible for a runner
+  const paceUnrealistic = paceSec != null && paceSec > 0 && paceSec < 120
   const estimatedSec =
     paceSec != null && paceSec > 0 && distanceM > 0
       ? Math.round(paceSec * (distanceM / 1000))
@@ -104,6 +106,11 @@ export default function RouteStats({
             className={`text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 ${paceError ? 'border-red-400 focus-visible:border-red-400 focus-visible:ring-red-200' : ''}`}
           />
           {paceError && <p className="text-xs text-red-500 mt-0.5">Enter a valid pace (MM:SS)</p>}
+          {!paceError && paceUnrealistic && (
+            <p className="text-xs text-amber-500 mt-0.5">
+              Pace seems too fast — did you mean a slower value?
+            </p>
+          )}
         </FieldContent>
 
         <div className="flex items-center justify-between text-sm">

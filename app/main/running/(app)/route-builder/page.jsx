@@ -32,6 +32,7 @@ import {
   deleteSavedRoute,
   updateSavedRoute,
   fetchActivities,
+  exportRouteGpx,
 } from '@/lib/api/running'
 import { fmtPace } from '@/app/main/running/(app)/dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
@@ -68,9 +69,7 @@ function SavedRouteRow({ route, onDelete, onView, onRename }) {
   async function handleExport() {
     setExporting(true)
     try {
-      const res = await fetch(`/api/running/v1/routes/${route.id}/export/gpx`)
-      if (!res.ok) throw new Error('Export failed')
-      const blob = await res.blob()
+      const blob = await exportRouteGpx(route.id)
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -78,8 +77,8 @@ function SavedRouteRow({ route, onDelete, onView, onRename }) {
       a.click()
       URL.revokeObjectURL(url)
       toast.success('GPX downloaded')
-    } catch {
-      toast.error('Export failed')
+    } catch (err) {
+      toast.error(err.message || 'Export failed')
     } finally {
       setExporting(false)
     }
@@ -281,6 +280,7 @@ export default function RouteBuilderPage() {
     if (waypoints.length < 2 || !routeName.trim()) return
     setSaving(true)
     try {
+      // Polyline encoding expects [lat, lng]; GeoJSON/MapLibre uses [lng, lat] — swap required
       const encoded = polyline.encode(waypoints.map(([lng, lat]) => [lat, lng]))
       const saved = await saveRoute({
         name: routeName.trim(),
@@ -321,7 +321,7 @@ export default function RouteBuilderPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <main id="routeBuilderPage" className="space-y-6">
       <PageHeader
         title="Route Builder"
         description="Draw custom routes by clicking the map, then save them for future runs"
@@ -415,7 +415,7 @@ export default function RouteBuilderPage() {
             >
               <p className="text-sm text-slate-400">No saved routes yet — build one above!</p>
               <a
-                href="#routeBuilderMap_routeBuilderPage"
+                href="#routeBuilderCard_routeBuilderPage"
                 className="text-sm font-medium text-violet-600 hover:text-violet-700 transition-colors"
               >
                 Start Building
@@ -467,6 +467,6 @@ export default function RouteBuilderPage() {
           )}
         </ModalContent>
       </Modal>
-    </div>
+    </main>
   )
 }

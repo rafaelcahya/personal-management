@@ -47,20 +47,14 @@ export async function GET(_, { params }) {
 
     const { data: route, error } = await supabase
       .from('rt_saved_routes')
-      .select('id, name, waypoints, user_id')
+      .select('id, name, waypoints')
       .eq('id', id)
+      .eq('user_id', user.id)
       .single()
 
     if (error || !route) {
       return new Response(JSON.stringify({ error: 'Route not found' }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-
-    if (route.user_id !== user.id) {
-      return new Response(JSON.stringify({ error: 'Forbidden' }), {
-        status: 403,
         headers: { 'Content-Type': 'application/json' },
       })
     }
