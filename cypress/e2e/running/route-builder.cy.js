@@ -5,8 +5,8 @@
 const validRoute = () => ({
   name: 'Cypress Test Route',
   waypoints: [
-    [-6.2088, 106.8456],
-    [-6.21, 106.847],
+    [106.8456, -6.2088],
+    [106.847, -6.21],
   ],
   encoded_polyline: '_qekA_qekA??',
   distance_m: 200,
@@ -37,6 +37,14 @@ describe('Route Builder API — GET list (authenticated)', () => {
       expect(entry).to.have.property('distance_m').and.be.a('number')
       expect(entry).to.have.property('encoded_polyline')
       expect(entry).to.have.property('created_at')
+    })
+  })
+
+  it('each entry includes a waypoints field', () => {
+    cy.getRoutes().then((res) => {
+      const entries = res.body.data
+      if (entries.length === 0) return
+      expect(entries[0]).to.have.property('waypoints')
     })
   })
 })
@@ -105,6 +113,18 @@ describe('Route Builder API — POST save (authenticated)', () => {
       expect(res.status).to.eq(422)
     })
   })
+
+  it('returns 422 when distance_m is 0', () => {
+    cy.postRoute({ ...validRoute(), distance_m: 0 }).then((res) => {
+      expect(res.status).to.eq(422)
+    })
+  })
+
+  it('returns 422 when name exceeds 100 characters', () => {
+    cy.postRoute({ ...validRoute(), name: 'a'.repeat(101) }).then((res) => {
+      expect(res.status).to.eq(422)
+    })
+  })
 })
 
 describe('Route Builder API — POST save (unauthenticated)', () => {
@@ -161,6 +181,13 @@ describe('Route Builder API — PATCH rename (authenticated)', () => {
   it('returns 400 when name is missing', function () {
     if (!routeId) this.skip()
     cy.patchRoute(routeId, {}).then((res) => {
+      expect(res.status).to.eq(400)
+    })
+  })
+
+  it('returns 400 when name exceeds 100 characters', function () {
+    if (!routeId) this.skip()
+    cy.patchRoute(routeId, { name: 'a'.repeat(101) }).then((res) => {
       expect(res.status).to.eq(400)
     })
   })
