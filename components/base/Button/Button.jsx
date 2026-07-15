@@ -1,11 +1,20 @@
 'use client'
 
 import { cloneElement, forwardRef, isValidElement, useMemo } from 'react'
-import { Slot } from '@radix-ui/react-slot'
 import { cva } from 'class-variance-authority'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Loader2, Plus } from 'lucide-react'
+
+const Slot = forwardRef(function Slot({ children, ...slotProps }, ref) {
+  if (!isValidElement(children)) return children ?? null
+  return cloneElement(children, {
+    ...slotProps,
+    ...children.props,
+    className: twMerge(clsx(slotProps.className, children.props.className)),
+    ref,
+  })
+})
 
 const buttonVariants = cva(
   [
@@ -73,7 +82,7 @@ const isIconOnlySize = (size) => size === 'icon' || size?.startsWith('icon-')
  * @param {boolean} [props.isLoading=false]
  * @param {string} [props.loadingText='Loading'] - Visually-hidden text announced by screen readers during loading
  * @param {boolean} [props.fullWidth=false] - Stretch button to fill its container width
- * @param {boolean} [props.asChild=false] - Merge button props onto the single child element via Radix Slot
+ * @param {boolean} [props.asChild=false] - Merge button props onto the single child element
  * @param {React.ElementType} [props.as='button']
  * @param {string} [props.className]
  * @param {React.ReactNode} [props.children]
