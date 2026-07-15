@@ -1052,7 +1052,18 @@
       "delete_route_btn": "deleteRouteBtn_{id}_routeBuilderPage",
       "edit_route_name_input": "editRouteNameInput_{id}_routeBuilderPage",
       "confirm_rename_btn": "confirmRenameBtn_{id}_routeBuilderPage",
-      "cancel_rename_btn": "cancelRenameBtn_{id}_routeBuilderPage"
+      "cancel_rename_btn": "cancelRenameBtn_{id}_routeBuilderPage",
+      "export_gpx_btn": "exportGpxBtn_{id}_routeBuilderPage",
+      "fullscreen_btn": "fullscreenBtn_routeBuilderPage",
+      "fullscreen_back_btn": "fullscreenBackBtn_routeBuilderPage",
+      "undo_floating_btn": "undoFloatingBtn_routeBuilderPage",
+      "map_hint_pill": "mapHintPill_routeBuilderPage",
+      "waypoint_delete_hint": "waypointDeleteHint_routeBuilderPage",
+      "fullscreen_stats_overlay": "fullscreenStatsOverlay_routeBuilderPage",
+      "fullscreen_controls_overlay": "fullscreenControlsOverlay_routeBuilderPage",
+      "pace_input": "paceInput_routeBuilderPage",
+      "distance_tooltip": "distanceTooltip_routeBuilderPage",
+      "estimated_time": "estimatedTime_routeBuilderPage"
     },
     "trading_currency": {
       "currency_nav": "currencyNav_sidebar",

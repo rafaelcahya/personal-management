@@ -11,6 +11,7 @@ const TILE_STYLE = `https://tile.jawg.io/jawg-lagoon.json?access-token=${process
 
 const DEFAULT_CENTER = [106.8456, -6.2088] // Jakarta [lng, lat]
 const DEFAULT_ZOOM = 13
+const ROUTE_LINE_COLOR = '#7c3aed'
 
 export default function RouteBuilderMap({
   waypoints,
@@ -31,6 +32,8 @@ export default function RouteBuilderMap({
   const mlRef = useRef(null)
   const markersRef = useRef([])
   const waypointsRef = useRef(waypoints)
+  const fullscreenBtnRef = useRef(null)
+  const fullscreenBackBtnRef = useRef(null)
   const [showDeleteHint, setShowDeleteHint] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
@@ -50,6 +53,13 @@ export default function RouteBuilderMap({
     document.body.style.overflow = isFullscreen ? 'hidden' : ''
     if (mapRef.current) {
       requestAnimationFrame(() => mapRef.current?.resize())
+    }
+    if (isFullscreen) {
+      // Move focus into dialog on open
+      requestAnimationFrame(() => fullscreenBackBtnRef.current?.focus())
+    } else {
+      // Restore focus to trigger button on close
+      fullscreenBtnRef.current?.focus()
     }
     return () => {
       document.body.style.overflow = ''
@@ -106,7 +116,7 @@ export default function RouteBuilderMap({
           id: 'route-line',
           type: 'line',
           source: 'route',
-          paint: { 'line-color': '#7c3aed', 'line-width': 4, 'line-opacity': 0.9 },
+          paint: { 'line-color': ROUTE_LINE_COLOR, 'line-width': 4, 'line-opacity': 0.9 },
         })
 
         map.on('click', (e) => {
@@ -137,22 +147,38 @@ export default function RouteBuilderMap({
   function addMarker(maplibregl, map, lnglat, index, total) {
     const isStart = index === 1
     const isLast = index === total
-    const color = isStart ? '#16a34a' : '#7c3aed'
+    const color = isStart ? '#16a34a' : ROUTE_LINE_COLOR
 
     const el = document.createElement('div')
     el.style.cssText = 'position:relative;width:0;height:0;'
+    el.setAttribute('role', 'button')
+    el.setAttribute('tabindex', '0')
+    el.setAttribute(
+      'aria-label',
+      `Waypoint ${index}${isStart ? ' (start)' : ''}. Press Delete to remove.`
+    )
 
     let html = ''
     if (isLast && !isStart) {
-      html += `<div style="position:absolute;width:20px;height:20px;border-radius:50%;background:#7c3aed;transform:translate(-50%,-50%);animation:routePing 1.6s ease-out infinite;pointer-events:none;"></div>`
+      html += `<div style="position:absolute;width:20px;height:20px;border-radius:50%;background:${ROUTE_LINE_COLOR};transform:translate(-50%,-50%);animation:routePing 1.6s ease-out infinite;pointer-events:none;"></div>`
     }
+    // innerHTML only uses internally-derived values (color constants) — never interpolate user input here
     html += `<div style="position:absolute;width:12px;height:12px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);transform:translate(-50%,-50%);"></div>`
     el.innerHTML = html
 
     const markerIndex = index - 1
+    function removeThisWaypoint() {
+      onChange(waypointsRef.current.filter((_, i) => i !== markerIndex))
+    }
     el.addEventListener('contextmenu', (e) => {
       e.preventDefault()
-      onChange(waypointsRef.current.filter((_, i) => i !== markerIndex))
+      removeThisWaypoint()
+    })
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault()
+        removeThisWaypoint()
+      }
     })
 
     const marker = new maplibregl.Marker({ element: el }).setLngLat(lnglat).addTo(map)
@@ -180,9 +206,15 @@ export default function RouteBuilderMap({
   const distKm = (distanceM / 1000).toFixed(2)
 
   return (
-    <div className={isFullscreen ? 'fixed inset-0 z-50 bg-white overflow-hidden' : 'relative'}>
+    <div
+      className={isFullscreen ? 'fixed inset-0 z-50 bg-white overflow-hidden' : 'relative'}
+      {...(isFullscreen
+        ? { role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Route builder fullscreen' }
+        : {})}
+    >
       {/* Fullscreen toggle */}
       <Button
+        ref={fullscreenBtnRef}
         id="fullscreenBtn_routeBuilderPage"
         variant="ghost"
         onClick={() => setIsFullscreen((v) => !v)}
@@ -236,6 +268,7 @@ export default function RouteBuilderMap({
       {/* Back button — top-left, fullscreen only */}
       {isFullscreen && (
         <Button
+          ref={fullscreenBackBtnRef}
           id="fullscreenBackBtn_routeBuilderPage"
           variant="ghost"
           onClick={() => setIsFullscreen(false)}

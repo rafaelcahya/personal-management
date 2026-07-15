@@ -215,7 +215,7 @@ export default function RunCalculatorPage() {
     'w-16 text-center text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500'
 
   return (
-    <div className="flex flex-col gap-6">
+    <main id="runCalculatorPage" className="space-y-6">
       <PageHeader
         title="Run Calculator"
         description="Calculate pace, project race times, and view splits"
@@ -597,6 +597,6 @@ export default function RunCalculatorPage() {
           </Card>
         </div>
       )}
-    </div>
+    </main>
   )
 }
