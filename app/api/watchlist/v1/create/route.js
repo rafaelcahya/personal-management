@@ -37,8 +37,8 @@ export async function POST(req) {
   } catch (err) {
     console.error('POST /api/watchlist/v1/create error:', err)
 
-    if (err.status === 409) {
-      return NextResponse.json({ success: false, error: err.message }, { status: 409 })
+    if (err.status === 409 || err.status === 422) {
+      return NextResponse.json({ success: false, error: err.message }, { status: err.status })
     }
 
     return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })

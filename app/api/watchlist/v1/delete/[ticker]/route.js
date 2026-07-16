@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { removeWatchlistTicker } from '@/lib/services/watchlist/removeWatchlistTicker'
 
+const TICKER_PATTERN = /^[A-Za-z]{1,10}$/
+
 export async function DELETE(req, { params }) {
   try {
     const supabase = await createClient()
@@ -16,8 +18,8 @@ export async function DELETE(req, { params }) {
 
     const { ticker } = await params
 
-    if (!ticker) {
-      return NextResponse.json({ success: false, error: 'Ticker is required' }, { status: 400 })
+    if (!ticker || !TICKER_PATTERN.test(ticker)) {
+      return NextResponse.json({ success: false, error: 'Invalid ticker format' }, { status: 400 })
     }
 
     await removeWatchlistTicker(user.id, ticker)

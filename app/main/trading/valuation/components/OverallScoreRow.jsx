@@ -23,9 +23,7 @@ export default function OverallScoreRow({ tickers, dataByTicker, statusByTicker,
           className="px-3 py-3 font-mono text-slate-800"
         >
           {cell.status === 'loading' && <Skeleton className="h-4 w-14 ml-auto" />}
-          {cell.status === 'error' && (
-            <TickerErrorCells ticker={cell.ticker} onRetry={onRetry} className="p-0" />
-          )}
+          {cell.status === 'error' && <TickerErrorCells ticker={cell.ticker} onRetry={onRetry} />}
           {cell.status === 'success' && (cell.overall ? `${cell.overall.score}/100` : '—')}
         </TableCell>
       ))}

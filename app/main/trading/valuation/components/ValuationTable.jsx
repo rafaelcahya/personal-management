@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { AlertCircle } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { Table, TableHeader, TableBody, TableRow, TableHead } from '@/components/base/Table/Table'
@@ -7,6 +8,8 @@ import { METRIC_SECTIONS } from './metricRows'
 import SectionGroupRow from './SectionGroupRow'
 import MetricRow from './MetricRow'
 import OverallScoreRow from './OverallScoreRow'
+import AnalystGaugeRow from './AnalystGaugeRow'
+import FiftyTwoWeekRangeRow from './FiftyTwoWeekRangeRow'
 
 const SUB_HEADER = 'py-1.5 text-violet-700 font-mono border-b border-slate-100'
 
@@ -91,12 +94,28 @@ export default function ValuationTable({ tickers, dataByTicker, statusByTicker, 
       </TableHeader>
       <TableBody divider={false}>
         {METRIC_SECTIONS.map((section) => (
-          <>
+          <React.Fragment key={`section-${section.label}`}>
             <SectionGroupRow
-              key={`section-${section.label}`}
               label={section.label}
               tickerCount={tickerCount}
+              description={section.description}
             />
+            {section.gauge && !isCompare && (
+              <AnalystGaugeRow
+                tickers={tickers}
+                dataByTicker={dataByTicker}
+                statusByTicker={statusByTicker}
+                tickerCount={tickerCount}
+              />
+            )}
+            {section.rangeGauge && !isCompare && (
+              <FiftyTwoWeekRangeRow
+                tickers={tickers}
+                dataByTicker={dataByTicker}
+                statusByTicker={statusByTicker}
+                tickerCount={tickerCount}
+              />
+            )}
             {section.rows.map((row) => (
               <MetricRow
                 key={row.key}
@@ -108,7 +127,7 @@ export default function ValuationTable({ tickers, dataByTicker, statusByTicker, 
                 onRetry={onRetry}
               />
             ))}
-          </>
+          </React.Fragment>
         ))}
         <OverallScoreRow
           tickers={tickers}

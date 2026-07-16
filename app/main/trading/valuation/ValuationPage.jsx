@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { AlertCircle } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Card, { CardContent } from '@/components/base/Card/Card'
@@ -30,7 +30,7 @@ export default function ValuationPage() {
     maxTickers,
   } = useValuationWatchlist()
 
-  const activeTickers = selected.filter(Boolean)
+  const activeTickers = useMemo(() => selected.filter(Boolean), [selected])
   const { dataByTicker, statusByTicker, retry } = useValuationData(activeTickers)
 
   const pageHeader = (
@@ -99,6 +99,7 @@ export default function ValuationPage() {
         open={sheetOpen}
         onOpenChange={setSheetOpen}
         watchlist={watchlist}
+        watchlistLoading={watchlistLoading}
         onAdd={addTicker}
         onRemove={removeTicker}
       />

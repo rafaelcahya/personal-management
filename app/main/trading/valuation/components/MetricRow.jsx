@@ -1,4 +1,6 @@
+import { Info } from 'lucide-react'
 import { TableRow, TableCell } from '@/components/base/Table/Table'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/base/Popover/Popover'
 import ValueCell from './ValueCell'
 import RcAssessmentLabel from './RcAssessmentLabel'
 import SignalBadge from './SignalBadge'
@@ -28,14 +30,32 @@ export default function MetricRow({ row, group, tickers, dataByTicker, statusByT
 
   return (
     <TableRow className="border-b border-slate-50">
-      <TableCell className="text-slate-600">{row.label}</TableCell>
+      <TableCell className="text-slate-600">
+        <div className="flex items-center gap-1.5">
+          <span>{row.label}</span>
+          {row.description && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="text-slate-300 hover:text-violet-500 transition-colors flex-shrink-0"
+                  aria-label={`Info: ${row.label}`}
+                >
+                  <Info className="size-3.5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent side="right" align="start" className="w-64 p-3">
+                <p className="text-xs text-slate-600 leading-relaxed">{row.description}</p>
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
+      </TableCell>
 
       {cells.map((cell) => (
         <TableCell key={`${cell.ticker}-value`} align="right" className="px-3 py-3">
           {cell.status === 'loading' && <Skeleton className="h-4 w-16 ml-auto" />}
-          {cell.status === 'error' && (
-            <TickerErrorCells ticker={cell.ticker} onRetry={onRetry} className="p-0" />
-          )}
+          {cell.status === 'error' && <TickerErrorCells ticker={cell.ticker} onRetry={onRetry} />}
           {cell.status === 'success' && (
             <ValueCell rowKey={row.key} value={cell.value} signal={cell.assessment?.signal} />
           )}

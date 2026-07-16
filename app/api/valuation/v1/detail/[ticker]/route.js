@@ -27,6 +27,9 @@ export async function GET(req, { params }) {
     return NextResponse.json({ success: true, data }, { status: 200 })
   } catch (err) {
     console.error('GET /api/valuation/v1/detail/[ticker] error:', err)
+    if (err.status === 404) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 404 })
+    }
     return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })
   }
 }

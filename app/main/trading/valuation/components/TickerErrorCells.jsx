@@ -4,18 +4,18 @@
  * are grouped by category rather than adjacent per ticker (spec section 3).
  * In single mode (1 ticker, no grouping) it still reads correctly as one row.
  */
-export default function TickerErrorCells({ ticker, onRetry, className = '' }) {
+export default function TickerErrorCells({ ticker, onRetry }) {
   return (
-    <td className={`px-3 py-3 text-center ${className}`}>
+    <span className="flex items-center justify-center gap-1.5">
       <span className="text-xs text-slate-400">failed</span>
       <button
         type="button"
         onClick={() => onRetry(ticker)}
         aria-label={`Retry loading ${ticker} data`}
-        className="ml-2 text-xs underline text-violet-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+        className="text-xs underline text-violet-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
       >
         Retry
       </button>
-    </td>
+    </span>
   )
 }

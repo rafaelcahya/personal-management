@@ -44,13 +44,13 @@ export default function ValuationHeader({
 
       <div className="flex flex-wrap items-center gap-2">
         <Select value={primary ?? ''} onValueChange={onPrimaryChange}>
-          <SelectTrigger id="tickerSelect_valuationPage" className="min-w-11 w-[220px]">
+          <SelectTrigger id="tickerSelect_valuationPage" className="min-w-11 w-[150px]">
             <SelectValue placeholder="Select a stock" />
           </SelectTrigger>
           <SelectContent>
             {tickerOptions(watchlist, compares, primary).map((item) => (
               <SelectItem key={item.ticker} value={item.ticker}>
-                {item.ticker} - {item.long_name}
+                {item.ticker}
               </SelectItem>
             ))}
           </SelectContent>
