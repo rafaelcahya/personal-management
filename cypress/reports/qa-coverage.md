@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-07-06 (issue #592 — route builder feature)
-**Branch:** release/v1.23
+**Last Updated:** 2026-07-16 (issue #672 — valuation page)
+**Branch:** feat/issue-672-valuation-page
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,388  | 46%  |
-| UI        | 1,597  | 54%  |
-| **Total** | **2,985** | 100% |
+| API       | 1,405  | 47%  |
+| UI        | 1,597  | 53%  |
+| **Total** | **3,002** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 205   | 300   | 505   |
+| Trading Management   | 222   | 300   | 522   |
 | Running Tracker      | 460   | 695   | 1,155 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,388** | **1,597** | **2,985** |
+| **Total**            | **1,405** | **1,597** | **3,002** |
 
 ---
 
@@ -180,7 +180,17 @@
 | Forex Currencies     | 7   | 0  | 7     |
 | **Subtotal**         | **60** | **0** | **60** |
 
-**Trading Total — API: 205 | UI: 300 | Total: 505**
+#### Valuation
+
+| Feature              | API | UI | Total |
+| -------------------- | --- | -- | ----- |
+| Watchlist List       | 2   | 0  | 2     |
+| Watchlist Create     | 6   | 0  | 6     |
+| Watchlist Delete     | 5   | 0  | 5     |
+| Valuation Detail     | 4   | 0  | 4     |
+| **Subtotal**         | **17** | **0** | **17** |
+
+**Trading Total — API: 222 | UI: 300 | Total: 522**
 
 ---
 
@@ -322,8 +332,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 205   | 300   | 505   |
+| Trading Management   | 222   | 300   | 522   |
 | Running Tracker      | 460   | 695   | 1,155 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,388** | **1,597** | **2,985** |
+| **Total**            | **1,405** | **1,597** | **3,002** |

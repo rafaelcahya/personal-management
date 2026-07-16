@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
         "@supabase/supabase-js",
         "@supabase/ssr",
         "@supabase/auth-helpers-nextjs",
+        "yahoo-finance2",
     ],
 
     poweredByHeader: false,
