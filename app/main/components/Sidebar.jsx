@@ -58,6 +58,13 @@ const TRADING_ITEMS = [
     href: '/main/trading/dashboard',
     icon: LayoutDashboard,
   },
+  {
+    id: 'tradingValuationNav_sidebar',
+    name: 'Valuation',
+    tooltip: 'Stock Valuation',
+    href: '/main/trading/valuation',
+    icon: BarChart2,
+  },
   { name: 'Trades', href: '/main/trading/trade', icon: TrendingUp },
   { name: 'Market Events', href: '/main/trading/event', icon: Calendar },
   { name: 'Fees', href: '/main/trading/fee', icon: Receipt },

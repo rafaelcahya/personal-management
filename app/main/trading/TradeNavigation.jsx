@@ -1,7 +1,14 @@
 'use client'
 
 import { useRouter, usePathname } from 'next/navigation'
-import { LayoutDashboard, Receipt, Calendar, TrendingUp, ChevronRight } from 'lucide-react'
+import {
+  LayoutDashboard,
+  Receipt,
+  Calendar,
+  TrendingUp,
+  ChevronRight,
+  BarChart2,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Button from '@/components/base/Button/Button'
 
@@ -12,6 +19,13 @@ const navigationItems = [
     value: 'dashboard',
     href: '/main/trading/dashboard',
     icon: LayoutDashboard,
+  },
+  {
+    name: 'Valuation',
+    description: 'Stock analysis',
+    value: 'valuation',
+    href: '/main/trading/valuation',
+    icon: BarChart2,
   },
   {
     name: 'Trades',
