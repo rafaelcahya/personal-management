@@ -132,22 +132,26 @@ export default function ManageWatchlistSheet({ open, onOpenChange, watchlist, on
                 {confirmingTicker === item.ticker ? (
                   <span className="flex items-center gap-1.5 shrink-0 text-xs">
                     <span className="text-slate-500">Remove?</span>
-                    <button
+                    <Button
                       type="button"
                       id={`removeTickerConfirmYes_${item.ticker}_valuationPage`}
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleRemove(item.ticker)}
                       disabled={removingTicker === item.ticker}
-                      className="text-destructive-subtle-foreground underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                      className="h-auto px-1 py-0 text-xs text-destructive-subtle-foreground underline"
                     >
                       Yes
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setConfirmingTicker(null)}
-                      className="text-slate-500 underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+                      className="h-auto px-1 py-0 text-xs text-slate-500 underline"
                     >
                       No
-                    </button>
+                    </Button>
                   </span>
                 ) : (
                   <Button

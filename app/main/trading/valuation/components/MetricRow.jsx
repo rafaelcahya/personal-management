@@ -1,3 +1,4 @@
+import { TableRow, TableCell } from '@/components/base/Table/Table'
 import ValueCell from './ValueCell'
 import RcAssessmentLabel from './RcAssessmentLabel'
 import SignalBadge from './SignalBadge'
@@ -26,11 +27,11 @@ export default function MetricRow({ row, group, tickers, dataByTicker, statusByT
   const cells = tickers.map((ticker) => cellsFor(ticker, group, row, dataByTicker, statusByTicker))
 
   return (
-    <tr className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-      <td className="px-4 py-3 text-sm text-slate-600">{row.label}</td>
+    <TableRow className="border-b border-slate-50">
+      <TableCell className="text-slate-600">{row.label}</TableCell>
 
       {cells.map((cell) => (
-        <td key={`${cell.ticker}-value`} className="px-3 py-3 text-right">
+        <TableCell key={`${cell.ticker}-value`} align="right" className="px-3 py-3">
           {cell.status === 'loading' && <Skeleton className="h-4 w-16 ml-auto" />}
           {cell.status === 'error' && (
             <TickerErrorCells ticker={cell.ticker} onRetry={onRetry} className="p-0" />
@@ -38,24 +39,24 @@ export default function MetricRow({ row, group, tickers, dataByTicker, statusByT
           {cell.status === 'success' && (
             <ValueCell rowKey={row.key} value={cell.value} signal={cell.assessment?.signal} />
           )}
-        </td>
+        </TableCell>
       ))}
 
       {cells.map((cell) => (
-        <td key={`${cell.ticker}-rc`} className="px-3 py-3 text-left">
+        <TableCell key={`${cell.ticker}-rc`} className="px-3 py-3">
           {cell.status === 'loading' && <Skeleton className="h-4 w-20" />}
           {cell.status === 'success' && (
             <RcAssessmentLabel label={cell.assessment?.label} signal={cell.assessment?.signal} />
           )}
-        </td>
+        </TableCell>
       ))}
 
       {cells.map((cell) => (
-        <td key={`${cell.ticker}-signal`} className="px-3 py-3 text-center">
+        <TableCell key={`${cell.ticker}-signal`} align="center" className="px-3 py-3">
           {cell.status === 'loading' && <Skeleton className="h-5 w-12 mx-auto rounded-full" />}
           {cell.status === 'success' && <SignalBadge signal={cell.assessment?.signal} />}
-        </td>
+        </TableCell>
       ))}
-    </tr>
+    </TableRow>
   )
 }
