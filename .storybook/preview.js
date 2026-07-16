@@ -264,6 +264,8 @@ const preview = {
             'Full Page',
             '*',
           ],
+          'State',
+          ['Docs', 'Variants', 'With Action', 'Custom Icon', 'Loading', '*'],
           'Table',
           [
             'Docs',
