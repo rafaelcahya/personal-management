@@ -342,7 +342,7 @@ function ModalHeader({ className, layout = 'default', ...props }) {
   return (
     <div
       className={cn(
-        layout === 'beside' ? 'flex flex-row items-center gap-3' : 'flex flex-col gap-1.5',
+        layout === 'beside' ? 'flex flex-row items-center gap-3' : 'flex flex-col gap-0.5',
         variant === 'bordered' && 'p-4 border-b shrink-0',
         variant === 'bordered' && borderColor,
         className
