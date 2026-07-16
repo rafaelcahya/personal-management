@@ -16,8 +16,8 @@ export const Docs = {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold text-gray-900">State</h1>
         <p className="text-base text-gray-500 leading-relaxed">
-          A flat-props component for section-level error, empty, and loading states. Covers the most
-          common inline state pattern without copy-pasting markup.
+          A flat-props component for section-level error, empty, and loading states. Replaces inline
+          markup with a consistent, accessible pattern across all modules.
         </p>
       </div>
 
@@ -37,9 +37,7 @@ export const Docs = {
               title: 'No items yet',
               description: 'Add your first item to get started.',
             },
-            {
-              variant: 'loading',
-            },
+            { variant: 'loading' },
           ].map(({ variant, ...rest }) => (
             <div key={variant} className="flex flex-col gap-2">
               <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded w-fit">
@@ -55,7 +53,6 @@ export const Docs = {
         <pre className="bg-gray-900 rounded-lg px-5 py-4 text-xs text-green-400 overflow-x-auto leading-relaxed">
           <code>{`import State from '@/components/base/State/State'
 
-// Error — with retry button
 <State
   variant="error"
   title="Failed to load data"
@@ -63,85 +60,135 @@ export const Docs = {
   action={{ label: 'Try again', onClick: handleRetry }}
 />
 
-// Empty — with optional CTA
-<State
-  variant="empty"
-  title="No items yet"
-  description="Add your first item to get started."
-/>
+<State variant="empty" title="No items yet" />
 
-// Loading — skeleton rows
 <State variant="loading" skeletonRows={3} />`}</code>
         </pre>
       </section>
 
-      {/* Variants */}
+      {/* Anatomy */}
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Variants</h2>
-
-        <div className="flex flex-col gap-6">
-          {/* error */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">error</code>
-              <span className="text-xs text-gray-500">
-                role=&quot;alert&quot; aria-live=&quot;assertive&quot;
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Anatomy</h2>
+        <div className="overflow-x-auto w-full">
+          <div className="min-w-max py-4">
+            <div className="relative inline-flex flex-col items-center gap-3 border-2 border-dashed border-gray-400 rounded px-8 py-5 pt-9">
+              <span className="absolute top-1.5 left-2.5 text-[10px] font-mono text-gray-500">
+                State
               </span>
-            </div>
-            <div className="border border-gray-200 rounded-xl">
-              <State
-                variant="error"
-                title="Failed to load valuation data"
-                description="BBCA — check your connection and retry."
-                action={{ label: 'Try again', onClick: () => {} }}
-              />
-            </div>
-          </div>
 
-          {/* empty */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">empty</code>
-              <span className="text-xs text-gray-500">role=&quot;status&quot;</span>
-            </div>
-            <div className="border border-gray-200 rounded-xl">
-              <State
-                variant="empty"
-                title="No tickers yet"
-                description="Add tickers to your watchlist to start comparing valuations."
-                action={{ label: 'Add ticker', onClick: () => {} }}
-              />
-            </div>
-          </div>
+              <div className="relative border-2 border-dashed border-violet-400 rounded px-4 py-2 pt-6 min-w-[120px] flex justify-center">
+                <span className="absolute top-1 left-1.5 text-[10px] font-mono text-violet-500 whitespace-nowrap">
+                  icon (opt)
+                </span>
+                <AlertCircle className="size-8 text-slate-400" />
+              </div>
 
-          {/* loading */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">loading</code>
-              <span className="text-xs text-gray-500">aria-busy=&quot;true&quot;</span>
-            </div>
-            <div className="border border-gray-200 rounded-xl">
-              <State variant="loading" skeletonRows={3} />
+              <div className="relative border-2 border-dashed border-blue-400 rounded px-4 py-2 pt-6 min-w-[200px] flex flex-col items-center gap-1">
+                <span className="absolute top-1 left-1.5 text-[10px] font-mono text-blue-500 whitespace-nowrap">
+                  title + description (opt)
+                </span>
+                <span className="text-sm font-medium text-slate-700">Failed to load data</span>
+                <span className="text-xs text-slate-500">Check your connection.</span>
+              </div>
+
+              <div className="relative border-2 border-dashed border-orange-400 rounded px-4 py-2 pt-6 min-w-[160px] flex justify-center">
+                <span className="absolute top-1 left-1.5 text-[10px] font-mono text-orange-500 whitespace-nowrap">
+                  action (opt)
+                </span>
+                <div className="h-7 w-20 rounded-md border border-gray-300 bg-white" />
+              </div>
             </div>
           </div>
         </div>
+
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium w-36">
+                Prop
+              </th>
+              <th className="text-left py-2 text-xs uppercase tracking-wide text-gray-500 font-medium">
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {[
+              {
+                prop: 'variant',
+                desc: 'Controls layout and ARIA role. "error" → alert; "empty" → status; "loading" → skeleton rows.',
+              },
+              {
+                prop: 'icon',
+                desc: 'Override default icon. Pass the component reference (not JSX). Defaults: error → AlertCircle, empty → Inbox.',
+              },
+              {
+                prop: 'title',
+                desc: 'Primary message rendered as <p>. Minimum required signal for error and empty variants.',
+              },
+              {
+                prop: 'description',
+                desc: 'Supporting text rendered below the title.',
+              },
+              {
+                prop: 'action',
+                desc: '{ label, onClick } — renders an outline Button. Use for retry or CTA.',
+              },
+              {
+                prop: 'skeletonRows',
+                desc: 'Number of skeleton rows for loading variant. Defaults to 3.',
+              },
+            ].map(({ prop, desc }) => (
+              <tr key={prop}>
+                <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{prop}</td>
+                <td className="py-2.5 text-xs text-gray-600">{desc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      {/* ARIA */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Accessibility</h2>
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b">
+              {['Variant', 'ARIA attributes'].map((h) => (
+                <th
+                  key={h}
+                  className="text-left py-2 pr-4 text-xs uppercase tracking-wide text-gray-500 font-medium"
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {[
+              { variant: 'error', aria: 'role="alert" aria-live="assertive"' },
+              { variant: 'empty', aria: 'role="status"' },
+              { variant: 'loading', aria: 'aria-busy="true" aria-label="Loading…"' },
+            ].map(({ variant, aria }) => (
+              <tr key={variant}>
+                <td className="py-2.5 pr-4 font-mono text-xs text-gray-700">{variant}</td>
+                <td className="py-2.5 font-mono text-xs text-gray-500">{aria}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
 
       {/* Custom icon */}
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Custom Icon</h2>
-        <p className="text-sm text-gray-500">
-          Pass a Lucide icon component via the{' '}
-          <code className="font-mono bg-gray-100 px-1 rounded text-xs">icon</code> prop to override
-          the default. Defaults: error → AlertCircle, empty → Inbox.
-        </p>
         <div className="grid grid-cols-2 gap-4">
           <div className="border border-gray-200 rounded-xl">
             <State
               variant="error"
               icon={ServerCrash}
               title="Server unavailable"
-              description="The service is temporarily down."
+              description="Service is temporarily down."
               action={{ label: 'Retry', onClick: () => {} }}
             />
           </div>
@@ -159,9 +206,9 @@ export const Docs = {
 
 <State
   variant="error"
-  icon={ServerCrash}
+  icon={ServerCrash}   // component ref, not JSX
   title="Server unavailable"
-  description="The service is temporarily down."
+  description="Service is temporarily down."
   action={{ label: 'Retry', onClick: handleRetry }}
 />`}</code>
         </pre>
@@ -189,13 +236,13 @@ export const Docs = {
                 prop: 'variant',
                 type: '"error" | "empty" | "loading"',
                 def: '"empty"',
-                desc: 'Controls icon, ARIA role, and layout.',
+                desc: 'Controls icon defaults, ARIA role, and layout.',
               },
               {
                 prop: 'icon',
                 type: 'LucideIcon',
                 def: 'AlertCircle / Inbox',
-                desc: 'Override the default icon. Pass the component reference, not JSX.',
+                desc: 'Override the default icon. Pass the component reference.',
               },
               {
                 prop: 'title',
