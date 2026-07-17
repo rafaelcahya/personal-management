@@ -13,8 +13,8 @@ const textareaVariants = cva(
     'transition-[color,box-shadow,border-color] duration-150',
     'outline-none resize-y',
     'text-sm font-medium px-3 py-2',
-    'selection:bg-violet-500 selection:text-white',
-    'focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600',
+    'selection:bg-primary/50 selection:text-primary-foreground',
+    'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:border-ring',
   ],
   {
     variants: {

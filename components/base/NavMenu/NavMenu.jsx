@@ -106,7 +106,7 @@ export function NavMenuList({ children, className }) {
       {children}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-0 h-0.5 rounded-full bg-violet-600 transition-all duration-200 ease-out"
+        className="pointer-events-none absolute bottom-0 left-0 h-0.5 rounded-full bg-primary transition-all duration-200 ease-out"
         style={{
           width: underline.width,
           transform: `translateX(${underline.left}px)`,
@@ -162,16 +162,16 @@ export function NavMenuTrigger({ children, icon: Icon, className }) {
       }}
       className={cn(
         'flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium',
-        'text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors',
-        isOpen && 'text-gray-900 bg-gray-50',
+        'text-foreground hover:text-foreground hover:bg-accent transition-colors',
+        isOpen && 'text-foreground bg-accent',
         className
       )}
     >
-      {Icon && <Icon className="size-4 shrink-0 text-gray-500" />}
+      {Icon && <Icon className="size-4 shrink-0 text-muted-foreground" />}
       {children}
       <ChevronDown
         className={cn(
-          'size-3.5 text-gray-400 transition-transform duration-200 ml-0.5',
+          'size-3.5 text-muted-foreground transition-transform duration-200 ml-0.5',
           isOpen && 'rotate-180'
         )}
       />
@@ -194,7 +194,7 @@ export function NavMenuIndicator({ className }) {
         className
       )}
     >
-      <div className="mt-[3px] size-[10px] rotate-45 bg-white border-l border-t border-gray-200" />
+      <div className="mt-[3px] size-[10px] rotate-45 bg-popover border-l border-t border-border" />
     </div>
   )
 }
@@ -241,7 +241,7 @@ export function NavMenuContent({ children, columns = 1, align = 'start', classNa
         'absolute top-[calc(100%+8px)] z-50',
         contentAlignMap[align] ?? 'left-0',
         contentWidthMap[columns] ?? 'min-w-48',
-        'bg-white rounded-xl border border-gray-200 shadow-lg',
+        'bg-popover rounded-xl border border-border shadow-lg',
         className
       )}
       {...hoverHandlers}
@@ -269,13 +269,13 @@ export function NavMenuLink({
       data-active={String(!!active)}
       className={cn(
         'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
-        'text-gray-700 hover:text-gray-900 hover:bg-gray-50',
-        active && 'text-violet-700 bg-violet-50',
+        'text-foreground hover:text-foreground hover:bg-accent',
+        active && 'text-primary bg-secondary',
         className
       )}
       {...props}
     >
-      {Icon && <Icon className="size-4 shrink-0 text-gray-500" />}
+      {Icon && <Icon className="size-4 shrink-0 text-muted-foreground" />}
       {children}
     </As>
   )
@@ -293,7 +293,7 @@ export function NavMenuGroupTitle({ children, className }) {
   return (
     <p
       className={cn(
-        'px-2 pt-1 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-400 select-none',
+        'px-2 pt-1 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground select-none',
         className
       )}
     >
@@ -319,8 +319,8 @@ export function NavMenuGroupItem({
       href={href}
       className={cn(
         'flex items-start gap-3 px-2 py-2 rounded-lg transition-colors group cursor-pointer',
-        'hover:bg-gray-50',
-        active && 'bg-violet-50',
+        'hover:bg-accent',
+        active && 'bg-secondary',
         className
       )}
       {...props}
@@ -329,8 +329,8 @@ export function NavMenuGroupItem({
         <div
           className={cn(
             'shrink-0 size-8 rounded-md flex items-center justify-center transition-colors',
-            'bg-gray-100 text-gray-600 group-hover:bg-violet-100 group-hover:text-violet-600',
-            active && 'bg-violet-100 text-violet-600'
+            'bg-muted text-muted-foreground group-hover:bg-secondary group-hover:text-primary',
+            active && 'bg-secondary text-primary'
           )}
         >
           <Icon className="size-4" />
@@ -339,14 +339,16 @@ export function NavMenuGroupItem({
       <div className="flex flex-col min-w-0">
         <span
           className={cn(
-            'text-sm font-medium text-gray-900 leading-tight',
-            active && 'text-violet-700'
+            'text-sm font-medium text-foreground leading-tight',
+            active && 'text-primary'
           )}
         >
           {label}
         </span>
         {description && (
-          <span className="text-xs text-gray-500 mt-0.5 leading-relaxed">{description}</span>
+          <span className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+            {description}
+          </span>
         )}
       </div>
     </As>
@@ -356,7 +358,7 @@ export function NavMenuGroupItem({
 // ─── NavMenuSeparator ─────────────────────────────────────────────────────────
 
 export function NavMenuSeparator({ className }) {
-  return <hr className={cn('my-1 border-gray-100', className)} />
+  return <hr className={cn('my-1 border-border', className)} />
 }
 
 // ─── NavMenuSub (nested flyout) ───────────────────────────────────────────────
@@ -405,14 +407,14 @@ export function NavMenuSubTrigger({ children, icon: Icon, className }) {
       role="menuitem"
       className={cn(
         'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-default select-none',
-        'text-gray-700 hover:text-gray-900 hover:bg-gray-50',
-        isOpen && 'bg-gray-50 text-gray-900',
+        'text-foreground hover:text-foreground hover:bg-accent',
+        isOpen && 'bg-accent text-foreground',
         className
       )}
     >
-      {Icon && <Icon className="size-4 shrink-0 text-gray-500" />}
+      {Icon && <Icon className="size-4 shrink-0 text-muted-foreground" />}
       <span className="flex-1">{children}</span>
-      <ChevronRight className="size-3.5 text-gray-400 shrink-0" />
+      <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />
     </div>
   )
 }
@@ -426,7 +428,7 @@ export function NavMenuSubContent({ children, className }) {
     <div
       className={cn(
         'absolute left-full top-0 z-50 ml-1',
-        'min-w-48 bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden',
+        'min-w-48 bg-popover rounded-xl border border-border shadow-lg overflow-hidden',
         className
       )}
       onMouseEnter={cancelSubClose}

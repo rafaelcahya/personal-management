@@ -165,9 +165,9 @@ export function TabsList({ children, variant = 'underline', size = 'md', classNa
         className={cn(
           'relative flex shrink-0',
           isVertical ? 'flex-col' : 'flex-row',
-          variant === 'underline' && !isVertical && 'border-b border-slate-200',
-          variant === 'underline' && isVertical && 'border-r border-slate-200 pr-0',
-          variant === 'pill' && 'gap-1 p-1 bg-slate-100 rounded-xl',
+          variant === 'underline' && !isVertical && 'border-b border-border',
+          variant === 'underline' && isVertical && 'border-r border-border pr-0',
+          variant === 'pill' && 'gap-1 p-1 bg-muted rounded-xl',
           className
         )}
         {...props}
@@ -178,7 +178,7 @@ export function TabsList({ children, variant = 'underline', size = 'md', classNa
             aria-hidden="true"
             style={{
               position: 'absolute',
-              backgroundColor: 'rgb(109, 40, 217)',
+              backgroundColor: 'hsl(var(--primary))',
               borderRadius: 2,
               transition: 'transform 200ms ease, width 200ms ease, height 200ms ease',
               ...indicatorStyle,
@@ -190,7 +190,7 @@ export function TabsList({ children, variant = 'underline', size = 'md', classNa
             aria-hidden="true"
             style={{
               position: 'absolute',
-              backgroundColor: 'white',
+              backgroundColor: 'hsl(var(--card))',
               borderRadius: '0.5rem',
               boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
               transition: 'transform 200ms ease, width 200ms ease, height 200ms ease',
@@ -230,14 +230,20 @@ export function TabsTrigger({
       className={cn(
         'relative inline-flex items-center gap-1.5 font-medium transition-colors outline-none',
         triggerSizes[size] ?? triggerSizes.md,
-        'focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-1 rounded-md',
+        'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-1 rounded-md',
         // underline
-        variant === 'underline' && isActive && 'text-violet-700',
-        variant === 'underline' && !isActive && !disabled && 'text-slate-500 hover:text-slate-800',
+        variant === 'underline' && isActive && 'text-primary',
+        variant === 'underline' &&
+          !isActive &&
+          !disabled &&
+          'text-muted-foreground hover:text-foreground',
         // pill
         variant === 'pill' && 'z-10 text-sm flex-1 justify-center',
-        variant === 'pill' && isActive && 'text-slate-900',
-        variant === 'pill' && !isActive && !disabled && 'text-slate-500 hover:text-slate-700',
+        variant === 'pill' && isActive && 'text-foreground',
+        variant === 'pill' &&
+          !isActive &&
+          !disabled &&
+          'text-muted-foreground hover:text-foreground',
         // disabled
         disabled && 'opacity-40 cursor-not-allowed pointer-events-none',
         className
