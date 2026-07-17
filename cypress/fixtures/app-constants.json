@@ -189,6 +189,12 @@
       "metrics": "/api/trade/v1/dashboard/metrics",
       "quick_view": "/api/trade/v1/dashboard/quick-view"
     },
+    "trading_research": {
+      "overview": "/api/trade/v1/research/overview",
+      "technicals": "/api/trade/v1/research/technicals",
+      "corporate_events": "/api/trade/v1/research/corporate-events",
+      "symbol_search": "/api/trade/v1/research/symbol-search"
+    },
     "currency_investments": {
       "list": "/api/currency-investments/v1/list",
       "create": "/api/currency-investments/v1/create",
