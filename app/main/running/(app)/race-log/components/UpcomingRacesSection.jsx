@@ -18,6 +18,7 @@ export default function UpcomingRacesSection({
   races,
   loading,
   error,
+  onLogRace,
   onRetry,
   onAdd,
   onUpdated,
@@ -29,8 +30,28 @@ export default function UpcomingRacesSection({
   return (
     <section id="upcomingRacesSection_raceLogPage" aria-label="Upcoming races">
       {/* Header */}
-      <div className="mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
         <h2 className="text-xl font-bold text-slate-800">Upcoming Races</h2>
+        <div className="flex items-center gap-2">
+          <Button
+            id="addRaceBtn"
+            onClick={onLogRace}
+            className="flex flex-1 sm:flex-none items-center justify-center gap-1.5"
+            aria-label="Log race"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Log race
+          </Button>
+          <Button
+            id="addUpcomingRaceBtn_raceLogPage"
+            onClick={() => setFormOpen(true)}
+            className="flex flex-1 sm:flex-none items-center justify-center gap-1.5"
+            aria-label="Add upcoming race"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Add upcoming race
+          </Button>
+        </div>
       </div>
 
       {/* Loading skeleton */}
