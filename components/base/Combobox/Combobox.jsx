@@ -198,14 +198,14 @@ export default function Combobox({
           type="button"
           tabIndex={-1}
           onClick={handleClear}
-          className="rounded p-0.5 hover:bg-gray-100 transition-colors"
+          className="rounded p-0.5 hover:bg-accent transition-colors"
         >
-          <X className="size-3.5 text-slate-400" />
+          <X className="size-3.5 text-muted-foreground" />
         </button>
       )}
       <ChevronDown
         className={clsx(
-          'size-4 text-slate-400 transition-transform duration-150',
+          'size-4 text-muted-foreground transition-transform duration-150',
           open && 'rotate-180'
         )}
       />
@@ -218,11 +218,11 @@ export default function Combobox({
     <>
       {loading && (
         <div className="flex justify-center py-5">
-          <Loader2 className="size-4 animate-spin text-slate-400" />
+          <Loader2 className="size-4 animate-spin text-muted-foreground" />
         </div>
       )}
       {!loading && visibleOptions.length === 0 && !showCreate && (
-        <p className="px-3 py-5 text-sm text-slate-400 text-center">{emptyText}</p>
+        <p className="px-3 py-5 text-sm text-muted-foreground text-center">{emptyText}</p>
       )}
       {!loading &&
         visibleOptions.map((opt, i) =>
@@ -247,7 +247,7 @@ export default function Combobox({
         <button
           type="button"
           onClick={handleCreate}
-          className="w-full flex items-center px-3 py-1.5 text-sm text-violet-600 hover:bg-violet-50 rounded transition-colors"
+          className="w-full flex items-center px-3 py-1.5 text-sm text-primary hover:bg-primary/10 rounded transition-colors"
         >
           {createLabel(query.trim())}
         </button>
@@ -267,7 +267,7 @@ export default function Combobox({
 
   const variantStyle = {
     default:
-      'border-input hover:border-slate-300 focus-within:ring-2 focus-within:ring-violet-200 focus-within:border-violet-600',
+      'border-input hover:border-border focus-within:ring-2 focus-within:ring-ring/30 focus-within:border-ring',
     error:
       'border-destructive focus-within:ring-2 focus-within:ring-destructive/20 focus-within:border-destructive',
     disabled: 'border-input opacity-50 pointer-events-none bg-muted',
@@ -407,7 +407,7 @@ export default function Combobox({
         className="p-0 max-h-[300px] flex flex-col overflow-hidden"
         align={align}
       >
-        <div className="shrink-0 p-2 border-b border-slate-100">
+        <div className="shrink-0 p-2 border-b border-border">
           <input
             ref={inputRef}
             value={query}

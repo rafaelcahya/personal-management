@@ -8,10 +8,10 @@ const SliderTooltip = ({ children }) => {
 
   return (
     <div className="absolute bottom-full left-1/2 mb-2.5 -translate-x-1/2" role="tooltip">
-      <div className="rounded-xl bg-white border border-slate-200 shadow-sm px-2.5 py-1 text-xs font-medium text-slate-700 whitespace-nowrap">
+      <div className="rounded-xl bg-popover border border-border shadow-sm px-2.5 py-1 text-xs font-medium text-popover-foreground whitespace-nowrap">
         {content}
       </div>
-      <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-slate-200" />
+      <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-border" />
     </div>
   )
 }

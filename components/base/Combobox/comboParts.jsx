@@ -42,7 +42,9 @@ export function ComboOption({ option, isSelected, onSelect }) {
       onClick={() => onSelect(option)}
       className={clsx(
         'w-full flex items-center gap-2 px-3 py-1.5 text-sm rounded text-left transition-colors',
-        isSelected ? 'bg-violet-50 text-violet-700 font-medium' : 'text-gray-700 hover:bg-gray-100',
+        isSelected
+          ? 'bg-secondary text-secondary-foreground font-medium'
+          : 'text-foreground hover:bg-accent',
         option.disabled && 'opacity-40 pointer-events-none'
       )}
     >
@@ -62,7 +64,7 @@ export function ComboOption({ option, isSelected, onSelect }) {
 export function ComboGroup({ group, items, selectedValues, onSelect }) {
   return (
     <div>
-      <div className="px-3 py-1.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+      <div className="px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
         {group}
       </div>
       {items.map((item) => (
@@ -81,7 +83,7 @@ export function ComboGroup({ group, items, selectedValues, onSelect }) {
 
 export function ComboTag({ label, onRemove }) {
   return (
-    <span className="inline-flex items-center gap-0.5 pl-2 pr-1 py-0.5 bg-violet-100 text-violet-700 text-xs font-medium rounded shrink-0">
+    <span className="inline-flex items-center gap-0.5 pl-2 pr-1 py-0.5 bg-secondary text-secondary-foreground text-xs font-medium rounded shrink-0">
       {label}
       <button
         type="button"
@@ -90,7 +92,7 @@ export function ComboTag({ label, onRemove }) {
           e.stopPropagation()
           onRemove()
         }}
-        className="rounded hover:bg-violet-200 transition-colors p-0.5"
+        className="rounded hover:bg-secondary/70 transition-colors p-0.5"
       >
         <X className="size-3" />
       </button>

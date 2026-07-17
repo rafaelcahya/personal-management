@@ -5,7 +5,7 @@ const CardContext = createContext({ variant: 'shell' })
 const CardHeaderContext = createContext({ layout: 'beside' })
 
 const cardBaseClasses = {
-  shell: 'bg-white rounded-xl shadow-sm overflow-hidden',
+  shell: 'bg-card rounded-xl shadow-sm overflow-hidden',
   transparent: '',
   info: 'bg-blue-50 rounded-xl shadow-sm overflow-hidden dark:bg-blue-950/40',
   success: 'bg-emerald-50 rounded-xl shadow-sm overflow-hidden dark:bg-emerald-950/40',
@@ -15,8 +15,8 @@ const cardBaseClasses = {
 }
 
 const cardBorderClasses = {
-  shell: 'border border-slate-200',
-  transparent: 'border border-slate-200',
+  shell: 'border border-border',
+  transparent: 'border border-border',
   info: 'border border-blue-200 dark:border-blue-900',
   success: 'border border-emerald-200 dark:border-emerald-900',
   warning: 'border border-amber-200 dark:border-amber-900',
@@ -25,7 +25,7 @@ const cardBorderClasses = {
 }
 
 const headerBorderClasses = {
-  shell: 'border-b border-slate-100',
+  shell: 'border-b border-border',
   transparent: '',
   info: 'border-b border-blue-100 dark:border-blue-900',
   success: 'border-b border-emerald-100 dark:border-emerald-900',
@@ -35,7 +35,7 @@ const headerBorderClasses = {
 }
 
 const footerBorderClasses = {
-  shell: 'border-t border-slate-100',
+  shell: 'border-t border-border',
   transparent: '',
   info: 'border-t border-blue-100 dark:border-blue-900',
   success: 'border-t border-emerald-100 dark:border-emerald-900',
@@ -45,8 +45,8 @@ const footerBorderClasses = {
 }
 
 const iconVariants = {
-  shell: { wrapper: 'bg-violet-50', icon: 'text-violet-600' },
-  transparent: { wrapper: 'bg-violet-50', icon: 'text-violet-600' },
+  shell: { wrapper: 'bg-secondary', icon: 'text-primary' },
+  transparent: { wrapper: 'bg-secondary', icon: 'text-primary' },
   info: { wrapper: 'bg-blue-100 dark:bg-blue-900', icon: 'text-blue-600 dark:text-blue-400' },
   success: {
     wrapper: 'bg-emerald-100 dark:bg-emerald-900',
@@ -123,7 +123,7 @@ export function CardIcon({ icon, className, iconClassName }) {
 
 export function CardTitle({ children, className, as: Tag = 'h3', id, ...rest }) {
   return (
-    <Tag id={id} className={cn('text-sm font-semibold text-slate-900', className)} {...rest}>
+    <Tag id={id} className={cn('text-sm font-semibold text-card-foreground', className)} {...rest}>
       {children}
     </Tag>
   )
@@ -131,7 +131,7 @@ export function CardTitle({ children, className, as: Tag = 'h3', id, ...rest }) 
 
 export function CardDescription({ children, className, id, ...rest }) {
   return (
-    <p id={id} className={cn('text-xs text-slate-500 mt-0.5', className)} {...rest}>
+    <p id={id} className={cn('text-xs text-muted-foreground mt-0.5', className)} {...rest}>
       {children}
     </p>
   )

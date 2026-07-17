@@ -99,18 +99,18 @@ const RadioGroupItem = ({
       disabled={disabled}
       onClick={() => !disabled && onChange(value)}
       className={cn(
-        'size-4 shrink-0 rounded-full border border-gray-300 bg-white inline-flex items-center justify-center',
+        'size-4 shrink-0 rounded-full border border-input bg-background inline-flex items-center justify-center',
         'transition-colors duration-100',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600',
-        checked && 'border-violet-600',
-        hasError && !checked && 'border-red-500',
-        hasError && checked && 'border-red-500',
-        disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:border-violet-400',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:border-ring',
+        checked && 'border-primary',
+        hasError && !checked && 'border-destructive',
+        hasError && checked && 'border-destructive',
+        disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:border-primary/60',
         className
       )}
     >
       {checked && (
-        <span className={cn('size-2 rounded-full', hasError ? 'bg-red-500' : 'bg-violet-600')} />
+        <span className={cn('size-2 rounded-full', hasError ? 'bg-destructive' : 'bg-primary')} />
       )}
       <input
         type="radio"

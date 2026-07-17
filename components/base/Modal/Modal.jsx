@@ -287,7 +287,7 @@ function ModalContent({
           style={animation !== 'none' ? { animationDuration: `${resolvedDuration}ms` } : undefined}
           className={cn(
             'pointer-events-auto relative',
-            'w-full bg-background border border-slate-100 shadow-xl',
+            'w-full bg-background border border-border shadow-xl',
             'flex flex-col',
             variant === 'default' && 'gap-3 p-4 overflow-y-auto',
             variant === 'bordered' && 'gap-0 p-0 overflow-hidden',
@@ -323,12 +323,12 @@ function ModalIcon({ icon, className, iconClassName }) {
   return (
     <div
       className={cn(
-        'flex items-center justify-center size-9 rounded-lg shrink-0 bg-violet-50',
+        'flex items-center justify-center size-9 rounded-lg shrink-0 bg-secondary',
         className
       )}
     >
       {createElement(icon, {
-        className: cn('size-4 text-violet-600', iconClassName),
+        className: cn('size-4 text-primary', iconClassName),
         'aria-hidden': 'true',
       })}
     </div>
@@ -377,7 +377,7 @@ function ModalTitle({ className, ...props }) {
   return (
     <h2
       id={ctx?.titleId}
-      className={cn('text-base font-semibold text-slate-800', className)}
+      className={cn('text-base font-semibold text-foreground', className)}
       {...props}
     />
   )
@@ -388,7 +388,11 @@ function ModalTitle({ className, ...props }) {
 function ModalDescription({ className, ...props }) {
   const ctx = useContext(ModalContext)
   return (
-    <p id={ctx?.descriptionId} className={cn('text-xs text-slate-500', className)} {...props} />
+    <p
+      id={ctx?.descriptionId}
+      className={cn('text-xs text-muted-foreground', className)}
+      {...props}
+    />
   )
 }
 

@@ -55,13 +55,13 @@ const Checkbox = ({
         }
       }}
       className={cn(
-        'size-4 shrink-0 rounded-sm border border-gray-300 bg-white inline-flex items-center justify-center',
+        'size-4 shrink-0 rounded-sm border border-input bg-background inline-flex items-center justify-center',
         'transition-colors duration-100',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600',
-        (isChecked || isIndeterminate) && 'bg-violet-600 border-violet-600',
-        hasError && !isChecked && !isIndeterminate && 'border-red-500',
-        hasError && (isChecked || isIndeterminate) && 'bg-red-500 border-red-500',
-        disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:border-violet-400',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:border-ring',
+        (isChecked || isIndeterminate) && 'bg-primary border-primary',
+        hasError && !isChecked && !isIndeterminate && 'border-destructive',
+        hasError && (isChecked || isIndeterminate) && 'bg-destructive border-destructive',
+        disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:border-primary/70',
         className
       )}
     >

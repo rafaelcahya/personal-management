@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 const DURATION_MAP = { fast: 100, default: 150, slow: 300, slower: 500 }
 
 const variantClasses = {
-  default: 'bg-white text-slate-900 border-slate-200',
+  default: 'bg-popover text-popover-foreground border-border',
   info: 'bg-blue-50 text-blue-900 border-blue-200',
   success: 'bg-emerald-50 text-emerald-900 border-emerald-200',
   warning: 'bg-amber-50 text-amber-900 border-amber-200',

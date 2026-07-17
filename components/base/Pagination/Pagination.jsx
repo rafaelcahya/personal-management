@@ -47,7 +47,7 @@ export default function Pagination({
       size={iconOnly ? 'icon-sm' : 'xs'}
       onClick={onPrev}
       disabled={page <= 1}
-      className="text-slate-600 hover:text-violet-600"
+      className="text-muted-foreground hover:text-primary"
       aria-label="Previous page"
     >
       <ChevronLeft className="size-3.5" aria-hidden="true" />
@@ -58,7 +58,7 @@ export default function Pagination({
   const pageInfo = (
     <span
       id={infoId}
-      className="text-xs text-slate-400 text-center whitespace-nowrap"
+      className="text-xs text-muted-foreground text-center whitespace-nowrap"
       aria-live="polite"
     >
       Page {page} of {totalPages} · {total} records
@@ -72,7 +72,7 @@ export default function Pagination({
       size={iconOnly ? 'icon-sm' : 'xs'}
       onClick={onNext}
       disabled={page >= totalPages}
-      className="text-slate-600 hover:text-violet-600"
+      className="text-muted-foreground hover:text-primary"
       aria-label="Next page"
     >
       {!iconOnly && 'Next'}

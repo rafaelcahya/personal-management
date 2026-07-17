@@ -73,7 +73,7 @@ export function CommandTrigger({ children, className, shortcutVariant = 'chip', 
       type="button"
       onClick={() => setOpen(true)}
       className={cn(
-        'flex items-center gap-2 text-sm text-gray-500 px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors',
+        'flex items-center gap-2 text-sm text-muted-foreground px-3 py-1.5 border border-border rounded-lg hover:bg-accent transition-colors',
         className
       )}
       {...props}
@@ -84,16 +84,18 @@ export function CommandTrigger({ children, className, shortcutVariant = 'chip', 
           <span>Search…</span>
           {shortcutVariant === 'chip' && (
             <span className="ml-auto flex items-center gap-0.5">
-              <kbd className="text-[10px] font-mono bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-400">
+              <kbd className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded border border-border text-muted-foreground">
                 ⌘
               </kbd>
-              <kbd className="text-[10px] font-mono bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-400">
+              <kbd className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded border border-border text-muted-foreground">
                 K
               </kbd>
             </span>
           )}
           {shortcutVariant === 'text' && (
-            <span className="ml-auto text-[11px] font-mono text-gray-400 tracking-[0.5em]">⌘K</span>
+            <span className="ml-auto text-[11px] font-mono text-muted-foreground tracking-[0.5em]">
+              ⌘K
+            </span>
           )}
         </>
       )}
@@ -162,7 +164,7 @@ export function CommandDialog({ children }) {
       {/* Panel */}
       <div
         ref={panelRef}
-        className="relative z-10 w-full max-w-lg mx-4 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden"
+        className="relative z-10 w-full max-w-lg mx-4 bg-popover rounded-xl shadow-2xl border border-border overflow-hidden"
       >
         {children}
       </div>
@@ -184,15 +186,15 @@ export function CommandInput({ placeholder = 'Type to search…', className, ...
   }, [])
 
   return (
-    <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-      <Search className="size-4 text-gray-400 shrink-0" />
+    <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+      <Search className="size-4 text-muted-foreground shrink-0" />
       <input
         ref={inputRef}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          'flex-1 text-sm outline-none bg-transparent text-gray-900 placeholder:text-gray-400',
+          'flex-1 text-sm outline-none bg-transparent text-foreground placeholder:text-muted-foreground',
           className
         )}
         {...props}
@@ -201,7 +203,7 @@ export function CommandInput({ placeholder = 'Type to search…', className, ...
         <button
           type="button"
           onClick={() => setQuery('')}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-muted-foreground hover:text-foreground transition-colors"
         >
           <X className="size-3.5" />
         </button>
@@ -237,7 +239,7 @@ export function CommandGroup({ label, children }) {
   return (
     <div style={{ display: hasVisible ? '' : 'none' }}>
       {label && (
-        <p className="px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-400 select-none">
+        <p className="px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground select-none">
           {label}
         </p>
       )}
@@ -277,13 +279,13 @@ export function CommandItem({
       hidden={isFiltered || undefined}
       onClick={handleSelect}
       className={cn(
-        'mx-2 flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm text-gray-700 select-none transition-colors',
-        'data-[active=true]:bg-gray-100 data-[active=true]:text-gray-900',
+        'mx-2 flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm text-foreground select-none transition-colors',
+        'data-[active=true]:bg-accent data-[active=true]:text-foreground',
         className
       )}
       {...props}
     >
-      {Icon && <Icon className="size-4 text-gray-500 shrink-0" />}
+      {Icon && <Icon className="size-4 text-muted-foreground shrink-0" />}
       <span className="flex-1 truncate">{label}</span>
       {shortcut && shortcutVariant === 'chip' && (
         <span className="flex items-center gap-1 shrink-0">
@@ -293,8 +295,8 @@ export function CommandItem({
               className={cn(
                 'inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono border rounded transition-colors',
                 activeKey === k.toLowerCase()
-                  ? 'bg-violet-100 border-violet-300 text-violet-600'
-                  : 'bg-gray-100 border-gray-200 text-gray-500'
+                  ? 'bg-secondary border-primary/40 text-primary'
+                  : 'bg-muted border-border text-muted-foreground'
               )}
             >
               {k}
@@ -312,7 +314,7 @@ export function CommandItem({
                 key={i}
                 className={cn(
                   'text-[11px] font-mono transition-colors',
-                  activeKey === char.toLowerCase() ? 'text-violet-500' : 'text-gray-400'
+                  activeKey === char.toLowerCase() ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
                 {char}
@@ -327,7 +329,7 @@ export function CommandItem({
 // ─── CommandSeparator ─────────────────────────────────────────────────────────
 
 export function CommandSeparator({ className }) {
-  return <hr className={cn('my-1.5 border-gray-100', className)} />
+  return <hr className={cn('my-1.5 border-border', className)} />
 }
 
 // ─── CommandEmpty ─────────────────────────────────────────────────────────────
@@ -347,7 +349,7 @@ export function CommandEmpty({ children }) {
     <div
       ref={ref}
       style={{ display: show ? '' : 'none' }}
-      className="py-10 text-center text-sm text-gray-400"
+      className="py-10 text-center text-sm text-muted-foreground"
     >
       {children ?? 'No results found.'}
     </div>
