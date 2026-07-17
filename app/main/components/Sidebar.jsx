@@ -30,6 +30,7 @@ import {
   DollarSign,
   ChevronDown,
   MapPin,
+  Microscope,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -67,6 +68,7 @@ const TRADING_ITEMS = [
   },
   { name: 'Trades', href: '/main/trading/trade', icon: TrendingUp },
   { name: 'Market Events', href: '/main/trading/event', icon: Calendar },
+  { name: 'Research', href: '/main/trading/research', icon: Microscope },
   { name: 'Fees', href: '/main/trading/fee', icon: Receipt },
   { name: 'Settings', href: '/main/trading/settings', icon: Settings },
 ]

@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-07-16 (issue #672 — valuation page)
-**Branch:** feat/issue-672-valuation-page
+**Last Updated:** 2026-07-17 (issue #693 — research page)
+**Branch:** release/v1.26
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,405  | 47%  |
+| API       | 1,417  | 47%  |
 | UI        | 1,597  | 53%  |
-| **Total** | **3,002** | 100% |
+| **Total** | **3,014** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 222   | 300   | 522   |
+| Trading Management   | 234   | 300   | 534   |
 | Running Tracker      | 460   | 695   | 1,155 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,405** | **1,597** | **3,002** |
+| **Total**            | **1,417** | **1,597** | **3,014** |
 
 ---
 
@@ -190,7 +190,17 @@
 | Valuation Detail     | 4   | 0  | 4     |
 | **Subtotal**         | **17** | **0** | **17** |
 
-**Trading Total — API: 222 | UI: 300 | Total: 522**
+#### Research
+
+| Feature              | API | UI | Total |
+| -------------------- | --- | -- | ----- |
+| Symbol Search        | 3   | 0  | 3     |
+| Overview             | 3   | 0  | 3     |
+| Technicals           | 3   | 0  | 3     |
+| Corporate Events     | 3   | 0  | 3     |
+| **Subtotal**         | **12** | **0** | **12** |
+
+**Trading Total — API: 234 | UI: 300 | Total: 534**
 
 ---
 
@@ -332,8 +342,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 222   | 300   | 522   |
+| Trading Management   | 234   | 300   | 534   |
 | Running Tracker      | 460   | 695   | 1,155 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,405** | **1,597** | **3,002** |
+| **Total**            | **1,417** | **1,597** | **3,014** |
