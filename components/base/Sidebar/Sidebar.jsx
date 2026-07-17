@@ -1,13 +1,6 @@
 'use client'
-import {
-  Children,
-  cloneElement,
-  createContext,
-  createPortal,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
+import { Children, cloneElement, createContext, useContext, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
