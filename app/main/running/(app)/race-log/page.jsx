@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Medal,
-  Plus,
   AlertTriangle,
   Flag,
   Trophy,
@@ -69,7 +68,6 @@ export default function RaceLogPage() {
   const [error, setError] = useState(null)
 
   const [formOpen, setFormOpen] = useState(false)
-  const [addUpcomingOpen, setAddUpcomingOpen] = useState(false)
 
   const [upcomingRaces, setUpcomingRaces] = useState([])
   const [upcomingLoading, setUpcomingLoading] = useState(true)
@@ -163,42 +161,18 @@ export default function RaceLogPage() {
 
   return (
     <div id="raceLogPage" className="flex flex-col gap-6">
-      <div className="flex items-start justify-between gap-4">
-        <PageHeader
-          title="Race Log"
-          description="Your race history — every finish line you've crossed."
-          breadcrumbs={[
-            { label: 'Running', href: '/main/running/dashboard' },
-            { label: 'Race Log' },
-          ]}
-        />
-        <div className="flex items-center gap-2 shrink-0">
-          <Button
-            id="addRaceBtn"
-            onClick={() => setFormOpen(true)}
-            className="flex items-center gap-1.5"
-            aria-label="Log race"
-          >
-            <Plus className="size-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Log race</span>
-          </Button>
-          <Button
-            id="addUpcomingRaceBtn_raceLogPage"
-            onClick={() => setAddUpcomingOpen(true)}
-            className="flex items-center gap-1.5"
-            aria-label="Add upcoming race"
-          >
-            <Plus className="size-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Add upcoming race</span>
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Race Log"
+        description="Your race history — every finish line you've crossed."
+        breadcrumbs={[{ label: 'Running', href: '/main/running/dashboard' }, { label: 'Race Log' }]}
+      />
       <SyncStravaButton id="syncStravaBtn_raceLog" />
 
       <UpcomingRacesSection
         races={upcomingRaces}
         loading={upcomingLoading}
         error={upcomingError}
+        onLogRace={() => setFormOpen(true)}
         onRetry={() => {
           setUpcomingError(null)
           setUpcomingLoading(true)
@@ -495,16 +469,6 @@ export default function RaceLogPage() {
           load()
           router.push(`/main/running/race-log/${newEntry.id}`)
         }}
-      />
-
-      <UpcomingRaceFormModal
-        open={addUpcomingOpen}
-        onClose={() => setAddUpcomingOpen(false)}
-        onSaved={(r) => {
-          handleUpcomingAdd(r)
-          setAddUpcomingOpen(false)
-        }}
-        race={null}
       />
     </div>
   )
