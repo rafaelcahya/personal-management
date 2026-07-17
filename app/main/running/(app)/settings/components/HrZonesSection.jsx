@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { getHrZones, updateHrZones, detectMaxHr } from '@/lib/api/running'
 
 const METHOD_OPTIONS = [
@@ -272,37 +271,7 @@ export default function HrZonesSection() {
 
               {/* Threshold HR */}
               <FieldContent>
-                <div className="flex items-center gap-1.5">
-                  <FieldLabel htmlFor="thresholdHrInput_settingsPage">
-                    Threshold HR (bpm)
-                  </FieldLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon-xs"
-                        aria-label="What is Threshold HR?"
-                        className="text-slate-300 hover:text-slate-500"
-                      >
-                        <Info className="size-3.5" aria-hidden="true" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      side="top"
-                      className="w-auto max-w-64 p-3 text-xs leading-relaxed"
-                    >
-                      <p className="font-semibold mb-1">Threshold HR (LTHR)</p>
-                      <p>
-                        Your heart rate at lactate threshold — the hardest effort you can sustain
-                        for ~60 minutes. Used by the Lactate Threshold zone method.
-                      </p>
-                      <p className="mt-1">
-                        A common estimate is <span className="font-medium">85% of Max HR</span>, but
-                        a 30-min all-out time trial gives more accurate results.
-                      </p>
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                <FieldLabel htmlFor="thresholdHrInput_settingsPage">Threshold HR (bpm)</FieldLabel>
                 <Input
                   id="thresholdHrInput_settingsPage"
                   type="number"
@@ -322,6 +291,10 @@ export default function HrZonesSection() {
                     Auto-calculated from Max HR (85%)
                   </p>
                 )}
+                <FieldDescription>
+                  Your heart rate at lactate threshold — the hardest effort you can sustain for ~60
+                  min. A common estimate is 85% of Max HR.
+                </FieldDescription>
               </FieldContent>
 
               {/* Calculation Method */}
@@ -341,6 +314,9 @@ export default function HrZonesSection() {
                     ))}
                   </SelectContent>
                 </Select>
+                <FieldDescription>
+                  {METHOD_OPTIONS.find((o) => o.value === method)?.description}
+                </FieldDescription>
               </FieldContent>
             </div>
 
