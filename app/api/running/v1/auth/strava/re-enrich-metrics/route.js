@@ -5,7 +5,7 @@ import { computeAndSaveDerivedMetrics } from '@/lib/services/running/metrics'
 
 const BATCH_LIMIT = 200
 
-export async function POST(_request) {
+export async function POST(request) {
   try {
     const supabase = await createClient()
     const {
@@ -17,18 +17,26 @@ export async function POST(_request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { searchParams } = new URL(request.url)
+    const force = searchParams.get('force') === 'true'
+
     const admin = createAdminClient()
 
-    // Only re-enrich activities that are missing at least one derived metric
-    // and meet the gate conditions (moving_time_sec > 20 min AND avg_hr not null)
-    const { data: activities, error: fetchError } = await admin
+    let query = admin
       .from('rt_activities')
       .select('id')
       .eq('user_id', user.id)
       .gt('moving_time_sec', 20 * 60)
       .not('avg_hr', 'is', null)
-      .or('efficiency_factor.is.null,aerobic_decoupling.is.null,estimated_vo2max.is.null')
       .limit(BATCH_LIMIT)
+
+    if (!force) {
+      query = query.or(
+        'efficiency_factor.is.null,aerobic_decoupling.is.null,estimated_vo2max.is.null'
+      )
+    }
+
+    const { data: activities, error: fetchError } = await query
 
     if (fetchError) {
       return NextResponse.json({ error: 'Failed to fetch activities' }, { status: 500 })

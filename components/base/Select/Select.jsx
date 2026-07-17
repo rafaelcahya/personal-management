@@ -57,7 +57,7 @@ const triggerVariants = cva(
     'cursor-pointer',
     'transition-[color,box-shadow,border-color] duration-150',
     'outline-none',
-    'focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600',
+    'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:border-ring',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
   ],
   {

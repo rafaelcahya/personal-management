@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { getHrZones, updateHrZones, detectMaxHr } from '@/lib/api/running'
 
 const METHOD_OPTIONS = [
@@ -55,6 +54,7 @@ export default function HrZonesSection() {
   const [maxHr, setMaxHr] = useState('')
   const [restingHr, setRestingHr] = useState('')
   const [thresholdHr, setThresholdHr] = useState('')
+  const [isThresholdAutoCalc, setIsThresholdAutoCalc] = useState(true)
   const [method, setMethod] = useState('max_hr')
 
   useEffect(() => {
@@ -67,6 +67,11 @@ export default function HrZonesSection() {
           setRestingHr(data.resting_hr_baseline ?? '')
           setThresholdHr(data.threshold_hr ?? '')
           setMethod(data.hr_zones_method ?? 'max_hr')
+          const savedMax = data.max_hr
+          const savedThreshold = data.threshold_hr
+          const isAuto =
+            !savedThreshold || (savedMax != null && savedThreshold === Math.round(savedMax * 0.85))
+          setIsThresholdAutoCalc(isAuto)
         }
       } catch (err) {
         if (!cancelled) setLoadError(err.message || 'Failed to load HR zones settings')
@@ -80,6 +85,25 @@ export default function HrZonesSection() {
     }
   }, [])
 
+  function handleMaxHrChange(e) {
+    const val = e.target.value
+    setMaxHr(val)
+    if (isThresholdAutoCalc) {
+      const num = Number(val)
+      if (val !== '' && !isNaN(num) && num >= 60) {
+        setThresholdHr(String(Math.round(num * 0.85)))
+      } else {
+        setThresholdHr('')
+      }
+    }
+  }
+
+  function handleThresholdHrChange(e) {
+    const val = e.target.value
+    setThresholdHr(val)
+    setIsThresholdAutoCalc(val === '')
+  }
+
   async function handleDetectMaxHr() {
     setDetecting(true)
     setDetectSuccess(null)
@@ -91,18 +115,15 @@ export default function HrZonesSection() {
       } else {
         setMaxHr(String(result))
         setDetectSuccess(result)
+        if (isThresholdAutoCalc) {
+          setThresholdHr(String(Math.round(result * 0.85)))
+        }
       }
     } catch {
       setDetectError(true)
     } finally {
       setDetecting(false)
     }
-  }
-
-  function handleAutoFillThresholdHr() {
-    const max = Number(maxHr)
-    if (!maxHr || isNaN(max) || max <= 0) return
-    setThresholdHr(String(Math.round(max * 0.85)))
   }
 
   async function handleSave() {
@@ -155,9 +176,6 @@ export default function HrZonesSection() {
     }
   }
 
-  const maxHrNum = Number(maxHr)
-  const hasValidMaxHr = maxHr !== '' && !isNaN(maxHrNum) && maxHrNum >= 60
-
   return (
     <Card as="section" aria-label="HR zones">
       <CardHeader>
@@ -192,7 +210,7 @@ export default function HrZonesSection() {
                     min={60}
                     max={250}
                     value={maxHr}
-                    onChange={(e) => setMaxHr(e.target.value)}
+                    onChange={handleMaxHrChange}
                     placeholder="e.g. 190"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
@@ -253,64 +271,30 @@ export default function HrZonesSection() {
 
               {/* Threshold HR */}
               <FieldContent>
-                <div className="flex items-center gap-1.5">
-                  <FieldLabel htmlFor="thresholdHrInput_settingsPage">
-                    Threshold HR (bpm)
-                  </FieldLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon-xs"
-                        aria-label="What is Threshold HR?"
-                        className="text-slate-300 hover:text-slate-500"
-                      >
-                        <Info className="size-3.5" aria-hidden="true" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      side="top"
-                      className="w-auto max-w-64 p-3 text-xs leading-relaxed"
-                    >
-                      <p className="font-semibold mb-1">Threshold HR (LTHR)</p>
-                      <p>
-                        Your heart rate at lactate threshold — the hardest effort you can sustain
-                        for ~60 minutes. Used by the Lactate Threshold zone method.
-                      </p>
-                      <p className="mt-1">
-                        A common estimate is <span className="font-medium">85% of Max HR</span>, but
-                        a 30-min all-out time trial gives more accurate results.
-                      </p>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    id="thresholdHrInput_settingsPage"
-                    type="number"
-                    min={100}
-                    max={220}
-                    value={thresholdHr}
-                    onChange={(e) => setThresholdHr(e.target.value)}
-                    placeholder="e.g. 165"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
-                  />
-                  <Button
-                    id="thresholdHrAutoFillBtn_settingsPage"
-                    type="button"
-                    variant="outline"
-                    disabled={!hasValidMaxHr}
-                    onClick={handleAutoFillThresholdHr}
-                    className="shrink-0 text-xs text-violet-600 border-violet-200 hover:bg-violet-50 disabled:opacity-50"
+                <FieldLabel htmlFor="thresholdHrInput_settingsPage">Threshold HR (bpm)</FieldLabel>
+                <Input
+                  id="thresholdHrInput_settingsPage"
+                  type="number"
+                  min={100}
+                  max={220}
+                  value={thresholdHr}
+                  onChange={handleThresholdHrChange}
+                  placeholder="e.g. 165"
+                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                />
+                {isThresholdAutoCalc && thresholdHr !== '' && (
+                  <p
+                    id="thresholdHrAutoCalcHint_settingsPage"
+                    className="text-xs text-violet-600 flex items-center gap-1"
                   >
-                    85% of Max HR
-                  </Button>
-                </div>
-                {!hasValidMaxHr && (
-                  <p id="thresholdHrNoMaxHr_settingsPage" className="text-xs text-red-500">
-                    Set Max HR first to use the auto-fill
+                    <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
+                    Auto-calculated from Max HR (85%)
                   </p>
                 )}
+                <FieldDescription>
+                  Your heart rate at lactate threshold — the hardest effort you can sustain for ~60
+                  min. A common estimate is 85% of Max HR.
+                </FieldDescription>
               </FieldContent>
 
               {/* Calculation Method */}
@@ -330,6 +314,9 @@ export default function HrZonesSection() {
                     ))}
                   </SelectContent>
                 </Select>
+                <FieldDescription>
+                  {METHOD_OPTIONS.find((o) => o.value === method)?.description}
+                </FieldDescription>
               </FieldContent>
             </div>
 

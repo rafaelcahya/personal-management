@@ -33,19 +33,19 @@ const sizeClasses = {
 
 const variantClasses = {
   empty: {
-    icon: 'text-gray-300',
-    title: 'text-gray-700',
-    description: 'text-gray-400',
+    icon: 'text-muted-foreground/50',
+    title: 'text-foreground',
+    description: 'text-muted-foreground',
   },
   search: {
-    icon: 'text-gray-300',
-    title: 'text-gray-700',
-    description: 'text-gray-400',
+    icon: 'text-muted-foreground/50',
+    title: 'text-foreground',
+    description: 'text-muted-foreground',
   },
   error: {
-    icon: 'text-red-300',
-    title: 'text-red-700',
-    description: 'text-red-400',
+    icon: 'text-destructive/50',
+    title: 'text-destructive',
+    description: 'text-destructive/70',
   },
 }
 

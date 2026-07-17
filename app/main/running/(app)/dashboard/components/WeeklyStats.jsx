@@ -188,7 +188,7 @@ export default function WeeklyStats({ data, activityType = null }) {
 
   return (
     <Card id="weeklyStatsCard" aria-label="Weekly stats" className="pb-4 gap-4">
-      <CardHeader className="flex-col md:flex-row justify-between">
+      <CardHeader className="flex-col md:flex-row items-start md:items-center justify-between">
         <div className="flex items-center gap-2">
           <CardIcon icon={CalendarRange} />
           <CardHeaderContent>

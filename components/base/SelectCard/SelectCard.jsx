@@ -37,13 +37,13 @@ export function SelectCard({
         }
         className={cn(
           'relative rounded-lg border transition-all select-none outline-none',
-          'focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-1',
+          'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-1',
           isHorizontal ? 'flex items-center gap-4' : 'flex flex-col gap-2.5',
           hasBadge && isHorizontal && 'pr-12',
           hasBadge && !isHorizontal && 'pr-8',
           selected
-            ? 'border-violet-600 ring-2 ring-violet-200 bg-violet-50/40 p-4'
-            : 'border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm',
+            ? 'border-primary ring-2 ring-ring/20 bg-secondary/40 p-4'
+            : 'border-border p-4 hover:border-input hover:shadow-sm',
           disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
           className
         )}
@@ -54,7 +54,7 @@ export function SelectCard({
             className={cn(
               'absolute size-5 rounded-full flex items-center justify-center transition-all',
               isHorizontal ? 'right-4 top-1/2 -translate-y-1/2' : 'top-3 right-3',
-              selected ? 'bg-violet-600' : 'border-2 border-gray-300 bg-white'
+              selected ? 'bg-primary' : 'border-2 border-input bg-background'
             )}
             aria-hidden="true"
           >
@@ -73,7 +73,7 @@ export function SelectCardIcon({ children, className }) {
     <div
       className={cn(
         'flex items-center justify-center size-9 rounded-md shrink-0',
-        selected ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-500',
+        selected ? 'bg-secondary text-primary' : 'bg-muted text-muted-foreground',
         className
       )}
     >
@@ -88,7 +88,7 @@ export function SelectCardTitle({ children, className }) {
     <p
       className={cn(
         'text-sm font-medium leading-snug',
-        selected ? 'text-gray-900' : 'text-gray-800',
+        selected ? 'text-foreground' : 'text-foreground',
         className
       )}
     >

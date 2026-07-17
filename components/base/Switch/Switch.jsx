@@ -49,10 +49,10 @@ const Switch = ({
         }
       }}
       className={cn(
-        'relative shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200',
+        'relative shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30',
         theme === 'pill' && [
           'h-5 w-9 rounded-full border-2 border-transparent transition-colors duration-200',
-          checked ? 'bg-violet-600' : 'bg-gray-200',
+          checked ? 'bg-primary' : 'bg-muted',
         ],
         theme === 'track' && ['h-6 w-9 flex items-center'],
         disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
@@ -62,7 +62,7 @@ const Switch = ({
       {theme === 'pill' && (
         <span
           className={cn(
-            'block size-4 rounded-full bg-white shadow-sm transition-transform duration-200',
+            'block size-4 rounded-full bg-background shadow-sm transition-transform duration-200',
             checked ? 'translate-x-4' : 'translate-x-0'
           )}
         />
@@ -73,13 +73,13 @@ const Switch = ({
           <span
             className={cn(
               'absolute inset-x-1 h-2.5 rounded-full transition-colors duration-200',
-              checked ? 'bg-violet-400' : 'bg-gray-300'
+              checked ? 'bg-primary/60' : 'bg-muted-foreground/30'
             )}
           />
           <span
             className={cn(
               'relative size-4 rounded-full shadow-md transition-all duration-200 z-10',
-              checked ? 'translate-x-5 bg-violet-600' : 'translate-x-0 bg-gray-400'
+              checked ? 'translate-x-5 bg-primary' : 'translate-x-0 bg-muted-foreground/50'
             )}
           />
         </>

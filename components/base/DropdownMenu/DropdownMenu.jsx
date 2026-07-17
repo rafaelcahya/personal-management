@@ -75,7 +75,7 @@ function getItems(el) {
 const itemBase =
   'w-full flex items-center gap-2 px-3 py-1.5 text-sm rounded-sm outline-none cursor-default select-none'
 const itemInteractive =
-  'hover:bg-violet-50 focus:bg-violet-50 active:bg-violet-100 hover:text-violet-700 focus:text-violet-700'
+  'hover:bg-secondary focus:bg-secondary active:bg-secondary/70 hover:text-primary focus:text-primary'
 const itemDisabled = 'opacity-40 cursor-not-allowed pointer-events-none'
 
 // ─── DropdownMenu ───────────────────────────────────────────────────────────────
@@ -245,7 +245,7 @@ function DropdownMenuContent({ children, className }) {
         onMouseEnter={trigger === 'hover' ? cancelClose : undefined}
         onMouseLeave={trigger === 'hover' ? closeMenu : undefined}
         className={cn(
-          'min-w-[10rem] overflow-hidden rounded-md border border-gray-200 bg-white p-1 shadow-md outline-none',
+          'min-w-[10rem] overflow-hidden rounded-md border border-border bg-popover p-1 shadow-md outline-none',
           className
         )}
       >
@@ -279,7 +279,7 @@ function DropdownMenuItem({
 
   const content = (
     <>
-      {Icon && <Icon className="size-4 shrink-0 text-gray-500" />}
+      {Icon && <Icon className="size-4 shrink-0 text-muted-foreground" />}
       {label !== undefined ? <span className="flex-1 text-left">{label}</span> : children}
       {shortcut && shortcutVariant === 'chip' && (
         <span className="ml-auto flex items-center gap-1 shrink-0">
@@ -289,8 +289,8 @@ function DropdownMenuItem({
               className={cn(
                 'inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono border rounded transition-colors',
                 activeKey === k.toLowerCase()
-                  ? 'bg-violet-100 border-violet-300 text-violet-600'
-                  : 'bg-gray-100 border-gray-200 text-gray-500'
+                  ? 'bg-secondary border-primary/40 text-primary'
+                  : 'bg-muted border-border text-muted-foreground'
               )}
             >
               {k}
@@ -308,7 +308,7 @@ function DropdownMenuItem({
                 key={i}
                 className={cn(
                   'text-[11px] font-mono transition-colors',
-                  activeKey === char.toLowerCase() ? 'text-violet-500' : 'text-gray-400'
+                  activeKey === char.toLowerCase() ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
                 {char}
@@ -358,7 +358,7 @@ function DropdownMenuGroup({ label, children, className }) {
   return (
     <div role="group" aria-label={label} className={className}>
       {label && (
-        <p className="px-3 py-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
+        <p className="px-3 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
           {label}
         </p>
       )}
@@ -370,7 +370,7 @@ function DropdownMenuGroup({ label, children, className }) {
 // ─── DropdownMenuSeparator ───────────────────────────────────────────────────────
 
 function DropdownMenuSeparator({ className }) {
-  return <div role="separator" className={cn('-mx-1 my-1 h-px bg-gray-100', className)} />
+  return <div role="separator" className={cn('-mx-1 my-1 h-px bg-border', className)} />
 }
 
 // ─── DropdownMenuCheckboxItem ────────────────────────────────────────────────────
@@ -400,7 +400,7 @@ function DropdownMenuCheckboxItem({
       className={cn(itemBase, itemInteractive, disabled && itemDisabled, className)}
     >
       <span className="size-4 flex items-center justify-center shrink-0">
-        {checked && <Check className="size-3.5 text-violet-600" />}
+        {checked && <Check className="size-3.5 text-primary" />}
       </span>
       <span className="flex-1 text-left">{label ?? children}</span>
     </button>
@@ -442,7 +442,7 @@ function DropdownMenuRadioItem({ value, label, disabled, className, children }) 
       className={cn(itemBase, itemInteractive, disabled && itemDisabled, className)}
     >
       <span className="size-4 flex items-center justify-center shrink-0">
-        {checked && <Circle className="size-2 fill-violet-600 text-violet-600" />}
+        {checked && <Circle className="size-2 fill-primary text-primary" />}
       </span>
       <span className="flex-1 text-left">{label ?? children}</span>
     </button>
@@ -506,9 +506,9 @@ function DropdownMenuSubTrigger({ label, icon: Icon, disabled, className, childr
       onKeyDown={handleKeyDown}
       className={cn(itemBase, itemInteractive, disabled && itemDisabled, className)}
     >
-      {Icon && <Icon className="size-4 shrink-0 text-gray-500" />}
+      {Icon && <Icon className="size-4 shrink-0 text-muted-foreground" />}
       <span className="flex-1 text-left">{label ?? children}</span>
-      <ChevronRight className="size-4 shrink-0 text-gray-400" />
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
     </button>
   )
 }
@@ -586,7 +586,7 @@ function DropdownMenuSubContent({ children, className }) {
         onMouseEnter={cancelSubClose}
         onMouseLeave={closeSub}
         className={cn(
-          'min-w-[10rem] overflow-hidden rounded-md border border-gray-200 bg-white p-1 shadow-md outline-none',
+          'min-w-[10rem] overflow-hidden rounded-md border border-border bg-popover p-1 shadow-md outline-none',
           className
         )}
       >

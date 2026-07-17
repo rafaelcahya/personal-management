@@ -16,6 +16,7 @@ import EventFilterDropdown from './component/EventFilterDropdown'
 import TimelineView from './component/TimelineView'
 import EventAnalysisModal from './component/EventAnalysisModal'
 import EventAnalysisHistoryModal from './component/EventAnalysisHistoryModal'
+import ImportSuggestionsModal from './component/ImportSuggestionsModal'
 import Pagination from '@/components/base/Pagination/Pagination'
 import Card, { CardContent } from '@/components/base/Card/Card'
 
@@ -180,8 +181,11 @@ export default function EventsPageClient() {
                 </div>
               </div>
 
-              {/* AI History button */}
-              <div className="flex justify-end">
+              {/* Import suggestions + AI History */}
+              <div className="flex items-center justify-end gap-2">
+                <ImportSuggestionsModal
+                  onImported={() => doFetch({ searchVal: search, pageVal: 1, filterVal: filter })}
+                />
                 <Button
                   variant="outline"
                   onClick={() => setHistoryModalOpen(true)}

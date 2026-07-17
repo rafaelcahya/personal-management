@@ -173,7 +173,7 @@ export function HoverCardContent({
       onMouseEnter={cancelClose}
       onMouseLeave={scheduleClose}
       className={cn(
-        'rounded-xl border border-slate-200 bg-white shadow-sm outline-none',
+        'rounded-xl border border-border bg-popover shadow-sm outline-none',
         'animate-in fade-in-0 zoom-in-95',
         className
       )}

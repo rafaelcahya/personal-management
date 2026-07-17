@@ -1,9 +1,8 @@
 'use client'
 
 import React from 'react'
-import { AlertCircle } from 'lucide-react'
-import Button from '@/components/base/Button/Button'
 import { Table, TableHeader, TableBody, TableRow, TableHead } from '@/components/base/Table/Table'
+import State from '@/components/base/State/State'
 import { METRIC_SECTIONS } from './metricRows'
 import SectionGroupRow from './SectionGroupRow'
 import MetricRow from './MetricRow'
@@ -21,20 +20,12 @@ export default function ValuationTable({ tickers, dataByTicker, statusByTicker, 
 
   if (singleModeError) {
     return (
-      <div
-        className="flex flex-col items-center justify-center gap-3 py-16 text-center"
-        role="alert"
-        aria-live="assertive"
-      >
-        <AlertCircle className="size-10 text-slate-400" aria-hidden="true" />
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-slate-700">Failed to load valuation data</p>
-          <p className="text-xs text-slate-500">{tickers[0]} — check your connection and retry</p>
-        </div>
-        <Button variant="outline" onClick={() => onRetry(tickers[0])} className="min-w-11">
-          Try again
-        </Button>
-      </div>
+      <State
+        variant="error"
+        title="Failed to load valuation data"
+        description={`${tickers[0]} — check your connection and retry`}
+        action={{ label: 'Try again', onClick: () => onRetry(tickers[0]) }}
+      />
     )
   }
 

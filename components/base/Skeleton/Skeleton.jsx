@@ -23,7 +23,7 @@ export function Skeleton({ animation = 'pulse', className, style, ...props }) {
       aria-hidden="true"
       style={style}
       className={cn(
-        'rounded bg-gray-200',
+        'rounded bg-muted',
         animation === 'pulse' && 'animate-pulse',
         animation === 'wave' && 'skeleton-wave',
         className
@@ -87,10 +87,7 @@ export function SkeletonButton({ size = 'default', animation = 'pulse', classNam
 export function SkeletonCard({ lines = 3, animation = 'pulse', className }) {
   return (
     <div
-      className={cn(
-        'flex flex-col gap-4 p-4 border border-gray-200 rounded-xl bg-white',
-        className
-      )}
+      className={cn('flex flex-col gap-4 p-4 border border-border rounded-xl bg-card', className)}
     >
       <div className="flex items-center gap-3">
         <SkeletonAvatar size="default" animation={animation} />
