@@ -1,4 +1,5 @@
 import '../app/globals.css'
+import '../app/tokens.css'
 import { withThemeByClassName } from '@storybook/addon-themes'
 
 /** @type {import('@storybook/nextjs').Preview} */
@@ -10,6 +11,8 @@ const preview = {
     options: {
       storySort: {
         order: [
+          'Theme',
+          ['Docs', 'Palette', 'Visual', '*'],
           'Accordion',
           ['Docs', 'Basic', 'Variant', 'Disabled', 'Default Value', 'Controlled', '*'],
           'Avatar',

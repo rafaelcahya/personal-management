@@ -9,8 +9,8 @@ const sizeClasses = {
 }
 
 const variantClasses = {
-  default: 'text-violet-600',
-  muted: 'text-gray-400',
+  default: 'text-primary',
+  muted: 'text-muted-foreground',
   white: 'text-white',
 }
 

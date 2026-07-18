@@ -14,11 +14,10 @@ import { Skeleton } from '../Skeleton/Skeleton'
 
 function SortIcon({ column, sortColumn, sortDirection }) {
   if (sortColumn !== column)
-    return <ChevronsUpDown className="size-3.5 text-gray-300 ml-1 inline" />
-  if (sortDirection === 'asc') return <ChevronUp className="size-3.5 text-violet-600 ml-1 inline" />
-  if (sortDirection === 'desc')
-    return <ChevronDown className="size-3.5 text-violet-600 ml-1 inline" />
-  return <ChevronsUpDown className="size-3.5 text-gray-300 ml-1 inline" />
+    return <ChevronsUpDown className="size-3.5 text-muted-foreground/40 ml-1 inline" />
+  if (sortDirection === 'asc') return <ChevronUp className="size-3.5 text-primary ml-1 inline" />
+  if (sortDirection === 'desc') return <ChevronDown className="size-3.5 text-primary ml-1 inline" />
+  return <ChevronsUpDown className="size-3.5 text-muted-foreground/40 ml-1 inline" />
 }
 
 function SkeletonCell({ width }) {
@@ -35,7 +34,7 @@ export function PrevButton({ disabled, onClick, id }) {
       id={id}
       onClick={onClick}
       disabled={disabled}
-      className="flex items-center justify-center size-7 rounded border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+      className="flex items-center justify-center size-7 rounded border border-border text-muted-foreground hover:bg-muted/50 disabled:opacity-40 disabled:cursor-not-allowed"
       aria-label="Previous page"
     >
       <ChevronLeft className="size-4" />
@@ -49,7 +48,7 @@ export function NextButton({ disabled, onClick, id }) {
       id={id}
       onClick={onClick}
       disabled={disabled}
-      className="flex items-center justify-center size-7 rounded border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+      className="flex items-center justify-center size-7 rounded border border-border text-muted-foreground hover:bg-muted/50 disabled:opacity-40 disabled:cursor-not-allowed"
       aria-label="Next page"
     >
       <ChevronRight className="size-4" />
@@ -59,7 +58,7 @@ export function NextButton({ disabled, onClick, id }) {
 
 function PageInfo({ safePage, totalPages }) {
   return (
-    <span className="text-xs text-gray-600 min-w-[80px] text-center">
+    <span className="text-xs text-muted-foreground min-w-[80px] text-center">
       Page {safePage} of {totalPages}
     </span>
   )
@@ -236,7 +235,7 @@ export function DataTable({
     <div className={cn('flex flex-col gap-3', className)}>
       {searchable && (
         <div className="relative w-full max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             placeholder="Search..."
@@ -245,14 +244,14 @@ export function DataTable({
               setSearchQuery(e.target.value)
               setCurrentPage(1)
             }}
-            className="w-full pl-9 pr-3 h-9 rounded-md border border-gray-200 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600"
+            className="w-full pl-9 pr-3 h-9 rounded-md border border-border text-sm text-foreground placeholder:text-muted-foreground bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-ring"
           />
         </div>
       )}
 
       <div
         className={cn(
-          'rounded-lg border border-gray-200 overflow-hidden',
+          'rounded-lg border border-border overflow-hidden',
           stickyHeader && 'max-h-96 overflow-y-auto'
         )}
       >
@@ -268,7 +267,7 @@ export function DataTable({
                       if (el) el.indeterminate = someVisibleSelected
                     }}
                     onChange={() => handleSelectAll(visibleIds)}
-                    className="size-4 rounded border-gray-300 accent-violet-600 cursor-pointer"
+                    className="size-4 rounded border-border accent-primary cursor-pointer"
                     aria-label="Select all"
                   />
                 </TableHead>
@@ -280,7 +279,7 @@ export function DataTable({
                   align={col.align}
                   width={col.width}
                   className={cn(
-                    sortable && col.sortable && 'cursor-pointer select-none hover:text-gray-700'
+                    sortable && col.sortable && 'cursor-pointer select-none hover:text-foreground'
                   )}
                   onClick={sortable && col.sortable ? () => handleSort(col.id) : undefined}
                 >
@@ -316,7 +315,7 @@ export function DataTable({
               <tr>
                 <td colSpan={columns.length + (selectable ? 1 : 0) + (expandable ? 1 : 0)}>
                   {emptyState ?? (
-                    <div className="py-12 text-center text-sm text-gray-400">No data</div>
+                    <div className="py-12 text-center text-sm text-muted-foreground">No data</div>
                   )}
                 </td>
               </tr>
@@ -344,7 +343,7 @@ export function DataTable({
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => handleSelectRow(id)}
-                            className="size-4 rounded border-gray-300 accent-violet-600 cursor-pointer"
+                            className="size-4 rounded border-border accent-primary cursor-pointer"
                             aria-label="Select row"
                           />
                         </TableCell>
@@ -353,7 +352,7 @@ export function DataTable({
                         <TableCell>
                           <ChevronRight
                             className={cn(
-                              'size-4 text-gray-400 transition-transform',
+                              'size-4 text-muted-foreground transition-transform',
                               isExpanded && 'rotate-90'
                             )}
                           />
@@ -366,7 +365,7 @@ export function DataTable({
                       ))}
                     </TableRow>
                     {expandable && isExpanded && (
-                      <tr className="bg-gray-50">
+                      <tr className="bg-muted/40">
                         <td
                           colSpan={columns.length + (selectable ? 1 : 0) + 1}
                           className="px-4 py-3"

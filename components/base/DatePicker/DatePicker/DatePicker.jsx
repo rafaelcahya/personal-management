@@ -76,7 +76,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
             onClick={() => canPrevMonth && setViewDate(subMonths(viewDate, 1))}
             className={clsx(
               'size-7 rounded flex items-center justify-center transition-colors',
-              canPrevMonth ? 'hover:bg-gray-100 cursor-pointer' : 'opacity-30 cursor-default'
+              canPrevMonth ? 'hover:bg-accent cursor-pointer' : 'opacity-30 cursor-default'
             )}
           >
             <ChevronLeftIcon className="size-4" />
@@ -86,14 +86,14 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
             <button
               type="button"
               onClick={() => setView('month')}
-              className="hover:bg-gray-100 cursor-pointer rounded px-1.5 py-0.5 text-sm font-semibold transition-colors"
+              className="hover:bg-accent cursor-pointer rounded px-1.5 py-0.5 text-sm font-semibold transition-colors"
             >
               {format(viewDate, 'MMMM')}
             </button>
             <button
               type="button"
               onClick={() => setView('year')}
-              className="hover:bg-gray-100 cursor-pointer rounded px-1.5 py-0.5 text-sm font-semibold transition-colors"
+              className="hover:bg-accent cursor-pointer rounded px-1.5 py-0.5 text-sm font-semibold transition-colors"
             >
               {currentYear}
             </button>
@@ -104,7 +104,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
             onClick={() => canNextMonth && setViewDate(addMonths(viewDate, 1))}
             className={clsx(
               'size-7 rounded flex items-center justify-center transition-colors',
-              canNextMonth ? 'hover:bg-gray-100 cursor-pointer' : 'opacity-30 cursor-default'
+              canNextMonth ? 'hover:bg-accent cursor-pointer' : 'opacity-30 cursor-default'
             )}
           >
             <ChevronRightIcon className="size-4" />
@@ -115,7 +115,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
           {WEEKDAYS.map((d) => (
             <div
               key={d}
-              className="size-8 flex items-center justify-center text-[11px] font-medium text-gray-400"
+              className="size-8 flex items-center justify-center text-[11px] font-medium text-muted-foreground"
             >
               {d}
             </div>
@@ -138,12 +138,12 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
                 className={clsx(
                   'size-8 rounded flex items-center justify-center text-xs font-medium transition-colors',
                   isSelected
-                    ? 'bg-violet-600 text-white'
+                    ? 'bg-primary text-primary-foreground'
                     : isTodayDate && inMonth
-                      ? 'bg-violet-50 text-violet-700 font-semibold hover:bg-violet-100'
+                      ? 'bg-accent text-accent-foreground font-semibold hover:bg-accent'
                       : inMonth
-                        ? 'text-gray-800 hover:bg-gray-100'
-                        : 'text-gray-300',
+                        ? 'text-foreground hover:bg-accent'
+                        : 'text-muted-foreground/30',
                   disabled && 'opacity-40 pointer-events-none'
                 )}
               >
@@ -170,7 +170,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
             onClick={() => canPrevYear && setViewDate(setYear(viewDate, currentYear - 1))}
             className={clsx(
               'size-7 rounded flex items-center justify-center transition-colors',
-              canPrevYear ? 'hover:bg-gray-100 cursor-pointer' : 'opacity-30 cursor-default'
+              canPrevYear ? 'hover:bg-accent cursor-pointer' : 'opacity-30 cursor-default'
             )}
           >
             <ChevronLeftIcon className="size-4" />
@@ -179,7 +179,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
           <button
             type="button"
             onClick={() => setView('year')}
-            className="hover:bg-gray-100 cursor-pointer rounded px-2 py-0.5 text-sm font-semibold transition-colors"
+            className="hover:bg-accent cursor-pointer rounded px-2 py-0.5 text-sm font-semibold transition-colors"
           >
             {currentYear}
           </button>
@@ -189,7 +189,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
             onClick={() => canNextYear && setViewDate(setYear(viewDate, currentYear + 1))}
             className={clsx(
               'size-7 rounded flex items-center justify-center transition-colors',
-              canNextYear ? 'hover:bg-gray-100 cursor-pointer' : 'opacity-30 cursor-default'
+              canNextYear ? 'hover:bg-accent cursor-pointer' : 'opacity-30 cursor-default'
             )}
           >
             <ChevronRightIcon className="size-4" />
@@ -231,13 +231,13 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
           onClick={() => canPrevDecade && setViewDate(setYear(viewDate, rangeStart - 1))}
           className={clsx(
             'size-7 rounded flex items-center justify-center transition-colors',
-            canPrevDecade ? 'hover:bg-gray-100 cursor-pointer' : 'opacity-30 cursor-default'
+            canPrevDecade ? 'hover:bg-accent cursor-pointer' : 'opacity-30 cursor-default'
           )}
         >
           <ChevronLeftIcon className="size-4" />
         </button>
 
-        <span className="text-sm font-semibold text-gray-700">
+        <span className="text-sm font-semibold text-foreground">
           {rangeStart} – {rangeEnd}
         </span>
 
@@ -246,7 +246,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
           onClick={() => canNextDecade && setViewDate(setYear(viewDate, rangeEnd + 1))}
           className={clsx(
             'size-7 rounded flex items-center justify-center transition-colors',
-            canNextDecade ? 'hover:bg-gray-100 cursor-pointer' : 'opacity-30 cursor-default'
+            canNextDecade ? 'hover:bg-accent cursor-pointer' : 'opacity-30 cursor-default'
           )}
         >
           <ChevronRightIcon className="size-4" />
@@ -272,10 +272,10 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
               className={clsx(
                 'rounded py-2 text-sm font-medium transition-colors text-center',
                 isSelectedYear
-                  ? 'bg-violet-600 text-white'
+                  ? 'bg-primary text-primary-foreground'
                   : isCurrentYear
-                    ? 'bg-violet-50 text-violet-700'
-                    : 'text-gray-700 hover:bg-gray-100',
+                    ? 'bg-accent text-accent-foreground'
+                    : 'text-foreground hover:bg-accent',
                 isYearDisabled && 'opacity-30 pointer-events-none'
               )}
             >

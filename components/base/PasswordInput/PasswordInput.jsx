@@ -22,12 +22,27 @@ function calcStrength(pwd, rules) {
 }
 
 const STRENGTH = [
-  { label: 'Weak', color: 'bg-red-400', text: 'text-red-600', hex: '#f87171' },
-  { label: 'Weak', color: 'bg-red-400', text: 'text-red-600', hex: '#f87171' },
-  { label: 'Weak', color: 'bg-red-400', text: 'text-red-600', hex: '#f87171' },
-  { label: 'Fair', color: 'bg-amber-400', text: 'text-amber-600', hex: '#fbbf24' },
-  { label: 'Strong', color: 'bg-emerald-500', text: 'text-emerald-600', hex: '#10b981' },
-  { label: 'Very Strong', color: 'bg-emerald-600', text: 'text-emerald-700', hex: '#059669' },
+  {
+    label: 'Weak',
+    color: 'bg-destructive',
+    text: 'text-destructive',
+    hex: 'hsl(var(--destructive))',
+  },
+  {
+    label: 'Weak',
+    color: 'bg-destructive',
+    text: 'text-destructive',
+    hex: 'hsl(var(--destructive))',
+  },
+  {
+    label: 'Weak',
+    color: 'bg-destructive',
+    text: 'text-destructive',
+    hex: 'hsl(var(--destructive))',
+  },
+  { label: 'Fair', color: 'bg-warning', text: 'text-warning', hex: 'hsl(var(--warning))' },
+  { label: 'Strong', color: 'bg-success', text: 'text-success', hex: 'hsl(var(--success))' },
+  { label: 'Very Strong', color: 'bg-success', text: 'text-success', hex: 'hsl(var(--success))' },
 ]
 
 const PasswordInput = forwardRef(function PasswordInput(
@@ -90,7 +105,7 @@ const PasswordInput = forwardRef(function PasswordInput(
       {strengthMeter && currentValue && (
         <div className="flex flex-col gap-1">
           {meterVariant === 'full' ? (
-            <div className="h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
+            <div className="h-1.5 w-full rounded-full bg-border overflow-hidden">
               <div
                 className="h-full rounded-full"
                 style={{
@@ -107,7 +122,7 @@ const PasswordInput = forwardRef(function PasswordInput(
                   key={i}
                   className={cn(
                     'h-1 flex-1 rounded-full transition-colors duration-300',
-                    i < score ? strengthInfo.color : 'bg-gray-200'
+                    i < score ? strengthInfo.color : 'bg-border'
                   )}
                 />
               ))}

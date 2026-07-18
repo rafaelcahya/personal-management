@@ -39,8 +39,8 @@ export default function Attachment({
   return (
     <div
       className={clsx(
-        'rounded-lg border bg-white px-3 py-2.5 transition-colors',
-        status === 'error' ? 'border-red-200' : 'border-gray-200',
+        'rounded-lg border bg-card px-3 py-2.5 transition-colors',
+        status === 'error' ? 'border-destructive/40' : 'border-border',
         className
       )}
     >
@@ -48,20 +48,22 @@ export default function Attachment({
         <AttachmentContent>
           <AttachmentIcon file={file} />
           <AttachmentInfo>
-            <p className="text-sm font-medium text-gray-800 truncate">{name}</p>
+            <p className="text-sm font-medium text-foreground truncate">{name}</p>
             <div className="flex items-center gap-1.5 mt-0.5">
-              {size > 0 && <span className="text-xs text-gray-400">{formatFileSize(size)}</span>}
+              {size > 0 && (
+                <span className="text-xs text-muted-foreground">{formatFileSize(size)}</span>
+              )}
               {statusText && (
                 <>
-                  {size > 0 && <span className="text-gray-300">·</span>}
+                  {size > 0 && <span className="text-muted-foreground/40">·</span>}
                   <span
                     className={clsx(
                       'text-xs',
                       status === 'error'
-                        ? 'text-red-500'
+                        ? 'text-destructive'
                         : status === 'done'
-                          ? 'text-green-600'
-                          : 'text-gray-400'
+                          ? 'text-success'
+                          : 'text-muted-foreground'
                     )}
                   >
                     {statusText}

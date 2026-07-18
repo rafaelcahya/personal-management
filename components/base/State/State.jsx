@@ -9,8 +9,8 @@ const DEFAULT_ICONS = {
 }
 
 const ICON_COLORS = {
-  error: 'text-slate-400',
-  empty: 'text-slate-300',
+  error: 'text-muted-foreground',
+  empty: 'text-muted-foreground/60',
 }
 
 const ARIA_ATTRS = {
@@ -49,14 +49,14 @@ export default function State({
     >
       {Icon && (
         <Icon
-          className={cn('size-10', ICON_COLORS[variant] ?? 'text-slate-300')}
+          className={cn('size-10', ICON_COLORS[variant] ?? 'text-muted-foreground/60')}
           aria-hidden="true"
         />
       )}
       {(title || description) && (
         <div className="space-y-1">
-          {title && <p className="text-sm font-medium text-slate-700">{title}</p>}
-          {description && <p className="text-xs text-slate-500">{description}</p>}
+          {title && <p className="text-sm font-medium text-foreground">{title}</p>}
+          {description && <p className="text-xs text-muted-foreground">{description}</p>}
         </div>
       )}
       {action && (

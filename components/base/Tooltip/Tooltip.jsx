@@ -16,18 +16,18 @@ const DURATION_MAP = { fast: 100, default: 150, slow: 300, slower: 500 }
 
 const variantClasses = {
   default: 'bg-popover text-popover-foreground border-border',
-  info: 'bg-blue-50 text-blue-900 border-blue-200',
-  success: 'bg-emerald-50 text-emerald-900 border-emerald-200',
-  warning: 'bg-amber-50 text-amber-900 border-amber-200',
-  danger: 'bg-red-50 text-red-900 border-red-200',
+  info: 'bg-info/10 text-foreground border-info/20',
+  success: 'bg-success-subtle text-foreground border-success/20',
+  warning: 'bg-warning-subtle text-foreground border-warning/30',
+  danger: 'bg-destructive-subtle text-foreground border-destructive/20',
 }
 
 const arrowFill = {
-  default: '#ffffff',
-  info: '#eff6ff',
-  success: '#ecfdf5',
-  warning: '#fffbeb',
-  danger: '#fef2f2',
+  default: 'hsl(var(--popover))',
+  info: 'var(--color-info-subtle)',
+  success: 'var(--color-success-subtle)',
+  warning: 'var(--color-warning-subtle)',
+  danger: 'var(--color-destructive-subtle)',
 }
 
 function computeFixedPosition(side, align, sideOffset, rect) {
