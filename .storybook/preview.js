@@ -67,6 +67,8 @@ const preview = {
               'Transparent',
               'Status',
               ['All Variants', 'Loading State', 'Error State', 'With Action', '*'],
+              'Bordered prop',
+              'Shadow prop',
               '*',
             ],
             'Usage',
