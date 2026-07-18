@@ -5,58 +5,52 @@ const CardContext = createContext({ variant: 'shell' })
 const CardHeaderContext = createContext({ layout: 'beside' })
 
 const cardBaseClasses = {
-  shell: 'bg-card rounded-xl shadow-sm overflow-hidden',
+  shell: 'bg-card rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
   transparent: '',
-  info: 'bg-blue-50 rounded-xl shadow-sm overflow-hidden dark:bg-blue-950/40',
-  success: 'bg-emerald-50 rounded-xl shadow-sm overflow-hidden dark:bg-emerald-950/40',
-  warning: 'bg-amber-50 rounded-xl shadow-sm overflow-hidden dark:bg-amber-950/40',
-  danger: 'bg-red-50 rounded-xl shadow-sm overflow-hidden dark:bg-red-950/40',
-  muted: 'bg-muted/40 rounded-xl shadow-sm overflow-hidden',
+  info: 'bg-info/10 rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
+  success: 'bg-success-subtle rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
+  warning: 'bg-warning-subtle rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
+  danger: 'bg-destructive-subtle rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
+  muted: 'bg-muted/40 rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
 }
 
 const cardBorderClasses = {
   shell: 'border border-border',
   transparent: 'border border-border',
-  info: 'border border-blue-200 dark:border-blue-900',
-  success: 'border border-emerald-200 dark:border-emerald-900',
-  warning: 'border border-amber-200 dark:border-amber-900',
-  danger: 'border border-red-200 dark:border-red-900',
+  info: 'border border-info/20',
+  success: 'border border-success/20',
+  warning: 'border border-warning/30',
+  danger: 'border border-destructive/20',
   muted: 'border border-border',
 }
 
 const headerBorderClasses = {
   shell: 'border-b border-border',
   transparent: '',
-  info: 'border-b border-blue-100 dark:border-blue-900',
-  success: 'border-b border-emerald-100 dark:border-emerald-900',
-  warning: 'border-b border-amber-100 dark:border-amber-900',
-  danger: 'border-b border-red-100 dark:border-red-900',
+  info: 'border-b border-info/20',
+  success: 'border-b border-success/20',
+  warning: 'border-b border-warning/30',
+  danger: 'border-b border-destructive/20',
   muted: 'border-b border-border',
 }
 
 const footerBorderClasses = {
   shell: 'border-t border-border',
   transparent: '',
-  info: 'border-t border-blue-100 dark:border-blue-900',
-  success: 'border-t border-emerald-100 dark:border-emerald-900',
-  warning: 'border-t border-amber-100 dark:border-amber-900',
-  danger: 'border-t border-red-100 dark:border-red-900',
+  info: 'border-t border-info/20',
+  success: 'border-t border-success/20',
+  warning: 'border-t border-warning/30',
+  danger: 'border-t border-destructive/20',
   muted: 'border-t border-border',
 }
 
 const iconVariants = {
   shell: { wrapper: 'bg-secondary', icon: 'text-primary' },
   transparent: { wrapper: 'bg-secondary', icon: 'text-primary' },
-  info: { wrapper: 'bg-blue-100 dark:bg-blue-900', icon: 'text-blue-600 dark:text-blue-400' },
-  success: {
-    wrapper: 'bg-emerald-100 dark:bg-emerald-900',
-    icon: 'text-emerald-600 dark:text-emerald-400',
-  },
-  warning: {
-    wrapper: 'bg-amber-100 dark:bg-amber-900',
-    icon: 'text-amber-700 dark:text-amber-400',
-  },
-  danger: { wrapper: 'bg-red-100 dark:bg-red-900', icon: 'text-red-600 dark:text-red-400' },
+  info: { wrapper: 'bg-info/10', icon: 'text-info' },
+  success: { wrapper: 'bg-success-subtle', icon: 'text-success' },
+  warning: { wrapper: 'bg-warning-subtle', icon: 'text-warning' },
+  danger: { wrapper: 'bg-destructive-subtle', icon: 'text-destructive' },
   muted: { wrapper: 'bg-muted/60', icon: 'text-muted-foreground' },
 }
 

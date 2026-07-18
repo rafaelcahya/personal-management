@@ -4,28 +4,29 @@
 
 @layer base {
   :root {
+    /* ── Old system: Tailwind utility classes read these via hsl() ──────────── */
     /* Surfaces */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 0 0% 100%; /* white */
+    --foreground: 229 84% 5%; /* slate-950 */
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 229 84% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+    --popover-foreground: 229 84% 5%;
 
     /* Brand */
-    --primary: 262 83% 58%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 250 100% 98%;
-    --secondary-foreground: 262 83% 58%;
+    --primary: 0 0% 13%; /* black-900 */
+    --primary-foreground: 210 40% 98%; /* slate-50 */
+    --secondary: 210 40% 96%; /* slate-100 */
+    --secondary-foreground: 217 33% 17%; /* slate-800 */
 
-    /* UI */
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 262 83% 58%;
+    /* UI — slate */
+    --muted: 210 40% 96%; /* slate-100 */
+    --muted-foreground: 215 16% 47%; /* slate-500 */
+    --accent: 210 40% 96%; /* slate-100 */
+    --accent-foreground: 229 84% 5%; /* slate-950 */
+    --border: 214 32% 91%; /* slate-200 */
+    --input: 214 32% 91%; /* slate-200 */
+    --ring: 0 0% 13%; /* black-900 */
 
     /* Feedback */
     --destructive: 0 84.2% 60.2%;
@@ -53,40 +54,90 @@
     --chart-5: 27 87% 67%;
 
     --radius: 0.5rem;
+
+    /* Shadows */
+    --shadow-card:
+      0 1px 3px 0 oklch(0.13 0.03 245 / 0.05), 0 1px 2px -1px oklch(0.13 0.03 245 / 0.04);
+
+    /* ── New system: --color-* tokens, direct CSS var usage ────────────────── */
+    /* Surfaces */
+    --color-background: var(--color-white);
+    --color-foreground: var(--color-slate-950);
+    --color-card: var(--color-white);
+    --color-card-foreground: var(--color-slate-950);
+    --color-popover: var(--color-white);
+    --color-popover-foreground: var(--color-slate-950);
+
+    /* Brand */
+    --color-primary: var(--color-black-900);
+    --color-primary-foreground: var(--color-slate-50);
+    --color-secondary: var(--color-slate-100);
+    --color-secondary-foreground: var(--color-slate-800);
+
+    /* UI Chrome */
+    --color-muted: var(--color-slate-100);
+    --color-muted-foreground: var(--color-slate-500);
+    --color-accent: var(--color-slate-100);
+    --color-accent-foreground: var(--color-slate-950);
+    --color-border: var(--color-slate-200);
+    --color-input: var(--color-slate-200);
+    --color-ring: var(--color-black-900);
+
+    /* Feedback */
+    --color-destructive: var(--color-red-500);
+    --color-destructive-foreground: var(--color-white);
+    --color-destructive-subtle: var(--color-red-50);
+    --color-destructive-subtle-foreground: var(--color-red-600);
+    --color-success: var(--color-green-600);
+    --color-success-foreground: var(--color-white);
+    --color-success-subtle: var(--color-green-50);
+    --color-success-subtle-foreground: var(--color-green-700);
+    --color-warning: var(--color-amber-500);
+    --color-warning-foreground: var(--color-amber-950);
+    --color-warning-subtle: var(--color-amber-50);
+    --color-warning-subtle-foreground: var(--color-amber-700);
+    --color-info: var(--color-blue-500);
+    --color-info-foreground: var(--color-white);
+    --color-info-subtle: var(--color-blue-50);
+    --color-info-subtle-foreground: var(--color-blue-700);
   }
 
   .dark {
+    /* ── Old system ──────────────────────────────────────────────────────────── */
     /* Surfaces */
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --background: 0 0% 3.5%; /* black-950 */
+    --foreground: 0 0% 99.5%; /* white-50 */
+    --card: 0 0% 5.5%; /* black-900 */
+    --card-foreground: 0 0% 99.5%;
+    --popover: 0 0% 11%; /* black-800 */
+    --popover-foreground: 0 0% 99.5%;
 
     /* Brand */
-    --primary: 263 70% 70%;
-    --primary-foreground: 262 83% 10%;
-    --secondary: 262 30% 18%;
-    --secondary-foreground: 263 70% 70%;
+    --primary: 0 0% 99.5%; /* white-50 */
+    --primary-foreground: 0 0% 3.5%; /* black-950 */
+    --secondary: 0 0% 11%; /* black-800 */
+    --secondary-foreground: 0 0% 75%; /* white-950 */
 
-    /* UI */
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 263 70% 70%;
+    /* UI — black */
+    --muted: 0 0% 11%; /* black-800 */
+    --muted-foreground: 0 0% 75%; /* white-950 */
+    --accent: 0 0% 22%; /* black-700 */
+    --accent-foreground: 0 0% 99.5%; /* white-50 */
+    --border: 0 0% 11%; /* black-800 */
+    --input: 0 0% 11%; /* black-800 */
+    --ring: 0 0% 99.5%; /* white-50 */
+
+    /* Shadows */
+    --shadow-card: none;
 
     /* Feedback */
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --success: 142 71% 35%;
+    --success: 142 71% 45%;
     --success-foreground: 0 0% 98%;
-    --warning: 38 92% 38%;
-    --warning-foreground: 0 0% 98%;
-    --info: 217 91% 50%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 20 14% 4%;
+    --info: 217 91% 60%;
     --info-foreground: 0 0% 98%;
 
     /* Additional */
@@ -103,6 +154,48 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    /* ── New system ──────────────────────────────────────────────────────────── */
+    /* Surfaces — 3-layer depth */
+    --color-background: var(--color-black-950);
+    --color-foreground: var(--color-white-50);
+    --color-card: var(--color-black-900);
+    --color-card-foreground: var(--color-white-50);
+    --color-popover: var(--color-black-800);
+    --color-popover-foreground: var(--color-white-50);
+
+    /* Brand — flipped for dark */
+    --color-primary: var(--color-white-50);
+    --color-primary-foreground: var(--color-black-950);
+    --color-secondary: var(--color-black-800);
+    --color-secondary-foreground: var(--color-white-950);
+
+    /* UI Chrome */
+    --color-muted: var(--color-black-800);
+    --color-muted-foreground: var(--color-white-950);
+    --color-accent: var(--color-black-700);
+    --color-accent-foreground: var(--color-white-50);
+    --color-border: var(--color-black-800);
+    --color-input: var(--color-black-800);
+    --color-ring: var(--color-white-50);
+
+    /* Feedback — lighter shades for dark bg readability */
+    --color-destructive: var(--color-red-400);
+    --color-destructive-foreground: var(--color-white);
+    --color-destructive-subtle: var(--color-red-950);
+    --color-destructive-subtle-foreground: var(--color-red-400);
+    --color-success: var(--color-green-400);
+    --color-success-foreground: var(--color-green-950);
+    --color-success-subtle: var(--color-green-950);
+    --color-success-subtle-foreground: var(--color-green-400);
+    --color-warning: var(--color-amber-400);
+    --color-warning-foreground: var(--color-amber-950);
+    --color-warning-subtle: var(--color-amber-950);
+    --color-warning-subtle-foreground: var(--color-amber-400);
+    --color-info: var(--color-blue-400);
+    --color-info-foreground: var(--color-white);
+    --color-info-subtle: var(--color-blue-950);
+    --color-info-subtle-foreground: var(--color-blue-400);
   }
 }
 
@@ -113,6 +206,88 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   Violet theme — light
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.violet {
+  --background: 0 0% 100%;
+  --foreground: 272 8% 11%; /* near-black, violet-slate tint */
+  --card: 0 0% 100%;
+  --card-foreground: 272 8% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 272 8% 11%;
+
+  --primary: 257 95% 59%; /* violet-600: oklch(0.532 0.265 286) */
+  --primary-foreground: 276 5% 98%;
+  --secondary: 270 58% 96%; /* soft violet */
+  --secondary-foreground: 259 75% 51%; /* violet-700: oklch(0.478 0.252 286) */
+
+  --muted: 272 10% 95.5%; /* violet-slate blend */
+  --muted-foreground: 270 9% 46%;
+  --accent: 272 10% 95.5%;
+  --accent-foreground: 272 8% 11%;
+  --border: 272 10% 90%;
+  --input: 272 10% 90%;
+  --ring: 257 95% 59%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 98%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 20 14% 4%;
+  --info: 217 91% 60%;
+  --info-foreground: 0 0% 98%;
+  --success-subtle: 138 76% 97%;
+  --success-subtle-foreground: 160 84% 39%;
+  --destructive-subtle: 0 86% 97%;
+  --destructive-subtle-foreground: 0 84% 60%;
+  --warning-subtle: 33 100% 96%;
+  --warning-subtle-foreground: 25 95% 53%;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   Violet theme — dark
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.violet.dark {
+  --background: 272 18% 9%; /* very dark violet */
+  --foreground: 278 4% 97%;
+  --card: 272 18% 12.5%; /* elevated surface */
+  --card-foreground: 278 4% 97%;
+  --popover: 272 18% 15.5%; /* highest layer */
+  --popover-foreground: 278 4% 97%;
+
+  --primary: 250 100% 73%; /* lighter violet for dark bg: oklch(0.652 0.212 286) */
+  --primary-foreground: 272 18% 9%;
+  --secondary: 272 16% 17%;
+  --secondary-foreground: 278 8% 84%;
+
+  --muted: 272 10% 17.5%; /* violet-slate blend */
+  --muted-foreground: 270 6% 63%;
+  --accent: 272 10% 17.5%;
+  --accent-foreground: 278 4% 97%;
+  --border: 272 10% 23%;
+  --input: 272 10% 17.5%;
+  --ring: 250 100% 73%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 98%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 20 14% 4%;
+  --info: 217 91% 60%;
+  --info-foreground: 0 0% 98%;
+  --success-subtle: 142 76% 10%;
+  --success-subtle-foreground: 160 84% 55%;
+  --destructive-subtle: 0 86% 10%;
+  --destructive-subtle-foreground: 0 84% 70%;
+  --warning-subtle: 33 100% 12%;
+  --warning-subtle-foreground: 25 95% 65%;
 }
 
 .recharts-wrapper,

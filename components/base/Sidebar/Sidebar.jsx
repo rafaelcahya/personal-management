@@ -105,10 +105,10 @@ function Sidebar({ className, side = 'left', children, ...props }) {
     return createPortal(
       <aside
         className={cn(
-          'fixed inset-y-0 z-50 flex flex-col bg-white w-72 transition-transform duration-200',
+          'fixed inset-y-0 z-50 flex flex-col bg-card w-72 transition-transform duration-200',
           side === 'left'
-            ? cn('left-0 border-r border-gray-200', open ? 'translate-x-0' : '-translate-x-full')
-            : cn('right-0 border-l border-gray-200', open ? 'translate-x-0' : 'translate-x-full'),
+            ? cn('left-0 border-r border-border', open ? 'translate-x-0' : '-translate-x-full')
+            : cn('right-0 border-l border-border', open ? 'translate-x-0' : 'translate-x-full'),
           className
         )}
         aria-label="Navigation sidebar"
@@ -123,7 +123,7 @@ function Sidebar({ className, side = 'left', children, ...props }) {
   return (
     <aside
       className={cn(
-        'flex flex-col shrink-0 bg-white border-gray-200 overflow-hidden',
+        'flex flex-col shrink-0 bg-card border-border overflow-hidden',
         collapseAnimation === 'slide' && 'transition-[width] duration-200',
         side === 'left' ? 'border-r' : 'border-l',
         collapsed ? 'w-14' : 'w-60',
@@ -148,8 +148,8 @@ function SidebarTrigger({ className, ...props }) {
       aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
       aria-expanded={isOpen}
       className={cn(
-        'inline-flex items-center justify-center rounded-md p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500',
+        'inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
         className
       )}
       {...props}
@@ -162,7 +162,7 @@ function SidebarTrigger({ className, ...props }) {
 function SidebarHeader({ className, children, ...props }) {
   return (
     <header
-      className={cn('flex items-center shrink-0 px-3 py-3 border-b border-gray-100', className)}
+      className={cn('flex items-center shrink-0 px-3 py-3 border-b border-border', className)}
       {...props}
     >
       {children}
@@ -180,7 +180,7 @@ function SidebarContent({ className, children, ...props }) {
 
 function SidebarFooter({ className, children, ...props }) {
   return (
-    <footer className={cn('shrink-0 px-3 py-3 border-t border-gray-100', className)} {...props}>
+    <footer className={cn('shrink-0 px-3 py-3 border-t border-border', className)} {...props}>
       {children}
     </footer>
   )
@@ -194,7 +194,7 @@ function SidebarGroup({ label, className, children, ...props }) {
       {label && (
         <div
           className={cn(
-            'px-1 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400 overflow-hidden whitespace-nowrap',
+            'px-1 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground overflow-hidden whitespace-nowrap',
             collapseAnimation === 'slide' && 'transition-[opacity,height,padding] duration-200',
             collapsed ? 'opacity-0 h-0 py-0' : 'opacity-100 h-auto'
           )}
@@ -237,7 +237,7 @@ function SidebarItemBadge({ className, children, ...props }) {
   return (
     <span
       className={cn(
-        'ml-auto shrink-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-semibold bg-violet-100 text-violet-700 overflow-hidden',
+        'ml-auto shrink-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-semibold bg-primary/10 text-primary overflow-hidden',
         collapseAnimation === 'slide' &&
           'transition-[opacity,width,min-width,padding] duration-200',
         collapsed ? 'opacity-0 w-0 min-w-0 px-0 ml-0' : 'opacity-100',
@@ -263,10 +263,10 @@ function SidebarTooltip({ label, children }) {
       {visible && label && (
         <div
           role="tooltip"
-          className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 px-2.5 py-1.5 rounded-md bg-gray-900 text-white text-xs font-medium shadow-md whitespace-nowrap pointer-events-none"
+          className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 px-2.5 py-1.5 rounded-md bg-foreground text-background text-xs font-medium shadow-md whitespace-nowrap pointer-events-none"
         >
           {label}
-          <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+          <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground" />
         </div>
       )}
     </div>
@@ -278,7 +278,7 @@ function SidebarSub({ open: isOpen = false, animation = 'slide', className, chil
     if (!isOpen) return null
     return (
       <div className={cn('pl-6 py-0.5 flex flex-col gap-0.5 relative', className)} {...props}>
-        <div className="absolute left-3 top-0 bottom-0 w-px bg-slate-100" />
+        <div className="absolute left-3 top-0 bottom-0 w-px bg-border" />
         {children}
       </div>
     )
@@ -294,7 +294,7 @@ function SidebarSub({ open: isOpen = false, animation = 'slide', className, chil
     >
       <div className="overflow-hidden">
         <div className={cn('pl-6 py-0.5 flex flex-col gap-0.5 relative', className)}>
-          <div className="absolute left-3 top-0 bottom-0 w-px bg-slate-100" />
+          <div className="absolute left-3 top-0 bottom-0 w-px bg-border" />
           {children}
         </div>
       </div>
@@ -340,18 +340,16 @@ function SidebarItem({
 
   const baseButtonClass = cn(
     'w-full flex items-center rounded-lg transition-colors duration-150',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
     sz.rest,
     active
-      ? 'bg-violet-50 text-violet-700 font-medium'
-      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+      ? 'bg-accent text-accent-foreground font-medium'
+      : 'text-muted-foreground hover:bg-accent hover:text-foreground',
     disabled && 'opacity-40 cursor-not-allowed'
   )
 
   const iconEl = icon ? (
-    <SidebarItemIcon className={cn(sz.icon, active ? 'text-violet-600' : '')}>
-      {icon}
-    </SidebarItemIcon>
+    <SidebarItemIcon className={cn(sz.icon, active ? 'text-primary' : '')}>{icon}</SidebarItemIcon>
   ) : (
     otherChildren.find((c) => c.type === SidebarItemIcon)
   )
@@ -386,7 +384,7 @@ function SidebarItem({
         {hasSub && (
           <ChevronDown
             className={cn(
-              'ml-auto size-3.5 shrink-0 text-gray-400',
+              'ml-auto size-3.5 shrink-0 text-muted-foreground',
               collapseAnimation === 'slide' && 'transition-transform duration-200',
               subOpen && 'rotate-180'
             )}

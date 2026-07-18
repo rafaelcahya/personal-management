@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, useCallback, useEffect, forwardRef } from 'react'
+import { createPortal } from 'react-dom'
 import { cva } from 'class-variance-authority'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -16,7 +17,7 @@ const triggerVariants = cva(
     'text-sm font-medium cursor-pointer',
     'transition-[color,box-shadow,border-color] duration-150',
     'outline-none',
-    'focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600',
+    'focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-ring',
   ],
   {
     variants: {
@@ -220,19 +221,37 @@ const ColorPicker = forwardRef(function ColorPicker(
 
   const [open, setOpen] = useState(false)
   const containerRef = useRef(null)
+  const [popupStyle, setPopupStyle] = useState({})
 
   const [formatMode, setFormatMode] = useState(format)
   const [inputFocused, setInputFocused] = useState(false)
   const [inputText, setInputText] = useState('')
 
+  const updatePopupPosition = useCallback(() => {
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    setPopupStyle({
+      top: rect.bottom + 6,
+      left: rect.left,
+      width: rect.width < 240 ? 240 : rect.width,
+    })
+  }, [])
+
   useEffect(() => {
     if (!open) return
+    updatePopupPosition()
     const handle = (e) => {
       if (!containerRef.current?.contains(e.target)) setOpen(false)
     }
     document.addEventListener('mousedown', handle)
-    return () => document.removeEventListener('mousedown', handle)
-  }, [open])
+    window.addEventListener('scroll', updatePopupPosition, true)
+    window.addEventListener('resize', updatePopupPosition)
+    return () => {
+      document.removeEventListener('mousedown', handle)
+      window.removeEventListener('scroll', updatePopupPosition, true)
+      window.removeEventListener('resize', updatePopupPosition)
+    }
+  }, [open, updatePopupPosition])
 
   const fireChange = useCallback(
     (newHsva) => {
@@ -297,88 +316,93 @@ const ColorPicker = forwardRef(function ColorPicker(
         </span>
       </button>
 
-      {open && (
-        <div className="absolute top-full left-0 mt-1.5 z-50 w-60 rounded-lg border border-border bg-popover shadow-xl p-3">
-          <SatValPicker
-            h={h}
-            s={s}
-            v={v}
-            onChange={(ns, nv) => fireChange({ h, s: ns, v: nv, a })}
-          />
+      {open &&
+        createPortal(
+          <div
+            style={{ position: 'fixed', zIndex: 9999, ...popupStyle }}
+            className="w-60 rounded-lg border border-border bg-popover shadow-xl p-3"
+          >
+            <SatValPicker
+              h={h}
+              s={s}
+              v={v}
+              onChange={(ns, nv) => fireChange({ h, s: ns, v: nv, a })}
+            />
 
-          <div className="flex flex-col gap-2 mt-3">
-            <HueSlider h={h} onChange={(nh) => fireChange({ h: nh, s, v, a })} />
-            {withAlpha && (
-              <AlphaSlider
-                h={h}
-                s={s}
-                v={v}
-                a={a}
-                onChange={(na) => fireChange({ h, s, v, a: na })}
-              />
-            )}
-          </div>
-
-          <div className="flex items-center gap-1.5 mt-3">
-            <select
-              value={formatMode}
-              onChange={(e) => setFormatMode(e.target.value)}
-              className={clsx(
-                'h-7 rounded border border-input bg-background px-1.5',
-                'text-xs font-medium text-foreground cursor-pointer',
-                'outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600'
+            <div className="flex flex-col gap-2 mt-3">
+              <HueSlider h={h} onChange={(nh) => fireChange({ h: nh, s, v, a })} />
+              {withAlpha && (
+                <AlphaSlider
+                  h={h}
+                  s={s}
+                  v={v}
+                  a={a}
+                  onChange={(na) => fireChange({ h, s, v, a: na })}
+                />
               )}
-            >
-              <option value="hex">HEX</option>
-              <option value="rgb">RGB</option>
-              <option value="hsl">HSL</option>
-            </select>
-            <input
-              type="text"
-              value={inputFocused ? inputText : currentDisplay}
-              onFocus={() => {
-                setInputFocused(true)
-                setInputText(currentDisplay)
-              }}
-              onChange={(e) => setInputText(e.target.value)}
-              onBlur={() => {
-                parseAndApply(inputText)
-                setInputFocused(false)
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+            </div>
+
+            <div className="flex items-center gap-1.5 mt-3">
+              <select
+                value={formatMode}
+                onChange={(e) => setFormatMode(e.target.value)}
+                className={clsx(
+                  'h-7 rounded border border-input bg-background px-1.5',
+                  'text-xs font-medium text-foreground cursor-pointer',
+                  'outline-none focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-ring'
+                )}
+              >
+                <option value="hex">HEX</option>
+                <option value="rgb">RGB</option>
+                <option value="hsl">HSL</option>
+              </select>
+              <input
+                type="text"
+                value={inputFocused ? inputText : currentDisplay}
+                onFocus={() => {
+                  setInputFocused(true)
+                  setInputText(currentDisplay)
+                }}
+                onChange={(e) => setInputText(e.target.value)}
+                onBlur={() => {
                   parseAndApply(inputText)
                   setInputFocused(false)
-                }
-              }}
-              className={clsx(
-                'flex-1 h-7 min-w-0 rounded border border-input bg-background px-2',
-                'text-xs font-mono text-foreground',
-                'outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600'
-              )}
-            />
-          </div>
-
-          {presets?.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
-              {presets.map((preset) => (
-                <button
-                  key={preset}
-                  type="button"
-                  title={preset}
-                  className={clsx(
-                    'size-5 rounded border border-black/10 cursor-pointer',
-                    'hover:scale-110 transition-transform',
-                    'outline-none focus-visible:ring-2 focus-visible:ring-violet-200'
-                  )}
-                  style={{ background: preset }}
-                  onClick={() => fireChange(fromInput(preset, 'hex'))}
-                />
-              ))}
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    parseAndApply(inputText)
+                    setInputFocused(false)
+                  }
+                }}
+                className={clsx(
+                  'flex-1 h-7 min-w-0 rounded border border-input bg-background px-2',
+                  'text-xs font-mono text-foreground',
+                  'outline-none focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-ring'
+                )}
+              />
             </div>
-          )}
-        </div>
-      )}
+
+            {presets?.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
+                {presets.map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    title={preset}
+                    className={clsx(
+                      'size-5 rounded border border-black/10 cursor-pointer',
+                      'hover:scale-110 transition-transform',
+                      'outline-none focus-visible:ring-2 focus-visible:ring-ring/20'
+                    )}
+                    style={{ background: preset }}
+                    onClick={() => fireChange(fromInput(preset, 'hex'))}
+                  />
+                ))}
+              </div>
+            )}
+          </div>,
+          document.body
+        )}
     </div>
   )
 })

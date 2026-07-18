@@ -36,10 +36,10 @@ const statusDotSizeMap = {
 }
 
 const statusColorMap = {
-  online: 'bg-green-500',
-  offline: 'bg-gray-400',
-  busy: 'bg-red-500',
-  away: 'bg-amber-400',
+  online: 'bg-success',
+  offline: 'bg-muted-foreground/50',
+  busy: 'bg-destructive',
+  away: 'bg-warning',
 }
 
 const overlapMap = {
@@ -137,7 +137,7 @@ export function AvatarFallback({ children, className, ...props }) {
         'absolute inset-0 z-0 flex items-center justify-center overflow-hidden select-none font-medium',
         shapeMap[shape] ?? shapeMap.circle,
         fallbackTextSizeMap[size] ?? fallbackTextSizeMap.default,
-        'bg-gray-200 text-gray-600',
+        'bg-muted text-muted-foreground',
         className
       )}
       {...props}
@@ -158,7 +158,7 @@ export function AvatarStatus({ status = 'online', ping = false, className, ...pr
     return (
       <span
         className={cn(
-          'absolute bottom-0 right-0 z-20 block rounded-full ring-2 ring-white',
+          'absolute bottom-0 right-0 z-20 block rounded-full ring-2 ring-background',
           dotSize,
           color,
           className
@@ -177,7 +177,7 @@ export function AvatarStatus({ status = 'online', ping = false, className, ...pr
         className={cn('animate-ping absolute inline-flex size-full rounded-full opacity-75', color)}
       />
       <span
-        className={cn('relative inline-flex size-full rounded-full ring-2 ring-white', color)}
+        className={cn('relative inline-flex size-full rounded-full ring-2 ring-background', color)}
       />
     </span>
   )
@@ -208,7 +208,7 @@ export function AvatarGroup({
           key: i,
           size,
           shape,
-          className: cn(i > 0 && overlap, 'ring-2 ring-white', shapeClass),
+          className: cn(i > 0 && overlap, 'ring-2 ring-background', shapeClass),
           style: { zIndex: max - i },
         })
       )}
@@ -217,7 +217,7 @@ export function AvatarGroup({
           className={cn(
             '-ml-2 relative inline-flex shrink-0',
             sizeDim,
-            'ring-2 ring-white',
+            'ring-2 ring-background',
             shapeClass
           )}
           style={{ zIndex: 0 }}
@@ -226,7 +226,7 @@ export function AvatarGroup({
             className={cn(
               'absolute inset-0 flex items-center justify-center font-medium',
               shapeClass,
-              'bg-gray-200 text-gray-600',
+              'bg-muted text-muted-foreground',
               overflowTextSize
             )}
           >
