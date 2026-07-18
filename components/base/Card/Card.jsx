@@ -4,14 +4,16 @@ import { cn } from '@/lib/utils'
 const CardContext = createContext({ variant: 'shell' })
 const CardHeaderContext = createContext({ layout: 'beside' })
 
+const SHADOW_CLASS = '[box-shadow:var(--shadow-card)]'
+
 const cardBaseClasses = {
-  shell: 'bg-card rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
+  shell: 'bg-card rounded-xl overflow-hidden',
   transparent: '',
-  info: 'bg-info/10 rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
-  success: 'bg-success-subtle rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
-  warning: 'bg-warning-subtle rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
-  danger: 'bg-destructive-subtle rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
-  muted: 'bg-muted/40 rounded-xl [box-shadow:var(--shadow-card)] overflow-hidden',
+  info: 'bg-info/10 rounded-xl overflow-hidden',
+  success: 'bg-success-subtle rounded-xl overflow-hidden',
+  warning: 'bg-warning-subtle rounded-xl overflow-hidden',
+  danger: 'bg-destructive-subtle rounded-xl overflow-hidden',
+  muted: 'bg-muted/40 rounded-xl overflow-hidden',
 }
 
 const cardBorderClasses = {
@@ -59,16 +61,26 @@ export default function Card({
   id,
   variant = 'shell',
   bordered,
+  shadow,
   children,
   as: Tag = 'div',
   ...rest
 }) {
-  const isBordered = bordered !== undefined ? bordered : variant !== 'transparent'
+  const isTransparent = variant === 'transparent'
+  const isBordered = isTransparent ? false : (bordered ?? true)
+  const hasShadow = isTransparent ? false : (shadow ?? true)
+
   const baseClass = cardBaseClasses[variant] ?? cardBaseClasses.shell
   const borderClass = isBordered ? (cardBorderClasses[variant] ?? cardBorderClasses.shell) : ''
+  const shadowClass = hasShadow ? SHADOW_CLASS : ''
+
   return (
     <CardContext.Provider value={{ variant }}>
-      <Tag id={id} className={cn('flex flex-col', baseClass, borderClass, className)} {...rest}>
+      <Tag
+        id={id}
+        className={cn('flex flex-col', baseClass, shadowClass, borderClass, className)}
+        {...rest}
+      >
         {children}
       </Tag>
     </CardContext.Provider>
