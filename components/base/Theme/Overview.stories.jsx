@@ -31,6 +31,7 @@ import {
   Archive,
   RefreshCw,
   Package,
+  ShieldCheck,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -4470,20 +4471,270 @@ function TradeActions() {
   )
 }
 
+// ── Border & Shadow: Portfolio Summary ───────────────────────────────────────
+function PortfolioSnapshot() {
+  const stats = [
+    { label: 'Total Value', value: 'Rp 142.6M', delta: '+4.2%', up: true },
+    { label: "Today's P&L", value: '+Rp 1.84M', delta: '+1.3%', up: true },
+    { label: 'Win Rate', value: '68%', delta: '−2% mo', up: false },
+    { label: 'Positions', value: '7', delta: '3 profit', up: true },
+  ]
+  return (
+    <Card>
+      <CardHeader>
+        <CardIcon icon={Wallet} />
+        <CardHeaderContent>
+          <CardTitle>Portfolio Snapshot</CardTitle>
+          <CardDescription>Default — bordered + shadow</CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
+      <CardContent className="grid grid-cols-2 gap-2 pt-0">
+        {stats.map(({ label, value, delta, up }) => (
+          <div key={label} className="rounded-lg bg-muted/40 px-3 py-2.5">
+            <p className="text-[10px] text-muted-foreground mb-0.5">{label}</p>
+            <p className="text-sm font-semibold text-card-foreground">{value}</p>
+            <p
+              className={`text-[10px] font-medium mt-0.5 ${up ? 'text-success' : 'text-destructive'}`}
+            >
+              {delta}
+            </p>
+          </div>
+        ))}
+      </CardContent>
+      <CardFooter>
+        <span className="text-xs text-muted-foreground">Last synced 2 min ago</span>
+      </CardFooter>
+    </Card>
+  )
+}
+
+// ── Border & Shadow: Open Positions (shadow only) ─────────────────────────────
+function OpenPositionsCard() {
+  const rows = [
+    { ticker: 'BBRI', name: 'Bank Rakyat Indonesia', price: 'Rp 5,150', pct: '+7.3%', up: true },
+    { ticker: 'TLKM', name: 'Telkom Indonesia', price: 'Rp 3,720', pct: '−4.6%', up: false },
+    { ticker: 'ASII', name: 'Astra International', price: 'Rp 4,890', pct: '+1.8%', up: true },
+  ]
+  return (
+    <Card bordered={false}>
+      <CardHeader>
+        <CardIcon icon={TrendingUp} />
+        <CardHeaderContent>
+          <CardTitle>Open Positions</CardTitle>
+          <CardDescription>Shadow only — bordered=false</CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
+      <CardContent className="pt-0 space-y-0.5">
+        {rows.map(({ ticker, name, price, pct, up }) => (
+          <div
+            key={ticker}
+            className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-accent transition-colors"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="size-7 rounded-md bg-secondary flex items-center justify-center shrink-0">
+                <span className="text-[10px] font-bold text-secondary-foreground">
+                  {ticker.slice(0, 2)}
+                </span>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-card-foreground">{ticker}</p>
+                <p className="text-[10px] text-muted-foreground">{name}</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-medium text-card-foreground">{price}</p>
+              <p className={`text-[10px] font-medium ${up ? 'text-success' : 'text-destructive'}`}>
+                {pct}
+              </p>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ── Border & Shadow: Notification Feed (border only) ─────────────────────────
+function NotificationFeedCard() {
+  const [read, setRead] = useState([])
+  const items = [
+    {
+      id: 1,
+      title: 'BBRI hit your target',
+      time: '2m ago',
+      body: 'Price crossed Rp 5,200 — alert triggered.',
+      color: 'text-success',
+    },
+    {
+      id: 2,
+      title: 'Dividend incoming',
+      time: '1h ago',
+      body: 'TLKM declares Rp 150/share for Q2.',
+      color: 'text-info',
+    },
+    {
+      id: 3,
+      title: 'GOTO dropped 8%',
+      time: '3h ago',
+      body: 'Portfolio impact: −Rp 42,000.',
+      color: 'text-destructive',
+    },
+  ]
+  return (
+    <Card shadow={false}>
+      <CardHeader>
+        <CardIcon icon={Bell} />
+        <CardHeaderContent>
+          <CardTitle>Notifications</CardTitle>
+          <CardDescription>Border only — shadow=false</CardDescription>
+        </CardHeaderContent>
+        {read.length < items.length && (
+          <button
+            onClick={() => setRead(items.map((i) => i.id))}
+            className="text-[10px] text-primary font-medium hover:underline shrink-0"
+          >
+            Mark all read
+          </button>
+        )}
+      </CardHeader>
+      <CardContent className="pt-0 space-y-1">
+        {items.map(({ id, title, time, body, color }) => (
+          <div
+            key={id}
+            onClick={() => setRead((r) => [...new Set([...r, id])])}
+            className={`rounded-lg px-3 py-2.5 cursor-pointer transition-colors ${read.includes(id) ? 'opacity-40' : 'bg-muted/40 hover:bg-muted/60'}`}
+          >
+            <div className="flex items-center justify-between mb-0.5">
+              <p className={`text-xs font-semibold ${color}`}>{title}</p>
+              <span className="text-[10px] text-muted-foreground shrink-0 ml-2">{time}</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground">{body}</p>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ── Border & Shadow: KYC Progress (flat) ─────────────────────────────────────
+function KycProgress() {
+  const steps = [
+    { label: 'Email verified', done: true },
+    { label: 'ID document uploaded', done: true },
+    { label: 'Selfie verification', done: false },
+    { label: 'Review & approval', done: false },
+  ]
+  const pct = Math.round((steps.filter((s) => s.done).length / steps.length) * 100)
+  return (
+    <Card bordered={false} shadow={false}>
+      <CardHeader>
+        <CardIcon icon={ShieldCheck} />
+        <CardHeaderContent>
+          <CardTitle>KYC Verification</CardTitle>
+          <CardDescription>Flat shell — bg-muted/40 auto-applied</CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+          <div
+            className="h-full bg-primary rounded-full transition-all"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <div className="space-y-1.5">
+          {steps.map(({ label, done }) => (
+            <div key={label} className="flex items-center gap-2.5">
+              <div
+                className={`size-4 rounded-full flex items-center justify-center shrink-0 ${done ? 'bg-success' : 'bg-muted border border-border'}`}
+              >
+                {done && <CheckCircle2 className="size-2.5 text-white" />}
+              </div>
+              <span
+                className={`text-xs ${done ? 'text-card-foreground' : 'text-muted-foreground'}`}
+              >
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+      <CardFooter>
+        <button className="text-xs font-semibold text-primary hover:underline underline-offset-2">
+          Continue verification →
+        </button>
+      </CardFooter>
+    </Card>
+  )
+}
+
+// ── Border & Shadow: Monthly Stats nested ────────────────────────────────────
+function MonthlyStatsCard() {
+  const items = [
+    { label: 'Trades', value: '24', icon: Activity },
+    { label: 'Avg. hold', value: '4.2d', icon: TrendingUp },
+    { label: 'Best trade', value: '+18%', icon: Star },
+  ]
+  return (
+    <Card>
+      <CardHeader>
+        <CardHeaderContent>
+          <CardTitle>Monthly Stats</CardTitle>
+          <CardDescription>Outer: bordered + shadow · Inner: flat nested cards</CardDescription>
+        </CardHeaderContent>
+      </CardHeader>
+      <CardContent className="pt-0 grid grid-cols-3 gap-2">
+        {items.map(({ label, value, icon: Icon }) => (
+          <Card key={label} bordered={false} shadow={false} variant="muted">
+            <CardContent className="p-3 flex flex-col items-center text-center gap-1">
+              <Icon className="size-4 text-primary" />
+              <p className="text-lg font-bold text-card-foreground">{value}</p>
+              <p className="text-[10px] text-muted-foreground">{label}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
 // ── Story ─────────────────────────────────────────────────────────────────────
 
+const SCHEMES = ['default', 'violet']
+
+function withTransition(fn) {
+  const el = document.documentElement
+  if (!document.startViewTransition) {
+    fn(el)
+    return
+  }
+  document.startViewTransition(() => fn(el))
+}
+
 function applyTheme(dark) {
-  document.documentElement.classList.toggle('dark', dark)
+  withTransition((el) => el.classList.toggle('dark', dark))
+}
+
+function applyScheme(scheme) {
+  withTransition((el) => {
+    SCHEMES.forEach((s) => el.classList.remove(s))
+    if (scheme !== 'default') el.classList.add(scheme)
+  })
 }
 
 function FloatingBar() {
   const [dark, setDark] = useState(
     () => typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
   )
+  const [scheme, setScheme] = useState('default')
 
   const handleMode = (isDark) => {
     setDark(isDark)
     applyTheme(isDark)
+  }
+
+  const handleScheme = (next) => {
+    setScheme(next)
+    applyScheme(next)
   }
 
   return (
@@ -4501,29 +4752,47 @@ function FloatingBar() {
         Component Overview
       </p>
 
-      <div className="flex items-center gap-0.5 p-1 rounded-lg bg-muted">
-        <button
-          onClick={() => handleMode(false)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-            !dark
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Sun className="size-3.5" />
-          Light
-        </button>
-        <button
-          onClick={() => handleMode(true)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-            dark
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Moon className="size-3.5" />
-          Dark
-        </button>
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-0.5 p-1 rounded-lg bg-muted">
+          {SCHEMES.map((s) => (
+            <button
+              key={s}
+              onClick={() => handleScheme(s)}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium capitalize transition-colors ${
+                scheme === s
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-0.5 p-1 rounded-lg bg-muted">
+          <button
+            onClick={() => handleMode(false)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              !dark
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Sun className="size-3.5" />
+            Light
+          </button>
+          <button
+            onClick={() => handleMode(true)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              dark
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Moon className="size-3.5" />
+            Dark
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -4582,6 +4851,11 @@ export const Visual = {
           <InventoryStock />
           <AssetDetail />
           <RiskDashboard />
+          <PortfolioSnapshot />
+          <OpenPositionsCard />
+          <NotificationFeedCard />
+          <KycProgress />
+          <MonthlyStatsCard />
         </div>
       </div>
     </div>

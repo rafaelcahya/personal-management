@@ -88,10 +88,25 @@ export const Docs = {
           <Tag color="blue">Design Tokens</Tag>
         </div>
         <p className="text-gray-500 text-base leading-relaxed max-w-2xl">
-          A dual-layer CSS variable system that powers light and dark mode across all base
-          components. Built on an OKLCH palette — all components respond to theme changes
-          automatically via semantic tokens.
+          A dual-layer CSS variable system that powers light/dark mode and color scheme variants
+          across all base components. Built on an OKLCH palette — all components respond to theme
+          changes automatically via semantic tokens.
         </p>
+        <div className="flex gap-2 mt-3">
+          {[
+            { label: 'Default Light', cls: '' },
+            { label: 'Default Dark', cls: 'dark' },
+            { label: 'Violet Light', cls: 'violet' },
+            { label: 'Violet Dark', cls: 'violet dark' },
+          ].map(({ label, cls }) => (
+            <span
+              key={label}
+              className="inline-block px-2 py-0.5 rounded text-xs font-mono font-medium bg-gray-100 text-gray-600"
+            >
+              {cls || '(none)'}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Architecture */}
@@ -537,6 +552,171 @@ export const Docs = {
         </SubSection>
       </Section>
 
+      {/* Color Scheme Variants */}
+      <Section title="Color Scheme Variants">
+        <p className="text-sm text-gray-600 mb-5 leading-relaxed">
+          Color schemes add a second axis to the theme system — independent from brightness. The{' '}
+          <code className="font-mono text-xs bg-gray-100 px-1 rounded">violet</code> class on{' '}
+          <code className="font-mono text-xs bg-gray-100 px-1 rounded">&lt;html&gt;</code> activates
+          the violet scheme. Combined with{' '}
+          <code className="font-mono text-xs bg-gray-100 px-1 rounded">dark</code>, four states are
+          possible:
+        </p>
+
+        <div className="overflow-x-auto mb-5">
+          <table className="w-full text-sm border-collapse">
+            <TableHead cols={['Class on <html>', 'State', 'Primary', 'Accent']} />
+            <tbody>
+              {[
+                {
+                  cls: '(none)',
+                  state: 'Default Light',
+                  primary: 'black-900',
+                  accent: 'slate-100',
+                },
+                { cls: 'dark', state: 'Default Dark', primary: 'white-50', accent: 'black-700' },
+                {
+                  cls: 'violet',
+                  state: 'Violet Light',
+                  primary: 'violet-600',
+                  accent: 'violet-100',
+                },
+                {
+                  cls: 'violet dark',
+                  state: 'Violet Dark',
+                  primary: 'violet-400',
+                  accent: 'violet-950',
+                },
+              ].map(({ cls, state, primary, accent }) => (
+                <tr key={state} className="even:bg-gray-50">
+                  <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                    {cls}
+                  </td>
+                  <td className="px-3 py-2 border border-gray-200 text-xs text-gray-600">
+                    {state}
+                  </td>
+                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-600">
+                    {primary}
+                  </td>
+                  <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-600">
+                    {accent}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <SubSection title="Token overrides">
+          <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+            Only 4 tokens change between default and violet — surfaces, feedback, and muted stay
+            identical. This minimises the override surface and ensures components only need to use
+            semantic tokens to be automatically scheme-aware.
+          </p>
+          <div className="overflow-x-auto mb-4">
+            <table className="w-full text-sm border-collapse">
+              <TableHead cols={['Token', 'Default Light', 'Violet Light', 'Violet Dark']} />
+              <tbody>
+                {[
+                  {
+                    name: '--color-primary',
+                    def: 'black-900',
+                    vl: 'violet-600',
+                    vd: 'violet-400',
+                    note: 'Brand action — buttons, active states',
+                  },
+                  {
+                    name: '--color-primary-foreground',
+                    def: 'slate-50',
+                    vl: 'slate-50',
+                    vd: 'white',
+                    note: 'Text on primary bg — white in violet dark',
+                  },
+                  {
+                    name: '--color-ring',
+                    def: 'black-900',
+                    vl: 'violet-700',
+                    vd: 'violet-400',
+                    note: 'Focus ring — always matches primary hue',
+                  },
+                  {
+                    name: '--color-accent',
+                    def: 'slate-100',
+                    vl: 'violet-100',
+                    vd: 'violet-950',
+                    note: 'Hover surface — tinted in violet scheme',
+                  },
+                  {
+                    name: '--color-accent-foreground',
+                    def: 'slate-950',
+                    vl: 'violet-900',
+                    vd: 'violet-100',
+                    note: 'Text on hover surface',
+                  },
+                ].map(({ name, def, vl, vd, note }) => (
+                  <tr key={name} className="even:bg-gray-50">
+                    <td className="px-3 py-2 border border-gray-200 font-mono text-violet-700 text-xs whitespace-nowrap">
+                      {name}
+                    </td>
+                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-gray-500">
+                      {def}
+                    </td>
+                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-violet-600">
+                      {vl}
+                    </td>
+                    <td className="px-3 py-2 border border-gray-200 font-mono text-xs text-violet-600">
+                      {vd}
+                    </td>
+                    <td className="px-3 py-2 border border-gray-200 text-xs text-gray-500">
+                      {note}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SubSection>
+
+        <SubSection title="How it works in CSS">
+          <Code>{`/* app/globals.css */
+
+/* :root — base aliases (Tailwind reads these) */
+:root {
+  --primary: var(--color-primary);   /* thin alias — always in sync */
+  --color-primary: var(--color-black-900);
+}
+
+/* .dark — overrides only --color-* tokens */
+.dark {
+  --color-primary: var(--color-white-50);
+}
+
+/* .violet — overrides only violet-specific tokens */
+.violet {
+  --color-primary: var(--color-violet-600);
+  --color-ring:    var(--color-violet-700);
+  --color-accent:  var(--color-violet-100);
+  --color-accent-foreground: var(--color-violet-900);
+}
+
+/* .violet.dark — higher specificity, violet dark overrides */
+.violet.dark {
+  --color-primary:             var(--color-violet-400);
+  --color-primary-foreground:  var(--color-white);
+  --color-ring:                var(--color-violet-400);
+  --color-accent:              var(--color-violet-950);
+  --color-accent-foreground:   var(--color-violet-100);
+}`}</Code>
+          <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+            Because <code className="font-mono bg-gray-100 px-1 rounded">--primary</code> is a thin
+            alias to <code className="font-mono bg-gray-100 px-1 rounded">--color-primary</code>,
+            Tailwind utility classes like{' '}
+            <code className="font-mono bg-gray-100 px-1 rounded">bg-primary</code> automatically
+            pick up the correct value in every scheme — no per-component overrides needed.
+          </p>
+        </SubSection>
+      </Section>
+
       {/* Dark mode depth */}
       <Section title="Dark Mode — Surface Depth">
         <p className="text-sm text-gray-600 mb-5 leading-relaxed">
@@ -610,8 +790,8 @@ export const Docs = {
       {/* Theme switching */}
       <Section title="Theme Switching">
         <SubSection
-          title="In the app (production)"
-          description="ThemeToggle in the sidebar footer handles both brightness and (future) color scheme."
+          title="Brightness — in the app (production)"
+          description="ThemeToggle in the sidebar footer manages brightness via next-themes."
         >
           <Code>{`// app/main/components/ThemeToggle.jsx
 // Uses next-themes — ThemeProvider in app/layout.tsx applies
@@ -634,21 +814,46 @@ setTheme('system')   // follows OS preference`}</Code>
         </SubSection>
 
         <SubSection
-          title="In Storybook"
-          description="The FloatingBar in Theme/Overview toggles dark class directly. The addon-themes toolbar also works for individual component stories."
+          title="Color scheme — useColorScheme hook"
+          description="lib/hooks/useColorScheme.js manages the violet class on <html> and persists to localStorage."
         >
-          <Code>{`// .storybook/preview.js — addon-themes decorator
-withThemeByClassName({
-  themes: {
-    light:        '',           // no class
-    dark:         'dark',       // adds .dark to <html>
-  },
-  defaultTheme: 'light',
-})`}</Code>
+          <Code>{`// lib/hooks/useColorScheme.js
+import { useColorScheme } from '@/lib/hooks/useColorScheme'
+
+const { scheme, setScheme } = useColorScheme()
+// scheme: 'default' | 'violet'
+
+setScheme('violet')   // adds .violet to <html>, persists to localStorage
+setScheme('default')  // removes .violet from <html>`}</Code>
+
+          <p className="text-xs text-gray-500 mt-2 mb-3 leading-relaxed">
+            The hook reads from localStorage on mount so the selected scheme survives page reloads.
+            ThemeToggle in the sidebar renders a Default / Violet row below the brightness toggle —
+            both controls are independent.
+          </p>
+
+          <Code>{`// The four class combinations on <html>:
+//
+//   (none)        → default light
+//   dark          → default dark
+//   violet        → violet light
+//   violet dark   → violet dark   ← .violet.dark selector handles this
+`}</Code>
+        </SubSection>
+
+        <SubSection
+          title="In Storybook"
+          description="The FloatingBar in Theme/Overview has two controls: a scheme toggle (Default / Violet) and a brightness toggle (Light / Dark)."
+        >
+          <Code>{`// FloatingBar in Overview.stories.jsx
+// Scheme toggle: adds/removes 'violet' class on document.documentElement
+// Brightness toggle: adds/removes 'dark' class on document.documentElement
+//
+// Both controls are independent — all four states are previewable.`}</Code>
 
           <p className="text-xs text-gray-500 mt-2">
-            The toolbar in the top-right of Storybook lets you switch themes on any story. The
-            Theme/Overview story has its own embedded FloatingBar for a richer preview experience.
+            The addon-themes toolbar in the Storybook top-right handles brightness for individual
+            component stories. For full scheme + brightness preview, use the Theme/Overview story.
           </p>
         </SubSection>
       </Section>

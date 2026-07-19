@@ -36,7 +36,6 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import packageJson from '@/package.json'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import ThemeToggle from './ThemeToggle'
 
 const INVENTORY_ITEMS = [
   {
@@ -469,7 +468,6 @@ export default function Sidebar({ user }) {
           <SidebarNav collapsed={collapsed} />
         </SidebarContent>
         <SidebarFooter>
-          <ThemeToggle collapsed={collapsed} />
           {!collapsed && (
             <p id="appVersion_sidebar" className="text-[10px] text-muted-foreground pb-2 mt-2">
               v{packageJson.version}
@@ -545,7 +543,6 @@ export default function Sidebar({ user }) {
               <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
             </SidebarContent>
             <SidebarFooter>
-              <ThemeToggle collapsed={false} />
               <p
                 id="appVersion_mobileDrawer"
                 className="text-[10px] text-muted-foreground pb-2 mt-2"
