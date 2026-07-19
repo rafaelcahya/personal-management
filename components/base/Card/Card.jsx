@@ -70,7 +70,10 @@ export default function Card({
   const isBordered = isTransparent ? false : (bordered ?? true)
   const hasShadow = isTransparent ? false : (shadow ?? true)
 
-  const baseClass = cardBaseClasses[variant] ?? cardBaseClasses.shell
+  const isFlat = !isBordered && !hasShadow && variant === 'shell'
+  const baseClass = isFlat
+    ? 'bg-card rounded-xl overflow-hidden'
+    : (cardBaseClasses[variant] ?? cardBaseClasses.shell)
   const borderClass = isBordered ? (cardBorderClasses[variant] ?? cardBorderClasses.shell) : ''
   const shadowClass = hasShadow ? SHADOW_CLASS : ''
 
