@@ -175,15 +175,18 @@ export default function SpendComparison({ data, loading }) {
               >
                 <XAxis
                   dataKey="label"
-                  tick={{ fontSize: 11, fill: '#94a3b8' }}
+                  tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis hide />
-                <Tooltip content={<BarTooltip />} cursor={{ fill: '#f8f7ff' }} />
+                <Tooltip content={<BarTooltip />} cursor={{ fill: 'var(--color-accent)' }} />
                 <Bar dataKey="total" radius={[5, 5, 0, 0]}>
                   {barData.map((entry, index) => (
-                    <Cell key={index} fill={entry.isThis ? '#7c3aed' : '#c4b5fd'} />
+                    <Cell
+                      key={index}
+                      fill={entry.isThis ? 'var(--color-violet-600)' : 'var(--color-violet-300)'}
+                    />
                   ))}
                 </Bar>
               </BarChart>
@@ -195,10 +198,14 @@ export default function SpendComparison({ data, loading }) {
             <p className="text-xs text-slate-400 mb-2">6-month trend</p>
             <ResponsiveContainer width="100%" height={130}>
               <LineChart data={lineData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="label"
-                  tick={{ fontSize: 11, fill: '#94a3b8' }}
+                  tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -207,10 +214,22 @@ export default function SpendComparison({ data, loading }) {
                 <Line
                   type="monotone"
                   dataKey="total"
-                  stroke="#7c3aed"
+                  stroke="var(--color-violet-600)"
                   strokeWidth={2}
-                  dot={<Dot r={3} fill="#7c3aed" stroke="#fff" strokeWidth={2} />}
-                  activeDot={{ r: 4, fill: '#7c3aed', stroke: '#fff', strokeWidth: 2 }}
+                  dot={
+                    <Dot
+                      r={3}
+                      fill="var(--color-violet-600)"
+                      stroke="var(--color-card)"
+                      strokeWidth={2}
+                    />
+                  }
+                  activeDot={{
+                    r: 4,
+                    fill: 'var(--color-violet-600)',
+                    stroke: 'var(--color-card)',
+                    strokeWidth: 2,
+                  }}
                 />
               </LineChart>
             </ResponsiveContainer>

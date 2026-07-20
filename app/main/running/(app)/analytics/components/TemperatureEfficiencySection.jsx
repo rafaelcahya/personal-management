@@ -51,7 +51,7 @@ function BoxShape(props) {
         x2={x}
         y1={toY(min)}
         y2={toY(q1)}
-        stroke="#94a3b8"
+        stroke="var(--color-muted-foreground)"
         strokeWidth={1}
         strokeDasharray={thin ? '3 2' : undefined}
       />
@@ -60,21 +60,35 @@ function BoxShape(props) {
         x2={x}
         y1={toY(q3)}
         y2={toY(max)}
-        stroke="#94a3b8"
+        stroke="var(--color-muted-foreground)"
         strokeWidth={1}
         strokeDasharray={thin ? '3 2' : undefined}
       />
       {/* whisker caps */}
-      <line x1={x - 5} x2={x + 5} y1={toY(min)} y2={toY(min)} stroke="#94a3b8" strokeWidth={1} />
-      <line x1={x - 5} x2={x + 5} y1={toY(max)} y2={toY(max)} stroke="#94a3b8" strokeWidth={1} />
+      <line
+        x1={x - 5}
+        x2={x + 5}
+        y1={toY(min)}
+        y2={toY(min)}
+        stroke="var(--color-muted-foreground)"
+        strokeWidth={1}
+      />
+      <line
+        x1={x - 5}
+        x2={x + 5}
+        y1={toY(max)}
+        y2={toY(max)}
+        stroke="var(--color-muted-foreground)"
+        strokeWidth={1}
+      />
       {/* box */}
       <rect
         x={x - w / 2}
         y={toY(q3)}
         width={w}
         height={toY(q1) - toY(q3)}
-        fill={thin ? 'none' : '#e2e8f0'}
-        stroke="#94a3b8"
+        fill={thin ? 'none' : 'var(--color-border)'}
+        stroke="var(--color-muted-foreground)"
         strokeWidth={1}
         rx={2}
       />
@@ -84,16 +98,22 @@ function BoxShape(props) {
         x2={x + w / 2}
         y1={toY(median)}
         y2={toY(median)}
-        stroke="#475569"
+        stroke="var(--color-foreground)"
         strokeWidth={2}
       />
       {/* median label */}
-      <text x={x + w / 2 + 4} y={toY(median) + 4} fontSize={9} fill="#64748b">
+      <text x={x + w / 2 + 4} y={toY(median) + 4} fontSize={9} fill="var(--color-muted-foreground)">
         {median.toFixed(2)}
       </text>
       {/* n label for thin boxes */}
       {thin && (
-        <text x={x} y={toY(max) - 6} textAnchor="middle" fontSize={8} fill="#94a3b8">
+        <text
+          x={x}
+          y={toY(max) - 6}
+          textAnchor="middle"
+          fontSize={8}
+          fill="var(--color-muted-foreground)"
+        >
           n={n}
         </text>
       )}
@@ -319,12 +339,12 @@ export default function TemperatureEfficiencySection() {
                 <div>
                   <ResponsiveContainer width="100%" height={220}>
                     <ComposedChart margin={{ top: 10, right: 16, bottom: 24, left: 16 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
                       <XAxis
                         dataKey="avg_temp_c"
                         type="number"
                         domain={['dataMin - 0.5', 'dataMax + 0.5']}
-                        tick={{ fontSize: 10, fill: '#94a3b8' }}
+                        tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
                         axisLine={false}
                         tickLine={false}
                         tickFormatter={(v) => `${v}°C`}
@@ -333,14 +353,14 @@ export default function TemperatureEfficiencySection() {
                           position: 'insideBottom',
                           offset: -2,
                           fontSize: 10,
-                          fill: '#94a3b8',
+                          fill: 'var(--color-muted-foreground)',
                         }}
                       />
                       <YAxis
                         dataKey="pace_hr_ratio"
                         type="number"
                         domain={[yMin, yMax]}
-                        tick={{ fontSize: 10, fill: '#94a3b8' }}
+                        tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
                         axisLine={false}
                         tickLine={false}
                         width={52}
@@ -351,7 +371,7 @@ export default function TemperatureEfficiencySection() {
                           position: 'insideLeft',
                           offset: 14,
                           fontSize: 10,
-                          fill: '#94a3b8',
+                          fill: 'var(--color-muted-foreground)',
                         }}
                       />
                       <Tooltip content={<CustomTooltip />} />
@@ -361,16 +381,16 @@ export default function TemperatureEfficiencySection() {
                         <ReferenceArea
                           y1={data.ref_band.low}
                           y2={data.ref_band.high}
-                          fill="#8b5cf6"
+                          fill="var(--color-violet-500)"
                           fillOpacity={0.06}
-                          stroke="#8b5cf6"
+                          stroke="var(--color-violet-500)"
                           strokeOpacity={0.2}
                           strokeDasharray="4 3"
                           label={{
                             value: 'Your zone',
                             position: 'insideTopRight',
                             fontSize: 9,
-                            fill: '#8b5cf6',
+                            fill: 'var(--color-violet-500)',
                           }}
                         />
                       )}

@@ -7,7 +7,7 @@ export default async function MainLayout({ children }) {
 
   return (
     <>
-      <NextTopLoader color="#7c3aed" height={3} showSpinner={false} />
+      <NextTopLoader color="var(--color-violet-600)" height={3} showSpinner={false} />
       <div className="flex h-screen bg-slate-50 overflow-hidden">
         <Sidebar user={user} />
         {/* pt-14 on mobile to clear the fixed top bar; removed on md+ */}

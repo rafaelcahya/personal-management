@@ -44,7 +44,14 @@ function getBracket(distance_m) {
 // ─── HR zone config (% of max HR) ────────────────────────────────────────────
 
 const HR_ZONES = [
-  { key: 'Z1', label: 'Z1 Easy', min: 0, max: 0.6, color: '#94a3b8', fill: '#f1f5f9' },
+  {
+    key: 'Z1',
+    label: 'Z1 Easy',
+    min: 0,
+    max: 0.6,
+    color: 'var(--color-muted-foreground)',
+    fill: 'var(--color-border)',
+  },
   { key: 'Z2', label: 'Z2 Aerobic', min: 0.6, max: 0.7, color: '#22c55e', fill: '#f0fdf4' },
   { key: 'Z3', label: 'Z3 Tempo', min: 0.7, max: 0.8, color: '#eab308', fill: '#fefce8' },
   { key: 'Z4', label: 'Z4 Hard', min: 0.8, max: 0.9, color: '#f97316', fill: '#fff7ed' },
@@ -138,17 +145,17 @@ function HrChart({ data }) {
       )}
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={chartData} margin={{ top: 12, right: 8, left: -12, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={[hrMin, hrMax]}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             unit=" bpm"
@@ -210,17 +217,17 @@ function SinglePaceChart({ bracket, runs }) {
   return (
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={chartData} margin={{ top: 12, right: 12, left: -4, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
         <XAxis
           dataKey="date"
-          tick={{ fontSize: 10, fill: '#94a3b8' }}
+          tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
           tickLine={false}
-          axisLine={{ stroke: '#e2e8f0' }}
+          axisLine={{ stroke: 'var(--color-border)' }}
           interval="preserveStartEnd"
         />
         <YAxis
           domain={[paceMin, paceMax]}
-          tick={{ fontSize: 10, fill: '#94a3b8' }}
+          tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
           tickLine={false}
           axisLine={false}
           tickFormatter={fmtPaceAxis}
@@ -246,7 +253,11 @@ function SinglePaceChart({ bracket, runs }) {
               </div>
             )
           }}
-          cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '4 3' }}
+          cursor={{
+            stroke: 'var(--color-muted-foreground)',
+            strokeWidth: 1,
+            strokeDasharray: '4 3',
+          }}
         />
         <Line
           type="linear"
@@ -306,7 +317,7 @@ function ComparePaceChart({ selectedBrackets, bracketMap }) {
           y1={yScale(t)}
           x2={PAD.left + plotW}
           y2={yScale(t)}
-          stroke="#f1f5f9"
+          stroke="var(--color-border)"
           strokeWidth="1"
         />
       ))}
@@ -319,17 +330,29 @@ function ComparePaceChart({ selectedBrackets, bracketMap }) {
           y={yScale(t) + 3}
           textAnchor="end"
           fontSize={9}
-          fill="#94a3b8"
+          fill="var(--color-muted-foreground)"
         >
           {fmtPaceAxis(t)}
         </text>
       ))}
 
       {/* X axis: Oldest / Latest */}
-      <text x={PAD.left} y={CH - 5} textAnchor="middle" fontSize={9} fill="#94a3b8">
+      <text
+        x={PAD.left}
+        y={CH - 5}
+        textAnchor="middle"
+        fontSize={9}
+        fill="var(--color-muted-foreground)"
+      >
         Oldest
       </text>
-      <text x={PAD.left + plotW} y={CH - 5} textAnchor="middle" fontSize={9} fill="#94a3b8">
+      <text
+        x={PAD.left + plotW}
+        y={CH - 5}
+        textAnchor="middle"
+        fontSize={9}
+        fill="var(--color-muted-foreground)"
+      >
         Latest
       </text>
 
@@ -387,7 +410,7 @@ function ComparePaceChart({ selectedBrackets, bracketMap }) {
                 height={TH}
                 rx="4"
                 fill="white"
-                stroke="#e2e8f0"
+                stroke="var(--color-border)"
                 strokeWidth="1"
               />
               <text
@@ -395,13 +418,19 @@ function ComparePaceChart({ selectedBrackets, bracketMap }) {
                 y={ty + 14}
                 textAnchor="middle"
                 fontSize={10}
-                fill="#64748b"
+                fill="var(--color-muted-foreground)"
                 fontWeight="600"
               >
                 {tooltip.date}
               </text>
               <circle cx={tx + 11} cy={ty + 31} r={3} fill={tooltip.color} />
-              <text x={tx + 18} y={ty + 35} fontSize={10} fill="#1e293b" fontWeight="700">
+              <text
+                x={tx + 18}
+                y={ty + 35}
+                fontSize={10}
+                fill="var(--color-foreground)"
+                fontWeight="700"
+              >
                 {fmtPaceFull(tooltip.pace)}
               </text>
             </g>
@@ -493,7 +522,7 @@ function PaceChart({ data }) {
 // ─── effort / power chart ─────────────────────────────────────────────────────
 
 const EFFORT_ZONES = [
-  { label: 'Light', min: 0, max: 50, color: '#94a3b8' },
+  { label: 'Light', min: 0, max: 50, color: 'var(--color-muted-foreground)' },
   { label: 'Moderate', min: 50, max: 150, color: '#22c55e' },
   { label: 'Hard', min: 150, max: 300, color: '#f97316' },
   { label: 'Extreme', min: 300, max: Infinity, color: '#ef4444' },
@@ -540,17 +569,17 @@ function EffortChart({ data }) {
       </div>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={chartData} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={[0, effortMax]}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             width={34}
@@ -573,7 +602,7 @@ function EffortChart({ data }) {
           <Line
             type="monotone"
             dataKey="Effort"
-            stroke="#8b5cf6"
+            stroke="var(--color-violet-500)"
             strokeWidth={2}
             dot={(props) => {
               const { cx, cy, payload } = props
@@ -626,17 +655,17 @@ function PowerChart({ data }) {
   return (
     <ResponsiveContainer width="100%" height={220}>
       <LineChart data={chartData} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
         <XAxis
           dataKey="date"
-          tick={{ fontSize: 10, fill: '#94a3b8' }}
+          tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
           tickLine={false}
           axisLine={false}
           interval="preserveStartEnd"
         />
         <YAxis
           domain={[wMin, wMax]}
-          tick={{ fontSize: 10, fill: '#94a3b8' }}
+          tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
           tickLine={false}
           axisLine={false}
           unit=" W"
@@ -647,16 +676,16 @@ function PowerChart({ data }) {
         <Line
           type="monotone"
           dataKey="Norm W"
-          stroke="#8b5cf6"
+          stroke="var(--color-violet-500)"
           strokeWidth={2}
-          dot={{ r: 3, fill: '#8b5cf6', strokeWidth: 0 }}
+          dot={{ r: 3, fill: 'var(--color-violet-500)', strokeWidth: 0 }}
           activeDot={{ r: 5 }}
           connectNulls={false}
         />
         <Line
           type="monotone"
           dataKey="Avg W"
-          stroke="#c4b5fd"
+          stroke="var(--color-violet-300)"
           strokeWidth={1.5}
           strokeDasharray="4 3"
           dot={false}

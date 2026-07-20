@@ -3,7 +3,7 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 const COLORS = [
-  '#7c3aed', // violet-700
+  'var(--color-violet-600)', // violet-700
   '#2563eb', // blue-600
   '#059669', // emerald-600
   '#d97706', // amber-600

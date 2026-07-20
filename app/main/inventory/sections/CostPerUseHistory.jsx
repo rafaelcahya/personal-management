@@ -165,15 +165,15 @@ export default function CostPerUseHistory({ items, loading }) {
         ) : (
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="dateLabel"
-                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
@@ -184,10 +184,22 @@ export default function CostPerUseHistory({ items, loading }) {
               <Line
                 type="monotone"
                 dataKey="cost_per_use"
-                stroke="#7c3aed"
+                stroke="var(--color-violet-600)"
                 strokeWidth={2}
-                dot={<Dot r={4} fill="#7c3aed" stroke="#fff" strokeWidth={2} />}
-                activeDot={{ r: 5, fill: '#7c3aed', stroke: '#fff', strokeWidth: 2 }}
+                dot={
+                  <Dot
+                    r={4}
+                    fill="var(--color-violet-600)"
+                    stroke="var(--color-card)"
+                    strokeWidth={2}
+                  />
+                }
+                activeDot={{
+                  r: 5,
+                  fill: 'var(--color-violet-600)',
+                  stroke: 'var(--color-card)',
+                  strokeWidth: 2,
+                }}
               />
             </LineChart>
           </ResponsiveContainer>

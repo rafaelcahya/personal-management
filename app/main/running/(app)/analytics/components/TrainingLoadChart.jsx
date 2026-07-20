@@ -85,15 +85,19 @@ export default function TrainingLoadChart({ trainingLoad }) {
   }
 
   const { acwr, acute_load_7d, chronic_load_28d, status, training_status } = trainingLoad
-  const statusColor = ACWR_COLORS[status] ?? '#94a3b8'
+  const statusColor = ACWR_COLORS[status] ?? 'var(--color-muted-foreground)'
   const trainingStatusMeta = training_status ? TRAINING_STATUS_CONFIG[training_status] : null
 
   const barData = [
-    { label: 'Acute (7d)', value: parseFloat(acute_load_7d?.toFixed(1) ?? 0), fill: '#8b5cf6' },
+    {
+      label: 'Acute (7d)',
+      value: parseFloat(acute_load_7d?.toFixed(1) ?? 0),
+      fill: 'var(--color-violet-500)',
+    },
     {
       label: 'Chronic (28d)',
       value: parseFloat(chronic_load_28d?.toFixed(1) ?? 0),
-      fill: '#c4b5fd',
+      fill: 'var(--color-violet-300)',
     },
   ]
 
@@ -138,17 +142,17 @@ export default function TrainingLoadChart({ trainingLoad }) {
           layout="vertical"
           margin={{ top: 0, right: 8, left: 0, bottom: 0 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" horizontal={false} />
           <XAxis
             type="number"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
             type="category"
             dataKey="label"
-            tick={{ fontSize: 11, fill: '#64748b' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             width={88}

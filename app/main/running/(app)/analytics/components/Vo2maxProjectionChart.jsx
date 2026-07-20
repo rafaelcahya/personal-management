@@ -133,17 +133,17 @@ export default function Vo2maxProjectionChart({ data, activities }) {
     <div id="vo2maxProjectionChart_analyticsPage" className="flex flex-col gap-2">
       <ResponsiveContainer width="100%" height={220}>
         <ComposedChart data={allPoints} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={[minY, maxY]}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => v.toFixed(0)}
@@ -154,7 +154,7 @@ export default function Vo2maxProjectionChart({ data, activities }) {
           {/* Confidence band: pessimistic → optimistic */}
           <Area
             dataKey="band"
-            fill="#ede9fe"
+            fill="var(--color-violet-100)"
             stroke="none"
             fillOpacity={0.5}
             isAnimationActive={false}
@@ -164,7 +164,7 @@ export default function Vo2maxProjectionChart({ data, activities }) {
           {/* Historical rolling avg — solid violet */}
           <Line
             dataKey="historical"
-            stroke="#7c3aed"
+            stroke="var(--color-violet-600)"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}
@@ -174,7 +174,7 @@ export default function Vo2maxProjectionChart({ data, activities }) {
           {/* Projected line — dashed violet */}
           <Line
             dataKey="projected"
-            stroke="#8b5cf6"
+            stroke="var(--color-violet-500)"
             strokeWidth={2}
             strokeDasharray="5 3"
             dot={false}

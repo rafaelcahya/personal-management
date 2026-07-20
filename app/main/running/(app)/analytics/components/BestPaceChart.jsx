@@ -56,16 +56,16 @@ export default function BestPaceChart({ activities }) {
       <p className="text-xs text-slate-400 mb-3">Best average pace per distance range</p>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={data} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 11, fill: '#94a3b8' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
             domain={[paceMin, paceMax]}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={fmtPaceTick}
@@ -73,7 +73,7 @@ export default function BestPaceChart({ activities }) {
             reversed
           />
           <Tooltip
-            cursor={{ fill: '#f8fafc' }}
+            cursor={{ fill: 'var(--color-accent)' }}
             content={({ active, payload }) => {
               if (!active || !payload?.length) return null
               const d = payload[0]?.payload

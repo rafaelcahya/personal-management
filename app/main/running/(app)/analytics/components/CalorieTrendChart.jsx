@@ -83,15 +83,15 @@ export default function CalorieTrendChart() {
     <div id="calorieTrendChart_analyticsPage" className="flex flex-col gap-3">
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={months} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
           <XAxis
             dataKey="month"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => `${Math.round(v / 1000)}k`}
@@ -113,7 +113,7 @@ export default function CalorieTrendChart() {
               )
             }}
           />
-          <Bar dataKey="total_kcal" fill="#8b5cf6" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="total_kcal" fill="var(--color-violet-500)" radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
 
