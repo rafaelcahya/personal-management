@@ -108,17 +108,17 @@ export default function FitnessAgeTrendChart() {
       </p>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={chartData} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={[yMin, yMax]}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             unit=" yrs"
@@ -127,14 +127,14 @@ export default function FitnessAgeTrendChart() {
           {chronologicalAge != null && (
             <ReferenceLine
               y={chronologicalAge}
-              stroke="#94a3b8"
+              stroke="var(--color-muted-foreground)"
               strokeDasharray="5 3"
               strokeOpacity={0.7}
               label={{
                 value: 'Your age',
                 position: 'insideTopRight',
                 fontSize: 10,
-                fill: '#94a3b8',
+                fill: 'var(--color-muted-foreground)',
               }}
             />
           )}
@@ -172,9 +172,9 @@ export default function FitnessAgeTrendChart() {
           <Line
             type="monotone"
             dataKey="fitness_age"
-            stroke="#7c3aed"
+            stroke="var(--color-violet-600)"
             strokeWidth={2}
-            dot={{ fill: '#7c3aed', r: 4, strokeWidth: 0 }}
+            dot={{ fill: 'var(--color-violet-600)', r: 4, strokeWidth: 0 }}
             activeDot={{ r: 5 }}
             name="Fitness Age"
             connectNulls={false}

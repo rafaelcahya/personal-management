@@ -80,24 +80,24 @@ export default function WeeklyElevationChart({ activities }) {
       <p className="text-xs text-slate-400 mb-3">Last 12 weeks — running activities only</p>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval={2}
           />
           <YAxis
             domain={[0, Math.ceil(maxGain * 1.15)]}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             unit=" m"
             width={48}
           />
           <Tooltip
-            cursor={{ fill: '#f8fafc' }}
+            cursor={{ fill: 'var(--color-accent)' }}
             content={({ active, payload }) => {
               if (!active || !payload?.length) return null
               const d = payload[0]?.payload

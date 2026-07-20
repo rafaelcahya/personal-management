@@ -77,10 +77,10 @@ function formatMetricLabel(val, metric) {
 }
 
 function barColor(split, bestIdx, worstIdx, idx, isPartial) {
-  if (isPartial) return '#8b5cf6'
+  if (isPartial) return 'var(--color-violet-500)'
   if (idx === bestIdx) return '#f59e0b'
   if (idx === worstIdx) return '#ef4444'
-  return '#8b5cf6'
+  return 'var(--color-violet-500)'
 }
 
 function CustomTooltip({ active, payload, label, metric }) {
@@ -215,11 +215,15 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                 margin={{ top: 0, right: 56, bottom: 0, left: 16 }}
                 barCategoryGap="16%"
               >
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  horizontal={false}
+                  stroke="var(--color-border)"
+                />
                 <XAxis
                   type="number"
                   domain={domain}
-                  tick={{ fontSize: 10, fill: '#94a3b8' }}
+                  tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
                   tickFormatter={(v) => {
                     if (metric === 'Pace' || metric === 'GAP') return fmtPace(Math.round(v))
                     if (metric === 'Time') return fmtDuration(Math.round(v))
@@ -232,14 +236,14 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                 <YAxis
                   type="category"
                   dataKey="name"
-                  tick={{ fontSize: 10, fill: '#94a3b8' }}
+                  tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
                   width={20}
                   axisLine={false}
                   tickLine={false}
                 />
                 <RechartsTooltip
                   content={<CustomTooltip metric={metric} />}
-                  cursor={{ fill: '#f8fafc' }}
+                  cursor={{ fill: 'var(--color-accent)' }}
                 />
                 <Bar dataKey="value" radius={[0, 3, 3, 0]} maxBarSize={32}>
                   {chartData.map((entry, index) => {
@@ -262,7 +266,13 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                       const py = Number(y) + Number(height) / 2 + 4
                       if (!isFinite(px) || !isFinite(py)) return null
                       return (
-                        <text x={px} y={py} fontSize={10} fill="#a78bfa" fontWeight={500}>
+                        <text
+                          x={px}
+                          y={py}
+                          fontSize={10}
+                          fill="var(--color-violet-400)"
+                          fontWeight={500}
+                        >
                           {value}
                         </text>
                       )

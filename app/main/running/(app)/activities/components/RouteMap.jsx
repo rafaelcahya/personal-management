@@ -15,7 +15,11 @@ const TILE_STYLES = {
   dark: 'https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json',
 }
 
-const POLYLINE_COLORS = { default: '#8b5cf6', street: '#ffffff', dark: '#a78bfa' }
+const POLYLINE_COLORS = {
+  default: 'var(--color-violet-500)',
+  street: '#ffffff',
+  dark: 'var(--color-violet-400)',
+}
 const BORDER_COLORS = { default: '#000000', street: null, dark: null }
 
 const esc = (s) =>
@@ -196,7 +200,7 @@ function MapLibreRouteMap({
       el.innerHTML = `
         <div style="position:absolute;width:18px;height:18px;border-radius:50%;background:${esc(color)};transform:translate(-50%,-50%);animation:routePing 1.6s ease-out infinite;pointer-events:none;"></div>
         <div style="position:absolute;width:11px;height:11px;border-radius:50%;background:${esc(color)};transform:translate(-50%,-50%);"></div>
-        <div class="route-marker-label" style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:#fff;color:#334155;border:1px solid #e2e8f0;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">${esc(label)}</div>
+        <div class="route-marker-label" style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:var(--color-card);color:var(--color-card-foreground);border:1px solid var(--color-border);padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">${esc(label)}</div>
       `
       return el
     }
@@ -249,13 +253,13 @@ function MapLibreRouteMap({
         lapEl.className = 'route-marker-wrapper'
         lapEl.style.cssText = 'position:relative;width:0;height:0;cursor:pointer;'
         lapEl.innerHTML = `
-          <div style="position:absolute;width:22px;height:22px;border-radius:50%;background:#7c3aed;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25);font-family:system-ui,sans-serif;">${esc(String(lapNum))}</div>
-          <div class="route-marker-label" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:#fff;color:#334155;border:1px solid #e2e8f0;padding:6px 10px;border-radius:8px;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">
-            <div style="font-size:11px;font-weight:700;color:#7c3aed;margin-bottom:4px;">Lap ${esc(String(lapNum))}</div>
+          <div style="position:absolute;width:22px;height:22px;border-radius:50%;background:var(--color-violet-600);transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;border:2px solid var(--color-card);box-shadow:0 1px 4px rgba(0,0,0,0.25);font-family:system-ui,sans-serif;">${esc(String(lapNum))}</div>
+          <div class="route-marker-label" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:var(--color-card);color:var(--color-card-foreground);border:1px solid var(--color-border);padding:6px 10px;border-radius:8px;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);">
+            <div style="font-size:11px;font-weight:700;color:var(--color-violet-600);margin-bottom:4px;">Lap ${esc(String(lapNum))}</div>
             <div style="display:grid;grid-template-columns:auto auto;gap:1px 10px;font-size:11px;">
-              <span style="color:#94a3b8;">Dist</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">${esc(distStr)}</span>
-              <span style="color:#94a3b8;">Pace</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">${esc(paceStr)}</span>
-              <span style="color:#94a3b8;">Time</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">${esc(timeStr)}</span>
+              <span style="color:var(--color-muted-foreground);">Dist</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">${esc(distStr)}</span>
+              <span style="color:var(--color-muted-foreground);">Pace</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">${esc(paceStr)}</span>
+              <span style="color:var(--color-muted-foreground);">Time</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">${esc(timeStr)}</span>
             </div>
           </div>`
 
@@ -278,8 +282,8 @@ function MapLibreRouteMap({
         el.className = 'route-marker-wrapper'
         el.style.cssText = 'position:relative;width:0;height:0;cursor:pointer;'
         el.innerHTML = `
-          <div style="position:absolute;width:13px;height:13px;border-radius:50%;background:#d97706;transform:translate(-50%,-50%);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
-          <div class="route-marker-label" style="position:absolute;bottom:13px;left:50%;transform:translateX(-50%);background:#fff;color:#334155;border:1px solid #e2e8f0;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 2px 4px rgba(0,0,0,0.08);">${esc(label)}</div>
+          <div style="position:absolute;width:13px;height:13px;border-radius:50%;background:#d97706;transform:translate(-50%,-50%);border:2px solid var(--color-card);box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
+          <div class="route-marker-label" style="position:absolute;bottom:13px;left:50%;transform:translateX(-50%);background:var(--color-card);color:var(--color-card-foreground);border:1px solid var(--color-border);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;font-family:system-ui,sans-serif;box-shadow:0 2px 4px rgba(0,0,0,0.08);">${esc(label)}</div>
         `
         return el
       }

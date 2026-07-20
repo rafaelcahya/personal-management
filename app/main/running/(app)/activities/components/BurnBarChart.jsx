@@ -39,7 +39,7 @@ function getChip(diff, isPace) {
 function chipFill(chip) {
   if (chip.className.includes('green')) return '#16a34a'
   if (chip.className.includes('red')) return '#dc2626'
-  return '#94a3b8'
+  return 'var(--color-muted-foreground)'
 }
 
 export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage' }) {
@@ -101,11 +101,11 @@ export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage
           margin={{ top: 0, right: 56, bottom: 0, left: 16 }}
           barCategoryGap="16%"
         >
-          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--color-border)" />
           <XAxis
             type="number"
             domain={xDomain}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickFormatter={(v) => (isPace ? fmtPace(Math.round(v)) : Math.round(v))}
             axisLine={false}
             tickLine={false}
@@ -114,7 +114,7 @@ export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage
             type="category"
             dataKey="split"
             tickFormatter={(v) => `#${v}`}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             width={28}
             axisLine={false}
             tickLine={false}
@@ -153,7 +153,7 @@ export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage
           <Bar
             dataKey="thisRun"
             name="This run"
-            fill="#7c3aed"
+            fill="var(--color-violet-600)"
             radius={[0, 3, 3, 0]}
             maxBarSize={14}
           >

@@ -49,17 +49,17 @@ export default function PaceTrendChart({ trendData }) {
       </p>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={withAvg} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={[paceMin, paceMax]}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={fmtPaceTick}
@@ -91,16 +91,16 @@ export default function PaceTrendChart({ trendData }) {
           <Line
             type="monotone"
             dataKey="pace"
-            stroke="#c4b5fd"
+            stroke="var(--color-violet-300)"
             strokeWidth={1.5}
-            dot={{ r: 3, fill: '#c4b5fd', strokeWidth: 0 }}
+            dot={{ r: 3, fill: 'var(--color-violet-300)', strokeWidth: 0 }}
             name="Pace"
             connectNulls={false}
           />
           <Line
             type="monotone"
             dataKey="avg"
-            stroke="#7c3aed"
+            stroke="var(--color-violet-600)"
             strokeWidth={2.5}
             dot={false}
             name="3-run avg"
