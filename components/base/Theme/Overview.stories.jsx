@@ -4699,7 +4699,12 @@ function MonthlyStatsCard() {
 
 // ── Story ─────────────────────────────────────────────────────────────────────
 
-const SCHEMES = ['default', 'violet']
+const SCHEMES = ['default', 'violet', 'glass']
+
+const SCHEME_CLASS = {
+  violet: 'violet',
+  glass: 'theme-glass',
+}
 
 function withTransition(fn) {
   const el = document.documentElement
@@ -4716,16 +4721,16 @@ function applyTheme(dark) {
 
 function applyScheme(scheme) {
   withTransition((el) => {
-    SCHEMES.forEach((s) => el.classList.remove(s))
-    if (scheme !== 'default') el.classList.add(scheme)
+    Object.values(SCHEME_CLASS).forEach((cls) => el.classList.remove(cls))
+    const cls = SCHEME_CLASS[scheme]
+    if (cls) el.classList.add(cls)
   })
 }
 
-function FloatingBar() {
+function FloatingBar({ scheme, onScheme }) {
   const [dark, setDark] = useState(
     () => typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
   )
-  const [scheme, setScheme] = useState('default')
 
   const handleMode = (isDark) => {
     setDark(isDark)
@@ -4733,8 +4738,12 @@ function FloatingBar() {
   }
 
   const handleScheme = (next) => {
-    setScheme(next)
+    onScheme(next)
     applyScheme(next)
+    if (next === 'glass') {
+      setDark(false)
+      applyTheme(false)
+    }
   }
 
   return (
@@ -4769,7 +4778,9 @@ function FloatingBar() {
           ))}
         </div>
 
-        <div className="flex items-center gap-0.5 p-1 rounded-lg bg-muted">
+        <div
+          className={`flex items-center gap-0.5 p-1 rounded-lg bg-muted ${scheme === 'glass' ? 'opacity-40 pointer-events-none' : ''}`}
+        >
           <button
             onClick={() => handleMode(false)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
@@ -4798,14 +4809,20 @@ function FloatingBar() {
   )
 }
 
-export const Visual = {
-  name: 'Visual',
-  render: () => (
-    <div
-      style={{ background: 'var(--color-background)', color: 'var(--color-foreground)' }}
-      className="min-h-screen"
-    >
-      <FloatingBar />
+function VisualPage() {
+  const [scheme, setScheme] = useState('default')
+  const bg = scheme === 'glass' ? 'rgb(248 250 252 / 0.5)' : 'var(--color-background)'
+
+  useEffect(() => {
+    document.body.style.backgroundColor = scheme === 'glass' ? '#f8fafc' : ''
+    return () => {
+      document.body.style.backgroundColor = ''
+    }
+  }, [scheme])
+
+  return (
+    <div style={{ background: bg, color: 'var(--color-foreground)' }} className="min-h-screen">
+      <FloatingBar scheme={scheme} onScheme={setScheme} />
       <div className="pt-12 p-8">
         <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 max-w-full mx-auto [&>*]:mb-4 [&>*]:break-inside-avoid">
           <QuickTrade />
@@ -4859,5 +4876,10 @@ export const Visual = {
         </div>
       </div>
     </div>
-  ),
+  )
+}
+
+export const Visual = {
+  name: 'Visual',
+  render: () => <VisualPage />,
 }
