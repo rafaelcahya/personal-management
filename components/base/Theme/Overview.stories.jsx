@@ -160,6 +160,7 @@ import {
   NavMenuSeparator,
 } from '../NavMenu/NavMenu'
 import State from '../State/State'
+import MarkdownEditor from '../MarkdownEditor/MarkdownEditor'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = { title: 'Theme/Overview' }
@@ -4809,6 +4810,31 @@ function FloatingBar({ scheme, onScheme }) {
   )
 }
 
+// ── Trade Journal ─────────────────────────────────────────────────────────────
+function TradeJournal() {
+  const [value, setValue] = useState(
+    `## BBRI Trade — 12 Jul 2025\n\nBought **100 lot** at Rp 5,150 based on MA20 crossing MA50.\n\n### Rationale\n\n- Volume confirmation: 1.8× average\n- RSI at 48 — neutral zone\n- Support held at 5,000\n\n### Exit Plan\n\n1. TP1: Rp 5,500 → sell 50%\n2. TP2: Rp 5,800 → sell remaining\n3. SL: Rp 4,900`
+  )
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div>
+          <p className="text-sm font-semibold text-foreground">Trade Journal</p>
+          <p className="text-xs text-muted-foreground">Document your analysis and rationale</p>
+        </div>
+        <FieldContent>
+          <FieldLabel>Entry Notes</FieldLabel>
+          <MarkdownEditor value={value} onChange={setValue} minHeight="180px" />
+        </FieldContent>
+        <Button className="w-full" variant="outline" onClick={() => toast.success('Journal saved')}>
+          Save Journal
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
 function VisualPage() {
   const [scheme, setScheme] = useState('default')
   const bg = scheme === 'glass' ? 'rgb(248 250 252 / 0.5)' : 'var(--color-background)'
@@ -4873,6 +4899,7 @@ function VisualPage() {
           <NotificationFeedCard />
           <KycProgress />
           <MonthlyStatsCard />
+          <TradeJournal />
         </div>
       </div>
     </div>
