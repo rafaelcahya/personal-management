@@ -41,7 +41,7 @@ const trackBarClass = 'relative w-full grow overflow-hidden rounded-full bg-inpu
 const rangeVariants = cva('absolute h-full', {
   variants: {
     variant: {
-      default: 'bg-violet-600',
+      default: 'bg-primary',
       error: 'bg-destructive',
       disabled: 'bg-muted-foreground/40',
     },
@@ -52,16 +52,16 @@ const rangeVariants = cva('absolute h-full', {
 const thumbVariants = cva(
   [
     'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 size-4',
-    'block bg-white rounded-full border border-slate-200 shadow-sm',
+    'block bg-background rounded-full border border-border shadow-sm',
     'transition-[box-shadow,border-color] duration-150 outline-none',
   ],
   {
     variants: {
       variant: {
         default:
-          'border-slate-200 focus-visible:border-violet-500 focus-visible:ring-2 focus-visible:ring-violet-200',
+          'border-border focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20',
         error: 'border-destructive/50 focus-visible:ring-2 focus-visible:ring-destructive/20',
-        disabled: 'border-slate-100 shadow-none cursor-not-allowed opacity-60',
+        disabled: 'border-border/50 shadow-none cursor-not-allowed opacity-60',
       },
     },
     defaultVariants: { variant: 'default' },
@@ -70,9 +70,9 @@ const thumbVariants = cva(
 
 const thumbConnectClasses = (thumbConnect, variant) => {
   if (variant === 'disabled') return ''
-  const always = variant === 'error' ? 'border-destructive/70' : 'border-violet-500'
-  const hover = variant === 'error' ? 'hover:border-destructive' : 'hover:border-violet-500'
-  const active = variant === 'error' ? 'active:border-destructive' : 'active:border-violet-500'
+  const always = variant === 'error' ? 'border-destructive/70' : 'border-primary'
+  const hover = variant === 'error' ? 'hover:border-destructive' : 'hover:border-primary'
+  const active = variant === 'error' ? 'active:border-destructive' : 'active:border-primary'
   if (thumbConnect === 'both') return always
   if (thumbConnect === 'hover') return hover
   if (thumbConnect === 'drag') return active
@@ -86,10 +86,10 @@ const InlineTooltip = ({ content }) => (
     className="absolute bottom-full left-1/2 mb-2.5 -translate-x-1/2 pointer-events-none"
     role="tooltip"
   >
-    <div className="rounded-xl bg-white border border-slate-200 shadow-sm px-2.5 py-1 text-xs font-medium text-slate-700 whitespace-nowrap">
+    <div className="rounded-xl bg-popover border border-border shadow-sm px-2.5 py-1 text-xs font-medium text-popover-foreground whitespace-nowrap">
       {content}
     </div>
-    <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-slate-200" />
+    <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-border" />
   </div>
 )
 

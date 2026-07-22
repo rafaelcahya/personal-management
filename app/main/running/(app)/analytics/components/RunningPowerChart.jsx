@@ -92,17 +92,17 @@ export default function RunningPowerChart({ activities }) {
       </div>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={['auto', 'auto']}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             unit=" W"
@@ -136,9 +136,9 @@ export default function RunningPowerChart({ activities }) {
           <Line
             type="monotone"
             dataKey="avg_watts"
-            stroke="#c4b5fd"
+            stroke="var(--color-violet-300)"
             strokeWidth={0}
-            dot={{ fill: '#c4b5fd', r: 3, strokeWidth: 0 }}
+            dot={{ fill: 'var(--color-violet-300)', r: 3, strokeWidth: 0 }}
             name="Power"
             connectNulls={false}
           />
@@ -154,7 +154,7 @@ export default function RunningPowerChart({ activities }) {
           <Line
             type="monotone"
             dataKey="rollingAvg"
-            stroke="#7c3aed"
+            stroke="var(--color-violet-600)"
             strokeWidth={2}
             dot={false}
             name={`${ROLLING_WINDOW}-activity avg`}

@@ -31,7 +31,7 @@ import {
 } from '@/components/base/Select/Select'
 import Button from '@/components/base/Button/Button'
 import Pagination from '@/components/base/Pagination/Pagination'
-import { fetchActivities, getUserProfile, getHrZones } from '@/lib/api/running'
+import { fetchActivities, fetchActivityTypes, getUserProfile, getHrZones } from '@/lib/api/running'
 import { fmtDistance, fmtPace, fmtDuration } from '../dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
 import TableSkeletonRows from '@/app/main/components/TableSkeletonRows'
@@ -290,8 +290,10 @@ function ActivitiesInner() {
   }, [searchInput])
 
   useEffect(() => {
-    setKnownTypes([])
-  }, [range, sort, search])
+    fetchActivityTypes()
+      .then((types) => setKnownTypes(types ?? []))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -310,13 +312,6 @@ function ActivitiesInner() {
         if (!cancelled) {
           setActivities(res.data ?? [])
           setTotal(res.total ?? 0)
-          setKnownTypes((prev) => {
-            const all = new Set(prev)
-            ;(res.data ?? []).forEach((a) => {
-              if (a.activity_type) all.add(a.activity_type)
-            })
-            return [...all]
-          })
         }
       } catch (err) {
         if (!cancelled) {

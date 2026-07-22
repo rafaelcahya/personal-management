@@ -42,13 +42,21 @@ const STATUS_TEXT = {
 }
 
 const ICON_CONFIG = {
-  image: { Icon: FileImage, color: 'text-violet-500', bg: 'bg-violet-50' },
-  pdf: { Icon: FileText, color: 'text-red-500', bg: 'bg-red-50' },
-  doc: { Icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50' },
-  sheet: { Icon: FileText, color: 'text-green-500', bg: 'bg-green-50' },
-  video: { Icon: FileVideo, color: 'text-orange-500', bg: 'bg-orange-50' },
-  audio: { Icon: FileAudio, color: 'text-pink-500', bg: 'bg-pink-50' },
-  file: { Icon: File, color: 'text-gray-400', bg: 'bg-gray-100' },
+  image: { Icon: FileImage, color: 'text-primary', bg: 'bg-primary/10' },
+  pdf: { Icon: FileText, color: 'text-destructive', bg: 'bg-destructive/10' },
+  doc: { Icon: FileText, color: 'text-info', bg: 'bg-info/10' },
+  sheet: { Icon: FileText, color: 'text-success', bg: 'bg-success-subtle' },
+  video: {
+    Icon: FileVideo,
+    color: 'text-orange-500 dark:text-orange-400',
+    bg: 'bg-orange-50 dark:bg-orange-950',
+  },
+  audio: {
+    Icon: FileAudio,
+    color: 'text-pink-500 dark:text-pink-400',
+    bg: 'bg-pink-50 dark:bg-pink-950',
+  },
+  file: { Icon: File, color: 'text-muted-foreground', bg: 'bg-muted' },
 }
 
 // ─── AttachmentIcon ────────────────────────────────────────────────────────────
@@ -99,7 +107,7 @@ export function AttachmentActions({
           type="button"
           onClick={onRetry}
           title="Retry upload"
-          className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+          className="p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
         >
           <RefreshCw className="size-3.5" />
         </button>
@@ -109,7 +117,7 @@ export function AttachmentActions({
           href={url}
           download
           title="Download"
-          className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+          className="p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
         >
           <Download className="size-3.5" />
         </a>
@@ -119,7 +127,7 @@ export function AttachmentActions({
           type="button"
           onClick={onTogglePreview}
           title={isPreviewOpen ? 'Hide preview' : 'Show preview'}
-          className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+          className="p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
         >
           <ChevronDown
             className={clsx(
@@ -134,7 +142,7 @@ export function AttachmentActions({
           type="button"
           onClick={onRemove}
           title="Remove"
-          className="p-1.5 rounded hover:bg-red-50 transition-colors text-gray-400 hover:text-red-500"
+          className="p-1.5 rounded hover:bg-destructive/10 transition-colors text-muted-foreground hover:text-destructive"
         >
           <Trash2 className="size-3.5" />
         </button>
@@ -147,9 +155,9 @@ export function AttachmentActions({
 
 export function AttachmentProgress({ progress = 0 }) {
   return (
-    <div className="mt-2 h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+    <div className="mt-2 h-1 w-full bg-muted rounded-full overflow-hidden">
       <div
-        className="h-full bg-violet-500 rounded-full transition-all duration-300"
+        className="h-full bg-primary rounded-full transition-all duration-300"
         style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
       />
     </div>
@@ -162,7 +170,7 @@ export function AttachmentPreview({ file }) {
   const url = file?.url ?? null
   if (!url) return null
   return (
-    <div className="mt-2 rounded-md overflow-hidden border border-gray-100 bg-gray-50">
+    <div className="mt-2 rounded-md overflow-hidden border border-border bg-muted/50">
       <img src={url} alt={file?.name ?? ''} className="w-full max-h-48 object-contain" />
     </div>
   )
@@ -172,9 +180,9 @@ export function AttachmentPreview({ file }) {
 
 export function AttachmentError({ title = 'Upload failed', description }) {
   return (
-    <div className="mt-2 rounded-md bg-red-50 border border-red-100 px-3 py-2">
-      <p className="text-xs font-medium text-red-700">{title}</p>
-      {description && <p className="text-xs text-red-500 mt-0.5">{description}</p>}
+    <div className="mt-2 rounded-md bg-destructive-subtle border border-destructive/20 px-3 py-2">
+      <p className="text-xs font-medium text-destructive">{title}</p>
+      {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
     </div>
   )
 }
@@ -183,7 +191,7 @@ export function AttachmentError({ title = 'Upload failed', description }) {
 
 const DEFAULT_DROPZONE_LABEL = (
   <>
-    Drop files here or <span className="text-violet-600">browse</span>
+    Drop files here or <span className="text-primary">browse</span>
   </>
 )
 
@@ -203,7 +211,7 @@ export function AttachmentTrigger({
       <button
         type="button"
         onClick={onClick}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 rounded-md border border-gray-200 hover:border-violet-300 hover:text-violet-600 hover:bg-violet-50 transition-colors w-fit"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground rounded-md border border-border hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-colors w-fit"
       >
         <Paperclip className="size-3.5" />
         {label ?? DEFAULT_BUTTON_LABEL}
@@ -217,13 +225,13 @@ export function AttachmentTrigger({
       onClick={onClick}
       onDrop={onDrop}
       onDragOver={onDragOver}
-      className="w-full flex flex-col items-center justify-center gap-2 px-4 py-6 rounded-lg border-2 border-dashed border-gray-200 hover:border-violet-300 hover:bg-violet-50/40 transition-colors cursor-pointer text-gray-400 hover:text-violet-500"
+      className="w-full flex flex-col items-center justify-center gap-2 px-4 py-6 rounded-lg border-2 border-dashed border-border hover:border-primary/40 hover:bg-primary/5 transition-colors cursor-pointer text-muted-foreground hover:text-primary"
     >
       <Upload className="size-5" />
       <div className="text-center">
         <p className="text-sm font-medium">{label ?? DEFAULT_DROPZONE_LABEL}</p>
         {(accept || sizeHint) && (
-          <p className="text-xs mt-0.5 text-gray-400">
+          <p className="text-xs mt-0.5 text-muted-foreground">
             {[accept, sizeHint].filter(Boolean).join(' · ')}
           </p>
         )}

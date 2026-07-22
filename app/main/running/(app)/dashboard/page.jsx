@@ -19,7 +19,7 @@ import {
   RefreshCw,
   CheckCircle2,
 } from 'lucide-react'
-import { getDashboard, syncStrava, fetchUpcomingRaces } from '@/lib/api/running'
+import { getDashboard, syncStrava, fetchUpcomingRaces, fetchActivityTypes } from '@/lib/api/running'
 import WeeklyStats from './components/WeeklyStats'
 import TrainingLoad from './components/TrainingLoad'
 import ActivitySection from './components/ActivitySection'
@@ -101,12 +101,6 @@ export default function RunningDashboardPage() {
       const data = await getDashboard(type)
       setDashboardData(data)
       setLastSyncAt(data.last_sync_at ?? null)
-      if (!isFilter) {
-        const types = [
-          ...new Set((data.recent_activities ?? []).map((a) => a.activity_type).filter(Boolean)),
-        ]
-        setAvailableTypes(types)
-      }
       return data
     } catch (err) {
       if (err.message === 'UNAUTHORIZED') {
@@ -137,6 +131,12 @@ export default function RunningDashboardPage() {
       setSyncing(false)
     }
   }
+
+  useEffect(() => {
+    fetchActivityTypes()
+      .then((types) => setAvailableTypes(types ?? []))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     async function init() {

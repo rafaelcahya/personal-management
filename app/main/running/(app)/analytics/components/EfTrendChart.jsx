@@ -49,17 +49,17 @@ export default function EfTrendChart({ activities }) {
       </p>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={data} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={['auto', 'auto']}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => v.toFixed(3)}
@@ -91,7 +91,7 @@ export default function EfTrendChart({ activities }) {
           <Line
             type="monotone"
             dataKey="ef"
-            stroke="#c4b5fd"
+            stroke="var(--color-violet-300)"
             strokeWidth={0}
             dot={(props) => {
               const { cx, cy, index, payload } = props
@@ -104,7 +104,7 @@ export default function EfTrendChart({ activities }) {
           <Line
             type="monotone"
             dataKey="rollingAvg"
-            stroke="#7c3aed"
+            stroke="var(--color-violet-600)"
             strokeWidth={2}
             strokeDasharray="4 2"
             dot={false}

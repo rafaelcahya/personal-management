@@ -90,7 +90,7 @@ export function SheetClose({ children, asChild = false, className, ...props }) {
       type="button"
       onClick={() => setOpen(false)}
       className={cn(
-        'inline-flex items-center justify-center rounded text-gray-400 hover:text-gray-600 transition-colors',
+        'inline-flex items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors',
         className
       )}
       {...props}
@@ -207,11 +207,14 @@ export function SheetContent({
     if (!open) setMounted(false)
   }
 
-  const panelClass = cn('flex flex-col shadow-xl border-slate-200', innerBorderMap[side], className)
+  const panelClass = cn(
+    'flex flex-col shadow-xl border-border bg-card',
+    innerBorderMap[side],
+    className
+  )
   const panelBaseStyle = {
     ...getSideStyle(side, size),
     overflowY: size === 'auto' ? 'hidden' : 'auto',
-    backgroundColor: 'white',
   }
 
   // animation='none': simple instant show/hide
@@ -271,19 +274,22 @@ export function SheetHeader({ className, ...props }) {
 
 export function SheetTitle({ className, ...props }) {
   return (
-    <h2 className={cn('text-lg font-semibold text-gray-900 leading-none', className)} {...props} />
+    <h2
+      className={cn('text-lg font-semibold text-card-foreground leading-none', className)}
+      {...props}
+    />
   )
 }
 
 export function SheetDescription({ className, ...props }) {
-  return <p className={cn('text-sm text-gray-500', className)} {...props} />
+  return <p className={cn('text-sm text-muted-foreground', className)} {...props} />
 }
 
 export function SheetFooter({ className, ...props }) {
   return (
     <div
       className={cn(
-        'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end px-6 pb-6 pt-4 mt-auto border-t border-gray-100',
+        'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end px-6 pb-6 pt-4 mt-auto border-t border-border',
         className
       )}
       {...props}

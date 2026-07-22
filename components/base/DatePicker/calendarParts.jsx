@@ -13,12 +13,12 @@ export const triggerVariants = cva(
     'text-sm font-medium cursor-pointer',
     'transition-[color,box-shadow,border-color] duration-150',
     'outline-none',
-    'focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600',
+    'focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-ring',
   ],
   {
     variants: {
       variant: {
-        default: 'border-input hover:border-slate-300',
+        default: 'border-input hover:border-input/80',
         error:
           'border-destructive focus-visible:ring-destructive/20 focus-visible:border-destructive',
         disabled: 'border-input opacity-50 cursor-not-allowed pointer-events-none bg-muted',
@@ -68,7 +68,7 @@ export const MONTH_SHORT = [
 ]
 
 // ─── MonthGrid ─────────────────────────────────────────────────────────────────
-// 3×4 grid of months. selectedMonth = violet-600, highlightMonth = violet-50.
+// 3×4 grid of months. selectedMonth = primary, highlightMonth = accent.
 
 export function MonthGrid({ selectedMonth, highlightMonth, onSelect, isMonthDisabled }) {
   return (
@@ -83,10 +83,10 @@ export function MonthGrid({ selectedMonth, highlightMonth, onSelect, isMonthDisa
             className={clsx(
               'rounded px-3 py-2 text-sm font-medium transition-colors text-center',
               selectedMonth === i
-                ? 'bg-violet-600 text-white'
+                ? 'bg-primary text-primary-foreground'
                 : highlightMonth === i
-                  ? 'bg-violet-50 text-violet-700'
-                  : 'text-gray-700 hover:bg-gray-100',
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-foreground hover:bg-accent',
               disabled && 'opacity-30 pointer-events-none'
             )}
           >
@@ -126,10 +126,10 @@ export function YearList({ selectedYear, onSelect, fromYear, toYear }) {
           className={clsx(
             'w-full px-3 py-1.5 text-sm font-medium rounded text-center transition-colors',
             y === selectedYear
-              ? 'bg-violet-600 text-white'
+              ? 'bg-primary text-primary-foreground'
               : y === currentYear
-                ? 'bg-violet-50 text-violet-700'
-                : 'text-gray-700 hover:bg-gray-100'
+                ? 'bg-accent text-accent-foreground'
+                : 'text-foreground hover:bg-accent'
           )}
         >
           {y}

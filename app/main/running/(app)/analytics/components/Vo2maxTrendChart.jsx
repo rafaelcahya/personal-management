@@ -49,17 +49,17 @@ export default function Vo2maxTrendChart({ activities }) {
       </p>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={data} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={['auto', 'auto']}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => v.toFixed(1)}
@@ -92,16 +92,16 @@ export default function Vo2maxTrendChart({ activities }) {
           <Line
             type="monotone"
             dataKey="vo2max"
-            stroke="#c4b5fd"
+            stroke="var(--color-violet-300)"
             strokeWidth={0}
-            dot={{ fill: '#c4b5fd', r: 3, strokeWidth: 0 }}
+            dot={{ fill: 'var(--color-violet-300)', r: 3, strokeWidth: 0 }}
             name="VO₂max"
             connectNulls={false}
           />
           <Line
             type="monotone"
             dataKey="rollingAvg"
-            stroke="#7c3aed"
+            stroke="var(--color-violet-600)"
             strokeWidth={2}
             dot={false}
             name="30d avg"

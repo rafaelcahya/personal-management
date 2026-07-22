@@ -15,8 +15,8 @@ export function TableHeader({ children, className, sticky, bordered, ...props })
   return (
     <thead
       className={cn(
-        sticky && 'sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e7eb]',
-        bordered && 'border-b border-gray-200',
+        sticky && 'sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]',
+        bordered && 'border-b border-border',
         className
       )}
       {...props}
@@ -28,7 +28,7 @@ export function TableHeader({ children, className, sticky, bordered, ...props })
 
 export function TableBody({ children, className, divider = true, ...props }) {
   return (
-    <tbody className={cn(divider && 'divide-y divide-gray-100', className)} {...props}>
+    <tbody className={cn(divider && 'divide-y divide-border', className)} {...props}>
       {children}
     </tbody>
   )
@@ -36,7 +36,7 @@ export function TableBody({ children, className, divider = true, ...props }) {
 
 export function TableFooter({ children, className, ...props }) {
   return (
-    <tfoot className={cn('border-t border-gray-200 bg-gray-50 font-medium', className)} {...props}>
+    <tfoot className={cn('border-t border-border bg-muted font-medium', className)} {...props}>
       {children}
     </tfoot>
   )
@@ -47,9 +47,9 @@ export function TableRow({ children, className, selected, clickable, ...props })
     <tr
       className={cn(
         'transition-colors',
-        selected && 'bg-violet-50',
-        clickable && 'cursor-pointer hover:bg-gray-50',
-        !selected && !clickable && 'hover:bg-gray-50',
+        selected && 'bg-primary/5',
+        clickable && 'cursor-pointer hover:bg-muted/50',
+        !selected && !clickable && 'hover:bg-muted/50',
         className
       )}
       {...props}
@@ -64,7 +64,7 @@ export function TableHead({ children, className, align = 'left', width, ...props
     <th
       style={width ? { width } : undefined}
       className={cn(
-        'h-10 px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-gray-500 whitespace-nowrap',
+        'h-10 px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-muted-foreground whitespace-nowrap',
         align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : 'text-left',
         className
       )}
@@ -79,7 +79,7 @@ export function TableCell({ children, className, align = 'left', ...props }) {
   return (
     <td
       className={cn(
-        'px-4 py-3 text-sm text-gray-700 align-middle',
+        'px-4 py-3 text-sm text-foreground align-middle',
         align === 'right' && 'text-right',
         align === 'center' && 'text-center',
         className
@@ -93,7 +93,7 @@ export function TableCell({ children, className, align = 'left', ...props }) {
 
 export function TableCaption({ children, className, ...props }) {
   return (
-    <caption className={cn('my-2 text-xs text-gray-400 text-center', className)} {...props}>
+    <caption className={cn('my-2 text-xs text-muted-foreground text-center', className)} {...props}>
       {children}
     </caption>
   )

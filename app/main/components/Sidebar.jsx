@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Button from '@/components/base/Button/Button'
 import { SidebarHeader, SidebarContent, SidebarFooter } from '@/components/base/Sidebar/Sidebar.jsx'
 import Link from 'next/link'
@@ -133,11 +133,13 @@ function NavItem({ item, collapsed, onClick }) {
         'flex items-center gap-3 rounded-lg text-sm font-medium transition-colors',
         collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2',
         isActive
-          ? 'bg-violet-50 text-violet-700'
-          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+          ? 'bg-secondary text-primary'
+          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
       )}
     >
-      <Icon className={cn('size-4 shrink-0', isActive ? 'text-violet-600' : 'text-slate-400')} />
+      <Icon
+        className={cn('size-4 shrink-0', isActive ? 'text-primary' : 'text-muted-foreground')}
+      />
       {!collapsed && <span className="truncate">{item.name}</span>}
     </Link>
   )
@@ -171,11 +173,13 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
         className={cn(
           'justify-center px-2 py-2.5 rounded-lg',
           isActive
-            ? 'bg-violet-50 text-violet-700'
-            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+            ? 'bg-secondary text-primary'
+            : 'text-muted-foreground hover:text-foreground hover:bg-accent'
         )}
       >
-        <Icon className={cn('size-4 shrink-0', isActive ? 'text-violet-600' : 'text-slate-400')} />
+        <Icon
+          className={cn('size-4 shrink-0', isActive ? 'text-primary' : 'text-muted-foreground')}
+        />
       </Button>
     )
     return (
@@ -198,11 +202,13 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
         className={cn(
           'justify-start gap-3 rounded-lg px-3 py-2',
           isActive
-            ? 'bg-violet-50 text-violet-700'
-            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+            ? 'bg-secondary text-primary'
+            : 'text-muted-foreground hover:text-foreground hover:bg-accent'
         )}
       >
-        <Icon className={cn('size-4 shrink-0', isActive ? 'text-violet-600' : 'text-slate-400')} />
+        <Icon
+          className={cn('size-4 shrink-0', isActive ? 'text-primary' : 'text-muted-foreground')}
+        />
         <span className="truncate flex-1 text-left">{label}</span>
         <ChevronDown
           className={cn(
@@ -212,7 +218,7 @@ function NavGroup({ id, label, icon: Icon, basePath, subitems, collapsed, onItem
         />
       </Button>
       {open && (
-        <div className="ml-4 pl-3 border-l border-slate-100 mt-0.5 space-y-0.5">
+        <div className="ml-4 pl-3 border-l border-border mt-0.5 space-y-0.5">
           {subitems.map((item) => (
             <NavItem key={item.href} item={item} collapsed={false} onClick={onItemClick} />
           ))}
@@ -226,7 +232,7 @@ function SidebarNav({ collapsed, onNavClick }) {
   return (
     <nav className="px-3 py-2 space-y-0.5">
       {!collapsed && (
-        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3 pt-3 pb-1.5">
+        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 pt-3 pb-1.5">
           Inventory
         </p>
       )}
@@ -235,10 +241,10 @@ function SidebarNav({ collapsed, onNavClick }) {
         <NavItem key={item.href} item={item} collapsed={collapsed} onClick={onNavClick} />
       ))}
 
-      <div className="border-t border-slate-100 pt-3" />
+      <div className="border-t border-border pt-3" />
 
       {!collapsed && (
-        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3 pb-1.5">
+        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-1.5">
           Trading
         </p>
       )}
@@ -260,10 +266,10 @@ function SidebarNav({ collapsed, onNavClick }) {
         onClick={onNavClick}
       />
 
-      <div className="border-t border-slate-100 pt-3" />
+      <div className="border-t border-border pt-3" />
 
       {!collapsed && (
-        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3 pb-1.5">
+        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-1.5">
           Running
         </p>
       )}
@@ -310,13 +316,13 @@ function UserSection({ collapsed, user, mobile = false }) {
   return (
     <div className="relative" ref={ref}>
       {open && (
-        <div className="absolute bottom-full left-0 right-0 mb-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-10">
+        <div className="absolute bottom-full left-0 right-0 mb-1 bg-popover border border-border rounded-xl shadow-lg overflow-hidden z-10">
           {!collapsed && (
-            <div className="px-3 py-2.5 border-b border-slate-100">
-              <p className="text-sm font-medium text-slate-700 truncate text-left w-fit">{name}</p>
+            <div className="px-3 py-2.5 border-b border-border">
+              <p className="text-sm font-medium text-foreground truncate text-left w-fit">{name}</p>
               <p
                 id={mobile ? 'userMenuEmail_mobile' : 'userMenuEmail_landingPage'}
-                className="text-xs text-slate-400 truncate text-left w-fit"
+                className="text-xs text-muted-foreground truncate text-left w-fit"
               >
                 {email}
               </p>
@@ -329,12 +335,12 @@ function UserSection({ collapsed, user, mobile = false }) {
             onClick={handleLogout}
             disabled={loading}
             aria-label="Sign out from application"
-            className="justify-start gap-2.5 px-3 py-5 text-slate-600 hover:bg-slate-50"
+            className="justify-start gap-2.5 px-3 py-5 text-foreground hover:bg-accent"
           >
             {loading ? (
-              <Loader2 className="size-4 animate-spin text-slate-400 shrink-0" />
+              <Loader2 className="size-4 animate-spin text-muted-foreground shrink-0" />
             ) : (
-              <LogOut className="size-4 text-slate-400 shrink-0" />
+              <LogOut className="size-4 text-muted-foreground shrink-0" />
             )}
             {loading ? 'Signing out...' : 'Sign out'}
           </Button>
@@ -347,17 +353,17 @@ function UserSection({ collapsed, user, mobile = false }) {
         aria-label="User menu"
         onClick={() => setOpen(!open)}
         className={cn(
-          'justify-start gap-2.5 p-0 hover:bg-white active:bg-white',
+          'justify-start gap-2.5 p-0 hover:bg-transparent active:bg-transparent',
           collapsed && 'justify-center'
         )}
       >
-        <div className="size-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0 text-violet-700 font-semibold text-sm">
+        <div className="size-8 rounded-full bg-secondary flex items-center justify-center shrink-0 text-primary font-semibold text-sm">
           {initials}
         </div>
         {!collapsed && (
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-700 truncate text-left w-fit">{name}</p>
-            <p className="text-xs text-slate-400 truncate text-left w-fit">{email}</p>
+            <p className="text-sm font-medium text-foreground truncate text-left w-fit">{name}</p>
+            <p className="text-xs text-muted-foreground truncate text-left w-fit">{email}</p>
           </div>
         )}
       </Button>
@@ -440,19 +446,19 @@ export default function Sidebar({ user }) {
       {/* ── Desktop sidebar ── */}
       <aside
         className={cn(
-          'hidden md:flex flex-col h-screen bg-white border-r border-slate-200 shrink-0 relative transition-[width] duration-300 ease-in-out',
+          'hidden md:flex flex-col h-screen bg-card border-r border-border shrink-0 relative transition-[width] duration-300 ease-in-out',
           collapsed ? 'w-[4.5rem]' : 'w-64'
         )}
       >
         {/* Logo */}
         <SidebarHeader
-          className={cn('gap-3 px-4 py-4 border-slate-100', collapsed && 'justify-center px-0')}
+          className={cn('gap-3 px-4 py-4 border-border', collapsed && 'justify-center px-0')}
         >
-          <div className="size-8 bg-violet-600 rounded-lg flex items-center justify-center shrink-0">
-            <Package2 className="size-4 text-white" />
+          <div className="size-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
+            <Package2 className="size-4 text-primary-foreground" />
           </div>
           {!collapsed && (
-            <span className="font-semibold text-slate-800 text-sm leading-tight">
+            <span className="font-semibold text-foreground text-sm leading-tight">
               Personal Management
             </span>
           )}
@@ -463,7 +469,7 @@ export default function Sidebar({ user }) {
         </SidebarContent>
         <SidebarFooter>
           {!collapsed && (
-            <p id="appVersion_sidebar" className="text-[10px] text-slate-400 pb-2">
+            <p id="appVersion_sidebar" className="text-[10px] text-muted-foreground pb-2 mt-2">
               v{packageJson.version}
             </p>
           )}
@@ -478,33 +484,33 @@ export default function Sidebar({ user }) {
           onClick={toggleCollapse}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="absolute -right-3 top-[4.25rem] rounded-full bg-white border border-slate-200 shadow-sm hover:bg-slate-50 z-10"
+          className="absolute -right-3 top-[4.25rem] rounded-full bg-card border border-border shadow-sm hover:bg-accent z-10"
         >
           {collapsed ? (
-            <PanelLeftOpen className="size-3 text-slate-500" />
+            <PanelLeftOpen className="size-3 text-muted-foreground" />
           ) : (
-            <PanelLeftClose className="size-3 text-slate-500" />
+            <PanelLeftClose className="size-3 text-muted-foreground" />
           )}
         </Button>
       </aside>
 
       {/* ── Mobile top bar ── */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-white border-b border-slate-200 flex items-center px-4 gap-3">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-card border-b border-border flex items-center px-4 gap-3">
         <Button
           id="mobileMenuTrigger"
           variant="ghost"
           size="icon-sm"
           onClick={() => setMobileOpen(true)}
           aria-label="Open navigation menu"
-          className="rounded-lg hover:bg-slate-100"
+          className="rounded-lg hover:bg-accent"
         >
-          <Menu className="size-5 text-slate-600" />
+          <Menu className="size-5 text-foreground" />
         </Button>
         <div className="flex items-center gap-2">
-          <div className="size-6 bg-violet-600 rounded-md flex items-center justify-center">
-            <Package2 className="size-3.5 text-white" />
+          <div className="size-6 bg-primary rounded-md flex items-center justify-center">
+            <Package2 className="size-3.5 text-primary-foreground" />
           </div>
-          <span className="font-semibold text-slate-800 text-sm">Personal Management</span>
+          <span className="font-semibold text-foreground text-sm">Personal Management</span>
         </div>
       </div>
 
@@ -515,29 +521,32 @@ export default function Sidebar({ user }) {
             className="md:hidden fixed inset-0 z-40 bg-black/40"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col">
-            <SidebarHeader className="justify-between h-14 border-slate-100 gap-2 px-4">
+          <aside className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-64 bg-card border-r border-border flex flex-col">
+            <SidebarHeader className="justify-between h-14 border-border gap-2 px-4">
               <div className="flex items-center gap-2">
-                <div className="size-7 bg-violet-600 rounded-lg flex items-center justify-center">
-                  <Package2 className="size-4 text-white" />
+                <div className="size-7 bg-primary rounded-lg flex items-center justify-center">
+                  <Package2 className="size-4 text-primary-foreground" />
                 </div>
-                <span className="font-semibold text-slate-800 text-sm">Personal Management</span>
+                <span className="font-semibold text-foreground text-sm">Personal Management</span>
               </div>
               <Button
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close navigation menu"
-                className="rounded-lg hover:bg-slate-100"
+                className="rounded-lg hover:bg-accent"
               >
-                <X className="size-4 text-slate-500" />
+                <X className="size-4 text-muted-foreground" />
               </Button>
             </SidebarHeader>
             <SidebarContent className="py-0">
               <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
             </SidebarContent>
             <SidebarFooter>
-              <p id="appVersion_mobileDrawer" className="text-[10px] text-slate-400 pb-2">
+              <p
+                id="appVersion_mobileDrawer"
+                className="text-[10px] text-muted-foreground pb-2 mt-2"
+              >
                 v{packageJson.version}
               </p>
               <UserSection collapsed={false} user={user} mobile={true} />

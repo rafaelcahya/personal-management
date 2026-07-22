@@ -23,7 +23,7 @@ import Card, {
 import { fetchSessionProfile } from '@/lib/api/running'
 
 const MORNING_COLOR = '#f59e0b'
-const EVENING_COLOR = '#8b5cf6'
+const EVENING_COLOR = 'var(--color-violet-500)'
 
 function fmtPace(sec) {
   if (!sec) return '—'
@@ -122,21 +122,21 @@ function TrainingLoadChart({ pagi, sore }) {
   return (
     <ResponsiveContainer width="100%" height={160}>
       <BarChart data={chartData} barCategoryGap="30%" barGap={4}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
         <XAxis
           dataKey="name"
-          tick={{ fontSize: 10, fill: '#94a3b8' }}
+          tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fontSize: 10, fill: '#94a3b8' }}
+          tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
           axisLine={false}
           tickLine={false}
           width={32}
         />
         <Tooltip
-          contentStyle={{ fontSize: 11, borderRadius: 6, border: '1px solid #e2e8f0' }}
+          contentStyle={{ fontSize: 11, borderRadius: 6, border: '1px solid var(--color-border)' }}
           formatter={(value, name, props) => {
             const label =
               name === 'Morning' ? props.payload.morningLabel : props.payload.eveningLabel

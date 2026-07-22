@@ -132,16 +132,20 @@ export default function PerformanceManagementChart() {
             data={data.series.map((d) => ({ ...d, label: fmtDate(d.date) }))}
             margin={{ top: 4, right: 8, left: -4, bottom: 0 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 10, fill: '#94a3b8' }}
+              tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
               tickLine={false}
               axisLine={false}
               interval="preserveStartEnd"
             />
-            <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} />
-            <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" />
+            <YAxis
+              tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+              tickLine={false}
+              axisLine={false}
+            />
+            <ReferenceLine y={0} stroke="var(--color-muted-foreground)" strokeDasharray="3 3" />
             <Tooltip
               content={({ active, payload, label }) => {
                 if (!active || !payload?.length) return null
@@ -165,7 +169,7 @@ export default function PerformanceManagementChart() {
             <Line
               type="monotone"
               dataKey="chronic_load_28d"
-              stroke="#8b5cf6"
+              stroke="var(--color-violet-500)"
               strokeWidth={2}
               dot={false}
               name="Fitness (CTL)"

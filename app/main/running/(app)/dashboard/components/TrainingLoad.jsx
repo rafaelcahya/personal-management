@@ -361,28 +361,6 @@ function StatCell({ label, value, sub, tip, valueClassName }) {
   )
 }
 
-function EffortSplitBar({ effort_split }) {
-  if (!effort_split || effort_split.easy_pct === null) return null
-  const { easy_pct, hard_pct, easy_load, hard_load } = effort_split
-  return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between text-xs text-slate-400">
-        <span>
-          Easy <span className="font-medium text-slate-600">{easy_pct}%</span> · {easy_load} pts
-        </span>
-        <span>
-          Hard <span className="font-medium text-slate-600">{hard_pct}%</span> · {hard_load} pts
-        </span>
-      </div>
-      <div className="flex h-1.5 rounded-full overflow-hidden bg-slate-100">
-        <div className="bg-green-400 transition-all" style={{ width: `${easy_pct}%` }} />
-        <div className="bg-red-400 transition-all" style={{ width: `${hard_pct}%` }} />
-      </div>
-      <p className="text-xs text-slate-400">Recommended: 80% easy · 20% hard</p>
-    </div>
-  )
-}
-
 function computeWeeksElapsed() {
   const now = new Date()
   const yearStart = new Date(now.getFullYear(), 0, 1)
@@ -406,7 +384,6 @@ export default function TrainingLoad({ data, weeklyStats }) {
     current_week_load,
     prev_week_load,
     ramp_pct,
-    effort_split,
     training_status,
     ytd_stats,
   } = data
@@ -497,9 +474,6 @@ export default function TrainingLoad({ data, weeklyStats }) {
               valueClassName={tsbTier?.color}
             />
           </div>
-
-          {/* Easy vs hard effort split */}
-          <EffortSplitBar effort_split={effort_split} />
 
           <div className="border-t border-slate-100" />
 

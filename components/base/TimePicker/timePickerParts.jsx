@@ -56,7 +56,7 @@ export function TimeScrollColumn({ label, options, value, onChange }) {
 
   return (
     <div className="flex flex-col items-center px-1">
-      <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide text-center pb-1.5 w-full">
+      <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide text-center pb-1.5 w-full">
         {label}
       </div>
       <div ref={listRef} className="overflow-y-auto h-44 w-12">
@@ -68,7 +68,9 @@ export function TimeScrollColumn({ label, options, value, onChange }) {
             onClick={() => onChange(opt)}
             className={clsx(
               'w-full py-1.5 text-sm font-medium rounded text-center transition-colors',
-              opt === value ? 'bg-violet-600 text-white' : 'text-gray-700 hover:bg-gray-100'
+              opt === value
+                ? 'bg-primary text-primary-foreground'
+                : 'text-foreground hover:bg-accent'
             )}
           >
             {String(opt).padStart(2, '0')}

@@ -26,11 +26,11 @@ export function Separator({
       <div
         role="separator"
         aria-orientation="horizontal"
-        className={cn('flex items-center gap-3 text-gray-200', className)}
+        className={cn('flex items-center gap-3 text-border', className)}
         {...props}
       >
         <div className={cn('flex-1', variantH[variant])} />
-        <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">{label}</span>
+        <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">{label}</span>
         <div className={cn('flex-1', variantH[variant])} />
       </div>
     )
@@ -41,7 +41,7 @@ export function Separator({
       role="separator"
       aria-orientation={orientation}
       className={cn(
-        'text-gray-200',
+        'text-border',
         isVertical ? variantV[variant] : cn('w-full', variantH[variant]),
         className
       )}

@@ -41,17 +41,17 @@ export default function RateHistoryChart({ data, avgBuyRate }) {
   return (
     <ResponsiveContainer width="100%" height={200}>
       <LineChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
         <XAxis
           dataKey="date"
-          tick={{ fontSize: 11, fill: '#94a3b8' }}
+          tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
           tickLine={false}
           axisLine={false}
           interval="preserveStartEnd"
         />
         <YAxis
           tickFormatter={formatYAxis}
-          tick={{ fontSize: 11, fill: '#94a3b8' }}
+          tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
           tickLine={false}
           axisLine={false}
           width={52}
@@ -68,7 +68,7 @@ export default function RateHistoryChart({ data, avgBuyRate }) {
         <Line
           type="monotone"
           dataKey="rate_idr"
-          stroke="#7c3aed"
+          stroke="var(--color-violet-600)"
           strokeWidth={2}
           dot={false}
           activeDot={{ r: 4 }}

@@ -25,7 +25,7 @@ function renderDot(props) {
       cx={cx}
       cy={cy}
       r={4}
-      fill={payload.isCurrentWeek ? '#7c3aed' : '#c4b5fd'}
+      fill={payload.isCurrentWeek ? 'var(--color-violet-600)' : 'var(--color-violet-300)'}
       stroke="white"
       strokeWidth={1.5}
     />
@@ -96,7 +96,7 @@ export default function WeeklyDistanceChart({ activities }) {
     xAxis: (
       <XAxis
         dataKey="label"
-        tick={{ fontSize: 10, fill: '#94a3b8' }}
+        tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
         tickLine={false}
         axisLine={false}
         interval={2}
@@ -105,14 +105,14 @@ export default function WeeklyDistanceChart({ activities }) {
     yAxis: (
       <YAxis
         domain={[0, Math.ceil(maxKm * 1.15)]}
-        tick={{ fontSize: 10, fill: '#94a3b8' }}
+        tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
         tickLine={false}
         axisLine={false}
         unit=" km"
         width={48}
       />
     ),
-    grid: <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />,
+    grid: <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />,
   }
 
   return (
@@ -164,12 +164,12 @@ export default function WeeklyDistanceChart({ activities }) {
             {axisProps.grid}
             {axisProps.xAxis}
             {axisProps.yAxis}
-            <Tooltip cursor={{ fill: '#f8fafc' }} content={tooltipContent} />
+            <Tooltip cursor={{ fill: 'var(--color-accent)' }} content={tooltipContent} />
             <Bar dataKey="distance_km" radius={[3, 3, 0, 0]}>
               {data.map((entry, i) => (
                 <Cell
                   key={i}
-                  fill={entry.isCurrentWeek ? '#7c3aed' : '#c4b5fd'}
+                  fill={entry.isCurrentWeek ? 'var(--color-violet-600)' : 'var(--color-violet-300)'}
                   aria-label={`${fmtWeekRange(entry.weekStart, entry.weekEnd)}: ${entry.distance_km} km`}
                 />
               ))}
@@ -184,10 +184,15 @@ export default function WeeklyDistanceChart({ activities }) {
             <Line
               type="monotone"
               dataKey="distance_km"
-              stroke="#c4b5fd"
+              stroke="var(--color-violet-300)"
               strokeWidth={2}
               dot={renderDot}
-              activeDot={{ r: 5, fill: '#7c3aed', stroke: 'white', strokeWidth: 1.5 }}
+              activeDot={{
+                r: 5,
+                fill: 'var(--color-violet-600)',
+                stroke: 'white',
+                strokeWidth: 1.5,
+              }}
             />
           </LineChart>
         )}

@@ -9,6 +9,7 @@ import {
   useRef,
   useId,
 } from 'react'
+import { createPortal } from 'react-dom'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -122,6 +123,7 @@ export function NavMenuList({ children, className }) {
 export function NavMenuItem({ children, id: idProp, className }) {
   const genId = useId()
   const id = idProp ?? genId
+  const containerRef = useRef(null)
   const { activeMenu, setActiveMenu, scheduleClose, cancelClose, trigger } = useNavMenu()
   const isOpen = activeMenu === id
 
@@ -137,8 +139,8 @@ export function NavMenuItem({ children, id: idProp, className }) {
       : {}
 
   return (
-    <NavMenuItemCtx.Provider value={{ id, isOpen, setActiveMenu }}>
-      <div className={cn('relative', className)} {...hoverHandlers}>
+    <NavMenuItemCtx.Provider value={{ id, isOpen, setActiveMenu, containerRef }}>
+      <div ref={containerRef} className={cn('relative', className)} {...hoverHandlers}>
         {children}
       </div>
     </NavMenuItemCtx.Provider>
@@ -222,24 +224,50 @@ const contentAlignMap = {
 }
 
 export function NavMenuContent({ children, columns = 1, align = 'start', className }) {
-  const { isOpen } = useNavMenuItem()
+  const { isOpen, containerRef } = useNavMenuItem()
   const { cancelClose, scheduleClose, trigger } = useNavMenu()
+  const contentRef = useRef(null)
+  const [style, setStyle] = useState({
+    position: 'fixed',
+    visibility: 'hidden',
+    top: 0,
+    left: 0,
+    zIndex: 9999,
+  })
+
+  useEffect(() => {
+    if (!isOpen) return
+    const reposition = () => {
+      if (!containerRef?.current || !contentRef?.current) return
+      const tr = containerRef.current.getBoundingClientRect()
+      const cr = contentRef.current.getBoundingClientRect()
+      const vw = window.innerWidth
+      let left
+      if (align === 'start') left = tr.left
+      else if (align === 'center') left = tr.left + tr.width / 2 - cr.width / 2
+      else left = tr.right - cr.width
+      left = Math.max(4, Math.min(left, vw - cr.width - 4))
+      setStyle({ position: 'fixed', top: tr.bottom + 8, left, visibility: 'visible', zIndex: 9999 })
+    }
+    reposition()
+    window.addEventListener('scroll', reposition, { passive: true, capture: true })
+    window.addEventListener('resize', reposition, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', reposition, { capture: true })
+      window.removeEventListener('resize', reposition)
+    }
+  }, [isOpen, align])
 
   const hoverHandlers =
-    trigger === 'hover'
-      ? {
-          onMouseEnter: cancelClose,
-          onMouseLeave: scheduleClose,
-        }
-      : {}
+    trigger === 'hover' ? { onMouseEnter: cancelClose, onMouseLeave: scheduleClose } : {}
 
   if (!isOpen) return null
 
-  return (
+  return createPortal(
     <div
+      ref={contentRef}
+      style={style}
       className={cn(
-        'absolute top-[calc(100%+8px)] z-50',
-        contentAlignMap[align] ?? 'left-0',
         contentWidthMap[columns] ?? 'min-w-48',
         'bg-popover rounded-xl border border-border shadow-lg',
         className
@@ -247,7 +275,8 @@ export function NavMenuContent({ children, columns = 1, align = 'start', classNa
       {...hoverHandlers}
     >
       <div className={cn('p-2', contentColsMap[columns])}>{children}</div>
-    </div>
+    </div>,
+    document.body
   )
 }
 

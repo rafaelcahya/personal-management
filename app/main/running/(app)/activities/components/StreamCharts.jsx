@@ -62,7 +62,7 @@ const SPEED_FLOOR_KMH = 5
 const CADENCE_FLOOR_SPM = 100
 
 const AXIS_PROPS = {
-  tick: { fontSize: 10, fill: '#94a3b8' },
+  tick: { fontSize: 10, fill: 'var(--color-muted-foreground)' },
   tickLine: false,
   axisLine: false,
 }
@@ -132,7 +132,7 @@ function CadenceTooltip({ active, payload, label }) {
 
 const GRID_PROPS = {
   strokeDasharray: '3 3',
-  stroke: '#f1f5f9',
+  stroke: 'var(--color-border)',
   vertical: false,
 }
 
@@ -154,7 +154,7 @@ const PACE_ZONE_DEFS = [
   { name: 'Z2', label: 'Endurance', loMult: 1.14, hiMult: 1.29, color: '#93c5fd' },
   { name: 'Z3', label: 'Tempo', loMult: 1.06, hiMult: 1.14, color: '#60a5fa' },
   { name: 'Z4', label: 'Threshold', loMult: 0.99, hiMult: 1.06, color: '#818cf8' },
-  { name: 'Z5', label: 'VO₂max', loMult: null, hiMult: 0.99, color: '#7c3aed' },
+  { name: 'Z5', label: 'VO₂max', loMult: null, hiMult: 0.99, color: 'var(--color-violet-600)' },
 ]
 
 function computePaceZones(thresholdPaceSec) {
@@ -249,8 +249,8 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
           >
             <defs>
               <linearGradient id="gradPace" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.25} />
-                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--color-violet-500)" stopOpacity={0.25} />
+                <stop offset="95%" stopColor="var(--color-violet-500)" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid {...GRID_PROPS} />
@@ -265,7 +265,7 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
             <Area
               type="monotone"
               dataKey={isSpeed ? 'speed_display' : 'pace_display'}
-              stroke="#8b5cf6"
+              stroke="var(--color-violet-500)"
               strokeWidth={1.5}
               fill="url(#gradPace)"
               baseValue={isSpeed ? 'dataMin' : 'dataMax'}
@@ -421,18 +421,18 @@ function ZoneTick({ x, y, payload, zones }) {
         textAnchor="end"
         fontSize={11}
         fontWeight={600}
-        fill="#475569"
+        fill="var(--color-foreground)"
         dy={hasRange || hasLabel ? -5 : 4}
       >
         {zone.name}
       </text>
       {hasRange && (
-        <text x={-6} textAnchor="end" fontSize={10} fill="#94a3b8" dy={7}>
+        <text x={-6} textAnchor="end" fontSize={10} fill="var(--color-muted-foreground)" dy={7}>
           {zone.min}–{zone.max}
         </text>
       )}
       {hasLabel && (
-        <text x={-6} textAnchor="end" fontSize={10} fill="#94a3b8" dy={7}>
+        <text x={-6} textAnchor="end" fontSize={10} fill="var(--color-muted-foreground)" dy={7}>
           {zone.label}
         </text>
       )}
@@ -479,7 +479,7 @@ function ZoneBarChart({
           margin={{ top: 4, right: 96, bottom: 4, left: 0 }}
           barCategoryGap={barCategoryGap}
         >
-          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--color-border)" />
           <XAxis type="number" domain={[0, 100]} hide />
           <YAxis
             type="category"
@@ -497,7 +497,7 @@ function ZoneBarChart({
             <LabelList
               dataKey="pctLabel"
               position="right"
-              style={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
+              style={{ fontSize: 11, fill: 'var(--color-muted-foreground)', fontWeight: 600 }}
             />
           </Bar>
         </BarChart>
@@ -571,7 +571,7 @@ function HrStreamChart({
     return {
       name: ZONE_SHORT_LABELS[i] ?? `Z${i + 1}`,
       label: ZONE_LABELS[i] ?? `Z${i + 1}`,
-      color: ZONE_COLORS[i] ?? '#94a3b8',
+      color: ZONE_COLORS[i] ?? 'var(--color-muted-foreground)',
       min: bz.min ?? null,
       max: bz.max ?? null,
       time: t,
@@ -607,7 +607,7 @@ function HrStreamChart({
             {showHistoricalLine && (
               <ReferenceLine
                 y={historicalAvgHr}
-                stroke="#94a3b8"
+                stroke="var(--color-muted-foreground)"
                 strokeDasharray="2 4"
                 strokeWidth={1.5}
                 id={`hrHistoricalAvgLine_${pagePrefix}`}
@@ -616,7 +616,7 @@ function HrStreamChart({
                   value: `All-time ${historicalAvgHr}`,
                   position: 'insideBottomRight',
                   fontSize: 9,
-                  fill: '#94a3b8',
+                  fill: 'var(--color-muted-foreground)',
                 }}
               />
             )}
@@ -712,8 +712,8 @@ function ElevationChart({ data }) {
           >
             <defs>
               <linearGradient id="gradElevation" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#94a3b8" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--color-muted-foreground)" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="var(--color-muted-foreground)" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid {...GRID_PROPS} />
@@ -723,7 +723,7 @@ function ElevationChart({ data }) {
             <Area
               type="monotone"
               dataKey="alt"
-              stroke="#94a3b8"
+              stroke="var(--color-muted-foreground)"
               strokeWidth={1.5}
               fill="url(#gradElevation)"
               baseValue="dataMin"

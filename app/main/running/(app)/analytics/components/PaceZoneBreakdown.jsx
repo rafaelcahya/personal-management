@@ -10,7 +10,7 @@ import {
 } from '@/components/base/EmptyState/EmptyState'
 
 // Z1 (Easy/slowest) → Z5 (VO2max/fastest): blue shades → violet
-const PACE_ZONE_COLORS = ['#bfdbfe', '#93c5fd', '#60a5fa', '#818cf8', '#7c3aed']
+const PACE_ZONE_COLORS = ['#bfdbfe', '#93c5fd', '#60a5fa', '#818cf8', 'var(--color-violet-600)']
 
 export default function PaceZoneBreakdown({ data, error }) {
   if (error) {

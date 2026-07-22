@@ -20,8 +20,8 @@ const cellVariants = cva(
     'rounded-md border bg-background text-foreground text-center font-semibold',
     'transition-[color,box-shadow,border-color] duration-150',
     'outline-none',
-    'focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:border-violet-600',
-    'selection:bg-violet-500 selection:text-white',
+    'focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-ring',
+    'selection:bg-primary selection:text-primary-foreground',
   ],
   {
     variants: {

@@ -173,7 +173,7 @@ export function PopoverContent({
       data-popover-portal=""
       style={{ ...floatStyle, ...widthStyle, ...style }}
       className={cn(
-        'rounded-xl border border-slate-200 bg-white shadow-sm outline-none',
+        'rounded-xl border border-border bg-popover shadow-sm outline-none',
         'animate-in fade-in-0 zoom-in-95 pointer-events-auto',
         className
       )}
@@ -197,7 +197,7 @@ export function PopoverClose({ children, asChild = false, className, ...props })
       type="button"
       onClick={() => setOpen(false)}
       className={cn(
-        'inline-flex items-center justify-center rounded text-gray-400 hover:text-gray-600 transition-colors',
+        'inline-flex items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors',
         className
       )}
       {...props}

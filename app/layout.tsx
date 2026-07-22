@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Figtree } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import "./tokens.css";
 import { Toaster } from "sonner";
 import "./style/index.css";
 import { AuthListener } from "@/components/AuthListener";
@@ -33,6 +34,13 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
+            <head>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `(function(){try{var s=localStorage.getItem('color-scheme');if(s==='violet')document.documentElement.classList.add('violet')}catch(e){}})()`,
+                    }}
+                />
+            </head>
             <body
                 className={`${geist.className} antialiased relative min-h-screen`}
             >

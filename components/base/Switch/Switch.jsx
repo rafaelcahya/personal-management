@@ -52,7 +52,7 @@ const Switch = ({
         'relative shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30',
         theme === 'pill' && [
           'h-5 w-9 rounded-full border-2 border-transparent transition-colors duration-200',
-          checked ? 'bg-primary' : 'bg-muted',
+          checked ? 'bg-primary' : 'bg-muted-foreground/25',
         ],
         theme === 'track' && ['h-6 w-9 flex items-center'],
         disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',

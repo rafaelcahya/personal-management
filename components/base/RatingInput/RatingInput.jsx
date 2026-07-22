@@ -40,7 +40,7 @@ function StarItem({
       onMouseMove={interactive ? (e) => onMouseMove(getPosition(e)) : undefined}
       onMouseLeave={interactive ? onMouseLeave : undefined}
     >
-      <Star className="size-full text-gray-200 fill-gray-100" />
+      <Star className="size-full text-border fill-muted" />
       {(isFull || isHalf) && (
         <div
           className="absolute inset-0"
@@ -78,8 +78,8 @@ function NumberItem({
         'rounded font-medium transition-colors flex items-center justify-center shrink-0',
         sizeClass,
         isActive
-          ? 'bg-violet-600 text-white'
-          : 'bg-gray-100 text-gray-500 hover:bg-violet-50 hover:text-violet-600',
+          ? 'bg-primary text-primary-foreground'
+          : 'bg-muted text-muted-foreground hover:bg-accent hover:text-primary',
         disabled && 'opacity-50',
         !interactive && 'pointer-events-none'
       )}

@@ -178,7 +178,7 @@ export function TabsList({ children, variant = 'underline', size = 'md', classNa
             aria-hidden="true"
             style={{
               position: 'absolute',
-              backgroundColor: 'hsl(var(--primary))',
+              backgroundColor: 'var(--primary)',
               borderRadius: 2,
               transition: 'transform 200ms ease, width 200ms ease, height 200ms ease',
               ...indicatorStyle,
@@ -190,7 +190,7 @@ export function TabsList({ children, variant = 'underline', size = 'md', classNa
             aria-hidden="true"
             style={{
               position: 'absolute',
-              backgroundColor: 'hsl(var(--card))',
+              backgroundColor: 'var(--card)',
               borderRadius: '0.5rem',
               boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
               transition: 'transform 200ms ease, width 200ms ease, height 200ms ease',

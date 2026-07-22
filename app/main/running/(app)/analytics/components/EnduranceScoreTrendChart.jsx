@@ -107,21 +107,21 @@ export default function EnduranceScoreTrendChart() {
                 value: band.label,
                 position: 'insideRight',
                 fontSize: 9,
-                fill: '#94a3b8',
+                fill: 'var(--color-muted-foreground)',
               }}
             />
           ))}
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={[0, 100]}
-            tick={{ fontSize: 10, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             width={28}
