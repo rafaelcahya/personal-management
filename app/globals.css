@@ -259,6 +259,82 @@
   --color-info-subtle-foreground: var(--color-blue-400);
 }
 
+/* ════════════════════════════════════════════════════════════════════════════
+   Glass theme
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.theme-glass {
+  color-scheme: light;
+
+  /* Warm canvas gradient painted on <html> so it fills the viewport */
+  background-image: linear-gradient(
+    145deg,
+    oklch(95% 0.02 55) 0%,
+    oklch(97% 0.01 75) 40%,
+    oklch(99% 0.008 90) 70%,
+    oklch(96% 0.015 60) 100%
+  );
+  min-height: 100vh;
+
+  /* Glass surface tokens */
+  --glass-surface: oklch(100% 0 0 / 0.72);
+  --glass-border: oklch(0% 0 0 / 0.07);
+  --glass-blur: 24px;
+  --glass-shadow: 0 4px 24px oklch(0% 0 0 / 0.04), 0 1px 3px oklch(0% 0 0 / 0.03);
+
+  /* Semantic overrides */
+  --color-background: transparent;
+  --color-card: var(--glass-surface);
+  --color-card-foreground: var(--color-slate-900);
+  --color-popover: var(--glass-surface);
+  --color-popover-foreground: var(--color-slate-900);
+  --color-muted: oklch(100% 0 0 / 0.38);
+  --color-accent: oklch(100% 0 0 / 0.38);
+  --color-border: var(--glass-border);
+  --color-input: var(--glass-border);
+  --shadow-card: var(--glass-shadow);
+}
+
+/* App wrapper has bg-slate-50; make transparent so gradient shows through */
+.theme-glass .bg-slate-50 {
+  background-color: transparent;
+}
+
+/* Frosted glass blur on card and popover surfaces */
+.theme-glass .bg-card,
+.theme-glass .bg-popover {
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--glass-surface);
+}
+
+/* Color blobs only on standalone cards, not accordion items */
+.theme-glass .bg-card:not([data-slot='accordion-item']) {
+  background:
+    radial-gradient(ellipse 110% 70% at 5% 0%, oklch(88% 0.1 50 / 0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 90% 65% at 95% 0%, oklch(90% 0.2 300 / 0.2) 0%, transparent 70%),
+    var(--glass-surface);
+}
+
+/* Fallback when backdrop-filter is unsupported */
+@supports not (backdrop-filter: blur(1px)) {
+  .theme-glass {
+    --glass-surface: oklch(100% 0 0 / 0.93);
+  }
+}
+
+/* Respect user preference for reduced transparency */
+@media (prefers-reduced-transparency: reduce) {
+  .theme-glass {
+    --glass-surface: oklch(100% 0 0 / 0.96);
+  }
+  .theme-glass .bg-card,
+  .theme-glass .bg-popover {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 .recharts-wrapper,
 .recharts-wrapper svg,
 .recharts-wrapper *:focus {
