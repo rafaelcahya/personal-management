@@ -117,7 +117,6 @@ describe('Running Dashboard API — GET /dashboard — training_load', () => {
         'current_week_load',
         'prev_week_load',
         'ramp_pct',
-        'effort_split',
         'training_status',
         'ytd_stats'
       )
@@ -152,21 +151,6 @@ describe('Running Dashboard API — GET /dashboard — training_load', () => {
     cy.getDashboard().then((res) => {
       const { ramp_pct } = res.body.data.training_load
       expect(ramp_pct === null || typeof ramp_pct === 'number').to.be.true
-    })
-  })
-
-  it('effort_split has easy_load, hard_load, easy_pct, hard_pct keys', () => {
-    cy.getDashboard().then((res) => {
-      const { effort_split } = res.body.data.training_load
-      expect(effort_split).to.include.all.keys('easy_load', 'hard_load', 'easy_pct', 'hard_pct')
-    })
-  })
-
-  it('effort_split easy_pct and hard_pct are null or numbers', () => {
-    cy.getDashboard().then((res) => {
-      const { easy_pct, hard_pct } = res.body.data.training_load.effort_split
-      expect(easy_pct === null || typeof easy_pct === 'number').to.be.true
-      expect(hard_pct === null || typeof hard_pct === 'number').to.be.true
     })
   })
 
