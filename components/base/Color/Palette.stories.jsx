@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Copy, Check } from 'lucide-react'
 
 /** @type {import('@storybook/nextjs').Meta} */
-const meta = { title: 'Theme/Overview' }
+const meta = { title: 'Color/Palette' }
 export default meta
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
