@@ -12,7 +12,7 @@ const preview = {
       storySort: {
         order: [
           'Theme',
-          ['Docs', 'Palette', 'Visual', '*'],
+          ['Docs', 'Visual', '*'],
           'Accordion',
           ['Docs', 'Basic', 'Variant', 'Disabled', 'Default Value', 'Controlled', '*'],
           'Avatar',
@@ -76,8 +76,8 @@ const preview = {
           ],
           'Collapsible',
           ['Docs', 'Basic', 'asChild trigger', '*'],
-          'Colors',
-          ['*'],
+          'Color',
+          ['Palette', '*'],
           'Command',
           ['Docs', 'Basic', 'With Groups', 'With Shortcuts', 'Empty State', 'Controlled', '*'],
           'DropdownMenu',
