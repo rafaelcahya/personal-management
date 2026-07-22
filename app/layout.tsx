@@ -37,7 +37,7 @@ export default function RootLayout({
             <head>
                 <script
                     dangerouslySetInnerHTML={{
-                        __html: `(function(){try{var s=localStorage.getItem('color-scheme');if(s==='violet')document.documentElement.classList.add('violet')}catch(e){}})()`,
+                        __html: `(function(){try{var s=localStorage.getItem('color-scheme');var e=document.documentElement;if(s==='glass')e.classList.add('theme-glass');else if(s!=='default')e.classList.add('violet')}catch(e){}})()`,
                     }}
                 />
             </head>
