@@ -77,13 +77,7 @@ export default function EventTable({ events, onRefresh, selectedIds = new Set(),
                   onClick={() => router.push(`/main/trading/event/${event.id}`)}
                 >
                   {onToggle && (
-                    <TableCell
-                      className="w-10"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onToggle(event.id, event)
-                      }}
-                    >
+                    <TableCell className="w-10" onClick={(e) => e.stopPropagation()}>
                       <Checkbox
                         id={`multiSelectCheckbox_${event.id}_eventPage`}
                         checked={isSelected}

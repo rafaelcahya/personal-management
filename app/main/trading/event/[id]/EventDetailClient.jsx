@@ -284,7 +284,7 @@ export default function EventDetailClient({ id }) {
           <div className="lg:col-span-8 p-5 lg:border-r border-slate-100">
             <div
               id="eventDescriptionBody_eventDetailPage"
-              className="prose prose-sm prose-slate max-w-none min-h-[120px]"
+              className="prose prose-sm prose-slate max-w-none min-h-[120px] prose-hr:border-border prose-hr:my-3"
             >
               {event.event_description ? (
                 <ReactMarkdown
@@ -371,7 +371,7 @@ export default function EventDetailClient({ id }) {
                 </div>
                 <div
                   id="eventAnalysisResult_eventDetailPage"
-                  className="prose prose-sm prose-slate max-w-none"
+                  className="prose prose-sm prose-slate max-w-none prose-hr:border-border prose-hr:my-3"
                 >
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
