@@ -7,7 +7,7 @@ import {
   FieldDescription,
   FieldContainer,
 } from '@/components/base/Field/Field'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
@@ -33,18 +33,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
-import Textarea from '@/components/base/Textarea/Textarea'
 import DatePicker from '@/components/base/DatePicker/DatePicker/DatePicker'
+import MarkdownEditor from '@/components/base/MarkdownEditor/MarkdownEditor'
 import { toast } from 'sonner'
 import { CalendarDays, Loader2, PlusIcon } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeSanitize from 'rehype-sanitize'
 import { eventSchema } from '@/schemas/event'
 import { createEvent } from '@/lib/api/event'
 import EventLinksInput from './component/EventLinksInput'
 import EventTagsInput from './component/EventTagsInput'
-import MarkdownToolbar from './component/MarkdownToolbar'
 
 const TITLE_MAX = 150
 const TITLE_WARN = 130
@@ -74,8 +70,6 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
   const { control, handleSubmit, reset, watch } = form
   const titleValue = watch('title') ?? ''
   const descValue = watch('event_description') ?? ''
-  const descriptionRef = useRef(null)
-  const [descPreview, setDescPreview] = useState(false)
 
   useEffect(() => {
     if (open && initialValues) {
@@ -106,8 +100,7 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
 
       await createEvent(payload)
       toast.success('Event created successfully!')
-      setOpen(false)
-      reset()
+      handleOpenChange(false)
       onAdded?.()
     } catch (err) {
       console.error(err)
@@ -140,6 +133,7 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
         variant="bordered"
         borderColor="border-slate-200"
         className="max-h-[85vh]"
+        size="lg"
         id="addNewEventForm_eventPage"
       >
         <ModalHeader layout="beside">
@@ -278,40 +272,12 @@ export default function AddEvent({ onAdded, initialValues, open: controlledOpen,
                         </span>
                       )}
                     </div>
-                    <div>
-                      <MarkdownToolbar
-                        textareaRef={descriptionRef}
-                        value={field.value ?? ''}
-                        onChange={field.onChange}
-                        previewMode={descPreview}
-                        onTogglePreview={() => setDescPreview((v) => !v)}
-                      />
-                      {descPreview ? (
-                        <div className="border border-slate-200 rounded-b-md bg-white px-3 py-2 min-h-[144px] prose prose-sm prose-slate max-w-none">
-                          {field.value ? (
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              rehypePlugins={[rehypeSanitize]}
-                            >
-                              {field.value}
-                            </ReactMarkdown>
-                          ) : (
-                            <p className="text-slate-400 italic text-sm">Nothing to preview.</p>
-                          )}
-                        </div>
-                      ) : (
-                        <Textarea
-                          {...field}
-                          ref={descriptionRef}
-                          placeholder="e.g., Federal Reserve announces interest rate decision..."
-                          id="eventDescriptionField_eventPage"
-                          className={`focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm font-medium rounded-t-none ${
-                            fieldState.error ? 'border-rose-500' : ''
-                          }`}
-                          rows={16}
-                        />
-                      )}
-                    </div>
+                    <MarkdownEditor
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      placeholder="e.g., Federal Reserve announces interest rate decision..."
+                      minHeight="384px"
+                    />
                     <FieldDescription className="text-xs text-slate-400">
                       The more detailed your notes, the more relevant the AI analysis. Supports
                       markdown.

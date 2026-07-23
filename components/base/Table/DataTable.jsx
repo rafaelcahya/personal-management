@@ -64,7 +64,7 @@ function PageInfo({ safePage, totalPages }) {
   )
 }
 
-function PaginationControls({ safePage, totalPages, variant, onPrev, onNext }) {
+export function PaginationControls({ safePage, totalPages, variant, onPrev, onNext }) {
   const prevDisabled = safePage === 1
   const nextDisabled = safePage === totalPages
 

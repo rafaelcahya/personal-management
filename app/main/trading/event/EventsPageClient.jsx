@@ -17,7 +17,7 @@ import TimelineView from './component/TimelineView'
 import EventAnalysisModal from './component/EventAnalysisModal'
 import EventAnalysisHistoryModal from './component/EventAnalysisHistoryModal'
 import ImportSuggestionsModal from './component/ImportSuggestionsModal'
-import Pagination from '@/components/base/Pagination/Pagination'
+import { PaginationControls } from '@/components/base/Table/DataTable'
 import Card, { CardContent } from '@/components/base/Card/Card'
 
 const FILTER_STORAGE_KEY = 'event-list-filter'
@@ -256,16 +256,17 @@ export default function EventsPageClient() {
                 />
               )}
 
-              <Pagination
-                id="eventPagination_eventPage"
-                prevId="prevPageBtn_eventPage"
-                nextId="nextPageBtn_eventPage"
-                page={page}
-                totalPages={totalPages}
-                total={total}
-                onPrev={() => setPage((p) => p - 1)}
-                onNext={() => setPage((p) => p + 1)}
-              />
+              {totalPages > 1 && (
+                <div id="eventPagination_eventPage" className="px-1 pb-3">
+                  <PaginationControls
+                    safePage={page}
+                    totalPages={totalPages}
+                    variant="full"
+                    onPrev={() => setPage((p) => p - 1)}
+                    onNext={() => setPage((p) => p + 1)}
+                  />
+                </div>
+              )}
             </>
           )}
         </CardContent>
