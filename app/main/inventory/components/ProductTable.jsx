@@ -74,7 +74,7 @@ export default function ProductTable({ products, startIndex = 0 }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 px-2 py-2">
+      <div className="md:hidden space-y-2">
         {products.map((item, index) => (
           <div
             key={item.id}
