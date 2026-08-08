@@ -25,6 +25,7 @@ import {
   BarChart2,
   Mountain,
   RefreshCw,
+  Droplets,
 } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Button from '@/components/base/Button/Button'
@@ -554,6 +555,24 @@ export default function ActivityDetailPage() {
                           label="Calories"
                           value={Math.round(activity.calories)}
                           unit="kcal"
+                        />
+                      )}
+                      {activity.glucose_burned_g != null && (
+                        <StatTile
+                          icon={Droplets}
+                          label="Glucose Burned"
+                          value={activity.glucose_burned_g}
+                          unit="g"
+                          sub={
+                            activity.fat_burned_g != null
+                              ? `Fat ${activity.fat_burned_g}g`
+                              : undefined
+                          }
+                          footer={
+                            activity.fuel_mode === 'avg_hr' ? (
+                              <span className="text-[10px] text-slate-400">avg HR estimate</span>
+                            ) : null
+                          }
                         />
                       )}
                       {activity.relative_effort != null && (

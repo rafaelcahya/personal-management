@@ -110,7 +110,7 @@ function DurationTable({ data, startIndex = 0 }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 py-2 px-3">
+      <div className="md:hidden space-y-2">
         {data.map((item, index) => (
           <div
             key={item.product_list_id}
@@ -214,7 +214,7 @@ export default function AvgUsageDuration({ items, loading, error, onRetry }) {
               <ModalDescription>Sorted by longest average duration</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody className="p-0">
+          <ModalBody>
             <DurationTable data={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
           {modalTotalPages > 1 && (

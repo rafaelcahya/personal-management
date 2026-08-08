@@ -120,7 +120,7 @@ function LowStockTable({ items, startIndex = 0 }) {
       </Table>
 
       {/* Mobile cards */}
-      <div className="md:hidden space-y-2 py-2 px-3">
+      <div className="md:hidden space-y-2">
         {items.map((item, index) => (
           <div
             key={item.id}
@@ -229,7 +229,7 @@ export default function LowStockAlert({ items, loading, error, onRetry }) {
               <ModalDescription>Sorted by lowest stock first</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody className="p-0">
+          <ModalBody>
             <LowStockTable items={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
           {modalTotalPages > 1 && (

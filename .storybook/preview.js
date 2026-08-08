@@ -168,6 +168,8 @@ const preview = {
             ['Docs', 'Basic', 'Fields', 'Step', 'Icon', 'Disabled', 'Error State', '*'],
             '*',
           ],
+          'MarkdownEditor',
+          ['Docs', 'Basic', 'Disabled', 'Error State', '*'],
           'Modal',
           ['Docs', 'Basic', 'Sizes', 'Animation', 'Controlled', 'Example', '*'],
           'NavMenu',
