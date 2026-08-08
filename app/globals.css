@@ -180,13 +180,13 @@
   /* Brand — violet */
   --color-primary: var(--color-violet-600);
   --color-primary-foreground: var(--color-slate-50);
-  --color-secondary: var(--color-violet-100);
+  --color-secondary: var(--color-violet-50);
   --color-secondary-foreground: var(--color-violet-700);
 
   /* UI Chrome — violet accents, slate neutrals */
   --color-muted: var(--color-slate-100);
   --color-muted-foreground: var(--color-slate-500);
-  --color-accent: var(--color-violet-100);
+  --color-accent: var(--color-violet-50);
   --color-accent-foreground: var(--color-violet-900);
   --color-border: var(--color-slate-200);
   --color-input: var(--color-slate-200);
