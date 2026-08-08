@@ -11,7 +11,7 @@ const TILE_STYLE = `https://tile.jawg.io/jawg-lagoon.json?access-token=${process
 
 const DEFAULT_CENTER = [106.8456, -6.2088] // Jakarta [lng, lat]
 const DEFAULT_ZOOM = 13
-const ROUTE_LINE_COLOR = 'var(--color-violet-600)'
+const ROUTE_LINE_COLOR = '#7c3aed'
 
 export default function RouteBuilderMap({
   waypoints,

@@ -16,11 +16,11 @@ const TILE_STYLES = {
 }
 
 const POLYLINE_COLORS = {
-  default: 'var(--color-violet-500)',
-  street: '#ffffff',
-  dark: 'var(--color-violet-400)',
+  default: '#8b5cf6',
+  street: '#7c3aed',
+  dark: '#a78bfa',
 }
-const BORDER_COLORS = { default: '#000000', street: null, dark: null }
+const BORDER_COLORS = { default: '#3b0764', street: '#3b0764', dark: null }
 
 const esc = (s) =>
   String(s)

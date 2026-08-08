@@ -5,6 +5,7 @@ import { patchActivitySchema } from '@/schemas/runningManualEntry'
 import { computeAndSaveDerivedMetrics } from '@/lib/services/running/metrics'
 import { computeGapSecPerKm } from '@/lib/services/running/activities/getGapPace'
 import { computeBurnBar } from '@/lib/services/running/activities/getBurnBar'
+import { estimateFuelBurn } from '@/lib/services/running/utils/estimateFuelBurn'
 
 export async function GET(_request, { params }) {
   try {
@@ -247,6 +248,12 @@ export async function GET(_request, { params }) {
       if (totalDuration > 0) historical_avg_cadence = Math.round(weightedSum / totalDuration) * 2
     }
 
+    const fuelBurn = estimateFuelBurn({
+      calories: activity.calories,
+      avgHr: activity.avg_hr,
+      maxHr: user_max_hr,
+    })
+
     return NextResponse.json(
       {
         activity: {
@@ -262,6 +269,9 @@ export async function GET(_request, { params }) {
           threshold_hr,
           threshold_pace_sec,
           hr_zones_method,
+          glucose_burned_g: fuelBurn?.glucose_burned_g ?? null,
+          fat_burned_g: fuelBurn?.fat_burned_g ?? null,
+          fuel_mode: fuelBurn?.fuel_mode ?? null,
         },
         splits: splitsWithGap,
         burn_bar,
