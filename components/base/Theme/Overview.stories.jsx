@@ -5,6 +5,7 @@ import {
   TrendingUp,
   Bell,
   Settings,
+  Home,
   User,
   Shield,
   Zap,
@@ -161,6 +162,18 @@ import {
 } from '../NavMenu/NavMenu'
 import State from '../State/State'
 import MarkdownEditor from '../MarkdownEditor/MarkdownEditor'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarItem,
+  SidebarOverlay,
+  SidebarProvider,
+  SidebarSub,
+  SidebarTrigger,
+} from '../Sidebar/Sidebar'
 
 /** @type {import('@storybook/nextjs').Meta} */
 const meta = { title: 'Theme/Overview' }
@@ -4698,6 +4711,184 @@ function MonthlyStatsCard() {
   )
 }
 
+// ── App Layout (Sidebar) ──────────────────────────────────────────────────────
+function AppLayout() {
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div>
+          <p className="text-sm font-semibold text-foreground">App Layout</p>
+          <p className="text-xs text-muted-foreground">Sidebar in three states</p>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          {/* Expanded */}
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+              Expanded
+            </p>
+            <div className="flex h-36 rounded-lg overflow-hidden border border-border shadow-sm">
+              <div className="w-20 bg-background border-r border-border flex flex-col shrink-0">
+                <div className="flex items-center gap-1.5 px-2 py-2 border-b border-border">
+                  <div className="size-3 rounded bg-primary/20 shrink-0" />
+                  <div className="h-2 w-10 rounded bg-foreground/20" />
+                </div>
+                <div className="flex-1 py-1.5 px-1 flex flex-col gap-0.5">
+                  <div className="text-[8px] font-semibold uppercase tracking-widest text-muted-foreground px-1 pb-0.5">
+                    Main
+                  </div>
+                  <div className="flex items-center gap-1 px-1 py-1 rounded bg-primary/10">
+                    <div className="size-2 rounded-sm bg-primary/50 shrink-0" />
+                    <div className="h-1.5 w-8 rounded bg-primary/40" />
+                  </div>
+                  <div className="flex items-center gap-1 px-1 py-1 rounded">
+                    <div className="size-2 rounded-sm bg-muted-foreground/30 shrink-0" />
+                    <div className="h-1.5 w-10 rounded bg-muted-foreground/20" />
+                    <div className="ml-auto h-3 w-3 rounded-full bg-primary/60 flex items-center justify-center">
+                      <span className="text-[6px] text-primary-foreground font-bold">3</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 px-1 py-1 rounded">
+                    <div className="size-2 rounded-sm bg-muted-foreground/30 shrink-0" />
+                    <div className="h-1.5 w-7 rounded bg-muted-foreground/20" />
+                  </div>
+                </div>
+                <div className="border-t border-border px-1 py-1.5">
+                  <div className="flex items-center gap-1 px-1 py-0.5">
+                    <div className="size-3 rounded-full bg-muted shrink-0" />
+                    <div className="h-1.5 w-8 rounded bg-muted-foreground/20" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 bg-muted/30 p-2 flex flex-col gap-1.5">
+                <div className="h-2.5 w-16 rounded bg-foreground/20" />
+                <div className="h-1.5 w-20 rounded bg-muted-foreground/20" />
+                <div className="flex-1 rounded bg-background border border-border" />
+              </div>
+            </div>
+            <p className="text-[9px] text-muted-foreground text-center">240px</p>
+          </div>
+
+          {/* Collapsed */}
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+              Collapsed
+            </p>
+            <div className="flex h-36 rounded-lg overflow-hidden border border-border shadow-sm">
+              <div className="w-8 bg-background border-r border-border flex flex-col shrink-0">
+                <div className="flex items-center justify-center py-2 border-b border-border">
+                  <div className="size-3 rounded bg-primary/20" />
+                </div>
+                <div className="flex-1 py-1.5 flex flex-col gap-1 items-center">
+                  <div className="size-5 rounded bg-primary/10 flex items-center justify-center">
+                    <div className="size-2.5 rounded-sm bg-primary/50" />
+                  </div>
+                  <div className="size-5 rounded flex items-center justify-center">
+                    <div className="size-2.5 rounded-sm bg-muted-foreground/30" />
+                  </div>
+                  <div className="size-5 rounded flex items-center justify-center">
+                    <div className="size-2.5 rounded-sm bg-muted-foreground/30" />
+                  </div>
+                </div>
+                <div className="border-t border-border py-1.5 flex justify-center">
+                  <div className="size-4 rounded-full bg-muted" />
+                </div>
+              </div>
+              <div className="flex-1 bg-muted/30 p-2 flex flex-col gap-1.5">
+                <div className="h-2.5 w-16 rounded bg-foreground/20" />
+                <div className="h-1.5 w-20 rounded bg-muted-foreground/20" />
+                <div className="flex-1 rounded bg-background border border-border" />
+              </div>
+            </div>
+            <p className="text-[9px] text-muted-foreground text-center">56px</p>
+          </div>
+
+          {/* Mobile Drawer */}
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+              Mobile
+            </p>
+            <div className="relative h-36 rounded-lg overflow-hidden border border-border shadow-sm">
+              <div className="absolute inset-0 bg-muted/30 p-2 flex flex-col gap-1.5">
+                <div className="flex items-center gap-1.5">
+                  <div className="size-3 rounded bg-foreground/20" />
+                  <div className="h-2 w-14 rounded bg-foreground/20" />
+                </div>
+                <div className="h-1.5 w-20 rounded bg-muted-foreground/20 mt-0.5" />
+                <div className="flex-1 rounded bg-background border border-border" />
+              </div>
+              <div className="absolute inset-0 bg-black/30 rounded-lg" />
+              <div className="absolute top-0 left-0 bottom-0 w-20 bg-background shadow-xl flex flex-col rounded-l-lg">
+                <div className="flex items-center gap-1.5 px-2 py-2 border-b border-border">
+                  <div className="size-3 rounded bg-primary/20 shrink-0" />
+                  <div className="h-2 w-10 rounded bg-foreground/20" />
+                </div>
+                <div className="flex-1 py-1.5 px-1 flex flex-col gap-0.5">
+                  <div className="flex items-center gap-1 px-1 py-1 rounded bg-primary/10">
+                    <div className="size-2 rounded-sm bg-primary/50 shrink-0" />
+                    <div className="h-1.5 w-8 rounded bg-primary/40" />
+                  </div>
+                  <div className="flex items-center gap-1 px-1 py-1">
+                    <div className="size-2 rounded-sm bg-muted-foreground/30 shrink-0" />
+                    <div className="h-1.5 w-10 rounded bg-muted-foreground/20" />
+                  </div>
+                  <div className="flex items-center gap-1 px-1 py-1">
+                    <div className="size-2 rounded-sm bg-muted-foreground/30 shrink-0" />
+                    <div className="h-1.5 w-7 rounded bg-muted-foreground/20" />
+                  </div>
+                </div>
+                <div className="border-t border-border px-1 py-1.5">
+                  <div className="flex items-center gap-1 px-1">
+                    <div className="size-3 rounded-full bg-muted shrink-0" />
+                    <div className="h-1.5 w-8 rounded bg-muted-foreground/20" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p className="text-[9px] text-muted-foreground text-center">drawer + overlay</p>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-border overflow-hidden">
+          <SidebarProvider defaultCollapsed={false}>
+            <SidebarOverlay />
+            <div className="flex h-48">
+              <Sidebar>
+                <SidebarHeader>
+                  <SidebarTrigger />
+                  <span className="ml-2 text-sm font-semibold text-foreground">My App</span>
+                </SidebarHeader>
+                <SidebarContent>
+                  <SidebarGroup label="Main">
+                    <SidebarItem icon={<Home className="size-4" />} label="Dashboard" active />
+                    <SidebarItem icon={<Package className="size-4" />} label="Inventory" badge={3}>
+                      <SidebarSub>
+                        <SidebarItem label="Products" />
+                        <SidebarItem label="Stock Alerts" />
+                      </SidebarSub>
+                    </SidebarItem>
+                    <SidebarItem icon={<TrendingUp className="size-4" />} label="Trading" />
+                  </SidebarGroup>
+                </SidebarContent>
+                <SidebarFooter>
+                  <SidebarItem icon={<Settings className="size-4" />} label="Settings" />
+                </SidebarFooter>
+              </Sidebar>
+              <main className="flex-1 bg-muted/20 p-4 flex flex-col gap-2 overflow-hidden">
+                <p className="text-sm font-semibold text-foreground">Dashboard</p>
+                <p className="text-xs text-muted-foreground">
+                  Use the trigger to collapse the sidebar
+                </p>
+                <div className="flex-1 rounded-lg bg-background border border-border" />
+              </main>
+            </div>
+          </SidebarProvider>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 // ── Story ─────────────────────────────────────────────────────────────────────
 
 const SCHEMES = ['default', 'violet', 'glass']
@@ -4900,6 +5091,7 @@ function VisualPage() {
           <KycProgress />
           <MonthlyStatsCard />
           <TradeJournal />
+          <AppLayout />
         </div>
       </div>
     </div>
