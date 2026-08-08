@@ -41,7 +41,7 @@ function formatDate(dateStr) {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
-  }).format(new Date(dateStr))
+  }).format(new Date(dateStr + 'T00:00:00'))
 }
 
 function TypeBadge({ type }) {
