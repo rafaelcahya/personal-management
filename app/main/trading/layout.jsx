@@ -1,9 +1,9 @@
-import TradeAIChat from '@/components/TradeAIChat'
+// import TradeAIChat from '@/components/TradeAIChat'
 
 export default function TradingManagementLayout({ children }) {
   return (
     <div className="relative">
-      <TradeAIChat />
+      {/* <TradeAIChat /> */}
       <div className="w-full max-w-5xl xl:max-w-7xl mx-auto px-4 pb-6 lg:py-8">{children}</div>
     </div>
   )
