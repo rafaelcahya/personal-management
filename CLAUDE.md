@@ -1,20 +1,28 @@
 # Personal Management App
 
-Personal productivity web app for one user, two domains: **Inventory Management** (stock tracking, usage patterns) and **Stock Trading** (trades, portfolio, P&L).
+Personal productivity web app for one user, four domains: **Inventory Management** (stock tracking, usage patterns), **Stock Trading** (trades, portfolio, P&L), **Running Tracker** (activity logging, AI coach), and **Auth + User Settings** (authentication, profile).
 
 ## Tech Stack
 
-| Layer         | Technology                   | Location                         |
-| ------------- | ---------------------------- | -------------------------------- |
-| Framework     | Next.js 15 App Router        | `app/`                           |
-| Language      | JavaScript/JSX               | all files                        |
-| Database      | Supabase (PostgreSQL)        | hosted                           |
-| Auth          | Supabase SSR + JWT           | `middleware.js`, `lib/supabase/` |
-| Styling       | Tailwind CSS + CSS variables | `app/globals.css`                |
-| UI Components | Base Components              | `components/base/`               |
-| Forms         | react-hook-form + Zod        | `schemas/`                       |
-| API Client    | custom fetch functions       | `lib/api/`                       |
-| E2E Testing   | Cypress                      | `cypress/`                       |
+| Layer           | Technology                   | Location                         |
+| --------------- | ---------------------------- | -------------------------------- |
+| Framework       | Next.js 15 App Router        | `app/`                           |
+| Language        | JavaScript/JSX               | all files                        |
+| Database        | Supabase (PostgreSQL)        | hosted                           |
+| Auth            | Supabase SSR + JWT           | `middleware.js`, `lib/supabase/` |
+| Styling         | Tailwind CSS + CSS variables | `app/globals.css`                |
+| UI Components   | Radix UI + Base Components   | `components/base/`               |
+| Forms           | react-hook-form + Zod        | `schemas/`                       |
+| API Client      | custom fetch functions       | `lib/api/`                       |
+| Charts          | Recharts                     | `components/`                    |
+| AI              | Anthropic Claude SDK         | `lib/`                           |
+| Background Jobs | Inngest                      | `inngest/`                       |
+| Maps            | Leaflet / MapLibre GL        | `components/`                    |
+| Animations      | GSAP                         | `components/`                    |
+| Notifications   | Sonner                       | `components/`                    |
+| Theme           | next-themes                  | `app/`                           |
+| Component Docs  | Storybook                    | `.storybook/`                    |
+| E2E Testing     | Cypress                      | `cypress/`                       |
 
 ## Key Files
 

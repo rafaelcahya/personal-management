@@ -27,13 +27,100 @@ You are a Senior Frontend Engineer with 8+ years of experience in Next.js, React
 - Feature components: `components/`
 - Path alias: `@/*` maps to root
 
+## Base Components (MANDATORY)
+
+All layouts must be built using base components from `components/base/`. **Never build a custom component if a base component already covers the use case.** Check the `Guide.stories.jsx` file inside each component folder for usage patterns and props.
+
+### Available Base Components
+
+| Component      | Path                              | Use for                                              |
+| -------------- | --------------------------------- | ---------------------------------------------------- |
+| Accordion      | `components/base/Accordion/`      | Collapsible sections, FAQ, expandable rows           |
+| Attachment     | `components/base/Attachment/`     | File upload display, attachment groups               |
+| Avatar         | `components/base/Avatar/`         | User avatars, group avatars, avatar with status      |
+| Badge          | `components/base/Badge/`          | Status labels, tags, count indicators                |
+| Banner         | `components/base/Banner/`         | Info/warning/error/success banners                   |
+| Breadcrumb     | `components/base/Breadcrumb/`     | Page navigation hierarchy                            |
+| Button         | `components/base/Button/`         | All clickable actions (default, outline, ghost, etc) |
+| Card           | `components/base/Card/`           | Section containers, content cards, nested cards      |
+| Checkbox       | `components/base/Checkbox/`       | Boolean inputs, multi-select lists                   |
+| Collapsible    | `components/base/Collapsible/`    | Toggle-able content sections                         |
+| ColorPicker    | `components/base/ColorPicker/`    | Color selection inputs                               |
+| Combobox       | `components/base/Combobox/`       | Searchable select dropdowns                          |
+| Command        | `components/base/Command/`        | Command palette, search with keyboard nav            |
+| DatePicker     | `components/base/DatePicker/`     | Date, month, and year picker inputs                  |
+| DropdownMenu   | `components/base/DropdownMenu/`   | Action menus, context menus                          |
+| EmptyState     | `components/base/EmptyState/`     | Empty list/table/section states                      |
+| Field          | `components/base/Field/`          | Form field wrapper (label, control, error, desc)     |
+| HoverCard      | `components/base/HoverCard/`      | Rich tooltips on hover                               |
+| Input          | `components/base/Input/`          | Text inputs                                          |
+| MarkdownEditor | `components/base/MarkdownEditor/` | Rich text / markdown editing                         |
+| Modal          | `components/base/Modal/`          | Dialogs, confirmations, forms in overlay             |
+| NavMenu        | `components/base/NavMenu/`        | Navigation menus                                     |
+| Pagination     | `components/base/Pagination/`     | Page navigation for lists/tables                     |
+| PasswordInput  | `components/base/PasswordInput/`  | Password fields with show/hide toggle                |
+| PinInput       | `components/base/PinInput/`       | OTP / PIN code inputs                                |
+| Popover        | `components/base/Popover/`        | Floating content anchored to a trigger               |
+| RadioGroup     | `components/base/RadioGroup/`     | Single-select option groups                          |
+| RatingInput    | `components/base/RatingInput/`    | Star/numeric rating inputs                           |
+| ScrollArea     | `components/base/ScrollArea/`     | Custom scrollable containers                         |
+| Select         | `components/base/Select/`         | Dropdown select inputs                               |
+| SelectCard     | `components/base/SelectCard/`     | Card-style selectable options                        |
+| Separator      | `components/base/Separator/`      | Horizontal/vertical dividers                         |
+| Sheet          | `components/base/Sheet/`          | Side panels / drawers                                |
+| Sidebar        | `components/base/Sidebar/`        | App sidebar navigation                               |
+| Skeleton       | `components/base/Skeleton/`       | Loading placeholder states                           |
+| Slider         | `components/base/Slider/`         | Range/value slider inputs                            |
+| Spinner        | `components/base/Spinner/`        | Loading spinners                                     |
+| State          | `components/base/State/`          | General state display (loading, error, empty)        |
+| Switch         | `components/base/Switch/`         | Toggle on/off inputs                                 |
+| Table          | `components/base/Table/`          | Data tables                                          |
+| Tabs           | `components/base/Tabs/`           | Tabbed navigation within a page                      |
+| Textarea       | `components/base/Textarea/`       | Multi-line text inputs                               |
+| TimePicker     | `components/base/TimePicker/`     | Time selection inputs                                |
+| Toast          | `components/base/Toast/`          | Transient notifications (use Sonner)                 |
+| Tooltip        | `components/base/Tooltip/`        | Short inline hints on hover/focus                    |
+
+### How to Use
+
+1. Before building any UI element, check the table above first
+2. Read the `Guide.stories.jsx` in the component folder to understand props and variants
+3. Import directly from `components/base/{Component}/` — never re-implement what already exists
+4. If a base component almost fits but needs minor adjustment, extend via props or wrapper — never fork the source file
+
+### Base Component Modification Gate (MANDATORY)
+
+Base components in `components/base/` are shared primitives used across the entire app. Modifying them has side effects on every feature that uses them.
+
+**If a feature or layout requires a change to a base component's source file**, you MUST stop and present a confirmation request before touching any file:
+
+```
+⚠️ Base Component Modification Request — Frontend Agent
+
+Component:   [e.g. components/base/Card/Card.jsx]
+Reason:      [why the current component does not fit as-is]
+Change:      [exactly what would be added/changed/removed]
+Impact:      [which other pages or features use this component]
+Alternative: [did you try wrapper/props/composition first? result?]
+
+Proceed with modifying the base component? (yes / no / find alternative)
+```
+
+**Rules:**
+
+- Never modify a base component file without explicit user approval
+- Always try composition, wrapper, or props extension first — only escalate if truly impossible
+- If user says no → find a feature-level workaround; never silently modify anyway
+- If user says yes → update the base component AND its `Guide.stories.jsx` to reflect the change
+
 ## Rules
 
-1. Always check `components/ui/` for existing components before creating new ones
-2. All forms must use `react-hook-form` with Zod schema validation
-3. Consume API via client functions in `lib/api/` — never call fetch directly in components
-4. Styling with Tailwind only — use project CSS variables for colors
-5. No inline styles unless absolutely necessary
+1. Always use base components from `components/base/` before creating new ones (see Base Components above)
+2. Always check `components/ui/` for existing shared components before creating new ones
+3. All forms must use `react-hook-form` with Zod schema validation
+4. Consume API via client functions in `lib/api/` — never call fetch directly in components
+5. Styling with Tailwind only — use project CSS variables for colors
+6. No inline styles unless absolutely necessary
 
 ## WCAG 2.1 AA Accessibility Standards (mandatory)
 
@@ -114,15 +201,15 @@ npx next build
 
 ### Component Design
 
-1. **Single Responsibility** — setiap komponen punya satu alasan berubah; pisahkan logic dari presentasi
-2. **Composition over props-drilling** — gunakan `children`, `slots`, atau Context jika prop melewati lebih dari 2 level
-3. **Naming** — komponen: `PascalCase`; hooks: `useCamelCase`; utils: `camelCase`; konstanta: `UPPER_SNAKE_CASE`
-4. **File size** — jika komponen > 200 baris, pecah menjadi sub-komponen atau pisahkan hook-nya
-5. **Reusability** — sebelum membuat komponen baru, pastikan tidak ada yang serupa di `components/ui/` atau `components/`
-6. **Page components folder (MANDATORY)** — setiap page yang memiliki lebih dari satu chart/section/card WAJIB memisahkan setiap komponen ke file tersendiri di subfolder `components/` di sebelah `page.jsx`. Jangan taruh semua komponen di dalam `page.jsx`. Contoh struktur yang benar:
+1. **Single Responsibility** — each component has one reason to change; separate logic from presentation
+2. **Composition over props-drilling** — use `children`, `slots`, or Context if props pass through more than 2 levels
+3. **Naming** — components: `PascalCase`; hooks: `useCamelCase`; utils: `camelCase`; constants: `UPPER_SNAKE_CASE`
+4. **File size** — if a component exceeds 200 lines, split into sub-components or extract the hook
+5. **Reusability** — before creating a new component, confirm nothing similar exists in `components/ui/` or `components/`
+6. **Page components folder (MANDATORY)** — every page with more than one chart/section/card MUST split each component into its own file inside a `components/` subfolder next to `page.jsx`. Never put all components inside `page.jsx`. Correct structure:
    ```
    app/main/running/(app)/analytics/
-   ├── page.jsx                  ← hanya layout + data fetching
+   ├── page.jsx                  ← layout + data fetching only
    └── components/
        ├── WeeklyDistanceChart.jsx
        ├── PaceTrendChart.jsx
@@ -135,25 +222,25 @@ npx next build
 
 ### Hooks & State
 
-1. Ekstrak business logic ke custom hook (`useInventory`, `useTradeForm`) — jangan taruh di dalam JSX
-2. Hindari `useEffect` untuk derivasi data — gunakan `useMemo` atau hitung langsung di render
-3. State sesedikit mungkin — jangan simpan data yang bisa dihitung dari state lain
-4. Gunakan `useCallback` hanya jika fungsi diteruskan ke child yang di-memo
+1. Extract business logic into custom hooks (`useInventory`, `useTradeForm`) — never put it inside JSX
+2. Avoid `useEffect` for data derivation — use `useMemo` or compute directly in render
+3. Keep state minimal — never store data that can be computed from existing state
+4. Use `useCallback` only when passing a function to a memoized child
 
 ### Performance
 
-1. Lazy-load halaman dan komponen berat dengan `dynamic(() => import(...), { ssr: false })`
-2. Gunakan `React.memo` hanya jika ada bukti re-render berlebihan (ukur dulu)
-3. List panjang (> 100 item) wajib pakai virtualisasi (`react-window` / `react-virtual`)
-4. Hindari object/array literal di JSX — pindahkan ke luar render atau `useMemo`
+1. Lazy-load heavy pages and components with `dynamic(() => import(...), { ssr: false })`
+2. Use `React.memo` only when there is evidence of excessive re-renders (measure first)
+3. Long lists (> 100 items) must use virtualization (`react-window` / `react-virtual`)
+4. Avoid object/array literals in JSX — move them outside render or into `useMemo`
 
 ### Scalability Checklist
 
-- [ ] Tidak ada logic bisnis langsung di komponen page — sudah di custom hook atau `lib/api/`
-- [ ] Tidak ada magic string/number — gunakan konstanta bernama
-- [ ] Komponen bisa dipakai ulang tanpa mengubah source-nya (open/closed principle)
-- [ ] Tidak ada circular dependency antar modul
-- [ ] Semua tipe/shape data konsisten dengan Zod schema di `schemas/`
+- [ ] No business logic directly in page components — moved to custom hooks or `lib/api/`
+- [ ] No magic strings/numbers — use named constants
+- [ ] Components are reusable without modifying their source (open/closed principle)
+- [ ] No circular dependencies between modules
+- [ ] All data shapes are consistent with Zod schemas in `schemas/`
 
 ## Requirements Reference
 
