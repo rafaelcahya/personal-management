@@ -1,13 +1,32 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Button from '@/components/base/Button/Button'
 import { useRouter } from 'next/navigation'
 import { Trophy } from 'lucide-react'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { fetchPersonalBests } from '@/lib/api/running'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/base/Accordion/Accordion'
 
-const DISTANCES = ['1 mile', '5K', '10K', '15K', 'Half-Marathon']
+const DISTANCES = ['1K', '1 mile', '5K', '5 mile', '10K', '15K', 'Half-Marathon']
+
+const DISTANCE_SLUGS = {
+  '1K': '1k',
+  '1 mile': '1mile',
+  '5K': '5k',
+  '5 mile': '5mile',
+  '10K': '10k',
+  '15K': '15k',
+  'Half-Marathon': 'halfMarathon',
+}
+
+function distanceSlug(distance) {
+  return DISTANCE_SLUGS[distance] ?? distance.replace(/\s+/g, '-')
+}
 
 function formatTime(sec) {
   const h = Math.floor(sec / 3600)
@@ -33,50 +52,84 @@ function formatDate(dateStr) {
   })
 }
 
-function DistanceColumn({ distance, entries, onRowClick }) {
-  if (!entries || entries.length === 0) {
-    return (
-      <div className="flex flex-col">
-        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide px-3 py-2 border-b border-slate-100">
-          {distance}
-        </div>
-        <div className="px-3 py-3 text-sm text-slate-400">—</div>
-      </div>
-    )
-  }
+const COLS = 'grid grid-cols-[2fr_1fr_1fr_1fr]'
+
+function DistanceRow({ distance, entries, onRowClick }) {
+  const slug = distanceSlug(distance)
+  const best = entries?.[0]
 
   return (
-    <div className="flex flex-col">
-      <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide px-3 py-2 border-b border-slate-100">
-        {distance}
-      </div>
-      {entries.map((entry) => {
-        const isPR = entry.rank === 1
-        const distanceKey = distance.replace(/\s+/g, '-')
-        return (
-          <Button
-            key={entry.rank}
-            id={`personalBestsRow_${distanceKey}_${entry.rank}_analyticsPage`}
-            variant="ghost"
-            fullWidth
-            onClick={() => entry.activity_id && onRowClick(entry.activity_id)}
-            className={`flex-col items-start gap-0.5 px-3 py-2.5 h-auto hover:bg-slate-50 border-b border-slate-50 last:border-b-0 ${
-              isPR ? 'bg-amber-50 hover:bg-amber-100' : ''
-            }`}
-          >
-            <div className="flex items-center gap-1.5">
-              {isPR && <Trophy size={12} className="text-amber-500 shrink-0" />}
-              <span
-                className={`text-sm font-semibold ${isPR ? 'text-amber-700' : 'text-slate-800'}`}
-              >
-                {formatTime(entry.elapsed_time_sec)}
-              </span>
+    <div id={`personalBestsAccordionItem_${slug}_analyticsPage`}>
+      <AccordionItem value={distance}>
+        <AccordionTrigger
+          id={`personalBestsAccordionTrigger_${slug}_analyticsPage`}
+          className="px-4 py-3"
+        >
+          <div className={`${COLS} flex-1 pr-2`}>
+            <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">
+              {distance}
+            </span>
+            <span className="text-sm text-slate-700 whitespace-nowrap">
+              {best ? formatTime(best.elapsed_time_sec) : '—'}
+            </span>
+            <span className="text-sm text-slate-500 whitespace-nowrap">
+              {best ? formatPace(best.pace_sec_per_km) : '—'}
+            </span>
+            <span className="text-xs text-slate-400 whitespace-nowrap">
+              {best ? formatDate(best.date) : '—'}
+            </span>
+          </div>
+        </AccordionTrigger>
+
+        <AccordionContent
+          id={`personalBestsAccordionContent_${slug}_analyticsPage`}
+          className="pb-0"
+        >
+          {!entries || entries.length === 0 ? (
+            <p className="text-sm text-slate-400 px-4 pb-3">No efforts recorded yet.</p>
+          ) : (
+            <div className="border-t border-slate-100">
+              {entries.map((entry) => {
+                const isPR = entry.rank === 1
+                return (
+                  <button
+                    key={entry.rank}
+                    id={`personalBestsRow_${slug}_${entry.rank}_analyticsPage`}
+                    type="button"
+                    onClick={() => entry.activity_id && onRowClick(entry.activity_id)}
+                    className={`flex w-full items-center text-left px-4 py-2.5 border-b border-slate-50 last:border-b-0 transition-colors hover:bg-slate-50 ${
+                      isPR ? 'bg-amber-50 hover:bg-amber-100' : ''
+                    }`}
+                  >
+                    <div className={`${COLS} flex-1 pr-2`}>
+                      <span className="flex items-center gap-1.5 whitespace-nowrap">
+                        {isPR && <Trophy size={12} className="text-amber-500 shrink-0" />}
+                        <span
+                          className={`text-xs font-medium ${isPR ? 'text-amber-600' : 'text-slate-400'}`}
+                        >
+                          #{entry.rank}
+                        </span>
+                      </span>
+                      <span
+                        className={`text-sm font-semibold whitespace-nowrap ${isPR ? 'text-amber-700' : 'text-slate-700'}`}
+                      >
+                        {formatTime(entry.elapsed_time_sec)}
+                      </span>
+                      <span className="text-sm text-slate-500 whitespace-nowrap">
+                        {formatPace(entry.pace_sec_per_km)}
+                      </span>
+                      <span className="text-xs text-slate-400 whitespace-nowrap">
+                        {formatDate(entry.date)}
+                      </span>
+                    </div>
+                    <div className="size-4 shrink-0" aria-hidden="true" />
+                  </button>
+                )
+              })}
             </div>
-            <span className="text-xs text-slate-500">{formatPace(entry.pace_sec_per_km)}</span>
-            <span className="text-xs text-slate-400">{formatDate(entry.date)}</span>
-          </Button>
-        )
-      })}
+          )}
+        </AccordionContent>
+      </AccordionItem>
     </div>
   )
 }
@@ -94,7 +147,7 @@ export default function PersonalBestsTable() {
       try {
         const result = await fetchPersonalBests()
         if (!cancelled) setData(result)
-      } catch (err) {
+      } catch {
         if (!cancelled) setError('Failed to load personal bests')
       } finally {
         if (!cancelled) setLoading(false)
@@ -111,11 +164,11 @@ export default function PersonalBestsTable() {
     return (
       <div
         id="personalBestsLoading_analyticsPage"
-        className="flex gap-2"
+        className="flex flex-col gap-2"
         aria-label="Loading personal bests"
       >
         {DISTANCES.map((d) => (
-          <Skeleton key={d} className="h-40 flex-1 rounded-xl" />
+          <Skeleton key={d} className="h-11 w-full rounded-lg" />
         ))}
       </div>
     )
@@ -136,17 +189,41 @@ export default function PersonalBestsTable() {
   return (
     <div
       id="personalBestsTable_analyticsPage"
-      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-slate-100 rounded-xl overflow-hidden border border-slate-100"
+      className="rounded-xl border border-slate-200 bg-white overflow-hidden"
     >
-      {DISTANCES.map((distance) => (
-        <div key={distance} className="bg-white">
-          <DistanceColumn
-            distance={distance}
-            entries={data?.[distance] ?? []}
-            onRowClick={(activityId) => router.push(`/main/running/activities/${activityId}`)}
-          />
+      <div className="overflow-x-auto">
+        <div className="min-w-[520px]">
+          {/* Column header — mirrors trigger layout (flex-1 grid + chevron spacer) */}
+          <div className="flex items-center px-4 py-2 border-b border-slate-100 bg-slate-50">
+            <div className={`${COLS} flex-1 pr-2`}>
+              <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                Distance
+              </span>
+              <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                Best Time
+              </span>
+              <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                Pace
+              </span>
+              <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                Date
+              </span>
+            </div>
+            <div className="size-4 shrink-0" aria-hidden="true" />
+          </div>
+
+          <Accordion type="multiple">
+            {DISTANCES.map((distance) => (
+              <DistanceRow
+                key={distance}
+                distance={distance}
+                entries={data?.[distance] ?? []}
+                onRowClick={(activityId) => router.push(`/main/running/activities/${activityId}`)}
+              />
+            ))}
+          </Accordion>
         </div>
-      ))}
+      </div>
     </div>
   )
 }
