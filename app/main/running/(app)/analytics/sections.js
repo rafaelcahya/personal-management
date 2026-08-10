@@ -12,14 +12,9 @@ import {
 } from 'lucide-react'
 
 export const ANALYTICS_SECTIONS = [
-  {
-    id: 'performanceTrendsSection_analyticsPage',
-    label: 'Performance Trends',
-    icon: TrendingUp,
-    defaultVisible: true,
-  },
+  // { id: 'performanceTrendsSection_analyticsPage', label: 'Performance Trends', icon: TrendingUp, defaultVisible: true },
   { id: 'weeklyDistanceSection', label: 'Weekly Distance', icon: BarChart2, defaultVisible: true },
-  { id: 'paceTrendSection', label: 'Pace Trend', icon: TrendingUp, defaultVisible: true },
+  // { id: 'paceTrendSection', label: 'Pace Trend', icon: TrendingUp, defaultVisible: true },
   { id: 'bestPaceSection', label: 'Best Pace by Distance', icon: Zap, defaultVisible: true },
   {
     id: 'elevationTerrainSection_analyticsPage',
@@ -27,19 +22,9 @@ export const ANALYTICS_SECTIONS = [
     icon: Mountain,
     defaultVisible: true,
   },
-  {
-    id: 'pmcSection_analyticsPage',
-    label: 'Performance Management',
-    icon: Activity,
-    defaultVisible: true,
-  },
+  // { id: 'pmcSection_analyticsPage', label: 'Performance Management', icon: Activity, defaultVisible: true },
   { id: 'vo2maxTrendSection', label: 'VO2max Trend', icon: Activity, defaultVisible: true },
-  {
-    id: 'runningPowerSection_analyticsPage',
-    label: 'Running Power',
-    icon: Zap,
-    defaultVisible: true,
-  },
+  // { id: 'runningPowerSection_analyticsPage', label: 'Running Power', icon: Zap, defaultVisible: true },
   {
     id: 'vo2maxTargetEffortSection',
     label: 'VO2max Target Effort',
