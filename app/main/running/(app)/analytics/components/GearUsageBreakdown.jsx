@@ -69,53 +69,75 @@ export default function GearUsageBreakdown({ gear, error }) {
 
   return (
     <div id="gearUsageBreakdown_analyticsPage" className="flex flex-col gap-3">
-      <Table
-        id="gearUsageTable_analyticsPage"
-        className="min-w-full"
-        aria-label="Gear usage breakdown"
-      >
-        <TableHeader sticky>
-          <TableRow>
-            <TableHead className="px-3 py-3 font-semibold text-slate-500">Gear</TableHead>
-            <TableHead className="px-3 py-3 font-semibold text-slate-500" align="right">
-              Activities
-            </TableHead>
-            <TableHead className="px-3 py-3 font-semibold text-slate-500" align="right">
-              Time
-            </TableHead>
-            <TableHead className="px-3 py-3 font-semibold text-slate-500" align="right">
-              Distance
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {visible.map((g) => (
-            <TableRow key={g.id}>
-              <TableCell className="px-3 py-3.5">
-                <div className="flex flex-col gap-0.5">
-                  <span className="font-semibold text-slate-900 leading-tight">
-                    {gearDisplayName(g)}
-                  </span>
-                  {g.retired && (
-                    <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full w-fit">
-                      Retired
-                    </span>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell className="px-3 py-3.5 font-mono text-slate-700" align="right">
-                {g.total_activities}
-              </TableCell>
-              <TableCell className="px-3 py-3.5 font-mono text-slate-700" align="right">
-                {fmtTime(g.total_moving_time_sec)}
-              </TableCell>
-              <TableCell className="px-3 py-3.5 font-mono text-slate-700" align="right">
-                {fmtDistKm(g.total_distance_m)}
-              </TableCell>
+      <div className="overflow-x-auto">
+        <Table
+          id="gearUsageTable_analyticsPage"
+          className="min-w-max w-full"
+          aria-label="Gear usage breakdown"
+        >
+          <TableHeader sticky>
+            <TableRow>
+              <TableHead className="px-3 py-3 whitespace-nowrap font-semibold text-slate-500">
+                Gear
+              </TableHead>
+              <TableHead
+                className="px-3 py-3 whitespace-nowrap font-semibold text-slate-500"
+                align="right"
+              >
+                Activities
+              </TableHead>
+              <TableHead
+                className="px-3 py-3 whitespace-nowrap font-semibold text-slate-500"
+                align="right"
+              >
+                Time
+              </TableHead>
+              <TableHead
+                className="px-3 py-3 whitespace-nowrap font-semibold text-slate-500"
+                align="right"
+              >
+                Distance
+              </TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {visible.map((g) => (
+              <TableRow key={g.id}>
+                <TableCell className="px-3 py-3.5 whitespace-nowrap">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-semibold text-slate-900 leading-tight">
+                      {gearDisplayName(g)}
+                    </span>
+                    {g.retired && (
+                      <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full w-fit">
+                        Retired
+                      </span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell
+                  className="px-3 py-3.5 whitespace-nowrap font-mono text-slate-700"
+                  align="right"
+                >
+                  {g.total_activities}
+                </TableCell>
+                <TableCell
+                  className="px-3 py-3.5 whitespace-nowrap font-mono text-slate-700"
+                  align="right"
+                >
+                  {fmtTime(g.total_moving_time_sec)}
+                </TableCell>
+                <TableCell
+                  className="px-3 py-3.5 whitespace-nowrap font-mono text-slate-700"
+                  align="right"
+                >
+                  {fmtDistKm(g.total_distance_m)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
       {hasRetired && (
         <RetiredToggle showRetired={showRetired} onToggle={() => setShowRetired((v) => !v)} />

@@ -301,96 +301,124 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
       )}
 
       {view === 'table' && (
-        <Table className="min-w-full" aria-label="Splits table">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-10">#</TableHead>
-              <TableHead align="right">Dist</TableHead>
-              <TableHead align="right">Pace</TableHead>
-              <TableHead align="right">Time</TableHead>
-              {hasSplitsHr && <TableHead align="right">HR</TableHead>}
-              <TableHead align="right">Elev</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {splits.map((s) => (
-              <TableRow key={s.id ?? s.split_number}>
-                <TableCell className="text-xs text-slate-400 font-medium">
-                  {s.split_number}
-                </TableCell>
-                <TableCell className="font-mono tabular-nums text-slate-700" align="right">
-                  {s.distance_m ? `${(s.distance_m / 1000).toFixed(2)} km` : '—'}
-                </TableCell>
-                <TableCell align="right">
-                  <span className="font-mono tabular-nums text-sm text-slate-700">
-                    {s.pace_sec_per_km ? `${fmtPace(s.pace_sec_per_km)}/km` : '—'}
-                  </span>
-                  {s.elevation_gain_m > 0 && s.gap_sec_per_km != null && (
-                    <div className="text-[10px] text-slate-400 mt-0.5">
-                      GAP {fmtPace(s.gap_sec_per_km)}/km{' '}
-                      {(() => {
-                        const diff = s.pace_sec_per_km - s.gap_sec_per_km
-                        return (
-                          <span className={diff > 15 ? 'text-red-500' : 'text-emerald-500'}>
-                            {diff >= 0 ? '+' : ''}
-                            {diff}s
-                          </span>
-                        )
-                      })()}
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell className="font-mono tabular-nums text-slate-700" align="right">
-                  {s.duration_sec ? fmtDuration(s.duration_sec) : '—'}
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table className="min-w-max w-full" aria-label="Splits table">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="px-3 whitespace-nowrap">#</TableHead>
+                <TableHead className="px-3 whitespace-nowrap" align="right">
+                  Dist
+                </TableHead>
+                <TableHead className="px-3 whitespace-nowrap" align="right">
+                  Pace
+                </TableHead>
+                <TableHead className="px-3 whitespace-nowrap" align="right">
+                  Time
+                </TableHead>
                 {hasSplitsHr && (
-                  <TableCell className="font-mono tabular-nums text-slate-700" align="right">
-                    {s.avg_hr ? `${s.avg_hr}` : '—'}
-                  </TableCell>
+                  <TableHead className="px-3 whitespace-nowrap" align="right">
+                    HR
+                  </TableHead>
                 )}
-                <TableCell className="font-mono tabular-nums text-slate-700" align="right">
-                  {s.elevation_gain_m != null
-                    ? `${s.elevation_gain_m > 0 ? '+' : ''}${Math.round(s.elevation_gain_m)} m`
-                    : '—'}
-                </TableCell>
+                <TableHead className="px-3 whitespace-nowrap" align="right">
+                  Elev
+                </TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {splits.map((s) => (
+                <TableRow key={s.id ?? s.split_number}>
+                  <TableCell className="px-3 whitespace-nowrap text-xs text-slate-400 font-medium">
+                    {s.split_number}
+                  </TableCell>
+                  <TableCell
+                    className="px-3 whitespace-nowrap font-mono tabular-nums text-slate-700"
+                    align="right"
+                  >
+                    {s.distance_m ? `${(s.distance_m / 1000).toFixed(2)} km` : '—'}
+                  </TableCell>
+                  <TableCell className="px-3 whitespace-nowrap" align="right">
+                    <span className="font-mono tabular-nums text-sm text-slate-700">
+                      {s.pace_sec_per_km ? `${fmtPace(s.pace_sec_per_km)}/km` : '—'}
+                    </span>
+                    {s.elevation_gain_m > 0 && s.gap_sec_per_km != null && (
+                      <div className="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">
+                        GAP {fmtPace(s.gap_sec_per_km)}/km{' '}
+                        {(() => {
+                          const diff = s.pace_sec_per_km - s.gap_sec_per_km
+                          return (
+                            <span className={diff > 15 ? 'text-red-500' : 'text-emerald-500'}>
+                              {diff >= 0 ? '+' : ''}
+                              {diff}s
+                            </span>
+                          )
+                        })()}
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell
+                    className="px-3 whitespace-nowrap font-mono tabular-nums text-slate-700"
+                    align="right"
+                  >
+                    {s.duration_sec ? fmtDuration(s.duration_sec) : '—'}
+                  </TableCell>
+                  {hasSplitsHr && (
+                    <TableCell
+                      className="px-3 whitespace-nowrap font-mono tabular-nums text-slate-700"
+                      align="right"
+                    >
+                      {s.avg_hr ? `${s.avg_hr}` : '—'}
+                    </TableCell>
+                  )}
+                  <TableCell
+                    className="px-3 whitespace-nowrap font-mono tabular-nums text-slate-700"
+                    align="right"
+                  >
+                    {s.elevation_gain_m != null
+                      ? `${s.elevation_gain_m > 0 ? '+' : ''}${Math.round(s.elevation_gain_m)} m`
+                      : '—'}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       {cardiacDrift !== null && (
-        <div id={`cardiacDrift_${pagePrefix}`} className="flex items-center gap-2 mt-2 px-1">
-          <Heart className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />
-          <span className="text-xs text-slate-400">Cardiac drift:</span>
-          <span
-            className={`text-xs font-semibold ${
-              cardiacDrift > 0 ? 'text-red-500' : 'text-blue-500'
-            }`}
-          >
-            {cardiacDrift > 0 ? '+' : ''}
-            {cardiacDrift} bpm
-          </span>
-          <span className="text-xs text-slate-300">(split 1 → last split)</span>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon-xs" aria-label="Cardiac drift information">
-                <Info className="size-3.5" aria-hidden="true" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent side="top" className="w-auto max-w-64 p-3 text-xs leading-relaxed">
-              <p className="font-semibold mb-1">What is Cardiac Drift?</p>
-              <p>
-                HR increase from your first split to your last split at the same pace — a sign of
-                fatigue or dehydration.
-              </p>
-              <p className="mt-1.5 text-slate-300">
-                <span className="text-green-400 font-medium">0–5 bpm</span> Good ·{' '}
-                <span className="text-amber-400 font-medium">6–10</span> Moderate ·{' '}
-                <span className="text-red-400 font-medium">&gt;10</span> High
-              </p>
-            </PopoverContent>
-          </Popover>
+        <div className="overflow-x-auto mt-2 px-1">
+          <div id={`cardiacDrift_${pagePrefix}`} className="flex items-center gap-2 min-w-max">
+            <Heart className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />
+            <span className="text-xs text-slate-400 whitespace-nowrap">Cardiac drift:</span>
+            <span
+              className={`text-xs font-semibold whitespace-nowrap ${
+                cardiacDrift > 0 ? 'text-red-500' : 'text-blue-500'
+              }`}
+            >
+              {cardiacDrift > 0 ? '+' : ''}
+              {cardiacDrift} bpm
+            </span>
+            <span className="text-xs text-slate-300 whitespace-nowrap">(split 1 → last split)</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon-xs" aria-label="Cardiac drift information">
+                  <Info className="size-3.5" aria-hidden="true" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent side="top" className="w-auto max-w-64 p-3 text-xs leading-relaxed">
+                <p className="font-semibold mb-1">What is Cardiac Drift?</p>
+                <p>
+                  HR increase from your first split to your last split at the same pace — a sign of
+                  fatigue or dehydration.
+                </p>
+                <p className="mt-1.5 text-slate-300">
+                  <span className="text-green-400 font-medium">0–5 bpm</span> Good ·{' '}
+                  <span className="text-amber-400 font-medium">6–10</span> Moderate ·{' '}
+                  <span className="text-red-400 font-medium">&gt;10</span> High
+                </p>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       )}
     </div>
