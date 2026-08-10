@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-07-17 (issue #693 — research page)
-**Branch:** release/v1.26
+**Last Updated:** 2026-08-10 (issue #741 — VO2max personal target)
+**Branch:** master
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,417  | 47%  |
+| API       | 1,431  | 47%  |
 | UI        | 1,597  | 53%  |
-| **Total** | **3,014** | 100% |
+| **Total** | **3,028** | 100% |
 
 ---
 
@@ -22,10 +22,10 @@
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
 | Trading Management   | 234   | 300   | 534   |
-| Running Tracker      | 460   | 695   | 1,155 |
+| Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,417** | **1,597** | **3,014** |
+| **Total**            | **1,431** | **1,597** | **3,028** |
 
 ---
 
@@ -264,8 +264,9 @@
 | Session Profile        | 18  | 0  | 18    |
 | Temperature Efficiency | 24  | 0  | 24    |
 | VO2Max Target Effort   | 4   | 31 | 35    |
+| VO2max Target (personal) | 14 | 0  | 14    |
 | Zone Analytics         | 24  | 0  | 24    |
-| **Subtotal**           | **126** | **87** | **213** |
+| **Subtotal**           | **140** | **87** | **227** |
 
 #### Injury AI
 
@@ -314,7 +315,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **53** | **21** | **74** |
 
-**Running Total — API: 460 | UI: 695 | Total: 1,155**
+**Running Total — API: 474 | UI: 695 | Total: 1,169**
 
 ---
 
@@ -343,7 +344,7 @@
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 701   | 454   | 1,155 |
 | Trading Management   | 234   | 300   | 534   |
-| Running Tracker      | 460   | 695   | 1,155 |
+| Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,417** | **1,597** | **3,014** |
+| **Total**            | **1,431** | **1,597** | **3,028** |

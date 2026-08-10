@@ -1,8 +1,125 @@
 'use client'
 
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Target, Trophy, AlertTriangle, Clock, TrendingUp, Info } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
+import Input from '@/components/base/Input/Input'
 import Link from 'next/link'
+import { vo2maxTargetInputSchema } from '@/schemas/vo2maxTarget'
+
+function Vo2maxTargetInput({ current, onSave, onClear }) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm({
+    resolver: zodResolver(vo2maxTargetInputSchema),
+    defaultValues: { vo2max_target: current ?? '' },
+  })
+
+  async function onSubmit(values) {
+    try {
+      await onSave(values.vo2max_target)
+    } catch (err) {
+      setError('vo2max_target', { message: err.message || 'Failed to save' })
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Input
+          id="vo2maxTargetInput_analyticsPage"
+          type="number"
+          min={10}
+          max={90}
+          step={0.5}
+          placeholder="e.g. 50"
+          className="h-8 w-24 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+          aria-label="VO2max target value in ml/kg/min"
+          {...register('vo2max_target', { valueAsNumber: true })}
+        />
+        <span className="text-xs text-slate-400 shrink-0">ml/kg/min</span>
+        <Button
+          id="vo2maxTargetSaveBtn_analyticsPage"
+          type="submit"
+          size="sm"
+          disabled={isSubmitting}
+          className="bg-violet-600 hover:bg-violet-700 text-white h-8 px-3 text-xs"
+        >
+          {isSubmitting ? 'Saving…' : 'Save'}
+        </Button>
+        {onClear && current != null && (
+          <Button
+            id="vo2maxTargetClearBtn_analyticsPage"
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onClear}
+            className="text-xs text-slate-400 hover:text-red-500 h-8 px-2"
+            aria-label="Clear VO2max target"
+          >
+            Clear
+          </Button>
+        )}
+      </div>
+      {errors.vo2max_target && (
+        <p className="text-xs text-red-500">{errors.vo2max_target.message}</p>
+      )}
+    </form>
+  )
+}
+
+function ManualTargetFooter({ manualTarget, onSaveTarget, onClearTarget }) {
+  const [open, setOpen] = useState(false)
+
+  if (!open) {
+    return (
+      <div className="border-t border-slate-100 pt-3">
+        <Button
+          id="vo2maxTargetFooterToggleBtn_analyticsPage"
+          variant="ghost"
+          size="sm"
+          onClick={() => setOpen(true)}
+          className="text-xs text-slate-400 hover:text-violet-600 px-0 h-auto"
+        >
+          {manualTarget != null
+            ? `Personal target: ${manualTarget} ml/kg/min — update`
+            : 'Set personal VO2max target'}
+        </Button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="border-t border-slate-100 pt-3 flex flex-col gap-2">
+      <p className="text-xs text-slate-500 font-medium">Personal VO2max target</p>
+      <Vo2maxTargetInput
+        current={manualTarget}
+        onSave={async (v) => {
+          await onSaveTarget(v)
+          setOpen(false)
+        }}
+        onClear={async () => {
+          await onClearTarget()
+          setOpen(false)
+        }}
+      />
+      <Button
+        id="vo2maxTargetCancelBtn_analyticsPage"
+        variant="ghost"
+        size="sm"
+        onClick={() => setOpen(false)}
+        className="text-xs text-slate-400 self-start px-0 h-auto"
+      >
+        Cancel
+      </Button>
+    </div>
+  )
+}
 
 const STATUS_META = {
   On_Track: {
@@ -61,7 +178,9 @@ function WeeksBar({ label, weeks, maxWeeks, colorClass }) {
   )
 }
 
-export default function Vo2maxGapCard({ data }) {
+export default function Vo2maxGapCard({ data, manualTarget, onSaveTarget, onClearTarget }) {
+  const [showUpdateInput, setShowUpdateInput] = useState(false)
+
   if (!data || data.status === 'no_goal') {
     return (
       <div
@@ -76,7 +195,7 @@ export default function Vo2maxGapCard({ data }) {
 
         <div
           id="vo2maxGapNoGoal_analyticsPage"
-          className="flex flex-col items-center gap-3 py-6 text-center"
+          className="flex flex-col items-center gap-3 py-4 text-center"
         >
           <Target className="h-8 w-8 text-slate-300" aria-hidden="true" />
           <p className="text-sm text-slate-500">No active race goal set.</p>
@@ -90,6 +209,100 @@ export default function Vo2maxGapCard({ data }) {
           >
             <Link href="/main/running/race-log">Set a race goal</Link>
           </Button>
+        </div>
+
+        <div className="border-t border-slate-100 pt-4 flex flex-col gap-2">
+          <p className="text-xs text-slate-500 font-medium">Or set a VO2max target directly</p>
+          <Vo2maxTargetInput current={null} onSave={onSaveTarget} />
+        </div>
+      </div>
+    )
+  }
+
+  if (data.status === 'manual_target') {
+    const { currentVo2max, requiredVo2max, gapMlKgMin } = data
+    const isAhead = (gapMlKgMin ?? 0) >= 0
+    const gapAbs = Math.abs(gapMlKgMin ?? 0)
+
+    return (
+      <div
+        id="vo2maxGapCard_analyticsPage"
+        className="rounded-xl border border-slate-200 bg-white p-5 flex flex-col gap-4"
+        aria-label="VO2max target effort status"
+      >
+        <div className="flex items-center gap-2">
+          <Target className="h-4 w-4 text-violet-500" aria-hidden="true" />
+          <p className="text-sm font-semibold text-slate-700">VO2max Target</p>
+        </div>
+
+        <div id="vo2maxGapNumbers_analyticsPage" className="grid grid-cols-3 gap-3">
+          <div className="rounded-lg bg-slate-50 border border-slate-200 p-3 text-center">
+            <p className="text-xs text-slate-500 mb-1">Current</p>
+            <p className="text-xl font-bold text-violet-600">
+              {currentVo2max != null ? currentVo2max : '—'}
+            </p>
+            <p className="text-xs text-slate-400">ml/kg/min</p>
+          </div>
+          <div className="rounded-lg bg-slate-50 border border-slate-200 p-3 text-center">
+            <p className="text-xs text-slate-500 mb-1">Target</p>
+            <p className="text-xl font-bold text-slate-700">{requiredVo2max}</p>
+            <p className="text-xs text-slate-400">ml/kg/min</p>
+          </div>
+          <div
+            className={`rounded-lg border p-3 text-center ${
+              isAhead ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'
+            }`}
+          >
+            <p className="text-xs text-slate-500 mb-1">Gap</p>
+            <p className={`text-xl font-bold ${isAhead ? 'text-emerald-600' : 'text-amber-600'}`}>
+              {gapMlKgMin != null ? `${isAhead ? '+' : '-'}${gapAbs}` : '—'}
+            </p>
+            <p className="text-xs text-slate-400">ml/kg/min</p>
+          </div>
+        </div>
+
+        <div className="border-t border-slate-100 pt-3 flex flex-col gap-2">
+          {showUpdateInput ? (
+            <>
+              <p className="text-xs text-slate-500 font-medium">Update target</p>
+              <Vo2maxTargetInput
+                current={manualTarget}
+                onSave={async (v) => {
+                  await onSaveTarget(v)
+                  setShowUpdateInput(false)
+                }}
+                onClear={onClearTarget}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowUpdateInput(false)}
+                className="text-xs text-slate-400 self-start px-0 h-auto"
+              >
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <div className="flex items-center gap-3 flex-wrap">
+              <Button
+                id="vo2maxUpdateTargetBtn_analyticsPage"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowUpdateInput(true)}
+                className="text-xs text-violet-600 hover:text-violet-700 px-0 h-auto"
+              >
+                Update target
+              </Button>
+              <span className="text-slate-200 text-xs">|</span>
+              <Link
+                id="vo2maxUseRaceGoalLink_analyticsPage"
+                href="/main/running/race-log"
+                className="text-xs text-slate-400 hover:text-slate-600"
+              >
+                Use a race goal instead
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     )
@@ -135,6 +348,11 @@ export default function Vo2maxGapCard({ data }) {
         >
           <Link href="/main/running/race-log">Add target time</Link>
         </Button>
+        <ManualTargetFooter
+          manualTarget={manualTarget}
+          onSaveTarget={onSaveTarget}
+          onClearTarget={onClearTarget}
+        />
       </div>
     )
   }
@@ -171,6 +389,11 @@ export default function Vo2maxGapCard({ data }) {
             </p>
           )}
         </div>
+        <ManualTargetFooter
+          manualTarget={manualTarget}
+          onSaveTarget={onSaveTarget}
+          onClearTarget={onClearTarget}
+        />
       </div>
     )
   }
@@ -204,6 +427,11 @@ export default function Vo2maxGapCard({ data }) {
             <Link href="/main/running/race-log">Set a new goal</Link>
           </Button>
         </div>
+        <ManualTargetFooter
+          manualTarget={manualTarget}
+          onSaveTarget={onSaveTarget}
+          onClearTarget={onClearTarget}
+        />
       </div>
     )
   }
@@ -247,6 +475,11 @@ export default function Vo2maxGapCard({ data }) {
             <p className="text-xs text-slate-400">ml/kg/min</p>
           </div>
         </div>
+        <ManualTargetFooter
+          manualTarget={manualTarget}
+          onSaveTarget={onSaveTarget}
+          onClearTarget={onClearTarget}
+        />
       </div>
     )
   }
@@ -372,6 +605,11 @@ export default function Vo2maxGapCard({ data }) {
           to see your fitness category.
         </p>
       )}
+      <ManualTargetFooter
+        manualTarget={manualTarget}
+        onSaveTarget={onSaveTarget}
+        onClearTarget={onClearTarget}
+      />
     </div>
   )
 }

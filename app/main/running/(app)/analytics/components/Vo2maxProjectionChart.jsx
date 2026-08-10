@@ -94,7 +94,8 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 export default function Vo2maxProjectionChart({ data, activities }) {
-  if (!data || data.status !== 'ok' || data.statusBadge === 'Goal Expired') {
+  const validStatus = data?.status === 'ok' || data?.status === 'manual_target'
+  if (!data || !validStatus || data.statusBadge === 'Goal Expired') {
     return null
   }
 
