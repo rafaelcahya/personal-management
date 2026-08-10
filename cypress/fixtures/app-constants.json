@@ -138,7 +138,8 @@
       "endurance_score": "/api/running/v1/analytics/endurance-score",
       "pmc": "/api/running/v1/analytics/pmc",
       "session_profile": "/api/running/v1/analytics/session-profile",
-      "temperature_efficiency": "/api/running/v1/analytics/temperature-efficiency"
+      "temperature_efficiency": "/api/running/v1/analytics/temperature-efficiency",
+      "vo2max_target": "/api/running/v1/analytics/vo2max-target"
     },
     "running_user_profile": {
       "get": "/api/running/v1/user/profile",
@@ -744,6 +745,13 @@
       "vo2max_projection_chart": "vo2maxProjectionChart_analyticsPage",
       "set_goal_btn": "setGoalBtn_analyticsPage",
       "set_new_goal_btn": "setNewGoalBtn_analyticsPage",
+      "vo2max_target_input": "vo2maxTargetInput_analyticsPage",
+      "vo2max_target_save_btn": "vo2maxTargetSaveBtn_analyticsPage",
+      "vo2max_target_clear_btn": "vo2maxTargetClearBtn_analyticsPage",
+      "vo2max_target_footer_toggle_btn": "vo2maxTargetFooterToggleBtn_analyticsPage",
+      "vo2max_target_cancel_btn": "vo2maxTargetCancelBtn_analyticsPage",
+      "vo2max_update_target_btn": "vo2maxUpdateTargetBtn_analyticsPage",
+      "vo2max_use_race_goal_link": "vo2maxUseRaceGoalLink_analyticsPage",
       "vo2max_sex_missing_hint": "vo2maxSexMissingHint_analyticsPage",
       "vo2max_trend_data_count": "vo2maxTrendDataCount_analyticsPage",
       "vo2max_trend_empty_count": "vo2maxTrendEmptyCount_analyticsPage",
