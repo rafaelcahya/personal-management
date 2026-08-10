@@ -16,13 +16,14 @@ import Section from './components/Section'
 import SectionsManager from './components/SectionsManager'
 import { useSectionVisibility } from './hooks/useSectionVisibility'
 import WeeklyDistanceChart from './components/WeeklyDistanceChart'
-import PaceTrendChart from './components/PaceTrendChart'
+// import PaceTrendChart from './components/PaceTrendChart'
+// import PerformanceManagementChart from './components/PerformanceManagementChart'
+// import RunningPowerChart from './components/RunningPowerChart'
+// import PerformanceTrends from '../dashboard/components/PerformanceTrends'
 import BestPaceChart from './components/BestPaceChart'
 import WeeklyElevationChart from './components/WeeklyElevationChart'
 import TerrainDistributionChart from './components/TerrainDistributionChart'
-import PerformanceManagementChart from './components/PerformanceManagementChart'
 import Vo2maxTrendChart from './components/Vo2maxTrendChart'
-import RunningPowerChart from './components/RunningPowerChart'
 import EfTrendChart from './components/EfTrendChart'
 import RacePredictor from './components/RacePredictor'
 import AnalyticsAICard from './components/AnalyticsAICard'
@@ -33,7 +34,6 @@ import ZoneAnalyticsSection from './components/ZoneAnalyticsSection'
 import FitnessAgeTrendChart from './components/FitnessAgeTrendChart'
 import EnduranceScoreTrendChart from './components/EnduranceScoreTrendChart'
 import TrainingZonesReference from './components/TrainingZonesReference'
-import PerformanceTrends from '../dashboard/components/PerformanceTrends'
 import SessionProfileSection from './components/SessionProfileSection'
 import TemperatureEfficiencySection from './components/TemperatureEfficiencySection'
 
@@ -180,11 +180,11 @@ export default function AnalyticsPage() {
 
       {!loading && !error && (
         <>
-          {vis('performanceTrendsSection_analyticsPage') && (
-            <div id="performanceTrendsSection_analyticsPage" className="scroll-mt-20">
-              <PerformanceTrends />
-            </div>
-          )}
+          {/* Performance Trends — hidden, re-enable when data is reliable
+          <div id="performanceTrendsSection_analyticsPage" className="scroll-mt-20">
+            <PerformanceTrends />
+          </div>
+          */}
 
           {vis('weeklyDistanceSection') && (
             <Section
@@ -198,17 +198,14 @@ export default function AnalyticsPage() {
             </Section>
           )}
 
+          {/* Pace Trend — hidden, re-enable when data is reliable
           {vis('paceTrendSection') && (
-            <Section
-              id="paceTrendSection"
-              title="Pace Trend"
-              description="How your average pace changes run by run. The purple line is a 3-run moving average — a downward slope means you're getting faster."
-              icon={TrendingUp}
-            >
+            <Section id="paceTrendSection" title="Pace Trend" description="How your average pace changes run by run. The purple line is a 3-run moving average — a downward slope means you're getting faster." icon={TrendingUp}>
               <PaceTrendChart trendData={runTrendData} />
               <AnalyticsAICard section="pace_trend" isPageStale={isPageStale} />
             </Section>
           )}
+          */}
 
           {vis('bestPaceSection') && (
             <Section
@@ -250,16 +247,13 @@ export default function AnalyticsPage() {
             </Section>
           )}
 
+          {/* Performance Management — hidden, re-enable when data is reliable
           {vis('pmcSection_analyticsPage') && (
-            <Section
-              id="pmcSection_analyticsPage"
-              title="Performance Management (Fitness / Fatigue / Form)"
-              description="Fitness (28-day load) and Fatigue (7-day load) over time, with Form (the gap between them) showing how fresh or fatigued you are. Most useful with 60+ days of history, especially for race tapering decisions."
-              icon={Activity}
-            >
+            <Section id="pmcSection_analyticsPage" title="Performance Management (Fitness / Fatigue / Form)" description="Fitness (28-day load) and Fatigue (7-day load) over time, with Form (the gap between them) showing how fresh or fatigued you are. Most useful with 60+ days of history, especially for race tapering decisions." icon={Activity}>
               <PerformanceManagementChart />
             </Section>
           )}
+          */}
 
           {vis('vo2maxTrendSection') && (
             <Section
@@ -273,16 +267,13 @@ export default function AnalyticsPage() {
             </Section>
           )}
 
+          {/* Running Power — hidden, re-enable when data is reliable
           {vis('runningPowerSection_analyticsPage') && (
-            <Section
-              id="runningPowerSection_analyticsPage"
-              title="Running Power"
-              description="Average power per run, with a 30-activity rolling average and weighted power (smooths out spikes from hills and surges) overlaid. Requires a device with running power support."
-              icon={Zap}
-            >
+            <Section id="runningPowerSection_analyticsPage" title="Running Power" description="Average power per run, with a 30-activity rolling average and weighted power (smooths out spikes from hills and surges) overlaid. Requires a device with running power support." icon={Zap}>
               <RunningPowerChart activities={activities} />
             </Section>
           )}
+          */}
 
           {vis('vo2maxTargetEffortSection') && (
             <Section
