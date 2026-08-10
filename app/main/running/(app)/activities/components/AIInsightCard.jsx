@@ -154,10 +154,7 @@ function renderMarkdown(content) {
 function FocusButtons({ onSelect, generating, variant = 'primary', selected = null }) {
   const buttons = variant === 'followup' ? FOLLOWUP_BUTTONS : FOCUS_BUTTONS
   return (
-    <div
-      className="flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-visible md:pb-0"
-      style={{ scrollbarWidth: 'none' }}
-    >
+    <div className="flex flex-wrap gap-2">
       {buttons.map(({ focus, label, icon: Icon }) => {
         const isSelected = selected === focus
         return (
