@@ -22,6 +22,7 @@
     "trading_event": "/main/trading/event",
     "trading_fee": "/main/trading/fee",
     "trading_settings": "/main/trading/settings",
+    "trading_investment_flow": "/main/trading/investment-flow",
     "trading_currency": "/main/trading/currency",
     "trading_currency_holdings": "/main/trading/currency/holdings",
     "trading_currency_detail": "/main/trading/currency/holdings/1",
@@ -218,6 +219,13 @@
       "create": "/api/running/v1/routes",
       "update": "/api/running/v1/routes",
       "delete": "/api/running/v1/routes"
+    },
+    "investment_flow": {
+      "list": "/api/investment-flow/v1",
+      "create": "/api/investment-flow/v1",
+      "update": "/api/investment-flow/v1",
+      "delete": "/api/investment-flow/v1",
+      "move": "/api/investment-flow/v1/move"
     }
   },
   "test_ids": {
@@ -290,6 +298,28 @@
       "quantity_error": "trade-quantity-error",
       "portfolio_summary": "portfolio-summary",
       "pnl_display": "portfolio-pnl"
+    },
+    "investment_flow": {
+      "tree_card": "investmentFlowTreeCard_investmentFlowPage",
+      "list_view_btn": "investmentFlowListViewBtn_investmentFlowPage",
+      "tree_view_btn": "investmentFlowTreeViewBtn_investmentFlowPage",
+      "add_category_btn": "investmentFlowAddCategoryBtn_investmentFlowPage",
+      "tree_canvas": "investmentFlowTreeCanvas_investmentFlowPage",
+      "tree_root_node": "treeViewRootNode_investmentFlowPage",
+      "category_form": "categoryNodeForm_investmentFlowPage",
+      "category_form_name_field": "categoryNodeFormNameField_investmentFlowPage",
+      "category_form_submit_btn": "categoryNodeFormSubmitBtn_investmentFlowPage",
+      "category_form_cancel_btn": "categoryNodeFormCancelBtn_investmentFlowPage",
+      "ticker_form": "tickerNodeForm_investmentFlowPage",
+      "ticker_form_nominal_type_manual": "tickerNodeFormNominalTypemanual_investmentFlowPage",
+      "ticker_form_nominal_type_autosum": "tickerNodeFormNominalTypeautosum_investmentFlowPage",
+      "ticker_form_name_field": "tickerNodeFormNameField_investmentFlowPage",
+      "ticker_form_nominal_field": "tickerNodeFormNominalField_investmentFlowPage",
+      "ticker_form_notes_field": "tickerNodeFormNotesField_investmentFlowPage",
+      "ticker_form_submit_btn": "tickerNodeFormSubmitBtn_investmentFlowPage",
+      "ticker_form_cancel_btn": "tickerNodeFormCancelBtn_investmentFlowPage",
+      "delete_node_confirm_btn": "deleteNodeConfirmBtn_investmentFlowPage",
+      "delete_node_cancel_btn": "deleteNodeCancelBtn_investmentFlowPage"
     },
     "auth": {
       "login_btn": "login-btn",

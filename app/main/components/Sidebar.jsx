@@ -31,6 +31,7 @@ import {
   ChevronDown,
   MapPin,
   Microscope,
+  GitBranch,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -70,6 +71,7 @@ const TRADING_ITEMS = [
   { name: 'Market Events', href: '/main/trading/event', icon: Calendar },
   { name: 'Research', href: '/main/trading/research', icon: Microscope },
   { name: 'Fees', href: '/main/trading/fee', icon: Receipt },
+  { name: 'Investment Flow', href: '/main/trading/investment-flow', icon: GitBranch },
   { name: 'Settings', href: '/main/trading/settings', icon: Settings },
 ]
 

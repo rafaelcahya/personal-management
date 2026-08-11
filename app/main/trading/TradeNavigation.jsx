@@ -8,6 +8,7 @@ import {
   TrendingUp,
   ChevronRight,
   BarChart2,
+  GitBranch,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Button from '@/components/base/Button/Button'
@@ -47,6 +48,13 @@ const navigationItems = [
     value: 'fees',
     href: '/main/trading/fee',
     icon: Receipt,
+  },
+  {
+    name: 'Investment Flow',
+    description: 'Portfolio allocation',
+    value: 'investment-flow',
+    href: '/main/trading/investment-flow',
+    icon: GitBranch,
   },
 ]
 
