@@ -110,7 +110,7 @@ function PredictionTable({ items, startIndex = 0 }) {
             <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody divider={false}>
+        <TableBody>
           {items.map((item, index) => (
             <TableRow key={item.id} clickable>
               <TableCell className="text-slate-500 text-xs" align="center">
@@ -118,14 +118,9 @@ function PredictionTable({ items, startIndex = 0 }) {
               </TableCell>
               <TableCell>
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                <div className="flex flex-col">
-                  <p className="font-semibold text-slate-900">{item.product}</p>
-                  {item.type && (
-                    <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0 w-max">
-                      {item.type}
-                    </span>
-                  )}
-                </div>
+                <p className="font-semibold text-slate-900">
+                  {item.product} {item.type}
+                </p>
               </TableCell>
               <TableCell className="font-mono text-slate-700" align="right">
                 {item.quantity}
@@ -213,7 +208,7 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
           </div>
         </CardHeader>
 
-        <CardContent className="p-4 md:p-0">
+        <CardContent className="p-0">
           {loading ? (
             <TableSkeleton />
           ) : error ? (
@@ -265,7 +260,7 @@ export default function RestockPrediction({ items, loading, error, onRetry }) {
               <ModalDescription>Sorted by most urgent first</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody>
+          <ModalBody className="p-0">
             <PredictionTable items={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
           {modalTotalPages > 1 && (
