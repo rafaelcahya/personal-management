@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-08-10 (issue #741 — VO2max personal target)
-**Branch:** master
+**Last Updated:** 2026-08-12 (issue #754 — sort product list by updated at)
+**Branch:** feat/issue-754-sort-product-updated-at
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,431  | 47%  |
+| API       | 1,433  | 47%  |
 | UI        | 1,597  | 53%  |
-| **Total** | **3,028** | 100% |
+| **Total** | **3,030** | 100% |
 
 ---
 
@@ -20,12 +20,12 @@
 | Module               | API   | UI    | Total |
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
-| Inventory Management | 701   | 454   | 1,155 |
+| Inventory Management | 703   | 454   | 1,157 |
 | Trading Management   | 234   | 300   | 534   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,431** | **1,597** | **3,028** |
+| **Total**            | **1,433** | **1,597** | **3,030** |
 
 ---
 
@@ -64,7 +64,7 @@
 | Edit Product         | 13  | 0  | 13    |
 | Favorite Product     | 27  | 0  | 27    |
 | Last Price           | 17  | 0  | 17    |
-| List Product         | 41  | 98 | 139   |
+| List Product         | 43  | 98 | 141   |
 | Product Detail       | 25  | 35 | 60    |
 | Product Filter       | 0   | 9  | 9     |
 | Product History      | 25  | 0  | 25    |
@@ -72,7 +72,7 @@
 | Restock Predictions  | 16  | 0  | 16    |
 | Product Summary      | 16  | 0  | 16    |
 | Update Product       | 39  | 0  | 39    |
-| **Subtotal**         | **348** | **211** | **559** |
+| **Subtotal**         | **350** | **211** | **561** |
 
 #### Product Brand
 
@@ -106,7 +106,7 @@
 | Update Name      | 29  | 14 | 43    |
 | **Subtotal**     | **124** | **58** | **182** |
 
-**Inventory Total — API: 701 | UI: 454 | Total: 1,155**
+**Inventory Total — API: 703 | UI: 454 | Total: 1,157**
 
 ---
 
@@ -342,9 +342,9 @@
 | Module               | API   | UI    | Total |
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
-| Inventory Management | 701   | 454   | 1,155 |
+| Inventory Management | 703   | 454   | 1,157 |
 | Trading Management   | 234   | 300   | 534   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,431** | **1,597** | **3,028** |
+| **Total**            | **1,433** | **1,597** | **3,030** |

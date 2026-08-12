@@ -354,6 +354,32 @@ describe('Product List API', () => {
     })
   })
 
+  it('?sort=updated_at_desc returns products sorted by updated_at descending', () => {
+    cy.GetProductList({ sort: 'updated_at_desc', limit: 50 }).then((res) => {
+      expect(res.status).to.eq(200)
+      if (res.body.data.length > 1) {
+        for (let i = 0; i < res.body.data.length - 1; i++) {
+          const a = new Date(res.body.data[i].updated_at).getTime()
+          const b = new Date(res.body.data[i + 1].updated_at).getTime()
+          expect(a).to.be.gte(b)
+        }
+      }
+    })
+  })
+
+  it('?sort=updated_at_asc returns products sorted by updated_at ascending', () => {
+    cy.GetProductList({ sort: 'updated_at_asc', limit: 50 }).then((res) => {
+      expect(res.status).to.eq(200)
+      if (res.body.data.length > 1) {
+        for (let i = 0; i < res.body.data.length - 1; i++) {
+          const a = new Date(res.body.data[i].updated_at).getTime()
+          const b = new Date(res.body.data[i + 1].updated_at).getTime()
+          expect(a).to.be.lte(b)
+        }
+      }
+    })
+  })
+
   // ─── data isolation ──────────────────────────────────────────────────────────
 
   it('all products in data belong to the authenticated user', () => {
