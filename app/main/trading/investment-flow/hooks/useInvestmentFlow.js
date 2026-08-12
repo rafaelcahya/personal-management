@@ -8,6 +8,7 @@ import {
   getInvestmentFlowTree,
   moveNode,
   updateNode,
+  updateUninvestedCash,
 } from '@/lib/api/investmentFlow'
 
 function buildTree(flatNodes) {
@@ -34,7 +35,8 @@ function buildTree(flatNodes) {
 }
 
 // nominal cascades from leaves upward; percentage is computed relative to the sum of root nominals
-function withComputedValues(roots, flatNodes) {
+// plus uninvested cash, since cash is part of total portfolio value
+function withComputedValues(roots, flatNodes, uninvestedCash) {
   function sumNominal(node) {
     if (node.children.length > 0) {
       node.computedNominal = node.children.reduce((sum, child) => sum + sumNominal(child), 0)
@@ -45,7 +47,7 @@ function withComputedValues(roots, flatNodes) {
   }
   roots.forEach(sumNominal)
 
-  const rootTotal = roots.reduce((sum, node) => sum + node.computedNominal, 0)
+  const rootTotal = roots.reduce((sum, node) => sum + node.computedNominal, 0) + uninvestedCash
 
   function applyPercentage(node) {
     node.percentage = rootTotal > 0 ? (node.computedNominal / rootTotal) * 100 : 0
@@ -72,6 +74,7 @@ function withComputedValues(roots, flatNodes) {
 
 export function useInvestmentFlow() {
   const [flatNodes, setFlatNodes] = useState([])
+  const [uninvestedCash, setUninvestedCash] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const isMounted = useRef(true)
@@ -87,9 +90,10 @@ export function useInvestmentFlow() {
     try {
       setIsLoading(true)
       setIsError(false)
-      const data = await getInvestmentFlowTree()
+      const { nodes, uninvestedCash: cashValue } = await getInvestmentFlowTree()
       if (!isMounted.current) return
-      setFlatNodes(data)
+      setFlatNodes(nodes)
+      setUninvestedCash(cashValue ?? 0)
     } catch (err) {
       if (!isMounted.current) return
       console.error('Failed to load investment flow tree:', err)
@@ -107,7 +111,10 @@ export function useInvestmentFlow() {
     roots: tree,
     rootTotal,
     enrichedFlatNodes,
-  } = useMemo(() => withComputedValues(buildTree(flatNodes), flatNodes), [flatNodes])
+  } = useMemo(
+    () => withComputedValues(buildTree(flatNodes), flatNodes, uninvestedCash),
+    [flatNodes, uninvestedCash]
+  )
 
   const handleCreateNode = useCallback(
     async (payload) => {
@@ -176,6 +183,18 @@ export function useInvestmentFlow() {
     [loadTree, flatNodes]
   )
 
+  const handleUpdateUninvestedCash = useCallback(async (amount) => {
+    try {
+      const result = await updateUninvestedCash(amount)
+      setUninvestedCash(result)
+      toast.success('Uninvested cash updated')
+      return true
+    } catch (err) {
+      toast.error(err.message || 'Failed to update uninvested cash')
+      return false
+    }
+  }, [])
+
   const categoryOptions = useMemo(() => {
     return flatNodes
       .filter((node) => node.node_type === 'category')
@@ -187,6 +206,7 @@ export function useInvestmentFlow() {
     flatNodes,
     enrichedFlatNodes,
     rootTotal,
+    uninvestedCash,
     isLoading,
     isError,
     reload: loadTree,
@@ -195,5 +215,6 @@ export function useInvestmentFlow() {
     updateNode: handleUpdateNode,
     deleteNode: handleDeleteNode,
     moveNode: handleMoveNode,
+    updateUninvestedCash: handleUpdateUninvestedCash,
   }
 }

@@ -87,3 +87,9 @@ export const moveNodeSchema = z.object({
   new_parent_id: z.string().uuid('Invalid parent node ID').nullable(),
   sort_order: z.number().int().min(0).optional().default(0),
 })
+
+export const updateUninvestedCashSchema = z.object({
+  amount: z
+    .number({ invalid_type_error: 'Amount must be a number' })
+    .nonnegative('Amount cannot be negative'),
+})

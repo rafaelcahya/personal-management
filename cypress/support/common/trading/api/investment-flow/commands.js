@@ -2,6 +2,7 @@ import constants from '../../../../../fixtures/app-constants.json'
 
 const BASE = constants.endpoints.investment_flow.list
 const MOVE_BASE = constants.endpoints.investment_flow.move
+const UNINVESTED_CASH_BASE = constants.endpoints.investment_flow.uninvested_cash
 
 // ─── list ─────────────────────────────────────────────────────────────────────
 
@@ -51,4 +52,22 @@ Cypress.Commands.add('moveInvestmentFlowNode', (body = {}) => {
 
 Cypress.Commands.add('moveInvestmentFlowNodeNoAuth', (body = {}) => {
   return cy.apiRequestNoAuth('PUT', MOVE_BASE, { body })
+})
+
+// ─── uninvested cash ──────────────────────────────────────────────────────────
+
+Cypress.Commands.add('getUninvestedCash', () => {
+  return cy.apiRequestWithSession('GET', UNINVESTED_CASH_BASE)
+})
+
+Cypress.Commands.add('getUninvestedCashNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', UNINVESTED_CASH_BASE)
+})
+
+Cypress.Commands.add('patchUninvestedCash', (body = {}) => {
+  return cy.apiRequestWithSession('PATCH', UNINVESTED_CASH_BASE, { body })
+})
+
+Cypress.Commands.add('patchUninvestedCashNoAuth', (body = {}) => {
+  return cy.apiRequestNoAuth('PATCH', UNINVESTED_CASH_BASE, { body })
 })
