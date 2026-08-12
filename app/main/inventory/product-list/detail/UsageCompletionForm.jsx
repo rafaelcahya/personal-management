@@ -148,17 +148,7 @@ export default function UsageCompletionForm({ historyItem, onUpdate, onCancel })
           </div>
         )}
 
-        <div className="flex justify-end gap-2 pt-2">
-          <Button
-            type="button"
-            variant="secondary"
-            className="text-violet-600 font-medium"
-            onClick={onCancel}
-            disabled={isSubmitting}
-            id="cancelBtn-usageCompletionForm"
-          >
-            Cancel
-          </Button>
+        <div className="flex justify-end pt-2">
           <Button type="submit" disabled={isSubmitting} id="updateRecordBtn-usageCompletionForm">
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSubmitting ? 'Updating...' : 'Update Record'}

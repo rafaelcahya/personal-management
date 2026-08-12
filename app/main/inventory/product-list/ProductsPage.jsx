@@ -196,7 +196,7 @@ export default function ProductsPageClient() {
       <ProductListSummary summary={summary} loading={summaryLoading} />
 
       <Card className="overflow-hidden">
-        <ProductTableHeader summary={summary} loading={summaryLoading} />
+        <ProductTableHeader />
 
         {/* Controls bar */}
         <CardAction

@@ -1,6 +1,6 @@
-import { INVENTORY_ENDPOINTS } from '../../../fixtures/endpoints.js'
-import { ROUTES } from '../../../fixtures/routes.js'
-import { TEST_IDS } from '../../../fixtures/test-ids.js'
+import { INVENTORY_ENDPOINTS } from '../../../../fixtures/endpoints.js'
+import { ROUTES } from '../../../../fixtures/routes.js'
+import { TEST_IDS } from '../../../../fixtures/test-ids.js'
 
 const constants = { test_ids: TEST_IDS }
 const PRODUCT_LIST_URL = ROUTES.inventory_product_list

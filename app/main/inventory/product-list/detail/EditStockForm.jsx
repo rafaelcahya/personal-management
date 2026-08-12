@@ -176,17 +176,6 @@ export default function EditStockForm({ entry, open, onOpenChange, onUpdated }) 
           </ModalBody>
 
           <ModalFooter>
-            <ModalClose asChild>
-              <Button
-                type="button"
-                variant="secondary"
-                className="text-violet-600 font-medium"
-                id="cancelEditStockBtn_productDetailPage"
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-            </ModalClose>
             <Button type="submit" disabled={loading} id="submitEditStockBtn_productDetailPage">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? 'Saving...' : 'Save Changes'}

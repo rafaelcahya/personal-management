@@ -1,5 +1,5 @@
-import { INVENTORY_ENDPOINTS } from '../../../fixtures/endpoints.js'
-import { ROUTES } from '../../../fixtures/routes.js'
+import { INVENTORY_ENDPOINTS } from '../../../../fixtures/endpoints.js'
+import { ROUTES } from '../../../../fixtures/routes.js'
 
 const PRODUCT_DETAIL_URL = (id) => `${ROUTES.inventory_product_list}/${id}`
 const PRODUCT_DETAIL_API = INVENTORY_ENDPOINTS.PRODUCT_DETAIL

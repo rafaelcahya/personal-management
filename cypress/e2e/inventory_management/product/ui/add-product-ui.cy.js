@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 
-import { ROUTES } from '../../../fixtures/routes.js'
-import { TEST_IDS } from '../../../fixtures/test-ids.js'
+import { ROUTES } from '../../../../fixtures/routes.js'
+import { TEST_IDS } from '../../../../fixtures/test-ids.js'
 const ids = TEST_IDS.add_product
 
 describe('Add Product Form - UI', () => {

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 
-import { INVENTORY_ENDPOINTS } from '../../../fixtures/endpoints.js'
+import { INVENTORY_ENDPOINTS } from '../../../../../fixtures/endpoints.js'
 
 describe('PATCH Favorite Product API - /api/inventory/v1/product/[id]/favorite', () => {
   let validBrandId

@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils'
 import { format, differenceInDays } from 'date-fns'
 import UsageCompletionForm from './UsageCompletionForm'
 import { TableRow, TableCell } from '@/components/base/Table/Table.jsx'
-import Card, { CardContent } from '@/components/base/Card/Card'
 import { Badge } from '@/components/base/Badge/Badge'
 
 function getDuration(startDate, endDate) {
@@ -83,16 +82,12 @@ export default function LogRow({ item, onUpdate }) {
       {isOpen && (
         <TableRow className="hover:bg-transparent">
           <TableCell colSpan={6} className="px-5 py-4 space-y-3">
-            <Card>
-              <CardContent className="p-3">
-                {item.note && (
-                  <div>
-                    <p className="text-xs font-medium text-slate-500 mb-1">Note</p>
-                    <p className="text-sm text-slate-700">{item.note}</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {item.note && (
+              <div>
+                <p className="text-xs font-medium text-slate-500 mb-0.5">Note</p>
+                <p className="text-sm text-slate-700">{item.note}</p>
+              </div>
+            )}
             <UsageCompletionForm
               historyItem={item}
               onUpdate={onUpdate}
