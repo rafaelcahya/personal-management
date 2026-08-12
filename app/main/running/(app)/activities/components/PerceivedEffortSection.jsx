@@ -130,43 +130,45 @@ export default function PerceivedEffortSection({
       )}
 
       {/* Picker */}
-      <div
-        role="radiogroup"
-        aria-label="Rate of Perceived Exertion, 1 to 10"
-        className="flex gap-1"
-      >
-        {RPE_LEVELS.map((level, idx) => {
-          const selected = rpe === level.value
-          return (
-            <Button
-              key={level.value}
-              id={`rpePicker_${level.value}_activityDetailPage`}
-              ref={(el) => (pillsRef.current[idx] = el)}
-              role="radio"
-              aria-checked={selected}
-              aria-label={`RPE ${level.value} — ${level.label}`}
-              tabIndex={selected ? 0 : rpe == null && level.value === 1 ? 0 : -1}
-              disabled={saving}
-              onClick={() => handlePick(level.value)}
-              onMouseEnter={() => setHovered(level.value)}
-              onMouseLeave={() => setHovered(null)}
-              onKeyDown={(e) => handleKeyDown(e, idx)}
-              style={
-                selected
-                  ? { background: level.bg, color: level.text, borderColor: level.bg }
-                  : hovered === level.value
-                    ? { background: level.bgLight, borderColor: level.bg, color: level.bg }
-                    : {}
-              }
-              className={`flex-1 min-w-0 h-9 rounded-lg text-xs font-semibold border transition-colors
+      <div className="overflow-x-auto pb-2">
+        <div
+          role="radiogroup"
+          aria-label="Rate of Perceived Exertion, 1 to 10"
+          className="flex gap-1 min-w-max"
+        >
+          {RPE_LEVELS.map((level, idx) => {
+            const selected = rpe === level.value
+            return (
+              <Button
+                key={level.value}
+                id={`rpePicker_${level.value}_activityDetailPage`}
+                ref={(el) => (pillsRef.current[idx] = el)}
+                role="radio"
+                aria-checked={selected}
+                aria-label={`RPE ${level.value} — ${level.label}`}
+                tabIndex={selected ? 0 : rpe == null && level.value === 1 ? 0 : -1}
+                disabled={saving}
+                onClick={() => handlePick(level.value)}
+                onMouseEnter={() => setHovered(level.value)}
+                onMouseLeave={() => setHovered(null)}
+                onKeyDown={(e) => handleKeyDown(e, idx)}
+                style={
+                  selected
+                    ? { background: level.bg, color: level.text, borderColor: level.bg }
+                    : hovered === level.value
+                      ? { background: level.bgLight, borderColor: level.bg, color: level.bg }
+                      : {}
+                }
+                className={`w-9 h-9 shrink-0 rounded-lg text-xs font-semibold border transition-colors
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200
                 disabled:opacity-50 disabled:pointer-events-none
                 ${selected ? '' : 'bg-white border-slate-200 text-slate-500'}`}
-            >
-              {level.value}
-            </Button>
-          )
-        })}
+              >
+                {level.value}
+              </Button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Axis labels / active level description — single container, consistent ID */}

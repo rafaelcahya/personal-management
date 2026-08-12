@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-07-17 (issue #693 — research page)
-**Branch:** release/v1.26
+**Last Updated:** 2026-08-12 (issue #765 — daily PnL calendar + security hardening)
+**Branch:** release/v1.29
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,417  | 47%  |
-| UI        | 1,597  | 53%  |
-| **Total** | **3,014** | 100% |
+| API       | 1,517  | 49%  |
+| UI        | 1,551  | 51%  |
+| **Total** | **3,068** | 100% |
 
 ---
 
@@ -20,12 +20,12 @@
 | Module               | API   | UI    | Total |
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
-| Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 234   | 300   | 534   |
-| Running Tracker      | 460   | 695   | 1,155 |
+| Inventory Management | 728   | 454   | 1,182 |
+| Trading Management   | 293   | 254   | 547   |
+| Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,417** | **1,597** | **3,014** |
+| **Total**            | **1,517** | **1,551** | **3,068** |
 
 ---
 
@@ -62,9 +62,11 @@
 | Create Stock         | 40  | 0  | 40    |
 | Delete Product       | 23  | 0  | 23    |
 | Edit Product         | 13  | 0  | 13    |
+| Edit Stock Entry     | 19  | 0  | 19    |
+| Delete Stock Entry   | 6   | 0  | 6     |
 | Favorite Product     | 27  | 0  | 27    |
 | Last Price           | 17  | 0  | 17    |
-| List Product         | 41  | 98 | 139   |
+| List Product         | 43  | 98 | 141   |
 | Product Detail       | 25  | 35 | 60    |
 | Product Filter       | 0   | 9  | 9     |
 | Product History      | 25  | 0  | 25    |
@@ -72,7 +74,7 @@
 | Restock Predictions  | 16  | 0  | 16    |
 | Product Summary      | 16  | 0  | 16    |
 | Update Product       | 39  | 0  | 39    |
-| **Subtotal**         | **348** | **211** | **559** |
+| **Subtotal**         | **375** | **211** | **586** |
 
 #### Product Brand
 
@@ -106,7 +108,7 @@
 | Update Name      | 29  | 14 | 43    |
 | **Subtotal**     | **124** | **58** | **182** |
 
-**Inventory Total — API: 701 | UI: 454 | Total: 1,155**
+**Inventory Total — API: 728 | UI: 454 | Total: 1,182**
 
 ---
 
@@ -117,21 +119,22 @@
 | Feature          | API | UI | Total |
 | ---------------- | --- | -- | ----- |
 | Dashboard API    | 27  | 0  | 27    |
-| **Subtotal**     | **27** | **0** | **27** |
+| Daily PnL        | 16  | 0  | 16    |
+| **Subtotal**     | **43** | **0** | **43** |
 
 #### Trade
 
 | Feature       | API | UI  | Total |
 | ------------- | --- | --- | ----- |
 | Auth Guard    | 29  | 0   | 29    |
-| Add Trade     | 0   | 109 | 109   |
+| Add Trade     | 43  | 63  | 106   |
 | Delete Trade  | 0   | 6   | 6     |
 | List Trade    | 12  | 0   | 12    |
 | Option Trade  | 0   | 7   | 7     |
 | Trade Summary | 13  | 0   | 13    |
 | Trade Detail  | 0   | 15  | 15    |
 | Update Trade  | 0   | 32  | 32    |
-| **Subtotal**  | **54** | **169** | **223** |
+| **Subtotal**  | **97** | **123** | **220** |
 
 #### Fee
 
@@ -200,7 +203,7 @@
 | Corporate Events     | 3   | 0  | 3     |
 | **Subtotal**         | **12** | **0** | **12** |
 
-**Trading Total — API: 234 | UI: 300 | Total: 534**
+**Trading Total — API: 293 | UI: 254 | Total: 547**
 
 ---
 
@@ -264,8 +267,9 @@
 | Session Profile        | 18  | 0  | 18    |
 | Temperature Efficiency | 24  | 0  | 24    |
 | VO2Max Target Effort   | 4   | 31 | 35    |
+| VO2max Target (personal) | 14 | 0  | 14    |
 | Zone Analytics         | 24  | 0  | 24    |
-| **Subtotal**           | **126** | **87** | **213** |
+| **Subtotal**           | **140** | **87** | **227** |
 
 #### Injury AI
 
@@ -314,7 +318,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **53** | **21** | **74** |
 
-**Running Total — API: 460 | UI: 695 | Total: 1,155**
+**Running Total — API: 474 | UI: 695 | Total: 1,169**
 
 ---
 
@@ -341,9 +345,9 @@
 | Module               | API   | UI    | Total |
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
-| Inventory Management | 701   | 454   | 1,155 |
-| Trading Management   | 234   | 300   | 534   |
-| Running Tracker      | 460   | 695   | 1,155 |
+| Inventory Management | 728   | 454   | 1,182 |
+| Trading Management   | 293   | 254   | 547   |
+| Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,417** | **1,597** | **3,014** |
+| **Total**            | **1,517** | **1,551** | **3,068** |

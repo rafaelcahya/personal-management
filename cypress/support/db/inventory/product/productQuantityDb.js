@@ -15,6 +15,18 @@ export async function getLatestProductQuantityFromDb(supabase, productListId, us
   return data
 }
 
+export async function getProductQuantityByIdFromDb(supabase, entryId, userId) {
+  const { data, error } = await supabase
+    .from('product_quantity')
+    .select('*')
+    .eq('id', entryId)
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (error) throw new Error(`DB query failed: ${error.message}`)
+  return data
+}
+
 export async function getProductQuantityCountFromDb(supabase, productListId, userId) {
   const { count, error } = await supabase
     .from('product_quantity')

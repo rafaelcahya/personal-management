@@ -8,6 +8,7 @@ import ProductListSummary from './list/component/ProductListSummary'
 import ProductTableHeader from './list/component/ProductTableHeader'
 import ProductsTable from './list/ProductsTable'
 import AddProductForm from './add-product/AddProductForm'
+import ProductSortDropdown from './list/component/ProductSortDropdown'
 import PageHeader from '../../components/PageHeader'
 import Input from '@/components/base/Input/Input'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
@@ -23,6 +24,32 @@ import {
   EmptyStateActions,
 } from '@/components/base/EmptyState/EmptyState'
 
+const SORT_STORAGE_KEY = 'inventory_product_sort'
+
+const VALID_SORTS = new Set([
+  'favorites_first',
+  'product_asc',
+  'product_desc',
+  'quantity_asc',
+  'quantity_desc',
+  'in_use_asc',
+  'in_use_desc',
+  'usage_date_asc',
+  'usage_date_desc',
+  'updated_at_asc',
+  'updated_at_desc',
+])
+
+function getSavedSort() {
+  if (typeof window === 'undefined') return null
+  try {
+    const saved = localStorage.getItem(SORT_STORAGE_KEY)
+    return saved && VALID_SORTS.has(saved) ? saved : null
+  } catch {
+    return null
+  }
+}
+
 export default function ProductsPageClient() {
   const searchParams = useSearchParams()
 
@@ -35,7 +62,7 @@ export default function ProductsPageClient() {
 
   // search + sort
   const [search, setSearch] = useState('')
-  const [sort, setSort] = useState(null)
+  const [sort, setSort] = useState(() => getSavedSort())
 
   // summary + restock (separate endpoints — unchanged)
   const [summary, setSummary] = useState(null)
@@ -133,6 +160,13 @@ export default function ProductsPageClient() {
   const handleSortChange = (newSort) => {
     setSort(newSort)
     setPage(1)
+    try {
+      if (newSort) {
+        localStorage.setItem(SORT_STORAGE_KEY, newSort)
+      } else {
+        localStorage.removeItem(SORT_STORAGE_KEY)
+      }
+    } catch {}
   }
 
   const handleSearchChange = (value) => {
@@ -144,6 +178,9 @@ export default function ProductsPageClient() {
     setSearch('')
     setSort(null)
     setPage(1)
+    try {
+      localStorage.removeItem(SORT_STORAGE_KEY)
+    } catch {}
   }
 
   const totalPages = Math.ceil(total / 15)
@@ -159,7 +196,7 @@ export default function ProductsPageClient() {
       <ProductListSummary summary={summary} loading={summaryLoading} />
 
       <Card className="overflow-hidden">
-        <ProductTableHeader summary={summary} loading={summaryLoading} />
+        <ProductTableHeader />
 
         {/* Controls bar */}
         <CardAction
@@ -169,6 +206,7 @@ export default function ProductsPageClient() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
             <SearchInput search={search} onSearchChange={handleSearchChange} />
             <div className="flex items-center justify-between gap-2 shrink-0">
+              <ProductSortDropdown sort={sort} onSortChange={handleSortChange} />
               <AddProductForm onAdded={handleRefresh} />
             </div>
           </div>

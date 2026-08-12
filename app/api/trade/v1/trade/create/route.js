@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createTrade } from '@/lib/services/trade/createTrade'
+import { createTradeServerSchema } from '@/schemas/trade'
 
 export async function POST(req) {
   try {
@@ -24,27 +25,13 @@ export async function POST(req) {
       )
     }
 
-    if (!body) {
-      return NextResponse.json(
-        { success: false, error: 'Request body is required' },
-        { status: 400 }
-      )
+    const parsed = createTradeServerSchema.safeParse(body)
+    if (!parsed.success) {
+      const errors = parsed.error.issues.map((i) => i.message)
+      return NextResponse.json({ success: false, error: errors }, { status: 400 })
     }
 
-    const requiredFields = ['trade_date', 'ticker', 'margin', 'proceeds']
-    const validationErrors = []
-
-    requiredFields.forEach((field) => {
-      if (!body[field] || body[field].toString().trim() === '') {
-        validationErrors.push(`${field.replace(/_/g, ' ')} is required`)
-      }
-    })
-
-    if (validationErrors.length > 0) {
-      return NextResponse.json({ success: false, error: validationErrors }, { status: 400 })
-    }
-
-    const newTrade = await createTrade(user.id, body)
+    const newTrade = await createTrade(user.id, parsed.data)
 
     return NextResponse.json({ success: true, trade: newTrade }, { status: 201 })
   } catch (err) {

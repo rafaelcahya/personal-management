@@ -253,7 +253,7 @@ export default function HoldingsPage() {
                 </TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody divider={false}>
+            <TableBody>
               {holdings.map((row) => (
                 <TableRow
                   key={row.currency}

@@ -22,6 +22,7 @@
     "trading_event": "/main/trading/event",
     "trading_fee": "/main/trading/fee",
     "trading_settings": "/main/trading/settings",
+    "trading_investment_flow": "/main/trading/investment-flow",
     "trading_currency": "/main/trading/currency",
     "trading_currency_holdings": "/main/trading/currency/holdings",
     "trading_currency_detail": "/main/trading/currency/holdings/1",
@@ -138,7 +139,8 @@
       "endurance_score": "/api/running/v1/analytics/endurance-score",
       "pmc": "/api/running/v1/analytics/pmc",
       "session_profile": "/api/running/v1/analytics/session-profile",
-      "temperature_efficiency": "/api/running/v1/analytics/temperature-efficiency"
+      "temperature_efficiency": "/api/running/v1/analytics/temperature-efficiency",
+      "vo2max_target": "/api/running/v1/analytics/vo2max-target"
     },
     "running_user_profile": {
       "get": "/api/running/v1/user/profile",
@@ -187,7 +189,8 @@
     },
     "trading_dashboard": {
       "metrics": "/api/trade/v1/dashboard/metrics",
-      "quick_view": "/api/trade/v1/dashboard/quick-view"
+      "quick_view": "/api/trade/v1/dashboard/quick-view",
+      "daily_pnl": "/api/trade/v1/trade/daily-pnl"
     },
     "trading_research": {
       "overview": "/api/trade/v1/research/overview",
@@ -217,6 +220,13 @@
       "create": "/api/running/v1/routes",
       "update": "/api/running/v1/routes",
       "delete": "/api/running/v1/routes"
+    },
+    "investment_flow": {
+      "list": "/api/investment-flow/v1",
+      "create": "/api/investment-flow/v1",
+      "update": "/api/investment-flow/v1",
+      "delete": "/api/investment-flow/v1",
+      "move": "/api/investment-flow/v1/move"
     }
   },
   "test_ids": {
@@ -289,6 +299,28 @@
       "quantity_error": "trade-quantity-error",
       "portfolio_summary": "portfolio-summary",
       "pnl_display": "portfolio-pnl"
+    },
+    "investment_flow": {
+      "tree_card": "investmentFlowTreeCard_investmentFlowPage",
+      "list_view_btn": "investmentFlowListViewBtn_investmentFlowPage",
+      "tree_view_btn": "investmentFlowTreeViewBtn_investmentFlowPage",
+      "add_category_btn": "investmentFlowAddCategoryBtn_investmentFlowPage",
+      "tree_canvas": "investmentFlowTreeCanvas_investmentFlowPage",
+      "tree_root_node": "treeViewRootNode_investmentFlowPage",
+      "category_form": "categoryNodeForm_investmentFlowPage",
+      "category_form_name_field": "categoryNodeFormNameField_investmentFlowPage",
+      "category_form_submit_btn": "categoryNodeFormSubmitBtn_investmentFlowPage",
+      "category_form_cancel_btn": "categoryNodeFormCancelBtn_investmentFlowPage",
+      "ticker_form": "tickerNodeForm_investmentFlowPage",
+      "ticker_form_nominal_type_manual": "tickerNodeFormNominalTypemanual_investmentFlowPage",
+      "ticker_form_nominal_type_autosum": "tickerNodeFormNominalTypeautosum_investmentFlowPage",
+      "ticker_form_name_field": "tickerNodeFormNameField_investmentFlowPage",
+      "ticker_form_nominal_field": "tickerNodeFormNominalField_investmentFlowPage",
+      "ticker_form_notes_field": "tickerNodeFormNotesField_investmentFlowPage",
+      "ticker_form_submit_btn": "tickerNodeFormSubmitBtn_investmentFlowPage",
+      "ticker_form_cancel_btn": "tickerNodeFormCancelBtn_investmentFlowPage",
+      "delete_node_confirm_btn": "deleteNodeConfirmBtn_investmentFlowPage",
+      "delete_node_cancel_btn": "deleteNodeCancelBtn_investmentFlowPage"
     },
     "auth": {
       "login_btn": "login-btn",
@@ -744,6 +776,13 @@
       "vo2max_projection_chart": "vo2maxProjectionChart_analyticsPage",
       "set_goal_btn": "setGoalBtn_analyticsPage",
       "set_new_goal_btn": "setNewGoalBtn_analyticsPage",
+      "vo2max_target_input": "vo2maxTargetInput_analyticsPage",
+      "vo2max_target_save_btn": "vo2maxTargetSaveBtn_analyticsPage",
+      "vo2max_target_clear_btn": "vo2maxTargetClearBtn_analyticsPage",
+      "vo2max_target_footer_toggle_btn": "vo2maxTargetFooterToggleBtn_analyticsPage",
+      "vo2max_target_cancel_btn": "vo2maxTargetCancelBtn_analyticsPage",
+      "vo2max_update_target_btn": "vo2maxUpdateTargetBtn_analyticsPage",
+      "vo2max_use_race_goal_link": "vo2maxUseRaceGoalLink_analyticsPage",
       "vo2max_sex_missing_hint": "vo2maxSexMissingHint_analyticsPage",
       "vo2max_trend_data_count": "vo2maxTrendDataCount_analyticsPage",
       "vo2max_trend_empty_count": "vo2maxTrendEmptyCount_analyticsPage",
@@ -754,6 +793,11 @@
       "personal_bests_error": "personalBestsError_analyticsPage",
       "personal_bests_table": "personalBestsTable_analyticsPage",
       "personal_bests_row": "personalBestsRow_{distance}_{rank}_analyticsPage",
+      "personal_bests_accordion_item": "personalBestsAccordionItem_{distance}_analyticsPage",
+      "personal_bests_accordion_trigger": "personalBestsAccordionTrigger_{distance}_analyticsPage",
+      "personal_bests_accordion_content": "personalBestsAccordionContent_{distance}_analyticsPage",
+      "personal_bests_1k_row": "personalBestsRow_1k_{rank}_analyticsPage",
+      "personal_bests_5mile_row": "personalBestsRow_5mile_{rank}_analyticsPage",
       "calorie_trend_chart": "calorieTrendChart_analyticsPage",
       "fitness_age_trend_section": "fitnessAgeTrendSection_analyticsPage",
       "fitness_age_trend_loading": "fitnessAgeTrendLoading_analyticsPage",
@@ -990,6 +1034,17 @@
       "personal_risk_free_rate_input": "personalRiskFreeRateInput_settingsPage",
       "margin_of_error_input": "marginOfErrorInput_settingsPage",
       "save_btn": "saveSettingsBtn_settingsPage"
+    },
+    "trading_dashboard": {
+      "pnl_calendar_card": "pnlCalendarCard_tradingDashboardPage",
+      "pnl_calendar_prev_btn": "pnlCalendarPrevBtn_tradingDashboardPage",
+      "pnl_calendar_month_label": "pnlCalendarMonthLabel_tradingDashboardPage",
+      "pnl_calendar_next_btn": "pnlCalendarNextBtn_tradingDashboardPage",
+      "pnl_calendar_grid": "pnlCalendarGrid_tradingDashboardPage",
+      "pnl_calendar_skeleton": "pnlCalendarSkeleton_tradingDashboardPage",
+      "pnl_calendar_error": "pnlCalendarError_tradingDashboardPage",
+      "pnl_calendar_retry_btn": "pnlCalendarRetryBtn_tradingDashboardPage",
+      "pnl_calendar_empty": "pnlCalendarEmpty_tradingDashboardPage"
     },
     "trading_trade": {
       "metric_strip": "tradeMetricStrip_tradePage",

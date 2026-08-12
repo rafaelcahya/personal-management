@@ -11,6 +11,7 @@ import { productQuantityTasks } from './productQuantityTasks.js'
 import { dbTasks } from './dbTasks.js'
 import { activitiesTasks } from './activitiesTasks.js'
 import { raceLogTasks } from './raceLogTasks.js'
+import { userTasks } from './running/UserTasks.js'
 
 export const registerTasks = (on, supabaseAdmin) => {
   on('task', {
@@ -27,5 +28,6 @@ export const registerTasks = (on, supabaseAdmin) => {
     ...raceLogTasks(supabaseAdmin),
     ...aiInsightsTasks(supabaseAdmin),
     ...settingsTasks(supabaseAdmin),
+    ...userTasks(supabaseAdmin),
   })
 }

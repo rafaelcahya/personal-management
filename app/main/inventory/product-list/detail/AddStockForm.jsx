@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
-import { Loader2, PackagePlus, Plus } from 'lucide-react'
+import { Loader2, PackagePlus, Plus, Pencil, Trash2Icon } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
@@ -32,6 +32,8 @@ import {
 import { createQuantityUpdate } from '@/lib/api/productQuantity'
 import { getLastPurchasePrice, getStockHistory } from '@/lib/api/product'
 import Card, { CardContent } from '@/components/base/Card/Card'
+import EditStockForm from './EditStockForm'
+import DeleteStockDialog from './DeleteStockDialog'
 
 export default function AddStockForm({
   product,
@@ -49,6 +51,8 @@ export default function AddStockForm({
   const [lastPriceLoading, setLastPriceLoading] = useState(false)
   const [stockHistory, setStockHistory] = useState([])
   const [historyLoading, setHistoryLoading] = useState(false)
+  const [editEntry, setEditEntry] = useState(null)
+  const [deleteEntry, setDeleteEntry] = useState(null)
 
   const form = useForm({
     defaultValues: {
@@ -115,208 +119,271 @@ export default function AddStockForm({
     onControlledChange?.(isOpen)
   }
 
+  const refreshHistory = () => {
+    setHistoryLoading(true)
+    getStockHistory(product.id)
+      .then((data) => setStockHistory(data?.slice(0, 3) ?? []))
+      .catch(() => setStockHistory([]))
+      .finally(() => setHistoryLoading(false))
+  }
+
   return (
-    <Modal open={effectiveOpen} onOpenChange={handleOpenChange}>
-      {!isControlled && (
-        <ModalTrigger asChild>
-          <Button
-            variant="ghost"
-            fullWidth
-            className="justify-start px-2 py-1.5 text-sm hover:bg-violet-50 rounded-sm"
-            id="addStockBtn-productList"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Stock
-          </Button>
-        </ModalTrigger>
-      )}
-      <ModalContent
-        className="max-h-[90vh]"
-        id="addStockPopup"
-        variant="bordered"
-        borderColor="border-slate-200"
-      >
-        <ModalHeader layout="beside">
-          <ModalIcon icon={PackagePlus} />
-          <ModalHeaderContent>
-            <ModalTitle>Add More Stock</ModalTitle>
-            <ModalDescription>
-              Restocking{' '}
-              <span className="text-violet-700">
-                {product.brand} {product.type} {product.product}
-              </span>
-            </ModalDescription>
-          </ModalHeaderContent>
-        </ModalHeader>
+    <>
+      <Modal open={effectiveOpen} onOpenChange={handleOpenChange}>
+        {!isControlled && (
+          <ModalTrigger asChild>
+            <Button
+              variant="ghost"
+              fullWidth
+              className="justify-start px-2 py-1.5 text-sm hover:bg-violet-50 rounded-sm"
+              id="addStockBtn-productList"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Stock
+            </Button>
+          </ModalTrigger>
+        )}
+        <ModalContent
+          className="max-h-[90vh]"
+          id="addStockPopup"
+          variant="bordered"
+          borderColor="border-slate-200"
+        >
+          <ModalHeader layout="beside">
+            <ModalIcon icon={PackagePlus} />
+            <ModalHeaderContent>
+              <ModalTitle>Add More Stock</ModalTitle>
+              <ModalDescription>
+                Restocking{' '}
+                <span className="text-violet-700">
+                  {product.brand} {product.type} {product.product}
+                </span>
+              </ModalDescription>
+            </ModalHeaderContent>
+          </ModalHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-          <ModalBody>
-            <FieldContainer>
-              {/* Recent Purchases */}
-              <Card>
-                {(historyLoading || stockHistory.length > 0) && (
-                  <CardContent className="p-3">
-                    <p className="text-xs font-medium text-slate-500 mb-2">Recent Purchases</p>
-                    {historyLoading ? (
-                      <p className="text-xs text-muted-foreground">Loading history...</p>
-                    ) : (
-                      <div className="space-y-1.5">
-                        {stockHistory.map((h, i) => (
-                          <div key={i} className="flex items-center justify-between text-xs">
-                            <span className="text-slate-500 font-mono">
-                              {h.purchase_date
-                                ? format(new Date(h.purchase_date), 'd MMM yyyy')
-                                : '-'}
-                            </span>
-                            <div className="flex items-center gap-3">
-                              <span className="text-slate-600">
-                                qty:{' '}
-                                <span className="font-medium font-mono">{h.quantity_added}</span>
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
+            <ModalBody>
+              <FieldContainer>
+                {/* Recent Purchases */}
+                <Card>
+                  {(historyLoading || stockHistory.length > 0) && (
+                    <CardContent className="p-3">
+                      <p className="text-xs font-medium text-slate-500 mb-2">Recent Purchases</p>
+                      {historyLoading ? (
+                        <p className="text-xs text-muted-foreground">Loading history...</p>
+                      ) : (
+                        <div className="space-y-1">
+                          {stockHistory.map((h, i) => (
+                            <div
+                              key={h.id ?? i}
+                              className="flex items-center justify-between text-xs group"
+                            >
+                              <span className="text-slate-500 font-mono">
+                                {h.purchase_date
+                                  ? format(new Date(h.purchase_date), 'd MMM yyyy')
+                                  : '-'}
                               </span>
-                              <span className="text-slate-700 font-medium font-mono">
-                                Rp {Number(h.price || 0).toLocaleString('id-ID')}
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-slate-600">
+                                  qty:{' '}
+                                  <span className="font-medium font-mono">{h.quantity_added}</span>
+                                </span>
+                                <span className="text-slate-700 font-medium font-mono">
+                                  Rp {Number(h.price || 0).toLocaleString('id-ID')}
+                                </span>
+                                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <button
+                                    type="button"
+                                    id={`editRecentPurchase_${h.id}_addStockPopup`}
+                                    onClick={() => setEditEntry(h)}
+                                    className="p-1 rounded hover:bg-violet-100 text-slate-400 hover:text-violet-600 transition-colors"
+                                    aria-label="Edit entry"
+                                  >
+                                    <Pencil className="size-3" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    id={`deleteRecentPurchase_${h.id}_addStockPopup`}
+                                    onClick={() => setDeleteEntry(h)}
+                                    className="p-1 rounded hover:bg-red-100 text-slate-400 hover:text-red-600 transition-colors"
+                                    aria-label="Delete entry"
+                                  >
+                                    <Trash2Icon className="size-3" />
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  )}
+                </Card>
+
+                {/* Quantity to Add */}
+                <Controller
+                  control={control}
+                  name="quantity_added"
+                  render={({ field, fieldState }) => (
+                    <FieldContent error={fieldState.error?.message}>
+                      <FieldLabel className="font-medium">Quantity to Add</FieldLabel>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        id="quantityToAddField"
+                        className="font-medium font-mono focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm"
+                        min={1}
+                      />
+                      <FieldDescription className="text-xs text-slate-400">
+                        Right now you've got {product.quantity} units in on hand 📦
+                      </FieldDescription>
+                      <FieldError />
+                    </FieldContent>
+                  )}
+                />
+
+                {/* Price */}
+                <Controller
+                  control={control}
+                  name="price"
+                  render={({ field, fieldState }) => (
+                    <FieldContent error={fieldState.error?.message}>
+                      <FieldLabel className="font-medium">Price (Rp)</FieldLabel>
+                      <Input
+                        type="number"
+                        id="priceField"
+                        step="0.01"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        className="font-medium font-mono focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm"
+                        min={0}
+                      />
+                      {lastPriceLoading ? (
+                        <FieldDescription className="text-xs text-slate-400">
+                          Loading last price...
+                        </FieldDescription>
+                      ) : lastPrice?.last_purchase_price != null ? (
+                        <FieldDescription className="text-xs text-slate-400">
+                          Last purchase price: Rp{' '}
+                          {lastPrice.last_purchase_price.toLocaleString('id-ID')}
+                          {lastPrice.last_purchase_date && (
+                            <>
+                              {' '}
+                              &mdash; {format(new Date(lastPrice.last_purchase_date), 'd MMM yyyy')}
+                            </>
+                          )}
+                        </FieldDescription>
+                      ) : (
+                        <FieldDescription className="text-xs text-slate-400">
+                          No previous purchase data available
+                        </FieldDescription>
+                      )}
+                      <FieldError />
+                    </FieldContent>
+                  )}
+                />
+
+                {/* Purchase Date */}
+                <Controller
+                  control={control}
+                  name="purchase_date"
+                  render={({ field, fieldState }) => (
+                    <FieldContent error={fieldState.error?.message}>
+                      <FieldLabel className="font-medium">Purchase Date</FieldLabel>
+                      <DatePicker value={field.value} onChange={field.onChange} />
+                      <FieldDescription className="text-xs text-slate-400">
+                        When did you buy this? 📅
+                      </FieldDescription>
+                      <FieldError />
+                    </FieldContent>
+                  )}
+                />
+
+                {/* Note */}
+                <Controller
+                  control={control}
+                  name="note"
+                  render={({ field, fieldState }) => (
+                    <FieldContent error={fieldState.error?.message}>
+                      <FieldLabel className="font-medium">Note (Optional)</FieldLabel>
+                      <Textarea
+                        {...field}
+                        id="noteField"
+                        placeholder="e.g. Where'd you buy it? Any special deals? Jot it down here ✍️"
+                        className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-vertical min-h-[80px]"
+                        rows={3}
+                      />
+                    </FieldContent>
+                  )}
+                />
+
+                {serverError && (
+                  <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
+                    <div className="flex gap-3">
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-red-900 mb-1">
+                          ⚠️ Unable to Add Stock
+                        </p>
+                        <p className="text-sm text-red-800">{serverError}</p>
                       </div>
-                    )}
-                  </CardContent>
-                )}
-              </Card>
-
-              {/* Quantity to Add */}
-              <Controller
-                control={control}
-                name="quantity_added"
-                render={({ field, fieldState }) => (
-                  <FieldContent error={fieldState.error?.message}>
-                    <FieldLabel className="font-medium">Quantity to Add</FieldLabel>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      id="quantityToAddField"
-                      className="font-medium font-mono focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm"
-                      min={1}
-                    />
-                    <FieldDescription className="text-xs text-slate-400">
-                      Right now you've got {product.quantity} units in on hand 📦
-                    </FieldDescription>
-                    <FieldError />
-                  </FieldContent>
-                )}
-              />
-
-              {/* Price */}
-              <Controller
-                control={control}
-                name="price"
-                render={({ field, fieldState }) => (
-                  <FieldContent error={fieldState.error?.message}>
-                    <FieldLabel className="font-medium">Price (Rp)</FieldLabel>
-                    <Input
-                      type="number"
-                      id="priceField"
-                      step="0.01"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      className="font-medium font-mono focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-sm"
-                      min={0}
-                    />
-                    {lastPriceLoading ? (
-                      <FieldDescription className="text-xs text-slate-400">
-                        Loading last price...
-                      </FieldDescription>
-                    ) : lastPrice?.last_purchase_price != null ? (
-                      <FieldDescription className="text-xs text-slate-400">
-                        Last purchase price: Rp{' '}
-                        {lastPrice.last_purchase_price.toLocaleString('id-ID')}
-                        {lastPrice.last_purchase_date && (
-                          <>
-                            {' '}
-                            &mdash; {format(new Date(lastPrice.last_purchase_date), 'd MMM yyyy')}
-                          </>
-                        )}
-                      </FieldDescription>
-                    ) : (
-                      <FieldDescription className="text-xs text-slate-400">
-                        No previous purchase data available
-                      </FieldDescription>
-                    )}
-                    <FieldError />
-                  </FieldContent>
-                )}
-              />
-
-              {/* Purchase Date */}
-              <Controller
-                control={control}
-                name="purchase_date"
-                render={({ field, fieldState }) => (
-                  <FieldContent error={fieldState.error?.message}>
-                    <FieldLabel className="font-medium">Purchase Date</FieldLabel>
-                    <DatePicker value={field.value} onChange={field.onChange} />
-                    <FieldDescription className="text-xs text-slate-400">
-                      When did you buy this? 📅
-                    </FieldDescription>
-                    <FieldError />
-                  </FieldContent>
-                )}
-              />
-
-              {/* Note */}
-              <Controller
-                control={control}
-                name="note"
-                render={({ field, fieldState }) => (
-                  <FieldContent error={fieldState.error?.message}>
-                    <FieldLabel className="font-medium">Note (Optional)</FieldLabel>
-                    <Textarea
-                      {...field}
-                      id="noteField"
-                      placeholder="e.g. Where'd you buy it? Any special deals? Jot it down here ✍️"
-                      className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 resize-vertical min-h-[80px]"
-                      rows={3}
-                    />
-                  </FieldContent>
-                )}
-              />
-
-              {serverError && (
-                <div className="rounded-lg border-2 border-red-200 bg-red-50/50 p-4 animate-in fade-in-50 slide-in-from-top-2 duration-200">
-                  <div className="flex gap-3">
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-red-900 mb-1">
-                        ⚠️ Unable to Add Stock
-                      </p>
-                      <p className="text-sm text-red-800">{serverError}</p>
                     </div>
                   </div>
-                </div>
-              )}
-            </FieldContainer>
-          </ModalBody>
+                )}
+              </FieldContainer>
+            </ModalBody>
 
-          <ModalFooter>
-            <ModalClose asChild>
-              <Button
-                type="button"
-                variant="secondary"
-                className="text-violet-600 font-medium"
-                id="cancelBtn-addStockPopup"
-                disabled={loading}
-              >
-                Cancel
+            <ModalFooter>
+              <ModalClose asChild>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="text-violet-600 font-medium"
+                  id="cancelBtn-addStockPopup"
+                  disabled={loading}
+                >
+                  Cancel
+                </Button>
+              </ModalClose>
+              <Button type="submit" disabled={loading} id="submitBtn-addStockPopup">
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {loading ? 'Adding...' : 'Add Stock'}
               </Button>
-            </ModalClose>
-            <Button type="submit" disabled={loading} id="submitBtn-addStockPopup">
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? 'Adding...' : 'Add Stock'}
-            </Button>
-          </ModalFooter>
-        </form>
-      </ModalContent>
-    </Modal>
+            </ModalFooter>
+          </form>
+        </ModalContent>
+      </Modal>
+
+      {editEntry && (
+        <EditStockForm
+          entry={editEntry}
+          open={!!editEntry}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setEditEntry(null)
+          }}
+          onUpdated={() => {
+            setEditEntry(null)
+            refreshHistory()
+            onAdded?.()
+          }}
+        />
+      )}
+
+      {deleteEntry && (
+        <DeleteStockDialog
+          entry={deleteEntry}
+          open={!!deleteEntry}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setDeleteEntry(null)
+          }}
+          onDeleted={() => {
+            setDeleteEntry(null)
+            refreshHistory()
+            onAdded?.()
+          }}
+        />
+      )}
+    </>
   )
 }

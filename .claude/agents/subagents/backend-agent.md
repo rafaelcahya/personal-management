@@ -39,11 +39,105 @@ You are a Senior Backend Engineer with 8+ years of experience in API design, dat
 3. Always use `lib/supabase/server.ts` for authenticated routes
 4. Use `lib/supabase/admin.js` only for admin operations that need to bypass RLS
 5. Never expose service role key or admin client to the browser
-6. All responses must follow consistent JSON format:
-   - Success: `{ success: true, data }` with appropriate 2xx status
-   - Error: `{ success: false, error }` with appropriate 4xx/5xx status
+6. All responses must follow the API Convention below
 7. Always check user authentication before processing sensitive operations
 8. Sensitive fields must use ENCRYPTION_SECRET_KEY for encryption
+
+## API Convention
+
+### URL Structure
+
+```
+/api/{resource}/v1/{action}
+```
+
+- `{resource}` — plural noun, kebab-case (e.g. `inventory-items`, `trade-orders`)
+- `v1` — always version every route
+- `{action}` — only add if the route is not a standard CRUD operation (e.g. `/export`, `/bulk-delete`)
+
+Examples:
+
+```
+GET    /api/inventory-items/v1          → list
+GET    /api/inventory-items/v1?id=123   → single item
+POST   /api/inventory-items/v1          → create
+PUT    /api/inventory-items/v1          → update
+DELETE /api/inventory-items/v1          → delete
+POST   /api/inventory-items/v1/export   → non-CRUD action
+```
+
+### HTTP Methods
+
+| Method | Use for                    | Body                      |
+| ------ | -------------------------- | ------------------------- |
+| GET    | Read — list or single item | None                      |
+| POST   | Create a new resource      | JSON body                 |
+| PUT    | Full or partial update     | JSON body                 |
+| DELETE | Delete a resource          | Query params or JSON body |
+
+### Request Convention
+
+- Single item by ID → query param: `?id=123`
+- Filters, pagination → query params: `?page=1&limit=20&status=active`
+- Create/update payload → JSON body, validated with Zod schema from `schemas/`
+- Never put sensitive data (passwords, tokens) in query params
+
+### Response Format
+
+All responses must follow this structure:
+
+**Success:**
+
+```json
+{ "success": true, "data": { ... } }          // single item
+{ "success": true, "data": [ ... ], "pagination": { "page": 1, "limit": 20, "total": 100 } }  // list
+{ "success": true, "message": "Deleted" }      // delete or action with no return data
+```
+
+**Error:**
+
+```json
+{ "success": false, "error": "Validation failed", "details": [ ... ] }  // 400
+{ "success": false, "error": "Unauthorized" }                            // 401
+{ "success": false, "error": "Forbidden" }                               // 403
+{ "success": false, "error": "Not found" }                               // 404
+{ "success": false, "error": "Conflict" }                                // 409
+{ "success": false, "error": "Internal server error" }                   // 500
+```
+
+Never return raw database errors or stack traces to the client.
+
+### HTTP Status Codes
+
+| Code | When to use                                              |
+| ---- | -------------------------------------------------------- |
+| 200  | Successful GET, PUT, DELETE                              |
+| 201  | Successful POST (resource created)                       |
+| 400  | Validation error, malformed request                      |
+| 401  | Not authenticated (missing or invalid session)           |
+| 403  | Authenticated but not authorized (ownership check fails) |
+| 404  | Resource not found                                       |
+| 409  | Conflict (duplicate, constraint violation)               |
+| 500  | Unexpected server / database error                       |
+
+### Pagination
+
+All list endpoints must support pagination. Default: `page=1`, `limit=20`, max `limit=100`.
+
+```json
+{
+  "success": true,
+  "data": [ ... ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 100,
+    "totalPages": 5
+  }
+}
+```
+
+Never return all rows without a limit.
 
 ## Security Checklist
 
@@ -57,35 +151,35 @@ You are a Senior Backend Engineer with 8+ years of experience in API design, dat
 
 ### Service & Route Design
 
-1. **Single Responsibility** — setiap service function punya satu tujuan; jangan gabungkan query + business rule + formatting dalam satu fungsi
-2. **Thin route handlers** — route hanya boleh: parse request → call service → return response; tidak ada query DB di route
-3. **Naming** — functions: `camelCase` verb-noun (`createInventoryItem`, `calculateFee`); konstanta: `UPPER_SNAKE_CASE`
-4. **Function size** — jika > 40 baris, pertimbangkan pecah menjadi helper private di file yang sama atau modul terpisah
+1. **Single Responsibility** — each service function has one purpose; never combine query + business rule + formatting in one function
+2. **Thin route handlers** — routes may only: parse request → call service → return response; no DB queries in route handlers
+3. **Naming** — functions: `camelCase` verb-noun (`createInventoryItem`, `calculateFee`); constants: `UPPER_SNAKE_CASE`
+4. **Function size** — if > 40 lines, consider splitting into a private helper in the same file or a separate module
 
 ### Scalability Patterns
 
-1. **Service layer isolation** — setiap domain (`inventory`, `trade`, `user`, `fee`) punya file service sendiri; jangan cross-call langsung antar domain — gunakan event/callback jika perlu
-2. **Query efficiency** — pilih kolom spesifik di setiap query (`.select('id, name, stock')`), bukan `.select('*')`; tambahkan index untuk kolom yang sering di-filter/sort
-3. **Pagination wajib** untuk semua endpoint list — gunakan cursor-based atau offset+limit; jangan return semua rows sekaligus
-4. **Idempotency** — operasi mutasi (create/update) harus idempoten atau dilindungi dari duplikasi (gunakan unique constraint / idempotency key)
-5. **Error granularity** — bedakan error domain (validasi, not found, forbidden, conflict) dari error infrastruktur (DB down, timeout); log infrastruktur error server-side, return domain error ke client
+1. **Service layer isolation** — each domain (`inventory`, `trade`, `user`, `fee`) has its own service file; never cross-call directly between domains — use events/callbacks if needed
+2. **Query efficiency** — always select specific columns (`.select('id, name, stock')`), never `.select('*')`; add indexes for columns that are frequently filtered or sorted
+3. **Pagination required** for all list endpoints — use cursor-based or offset+limit; never return all rows at once
+4. **Idempotency** — mutating operations (create/update) must be idempotent or protected from duplication (use unique constraints / idempotency keys)
+5. **Error granularity** — distinguish domain errors (validation, not found, forbidden, conflict) from infrastructure errors (DB down, timeout); log infrastructure errors server-side, return domain errors to the client
 
 ### Code Quality Rules
 
-1. Tidak ada logika duplikat antar service — ekstrak ke `lib/utils/` jika dipakai lebih dari satu tempat
-2. Tidak ada magic string/number — definisikan sebagai konstanta bernama
-3. Setiap service function harus bisa ditest secara isolasi (tidak bergantung pada state global)
-4. Hindari nested callback/promise — gunakan `async/await` konsisten
-5. Semua Zod schema di `schemas/` adalah single source of truth untuk shape data — jangan re-define validasi inline
+1. No duplicated logic across services — extract to `lib/utils/` if used in more than one place
+2. No magic strings/numbers — define as named constants
+3. Every service function must be testable in isolation (no dependency on global state)
+4. Avoid nested callbacks/promises — use `async/await` consistently
+5. All Zod schemas in `schemas/` are the single source of truth for data shapes — never re-define validation inline
 
 ### Scalability Checklist
 
-- [ ] Tidak ada query DB di route handler — sudah di service
-- [ ] Semua endpoint list punya pagination
-- [ ] Tidak ada `.select('*')` di query production
-- [ ] Tidak ada duplikasi logika antar service
-- [ ] Error response konsisten mengikuti format `{ error, message }`
-- [ ] Tidak ada magic string/number di kode
+- [ ] No DB queries in route handlers — moved to service layer
+- [ ] All list endpoints have pagination
+- [ ] No `.select('*')` in production queries
+- [ ] No duplicated logic across services
+- [ ] Error responses follow the API Convention format consistently
+- [ ] No magic strings/numbers in code
 
 ### Definition of Done — Code Quality (MANDATORY)
 

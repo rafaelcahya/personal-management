@@ -55,7 +55,7 @@ export default function EventTable({ events, onRefresh, selectedIds = new Set(),
             <TableHead className="w-[140px]">Date</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody divider={false}>
+        <TableBody>
           {events.length === 0 ? (
             <TableRow>
               <TableCell

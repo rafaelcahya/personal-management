@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
+    "@dagrejs/dagre": "^3.1.1",
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.1",
     "@mapbox/polyline": "^1.2.1",
@@ -47,6 +48,7 @@
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.7",
     "@tailwindcss/typography": "^0.5.20",
+    "@xyflow/react": "^12.11.2",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "cloc": "^2.6.0-cloc",
