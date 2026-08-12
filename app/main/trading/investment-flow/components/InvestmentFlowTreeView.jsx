@@ -36,20 +36,33 @@ function nodeHeightFor(n) {
   return CATEGORY_NODE_HEIGHT
 }
 
-function getLayoutedElements(nodes, edges) {
+// Category tree uses LR layout via dagre.
+// Cash node is positioned manually below the portfolio root so it appears
+// as a separate downward branch while categories extend to the right.
+function getLayoutedElements(nodes, edges, cashNodeId, rootNodeId) {
+  const mainNodes = nodes.filter((n) => n.id !== cashNodeId)
+  const mainEdges = edges.filter((e) => e.target !== cashNodeId)
+
   const g = new dagre.graphlib.Graph()
   g.setDefaultEdgeLabel(() => ({}))
   g.setGraph({ rankdir: 'LR', nodesep: 40, ranksep: 80 })
-  nodes.forEach((n) => g.setNode(n.id, { width: NODE_WIDTH, height: nodeHeightFor(n) }))
-  edges.forEach((e) => g.setEdge(e.source, e.target))
+  mainNodes.forEach((n) => g.setNode(n.id, { width: NODE_WIDTH, height: nodeHeightFor(n) }))
+  mainEdges.forEach((e) => g.setEdge(e.source, e.target))
   dagre.layout(g)
-  return {
-    nodes: nodes.map((n) => {
-      const { x, y } = g.node(n.id)
-      return { ...n, position: { x: x - NODE_WIDTH / 2, y: y - nodeHeightFor(n) / 2 } }
-    }),
-    edges,
+
+  const layoutedMain = mainNodes.map((n) => {
+    const { x, y } = g.node(n.id)
+    return { ...n, position: { x: x - NODE_WIDTH / 2, y: y - nodeHeightFor(n) / 2 } }
+  })
+
+  const rootPos = layoutedMain.find((n) => n.id === rootNodeId)?.position ?? { x: 0, y: 0 }
+  const cashNode = nodes.find((n) => n.id === cashNodeId)
+  const cashPositioned = {
+    ...cashNode,
+    position: { x: rootPos.x, y: rootPos.y + ROOT_NODE_HEIGHT + 80 },
   }
+
+  return { nodes: [...layoutedMain, cashPositioned], edges }
 }
 
 function RootNodeCard({ data }) {
@@ -59,7 +72,8 @@ function RootNodeCard({ data }) {
       id="treeViewRootNode_investmentFlowPage"
       className="border-2 border-violet-300 rounded-xl bg-violet-50 shadow-sm p-3 w-[240px]"
     >
-      <Handle type="source" position={Position.Right} />
+      <Handle type="source" position={Position.Right} id="right" />
+      <Handle type="source" position={Position.Bottom} id="bottom" />
       <div className="flex items-center gap-2 min-w-0">
         <Layers className="size-4 text-violet-600 shrink-0" aria-hidden="true" />
         <span className="text-sm font-semibold text-violet-800 truncate">Portfolio</span>
@@ -217,7 +231,7 @@ function CashNodeCard({ data }) {
       id="treeViewUninvestedCashNode_investmentFlowPage"
       className="border rounded-xl bg-white shadow-sm p-3 w-[240px]"
     >
-      <Handle type="target" position={Position.Left} />
+      <Handle type="target" position={Position.Top} />
 
       <div className="flex items-center gap-2 min-w-0">
         <Wallet className="size-4 text-emerald-500 shrink-0" aria-hidden="true" />
@@ -372,24 +386,32 @@ export default function InvestmentFlowTreeView({
         type: 'smoothstep',
       }))
 
-    // Edges from virtual root to all top-level nodes (no parent_id)
+    // Edges from virtual root to all top-level category nodes (right branch)
     const rootEdges = flatNodes
       .filter((node) => !node.parent_id)
       .map((node) => ({
         id: `e-${VIRTUAL_ROOT_ID}-${node.id}`,
         source: VIRTUAL_ROOT_ID,
         target: node.id,
+        sourceHandle: 'right',
         type: 'smoothstep',
       }))
 
+    // Cash edge exits from bottom of Portfolio (downward branch)
     const cashEdge = {
       id: `e-${VIRTUAL_ROOT_ID}-${UNINVESTED_CASH_ID}`,
       source: VIRTUAL_ROOT_ID,
       target: UNINVESTED_CASH_ID,
+      sourceHandle: 'bottom',
       type: 'smoothstep',
     }
 
-    return getLayoutedElements(rfNodes, [...rootEdges, ...rfEdges, cashEdge])
+    return getLayoutedElements(
+      rfNodes,
+      [...rootEdges, ...rfEdges, cashEdge],
+      UNINVESTED_CASH_ID,
+      VIRTUAL_ROOT_ID
+    )
   }, [flatNodes, rootTotal, uninvestedCash, uninvestedCashPct, onEditUninvestedCash])
 
   return (

@@ -322,6 +322,7 @@
       "ticker_form_cancel_btn": "tickerNodeFormCancelBtn_investmentFlowPage",
       "delete_node_confirm_btn": "deleteNodeConfirmBtn_investmentFlowPage",
       "delete_node_cancel_btn": "deleteNodeCancelBtn_investmentFlowPage",
+      "portfolio_row": "investmentFlowPortfolioRow_investmentFlowPage",
       "uninvested_cash_node": "uninvestedCashNode_investmentFlowPage",
       "uninvested_cash_edit_btn": "uninvestedCashEditBtn_investmentFlowPage",
       "uninvested_cash_form": "uninvestedCashForm_investmentFlowPage",
