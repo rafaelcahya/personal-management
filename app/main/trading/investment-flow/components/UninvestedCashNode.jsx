@@ -9,7 +9,7 @@ export default function UninvestedCashNode({ amount, percentage, onEdit }) {
     <div
       id="uninvestedCashNode_investmentFlowPage"
       className="flex items-center gap-2 rounded-lg px-2 py-2 hover:bg-slate-50 transition-colors"
-      style={{ paddingLeft: '28px' }}
+      style={{ paddingLeft: '8px' }}
     >
       <span className="w-4 shrink-0" aria-hidden="true" />
       <span className="w-6 shrink-0" aria-hidden="true" />
