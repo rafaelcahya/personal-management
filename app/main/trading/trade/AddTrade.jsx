@@ -93,7 +93,8 @@ export default function AddTrade({
   const form = useForm({
     resolver: zodResolver(tradeSchema),
     defaultValues: {
-      trade_date: new Date(),
+      buy_date: null,
+      sell_date: null,
       ticker: '',
       margin: '',
       proceeds: '',
@@ -159,9 +160,17 @@ export default function AddTrade({
   const handleAddTrade = async (values) => {
     setLoading(true)
     try {
+      const toDateStr = (d) => {
+        if (!d) return null
+        const y = d.getFullYear()
+        const m = String(d.getMonth() + 1).padStart(2, '0')
+        const day = String(d.getDate()).padStart(2, '0')
+        return `${y}-${m}-${day}`
+      }
       const payload = {
         ...values,
-        trade_date: values.trade_date.toISOString().split('T')[0],
+        buy_date: toDateStr(values.buy_date),
+        sell_date: toDateStr(values.sell_date),
       }
 
       await createTrade(payload)
@@ -212,28 +221,51 @@ export default function AddTrade({
         ) : (
           <form onSubmit={handleSubmit(handleAddTrade)} className="flex flex-col flex-1 min-h-0">
             <ModalBody className="space-y-4 pr-2" padding={{ x: 4 }}>
-              {/* Trade Date */}
-              <Controller
-                control={control}
-                name="trade_date"
-                render={({ field, fieldState }) => (
-                  <FieldContent error={fieldState.error?.message}>
-                    <FieldLabel className="font-medium">Trade Date</FieldLabel>
-                    <DatePicker
-                      id="tradeDateField_tradePage"
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                    <FieldDescription className="text-xs text-slate-400">
-                      When did you execute this trade? 📅
-                    </FieldDescription>
-                    <FieldError
-                      id="tradeDateField_errorMessage_tradePage"
-                      className="font-medium"
-                    />
-                  </FieldContent>
-                )}
-              />
+              {/* Buy Date & Sell Date */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Controller
+                  control={control}
+                  name="buy_date"
+                  render={({ field, fieldState }) => (
+                    <FieldContent error={fieldState.error?.message}>
+                      <FieldLabel className="font-medium">Buy Date</FieldLabel>
+                      <DatePicker
+                        id="buyDateField_tradePage"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                      <FieldDescription className="text-xs text-slate-400">
+                        When did you open the position?
+                      </FieldDescription>
+                      <FieldError
+                        id="buyDateField_errorMessage_tradePage"
+                        className="font-medium"
+                      />
+                    </FieldContent>
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="sell_date"
+                  render={({ field, fieldState }) => (
+                    <FieldContent error={fieldState.error?.message}>
+                      <FieldLabel className="font-medium">Sell Date</FieldLabel>
+                      <DatePicker
+                        id="sellDateField_tradePage"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                      <FieldDescription className="text-xs text-slate-400">
+                        When did you close the position?
+                      </FieldDescription>
+                      <FieldError
+                        id="sellDateField_errorMessage_tradePage"
+                        className="font-medium"
+                      />
+                    </FieldContent>
+                  )}
+                />
+              </div>
 
               {/* Ticker */}
               <Controller

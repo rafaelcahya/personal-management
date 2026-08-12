@@ -7,9 +7,8 @@ export const tradeListQuerySchema = z.object({
 })
 
 export const tradeSchema = z.object({
-  trade_date: z.date({
-    required_error: 'Please select a trade date',
-  }),
+  buy_date: z.date({ required_error: 'Please select a buy date' }).nullable().optional(),
+  sell_date: z.date({ required_error: 'Please select a sell date' }).nullable().optional(),
   ticker: z
     .string()
     .min(1, 'Ticker is required')

@@ -81,7 +81,8 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
   const form = useForm({
     resolver: zodResolver(tradeSchema),
     defaultValues: {
-      trade_date: new Date(),
+      buy_date: null,
+      sell_date: null,
       ticker: '',
       margin: '',
       proceeds: '',
@@ -129,7 +130,8 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
       setOptions(allOptions)
 
       reset({
-        trade_date: new Date(trade.trade_date),
+        buy_date: trade.buy_date ? new Date(trade.buy_date + 'T00:00:00') : null,
+        sell_date: trade.sell_date ? new Date(trade.sell_date + 'T00:00:00') : null,
         ticker: trade.ticker || '',
         margin: trade.margin?.toString() || '',
         proceeds: trade.proceeds?.toString() || '',
@@ -161,9 +163,17 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
     setLoading(true)
 
     try {
+      const toDateStr = (d) => {
+        if (!d) return null
+        const y = d.getFullYear()
+        const m = String(d.getMonth() + 1).padStart(2, '0')
+        const day = String(d.getDate()).padStart(2, '0')
+        return `${y}-${m}-${day}`
+      }
       const payload = {
         ...values,
-        trade_date: values.trade_date.toISOString().split('T')[0],
+        buy_date: toDateStr(values.buy_date),
+        sell_date: toDateStr(values.sell_date),
       }
 
       await updateTrade(trade.id, payload)
@@ -201,18 +211,37 @@ export default function UpdateTrade({ trade, onClose, onUpdated }) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
             <ModalBody>
               <FieldContainer>
-                {/* Trade Date */}
-                <Controller
-                  control={control}
-                  name="trade_date"
-                  render={({ field, fieldState }) => (
-                    <FieldContent error={fieldState.error?.message}>
-                      <FieldLabel className="font-medium">Trade Date</FieldLabel>
-                      <DatePicker value={field.value} onChange={field.onChange} />
-                      <FieldError className="font-medium" />
-                    </FieldContent>
-                  )}
-                />
+                {/* Buy Date & Sell Date */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Controller
+                    control={control}
+                    name="buy_date"
+                    render={({ field, fieldState }) => (
+                      <FieldContent error={fieldState.error?.message}>
+                        <FieldLabel className="font-medium">Buy Date</FieldLabel>
+                        <DatePicker value={field.value} onChange={field.onChange} />
+                        <FieldDescription className="text-xs text-slate-400">
+                          When did you open the position?
+                        </FieldDescription>
+                        <FieldError className="font-medium" />
+                      </FieldContent>
+                    )}
+                  />
+                  <Controller
+                    control={control}
+                    name="sell_date"
+                    render={({ field, fieldState }) => (
+                      <FieldContent error={fieldState.error?.message}>
+                        <FieldLabel className="font-medium">Sell Date</FieldLabel>
+                        <DatePicker value={field.value} onChange={field.onChange} />
+                        <FieldDescription className="text-xs text-slate-400">
+                          When did you close the position?
+                        </FieldDescription>
+                        <FieldError className="font-medium" />
+                      </FieldContent>
+                    )}
+                  />
+                </div>
 
                 {/* Ticker */}
                 <Controller
