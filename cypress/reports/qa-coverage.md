@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-08-12 (issue #765 — daily PnL calendar + security hardening)
-**Branch:** release/v1.29
+**Last Updated:** 2026-08-12 (issue #771 — uninvested cash node)
+**Branch:** feat/issue-771-uninvested-cash
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,517  | 49%  |
-| UI        | 1,551  | 51%  |
-| **Total** | **3,068** | 100% |
+| API       | 1,567  | 50%  |
+| UI        | 1,551  | 50%  |
+| **Total** | **3,118** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 293   | 254   | 547   |
+| Trading Management   | 343   | 254   | 597   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,517** | **1,551** | **3,068** |
+| **Total**            | **1,567** | **1,551** | **3,118** |
 
 ---
 
@@ -203,7 +203,16 @@
 | Corporate Events     | 3   | 0  | 3     |
 | **Subtotal**         | **12** | **0** | **12** |
 
-**Trading Total — API: 293 | UI: 254 | Total: 547**
+#### Investment Flow
+
+| Feature              | API | UI | Total |
+| -------------------- | --- | -- | ----- |
+| List/Create/Update/Delete Node | 33 | 0 | 33 |
+| Move Node             | 7   | 0  | 7     |
+| Uninvested Cash       | 10  | 0  | 10    |
+| **Subtotal**         | **50** | **0** | **50** |
+
+**Trading Total — API: 343 | UI: 254 | Total: 597**
 
 ---
 
@@ -346,8 +355,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 293   | 254   | 547   |
+| Trading Management   | 343   | 254   | 597   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,517** | **1,551** | **3,068** |
+| **Total**            | **1,567** | **1,551** | **3,118** |
