@@ -2,15 +2,33 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, RefreshCw, Package, ShoppingCart, AlertCircle } from 'lucide-react'
+import {
+  ChevronLeft,
+  RefreshCw,
+  Package,
+  ShoppingCart,
+  AlertCircle,
+  MoreHorizontalIcon,
+  Pencil,
+  Trash2Icon,
+} from 'lucide-react'
 import { format } from 'date-fns'
 import { getProductById, getStockHistory, getProductUsageHistory } from '@/lib/api/product'
 import PageHeader from '@/app/main/components/PageHeader'
 import ProductUsageLog from '@/app/main/inventory/product-list/detail/ProductUsageLog'
+import EditStockForm from '@/app/main/inventory/product-list/detail/EditStockForm'
+import DeleteStockDialog from '@/app/main/inventory/product-list/detail/DeleteStockDialog'
 import { Badge } from '@/components/base/Badge/Badge'
 import Button from '@/components/base/Button/Button'
 import Card, { CardContent } from '@/components/base/Card/Card.jsx'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/base/DropdownMenu/DropdownMenu'
 import {
   Table,
   TableHeader,
@@ -49,7 +67,10 @@ function StatCardSkeleton() {
 // ----------------------------------------------------------------
 // Purchase history table
 // ----------------------------------------------------------------
-function PurchaseHistorySection({ history }) {
+function PurchaseHistorySection({ history, onRefresh }) {
+  const [editEntry, setEditEntry] = useState(null)
+  const [deleteEntry, setDeleteEntry] = useState(null)
+
   if (!history || history.length === 0) {
     return (
       <div
@@ -69,32 +90,99 @@ function PurchaseHistorySection({ history }) {
   const sorted = [...history].sort((a, b) => new Date(b.purchase_date) - new Date(a.purchase_date))
 
   return (
-    <Table id="purchaseTable_productDetailPage" aria-label="Purchase history">
-      <TableHeader>
-        <TableRow>
-          <TableHead>Date</TableHead>
-          <TableHead align="right">Qty Added</TableHead>
-          <TableHead align="right">Price</TableHead>
-          <TableHead>Note</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sorted.map((h, idx) => (
-          <TableRow key={h.id ?? idx} id="purchaseRow_productDetailPage" clickable>
-            <TableCell className="text-slate-700 whitespace-nowrap">
-              {h.purchase_date ? format(new Date(h.purchase_date), 'd MMM yyyy') : '—'}
-            </TableCell>
-            <TableCell className="font-mono text-slate-700" align="right">
-              {h.quantity_added ?? '—'}
-            </TableCell>
-            <TableCell className="font-mono text-slate-700 whitespace-nowrap" align="right">
-              {h.price != null ? `Rp ${Number(h.price).toLocaleString('id-ID')}` : '—'}
-            </TableCell>
-            <TableCell className="text-slate-500 max-w-xs truncate">{h.note || '—'}</TableCell>
+    <>
+      <Table id="purchaseTable_productDetailPage" aria-label="Purchase history">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date</TableHead>
+            <TableHead align="right">Qty Added</TableHead>
+            <TableHead align="right">Price</TableHead>
+            <TableHead>Note</TableHead>
+            <TableHead className="w-10">
+              <span className="sr-only">Actions</span>
+            </TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {sorted.map((h, idx) => (
+            <TableRow key={h.id ?? idx} id={`purchaseRow_${h.id}_productDetailPage`}>
+              <TableCell className="text-slate-700 whitespace-nowrap">
+                {h.purchase_date ? format(new Date(h.purchase_date), 'd MMM yyyy') : '—'}
+              </TableCell>
+              <TableCell className="font-mono text-slate-700" align="right">
+                {h.quantity_added ?? '—'}
+              </TableCell>
+              <TableCell className="font-mono text-slate-700 whitespace-nowrap" align="right">
+                {h.price != null ? `Rp ${Number(h.price).toLocaleString('id-ID')}` : '—'}
+              </TableCell>
+              <TableCell className="text-slate-500 max-w-xs truncate">{h.note || '—'}</TableCell>
+              <TableCell align="center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      id={`purchaseRowMenu_${h.id}_productDetailPage`}
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Entry actions"
+                      className="size-7 outline-none hover:bg-slate-100"
+                    >
+                      <MoreHorizontalIcon className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      id={`editStockEntry_${h.id}_productDetailPage`}
+                      onSelect={() => setEditEntry(h)}
+                      className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Edit Entry
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      id={`deleteStockEntry_${h.id}_productDetailPage`}
+                      onSelect={() => setDeleteEntry(h)}
+                      className="text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700 cursor-pointer"
+                    >
+                      <Trash2Icon className="h-4 w-4 mr-2" />
+                      Delete Entry
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {editEntry && (
+        <EditStockForm
+          entry={editEntry}
+          open={!!editEntry}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setEditEntry(null)
+          }}
+          onUpdated={async () => {
+            setEditEntry(null)
+            await onRefresh?.()
+          }}
+        />
+      )}
+
+      {deleteEntry && (
+        <DeleteStockDialog
+          entry={deleteEntry}
+          open={!!deleteEntry}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setDeleteEntry(null)
+          }}
+          onDeleted={async () => {
+            setDeleteEntry(null)
+            await onRefresh?.()
+          }}
+        />
+      )}
+    </>
   )
 }
 
@@ -308,7 +396,7 @@ export default function ProductDetailPage({ productId }) {
               <p className="text-xs text-slate-500 mt-0.5">All restocks for this product</p>
             </div>
           </div>
-          <PurchaseHistorySection history={stockHistory} />
+          <PurchaseHistorySection history={stockHistory} onRefresh={loadData} />
         </section>
 
         {/* Usage History */}

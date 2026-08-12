@@ -1,5 +1,6 @@
 import {
   getLatestProductQuantityFromDb,
+  getProductQuantityByIdFromDb,
   getProductQuantityCountFromDb,
   getProductQuantityListFromDb,
   getProductQuantityHistoryFromDb,
@@ -10,6 +11,10 @@ import {
 export const productQuantityTasks = (supabaseAdmin) => ({
   async getLatestProductQuantityFromDb({ productListId, userId }) {
     return getLatestProductQuantityFromDb(supabaseAdmin, productListId, userId)
+  },
+
+  async getProductQuantityByIdFromDb({ entryId, userId }) {
+    return getProductQuantityByIdFromDb(supabaseAdmin, entryId, userId)
   },
 
   async getProductQuantityCountFromDb({ productListId, userId }) {
