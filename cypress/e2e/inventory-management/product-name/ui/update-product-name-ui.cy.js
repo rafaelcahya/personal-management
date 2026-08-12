@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
-import { ROUTES } from '../../../fixtures/routes.js'
-import { INVENTORY_ENDPOINTS } from '../../../fixtures/endpoints.js'
+import { ROUTES } from '../../../../fixtures/routes.js'
+import { INVENTORY_ENDPOINTS } from '../../../../fixtures/endpoints.js'
 
 const PRODUCT_NAME_URL = ROUTES.inventory_product_name
 const PRODUCT_NAME_LIST_API = INVENTORY_ENDPOINTS.PRODUCT_NAME_LIST

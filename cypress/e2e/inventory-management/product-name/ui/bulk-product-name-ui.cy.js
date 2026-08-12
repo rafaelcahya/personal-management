@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { ROUTES } from '../../../fixtures/routes.js'
+import { ROUTES } from '../../../../fixtures/routes.js'
 
 const PRODUCT_NAME_URL = ROUTES.inventory_product_name
 
