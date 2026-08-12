@@ -1,6 +1,6 @@
-import { ROUTES } from '../../../fixtures/routes.js'
-import { INVENTORY_ENDPOINTS } from '../../../fixtures/endpoints.js'
-import { TEST_IDS } from '../../../fixtures/test-ids.js'
+import { ROUTES } from '../../../../fixtures/routes.js'
+import { INVENTORY_ENDPOINTS } from '../../../../fixtures/endpoints.js'
+import { TEST_IDS } from '../../../../fixtures/test-ids.js'
 
 const IDS = TEST_IDS.product_name
 
