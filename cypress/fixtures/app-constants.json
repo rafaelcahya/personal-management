@@ -189,7 +189,8 @@
     },
     "trading_dashboard": {
       "metrics": "/api/trade/v1/dashboard/metrics",
-      "quick_view": "/api/trade/v1/dashboard/quick-view"
+      "quick_view": "/api/trade/v1/dashboard/quick-view",
+      "daily_pnl": "/api/trade/v1/trade/daily-pnl"
     },
     "trading_research": {
       "overview": "/api/trade/v1/research/overview",
@@ -1033,6 +1034,17 @@
       "personal_risk_free_rate_input": "personalRiskFreeRateInput_settingsPage",
       "margin_of_error_input": "marginOfErrorInput_settingsPage",
       "save_btn": "saveSettingsBtn_settingsPage"
+    },
+    "trading_dashboard": {
+      "pnl_calendar_card": "pnlCalendarCard_tradingDashboardPage",
+      "pnl_calendar_prev_btn": "pnlCalendarPrevBtn_tradingDashboardPage",
+      "pnl_calendar_month_label": "pnlCalendarMonthLabel_tradingDashboardPage",
+      "pnl_calendar_next_btn": "pnlCalendarNextBtn_tradingDashboardPage",
+      "pnl_calendar_grid": "pnlCalendarGrid_tradingDashboardPage",
+      "pnl_calendar_skeleton": "pnlCalendarSkeleton_tradingDashboardPage",
+      "pnl_calendar_error": "pnlCalendarError_tradingDashboardPage",
+      "pnl_calendar_retry_btn": "pnlCalendarRetryBtn_tradingDashboardPage",
+      "pnl_calendar_empty": "pnlCalendarEmpty_tradingDashboardPage"
     },
     "trading_trade": {
       "metric_strip": "tradeMetricStrip_tradePage",

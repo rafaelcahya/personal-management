@@ -1,6 +1,6 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-08-12 (issue #767 — add buy date and sell date to trade form)
+**Last Updated:** 2026-08-12 (issue #765 — daily PnL calendar + security hardening)
 **Branch:** release/v1.29
 
 ---
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,501  | 49%  |
+| API       | 1,517  | 49%  |
 | UI        | 1,551  | 51%  |
-| **Total** | **3,052** | 100% |
+| **Total** | **3,068** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 277   | 254   | 531   |
+| Trading Management   | 293   | 254   | 547   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,501** | **1,551** | **3,052** |
+| **Total**            | **1,517** | **1,551** | **3,068** |
 
 ---
 
@@ -119,7 +119,8 @@
 | Feature          | API | UI | Total |
 | ---------------- | --- | -- | ----- |
 | Dashboard API    | 27  | 0  | 27    |
-| **Subtotal**     | **27** | **0** | **27** |
+| Daily PnL        | 16  | 0  | 16    |
+| **Subtotal**     | **43** | **0** | **43** |
 
 #### Trade
 
@@ -202,7 +203,7 @@
 | Corporate Events     | 3   | 0  | 3     |
 | **Subtotal**         | **12** | **0** | **12** |
 
-**Trading Total — API: 277 | UI: 254 | Total: 531**
+**Trading Total — API: 293 | UI: 254 | Total: 547**
 
 ---
 
@@ -345,8 +346,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 277   | 254   | 531   |
+| Trading Management   | 293   | 254   | 547   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,501** | **1,551** | **3,052** |
+| **Total**            | **1,517** | **1,551** | **3,068** |
