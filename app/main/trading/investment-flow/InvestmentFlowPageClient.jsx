@@ -19,6 +19,8 @@ import InvestmentFlowTreeView from './components/InvestmentFlowTreeView'
 import CategoryNodeForm from './components/CategoryNodeForm'
 import TickerNodeForm from './components/TickerNodeForm'
 import DeleteNodeDialog from './components/DeleteNodeDialog'
+import UninvestedCashNode from './components/UninvestedCashNode'
+import UninvestedCashForm from './components/UninvestedCashForm'
 import InvestmentFlowEmptyState from './components/InvestmentFlowEmptyState'
 import InvestmentFlowSkeleton from './components/InvestmentFlowSkeleton'
 import InvestmentFlowErrorState from './components/InvestmentFlowErrorState'
@@ -38,6 +40,7 @@ export default function InvestmentFlowPageClient() {
     tree,
     enrichedFlatNodes,
     rootTotal,
+    uninvestedCash,
     isLoading,
     isError,
     reload,
@@ -46,6 +49,7 @@ export default function InvestmentFlowPageClient() {
     updateNode,
     deleteNode,
     moveNode,
+    updateUninvestedCash,
   } = useInvestmentFlow()
 
   const [viewMode, setViewMode] = useState('list')
@@ -62,6 +66,9 @@ export default function InvestmentFlowPageClient() {
     node: null,
   })
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [uninvestedCashFormOpen, setUninvestedCashFormOpen] = useState(false)
+
+  const uninvestedCashPct = rootTotal > 0 ? (uninvestedCash / rootTotal) * 100 : 0
 
   const openAddCategory = (parentId = null) =>
     setCategoryFormState({ open: true, mode: 'create', parentId, node: null })
@@ -136,7 +143,18 @@ export default function InvestmentFlowPageClient() {
       {PAGE_HEADER}
 
       {tree.length === 0 ? (
-        <InvestmentFlowEmptyState onAddCategory={() => openAddCategory(null)} />
+        <div className="space-y-6">
+          <InvestmentFlowEmptyState onAddCategory={() => openAddCategory(null)} />
+          <Card id="uninvestedCashCard_investmentFlowPage">
+            <CardContent>
+              <UninvestedCashNode
+                amount={uninvestedCash}
+                percentage={uninvestedCashPct}
+                onEdit={() => setUninvestedCashFormOpen(true)}
+              />
+            </CardContent>
+          </Card>
+        </div>
       ) : (
         <Card id="investmentFlowTreeCard_investmentFlowPage">
           <CardHeader>
@@ -200,17 +218,27 @@ export default function InvestmentFlowPageClient() {
                 createNode={createNode}
                 updateNode={updateNode}
                 deleteNode={deleteNode}
+                uninvestedCash={uninvestedCash}
+                uninvestedCashPct={uninvestedCashPct}
+                onEditUninvestedCash={() => setUninvestedCashFormOpen(true)}
               />
             ) : (
-              <InvestmentTree
-                tree={tree}
-                categoryOptions={categoryOptions}
-                onAddCategory={openAddCategory}
-                onAddTicker={openAddTicker}
-                onEdit={openEdit}
-                onDelete={setDeleteTarget}
-                onMove={handleMove}
-              />
+              <>
+                <InvestmentTree
+                  tree={tree}
+                  categoryOptions={categoryOptions}
+                  onAddCategory={openAddCategory}
+                  onAddTicker={openAddTicker}
+                  onEdit={openEdit}
+                  onDelete={setDeleteTarget}
+                  onMove={handleMove}
+                />
+                <UninvestedCashNode
+                  amount={uninvestedCash}
+                  percentage={uninvestedCashPct}
+                  onEdit={() => setUninvestedCashFormOpen(true)}
+                />
+              </>
             )}
           </CardContent>
         </Card>
@@ -235,6 +263,15 @@ export default function InvestmentFlowPageClient() {
         onOpenChange={(open) => !open && setDeleteTarget(null)}
         node={deleteTarget}
         onConfirm={deleteNode}
+      />
+      <UninvestedCashForm
+        open={uninvestedCashFormOpen}
+        onOpenChange={setUninvestedCashFormOpen}
+        initialAmount={uninvestedCash}
+        onSubmit={async (values) => {
+          const ok = await updateUninvestedCash(values.amount)
+          if (ok) setUninvestedCashFormOpen(false)
+        }}
       />
     </main>
   )

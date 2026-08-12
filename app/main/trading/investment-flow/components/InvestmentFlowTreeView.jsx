@@ -4,7 +4,16 @@ import { useMemo, useState } from 'react'
 import dagre from '@dagrejs/dagre'
 import { ReactFlow, Background, Controls, Handle, Position } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { FolderTree, Layers, Pencil, Plus, Tag as TagIcon, Trash2, TrendingUp } from 'lucide-react'
+import {
+  FolderTree,
+  Layers,
+  Pencil,
+  Plus,
+  Tag as TagIcon,
+  Trash2,
+  TrendingUp,
+  Wallet,
+} from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { Badge } from '@/components/base/Badge/Badge'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
@@ -16,11 +25,14 @@ const NODE_WIDTH = 240
 const ROOT_NODE_HEIGHT = 80
 const CATEGORY_NODE_HEIGHT = 110
 const TICKER_NODE_HEIGHT = 130
+const CASH_NODE_HEIGHT = 90
 const VIRTUAL_ROOT_ID = '__portfolio_root__'
+const UNINVESTED_CASH_ID = '__uninvested_cash__'
 
 function nodeHeightFor(n) {
   if (n.type === 'tickerNode') return TICKER_NODE_HEIGHT
   if (n.type === 'rootNode') return ROOT_NODE_HEIGHT
+  if (n.type === 'cashNode') return CASH_NODE_HEIGHT
   return CATEGORY_NODE_HEIGHT
 }
 
@@ -197,10 +209,48 @@ function TickerNodeCard({ data }) {
   )
 }
 
+function CashNodeCard({ data }) {
+  const { amount, percentage, onEdit } = data
+
+  return (
+    <div
+      id="treeViewUninvestedCashNode_investmentFlowPage"
+      className="border rounded-xl bg-white shadow-sm p-3 w-[240px]"
+    >
+      <Handle type="target" position={Position.Left} />
+
+      <div className="flex items-center gap-2 min-w-0">
+        <Wallet className="size-4 text-emerald-500 shrink-0" aria-hidden="true" />
+        <span className="text-sm font-semibold text-slate-800 truncate">Uninvested Cash</span>
+      </div>
+
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-xs text-slate-500 whitespace-nowrap">{formatRupiah(amount)}</span>
+        <Badge className="bg-emerald-100 text-emerald-700 border-transparent" size="sm">
+          {percentage.toFixed(1)}%
+        </Badge>
+      </div>
+
+      <div className="flex items-center gap-1 mt-3">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Edit uninvested cash"
+          id="treeViewUninvestedCashEditBtn_investmentFlowPage"
+          onClick={onEdit}
+        >
+          <Pencil className="size-3.5" aria-hidden="true" />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 const nodeTypes = {
   rootNode: RootNodeCard,
   categoryNode: CategoryNodeCard,
   tickerNode: TickerNodeCard,
+  cashNode: CashNodeCard,
 }
 
 export default function InvestmentFlowTreeView({
@@ -209,6 +259,9 @@ export default function InvestmentFlowTreeView({
   createNode,
   updateNode,
   deleteNode,
+  uninvestedCash,
+  uninvestedCashPct,
+  onEditUninvestedCash,
 }) {
   const [categoryFormState, setCategoryFormState] = useState({
     open: false,
@@ -286,8 +339,16 @@ export default function InvestmentFlowTreeView({
       data: { rootTotal },
     }
 
+    const cashNode = {
+      id: UNINVESTED_CASH_ID,
+      type: 'cashNode',
+      position: { x: 0, y: 0 },
+      data: { amount: uninvestedCash, percentage: uninvestedCashPct, onEdit: onEditUninvestedCash },
+    }
+
     const rfNodes = [
       virtualRoot,
+      cashNode,
       ...flatNodes.map((node) => ({
         id: node.id,
         type: node.node_type === 'category' ? 'categoryNode' : 'tickerNode',
@@ -321,8 +382,15 @@ export default function InvestmentFlowTreeView({
         type: 'smoothstep',
       }))
 
-    return getLayoutedElements(rfNodes, [...rootEdges, ...rfEdges])
-  }, [flatNodes, rootTotal])
+    const cashEdge = {
+      id: `e-${VIRTUAL_ROOT_ID}-${UNINVESTED_CASH_ID}`,
+      source: VIRTUAL_ROOT_ID,
+      target: UNINVESTED_CASH_ID,
+      type: 'smoothstep',
+    }
+
+    return getLayoutedElements(rfNodes, [...rootEdges, ...rfEdges, cashEdge])
+  }, [flatNodes, rootTotal, uninvestedCash, uninvestedCashPct, onEditUninvestedCash])
 
   return (
     <div
