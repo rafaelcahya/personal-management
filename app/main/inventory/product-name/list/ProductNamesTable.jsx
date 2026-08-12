@@ -8,7 +8,7 @@ import Button from '@/components/base/Button/Button'
 import { Checkbox } from '@/components/base/Checkbox/Checkbox'
 import { bulkUpdateProductNameStatus } from '@/lib/api/productName'
 import ProductNameUpdate from '../UpdateProductName'
-import { Pencil, SearchX, X } from 'lucide-react'
+import { SearchX, X } from 'lucide-react'
 import { toast } from 'sonner'
 import Pagination from '@/components/base/Pagination/Pagination'
 import {
@@ -185,12 +185,9 @@ export default function ProductNamesTable({
                 Products
               </TableHead>
               <TableHead>Notes</TableHead>
-              <TableHead className="w-[60px]" align="center">
-                <span className="sr-only">Action</span>
-              </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody divider={false}>
+          <TableBody>
             {names.map((productName, index) => (
               <TableRow key={productName.id} clickable onClick={() => setSelectedName(productName)}>
                 <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
@@ -243,22 +240,6 @@ export default function ProductNamesTable({
                 </TableCell>
                 <TableCell className="text-slate-500 max-w-xs truncate">
                   {productName.note || '—'}
-                </TableCell>
-                <TableCell className="text-center w-[60px]" onClick={(e) => e.stopPropagation()}>
-                  <Button
-                    type="button"
-                    size="xs"
-                    variant="ghost"
-                    id={`editProductNameBtn_${productName.id}_productNamePage`}
-                    aria-label={`Edit ${productName.product_name}`}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setSelectedName(productName)
-                    }}
-                    className="inline-flex items-center justify-center rounded-md p-1.5 text-violet-500 hover:bg-violet-100 transition-colors min-h-[32px] min-w-[32px]"
-                  >
-                    <Pencil className="size-3.5" />
-                  </Button>
                 </TableCell>
               </TableRow>
             ))}
