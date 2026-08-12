@@ -128,7 +128,7 @@ export default function CostPerUse({ top5, all, loading, error, onRetry }) {
               <ModalDescription>Sorted by highest cost per use</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody padding={{ x: 0, y: 0 }} className="overflow-y-auto flex-1">
+          <ModalBody className="p-0">
             {all.length === 0 ? (
               <EmptyState size="sm">
                 <EmptyStateIcon icon={BarChart2} />

@@ -55,14 +55,9 @@ function MonthBlock({ month, items }) {
         >
           <div className="min-w-0">
             <p className="text-xs text-slate-400 truncate">{item.brand || '—'}</p>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 mt-0.5">
-              <p className="font-medium text-slate-700 text-sm truncate">{item.product}</p>
-              {item.type && (
-                <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                  {item.type}
-                </span>
-              )}
-            </div>
+            <p className="text-sm font-semibold text-slate-900">
+              {item.product} {item.type}
+            </p>
           </div>
           <span className="font-semibold text-violet-700 text-sm shrink-0 ml-3">
             {formatRupiah(item.total_spent)}
