@@ -8,6 +8,7 @@ import ProductListSummary from './list/component/ProductListSummary'
 import ProductTableHeader from './list/component/ProductTableHeader'
 import ProductsTable from './list/ProductsTable'
 import AddProductForm from './add-product/AddProductForm'
+import ProductSortDropdown from './list/component/ProductSortDropdown'
 import PageHeader from '../../components/PageHeader'
 import Input from '@/components/base/Input/Input'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
@@ -169,6 +170,7 @@ export default function ProductsPageClient() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
             <SearchInput search={search} onSearchChange={handleSearchChange} />
             <div className="flex items-center justify-between gap-2 shrink-0">
+              <ProductSortDropdown sort={sort} onSortChange={handleSortChange} />
               <AddProductForm onAdded={handleRefresh} />
             </div>
           </div>

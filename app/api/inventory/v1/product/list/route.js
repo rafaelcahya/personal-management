@@ -15,6 +15,8 @@ const VALID_SORTS = [
   'in_use_desc',
   'usage_date_asc',
   'usage_date_desc',
+  'updated_at_asc',
+  'updated_at_desc',
 ]
 
 const VALID_FILTERS = ['active', 'inactive', 'favorite', 'low-stock', 'out-stock', 'never-used']
