@@ -226,7 +226,8 @@
       "create": "/api/investment-flow/v1",
       "update": "/api/investment-flow/v1",
       "delete": "/api/investment-flow/v1",
-      "move": "/api/investment-flow/v1/move"
+      "move": "/api/investment-flow/v1/move",
+      "uninvested_cash": "/api/investment-flow/v1/uninvested-cash"
     }
   },
   "test_ids": {
