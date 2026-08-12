@@ -1,7 +1,7 @@
 import Link from 'next/link'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, ChevronLeft } from 'lucide-react'
 
-export default function PageHeader({ title, description, breadcrumbs = [] }) {
+export default function PageHeader({ title, description, breadcrumbs = [], backHref }) {
   return (
     <div>
       <nav
@@ -27,8 +27,21 @@ export default function PageHeader({ title, description, breadcrumbs = [] }) {
         })}
       </nav>
 
-      <h1 className="text-xl font-semibold text-slate-800 leading-tight">{title}</h1>
-      {description && <p className="text-sm text-slate-500 mt-0.5">{description}</p>}
+      <div className="flex items-center gap-1">
+        {backHref && (
+          <Link
+            href={backHref}
+            aria-label="Go back"
+            className="shrink-0 p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1"
+          >
+            <ChevronLeft className="size-5" />
+          </Link>
+        )}
+        <div>
+          <h1 className="text-xl font-semibold text-slate-800 leading-tight">{title}</h1>
+          {description && <p className="text-sm text-slate-500 mt-0.5">{description}</p>}
+        </div>
+      </div>
     </div>
   )
 }

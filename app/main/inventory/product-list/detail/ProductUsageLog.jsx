@@ -7,7 +7,6 @@ import {
   TableRow,
   TableHead,
 } from '@/components/base/Table/Table.jsx'
-import Card, { CardContent } from '@/components/base/Card/Card'
 
 export default function ProductUsageLog({ log, onUpdate }) {
   if (!log || log.length === 0) {
@@ -23,33 +22,22 @@ export default function ProductUsageLog({ log, onUpdate }) {
   }
 
   return (
-    <Card
-      id="usageLog_productListPage"
-      className="overflow-x-auto rounded-xl border border-slate-200"
-    >
-      <CardContent className="p-0">
-        <Table
-          id="usageLogTable_productListPage"
-          className="min-w-full"
-          aria-label="Product usage log"
-        >
-          <TableHeader sticky>
-            <TableRow>
-              <TableHead className="w-8" />
-              <TableHead>Start Date</TableHead>
-              <TableHead>End Date</TableHead>
-              <TableHead id="durationCol_usageLogTable">Duration</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead align="right">Qty</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {log.map((item) => (
-              <LogRow key={item.id} item={item} onUpdate={onUpdate} />
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+    <Table id="usageLogTable_productListPage" className="min-w-full" aria-label="Product usage log">
+      <TableHeader sticky>
+        <TableRow>
+          <TableHead className="w-8" />
+          <TableHead>Start Date</TableHead>
+          <TableHead>End Date</TableHead>
+          <TableHead id="durationCol_usageLogTable">Duration</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead align="right">Qty</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {log.map((item) => (
+          <LogRow key={item.id} item={item} onUpdate={onUpdate} />
+        ))}
+      </TableBody>
+    </Table>
   )
 }

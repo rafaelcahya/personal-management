@@ -190,10 +190,11 @@ THEN show empty state "No products yet."
 **Display:** Table with columns: No, Product (brand + name + type badge), Status, Stock
 
 **Stock Badge:**
-| Condition | Badge |
-|-----------|-------|
-| `quantity === 0` | Red badge "Out of Stock" |
-| `quantity ≤ 2` | Orange badge "Low: X left" |
+
+| Condition        | Badge                      |
+| ---------------- | -------------------------- |
+| `quantity === 0` | Red badge "Out of Stock"   |
+| `quantity ≤ 2`   | Orange badge "Low: X left" |
 
 **Behavior:**
 
@@ -312,12 +313,13 @@ THEN show empty state "No purchase data yet 📋"
 **Display:** Table with columns: No, Product (brand + name + type badge), Avg Duration
 
 **Duration Badge:**
-| Condition | Badge |
-|-----------|-------|
-| `< 30 days` | Red badge (consumed quickly) |
-| `30–59 days` | Yellow badge |
-| `≥ 60 days` | Green badge (long-lasting) |
-| Format | `X days` |
+
+| Condition    | Badge                        |
+| ------------ | ---------------------------- |
+| `< 30 days`  | Red badge (consumed quickly) |
+| `30–59 days` | Yellow badge                 |
+| `≥ 60 days`  | Green badge (long-lasting)   |
+| Format       | `X days`                     |
 
 **Behavior:**
 
@@ -414,13 +416,14 @@ THEN show empty state "No purchase history yet 📊"
 **Display:** Table with columns: No, Product (brand + name + type badge), Qty, Est. Empty, Status badge
 
 **Urgency Badge:**
-| Condition | Badge |
-|-----------|-------|
-| `quantity = 0` | Red badge "Out of Stock" |
-| `days_until_empty ≤ 7` | Red badge "Critical" |
-| `days_until_empty ≤ 14` | Orange badge "Soon" |
+
+| Condition               | Badge                     |
+| ----------------------- | ------------------------- |
+| `quantity = 0`          | Red badge "Out of Stock"  |
+| `days_until_empty ≤ 7`  | Red badge "Critical"      |
+| `days_until_empty ≤ 14` | Orange badge "Soon"       |
 | `days_until_empty ≤ 30` | Yellow badge "This Month" |
-| `days_until_empty > 30` | Green badge "6+ Months" |
+| `days_until_empty > 30` | Green badge "6+ Months"   |
 
 **Behavior:**
 
@@ -462,11 +465,12 @@ THEN that product is not shown (cannot be predicted)
 - Progress bar with color coding
 
 **Progress Bar Color:**
-| Condition | Color |
-|-----------|-------|
-| `< 75%` | Violet |
-| `75–99%` | Yellow |
-| `≥ 100%` | Red (over budget) |
+
+| Condition | Color             |
+| --------- | ----------------- |
+| `< 75%`   | Violet            |
+| `75–99%`  | Yellow            |
+| `≥ 100%`  | Red (over budget) |
 
 **Inline Edit Budget:**
 
@@ -524,13 +528,14 @@ THEN the progress bar is red and the percentage badge shows ≥ 100%
 - Legend at the bottom left: "Less → More" with 5 color boxes
 
 **Color Levels (5 levels):**
-| Level | Range | Tailwind Color |
-|-------|-------|----------------|
-| 0 | No spend | `bg-slate-100` |
-| 1 | > 0 – < 50k | `bg-violet-200` |
-| 2 | 50k – 200k | `bg-violet-400` |
-| 3 | 200k – 500k | `bg-violet-600` |
-| 4 | > 500k | `bg-violet-800` |
+
+| Level | Range       | Tailwind Color  |
+| ----- | ----------- | --------------- |
+| 0     | No spend    | `bg-slate-100`  |
+| 1     | > 0 – < 50k | `bg-violet-200` |
+| 2     | 50k – 200k  | `bg-violet-400` |
+| 3     | 200k – 500k | `bg-violet-600` |
+| 4     | > 500k      | `bg-violet-800` |
 
 **Hover Tooltip:** Date (dd MMM yyyy) + amount (Rupiah format or "No spend")
 
@@ -572,12 +577,13 @@ THEN the cell is bg-violet-800 (level 4, highest)
 - `lifecycle_score` = `round(cost_score × 0.5 + duration_score × 0.5)`
 
 **Tier Badge:**
-| Score | Tier | Color |
-|-------|------|-------|
-| ≥ 80 | S | Violet |
-| 60–79 | A | Green |
-| 40–59 | B | Yellow |
-| < 40 | C | Slate |
+
+| Score | Tier | Color  |
+| ----- | ---- | ------ |
+| ≥ 80  | S    | Violet |
+| 60–79 | A    | Green  |
+| 40–59 | B    | Yellow |
+| < 40  | C    | Slate  |
 
 **Display:** Table with columns: No, Product (brand + name + type badge), Cost/Use, Avg Duration, Tier, Score (progress bar + number)
 
@@ -732,7 +738,7 @@ THEN all sections show a skeleton loading state
 
 #### 3.1.1 Product List (`/main/inventory/product-list`)
 
-**Description:** The main product management page. Displays all products in a table with search, filter, and per-product actions.
+**Description:** The main product management page. Displays all products in a browsable table with search and filter. Each row is clickable and navigates to the Product Detail page. Actions (Edit, Add Stock, Record Usage) are accessible from the detail page — there is no per-row action dropdown on this page.
 
 **Route:** `/main/inventory/product-list`
 **Entry Point:** `app/main/inventory/product-list/page.jsx`
@@ -745,13 +751,11 @@ THEN all sections show a skeleton loading state
 
 > As a user, I want to filter products by status or stock level, so that I can focus on products that need attention.
 
-> As a user, I want to edit product details, so that I can correct mistakes or update product information.
+> As a user, I want to click a product row and go to its detail page, so that I can see full history and take actions from one place.
 
 > As a user, I want to see at a glance which products are out of stock or running low, so that I can prioritize restocking.
 
-> As a user, I want to add stock with the last purchase price visible, so that I can make an informed decision about the price I enter.
-
-> As a user, I want to record when I start using a product, so that I can track usage duration and consumption patterns.
+> As a user, I want to mark a product as a favorite directly from the list, so that I don't have to navigate to the detail page just to toggle a star.
 
 ---
 
@@ -761,19 +765,34 @@ THEN all sections show a skeleton loading state
 
 Columns shown:
 
-| Column         | Data                | Alignment | Note                                                                                           |
-| -------------- | ------------------- | --------- | ---------------------------------------------------------------------------------------------- |
-| Product        | brand + type + name | Left      | Favorite star icon on the left — space is always reserved (visibility:hidden if not favorited) |
-| Quantity       | `quantity`          | Right     | Monospace font                                                                                 |
-| In Use         | `usage_quantity`    | Right     | Monospace font — number of units currently in use                                              |
-| Usage Date     | `usage_date`        | Center    | Format: DD MMM YYYY, "-" if never used                                                         |
-| Product Status | `product_status`    | Center    | Badge: active (green) / inactive (red)                                                         |
-| Actions        | —                   | Center    | 3-dot dropdown                                                                                 |
+| Column         | Data                | Alignment | Note                                                                                                              |
+| -------------- | ------------------- | --------- | ----------------------------------------------------------------------------------------------------------------- |
+| Product        | brand + type + name | Left      | Favorite star icon on the left — clickable to toggle favorite; space is always reserved (hidden if not favorited) |
+| Quantity       | `quantity`          | Right     | Monospace font                                                                                                    |
+| In Use         | `usage_quantity`    | Right     | Monospace font — number of units currently in use                                                                 |
+| Usage Date     | `usage_date`        | Center    | Format: DD MMM YYYY, "-" if never used                                                                            |
+| Product Status | `product_status`    | Center    | Badge: active (green) / inactive (red)                                                                            |
+
+The ⋯ (3-dot action dropdown) column is removed. The Actions column no longer exists on this page.
+
+**Row click behavior:** clicking anywhere on a row (except the star icon) navigates to `/main/inventory/product-list/[id]` (the Product Detail page). The entire row is a link — cursor changes to pointer on hover.
+
+**Star icon behavior:** clicking the star icon toggles `is_favorite` for that product without navigating away. The icon click is isolated from the row click (event propagation stopped). Favorites are always sorted to the top of the list.
 
 ```
 GIVEN products exist in the database
 WHEN the page loads
 THEN all products are shown in the table, with favorites at the top
+AND there is no action dropdown column
+
+GIVEN the user clicks anywhere on a product row (except the star)
+WHEN the click is handled
+THEN the browser navigates to /main/inventory/product-list/[id] for that product
+
+GIVEN the user clicks the star icon on a product row
+WHEN the toggle succeeds
+THEN is_favorite is updated and the star reflects the new state
+AND the user stays on the Product List page (no navigation)
 ```
 
 **B. Search Bar**
@@ -852,88 +871,15 @@ AND a success toast is shown
 
 **E. Edit Product**
 
-```
-GIVEN the user clicks "Edit Product" in the action dropdown
-WHEN the Dialog opens
-THEN fields are pre-filled: Brand (Select), Product Name (Select), Type (Input), Status (Select active/inactive)
-AND each field has a guide message below it
-
-GIVEN the changes are valid
-WHEN the user clicks "Save Changes"
-THEN the product is updated in the table
-AND a success toast is shown
-AND the Dialog closes
-```
-
-UI: Use `<Dialog>` — consistent with all other actions (Add Stock, Record Usage, Delete, Add Product).
+Edit Product is no longer accessible from the Product List page. It is accessible from the Product Detail page action bar. See section 3.1.6 for the Edit Product spec.
 
 **F. Add Stock**
 
-```
-GIVEN the user clicks "Add Stock" in the action dropdown
-WHEN the Dialog opens
-THEN show: Quantity to Add, Price (Rp), Purchase Date, Note (optional)
-AND below the Price field show the last purchase price hint (see F.1)
-AND above the form fields show the Recent Purchases section (see F.2)
-
-GIVEN quantity_added ≥ 1 and price ≥ 0
-WHEN the user submits
-THEN stock increases and the history record is saved
-```
-
-**F.1 Last Purchase Price Hint (implemented — v1.11)**
-
-When the Add Stock dialog opens, the system calls `GET /api/inventory/v1/product/[id]/last-price` and shows the result below the Price field.
-
-| Condition  | Display                                      |
-| ---------- | -------------------------------------------- |
-| Loading    | "Loading last price..."                      |
-| Data found | "Last purchase price: Rp X.XXX — d MMM yyyy" |
-| No data    | "No previous purchase data available"        |
-
-```
-GIVEN the user opens the Add Stock dialog for a product that has been bought before
-WHEN the last-price API responds
-THEN the hint "Last purchase price: Rp X — d MMM yyyy" is shown below the Price field
-
-GIVEN the user opens the Add Stock dialog for a product that has never been bought
-WHEN the last-price API responds with no data
-THEN the text "No previous purchase data available" is shown
-```
-
-**F.2 Recent Purchases Section (implemented — v1.11)**
-
-When the Add Stock dialog opens, the system calls `GET /api/inventory/v1/product/stock/history/[id]` and shows the 3 most recent purchases above the form fields (before Quantity to Add).
-
-Each row shows: date (mono font), qty, price (Rp, id-ID format, mono font).
-This section is only shown if there is purchase history (hidden if history is empty).
-
-```
-GIVEN the user opens the Add Stock dialog and there is previous purchase history
-WHEN the stock-history API responds
-THEN the "Recent Purchases" section is shown above the form with up to 3 most recent entries
-
-GIVEN the user opens the Add Stock dialog and there is no purchase history
-WHEN the stock-history API responds with empty data
-THEN the "Recent Purchases" section is not shown
-```
-
-**API for Add Stock:**
-
-- `GET /api/inventory/v1/product/[id]/last-price` — Response: `{ success: true, data: { last_purchase_price, last_purchase_date } }`
-- `GET /api/inventory/v1/product/stock/history/[id]` — Response: array of `{ purchase_date, quantity_added, price }`
+Add Stock is no longer accessible from the Product List page. It is accessible from the Product Detail page action bar. See section 3.1.6 for the Add Stock spec.
 
 **G. Record Usage** _(previously called "Update Usage" — renamed for clarity)_
 
-```
-GIVEN the user clicks "Record Usage" in the action dropdown
-WHEN the dialog opens
-THEN the user can record when they started using the product and the quantity being used
-
-GIVEN usage is recorded
-WHEN it saves successfully
-THEN the "Usage Date" and "In Use" columns in the table update
-```
+Record Usage is no longer accessible from the Product List page. It is accessible from the Product Detail page action bar. See section 3.1.6 for the Record Usage spec.
 
 **G.1 Note Display in Usage Log (implemented — v1.11)**
 
@@ -951,25 +897,11 @@ THEN the "Note" card is not shown (conditional rendering)
 
 **H. Favorites**
 
-```
-GIVEN the user clicks "Add to Favorites" in the action dropdown
-WHEN the action succeeds
-THEN the product moves to the top of the table
-AND the star icon appears in the Product column
-AND the menu item changes to "Remove from Favorites"
-```
+The favorites toggle is handled via the star icon in the Product column — there is no action dropdown. See the star icon behavior in section A above.
 
 **I. Delete Product**
 
-```
-GIVEN the user clicks "Delete Product" in the action dropdown
-WHEN a confirmation dialog appears
-THEN the user must confirm before the product is deleted (destructive action)
-
-GIVEN the user confirms
-WHEN deletion succeeds
-THEN the product disappears from the table and a success toast is shown
-```
+Delete Product is no longer accessible from the Product List page. It is accessible from the Product Detail page. See section 3.1.6 for the Delete spec.
 
 ---
 
@@ -1102,16 +1034,6 @@ GIVEN the user clicks the "Total Stock" card
 WHEN there is no filterValue
 THEN no action is taken (card is not clickable)
 ```
-
-**Action Dropdown per Product (order):**
-
-1. Edit Product _(new)_
-2. Add Stock
-3. Record Usage _(previously: Update Usage)_
-4. — separator —
-5. Add to Favorites / Remove from Favorites
-6. — separator —
-7. Delete Product _(only shown if not yet deleted)_
 
 ---
 
@@ -2244,9 +2166,9 @@ THEN the message is not sent
 
 ---
 
-#### 3.1.6 Product Detail Page (`/main/inventory/product-list/[id]`) — implemented v1.11
+#### 3.1.6 Product Detail Page (`/main/inventory/product-list/[id]`)
 
-**Description:** The individual product detail page showing summary stats, purchase history, and usage history in a single view. Accessible from the route `/main/inventory/product-list/[id]`.
+**Description:** The single hub for viewing and managing an individual product. Shows summary stats, stock history, and usage history in one view. All management actions (Edit Product, Add Stock, Record Usage) are accessible from the action bar in the page header — there is no action dropdown on the Product List page anymore.
 
 **Route:** `/main/inventory/product-list/[id]`
 **Entry Point:** `app/main/inventory/product-list/[id]/page.jsx`
@@ -2254,28 +2176,102 @@ THEN the message is not sent
 
 **User Stories:**
 
-> As a user, I want to see a complete history of purchases and usage sessions for a single product, so that I can understand how I've been using and buying it.
+> As a user, I want to see a complete history of stock purchases and usage sessions for a single product, so that I can understand how I've been using and buying it.
 
 > As a user, I want to see summary stats (current stock, total added, total spent, usage sessions) for a product in one place, so that I can evaluate its consumption at a glance.
+
+> As a user, I want to edit product details, add stock, or record usage from the product detail page, so that all management actions are in one place.
+
+> As a user, I want to toggle a product as a favorite from its detail page, so that I can manage favorites without going back to the list.
 
 **Page Structure:**
 
 1. Back link — "Back to Product List" → `/main/inventory/product-list`
 2. PageHeader — `title`: product name, `description`: brand · type, `breadcrumbs`: Inventory > Product List > [product name]
-3. Status badge (active/inactive) — next to the PageHeader (float right on sm+)
+3. Header area — right side contains:
+   - **Star icon** — clickable to toggle `is_favorite`; filled star if favorite, outline star if not; calls the same toggle API used by the Product List
+   - **Status badge** (active/inactive) — displayed next to the star icon
+   - **Action bar** — three buttons: `Edit Product`, `Add Stock`, `Record Usage`
+     - Each button opens a `<Dialog>` (same form as previously used on the Product List page)
+     - On mobile: the action bar buttons collapse into a ⋯ dropdown to save space
 4. 4 stat cards (2-col mobile, 4-col desktop):
    - **Current Stock** — `product.quantity`, sub-label "Out of stock" / "Low stock" if applicable
    - **Total Added** — SUM(`quantity_added`) from stock history, sub-label "all time"
    - **Total Spent** — SUM(`price`) from stock history, formatted as `Rp X.XXX`
    - **Usage Sessions** — COUNT of records from usage history
 5. 2-column content grid (1-col mobile, 2-col desktop):
-   - **Purchase History** — table columns: Date, Qty Added, Price, Note; sorted most recent first; empty state: icon + "No purchase history yet"
+   - **Stock History** _(renamed from Purchase History)_ — table columns: Date, Qty Added, Price, Note; sorted most recent first; empty state: icon + "No stock history yet"
    - **Usage History** — reuses the `ProductUsageLog` component
+
+**Action Bar — Edit Product:**
+
+Fields: Brand (Select), Product Name (Select), Type (Input), Status (Select active/inactive). Each field has a guide message below it.
+
+```
+GIVEN the user clicks "Edit Product" in the action bar
+WHEN the Dialog opens
+THEN fields are pre-filled with the current product data
+
+GIVEN the changes are valid
+WHEN the user clicks "Save Changes"
+THEN the product is updated and the page header reflects the change
+AND a success toast is shown
+AND the Dialog closes
+```
+
+**Action Bar — Add Stock:**
+
+Fields: Quantity to Add, Price (Rp), Purchase Date, Note (optional). Below the Price field: last purchase price hint. Above the form fields: Recent Purchases section (up to 3 most recent entries, hidden if empty).
+
+Last Purchase Price Hint:
+
+| Condition  | Display                                      |
+| ---------- | -------------------------------------------- |
+| Loading    | "Loading last price..."                      |
+| Data found | "Last purchase price: Rp X.XXX — d MMM yyyy" |
+| No data    | "No previous purchase data available"        |
+
+```
+GIVEN the user clicks "Add Stock" in the action bar
+WHEN the Dialog opens
+THEN show: Quantity to Add, Price (Rp), Purchase Date, Note (optional)
+AND below the Price field show the last purchase price hint
+AND above the form fields show the Recent Purchases section if history exists
+
+GIVEN quantity_added ≥ 1 and price ≥ 0
+WHEN the user submits
+THEN the Current Stock and Total Added stat cards update
+AND the Stock History section shows the new entry
+AND a success toast is shown
+```
+
+**Action Bar — Record Usage:**
+
+```
+GIVEN the user clicks "Record Usage" in the action bar
+WHEN the dialog opens
+THEN the user can record when they started using the product and the quantity being used
+
+GIVEN usage is recorded
+WHEN it saves successfully
+THEN the Usage Sessions stat card updates
+AND a success toast is shown
+```
+
+**Star Icon (Favorite Toggle):**
+
+```
+GIVEN the user is on the Product Detail page
+WHEN the user clicks the star icon in the header
+THEN is_favorite is toggled for the product
+AND the star icon state updates immediately (filled ↔ outline)
+AND a success toast is shown
+```
 
 **Data Fetching:** 3 parallel API calls via `Promise.all` on component mount:
 
 - `GET /api/inventory/v1/product/[id]` → product data
-- `GET /api/inventory/v1/product/stock/history/[id]` → purchase history
+- `GET /api/inventory/v1/product/stock/history/[id]` → stock history
 - Usage history API → usage log
 
 **Loading State:** Full skeleton with back link still visible — skeleton for header, 4 stat cards, and 2 content sections.
@@ -2288,6 +2284,8 @@ THEN the message is not sent
 GIVEN the user navigates to /main/inventory/product-list/[id]
 WHEN the page loads
 THEN 4 stat cards show accurate data based on the product's stock history and usage history
+AND the action bar shows Edit Product, Add Stock, and Record Usage buttons
+AND the star icon reflects the current is_favorite state
 
 GIVEN data is still loading
 WHEN the API hasn't responded yet
@@ -2301,11 +2299,15 @@ AND clicking "Try again" retries all 3 API calls
 
 GIVEN a product has status "active"
 WHEN the page loads
-THEN an emerald "active" badge is shown next to the PageHeader
+THEN an emerald "active" badge is shown in the header area
 
-GIVEN a product has no purchase history
-WHEN the Purchase History section renders
-THEN the empty state is shown with an icon and "No purchase history yet"
+GIVEN a product has no stock history
+WHEN the Stock History section renders
+THEN the empty state is shown with an icon and "No stock history yet"
+
+GIVEN the user is on a mobile viewport
+WHEN the page loads
+THEN the action bar buttons are collapsed into a ⋯ dropdown
 ```
 
 **Validations:**
@@ -2316,15 +2318,20 @@ THEN the empty state is shown with an icon and "No purchase history yet"
 **API Endpoints:**
 
 - `GET /api/inventory/v1/product/[id]` — product detail
-- `GET /api/inventory/v1/product/stock/history/[id]` — purchase history
-- `GET /api/inventory/v1/product-history/[id]` — single usage history entry by ID; used by this page to display individual usage session data
-- `GET /api/inventory/v1/product/restock-predictions` — used on the Product List page (not on the detail page)
+- `GET /api/inventory/v1/product/stock/history/[id]` — stock history (renamed from purchase history)
+- `GET /api/inventory/v1/product/[id]/last-price` — last purchase price hint for Add Stock dialog
+- `GET /api/inventory/v1/product-history/[id]` — single usage history entry by ID
+- `PUT /api/inventory/v1/product/[id]` — update product (Edit Product action)
+- `POST /api/inventory/v1/product/stock/[id]` — add stock (Add Stock action)
+- `POST /api/inventory/v1/product-history` — record usage (Record Usage action)
+- `PATCH /api/inventory/v1/product/[id]/favorite` — toggle is_favorite (star icon)
 
 ---
 
 ## Version History
 
-| Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.1     | 2026-06-17 | Full translation from Indonesian to English (sections 3.1.0, 3.1.1, and all mixed-language content). Fixed `product_usage_log` → `product_history` table name throughout. Added missing endpoints: `GET /product-brand/[id]`, `GET /product-brand/summary`. Added and clarified `PATCH /product-history/update/[id]` and `GET /product-history/[id]` with usage context notes. Expanded section 3.1.5 (Inventory AI Chat) from stub to full spec. |
-| 1.0     | (initial)  | Original PRD — partial Indonesian, stub sections                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.2     | 2026-08-12 | Section 3.1.1: removed ⋯ action dropdown from product list rows; entire row is now a clickable link to the Product Detail page; star icon on each row is clickable to toggle favorites. Section 3.1.6: added action bar (Edit Product, Add Stock, Record Usage) to the Product Detail page header; added star icon (favorite toggle) to header; renamed "Purchase History" → "Stock History"; Product Detail page is now the single management hub. |
+| 1.1     | 2026-06-17 | Full translation from Indonesian to English (sections 3.1.0, 3.1.1, and all mixed-language content). Fixed `product_usage_log` → `product_history` table name throughout. Added missing endpoints: `GET /product-brand/[id]`, `GET /product-brand/summary`. Added and clarified `PATCH /product-history/update/[id]` and `GET /product-history/[id]` with usage context notes. Expanded section 3.1.5 (Inventory AI Chat) from stub to full spec.   |
+| 1.0     | (initial)  | Original PRD — partial Indonesian, stub sections                                                                                                                                                                                                                                                                                                                                                                                                    |

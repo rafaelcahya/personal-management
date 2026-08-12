@@ -14,7 +14,7 @@ import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
 import { adjustStock } from '@/lib/api/product'
 
-function RecordUsageForm({ product, onUpdated, onClose }) {
+function RecordUsageForm({ product, onUpdated }) {
   const [serverError, setServerError] = useState(null)
 
   const form = useForm({
@@ -45,12 +45,11 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
         toast.success('Usage recorded successfully!')
 
         await onUpdated?.()
-        onClose?.()
       } catch (err) {
         setServerError(err.message || 'Failed to record usage')
       }
     },
-    [product, onUpdated, onClose]
+    [product, onUpdated]
   )
 
   if (!product) return null
@@ -161,16 +160,7 @@ function RecordUsageForm({ product, onUpdated, onClose }) {
         </div>
       )}
 
-      <div className="flex justify-end gap-2 pt-2">
-        <Button
-          type="button"
-          onClick={onClose}
-          variant="secondary"
-          className="text-violet-600 font-medium"
-          id="cancelBtn_recordUsageForm"
-        >
-          Cancel
-        </Button>
+      <div className="flex justify-end pt-2">
         <Button type="submit" disabled={isSubmitting} id="startTrackingBtn_recordUsageForm">
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isSubmitting ? 'Saving...' : 'Record Usage'}

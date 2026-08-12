@@ -2,34 +2,12 @@
 
 import { useState } from 'react'
 import { Modal, ModalContent, ModalBody } from '@/components/base/Modal/Modal.jsx'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/base/DropdownMenu/DropdownMenu'
 import { Badge } from '@/components/base/Badge/Badge'
-import Button from '@/components/base/Button/Button'
-import {
-  ArrowDown,
-  ArrowUp,
-  ArrowUpDown,
-  FilePenLine,
-  MoreHorizontalIcon,
-  PackagePlus,
-  Pencil,
-  StarIcon,
-  Trash2Icon,
-} from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, StarIcon } from 'lucide-react'
 import Pagination from '@/components/base/Pagination/Pagination'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { favoriteProduct } from '@/lib/api/product'
-import AddStockForm from '../detail/AddStockForm'
-import StockAdjustment from '../detail/StockAdjustment'
-import DeleteProductDialog from './component/DeleteProductDialog'
-import EditProductSheet from './component/EditProductSheet'
 import {
   Table,
   TableHeader,
@@ -38,6 +16,7 @@ import {
   TableHead,
   TableCell,
 } from '@/components/base/Table/Table.jsx'
+import Link from 'next/link'
 
 const LOW_STOCK_THRESHOLD = 5
 
@@ -57,83 +36,6 @@ function QuantityBadge({ quantity }) {
     return <Badge className="bg-yellow-100 text-yellow-700">Low Stock</Badge>
   }
   return <span className="font-mono font-medium tabular-nums">{quantity}</span>
-}
-
-function ActionMenu({
-  product,
-  onEdit,
-  onAddStock,
-  onRecordUsage,
-  onToggleFavorite,
-  loadingFavorite,
-  onDelete,
-  onRefresh,
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          id="actionMenuTrigger_productListPage"
-          variant="ghost"
-          size="icon"
-          aria-label="Open menu"
-          className="size-8 outline-none hover:bg-slate-200"
-        >
-          <MoreHorizontalIcon />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem
-          id="editAction_productListPage"
-          onSelect={() => onEdit(product)}
-          className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
-        >
-          <Pencil className="h-4 w-4 mr-2" />
-          Edit Product
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => onAddStock(product)}
-          className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
-        >
-          <PackagePlus className="h-4 w-4 mr-2" />
-          Add Stock
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          id="recordUsageAction_productListPage"
-          onSelect={() => onRecordUsage(product)}
-          className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
-        >
-          <FilePenLine className="h-4 w-4 mr-2" />
-          Record Usage
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onSelect={() => onToggleFavorite(product)}
-          disabled={loadingFavorite === product.id}
-          className="hover:bg-violet-50 hover:outline-none focus:bg-violet-50 cursor-pointer"
-        >
-          <StarIcon
-            className={`size-4 mr-2 ${
-              product.is_favorite ? 'fill-yellow-400 text-yellow-400' : ''
-            }`}
-          />
-          {product.is_favorite ? 'Remove from Favorites' : 'Add to Favorites'}
-        </DropdownMenuItem>
-        {!product.deleted_at && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={() => onDelete(product)}
-              className="text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700 cursor-pointer"
-            >
-              <Trash2Icon className="h-4 w-4 mr-2" />
-              Delete Product
-            </DropdownMenuItem>
-          </>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
 }
 
 function SortIcon({ column, sort }) {
@@ -157,10 +59,6 @@ export default function ProductsTable({
   onPrev,
   onNext,
 }) {
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [editProduct, setEditProduct] = useState(null)
-  const [addStockProduct, setAddStockProduct] = useState(null)
-  const [deleteProduct, setDeleteProduct] = useState(null)
   const [loadingFavorite, setLoadingFavorite] = useState(null)
   const [previewImg, setPreviewImg] = useState(null)
 
@@ -172,7 +70,9 @@ export default function ProductsTable({
     onSortChange(newSort)
   }
 
-  const handleToggleFavorite = async (product) => {
+  const handleToggleFavorite = async (e, product) => {
+    e.preventDefault()
+    e.stopPropagation()
     const newFavoriteStatus = !product.is_favorite
     setLoadingFavorite(product.id)
     try {
@@ -190,38 +90,39 @@ export default function ProductsTable({
     }
   }
 
-  const sharedActionProps = {
-    onEdit: setEditProduct,
-    onAddStock: setAddStockProduct,
-    onRecordUsage: setSelectedProduct,
-    onDelete: setDeleteProduct,
-    onToggleFavorite: handleToggleFavorite,
-    loadingFavorite,
-    onRefresh,
-  }
-
   return (
     <>
       {/* ── Mobile Card List (< sm) ── */}
       <div id="mobileCards_productListPage" className="flex flex-col gap-2 sm:hidden px-3 py-3">
         {products.map((product) => (
-          <div
+          <Link
             key={product.id}
+            href={`/main/inventory/product-list/${product.id}`}
             id={`mobileCard_${product.id}_productListPage`}
-            className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
+            className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm block"
           >
-            {/* Row 1: name + status + actions */}
+            {/* Row 1: name + status + star */}
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
-                <StarIcon
-                  className={`size-3.5 flex-shrink-0 ${
-                    product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'
-                  }`}
-                />
+                <button
+                  type="button"
+                  onClick={(e) => handleToggleFavorite(e, product)}
+                  disabled={loadingFavorite === product.id}
+                  aria-label={product.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+                  className="shrink-0 p-0.5 rounded transition-opacity disabled:opacity-50"
+                  id={`starBtn_${product.id}_productListPage`}
+                >
+                  <StarIcon
+                    className={`size-3.5 ${
+                      product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'
+                    }`}
+                  />
+                </button>
                 <div className="flex flex-col items-start gap-2">
                   {product.product_image && (
                     <span
                       onClick={(e) => {
+                        e.preventDefault()
                         e.stopPropagation()
                         setPreviewImg(product.product_image)
                       }}
@@ -237,16 +138,9 @@ export default function ProductsTable({
                   )}
                   <div className="min-w-0">
                     <p className="text-xs text-slate-400 truncate leading-tight">{product.brand}</p>
-                    <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                      <p className="font-medium text-slate-700 text-sm truncate">
-                        {product.product}
-                      </p>
-                      {product.type && (
-                        <Badge className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                          {product.type}
-                        </Badge>
-                      )}
-                    </div>
+                    <p className="font-medium text-slate-700 text-sm truncate capitalize mt-0.5">
+                      {product.product} {product.type}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -260,7 +154,6 @@ export default function ProductsTable({
                 >
                   {product.product_status}
                 </Badge>
-                <ActionMenu product={product} {...sharedActionProps} />
               </div>
             </div>
 
@@ -300,7 +193,7 @@ export default function ProductsTable({
                 </span>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -310,51 +203,65 @@ export default function ProductsTable({
           <TableHeader sticky>
             <TableRow>
               <TableHead
-                className="w-[35%] cursor-pointer select-none"
+                className="w-[38%] cursor-pointer select-none"
                 onClick={() => handleSort('product')}
               >
                 Product <SortIcon column="product" sort={sort} />
               </TableHead>
               <TableHead
-                className="w-[12%] cursor-pointer select-none"
+                className="w-[14%] cursor-pointer select-none"
                 align="right"
                 onClick={() => handleSort('quantity')}
               >
                 Quantity <SortIcon column="quantity" sort={sort} />
               </TableHead>
               <TableHead
-                className="w-[15%] cursor-pointer select-none"
+                className="w-[16%] cursor-pointer select-none"
                 align="right"
                 onClick={() => handleSort('in_use')}
               >
                 In Use <SortIcon column="in_use" sort={sort} />
               </TableHead>
               <TableHead
-                className="w-[13%] cursor-pointer select-none"
+                className="w-[16%] cursor-pointer select-none"
                 align="center"
                 onClick={() => handleSort('usage_date')}
               >
                 Usage Date <SortIcon column="usage_date" sort={sort} />
               </TableHead>
-              <TableHead className="w-[13%]" align="center">
+              <TableHead className="w-[16%]" align="center">
                 Status
-              </TableHead>
-              <TableHead className="w-[12%]" align="center">
-                <span className="sr-only">Actions</span>
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody divider={false}>
+          <TableBody>
             {' '}
             {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell className="w-[35%]">
+              <TableRow
+                key={product.id}
+                className="cursor-pointer hover:bg-slate-50 transition-colors"
+                onClick={() => {
+                  window.location.href = `/main/inventory/product-list/${product.id}`
+                }}
+              >
+                <TableCell className="w-[38%]">
                   <div className="flex items-center gap-3">
-                    <StarIcon
-                      className={`size-4 flex-shrink-0 ${
-                        product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'
-                      }`}
-                    />
+                    <button
+                      type="button"
+                      onClick={(e) => handleToggleFavorite(e, product)}
+                      disabled={loadingFavorite === product.id}
+                      aria-label={
+                        product.is_favorite ? 'Remove from favorites' : 'Add to favorites'
+                      }
+                      className="shrink-0 p-0.5 rounded transition-opacity disabled:opacity-50"
+                      id={`starBtn_${product.id}_productListPage`}
+                    >
+                      <StarIcon
+                        className={`size-4 ${
+                          product.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'
+                        }`}
+                      />
+                    </button>
                     {product.product_image && (
                       <span
                         onClick={(e) => {
@@ -371,20 +278,15 @@ export default function ProductsTable({
                         />
                       </span>
                     )}
-                    <div>
+                    <div className="pr-2">
                       <p className="text-xs text-slate-400 truncate">{product.brand}</p>
-                      <div className="flex flex-col items-start gap-1.5">
-                        <p className="font-semibold text-slate-900 truncate">{product.product}</p>
-                        {product.type && (
-                          <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                            {product.type}
-                          </span>
-                        )}
-                      </div>
+                      <p className="font-medium text-slate-900 truncate capitalize mt-0.5">
+                        {product.product} {product.type}
+                      </p>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="w-[12%]" align="right">
+                <TableCell className="w-[14%]" align="right">
                   <QuantityBadge quantity={product.quantity} />
                   {restockPredictions[product.id] &&
                     product.quantity > 0 &&
@@ -401,15 +303,15 @@ export default function ProductsTable({
                     })()}
                 </TableCell>
                 <TableCell
-                  className="font-mono font-medium tabular-nums text-slate-700 w-[15%]"
+                  className="font-mono font-medium tabular-nums text-slate-700 w-[16%]"
                   align="right"
                 >
                   {product.usage_quantity}
                 </TableCell>
-                <TableCell className="text-slate-700 w-[13%]" align="center">
+                <TableCell className="text-slate-700 w-[16%]" align="center">
                   {product.usage_date ? format(new Date(product.usage_date), 'dd MMM yyyy') : '—'}
                 </TableCell>
-                <TableCell className="w-[13%]" align="center">
+                <TableCell className="w-[16%]" align="center">
                   <Badge
                     className={`${
                       product.product_status === 'active'
@@ -419,9 +321,6 @@ export default function ProductsTable({
                   >
                     {product.product_status}
                   </Badge>
-                </TableCell>
-                <TableCell className="w-[12%]" align="center">
-                  <ActionMenu product={product} {...sharedActionProps} />
                 </TableCell>
               </TableRow>
             ))}
@@ -437,54 +336,6 @@ export default function ProductsTable({
         onPrev={onPrev}
         onNext={onNext}
         className="pb-4"
-      />
-
-      {deleteProduct && (
-        <DeleteProductDialog
-          product={deleteProduct}
-          open={true}
-          onOpenChange={(isOpen) => {
-            if (!isOpen) setDeleteProduct(null)
-          }}
-          onDeleted={async () => {
-            await onRefresh()
-            setDeleteProduct(null)
-          }}
-        />
-      )}
-
-      {addStockProduct && (
-        <AddStockForm
-          product={addStockProduct}
-          open={true}
-          onOpenChange={(open) => {
-            if (!open) setAddStockProduct(null)
-          }}
-          onAdded={async () => {
-            await onRefresh()
-            setAddStockProduct(null)
-          }}
-        />
-      )}
-
-      {selectedProduct && (
-        <StockAdjustment
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-          onUpdated={async () => {
-            await onRefresh()
-            setSelectedProduct(null)
-          }}
-        />
-      )}
-
-      <EditProductSheet
-        product={editProduct}
-        open={!!editProduct}
-        onOpenChange={(isOpen) => {
-          if (!isOpen) setEditProduct(null)
-        }}
-        onUpdated={onRefresh}
       />
 
       <Modal
