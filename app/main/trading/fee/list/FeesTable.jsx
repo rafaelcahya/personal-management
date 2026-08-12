@@ -32,7 +32,7 @@ export default function FeesTable({ fees, onFeesChange, onRefresh }) {
             <TableHead align="right">Amount</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody divider={false}>
+        <TableBody>
           {fees.map((fee) => (
             <TableRow key={fee.id} clickable onClick={() => setSelectedFee(fee)}>
               <TableCell className="text-slate-700">{formatDate(fee.fee_date)}</TableCell>

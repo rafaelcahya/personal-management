@@ -69,7 +69,7 @@ export default function TradesTable({ trades, sortKey, sortDir, onSort, onRefres
             <TableHead>Type</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody divider={false}>
+        <TableBody>
           {trades.map((trade) => (
             <TableRow
               key={trade.id}
