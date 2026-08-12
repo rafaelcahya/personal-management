@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import OverviewSection from './section/OverviewSection'
 import PerformanceSection from './section/PerformanceSection'
 import RiskSection from './section/RiskSection'
+import PnLCalendar from './section/component/PnLCalendar'
 import PageHeader from '../../components/PageHeader'
 import { fetchMetrics } from '@/lib/api/dashboard'
 
@@ -68,6 +69,10 @@ export default function TradingDashboard() {
 
       <section id="risk" aria-label="Risk">
         <RiskSection metrics={metrics} loading={loading} />
+      </section>
+
+      <section id="pnl-calendar" aria-label="PnL Calendar">
+        <PnLCalendar />
       </section>
     </main>
   )

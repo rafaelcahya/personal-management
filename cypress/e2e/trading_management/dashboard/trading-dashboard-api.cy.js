@@ -302,7 +302,7 @@ describe('Trading Dashboard API', () => {
           if (trades.length === 0) return
 
           const item = trades[0]
-          expect(item).to.include.all.keys(['id', 'ticker', 'realized_gain', 'trade_date'])
+          expect(item).to.include.all.keys(['id', 'ticker', 'realized_gain', 'sell_date'])
         })
       })
     })
@@ -335,6 +335,152 @@ describe('Trading Dashboard API', () => {
       it('should respond within 2000ms', () => {
         const start = Date.now()
         cy.GetTradingDashboardQuickView().then((response) => {
+          expect(response.status).to.eq(200)
+          expect(Date.now() - start).to.be.lte(2000)
+        })
+      })
+    })
+  })
+
+  // ─── GET /api/trade/v1/trade/daily-pnl ────────────────────────────────────
+
+  describe('GET /api/trade/v1/trade/daily-pnl', () => {
+    describe('Authentication', () => {
+      it('should return 200 for authenticated user', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2026, month: 8 }).then((response) => {
+          expect(response.status).to.eq(200)
+          expect(response.body.success).to.be.true
+        })
+      })
+
+      it('should return 401 without authentication', () => {
+        cy.clearApiAuth()
+        cy.GetTradingDashboardDailyPnlNoAuth().then((response) => {
+          expect(response.status).to.be.oneOf([307, 401])
+
+          if (response.status === 401 && response.body?.success !== undefined) {
+            expect(response.body.success).to.be.false
+          }
+
+          if (response.status === 307) {
+            const location = response.headers.location ?? ''
+            expect(String(location)).to.include('/login')
+          }
+        })
+      })
+    })
+
+    describe('Response Structure', () => {
+      it('should return correct top-level keys', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2026, month: 8 }).then((response) => {
+          expect(response.body).to.have.all.keys('success', 'data')
+          expect(response.body.success).to.be.true
+          expect(response.body.data).to.be.an('array')
+        })
+      })
+
+      it('should return correct content-type', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2026, month: 8 }).then((response) => {
+          expect(response.headers['content-type']).to.include('application/json')
+        })
+      })
+
+      it('each item should have required fields with correct types', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2026, month: 8 }).then((response) => {
+          const { data } = response.body
+          if (data.length === 0) return
+
+          const item = data[0]
+          expect(item).to.include.all.keys(['date', 'pnl', 'count'])
+          expect(item.date).to.match(/^\d{4}-\d{2}-\d{2}$/)
+          expect(item.pnl).to.be.a('number')
+          expect(item.count).to.be.a('number')
+        })
+      })
+    })
+
+    describe('Query Param Validation', () => {
+      it('should return 400 when year is missing', () => {
+        cy.GetTradingDashboardDailyPnl({ month: 8 }).then((response) => {
+          expect(response.status).to.eq(400)
+          expect(response.body.success).to.be.false
+        })
+      })
+
+      it('should return 400 when month is missing', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2026 }).then((response) => {
+          expect(response.status).to.eq(400)
+          expect(response.body.success).to.be.false
+        })
+      })
+
+      it('should return 400 when month is 0', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2026, month: 0 }).then((response) => {
+          expect(response.status).to.eq(400)
+          expect(response.body.success).to.be.false
+        })
+      })
+
+      it('should return 400 when month is 13', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2026, month: 13 }).then((response) => {
+          expect(response.status).to.eq(400)
+          expect(response.body.success).to.be.false
+        })
+      })
+
+      it('should return 400 when year is below 2000', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 1999, month: 8 }).then((response) => {
+          expect(response.status).to.eq(400)
+          expect(response.body.success).to.be.false
+        })
+      })
+
+      it('should return 400 when year is above 2100', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2101, month: 8 }).then((response) => {
+          expect(response.status).to.eq(400)
+          expect(response.body.success).to.be.false
+        })
+      })
+
+      it('should return 200 for valid year and month', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2026, month: 8 }).then((response) => {
+          expect(response.status).to.eq(200)
+        })
+      })
+    })
+
+    describe('Business Logic', () => {
+      it('count should be at least 1 for every item', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2026, month: 8 }).then((response) => {
+          const { data } = response.body
+          data.forEach((item) => {
+            expect(item.count).to.be.gte(1)
+          })
+        })
+      })
+
+      it('date values should fall within the requested month', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2026, month: 8 }).then((response) => {
+          const { data } = response.body
+          data.forEach((item) => {
+            expect(item.date.startsWith('2026-08')).to.be.true
+          })
+        })
+      })
+
+      it('should return empty array for a future month with no trades', () => {
+        cy.GetTradingDashboardDailyPnl({ year: 2099, month: 12 }).then((response) => {
+          expect(response.status).to.eq(200)
+          expect(response.body.success).to.be.true
+          expect(response.body.data).to.be.an('array').that.is.empty
+        })
+      })
+    })
+
+    describe('Performance', () => {
+      it('should respond within 2000ms', () => {
+        const start = Date.now()
+        cy.GetTradingDashboardDailyPnl({ year: 2026, month: 8 }).then((response) => {
           expect(response.status).to.eq(200)
           expect(Date.now() - start).to.be.lte(2000)
         })
