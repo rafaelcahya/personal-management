@@ -55,7 +55,8 @@ export default function TradesTable({ trades, sortKey, sortDir, onSort, onRefres
       >
         <TableHeader sticky>
           <TableRow>
-            <SortableHead column={sortColumn} label="Date" sortKey="trade_date" />
+            <SortableHead column={sortColumn} label="Buy Date" sortKey="buy_date" />
+            <SortableHead column={sortColumn} label="Sell Date" sortKey="sell_date" />
             <TableHead>Ticker</TableHead>
             <TableHead align="right">Margin</TableHead>
             <TableHead align="right">Proceeds</TableHead>
@@ -78,11 +79,22 @@ export default function TradesTable({ trades, sortKey, sortDir, onSort, onRefres
               onClick={() => setSelectedTrade(trade)}
             >
               <TableCell className="text-slate-700 whitespace-nowrap">
-                {new Date(trade.trade_date).toLocaleDateString('id-ID', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric',
-                })}
+                {trade.buy_date
+                  ? new Date(trade.buy_date + 'T00:00:00').toLocaleDateString('id-ID', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })
+                  : '—'}
+              </TableCell>
+              <TableCell className="text-slate-700 whitespace-nowrap">
+                {trade.sell_date
+                  ? new Date(trade.sell_date + 'T00:00:00').toLocaleDateString('id-ID', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })
+                  : '—'}
               </TableCell>
               <TableCell className="font-bold uppercase text-violet-600">{trade.ticker}</TableCell>
               <TableCell className="font-mono text-slate-700 whitespace-nowrap" align="right">

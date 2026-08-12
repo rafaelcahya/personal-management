@@ -31,7 +31,7 @@ export async function POST(req) {
       )
     }
 
-    const requiredFields = ['trade_date', 'ticker', 'margin', 'proceeds']
+    const requiredFields = ['ticker', 'margin', 'proceeds']
     const validationErrors = []
 
     requiredFields.forEach((field) => {

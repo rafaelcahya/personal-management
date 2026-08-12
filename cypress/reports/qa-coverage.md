@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-08-12 (issue #755 — edit and delete stock entry)
-**Branch:** feat/issue-755-edit-delete-stock-entry
+**Last Updated:** 2026-08-12 (issue #767 — add buy date and sell date to trade form)
+**Branch:** release/v1.29
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,458  | 48%  |
-| UI        | 1,597  | 52%  |
-| **Total** | **3,055** | 100% |
+| API       | 1,501  | 49%  |
+| UI        | 1,551  | 51%  |
+| **Total** | **3,052** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 234   | 300   | 534   |
+| Trading Management   | 277   | 254   | 531   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,458** | **1,597** | **3,055** |
+| **Total**            | **1,501** | **1,551** | **3,052** |
 
 ---
 
@@ -126,14 +126,14 @@
 | Feature       | API | UI  | Total |
 | ------------- | --- | --- | ----- |
 | Auth Guard    | 29  | 0   | 29    |
-| Add Trade     | 0   | 109 | 109   |
+| Add Trade     | 43  | 63  | 106   |
 | Delete Trade  | 0   | 6   | 6     |
 | List Trade    | 12  | 0   | 12    |
 | Option Trade  | 0   | 7   | 7     |
 | Trade Summary | 13  | 0   | 13    |
 | Trade Detail  | 0   | 15  | 15    |
 | Update Trade  | 0   | 32  | 32    |
-| **Subtotal**  | **54** | **169** | **223** |
+| **Subtotal**  | **97** | **123** | **220** |
 
 #### Fee
 
@@ -202,7 +202,7 @@
 | Corporate Events     | 3   | 0  | 3     |
 | **Subtotal**         | **12** | **0** | **12** |
 
-**Trading Total — API: 234 | UI: 300 | Total: 534**
+**Trading Total — API: 277 | UI: 254 | Total: 531**
 
 ---
 
@@ -345,8 +345,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 234   | 300   | 534   |
+| Trading Management   | 277   | 254   | 531   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,458** | **1,597** | **3,055** |
+| **Total**            | **1,501** | **1,551** | **3,052** |

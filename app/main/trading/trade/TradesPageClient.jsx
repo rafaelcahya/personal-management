@@ -16,7 +16,7 @@ import Input from '@/components/base/Input/Input'
 import { Search, X } from 'lucide-react'
 import Card, { CardContent, CardFooter } from '@/components/base/Card/Card'
 
-const DEFAULT_SORT_KEY = 'trade_date'
+const DEFAULT_SORT_KEY = 'sell_date'
 const DEFAULT_SORT_DIR = 'desc'
 const DEBOUNCE_MS = 300
 
@@ -25,9 +25,9 @@ function sortTrades(trades, key, dir) {
     let aVal = a[key]
     let bVal = b[key]
 
-    if (key === 'trade_date') {
-      aVal = new Date(aVal).getTime()
-      bVal = new Date(bVal).getTime()
+    if (key === 'buy_date' || key === 'sell_date') {
+      aVal = aVal ? new Date(aVal).getTime() : 0
+      bVal = bVal ? new Date(bVal).getTime() : 0
     } else {
       aVal = parseFloat(aVal) || 0
       bVal = parseFloat(bVal) || 0
@@ -161,7 +161,7 @@ export default function TradesPageClient({
       <Card>
         <TradeTableHeader
           controls={
-            <div className="flex items-center gap-2 w-full">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
               <div className="relative flex-1" id="tradeSearchBar_tradePage">
                 <Search
                   className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400 pointer-events-none"
@@ -189,6 +189,7 @@ export default function TradesPageClient({
                   </Button>
                 )}
               </div>
+
               <AddTrade
                 open={addTradeOpen}
                 onOpenChange={setAddTradeOpen}
