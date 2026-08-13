@@ -48,8 +48,7 @@ export function TableRow({ children, className, selected, clickable, ...props })
       className={cn(
         'transition-colors',
         selected && 'bg-primary/5',
-        clickable && 'cursor-pointer hover:bg-muted/50',
-        !selected && !clickable && 'hover:bg-muted/50',
+        clickable && 'cursor-pointer hover:bg-accent',
         className
       )}
       {...props}
