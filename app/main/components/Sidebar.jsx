@@ -32,6 +32,7 @@ import {
   MapPin,
   Microscope,
   GitBranch,
+  ShieldCheck,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -330,6 +331,15 @@ function UserSection({ collapsed, user, mobile = false }) {
               </p>
             </div>
           )}
+          <Link
+            id={mobile ? 'securityLink_mobile' : 'securityLink_sidebar'}
+            href="/main/security"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-foreground hover:bg-accent rounded-none w-full"
+          >
+            <ShieldCheck className="size-4 text-muted-foreground shrink-0" aria-hidden="true" />
+            Security
+          </Link>
           <Button
             id={mobile ? 'userMenuSignOut_mobile' : 'logoutBtn'}
             variant="ghost"
