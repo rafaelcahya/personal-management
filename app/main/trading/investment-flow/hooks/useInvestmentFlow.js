@@ -9,6 +9,9 @@ import {
   moveNode,
   updateNode,
   updateUninvestedCash,
+  createCashCategory,
+  updateCashCategory,
+  deleteCashCategory,
 } from '@/lib/api/investmentFlow'
 
 function buildTree(flatNodes) {
@@ -75,6 +78,7 @@ function withComputedValues(roots, flatNodes, uninvestedCash) {
 export function useInvestmentFlow() {
   const [flatNodes, setFlatNodes] = useState([])
   const [uninvestedCash, setUninvestedCash] = useState(0)
+  const [cashCategories, setCashCategories] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const isMounted = useRef(true)
@@ -90,10 +94,15 @@ export function useInvestmentFlow() {
     try {
       setIsLoading(true)
       setIsError(false)
-      const { nodes, uninvestedCash: cashValue } = await getInvestmentFlowTree()
+      const {
+        nodes,
+        uninvestedCash: cashValue,
+        cashCategories: cats,
+      } = await getInvestmentFlowTree()
       if (!isMounted.current) return
       setFlatNodes(nodes)
       setUninvestedCash(cashValue ?? 0)
+      setCashCategories(cats ?? [])
     } catch (err) {
       if (!isMounted.current) return
       console.error('Failed to load investment flow tree:', err)
@@ -107,13 +116,22 @@ export function useInvestmentFlow() {
     loadTree()
   }, [loadTree])
 
+  // when categories exist, their sum overrides the manual uninvested cash total
+  const effectiveUninvestedCash = useMemo(
+    () =>
+      cashCategories.length > 0
+        ? cashCategories.reduce((sum, c) => sum + (c.nominal || 0), 0)
+        : uninvestedCash,
+    [cashCategories, uninvestedCash]
+  )
+
   const {
     roots: tree,
     rootTotal,
     enrichedFlatNodes,
   } = useMemo(
-    () => withComputedValues(buildTree(flatNodes), flatNodes, uninvestedCash),
-    [flatNodes, uninvestedCash]
+    () => withComputedValues(buildTree(flatNodes), flatNodes, effectiveUninvestedCash),
+    [flatNodes, effectiveUninvestedCash]
   )
 
   const handleCreateNode = useCallback(
@@ -124,6 +142,7 @@ export function useInvestmentFlow() {
         await loadTree()
         return true
       } catch (err) {
+        if (err.code === 'INSUFFICIENT_CASH') throw err
         toast.error(err.message || 'Failed to create node')
         return false
       }
@@ -139,6 +158,7 @@ export function useInvestmentFlow() {
         await loadTree()
         return true
       } catch (err) {
+        if (err.code === 'INSUFFICIENT_CASH') throw err
         toast.error(err.message || 'Failed to update node')
         return false
       }
@@ -195,6 +215,42 @@ export function useInvestmentFlow() {
     }
   }, [])
 
+  const handleCreateCashCategory = useCallback(async (payload) => {
+    try {
+      const category = await createCashCategory(payload)
+      setCashCategories((prev) => [...prev, category])
+      toast.success('Cash category added')
+      return true
+    } catch (err) {
+      toast.error(err.message || 'Failed to add cash category')
+      return false
+    }
+  }, [])
+
+  const handleUpdateCashCategory = useCallback(async (id, payload) => {
+    try {
+      const updated = await updateCashCategory(id, payload)
+      setCashCategories((prev) => prev.map((c) => (c.id === id ? updated : c)))
+      toast.success('Cash category updated')
+      return true
+    } catch (err) {
+      toast.error(err.message || 'Failed to update cash category')
+      return false
+    }
+  }, [])
+
+  const handleDeleteCashCategory = useCallback(async (id) => {
+    try {
+      await deleteCashCategory(id)
+      setCashCategories((prev) => prev.filter((c) => c.id !== id))
+      toast.success('Cash category deleted')
+      return true
+    } catch (err) {
+      toast.error(err.message || 'Failed to delete cash category')
+      return false
+    }
+  }, [])
+
   const categoryOptions = useMemo(() => {
     return flatNodes
       .filter((node) => node.node_type === 'category')
@@ -206,7 +262,8 @@ export function useInvestmentFlow() {
     flatNodes,
     enrichedFlatNodes,
     rootTotal,
-    uninvestedCash,
+    uninvestedCash: effectiveUninvestedCash,
+    cashCategories,
     isLoading,
     isError,
     reload: loadTree,
@@ -216,5 +273,8 @@ export function useInvestmentFlow() {
     deleteNode: handleDeleteNode,
     moveNode: handleMoveNode,
     updateUninvestedCash: handleUpdateUninvestedCash,
+    createCashCategory: handleCreateCashCategory,
+    updateCashCategory: handleUpdateCashCategory,
+    deleteCashCategory: handleDeleteCashCategory,
   }
 }

@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-08-12 (issue #771 — uninvested cash node)
-**Branch:** feat/issue-771-uninvested-cash
+**Last Updated:** 2026-08-13 (issue #776 — uninvested cash categories)
+**Branch:** feat/issue-776-uninvested-cash-categories
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,567  | 50%  |
-| UI        | 1,551  | 50%  |
-| **Total** | **3,118** | 100% |
+| API       | 1,587  | 51%  |
+| UI        | 1,551  | 49%  |
+| **Total** | **3,138** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 343   | 254   | 597   |
+| Trading Management   | 363   | 254   | 617   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,567** | **1,551** | **3,118** |
+| **Total**            | **1,587** | **1,551** | **3,138** |
 
 ---
 
@@ -207,12 +207,13 @@
 
 | Feature              | API | UI | Total |
 | -------------------- | --- | -- | ----- |
-| List/Create/Update/Delete Node | 33 | 0 | 33 |
+| List/Create/Update/Delete Node | 35 | 0 | 35 |
 | Move Node             | 7   | 0  | 7     |
-| Uninvested Cash       | 10  | 0  | 10    |
-| **Subtotal**         | **50** | **0** | **50** |
+| Uninvested Cash       | 11  | 0  | 11    |
+| Cash Categories       | 17  | 0  | 17    |
+| **Subtotal**         | **70** | **0** | **70** |
 
-**Trading Total — API: 343 | UI: 254 | Total: 597**
+**Trading Total — API: 363 | UI: 254 | Total: 617**
 
 ---
 
@@ -355,8 +356,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 343   | 254   | 597   |
+| Trading Management   | 363   | 254   | 617   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,567** | **1,551** | **3,118** |
+| **Total**            | **1,587** | **1,551** | **3,138** |

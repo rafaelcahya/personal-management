@@ -21,6 +21,7 @@ import TickerNodeForm from './components/TickerNodeForm'
 import DeleteNodeDialog from './components/DeleteNodeDialog'
 import UninvestedCashNode from './components/UninvestedCashNode'
 import UninvestedCashForm from './components/UninvestedCashForm'
+import UninvestedCashCategoryForm from './components/UninvestedCashCategoryForm'
 import InvestmentFlowEmptyState from './components/InvestmentFlowEmptyState'
 import InvestmentFlowSkeleton from './components/InvestmentFlowSkeleton'
 import InvestmentFlowErrorState from './components/InvestmentFlowErrorState'
@@ -41,6 +42,7 @@ export default function InvestmentFlowPageClient() {
     enrichedFlatNodes,
     rootTotal,
     uninvestedCash,
+    cashCategories,
     isLoading,
     isError,
     reload,
@@ -50,6 +52,9 @@ export default function InvestmentFlowPageClient() {
     deleteNode,
     moveNode,
     updateUninvestedCash,
+    createCashCategory,
+    updateCashCategory,
+    deleteCashCategory,
   } = useInvestmentFlow()
 
   const [viewMode, setViewMode] = useState('list')
@@ -67,6 +72,12 @@ export default function InvestmentFlowPageClient() {
   })
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [uninvestedCashFormOpen, setUninvestedCashFormOpen] = useState(false)
+  const [cashCategoryFormState, setCashCategoryFormState] = useState({
+    open: false,
+    mode: 'create',
+    category: null,
+  })
+  const [deleteCashCategoryTarget, setDeleteCashCategoryTarget] = useState(null)
 
   const uninvestedCashPct = rootTotal > 0 ? (uninvestedCash / rootTotal) * 100 : 0
 
@@ -104,6 +115,7 @@ export default function InvestmentFlowPageClient() {
           node_type: 'category',
           nominal: null,
           notes: null,
+          uninvested_cash_category_id: null,
         })
       }
       return createNode({
@@ -119,6 +131,19 @@ export default function InvestmentFlowPageClient() {
   }
 
   const handleMove = (nodeId, newParentId) => moveNode(nodeId, newParentId)
+
+  const openAddCashCategory = () =>
+    setCashCategoryFormState({ open: true, mode: 'create', category: null })
+
+  const openEditCashCategory = (category) =>
+    setCashCategoryFormState({ open: true, mode: 'edit', category })
+
+  const handleCashCategorySubmit = async (values) => {
+    if (cashCategoryFormState.mode === 'edit') {
+      return updateCashCategory(cashCategoryFormState.category.id, values)
+    }
+    return createCashCategory(values)
+  }
 
   if (isLoading) {
     return (
@@ -151,6 +176,10 @@ export default function InvestmentFlowPageClient() {
                 amount={uninvestedCash}
                 percentage={uninvestedCashPct}
                 onEdit={() => setUninvestedCashFormOpen(true)}
+                categories={cashCategories}
+                onAddCategory={openAddCashCategory}
+                onEditCategory={openEditCashCategory}
+                onDeleteCategory={setDeleteCashCategoryTarget}
               />
             </CardContent>
           </Card>
@@ -221,6 +250,10 @@ export default function InvestmentFlowPageClient() {
                 uninvestedCash={uninvestedCash}
                 uninvestedCashPct={uninvestedCashPct}
                 onEditUninvestedCash={() => setUninvestedCashFormOpen(true)}
+                cashCategories={cashCategories}
+                createCashCategory={createCashCategory}
+                updateCashCategory={updateCashCategory}
+                deleteCashCategory={deleteCashCategory}
               />
             ) : (
               <>
@@ -237,6 +270,10 @@ export default function InvestmentFlowPageClient() {
                   amount={uninvestedCash}
                   percentage={uninvestedCashPct}
                   onEdit={() => setUninvestedCashFormOpen(true)}
+                  categories={cashCategories}
+                  onAddCategory={openAddCashCategory}
+                  onEditCategory={openEditCashCategory}
+                  onDeleteCategory={setDeleteCashCategoryTarget}
                 />
               </>
             )}
@@ -257,6 +294,7 @@ export default function InvestmentFlowPageClient() {
         mode={tickerFormState.mode}
         initialValues={tickerFormState.node}
         onSubmit={handleTickerSubmit}
+        cashCategories={cashCategories}
       />
       <DeleteNodeDialog
         open={Boolean(deleteTarget)}
@@ -272,6 +310,21 @@ export default function InvestmentFlowPageClient() {
           const ok = await updateUninvestedCash(values.amount)
           if (ok) setUninvestedCashFormOpen(false)
         }}
+      />
+
+      <UninvestedCashCategoryForm
+        open={cashCategoryFormState.open}
+        onOpenChange={(open) => setCashCategoryFormState((prev) => ({ ...prev, open }))}
+        mode={cashCategoryFormState.mode}
+        initialValues={cashCategoryFormState.category}
+        onSubmit={handleCashCategorySubmit}
+      />
+
+      <DeleteNodeDialog
+        open={Boolean(deleteCashCategoryTarget)}
+        onOpenChange={(open) => !open && setDeleteCashCategoryTarget(null)}
+        node={deleteCashCategoryTarget ? { ...deleteCashCategoryTarget, children: [] } : null}
+        onConfirm={deleteCashCategory}
       />
     </main>
   )
