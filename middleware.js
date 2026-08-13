@@ -26,6 +26,8 @@ export async function middleware(request) {
     path.startsWith('/_next') ||
     path.startsWith('/api/auth') ||
     path.startsWith('/api/inngest') ||
+    path.startsWith('/docs') ||
+    path.startsWith('/api/docs') ||
     path === '/api/running/v1/auth/strava/callback'
   ) {
     return NextResponse.next()
