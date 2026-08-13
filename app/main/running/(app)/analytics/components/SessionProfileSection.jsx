@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts'
+import Button from '@/components/base/Button/Button'
 import Card, {
   CardContent,
   CardDescription,

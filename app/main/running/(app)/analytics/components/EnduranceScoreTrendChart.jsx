@@ -11,6 +11,8 @@ import {
   ReferenceArea,
   ResponsiveContainer,
 } from 'recharts'
+import Button from '@/components/base/Button/Button'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { fetchEnduranceScoreTrend } from '@/lib/api/running'
 import { ENDURANCE_TIER_BANDS, getEnduranceTier } from '@/lib/services/running/utils/enduranceScore'
 
@@ -47,10 +49,7 @@ export default function EnduranceScoreTrendChart() {
 
   if (loading) {
     return (
-      <div
-        id="enduranceScoreTrendLoading_analyticsPage"
-        className="h-[220px] bg-slate-50 rounded-lg animate-pulse"
-      />
+      <Skeleton id="enduranceScoreTrendLoading_analyticsPage" className="h-[220px] rounded-lg" />
     )
   }
 

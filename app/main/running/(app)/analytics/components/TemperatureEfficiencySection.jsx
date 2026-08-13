@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Thermometer } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
 import {
   ComposedChart,
   Scatter,
