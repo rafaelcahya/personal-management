@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { GitBranch, List, Plus, Share2 } from 'lucide-react'
+import { useCallback, useState } from 'react'
+import { Eye, EyeOff, GitBranch, List, Plus, Share2 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Card, {
   CardAction,
@@ -43,6 +43,7 @@ export default function InvestmentFlowPageClient() {
     rootTotal,
     uninvestedCash,
     cashCategories,
+    highlights,
     isLoading,
     isError,
     reload,
@@ -52,12 +53,27 @@ export default function InvestmentFlowPageClient() {
     deleteNode,
     moveNode,
     updateUninvestedCash,
+    saveHighlights,
     createCashCategory,
     updateCashCategory,
     deleteCashCategory,
   } = useInvestmentFlow()
 
   const [viewMode, setViewMode] = useState('list')
+  const [hideAmounts, setHideAmounts] = useState(false)
+
+  const handleHighlight = useCallback(
+    (nodeId, color) => {
+      const next = { ...highlights }
+      if (color == null) {
+        delete next[nodeId]
+      } else {
+        next[nodeId] = color
+      }
+      saveHighlights(next)
+    },
+    [highlights, saveHighlights]
+  )
   const [categoryFormState, setCategoryFormState] = useState({
     open: false,
     mode: 'create',
@@ -180,6 +196,7 @@ export default function InvestmentFlowPageClient() {
                 onAddCategory={openAddCashCategory}
                 onEditCategory={openEditCashCategory}
                 onDeleteCategory={setDeleteCashCategoryTarget}
+                hideAmounts={hideAmounts}
               />
             </CardContent>
           </Card>
@@ -190,9 +207,31 @@ export default function InvestmentFlowPageClient() {
             <CardIcon icon={GitBranch} />
             <CardHeaderContent>
               <CardTitle>Portfolio Allocation</CardTitle>
-              <CardDescription>Total: {formatRupiah(rootTotal)}</CardDescription>
+              <CardDescription>
+                Total: {hideAmounts ? '••••••' : formatRupiah(rootTotal)}
+              </CardDescription>
             </CardHeaderContent>
             <CardAction className="flex items-center gap-2">
+              <Button
+                id="investmentFlowHideAmountsBtn_investmentFlowPage"
+                variant="ghost"
+                size="icon-sm"
+                aria-label={hideAmounts ? 'Show amounts' : 'Hide amounts'}
+                aria-pressed={hideAmounts}
+                title={hideAmounts ? 'Show amounts' : 'Hide amounts'}
+                onClick={() => setHideAmounts((h) => !h)}
+                className={cn(
+                  hideAmounts
+                    ? 'bg-violet-100 text-violet-700'
+                    : 'text-slate-400 hover:text-slate-600'
+                )}
+              >
+                {hideAmounts ? (
+                  <Eye className="size-4" aria-hidden="true" />
+                ) : (
+                  <EyeOff className="size-4" aria-hidden="true" />
+                )}
+              </Button>
               <div
                 role="group"
                 aria-label="Toggle view mode"
@@ -254,6 +293,9 @@ export default function InvestmentFlowPageClient() {
                 createCashCategory={createCashCategory}
                 updateCashCategory={updateCashCategory}
                 deleteCashCategory={deleteCashCategory}
+                hideAmounts={hideAmounts}
+                highlights={highlights}
+                onHighlight={handleHighlight}
               />
             ) : (
               <>
@@ -265,6 +307,9 @@ export default function InvestmentFlowPageClient() {
                   onEdit={openEdit}
                   onDelete={setDeleteTarget}
                   onMove={handleMove}
+                  hideAmounts={hideAmounts}
+                  highlights={highlights}
+                  onHighlight={handleHighlight}
                 />
                 <UninvestedCashNode
                   amount={uninvestedCash}
@@ -274,6 +319,7 @@ export default function InvestmentFlowPageClient() {
                   onAddCategory={openAddCashCategory}
                   onEditCategory={openEditCashCategory}
                   onDeleteCategory={setDeleteCashCategoryTarget}
+                  hideAmounts={hideAmounts}
                 />
               </>
             )}

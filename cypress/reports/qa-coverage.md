@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-08-13 (issue #776 — uninvested cash categories)
-**Branch:** feat/issue-776-uninvested-cash-categories
+**Last Updated:** 2026-08-13 (issue #783 — investment flow highlights)
+**Branch:** release/v1.30
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,587  | 51%  |
+| API       | 1,598  | 51%  |
 | UI        | 1,551  | 49%  |
-| **Total** | **3,138** | 100% |
+| **Total** | **3,149** | 100% |
 
 ---
 
@@ -21,11 +21,11 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 363   | 254   | 617   |
+| Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,587** | **1,551** | **3,138** |
+| **Total**            | **1,598** | **1,551** | **3,149** |
 
 ---
 
@@ -211,9 +211,10 @@
 | Move Node             | 7   | 0  | 7     |
 | Uninvested Cash       | 11  | 0  | 11    |
 | Cash Categories       | 17  | 0  | 17    |
-| **Subtotal**         | **70** | **0** | **70** |
+| Highlights            | 11  | 0  | 11    |
+| **Subtotal**         | **81** | **0** | **81** |
 
-**Trading Total — API: 363 | UI: 254 | Total: 617**
+**Trading Total — API: 374 | UI: 254 | Total: 628**
 
 ---
 
@@ -356,8 +357,8 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth                 | 22    | 107   | 129   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 363   | 254   | 617   |
+| Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 474   | 695   | 1,169 |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,587** | **1,551** | **3,138** |
+| **Total**            | **1,598** | **1,551** | **3,149** |

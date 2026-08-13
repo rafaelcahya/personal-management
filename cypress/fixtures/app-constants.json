@@ -228,7 +228,8 @@
       "delete": "/api/investment-flow/v1",
       "move": "/api/investment-flow/v1/move",
       "uninvested_cash": "/api/investment-flow/v1/uninvested-cash",
-      "uninvested_cash_categories": "/api/investment-flow/v1/uninvested-cash/categories"
+      "uninvested_cash_categories": "/api/investment-flow/v1/uninvested-cash/categories",
+      "highlights": "/api/investment-flow/v1/highlights"
     }
   },
   "test_ids": {

@@ -12,6 +12,7 @@ export default function UninvestedCashNode({
   onAddCategory,
   onEditCategory,
   onDeleteCategory,
+  hideAmounts = false,
 }) {
   const hasCategories = categories.length > 0
 
@@ -29,7 +30,7 @@ export default function UninvestedCashNode({
           Uninvested Cash
         </span>
         <span className="text-xs text-slate-500 whitespace-nowrap shrink-0 hidden sm:inline">
-          {formatRupiah(amount)}
+          {hideAmounts ? '••••••' : formatRupiah(amount)}
         </span>
         <span className="text-xs font-semibold text-emerald-600 whitespace-nowrap shrink-0 w-14 text-right">
           {percentage.toFixed(1)}%
@@ -72,7 +73,7 @@ export default function UninvestedCashNode({
             <Wallet className="size-3.5 text-emerald-400 shrink-0" aria-hidden="true" />
             <span className="text-sm text-slate-600 truncate min-w-0 flex-1">{cat.name}</span>
             <span className="text-xs text-slate-500 whitespace-nowrap shrink-0 hidden sm:inline">
-              {formatRupiah(cat.nominal)}
+              {hideAmounts ? '••••••' : formatRupiah(cat.nominal)}
             </span>
             <Button
               id={`uninvestedCashCategoryEditBtn_${cat.id}_investmentFlowPage`}

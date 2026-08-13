@@ -9,6 +9,7 @@ import {
   moveNode,
   updateNode,
   updateUninvestedCash,
+  updateHighlights,
   createCashCategory,
   updateCashCategory,
   deleteCashCategory,
@@ -79,6 +80,7 @@ export function useInvestmentFlow() {
   const [flatNodes, setFlatNodes] = useState([])
   const [uninvestedCash, setUninvestedCash] = useState(0)
   const [cashCategories, setCashCategories] = useState([])
+  const [highlights, setHighlights] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const isMounted = useRef(true)
@@ -98,11 +100,13 @@ export function useInvestmentFlow() {
         nodes,
         uninvestedCash: cashValue,
         cashCategories: cats,
+        highlights: savedHighlights,
       } = await getInvestmentFlowTree()
       if (!isMounted.current) return
       setFlatNodes(nodes)
       setUninvestedCash(cashValue ?? 0)
       setCashCategories(cats ?? [])
+      setHighlights(savedHighlights ?? {})
     } catch (err) {
       if (!isMounted.current) return
       console.error('Failed to load investment flow tree:', err)
@@ -203,6 +207,15 @@ export function useInvestmentFlow() {
     [loadTree, flatNodes]
   )
 
+  const handleSaveHighlights = useCallback(async (next) => {
+    setHighlights(next)
+    try {
+      await updateHighlights(next)
+    } catch (err) {
+      console.error('Failed to save highlights:', err)
+    }
+  }, [])
+
   const handleUpdateUninvestedCash = useCallback(async (amount) => {
     try {
       const result = await updateUninvestedCash(amount)
@@ -264,6 +277,7 @@ export function useInvestmentFlow() {
     rootTotal,
     uninvestedCash: effectiveUninvestedCash,
     cashCategories,
+    highlights,
     isLoading,
     isError,
     reload: loadTree,
@@ -273,6 +287,7 @@ export function useInvestmentFlow() {
     deleteNode: handleDeleteNode,
     moveNode: handleMoveNode,
     updateUninvestedCash: handleUpdateUninvestedCash,
+    saveHighlights: handleSaveHighlights,
     createCashCategory: handleCreateCashCategory,
     updateCashCategory: handleUpdateCashCategory,
     deleteCashCategory: handleDeleteCashCategory,
