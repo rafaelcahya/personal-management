@@ -9,6 +9,13 @@ import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
 import Textarea from '@/components/base/Textarea/Textarea'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/base/Select/Select'
+import {
   FieldContainer,
   FieldContent,
   FieldDescription,
@@ -34,6 +41,7 @@ const tickerFormSchema = z
     name: z.string().min(1, 'Name is required').max(100, 'Name must not exceed 100 characters'),
     nominal: z.number().positive('Nominal must be a positive number').optional(),
     notes: z.string().max(500, 'Notes must not exceed 500 characters').optional(),
+    uninvested_cash_category_id: z.string().uuid().nullable().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.nominalType === 'manual' && data.nominal == null) {
@@ -55,8 +63,10 @@ export default function TickerNodeForm({
   initialValues,
   onSubmit,
   idPrefix = 'tickerNodeForm',
+  cashCategories = [],
 }) {
   const [loading, setLoading] = useState(false)
+  const [formError, setFormError] = useState(null)
 
   const form = useForm({
     resolver: zodResolver(tickerFormSchema),
@@ -65,6 +75,7 @@ export default function TickerNodeForm({
       name: initialValues?.name || '',
       nominal: initialValues?.nominal ?? undefined,
       notes: initialValues?.notes || '',
+      uninvested_cash_category_id: initialValues?.uninvested_cash_category_id ?? null,
     },
   })
 
@@ -78,17 +89,21 @@ export default function TickerNodeForm({
         name: initialValues?.name || '',
         nominal: initialValues?.nominal ?? undefined,
         notes: initialValues?.notes || '',
+        uninvested_cash_category_id: initialValues?.uninvested_cash_category_id ?? null,
       })
     }
   }, [open, initialValues, reset])
 
   const submit = async (values) => {
     setLoading(true)
+    setFormError(null)
     try {
       const success = await onSubmit(values)
       if (success) {
         onOpenChange(false)
       }
+    } catch (err) {
+      setFormError(err.message || 'Failed to save')
     } finally {
       setLoading(false)
     }
@@ -96,7 +111,10 @@ export default function TickerNodeForm({
 
   const handleOpenChange = (isOpen) => {
     onOpenChange(isOpen)
-    if (!isOpen) reset()
+    if (!isOpen) {
+      reset()
+      setFormError(null)
+    }
   }
 
   const isEdit = mode === 'edit'
@@ -214,6 +232,45 @@ export default function TickerNodeForm({
                     )}
                   />
 
+                  {cashCategories.length > 0 && (
+                    <Controller
+                      control={control}
+                      name="uninvested_cash_category_id"
+                      render={({ field }) => (
+                        <FieldContent>
+                          <FieldLabel
+                            htmlFor={`${idPrefix}CashCategoryField_investmentFlowPage`}
+                            className="font-medium"
+                          >
+                            Cash Pool (optional)
+                          </FieldLabel>
+                          <Select
+                            value={field.value ?? '__none__'}
+                            onValueChange={(val) => field.onChange(val === '__none__' ? null : val)}
+                          >
+                            <SelectTrigger
+                              id={`${idPrefix}CashCategoryField_investmentFlowPage`}
+                              className={fieldClass}
+                            >
+                              <SelectValue placeholder="Select cash pool..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__none__">None</SelectItem>
+                              {cashCategories.map((cat) => (
+                                <SelectItem key={cat.id} value={cat.id}>
+                                  {cat.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldDescription className="text-xs text-slate-400">
+                            Which uninvested cash pool funds this position?
+                          </FieldDescription>
+                        </FieldContent>
+                      )}
+                    />
+                  )}
+
                   <Controller
                     control={control}
                     name="notes"
@@ -239,6 +296,8 @@ export default function TickerNodeForm({
               )}
             </FieldContainer>
           </ModalBody>
+
+          {formError && <p className="mx-6 mb-2 text-sm text-rose-600 font-medium">{formError}</p>}
 
           <ModalFooter className="shrink-0 pt-4">
             <Button

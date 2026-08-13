@@ -20,12 +20,14 @@ import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import CategoryNodeForm from './CategoryNodeForm'
 import TickerNodeForm from './TickerNodeForm'
 import DeleteNodeDialog from './DeleteNodeDialog'
+import UninvestedCashCategoryForm from './UninvestedCashCategoryForm'
 
 const NODE_WIDTH = 240
 const ROOT_NODE_HEIGHT = 80
 const CATEGORY_NODE_HEIGHT = 110
 const TICKER_NODE_HEIGHT = 130
-const CASH_NODE_HEIGHT = 90
+const CASH_NODE_HEIGHT = 110
+const CASH_CATEGORY_NODE_HEIGHT = 90
 const VIRTUAL_ROOT_ID = '__portfolio_root__'
 const UNINVESTED_CASH_ID = '__uninvested_cash__'
 
@@ -33,36 +35,77 @@ function nodeHeightFor(n) {
   if (n.type === 'tickerNode') return TICKER_NODE_HEIGHT
   if (n.type === 'rootNode') return ROOT_NODE_HEIGHT
   if (n.type === 'cashNode') return CASH_NODE_HEIGHT
+  if (n.type === 'cashCategoryNode') return CASH_CATEGORY_NODE_HEIGHT
   return CATEGORY_NODE_HEIGHT
 }
 
-// Category tree uses LR layout via dagre.
-// Cash node is positioned manually below the portfolio root so it appears
-// as a separate downward branch while categories extend to the right.
-function getLayoutedElements(nodes, edges, cashNodeId, rootNodeId) {
-  const mainNodes = nodes.filter((n) => n.id !== cashNodeId)
-  const mainEdges = edges.filter((e) => e.target !== cashNodeId)
+// Main investment tree uses LR dagre layout.
+// Cash branch (cash node + its categories) uses a separate RL dagre layout
+// and is translated so the cash node sits to the LEFT of the portfolio root.
+function getLayoutedElements(nodes, edges, cashNodeId, rootNodeId, cashCategoryIds) {
+  const cashCategorySet = new Set(cashCategoryIds)
 
-  const g = new dagre.graphlib.Graph()
-  g.setDefaultEdgeLabel(() => ({}))
-  g.setGraph({ rankdir: 'LR', nodesep: 40, ranksep: 80 })
-  mainNodes.forEach((n) => g.setNode(n.id, { width: NODE_WIDTH, height: nodeHeightFor(n) }))
-  mainEdges.forEach((e) => g.setEdge(e.source, e.target))
-  dagre.layout(g)
+  const mainNodes = nodes.filter((n) => n.id !== cashNodeId && !cashCategorySet.has(n.id))
+  const mainEdges = edges.filter((e) => e.target !== cashNodeId && !cashCategorySet.has(e.target))
+
+  const gMain = new dagre.graphlib.Graph()
+  gMain.setDefaultEdgeLabel(() => ({}))
+  gMain.setGraph({ rankdir: 'LR', nodesep: 40, ranksep: 80 })
+  mainNodes.forEach((n) => gMain.setNode(n.id, { width: NODE_WIDTH, height: nodeHeightFor(n) }))
+  mainEdges.forEach((e) => gMain.setEdge(e.source, e.target))
+  dagre.layout(gMain)
 
   const layoutedMain = mainNodes.map((n) => {
-    const { x, y } = g.node(n.id)
+    const { x, y } = gMain.node(n.id)
     return { ...n, position: { x: x - NODE_WIDTH / 2, y: y - nodeHeightFor(n) / 2 } }
   })
 
   const rootPos = layoutedMain.find((n) => n.id === rootNodeId)?.position ?? { x: 0, y: 0 }
+
+  // Cash branch: RL dagre (cash node is source → categories are targets)
+  // In RL layout, source sits to the RIGHT, targets expand LEFT — exactly what we want.
   const cashNode = nodes.find((n) => n.id === cashNodeId)
-  const cashPositioned = {
-    ...cashNode,
-    position: { x: rootPos.x, y: rootPos.y + ROOT_NODE_HEIGHT + 80 },
+  const cashCategoryNodes = nodes.filter((n) => cashCategorySet.has(n.id))
+
+  const cashBranchNodes = cashNode ? [cashNode, ...cashCategoryNodes] : []
+
+  let layoutedCash = []
+
+  if (cashNode && cashBranchNodes.length > 0) {
+    if (cashCategoryNodes.length === 0) {
+      // No categories: position cash node directly to the left of portfolio root
+      const cashX = rootPos.x - NODE_WIDTH - 80
+      const cashY = rootPos.y + (ROOT_NODE_HEIGHT - CASH_NODE_HEIGHT) / 2
+      layoutedCash = [{ ...cashNode, position: { x: cashX, y: cashY } }]
+    } else {
+      const gCash = new dagre.graphlib.Graph()
+      gCash.setDefaultEdgeLabel(() => ({}))
+      // RL: cash (source, rank 0) is rightmost; categories (targets) expand left
+      gCash.setGraph({ rankdir: 'RL', nodesep: 40, ranksep: 80 })
+      cashBranchNodes.forEach((n) =>
+        gCash.setNode(n.id, { width: NODE_WIDTH, height: nodeHeightFor(n) })
+      )
+      cashCategoryNodes.forEach((cat) => gCash.setEdge(cashNodeId, cat.id))
+      dagre.layout(gCash)
+
+      // Translate: cash node center aligns to the left of portfolio root
+      const cashInDagre = gCash.node(cashNodeId)
+      const targetCashX = rootPos.x - NODE_WIDTH - 80
+      const targetCashY = rootPos.y + (ROOT_NODE_HEIGHT - CASH_NODE_HEIGHT) / 2
+      const offsetX = targetCashX - (cashInDagre.x - NODE_WIDTH / 2)
+      const offsetY = targetCashY - (cashInDagre.y - CASH_NODE_HEIGHT / 2)
+
+      layoutedCash = cashBranchNodes.map((n) => {
+        const { x, y } = gCash.node(n.id)
+        return {
+          ...n,
+          position: { x: x - NODE_WIDTH / 2 + offsetX, y: y - nodeHeightFor(n) / 2 + offsetY },
+        }
+      })
+    }
   }
 
-  return { nodes: [...layoutedMain, cashPositioned], edges }
+  return { nodes: [...layoutedMain, ...layoutedCash], edges }
 }
 
 function RootNodeCard({ data }) {
@@ -73,7 +116,7 @@ function RootNodeCard({ data }) {
       className="border-2 border-violet-300 rounded-xl bg-violet-50 shadow-sm p-3 w-[240px]"
     >
       <Handle type="source" position={Position.Right} id="right" />
-      <Handle type="source" position={Position.Bottom} id="bottom" />
+      <Handle type="source" position={Position.Left} id="left" />
       <div className="flex items-center gap-2 min-w-0">
         <Layers className="size-4 text-violet-600 shrink-0" aria-hidden="true" />
         <span className="text-sm font-semibold text-violet-800 truncate">Portfolio</span>
@@ -224,14 +267,15 @@ function TickerNodeCard({ data }) {
 }
 
 function CashNodeCard({ data }) {
-  const { amount, percentage, onEdit } = data
+  const { amount, percentage, onEdit, onAddCategory, hasCategories } = data
 
   return (
     <div
       id="treeViewUninvestedCashNode_investmentFlowPage"
       className="border rounded-xl bg-white shadow-sm p-3 w-[240px]"
     >
-      <Handle type="target" position={Position.Top} />
+      <Handle type="target" position={Position.Right} id="right" />
+      <Handle type="source" position={Position.Left} id="left" />
 
       <div className="flex items-center gap-2 min-w-0">
         <Wallet className="size-4 text-emerald-500 shrink-0" aria-hidden="true" />
@@ -246,14 +290,72 @@ function CashNodeCard({ data }) {
       </div>
 
       <div className="flex items-center gap-1 mt-3">
+        {!hasCategories && (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Edit uninvested cash"
+            id="treeViewUninvestedCashEditBtn_investmentFlowPage"
+            onClick={onEdit}
+          >
+            <Pencil className="size-3.5" aria-hidden="true" />
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label="Edit uninvested cash"
-          id="treeViewUninvestedCashEditBtn_investmentFlowPage"
-          onClick={onEdit}
+          aria-label="Add cash pool"
+          id="treeViewUninvestedCashAddCategoryBtn_investmentFlowPage"
+          onClick={onAddCategory}
+        >
+          <Plus className="size-3.5" aria-hidden="true" />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function CashCategoryNodeCard({ data }) {
+  const { category, onEdit, onDelete } = data
+
+  return (
+    <div
+      id={`treeViewCashCategoryNode_${category.id}_investmentFlowPage`}
+      className="border border-emerald-200 rounded-xl bg-emerald-50 shadow-sm p-3 w-[240px]"
+    >
+      <Handle type="target" position={Position.Right} />
+
+      <div className="flex items-center gap-2 min-w-0">
+        <Wallet className="size-4 text-emerald-400 shrink-0" aria-hidden="true" />
+        <span className="text-sm font-semibold text-slate-800 truncate" title={category.name}>
+          {category.name}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-xs text-slate-500 whitespace-nowrap">
+          {formatRupiah(category.nominal)}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-1 mt-3">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label={`Edit ${category.name}`}
+          id={`treeViewCashCategoryEditBtn_${category.id}_investmentFlowPage`}
+          onClick={() => onEdit(category)}
         >
           <Pencil className="size-3.5" aria-hidden="true" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label={`Delete ${category.name}`}
+          id={`treeViewCashCategoryDeleteBtn_${category.id}_investmentFlowPage`}
+          onClick={() => onDelete(category)}
+        >
+          <Trash2 className="size-3.5 text-rose-400" aria-hidden="true" />
         </Button>
       </div>
     </div>
@@ -265,6 +367,7 @@ const nodeTypes = {
   categoryNode: CategoryNodeCard,
   tickerNode: TickerNodeCard,
   cashNode: CashNodeCard,
+  cashCategoryNode: CashCategoryNodeCard,
 }
 
 export default function InvestmentFlowTreeView({
@@ -276,6 +379,10 @@ export default function InvestmentFlowTreeView({
   uninvestedCash,
   uninvestedCashPct,
   onEditUninvestedCash,
+  cashCategories = [],
+  createCashCategory,
+  updateCashCategory,
+  deleteCashCategory,
 }) {
   const [categoryFormState, setCategoryFormState] = useState({
     open: false,
@@ -290,6 +397,12 @@ export default function InvestmentFlowTreeView({
     node: null,
   })
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [cashCategoryFormState, setCashCategoryFormState] = useState({
+    open: false,
+    mode: 'create',
+    category: null,
+  })
+  const [deleteCashCategoryTarget, setDeleteCashCategoryTarget] = useState(null)
 
   const openAddCategory = (parentId) =>
     setCategoryFormState({ open: true, mode: 'create', parentId, node: null })
@@ -304,6 +417,12 @@ export default function InvestmentFlowTreeView({
       setTickerFormState({ open: true, mode: 'edit', parentId: node.parent_id, node })
     }
   }
+
+  const openAddCashCategory = () =>
+    setCashCategoryFormState({ open: true, mode: 'create', category: null })
+
+  const openEditCashCategory = (category) =>
+    setCashCategoryFormState({ open: true, mode: 'edit', category })
 
   const handleCategorySubmit = async (values) => {
     if (categoryFormState.mode === 'edit') {
@@ -325,6 +444,7 @@ export default function InvestmentFlowTreeView({
           node_type: 'category',
           nominal: null,
           notes: null,
+          uninvested_cash_category_id: null,
         })
       }
       return createNode({
@@ -337,6 +457,13 @@ export default function InvestmentFlowTreeView({
       return updateNode(tickerFormState.node.id, { ...rest, node_type: 'ticker' })
     }
     return createNode({ parent_id: tickerFormState.parentId, node_type: 'ticker', ...rest })
+  }
+
+  const handleCashCategorySubmit = async (values) => {
+    if (cashCategoryFormState.mode === 'edit') {
+      return updateCashCategory(cashCategoryFormState.category.id, values)
+    }
+    return createCashCategory(values)
   }
 
   const deleteTargetWithChildren = useMemo(() => {
@@ -353,16 +480,36 @@ export default function InvestmentFlowTreeView({
       data: { rootTotal },
     }
 
+    const hasCategories = cashCategories.length > 0
+
     const cashNode = {
       id: UNINVESTED_CASH_ID,
       type: 'cashNode',
       position: { x: 0, y: 0 },
-      data: { amount: uninvestedCash, percentage: uninvestedCashPct, onEdit: onEditUninvestedCash },
+      data: {
+        amount: uninvestedCash,
+        percentage: uninvestedCashPct,
+        onEdit: onEditUninvestedCash,
+        onAddCategory: openAddCashCategory,
+        hasCategories,
+      },
     }
+
+    const cashCategoryRfNodes = cashCategories.map((cat) => ({
+      id: cat.id,
+      type: 'cashCategoryNode',
+      position: { x: 0, y: 0 },
+      data: {
+        category: cat,
+        onEdit: openEditCashCategory,
+        onDelete: setDeleteCashCategoryTarget,
+      },
+    }))
 
     const rfNodes = [
       virtualRoot,
       cashNode,
+      ...cashCategoryRfNodes,
       ...flatNodes.map((node) => ({
         id: node.id,
         type: node.node_type === 'category' ? 'categoryNode' : 'tickerNode',
@@ -386,7 +533,6 @@ export default function InvestmentFlowTreeView({
         type: 'smoothstep',
       }))
 
-    // Edges from virtual root to all top-level category nodes (right branch)
     const rootEdges = flatNodes
       .filter((node) => !node.parent_id)
       .map((node) => ({
@@ -397,22 +543,42 @@ export default function InvestmentFlowTreeView({
         type: 'smoothstep',
       }))
 
-    // Cash edge exits from bottom of Portfolio (downward branch)
+    // Cash node exits from the LEFT of Portfolio root
     const cashEdge = {
       id: `e-${VIRTUAL_ROOT_ID}-${UNINVESTED_CASH_ID}`,
       source: VIRTUAL_ROOT_ID,
       target: UNINVESTED_CASH_ID,
-      sourceHandle: 'bottom',
+      sourceHandle: 'left',
+      targetHandle: 'right',
       type: 'smoothstep',
     }
 
+    // Edges from cash node to each category (cash node is source, categories are targets)
+    const cashCategoryEdges = cashCategories.map((cat) => ({
+      id: `e-${UNINVESTED_CASH_ID}-${cat.id}`,
+      source: UNINVESTED_CASH_ID,
+      target: cat.id,
+      sourceHandle: 'left',
+      type: 'smoothstep',
+    }))
+
+    const cashCategoryIds = cashCategories.map((c) => c.id)
+
     return getLayoutedElements(
       rfNodes,
-      [...rootEdges, ...rfEdges, cashEdge],
+      [...rootEdges, ...rfEdges, cashEdge, ...cashCategoryEdges],
       UNINVESTED_CASH_ID,
-      VIRTUAL_ROOT_ID
+      VIRTUAL_ROOT_ID,
+      cashCategoryIds
     )
-  }, [flatNodes, rootTotal, uninvestedCash, uninvestedCashPct, onEditUninvestedCash])
+  }, [
+    flatNodes,
+    rootTotal,
+    uninvestedCash,
+    uninvestedCashPct,
+    onEditUninvestedCash,
+    cashCategories,
+  ])
 
   return (
     <div
@@ -440,6 +606,7 @@ export default function InvestmentFlowTreeView({
         mode={tickerFormState.mode}
         initialValues={tickerFormState.node}
         onSubmit={handleTickerSubmit}
+        cashCategories={cashCategories}
       />
 
       <DeleteNodeDialog
@@ -447,6 +614,22 @@ export default function InvestmentFlowTreeView({
         onOpenChange={(open) => !open && setDeleteTarget(null)}
         node={deleteTargetWithChildren}
         onConfirm={deleteNode}
+      />
+
+      <UninvestedCashCategoryForm
+        idPrefix="treeViewCashCategoryForm"
+        open={cashCategoryFormState.open}
+        onOpenChange={(open) => setCashCategoryFormState((prev) => ({ ...prev, open }))}
+        mode={cashCategoryFormState.mode}
+        initialValues={cashCategoryFormState.category}
+        onSubmit={handleCashCategorySubmit}
+      />
+
+      <DeleteNodeDialog
+        open={Boolean(deleteCashCategoryTarget)}
+        onOpenChange={(open) => !open && setDeleteCashCategoryTarget(null)}
+        node={deleteCashCategoryTarget ? { ...deleteCashCategoryTarget, children: [] } : null}
+        onConfirm={(id) => deleteCashCategory(id)}
       />
     </div>
   )
