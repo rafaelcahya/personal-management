@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Trophy } from 'lucide-react'
+import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { fetchPersonalBests } from '@/lib/api/running'
 import {
@@ -140,25 +141,26 @@ export default function PersonalBestsTable() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true)
+    setError(null)
     let cancelled = false
-
-    async function load() {
-      try {
-        const result = await fetchPersonalBests()
+    fetchPersonalBests()
+      .then((result) => {
         if (!cancelled) setData(result)
-      } catch {
+      })
+      .catch(() => {
         if (!cancelled) setError('Failed to load personal bests')
-      } finally {
+      })
+      .finally(() => {
         if (!cancelled) setLoading(false)
-      }
-    }
-
-    load()
+      })
     return () => {
       cancelled = true
     }
   }, [])
+
+  useEffect(load, [load])
 
   if (loading) {
     return (
@@ -178,10 +180,17 @@ export default function PersonalBestsTable() {
     return (
       <div
         id="personalBestsError_analyticsPage"
-        className="rounded-xl border border-red-200 bg-red-50 px-4 py-4"
+        className="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 px-4 py-4"
         role="alert"
       >
-        <p className="text-sm text-red-700">{error}</p>
+        <p className="text-sm text-red-700 flex-1">{error}</p>
+        <Button
+          variant="ghost"
+          onClick={load}
+          className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
+        >
+          Try again
+        </Button>
       </div>
     )
   }

@@ -9,6 +9,8 @@ import {
   fetchAnalyticsStaleness,
   fetchZoneReference,
 } from '@/lib/api/running'
+import Button from '@/components/base/Button/Button'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import PageHeader from '@/app/main/components/PageHeader'
 import SyncStravaButton from '@/app/main/running/components/SyncStravaButton'
 import { RUN_TYPES } from './components/utils'
@@ -142,21 +144,21 @@ export default function AnalyticsPage() {
           className="flex flex-col gap-6"
           aria-label="Loading analytics"
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-20 bg-slate-100 rounded-lg animate-pulse"
-                aria-hidden="true"
-              />
-            ))}
-          </div>
-          {Array.from({ length: 3 }).map((_, i) => (
+          {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="h-64 bg-slate-100 rounded-xl animate-pulse"
+              className="rounded-xl border border-slate-100 bg-white p-5 flex flex-col gap-4"
               aria-hidden="true"
-            />
+            >
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <Skeleton className="h-4 w-40 rounded" />
+                  <Skeleton className="h-3 w-64 rounded" />
+                </div>
+              </div>
+              <Skeleton className="h-52 rounded-lg" />
+            </div>
           ))}
         </div>
       )}

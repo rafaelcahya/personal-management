@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   LineChart,
   Line,
@@ -11,6 +11,8 @@ import {
   ReferenceLine,
   ResponsiveContainer,
 } from 'recharts'
+import Button from '@/components/base/Button/Button'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { fetchFitnessAgeTrend } from '@/lib/api/running'
 
 function fmtWeek(dateStr) {
@@ -23,7 +25,9 @@ export default function FitnessAgeTrendChart() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true)
+    setError(null)
     let cancelled = false
     fetchFitnessAgeTrend()
       .then((d) => {
@@ -40,20 +44,28 @@ export default function FitnessAgeTrendChart() {
     }
   }, [])
 
+  useEffect(load, [load])
+
   if (loading) {
-    return (
-      <div
-        id="fitnessAgeTrendLoading_analyticsPage"
-        className="h-[200px] bg-slate-50 rounded-lg animate-pulse"
-      />
-    )
+    return <Skeleton id="fitnessAgeTrendLoading_analyticsPage" className="h-[200px] rounded-lg" />
   }
 
   if (error) {
     return (
-      <p id="fitnessAgeTrendError_analyticsPage" className="text-sm text-red-400 py-4">
-        {error}
-      </p>
+      <div
+        id="fitnessAgeTrendError_analyticsPage"
+        className="flex items-center gap-3 py-4"
+        role="alert"
+      >
+        <p className="text-sm text-red-400">{error}</p>
+        <Button
+          variant="ghost"
+          onClick={load}
+          className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+        >
+          Try again
+        </Button>
+      </div>
     )
   }
 
