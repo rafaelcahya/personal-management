@@ -239,7 +239,7 @@ export default function ProductsTable({
             {products.map((product) => (
               <TableRow
                 key={product.id}
-                className="cursor-pointer hover:bg-slate-50 transition-colors"
+                clickable
                 onClick={() => {
                   window.location.href = `/main/inventory/product-list/${product.id}`
                 }}

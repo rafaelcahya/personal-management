@@ -300,6 +300,15 @@
   background-color: transparent;
 }
 
+/* Table header rows keep the solid default light background in glass theme */
+.theme-glass thead,
+.theme-glass thead .bg-slate-50,
+.theme-glass thead .bg-card {
+  background-color: white;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 /* Frosted glass blur on card and popover surfaces */
 .theme-glass .bg-card,
 .theme-glass .bg-popover {
