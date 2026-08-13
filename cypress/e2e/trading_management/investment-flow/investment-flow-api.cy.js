@@ -2,6 +2,7 @@
 // Investment Flow API tests for issue #751
 // Extended for issue #771 — uninvested cash node
 // Extended for issue #776 — uninvested cash categories
+// Extended for issue #781 — node highlights (color map)
 // Endpoints:
 //   GET    /api/investment-flow/v1                              — list nodes (flat adjacency list)
 //   POST   /api/investment-flow/v1                              — create node
@@ -14,6 +15,8 @@
 //   POST   /api/investment-flow/v1/uninvested-cash/categories   — create cash category
 //   PUT    /api/investment-flow/v1/uninvested-cash/categories/:id   — update cash category
 //   DELETE /api/investment-flow/v1/uninvested-cash/categories/:id   — delete cash category
+//   GET    /api/investment-flow/v1/highlights                   — get node highlight color map
+//   PATCH  /api/investment-flow/v1/highlights                   — set node highlight color map
 
 const makeCategoryPayload = (overrides = {}) => ({
   node_type: 'category',
@@ -91,6 +94,31 @@ describe('Investment Flow API — GET /api/investment-flow/v1', () => {
     cy.listInvestmentFlowNodes().then((res) => {
       expect(res.body.data).to.have.property('cashCategories').that.is.an('array')
     })
+  })
+
+  it('returns highlights as an object alongside the node list (issue #781)', () => {
+    cy.listInvestmentFlowNodes().then((res) => {
+      expect(res.body.data).to.have.property('highlights').that.is.an('object')
+    })
+  })
+
+  it('reflects a PATCHed highlight color in data.highlights (issue #781)', () => {
+    cy.createInvestmentFlowNode(makeCategoryPayload({ name: 'Highlight Sync Category' })).then(
+      (createRes) => {
+        expect(createRes.status).to.eq(201)
+        const nodeId = createRes.body.data.id
+
+        cy.patchInvestmentFlowHighlights({ highlights: { [nodeId]: '#3B82F6' } }).then(
+          (patchRes) => {
+            expect(patchRes.status).to.eq(200)
+
+            cy.listInvestmentFlowNodes().then((listRes) => {
+              expect(listRes.body.data.highlights).to.have.property(nodeId, '#3B82F6')
+            })
+          }
+        )
+      }
+    )
   })
 })
 
@@ -867,6 +895,101 @@ describe('Investment Flow API — DELETE /api/investment-flow/v1/uninvested-cash
     cy.clearCookies()
     cy.deleteUninvestedCashCategoryNoAuth('00000000-0000-0000-0000-000000000001').then((res) => {
       expect(res.status).to.be.oneOf([401, 307])
+    })
+  })
+})
+
+// ─── GET /api/investment-flow/v1/highlights ──────────────────────────────────
+
+describe('Investment Flow API — GET /api/investment-flow/v1/highlights', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('returns 200 with valid session', () => {
+    cy.getInvestmentFlowHighlights().then((res) => {
+      expect(res.status).to.eq(200)
+    })
+  })
+
+  it('returns 401 when unauthenticated', () => {
+    cy.clearCookies()
+    cy.getInvestmentFlowHighlightsNoAuth().then((res) => {
+      expect(res.status).to.be.oneOf([401, 307])
+    })
+  })
+
+  it('returns success: true and data.highlights as an object', () => {
+    cy.setupApiAuthCookies()
+    cy.getInvestmentFlowHighlights().then((res) => {
+      expect(res.body).to.have.property('success', true)
+      expect(res.body.data).to.have.property('highlights').that.is.an('object')
+    })
+  })
+})
+
+// ─── PATCH /api/investment-flow/v1/highlights ────────────────────────────────
+
+describe('Investment Flow API — PATCH /api/investment-flow/v1/highlights', () => {
+  let nodeId
+
+  before(() => {
+    cy.clearCookies()
+    cy.clearLocalStorage()
+    cy.setupApiAuthCookies()
+    cy.createInvestmentFlowNode(makeCategoryPayload({ name: 'Highlight Test Category' })).then(
+      (res) => {
+        expect(res.status).to.eq(201)
+        nodeId = res.body.data.id
+      }
+    )
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('returns 200 and the updated highlights when setting a valid color', () => {
+    cy.patchInvestmentFlowHighlights({ highlights: { [nodeId]: '#EF4444' } }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('success', true)
+      expect(res.body.data.highlights).to.have.property(nodeId, '#EF4444')
+    })
+  })
+
+  it('persists the updated highlights on subsequent GET', () => {
+    cy.patchInvestmentFlowHighlights({ highlights: { [nodeId]: '#22C55E' } }).then(() => {
+      cy.getInvestmentFlowHighlights().then((res) => {
+        expect(res.body.data.highlights).to.have.property(nodeId, '#22C55E')
+      })
+    })
+  })
+
+  it('returns 401 when unauthenticated', () => {
+    cy.clearCookies()
+    cy.patchInvestmentFlowHighlightsNoAuth({ highlights: { [nodeId]: '#3B82F6' } }).then((res) => {
+      expect(res.status).to.be.oneOf([401, 307])
+    })
+  })
+
+  it('returns 400 when a highlight value is not a valid hex color', () => {
+    cy.patchInvestmentFlowHighlights({ highlights: { [nodeId]: 'not-a-color' } }).then((res) => {
+      expect(res.status).to.eq(400)
+      expect(res.body).to.have.property('success', false)
+    })
+  })
+
+  it('returns 400 when a highlight key is not a valid uuid', () => {
+    cy.patchInvestmentFlowHighlights({ highlights: { 'not-a-uuid': '#EF4444' } }).then((res) => {
+      expect(res.status).to.eq(400)
+      expect(res.body).to.have.property('success', false)
+    })
+  })
+
+  it('returns 400 when highlights field is missing', () => {
+    cy.patchInvestmentFlowHighlights({}).then((res) => {
+      expect(res.status).to.eq(400)
+      expect(res.body).to.have.property('success', false)
     })
   })
 })

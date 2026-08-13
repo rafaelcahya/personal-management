@@ -11,6 +11,9 @@ export default function InvestmentTree({
   onEdit,
   onDelete,
   onMove,
+  hideAmounts = false,
+  highlights = {},
+  onHighlight,
 }) {
   const [draggedId, setDraggedId] = useState(null)
 
@@ -41,6 +44,9 @@ export default function InvestmentTree({
           onDragStart={setDraggedId}
           onDragEnd={() => setDraggedId(null)}
           onDropOnCategory={handleDropOnCategory}
+          hideAmounts={hideAmounts}
+          highlights={highlights}
+          onHighlight={onHighlight}
         />
       ))}
     </div>

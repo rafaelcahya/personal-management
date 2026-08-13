@@ -1,22 +1,96 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react'
 import dagre from '@dagrejs/dagre'
 import { ReactFlow, Background, Controls, Handle, Position } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import {
   FolderTree,
   Layers,
+  Palette,
   Pencil,
   Plus,
   Tag as TagIcon,
   Trash2,
   TrendingUp,
   Wallet,
+  X,
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { Badge } from '@/components/base/Badge/Badge'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/base/Popover/Popover'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
+
+const HIGHLIGHT_COLORS = [
+  { value: '#EF4444', label: 'Red' },
+  { value: '#3B82F6', label: 'Blue' },
+  { value: '#22C55E', label: 'Green' },
+  { value: '#EAB308', label: 'Yellow' },
+  { value: '#94A3B8', label: 'Grey' },
+]
+
+const FlowDisplayContext = createContext({
+  hideAmounts: false,
+  highlights: {},
+  onHighlight: () => {},
+})
+
+function NodeColorPicker({ nodeId }) {
+  const { highlights, onHighlight } = useContext(FlowDisplayContext)
+  const activeColor = highlights[nodeId] ?? null
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon-sm" aria-label="Highlight color">
+          {activeColor ? (
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: activeColor }} />
+          ) : (
+            <Palette className="size-3.5" aria-hidden="true" />
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent side="bottom" align="start" sideOffset={4} className="p-2 w-auto">
+        <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wide mb-2">
+          Highlight
+        </p>
+        <div className="flex items-center gap-1.5">
+          {HIGHLIGHT_COLORS.map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              aria-label={label}
+              onClick={() => {
+                onHighlight(nodeId, activeColor === value ? null : value)
+                setOpen(false)
+              }}
+              className="w-5 h-5 rounded-full transition-transform hover:scale-110 shrink-0"
+              style={{
+                backgroundColor: value,
+                outline: activeColor === value ? `2px solid ${value}` : 'none',
+                outlineOffset: '2px',
+              }}
+            />
+          ))}
+          {activeColor && (
+            <button
+              type="button"
+              aria-label="Clear highlight"
+              onClick={() => {
+                onHighlight(nodeId, null)
+                setOpen(false)
+              }}
+              className="w-5 h-5 rounded-full border border-slate-300 bg-white flex items-center justify-center hover:bg-slate-50 shrink-0"
+            >
+              <X className="size-2.5" aria-hidden="true" />
+            </button>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}
 import CategoryNodeForm from './CategoryNodeForm'
 import TickerNodeForm from './TickerNodeForm'
 import DeleteNodeDialog from './DeleteNodeDialog'
@@ -110,6 +184,7 @@ function getLayoutedElements(nodes, edges, cashNodeId, rootNodeId, cashCategoryI
 
 function RootNodeCard({ data }) {
   const { rootTotal } = data
+  const { hideAmounts } = useContext(FlowDisplayContext)
   return (
     <div
       id="treeViewRootNode_investmentFlowPage"
@@ -122,7 +197,9 @@ function RootNodeCard({ data }) {
         <span className="text-sm font-semibold text-violet-800 truncate">Portfolio</span>
       </div>
       <div className="flex items-center justify-between mt-2">
-        <span className="text-xs text-violet-600 whitespace-nowrap">{formatRupiah(rootTotal)}</span>
+        <span className="text-xs text-violet-600 whitespace-nowrap">
+          {hideAmounts ? '••••••' : formatRupiah(rootTotal)}
+        </span>
         <Badge className="bg-violet-200 text-violet-800 border-transparent" size="sm">
           100%
         </Badge>
@@ -133,11 +210,16 @@ function RootNodeCard({ data }) {
 
 function CategoryNodeCard({ data }) {
   const { node, onAddCategory, onAddTicker, onEdit, onDelete } = data
+  const { hideAmounts, highlights } = useContext(FlowDisplayContext)
+  const highlightColor = highlights[node.id] ?? null
 
   return (
     <div
       id={`treeViewCategoryNode_${node.id}_investmentFlowPage`}
-      className="border rounded-xl bg-white shadow-sm p-3 w-[240px]"
+      className="rounded-xl bg-white shadow-sm p-3 w-[240px] transition-colors"
+      style={{
+        border: highlightColor ? `2px solid ${highlightColor}` : '1px solid #e2e8f0',
+      }}
     >
       <Handle type="target" position={Position.Left} />
       <Handle type="source" position={Position.Right} />
@@ -151,14 +233,14 @@ function CategoryNodeCard({ data }) {
 
       <div className="flex items-center justify-between mt-2">
         <span className="text-xs text-slate-500 whitespace-nowrap">
-          {formatRupiah(node.computedNominal)}
+          {hideAmounts ? '••••••' : formatRupiah(node.computedNominal)}
         </span>
         <Badge className="bg-violet-100 text-violet-700 border-transparent" size="sm">
           {node.percentage.toFixed(1)}%
         </Badge>
       </div>
 
-      <div className="flex items-center gap-1 mt-3">
+      <div className="flex items-center gap-1 mt-3 flex-wrap">
         <Button
           variant="ghost"
           size="icon-sm"
@@ -195,6 +277,7 @@ function CategoryNodeCard({ data }) {
         >
           <Trash2 className="size-3.5" aria-hidden="true" />
         </Button>
+        <NodeColorPicker nodeId={node.id} />
       </div>
     </div>
   )
@@ -202,11 +285,16 @@ function CategoryNodeCard({ data }) {
 
 function TickerNodeCard({ data }) {
   const { node, onAddTicker, onEdit, onDelete } = data
+  const { hideAmounts, highlights } = useContext(FlowDisplayContext)
+  const highlightColor = highlights[node.id] ?? null
 
   return (
     <div
       id={`treeViewTickerNode_${node.id}_investmentFlowPage`}
-      className="border rounded-xl bg-white shadow-sm p-3 w-[240px]"
+      className="rounded-xl bg-white shadow-sm p-3 w-[240px] transition-colors"
+      style={{
+        border: highlightColor ? `2px solid ${highlightColor}` : '1px solid #e2e8f0',
+      }}
     >
       <Handle type="target" position={Position.Left} />
       <Handle type="source" position={Position.Right} />
@@ -220,7 +308,7 @@ function TickerNodeCard({ data }) {
 
       <div className="flex items-center justify-between mt-2">
         <span className="text-xs text-slate-500 whitespace-nowrap">
-          {formatRupiah(node.computedNominal)}
+          {hideAmounts ? '••••••' : formatRupiah(node.computedNominal)}
         </span>
         <Badge className="bg-violet-100 text-violet-700 border-transparent" size="sm">
           {node.percentage.toFixed(1)}%
@@ -233,7 +321,7 @@ function TickerNodeCard({ data }) {
         </p>
       )}
 
-      <div className="flex items-center gap-1 mt-3">
+      <div className="flex items-center gap-1 mt-3 flex-wrap">
         <Button
           variant="ghost"
           size="icon-sm"
@@ -261,6 +349,7 @@ function TickerNodeCard({ data }) {
         >
           <Trash2 className="size-3.5" aria-hidden="true" />
         </Button>
+        <NodeColorPicker nodeId={node.id} />
       </div>
     </div>
   )
@@ -268,6 +357,7 @@ function TickerNodeCard({ data }) {
 
 function CashNodeCard({ data }) {
   const { amount, percentage, onEdit, onAddCategory, hasCategories } = data
+  const { hideAmounts } = useContext(FlowDisplayContext)
 
   return (
     <div
@@ -283,7 +373,9 @@ function CashNodeCard({ data }) {
       </div>
 
       <div className="flex items-center justify-between mt-2">
-        <span className="text-xs text-slate-500 whitespace-nowrap">{formatRupiah(amount)}</span>
+        <span className="text-xs text-slate-500 whitespace-nowrap">
+          {hideAmounts ? '••••••' : formatRupiah(amount)}
+        </span>
         <Badge className="bg-emerald-100 text-emerald-700 border-transparent" size="sm">
           {percentage.toFixed(1)}%
         </Badge>
@@ -317,6 +409,7 @@ function CashNodeCard({ data }) {
 
 function CashCategoryNodeCard({ data }) {
   const { category, onEdit, onDelete } = data
+  const { hideAmounts } = useContext(FlowDisplayContext)
 
   return (
     <div
@@ -334,7 +427,7 @@ function CashCategoryNodeCard({ data }) {
 
       <div className="flex items-center justify-between mt-2">
         <span className="text-xs text-slate-500 whitespace-nowrap">
-          {formatRupiah(category.nominal)}
+          {hideAmounts ? '••••••' : formatRupiah(category.nominal)}
         </span>
       </div>
 
@@ -383,6 +476,9 @@ export default function InvestmentFlowTreeView({
   createCashCategory,
   updateCashCategory,
   deleteCashCategory,
+  hideAmounts = false,
+  highlights = {},
+  onHighlight,
 }) {
   const [categoryFormState, setCategoryFormState] = useState({
     open: false,
@@ -581,56 +677,60 @@ export default function InvestmentFlowTreeView({
   ])
 
   return (
-    <div
-      id="investmentFlowTreeCanvas_investmentFlowPage"
-      className="h-[calc(100dvh-18rem)] lg:h-[calc(100dvh-14rem)] min-h-[400px] w-full bg-slate-50"
+    <FlowDisplayContext.Provider
+      value={{ hideAmounts, highlights, onHighlight: onHighlight ?? (() => {}) }}
     >
-      <ReactFlow nodes={layoutedNodes} edges={layoutedEdges} nodeTypes={nodeTypes} fitView>
-        <Background />
-        <Controls />
-      </ReactFlow>
+      <div
+        id="investmentFlowTreeCanvas_investmentFlowPage"
+        className="h-[calc(100dvh-18rem)] lg:h-[calc(100dvh-14rem)] min-h-[400px] w-full bg-slate-50"
+      >
+        <ReactFlow nodes={layoutedNodes} edges={layoutedEdges} nodeTypes={nodeTypes} fitView>
+          <Background />
+          <Controls />
+        </ReactFlow>
 
-      <CategoryNodeForm
-        idPrefix="treeViewCategoryNodeForm"
-        open={categoryFormState.open}
-        onOpenChange={(open) => setCategoryFormState((prev) => ({ ...prev, open }))}
-        mode={categoryFormState.mode}
-        initialValues={categoryFormState.node}
-        onSubmit={handleCategorySubmit}
-      />
+        <CategoryNodeForm
+          idPrefix="treeViewCategoryNodeForm"
+          open={categoryFormState.open}
+          onOpenChange={(open) => setCategoryFormState((prev) => ({ ...prev, open }))}
+          mode={categoryFormState.mode}
+          initialValues={categoryFormState.node}
+          onSubmit={handleCategorySubmit}
+        />
 
-      <TickerNodeForm
-        idPrefix="treeViewTickerNodeForm"
-        open={tickerFormState.open}
-        onOpenChange={(open) => setTickerFormState((prev) => ({ ...prev, open }))}
-        mode={tickerFormState.mode}
-        initialValues={tickerFormState.node}
-        onSubmit={handleTickerSubmit}
-        cashCategories={cashCategories}
-      />
+        <TickerNodeForm
+          idPrefix="treeViewTickerNodeForm"
+          open={tickerFormState.open}
+          onOpenChange={(open) => setTickerFormState((prev) => ({ ...prev, open }))}
+          mode={tickerFormState.mode}
+          initialValues={tickerFormState.node}
+          onSubmit={handleTickerSubmit}
+          cashCategories={cashCategories}
+        />
 
-      <DeleteNodeDialog
-        open={Boolean(deleteTarget)}
-        onOpenChange={(open) => !open && setDeleteTarget(null)}
-        node={deleteTargetWithChildren}
-        onConfirm={deleteNode}
-      />
+        <DeleteNodeDialog
+          open={Boolean(deleteTarget)}
+          onOpenChange={(open) => !open && setDeleteTarget(null)}
+          node={deleteTargetWithChildren}
+          onConfirm={deleteNode}
+        />
 
-      <UninvestedCashCategoryForm
-        idPrefix="treeViewCashCategoryForm"
-        open={cashCategoryFormState.open}
-        onOpenChange={(open) => setCashCategoryFormState((prev) => ({ ...prev, open }))}
-        mode={cashCategoryFormState.mode}
-        initialValues={cashCategoryFormState.category}
-        onSubmit={handleCashCategorySubmit}
-      />
+        <UninvestedCashCategoryForm
+          idPrefix="treeViewCashCategoryForm"
+          open={cashCategoryFormState.open}
+          onOpenChange={(open) => setCashCategoryFormState((prev) => ({ ...prev, open }))}
+          mode={cashCategoryFormState.mode}
+          initialValues={cashCategoryFormState.category}
+          onSubmit={handleCashCategorySubmit}
+        />
 
-      <DeleteNodeDialog
-        open={Boolean(deleteCashCategoryTarget)}
-        onOpenChange={(open) => !open && setDeleteCashCategoryTarget(null)}
-        node={deleteCashCategoryTarget ? { ...deleteCashCategoryTarget, children: [] } : null}
-        onConfirm={(id) => deleteCashCategory(id)}
-      />
-    </div>
+        <DeleteNodeDialog
+          open={Boolean(deleteCashCategoryTarget)}
+          onOpenChange={(open) => !open && setDeleteCashCategoryTarget(null)}
+          node={deleteCashCategoryTarget ? { ...deleteCashCategoryTarget, children: [] } : null}
+          onConfirm={(id) => deleteCashCategory(id)}
+        />
+      </div>
+    </FlowDisplayContext.Provider>
   )
 }

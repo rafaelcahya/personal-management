@@ -8,10 +8,12 @@ import {
   GripVertical,
   MoreHorizontal,
   Move,
+  Palette,
   Pencil,
   Plus,
   Tag as TagIcon,
   Trash2,
+  X,
 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import {
@@ -24,8 +26,81 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/base/DropdownMenu/DropdownMenu'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/base/Popover/Popover'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import { cn } from '@/lib/utils'
+
+const HIGHLIGHT_COLORS = [
+  { value: '#EF4444', label: 'Red' },
+  { value: '#3B82F6', label: 'Blue' },
+  { value: '#22C55E', label: 'Green' },
+  { value: '#EAB308', label: 'Yellow' },
+  { value: '#94A3B8', label: 'Grey' },
+]
+
+function HighlightPicker({ nodeId, highlightColor, onHighlight }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-6 shrink-0 min-w-6 min-h-6"
+          aria-label="Highlight color"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {highlightColor ? (
+            <span
+              className="w-3 h-3 rounded-full shrink-0"
+              style={{ backgroundColor: highlightColor }}
+            />
+          ) : (
+            <Palette className="size-3.5 text-slate-400" aria-hidden="true" />
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent side="bottom" align="end" sideOffset={4} className="p-2 w-auto">
+        <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wide mb-2">
+          Highlight
+        </p>
+        <div className="flex items-center gap-1.5">
+          {HIGHLIGHT_COLORS.map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              aria-label={label}
+              onClick={() => {
+                onHighlight(nodeId, highlightColor === value ? null : value)
+                setOpen(false)
+              }}
+              className="w-5 h-5 rounded-full transition-transform hover:scale-110 shrink-0"
+              style={{
+                backgroundColor: value,
+                outline: highlightColor === value ? `2px solid ${value}` : 'none',
+                outlineOffset: '2px',
+              }}
+            />
+          ))}
+          {highlightColor && (
+            <button
+              type="button"
+              aria-label="Clear highlight"
+              onClick={() => {
+                onHighlight(nodeId, null)
+                setOpen(false)
+              }}
+              className="w-5 h-5 rounded-full border border-slate-300 bg-white flex items-center justify-center hover:bg-slate-50 shrink-0"
+            >
+              <X className="size-2.5" aria-hidden="true" />
+            </button>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}
 
 export default function TreeNode({
   node,
@@ -40,6 +115,9 @@ export default function TreeNode({
   onDragStart,
   onDragEnd,
   onDropOnCategory,
+  hideAmounts = false,
+  highlights = {},
+  onHighlight,
 }) {
   const [expanded, setExpanded] = useState(true)
   const [isDragOver, setIsDragOver] = useState(false)
@@ -47,6 +125,7 @@ export default function TreeNode({
   const isCategory = node.node_type === 'category'
   const hasChildren = node.children.length > 0
   const isBeingDragged = draggedId === node.id
+  const highlightColor = highlights[node.id] ?? null
 
   // categories cannot be dropped onto themselves or their own descendants
   const otherCategoryOptions = categoryOptions.filter((opt) => opt.id !== node.id)
@@ -125,8 +204,10 @@ export default function TreeNode({
         <span
           className={cn(
             'text-sm truncate min-w-0 flex-1',
-            isCategory ? 'font-semibold text-slate-800' : 'font-medium text-slate-700'
+            !highlightColor && (isCategory ? 'text-slate-800' : 'text-slate-700'),
+            isCategory ? 'font-semibold' : 'font-medium'
           )}
+          style={highlightColor ? { color: highlightColor } : undefined}
           title={node.name}
         >
           {node.name}
@@ -134,11 +215,20 @@ export default function TreeNode({
 
         {/* Nominal + Percentage */}
         <span className="text-xs text-slate-500 whitespace-nowrap shrink-0 hidden sm:inline">
-          {formatRupiah(node.computedNominal)}
+          {hideAmounts ? '••••••' : formatRupiah(node.computedNominal)}
         </span>
         <span className="text-xs font-semibold text-violet-600 whitespace-nowrap shrink-0 w-14 text-right">
           {node.percentage.toFixed(1)}%
         </span>
+
+        {/* Highlight color picker */}
+        {onHighlight && (
+          <HighlightPicker
+            nodeId={node.id}
+            highlightColor={highlightColor}
+            onHighlight={onHighlight}
+          />
+        )}
 
         {/* Actions */}
         <DropdownMenu>
@@ -200,6 +290,9 @@ export default function TreeNode({
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
               onDropOnCategory={onDropOnCategory}
+              hideAmounts={hideAmounts}
+              highlights={highlights}
+              onHighlight={onHighlight}
             />
           ))}
         </div>

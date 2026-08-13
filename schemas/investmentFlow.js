@@ -119,3 +119,12 @@ export const updateCashCategorySchema = z.object({
 export const deleteCashCategoryQuerySchema = z.object({
   id: z.string().uuid('Invalid category ID'),
 })
+
+const HEX_COLOR_REGEX = /^#[0-9A-Fa-f]{6}$/
+
+export const updateHighlightsSchema = z.object({
+  highlights: z.record(
+    z.string().uuid('Invalid node ID'),
+    z.string().regex(HEX_COLOR_REGEX, 'Invalid hex color')
+  ),
+})

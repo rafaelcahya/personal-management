@@ -6,6 +6,7 @@ import { updateNode } from '@/lib/services/investmentFlow/updateNode'
 import { deleteNode } from '@/lib/services/investmentFlow/deleteNode'
 import { getUninvestedCash } from '@/lib/services/investmentFlow/getUninvestedCash'
 import { listCashCategories } from '@/lib/services/investmentFlow/listCashCategories'
+import { getHighlights } from '@/lib/services/investmentFlow/getHighlights'
 import { createNodeSchema, updateNodeSchema, deleteNodeQuerySchema } from '@/schemas/investmentFlow'
 import {
   USER_FACING_ERRORS,
@@ -28,14 +29,15 @@ export async function GET() {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
-    const [nodes, uninvestedCash, cashCategories] = await Promise.all([
+    const [nodes, uninvestedCash, cashCategories, highlights] = await Promise.all([
       listNodes(user.id),
       getUninvestedCash(user.id),
       listCashCategories(user.id),
+      getHighlights(user.id),
     ])
 
     return NextResponse.json(
-      { success: true, data: { nodes, uninvestedCash, cashCategories } },
+      { success: true, data: { nodes, uninvestedCash, cashCategories, highlights } },
       { status: 200 }
     )
   } catch (err) {
