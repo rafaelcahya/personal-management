@@ -93,14 +93,31 @@ import './common/running/api/activities/commands'
 - UI behavior — API tests are HTTP only, no browser interaction
 - Things already covered in another `it()` block in the same describe
 
-### Test File Structure
+### Test File Naming Convention
 
-One file per module. All endpoints for that module go in one file, separated by section comments:
+Name test files using the pattern `{operation}_{featureName}_{type}.cy.js`:
+
+- `{operation}` — CRUD verb: `create`, `read`, `update`, `delete`
+- `{featureName}` — camelCase feature name
+- `{type}` — `api` for API tests, `ui` for UI tests
+
+**Examples:**
+
+```
+create_investmentFlowHighlights_api.cy.js
+read_investmentFlowHighlights_api.cy.js
+update_investmentFlowHighlights_api.cy.js
+delete_investmentFlowHighlights_api.cy.js
+create_tradeEntry_ui.cy.js
+read_activityDetail_ui.cy.js
+```
+
+Within each file, separate sections with comments:
 
 ```js
-// ─── activities list ──────────────────────────────────────────────────────────
-// ─── activity detail ─────────────────────────────────────────────────────────
-// ─── streams ─────────────────────────────────────────────────────────────────
+// ─── auth guard ───────────────────────────────────────────────────────────────
+// ─── success response ────────────────────────────────────────────────────────
+// ─── validation ──────────────────────────────────────────────────────────────
 ```
 
 Test files call custom commands — clean, no HTTP detail:
