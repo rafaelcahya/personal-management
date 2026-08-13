@@ -90,9 +90,9 @@ export default function ProductHistoryTable({
             <TableHead>Note</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody divider={false}>
+        <TableBody>
           {histories.map((history, index) => (
-            <TableRow key={history.id} clickable>
+            <TableRow key={history.id}>
               <TableCell className="font-mono text-slate-700 w-[30px]" align="center">
                 {(page - 1) * 15 + index + 1}
               </TableCell>
@@ -101,26 +101,9 @@ export default function ProductHistoryTable({
                   <p className="text-xs text-slate-400 truncate leading-tight">
                     {history.brand || '—'}
                   </p>
-                  <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                    {history.product_list_id &&
-                    Number.isInteger(Number(history.product_list_id)) ? (
-                      <Link
-                        href={`/main/inventory/product-list/${history.product_list_id}`}
-                        className="font-semibold text-slate-900 text-sm truncate hover:text-violet-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-1 rounded"
-                      >
-                        {history.product}
-                      </Link>
-                    ) : (
-                      <p className="font-semibold text-slate-900 text-sm truncate">
-                        {history.product}
-                      </p>
-                    )}
-                    {history.type && (
-                      <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                        {history.type}
-                      </span>
-                    )}
-                  </div>
+                  <p className="font-semibold text-slate-900">
+                    {history.product} {history.type}
+                  </p>
                 </div>
               </TableCell>
               <TableCell className="w-[100px]">

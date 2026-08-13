@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
+import { getRateLimitTier, rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 export async function middleware(request) {
   const path = request.nextUrl.pathname
@@ -26,6 +27,8 @@ export async function middleware(request) {
     path.startsWith('/_next') ||
     path.startsWith('/api/auth') ||
     path.startsWith('/api/inngest') ||
+    path.startsWith('/docs') ||
+    path.startsWith('/api/docs') ||
     path === '/api/running/v1/auth/strava/callback'
   ) {
     return NextResponse.next()
@@ -78,6 +81,12 @@ export async function middleware(request) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('next', path)
     return NextResponse.redirect(loginUrl)
+  }
+
+  if (user && path.startsWith('/api/')) {
+    const tier = getRateLimitTier(path)
+    const result = rateLimit(`${tier}:${user.id}`, tier)
+    if (!result.allowed) return rateLimitResponse(result)
   }
 
   if (user && (path === '/login' || path === '/')) {

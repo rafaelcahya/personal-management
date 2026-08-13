@@ -8,6 +8,11 @@ import {
   getInvestmentFlowTree,
   moveNode,
   updateNode,
+  updateUninvestedCash,
+  updateHighlights,
+  createCashCategory,
+  updateCashCategory,
+  deleteCashCategory,
 } from '@/lib/api/investmentFlow'
 
 function buildTree(flatNodes) {
@@ -34,7 +39,8 @@ function buildTree(flatNodes) {
 }
 
 // nominal cascades from leaves upward; percentage is computed relative to the sum of root nominals
-function withComputedValues(roots, flatNodes) {
+// plus uninvested cash, since cash is part of total portfolio value
+function withComputedValues(roots, flatNodes, uninvestedCash) {
   function sumNominal(node) {
     if (node.children.length > 0) {
       node.computedNominal = node.children.reduce((sum, child) => sum + sumNominal(child), 0)
@@ -45,7 +51,7 @@ function withComputedValues(roots, flatNodes) {
   }
   roots.forEach(sumNominal)
 
-  const rootTotal = roots.reduce((sum, node) => sum + node.computedNominal, 0)
+  const rootTotal = roots.reduce((sum, node) => sum + node.computedNominal, 0) + uninvestedCash
 
   function applyPercentage(node) {
     node.percentage = rootTotal > 0 ? (node.computedNominal / rootTotal) * 100 : 0
@@ -72,6 +78,9 @@ function withComputedValues(roots, flatNodes) {
 
 export function useInvestmentFlow() {
   const [flatNodes, setFlatNodes] = useState([])
+  const [uninvestedCash, setUninvestedCash] = useState(0)
+  const [cashCategories, setCashCategories] = useState([])
+  const [highlights, setHighlights] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const isMounted = useRef(true)
@@ -87,9 +96,17 @@ export function useInvestmentFlow() {
     try {
       setIsLoading(true)
       setIsError(false)
-      const data = await getInvestmentFlowTree()
+      const {
+        nodes,
+        uninvestedCash: cashValue,
+        cashCategories: cats,
+        highlights: savedHighlights,
+      } = await getInvestmentFlowTree()
       if (!isMounted.current) return
-      setFlatNodes(data)
+      setFlatNodes(nodes)
+      setUninvestedCash(cashValue ?? 0)
+      setCashCategories(cats ?? [])
+      setHighlights(savedHighlights ?? {})
     } catch (err) {
       if (!isMounted.current) return
       console.error('Failed to load investment flow tree:', err)
@@ -103,11 +120,23 @@ export function useInvestmentFlow() {
     loadTree()
   }, [loadTree])
 
+  // when categories exist, their sum overrides the manual uninvested cash total
+  const effectiveUninvestedCash = useMemo(
+    () =>
+      cashCategories.length > 0
+        ? cashCategories.reduce((sum, c) => sum + (c.nominal || 0), 0)
+        : uninvestedCash,
+    [cashCategories, uninvestedCash]
+  )
+
   const {
     roots: tree,
     rootTotal,
     enrichedFlatNodes,
-  } = useMemo(() => withComputedValues(buildTree(flatNodes), flatNodes), [flatNodes])
+  } = useMemo(
+    () => withComputedValues(buildTree(flatNodes), flatNodes, effectiveUninvestedCash),
+    [flatNodes, effectiveUninvestedCash]
+  )
 
   const handleCreateNode = useCallback(
     async (payload) => {
@@ -117,6 +146,7 @@ export function useInvestmentFlow() {
         await loadTree()
         return true
       } catch (err) {
+        if (err.code === 'INSUFFICIENT_CASH') throw err
         toast.error(err.message || 'Failed to create node')
         return false
       }
@@ -132,6 +162,7 @@ export function useInvestmentFlow() {
         await loadTree()
         return true
       } catch (err) {
+        if (err.code === 'INSUFFICIENT_CASH') throw err
         toast.error(err.message || 'Failed to update node')
         return false
       }
@@ -176,6 +207,63 @@ export function useInvestmentFlow() {
     [loadTree, flatNodes]
   )
 
+  const handleSaveHighlights = useCallback(async (next) => {
+    setHighlights(next)
+    try {
+      await updateHighlights(next)
+    } catch (err) {
+      console.error('Failed to save highlights:', err)
+    }
+  }, [])
+
+  const handleUpdateUninvestedCash = useCallback(async (amount) => {
+    try {
+      const result = await updateUninvestedCash(amount)
+      setUninvestedCash(result)
+      toast.success('Uninvested cash updated')
+      return true
+    } catch (err) {
+      toast.error(err.message || 'Failed to update uninvested cash')
+      return false
+    }
+  }, [])
+
+  const handleCreateCashCategory = useCallback(async (payload) => {
+    try {
+      const category = await createCashCategory(payload)
+      setCashCategories((prev) => [...prev, category])
+      toast.success('Cash category added')
+      return true
+    } catch (err) {
+      toast.error(err.message || 'Failed to add cash category')
+      return false
+    }
+  }, [])
+
+  const handleUpdateCashCategory = useCallback(async (id, payload) => {
+    try {
+      const updated = await updateCashCategory(id, payload)
+      setCashCategories((prev) => prev.map((c) => (c.id === id ? updated : c)))
+      toast.success('Cash category updated')
+      return true
+    } catch (err) {
+      toast.error(err.message || 'Failed to update cash category')
+      return false
+    }
+  }, [])
+
+  const handleDeleteCashCategory = useCallback(async (id) => {
+    try {
+      await deleteCashCategory(id)
+      setCashCategories((prev) => prev.filter((c) => c.id !== id))
+      toast.success('Cash category deleted')
+      return true
+    } catch (err) {
+      toast.error(err.message || 'Failed to delete cash category')
+      return false
+    }
+  }, [])
+
   const categoryOptions = useMemo(() => {
     return flatNodes
       .filter((node) => node.node_type === 'category')
@@ -187,6 +275,9 @@ export function useInvestmentFlow() {
     flatNodes,
     enrichedFlatNodes,
     rootTotal,
+    uninvestedCash: effectiveUninvestedCash,
+    cashCategories,
+    highlights,
     isLoading,
     isError,
     reload: loadTree,
@@ -195,5 +286,10 @@ export function useInvestmentFlow() {
     updateNode: handleUpdateNode,
     deleteNode: handleDeleteNode,
     moveNode: handleMoveNode,
+    updateUninvestedCash: handleUpdateUninvestedCash,
+    saveHighlights: handleSaveHighlights,
+    createCashCategory: handleCreateCashCategory,
+    updateCashCategory: handleUpdateCashCategory,
+    deleteCashCategory: handleDeleteCashCategory,
   }
 }

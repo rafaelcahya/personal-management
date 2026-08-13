@@ -226,7 +226,10 @@
       "create": "/api/investment-flow/v1",
       "update": "/api/investment-flow/v1",
       "delete": "/api/investment-flow/v1",
-      "move": "/api/investment-flow/v1/move"
+      "move": "/api/investment-flow/v1/move",
+      "uninvested_cash": "/api/investment-flow/v1/uninvested-cash",
+      "uninvested_cash_categories": "/api/investment-flow/v1/uninvested-cash/categories",
+      "highlights": "/api/investment-flow/v1/highlights"
     }
   },
   "test_ids": {
@@ -320,7 +323,16 @@
       "ticker_form_submit_btn": "tickerNodeFormSubmitBtn_investmentFlowPage",
       "ticker_form_cancel_btn": "tickerNodeFormCancelBtn_investmentFlowPage",
       "delete_node_confirm_btn": "deleteNodeConfirmBtn_investmentFlowPage",
-      "delete_node_cancel_btn": "deleteNodeCancelBtn_investmentFlowPage"
+      "delete_node_cancel_btn": "deleteNodeCancelBtn_investmentFlowPage",
+      "portfolio_row": "investmentFlowPortfolioRow_investmentFlowPage",
+      "uninvested_cash_node": "uninvestedCashNode_investmentFlowPage",
+      "uninvested_cash_edit_btn": "uninvestedCashEditBtn_investmentFlowPage",
+      "uninvested_cash_form": "uninvestedCashForm_investmentFlowPage",
+      "uninvested_cash_amount_field": "uninvestedCashAmountField_investmentFlowPage",
+      "uninvested_cash_submit_btn": "uninvestedCashSubmitBtn_investmentFlowPage",
+      "uninvested_cash_cancel_btn": "uninvestedCashCancelBtn_investmentFlowPage",
+      "tree_view_uninvested_cash_node": "treeViewUninvestedCashNode_investmentFlowPage",
+      "tree_view_uninvested_cash_edit_btn": "treeViewUninvestedCashEditBtn_investmentFlowPage"
     },
     "auth": {
       "login_btn": "login-btn",

@@ -1,59 +1,205 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react'
 import dagre from '@dagrejs/dagre'
 import { ReactFlow, Background, Controls, Handle, Position } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { FolderTree, Layers, Pencil, Plus, Tag as TagIcon, Trash2, TrendingUp } from 'lucide-react'
+import {
+  FolderTree,
+  Layers,
+  Palette,
+  Pencil,
+  Plus,
+  Tag as TagIcon,
+  Trash2,
+  TrendingUp,
+  Wallet,
+  X,
+} from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { Badge } from '@/components/base/Badge/Badge'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/base/Popover/Popover'
 import { formatRupiah } from '@/lib/utils/currencyFormatter'
+
+const HIGHLIGHT_COLORS = [
+  { value: '#EF4444', label: 'Red' },
+  { value: '#3B82F6', label: 'Blue' },
+  { value: '#22C55E', label: 'Green' },
+  { value: '#EAB308', label: 'Yellow' },
+  { value: '#94A3B8', label: 'Grey' },
+]
+
+const FlowDisplayContext = createContext({
+  hideAmounts: false,
+  highlights: {},
+  onHighlight: () => {},
+})
+
+function NodeColorPicker({ nodeId }) {
+  const { highlights, onHighlight } = useContext(FlowDisplayContext)
+  const activeColor = highlights[nodeId] ?? null
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon-sm" aria-label="Highlight color">
+          {activeColor ? (
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: activeColor }} />
+          ) : (
+            <Palette className="size-3.5" aria-hidden="true" />
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent side="bottom" align="start" sideOffset={4} className="p-2 w-auto">
+        <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wide mb-2">
+          Highlight
+        </p>
+        <div className="flex items-center gap-1.5">
+          {HIGHLIGHT_COLORS.map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              aria-label={label}
+              onClick={() => {
+                onHighlight(nodeId, activeColor === value ? null : value)
+                setOpen(false)
+              }}
+              className="w-5 h-5 rounded-full transition-transform hover:scale-110 shrink-0"
+              style={{
+                backgroundColor: value,
+                outline: activeColor === value ? `2px solid ${value}` : 'none',
+                outlineOffset: '2px',
+              }}
+            />
+          ))}
+          {activeColor && (
+            <button
+              type="button"
+              aria-label="Clear highlight"
+              onClick={() => {
+                onHighlight(nodeId, null)
+                setOpen(false)
+              }}
+              className="w-5 h-5 rounded-full border border-slate-300 bg-white flex items-center justify-center hover:bg-slate-50 shrink-0"
+            >
+              <X className="size-2.5" aria-hidden="true" />
+            </button>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}
 import CategoryNodeForm from './CategoryNodeForm'
 import TickerNodeForm from './TickerNodeForm'
 import DeleteNodeDialog from './DeleteNodeDialog'
+import UninvestedCashCategoryForm from './UninvestedCashCategoryForm'
 
 const NODE_WIDTH = 240
 const ROOT_NODE_HEIGHT = 80
 const CATEGORY_NODE_HEIGHT = 110
 const TICKER_NODE_HEIGHT = 130
+const CASH_NODE_HEIGHT = 110
+const CASH_CATEGORY_NODE_HEIGHT = 90
 const VIRTUAL_ROOT_ID = '__portfolio_root__'
+const UNINVESTED_CASH_ID = '__uninvested_cash__'
 
 function nodeHeightFor(n) {
   if (n.type === 'tickerNode') return TICKER_NODE_HEIGHT
   if (n.type === 'rootNode') return ROOT_NODE_HEIGHT
+  if (n.type === 'cashNode') return CASH_NODE_HEIGHT
+  if (n.type === 'cashCategoryNode') return CASH_CATEGORY_NODE_HEIGHT
   return CATEGORY_NODE_HEIGHT
 }
 
-function getLayoutedElements(nodes, edges) {
-  const g = new dagre.graphlib.Graph()
-  g.setDefaultEdgeLabel(() => ({}))
-  g.setGraph({ rankdir: 'LR', nodesep: 40, ranksep: 80 })
-  nodes.forEach((n) => g.setNode(n.id, { width: NODE_WIDTH, height: nodeHeightFor(n) }))
-  edges.forEach((e) => g.setEdge(e.source, e.target))
-  dagre.layout(g)
-  return {
-    nodes: nodes.map((n) => {
-      const { x, y } = g.node(n.id)
-      return { ...n, position: { x: x - NODE_WIDTH / 2, y: y - nodeHeightFor(n) / 2 } }
-    }),
-    edges,
+// Main investment tree uses LR dagre layout.
+// Cash branch (cash node + its categories) uses a separate RL dagre layout
+// and is translated so the cash node sits to the LEFT of the portfolio root.
+function getLayoutedElements(nodes, edges, cashNodeId, rootNodeId, cashCategoryIds) {
+  const cashCategorySet = new Set(cashCategoryIds)
+
+  const mainNodes = nodes.filter((n) => n.id !== cashNodeId && !cashCategorySet.has(n.id))
+  const mainEdges = edges.filter((e) => e.target !== cashNodeId && !cashCategorySet.has(e.target))
+
+  const gMain = new dagre.graphlib.Graph()
+  gMain.setDefaultEdgeLabel(() => ({}))
+  gMain.setGraph({ rankdir: 'LR', nodesep: 40, ranksep: 80 })
+  mainNodes.forEach((n) => gMain.setNode(n.id, { width: NODE_WIDTH, height: nodeHeightFor(n) }))
+  mainEdges.forEach((e) => gMain.setEdge(e.source, e.target))
+  dagre.layout(gMain)
+
+  const layoutedMain = mainNodes.map((n) => {
+    const { x, y } = gMain.node(n.id)
+    return { ...n, position: { x: x - NODE_WIDTH / 2, y: y - nodeHeightFor(n) / 2 } }
+  })
+
+  const rootPos = layoutedMain.find((n) => n.id === rootNodeId)?.position ?? { x: 0, y: 0 }
+
+  // Cash branch: RL dagre (cash node is source → categories are targets)
+  // In RL layout, source sits to the RIGHT, targets expand LEFT — exactly what we want.
+  const cashNode = nodes.find((n) => n.id === cashNodeId)
+  const cashCategoryNodes = nodes.filter((n) => cashCategorySet.has(n.id))
+
+  const cashBranchNodes = cashNode ? [cashNode, ...cashCategoryNodes] : []
+
+  let layoutedCash = []
+
+  if (cashNode && cashBranchNodes.length > 0) {
+    if (cashCategoryNodes.length === 0) {
+      // No categories: position cash node directly to the left of portfolio root
+      const cashX = rootPos.x - NODE_WIDTH - 80
+      const cashY = rootPos.y + (ROOT_NODE_HEIGHT - CASH_NODE_HEIGHT) / 2
+      layoutedCash = [{ ...cashNode, position: { x: cashX, y: cashY } }]
+    } else {
+      const gCash = new dagre.graphlib.Graph()
+      gCash.setDefaultEdgeLabel(() => ({}))
+      // RL: cash (source, rank 0) is rightmost; categories (targets) expand left
+      gCash.setGraph({ rankdir: 'RL', nodesep: 40, ranksep: 80 })
+      cashBranchNodes.forEach((n) =>
+        gCash.setNode(n.id, { width: NODE_WIDTH, height: nodeHeightFor(n) })
+      )
+      cashCategoryNodes.forEach((cat) => gCash.setEdge(cashNodeId, cat.id))
+      dagre.layout(gCash)
+
+      // Translate: cash node center aligns to the left of portfolio root
+      const cashInDagre = gCash.node(cashNodeId)
+      const targetCashX = rootPos.x - NODE_WIDTH - 80
+      const targetCashY = rootPos.y + (ROOT_NODE_HEIGHT - CASH_NODE_HEIGHT) / 2
+      const offsetX = targetCashX - (cashInDagre.x - NODE_WIDTH / 2)
+      const offsetY = targetCashY - (cashInDagre.y - CASH_NODE_HEIGHT / 2)
+
+      layoutedCash = cashBranchNodes.map((n) => {
+        const { x, y } = gCash.node(n.id)
+        return {
+          ...n,
+          position: { x: x - NODE_WIDTH / 2 + offsetX, y: y - nodeHeightFor(n) / 2 + offsetY },
+        }
+      })
+    }
   }
+
+  return { nodes: [...layoutedMain, ...layoutedCash], edges }
 }
 
 function RootNodeCard({ data }) {
   const { rootTotal } = data
+  const { hideAmounts } = useContext(FlowDisplayContext)
   return (
     <div
       id="treeViewRootNode_investmentFlowPage"
       className="border-2 border-violet-300 rounded-xl bg-violet-50 shadow-sm p-3 w-[240px]"
     >
-      <Handle type="source" position={Position.Right} />
+      <Handle type="source" position={Position.Right} id="right" />
+      <Handle type="source" position={Position.Left} id="left" />
       <div className="flex items-center gap-2 min-w-0">
         <Layers className="size-4 text-violet-600 shrink-0" aria-hidden="true" />
         <span className="text-sm font-semibold text-violet-800 truncate">Portfolio</span>
       </div>
       <div className="flex items-center justify-between mt-2">
-        <span className="text-xs text-violet-600 whitespace-nowrap">{formatRupiah(rootTotal)}</span>
+        <span className="text-xs text-violet-600 whitespace-nowrap">
+          {hideAmounts ? '••••••' : formatRupiah(rootTotal)}
+        </span>
         <Badge className="bg-violet-200 text-violet-800 border-transparent" size="sm">
           100%
         </Badge>
@@ -64,11 +210,16 @@ function RootNodeCard({ data }) {
 
 function CategoryNodeCard({ data }) {
   const { node, onAddCategory, onAddTicker, onEdit, onDelete } = data
+  const { hideAmounts, highlights } = useContext(FlowDisplayContext)
+  const highlightColor = highlights[node.id] ?? null
 
   return (
     <div
       id={`treeViewCategoryNode_${node.id}_investmentFlowPage`}
-      className="border rounded-xl bg-white shadow-sm p-3 w-[240px]"
+      className="rounded-xl bg-white shadow-sm p-3 w-[240px] transition-colors"
+      style={{
+        border: highlightColor ? `2px solid ${highlightColor}` : '1px solid #e2e8f0',
+      }}
     >
       <Handle type="target" position={Position.Left} />
       <Handle type="source" position={Position.Right} />
@@ -82,14 +233,14 @@ function CategoryNodeCard({ data }) {
 
       <div className="flex items-center justify-between mt-2">
         <span className="text-xs text-slate-500 whitespace-nowrap">
-          {formatRupiah(node.computedNominal)}
+          {hideAmounts ? '••••••' : formatRupiah(node.computedNominal)}
         </span>
         <Badge className="bg-violet-100 text-violet-700 border-transparent" size="sm">
           {node.percentage.toFixed(1)}%
         </Badge>
       </div>
 
-      <div className="flex items-center gap-1 mt-3">
+      <div className="flex items-center gap-1 mt-3 flex-wrap">
         <Button
           variant="ghost"
           size="icon-sm"
@@ -126,6 +277,7 @@ function CategoryNodeCard({ data }) {
         >
           <Trash2 className="size-3.5" aria-hidden="true" />
         </Button>
+        <NodeColorPicker nodeId={node.id} />
       </div>
     </div>
   )
@@ -133,11 +285,16 @@ function CategoryNodeCard({ data }) {
 
 function TickerNodeCard({ data }) {
   const { node, onAddTicker, onEdit, onDelete } = data
+  const { hideAmounts, highlights } = useContext(FlowDisplayContext)
+  const highlightColor = highlights[node.id] ?? null
 
   return (
     <div
       id={`treeViewTickerNode_${node.id}_investmentFlowPage`}
-      className="border rounded-xl bg-white shadow-sm p-3 w-[240px]"
+      className="rounded-xl bg-white shadow-sm p-3 w-[240px] transition-colors"
+      style={{
+        border: highlightColor ? `2px solid ${highlightColor}` : '1px solid #e2e8f0',
+      }}
     >
       <Handle type="target" position={Position.Left} />
       <Handle type="source" position={Position.Right} />
@@ -151,7 +308,7 @@ function TickerNodeCard({ data }) {
 
       <div className="flex items-center justify-between mt-2">
         <span className="text-xs text-slate-500 whitespace-nowrap">
-          {formatRupiah(node.computedNominal)}
+          {hideAmounts ? '••••••' : formatRupiah(node.computedNominal)}
         </span>
         <Badge className="bg-violet-100 text-violet-700 border-transparent" size="sm">
           {node.percentage.toFixed(1)}%
@@ -164,7 +321,7 @@ function TickerNodeCard({ data }) {
         </p>
       )}
 
-      <div className="flex items-center gap-1 mt-3">
+      <div className="flex items-center gap-1 mt-3 flex-wrap">
         <Button
           variant="ghost"
           size="icon-sm"
@@ -192,6 +349,107 @@ function TickerNodeCard({ data }) {
         >
           <Trash2 className="size-3.5" aria-hidden="true" />
         </Button>
+        <NodeColorPicker nodeId={node.id} />
+      </div>
+    </div>
+  )
+}
+
+function CashNodeCard({ data }) {
+  const { amount, percentage, onEdit, onAddCategory, hasCategories } = data
+  const { hideAmounts } = useContext(FlowDisplayContext)
+
+  return (
+    <div
+      id="treeViewUninvestedCashNode_investmentFlowPage"
+      className="border rounded-xl bg-white shadow-sm p-3 w-[240px]"
+    >
+      <Handle type="target" position={Position.Right} id="right" />
+      <Handle type="source" position={Position.Left} id="left" />
+
+      <div className="flex items-center gap-2 min-w-0">
+        <Wallet className="size-4 text-emerald-500 shrink-0" aria-hidden="true" />
+        <span className="text-sm font-semibold text-slate-800 truncate">Uninvested Cash</span>
+      </div>
+
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-xs text-slate-500 whitespace-nowrap">
+          {hideAmounts ? '••••••' : formatRupiah(amount)}
+        </span>
+        <Badge className="bg-emerald-100 text-emerald-700 border-transparent" size="sm">
+          {percentage.toFixed(1)}%
+        </Badge>
+      </div>
+
+      <div className="flex items-center gap-1 mt-3">
+        {!hasCategories && (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Edit uninvested cash"
+            id="treeViewUninvestedCashEditBtn_investmentFlowPage"
+            onClick={onEdit}
+          >
+            <Pencil className="size-3.5" aria-hidden="true" />
+          </Button>
+        )}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Add cash pool"
+          id="treeViewUninvestedCashAddCategoryBtn_investmentFlowPage"
+          onClick={onAddCategory}
+        >
+          <Plus className="size-3.5" aria-hidden="true" />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function CashCategoryNodeCard({ data }) {
+  const { category, onEdit, onDelete } = data
+  const { hideAmounts } = useContext(FlowDisplayContext)
+
+  return (
+    <div
+      id={`treeViewCashCategoryNode_${category.id}_investmentFlowPage`}
+      className="border border-emerald-200 rounded-xl bg-emerald-50 shadow-sm p-3 w-[240px]"
+    >
+      <Handle type="target" position={Position.Right} />
+
+      <div className="flex items-center gap-2 min-w-0">
+        <Wallet className="size-4 text-emerald-400 shrink-0" aria-hidden="true" />
+        <span className="text-sm font-semibold text-slate-800 truncate" title={category.name}>
+          {category.name}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-xs text-slate-500 whitespace-nowrap">
+          {hideAmounts ? '••••••' : formatRupiah(category.nominal)}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-1 mt-3">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label={`Edit ${category.name}`}
+          id={`treeViewCashCategoryEditBtn_${category.id}_investmentFlowPage`}
+          onClick={() => onEdit(category)}
+        >
+          <Pencil className="size-3.5" aria-hidden="true" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label={`Delete ${category.name}`}
+          id={`treeViewCashCategoryDeleteBtn_${category.id}_investmentFlowPage`}
+          onClick={() => onDelete(category)}
+        >
+          <Trash2 className="size-3.5 text-rose-400" aria-hidden="true" />
+        </Button>
       </div>
     </div>
   )
@@ -201,6 +459,8 @@ const nodeTypes = {
   rootNode: RootNodeCard,
   categoryNode: CategoryNodeCard,
   tickerNode: TickerNodeCard,
+  cashNode: CashNodeCard,
+  cashCategoryNode: CashCategoryNodeCard,
 }
 
 export default function InvestmentFlowTreeView({
@@ -209,6 +469,16 @@ export default function InvestmentFlowTreeView({
   createNode,
   updateNode,
   deleteNode,
+  uninvestedCash,
+  uninvestedCashPct,
+  onEditUninvestedCash,
+  cashCategories = [],
+  createCashCategory,
+  updateCashCategory,
+  deleteCashCategory,
+  hideAmounts = false,
+  highlights = {},
+  onHighlight,
 }) {
   const [categoryFormState, setCategoryFormState] = useState({
     open: false,
@@ -223,6 +493,12 @@ export default function InvestmentFlowTreeView({
     node: null,
   })
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [cashCategoryFormState, setCashCategoryFormState] = useState({
+    open: false,
+    mode: 'create',
+    category: null,
+  })
+  const [deleteCashCategoryTarget, setDeleteCashCategoryTarget] = useState(null)
 
   const openAddCategory = (parentId) =>
     setCategoryFormState({ open: true, mode: 'create', parentId, node: null })
@@ -237,6 +513,12 @@ export default function InvestmentFlowTreeView({
       setTickerFormState({ open: true, mode: 'edit', parentId: node.parent_id, node })
     }
   }
+
+  const openAddCashCategory = () =>
+    setCashCategoryFormState({ open: true, mode: 'create', category: null })
+
+  const openEditCashCategory = (category) =>
+    setCashCategoryFormState({ open: true, mode: 'edit', category })
 
   const handleCategorySubmit = async (values) => {
     if (categoryFormState.mode === 'edit') {
@@ -258,6 +540,7 @@ export default function InvestmentFlowTreeView({
           node_type: 'category',
           nominal: null,
           notes: null,
+          uninvested_cash_category_id: null,
         })
       }
       return createNode({
@@ -270,6 +553,13 @@ export default function InvestmentFlowTreeView({
       return updateNode(tickerFormState.node.id, { ...rest, node_type: 'ticker' })
     }
     return createNode({ parent_id: tickerFormState.parentId, node_type: 'ticker', ...rest })
+  }
+
+  const handleCashCategorySubmit = async (values) => {
+    if (cashCategoryFormState.mode === 'edit') {
+      return updateCashCategory(cashCategoryFormState.category.id, values)
+    }
+    return createCashCategory(values)
   }
 
   const deleteTargetWithChildren = useMemo(() => {
@@ -286,8 +576,36 @@ export default function InvestmentFlowTreeView({
       data: { rootTotal },
     }
 
+    const hasCategories = cashCategories.length > 0
+
+    const cashNode = {
+      id: UNINVESTED_CASH_ID,
+      type: 'cashNode',
+      position: { x: 0, y: 0 },
+      data: {
+        amount: uninvestedCash,
+        percentage: uninvestedCashPct,
+        onEdit: onEditUninvestedCash,
+        onAddCategory: openAddCashCategory,
+        hasCategories,
+      },
+    }
+
+    const cashCategoryRfNodes = cashCategories.map((cat) => ({
+      id: cat.id,
+      type: 'cashCategoryNode',
+      position: { x: 0, y: 0 },
+      data: {
+        category: cat,
+        onEdit: openEditCashCategory,
+        onDelete: setDeleteCashCategoryTarget,
+      },
+    }))
+
     const rfNodes = [
       virtualRoot,
+      cashNode,
+      ...cashCategoryRfNodes,
       ...flatNodes.map((node) => ({
         id: node.id,
         type: node.node_type === 'category' ? 'categoryNode' : 'tickerNode',
@@ -311,53 +629,108 @@ export default function InvestmentFlowTreeView({
         type: 'smoothstep',
       }))
 
-    // Edges from virtual root to all top-level nodes (no parent_id)
     const rootEdges = flatNodes
       .filter((node) => !node.parent_id)
       .map((node) => ({
         id: `e-${VIRTUAL_ROOT_ID}-${node.id}`,
         source: VIRTUAL_ROOT_ID,
         target: node.id,
+        sourceHandle: 'right',
         type: 'smoothstep',
       }))
 
-    return getLayoutedElements(rfNodes, [...rootEdges, ...rfEdges])
-  }, [flatNodes, rootTotal])
+    // Cash node exits from the LEFT of Portfolio root
+    const cashEdge = {
+      id: `e-${VIRTUAL_ROOT_ID}-${UNINVESTED_CASH_ID}`,
+      source: VIRTUAL_ROOT_ID,
+      target: UNINVESTED_CASH_ID,
+      sourceHandle: 'left',
+      targetHandle: 'right',
+      type: 'smoothstep',
+    }
+
+    // Edges from cash node to each category (cash node is source, categories are targets)
+    const cashCategoryEdges = cashCategories.map((cat) => ({
+      id: `e-${UNINVESTED_CASH_ID}-${cat.id}`,
+      source: UNINVESTED_CASH_ID,
+      target: cat.id,
+      sourceHandle: 'left',
+      type: 'smoothstep',
+    }))
+
+    const cashCategoryIds = cashCategories.map((c) => c.id)
+
+    return getLayoutedElements(
+      rfNodes,
+      [...rootEdges, ...rfEdges, cashEdge, ...cashCategoryEdges],
+      UNINVESTED_CASH_ID,
+      VIRTUAL_ROOT_ID,
+      cashCategoryIds
+    )
+  }, [
+    flatNodes,
+    rootTotal,
+    uninvestedCash,
+    uninvestedCashPct,
+    onEditUninvestedCash,
+    cashCategories,
+  ])
 
   return (
-    <div
-      id="investmentFlowTreeCanvas_investmentFlowPage"
-      className="h-[calc(100dvh-18rem)] lg:h-[calc(100dvh-14rem)] min-h-[400px] w-full bg-slate-50"
+    <FlowDisplayContext.Provider
+      value={{ hideAmounts, highlights, onHighlight: onHighlight ?? (() => {}) }}
     >
-      <ReactFlow nodes={layoutedNodes} edges={layoutedEdges} nodeTypes={nodeTypes} fitView>
-        <Background />
-        <Controls />
-      </ReactFlow>
+      <div
+        id="investmentFlowTreeCanvas_investmentFlowPage"
+        className="h-[calc(100dvh-18rem)] lg:h-[calc(100dvh-14rem)] min-h-[400px] w-full bg-slate-50"
+      >
+        <ReactFlow nodes={layoutedNodes} edges={layoutedEdges} nodeTypes={nodeTypes} fitView>
+          <Background />
+          <Controls />
+        </ReactFlow>
 
-      <CategoryNodeForm
-        idPrefix="treeViewCategoryNodeForm"
-        open={categoryFormState.open}
-        onOpenChange={(open) => setCategoryFormState((prev) => ({ ...prev, open }))}
-        mode={categoryFormState.mode}
-        initialValues={categoryFormState.node}
-        onSubmit={handleCategorySubmit}
-      />
+        <CategoryNodeForm
+          idPrefix="treeViewCategoryNodeForm"
+          open={categoryFormState.open}
+          onOpenChange={(open) => setCategoryFormState((prev) => ({ ...prev, open }))}
+          mode={categoryFormState.mode}
+          initialValues={categoryFormState.node}
+          onSubmit={handleCategorySubmit}
+        />
 
-      <TickerNodeForm
-        idPrefix="treeViewTickerNodeForm"
-        open={tickerFormState.open}
-        onOpenChange={(open) => setTickerFormState((prev) => ({ ...prev, open }))}
-        mode={tickerFormState.mode}
-        initialValues={tickerFormState.node}
-        onSubmit={handleTickerSubmit}
-      />
+        <TickerNodeForm
+          idPrefix="treeViewTickerNodeForm"
+          open={tickerFormState.open}
+          onOpenChange={(open) => setTickerFormState((prev) => ({ ...prev, open }))}
+          mode={tickerFormState.mode}
+          initialValues={tickerFormState.node}
+          onSubmit={handleTickerSubmit}
+          cashCategories={cashCategories}
+        />
 
-      <DeleteNodeDialog
-        open={Boolean(deleteTarget)}
-        onOpenChange={(open) => !open && setDeleteTarget(null)}
-        node={deleteTargetWithChildren}
-        onConfirm={deleteNode}
-      />
-    </div>
+        <DeleteNodeDialog
+          open={Boolean(deleteTarget)}
+          onOpenChange={(open) => !open && setDeleteTarget(null)}
+          node={deleteTargetWithChildren}
+          onConfirm={deleteNode}
+        />
+
+        <UninvestedCashCategoryForm
+          idPrefix="treeViewCashCategoryForm"
+          open={cashCategoryFormState.open}
+          onOpenChange={(open) => setCashCategoryFormState((prev) => ({ ...prev, open }))}
+          mode={cashCategoryFormState.mode}
+          initialValues={cashCategoryFormState.category}
+          onSubmit={handleCashCategorySubmit}
+        />
+
+        <DeleteNodeDialog
+          open={Boolean(deleteCashCategoryTarget)}
+          onOpenChange={(open) => !open && setDeleteCashCategoryTarget(null)}
+          node={deleteCashCategoryTarget ? { ...deleteCashCategoryTarget, children: [] } : null}
+          onConfirm={(id) => deleteCashCategory(id)}
+        />
+      </div>
+    </FlowDisplayContext.Provider>
   )
 }

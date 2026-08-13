@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { GitBranch, List, Plus, Share2 } from 'lucide-react'
+import { useCallback, useState } from 'react'
+import { Eye, EyeOff, GitBranch, List, Plus, Share2 } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import Card, {
   CardAction,
@@ -19,6 +19,9 @@ import InvestmentFlowTreeView from './components/InvestmentFlowTreeView'
 import CategoryNodeForm from './components/CategoryNodeForm'
 import TickerNodeForm from './components/TickerNodeForm'
 import DeleteNodeDialog from './components/DeleteNodeDialog'
+import UninvestedCashNode from './components/UninvestedCashNode'
+import UninvestedCashForm from './components/UninvestedCashForm'
+import UninvestedCashCategoryForm from './components/UninvestedCashCategoryForm'
 import InvestmentFlowEmptyState from './components/InvestmentFlowEmptyState'
 import InvestmentFlowSkeleton from './components/InvestmentFlowSkeleton'
 import InvestmentFlowErrorState from './components/InvestmentFlowErrorState'
@@ -38,6 +41,9 @@ export default function InvestmentFlowPageClient() {
     tree,
     enrichedFlatNodes,
     rootTotal,
+    uninvestedCash,
+    cashCategories,
+    highlights,
     isLoading,
     isError,
     reload,
@@ -46,9 +52,28 @@ export default function InvestmentFlowPageClient() {
     updateNode,
     deleteNode,
     moveNode,
+    updateUninvestedCash,
+    saveHighlights,
+    createCashCategory,
+    updateCashCategory,
+    deleteCashCategory,
   } = useInvestmentFlow()
 
   const [viewMode, setViewMode] = useState('list')
+  const [hideAmounts, setHideAmounts] = useState(false)
+
+  const handleHighlight = useCallback(
+    (nodeId, color) => {
+      const next = { ...highlights }
+      if (color == null) {
+        delete next[nodeId]
+      } else {
+        next[nodeId] = color
+      }
+      saveHighlights(next)
+    },
+    [highlights, saveHighlights]
+  )
   const [categoryFormState, setCategoryFormState] = useState({
     open: false,
     mode: 'create',
@@ -62,6 +87,15 @@ export default function InvestmentFlowPageClient() {
     node: null,
   })
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [uninvestedCashFormOpen, setUninvestedCashFormOpen] = useState(false)
+  const [cashCategoryFormState, setCashCategoryFormState] = useState({
+    open: false,
+    mode: 'create',
+    category: null,
+  })
+  const [deleteCashCategoryTarget, setDeleteCashCategoryTarget] = useState(null)
+
+  const uninvestedCashPct = rootTotal > 0 ? (uninvestedCash / rootTotal) * 100 : 0
 
   const openAddCategory = (parentId = null) =>
     setCategoryFormState({ open: true, mode: 'create', parentId, node: null })
@@ -97,6 +131,7 @@ export default function InvestmentFlowPageClient() {
           node_type: 'category',
           nominal: null,
           notes: null,
+          uninvested_cash_category_id: null,
         })
       }
       return createNode({
@@ -112,6 +147,19 @@ export default function InvestmentFlowPageClient() {
   }
 
   const handleMove = (nodeId, newParentId) => moveNode(nodeId, newParentId)
+
+  const openAddCashCategory = () =>
+    setCashCategoryFormState({ open: true, mode: 'create', category: null })
+
+  const openEditCashCategory = (category) =>
+    setCashCategoryFormState({ open: true, mode: 'edit', category })
+
+  const handleCashCategorySubmit = async (values) => {
+    if (cashCategoryFormState.mode === 'edit') {
+      return updateCashCategory(cashCategoryFormState.category.id, values)
+    }
+    return createCashCategory(values)
+  }
 
   if (isLoading) {
     return (
@@ -136,16 +184,54 @@ export default function InvestmentFlowPageClient() {
       {PAGE_HEADER}
 
       {tree.length === 0 ? (
-        <InvestmentFlowEmptyState onAddCategory={() => openAddCategory(null)} />
+        <div className="space-y-6">
+          <InvestmentFlowEmptyState onAddCategory={() => openAddCategory(null)} />
+          <Card id="uninvestedCashCard_investmentFlowPage">
+            <CardContent>
+              <UninvestedCashNode
+                amount={uninvestedCash}
+                percentage={uninvestedCashPct}
+                onEdit={() => setUninvestedCashFormOpen(true)}
+                categories={cashCategories}
+                onAddCategory={openAddCashCategory}
+                onEditCategory={openEditCashCategory}
+                onDeleteCategory={setDeleteCashCategoryTarget}
+                hideAmounts={hideAmounts}
+              />
+            </CardContent>
+          </Card>
+        </div>
       ) : (
         <Card id="investmentFlowTreeCard_investmentFlowPage">
           <CardHeader>
             <CardIcon icon={GitBranch} />
             <CardHeaderContent>
               <CardTitle>Portfolio Allocation</CardTitle>
-              <CardDescription>Total: {formatRupiah(rootTotal)}</CardDescription>
+              <CardDescription>
+                Total: {hideAmounts ? '••••••' : formatRupiah(rootTotal)}
+              </CardDescription>
             </CardHeaderContent>
             <CardAction className="flex items-center gap-2">
+              <Button
+                id="investmentFlowHideAmountsBtn_investmentFlowPage"
+                variant="ghost"
+                size="icon-sm"
+                aria-label={hideAmounts ? 'Show amounts' : 'Hide amounts'}
+                aria-pressed={hideAmounts}
+                title={hideAmounts ? 'Show amounts' : 'Hide amounts'}
+                onClick={() => setHideAmounts((h) => !h)}
+                className={cn(
+                  hideAmounts
+                    ? 'bg-violet-100 text-violet-700'
+                    : 'text-slate-400 hover:text-slate-600'
+                )}
+              >
+                {hideAmounts ? (
+                  <Eye className="size-4" aria-hidden="true" />
+                ) : (
+                  <EyeOff className="size-4" aria-hidden="true" />
+                )}
+              </Button>
               <div
                 role="group"
                 aria-label="Toggle view mode"
@@ -200,17 +286,42 @@ export default function InvestmentFlowPageClient() {
                 createNode={createNode}
                 updateNode={updateNode}
                 deleteNode={deleteNode}
+                uninvestedCash={uninvestedCash}
+                uninvestedCashPct={uninvestedCashPct}
+                onEditUninvestedCash={() => setUninvestedCashFormOpen(true)}
+                cashCategories={cashCategories}
+                createCashCategory={createCashCategory}
+                updateCashCategory={updateCashCategory}
+                deleteCashCategory={deleteCashCategory}
+                hideAmounts={hideAmounts}
+                highlights={highlights}
+                onHighlight={handleHighlight}
               />
             ) : (
-              <InvestmentTree
-                tree={tree}
-                categoryOptions={categoryOptions}
-                onAddCategory={openAddCategory}
-                onAddTicker={openAddTicker}
-                onEdit={openEdit}
-                onDelete={setDeleteTarget}
-                onMove={handleMove}
-              />
+              <>
+                <InvestmentTree
+                  tree={tree}
+                  categoryOptions={categoryOptions}
+                  onAddCategory={openAddCategory}
+                  onAddTicker={openAddTicker}
+                  onEdit={openEdit}
+                  onDelete={setDeleteTarget}
+                  onMove={handleMove}
+                  hideAmounts={hideAmounts}
+                  highlights={highlights}
+                  onHighlight={handleHighlight}
+                />
+                <UninvestedCashNode
+                  amount={uninvestedCash}
+                  percentage={uninvestedCashPct}
+                  onEdit={() => setUninvestedCashFormOpen(true)}
+                  categories={cashCategories}
+                  onAddCategory={openAddCashCategory}
+                  onEditCategory={openEditCashCategory}
+                  onDeleteCategory={setDeleteCashCategoryTarget}
+                  hideAmounts={hideAmounts}
+                />
+              </>
             )}
           </CardContent>
         </Card>
@@ -229,12 +340,37 @@ export default function InvestmentFlowPageClient() {
         mode={tickerFormState.mode}
         initialValues={tickerFormState.node}
         onSubmit={handleTickerSubmit}
+        cashCategories={cashCategories}
       />
       <DeleteNodeDialog
         open={Boolean(deleteTarget)}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
         node={deleteTarget}
         onConfirm={deleteNode}
+      />
+      <UninvestedCashForm
+        open={uninvestedCashFormOpen}
+        onOpenChange={setUninvestedCashFormOpen}
+        initialAmount={uninvestedCash}
+        onSubmit={async (values) => {
+          const ok = await updateUninvestedCash(values.amount)
+          if (ok) setUninvestedCashFormOpen(false)
+        }}
+      />
+
+      <UninvestedCashCategoryForm
+        open={cashCategoryFormState.open}
+        onOpenChange={(open) => setCashCategoryFormState((prev) => ({ ...prev, open }))}
+        mode={cashCategoryFormState.mode}
+        initialValues={cashCategoryFormState.category}
+        onSubmit={handleCashCategorySubmit}
+      />
+
+      <DeleteNodeDialog
+        open={Boolean(deleteCashCategoryTarget)}
+        onOpenChange={(open) => !open && setDeleteCashCategoryTarget(null)}
+        node={deleteCashCategoryTarget ? { ...deleteCashCategoryTarget, children: [] } : null}
+        onConfirm={deleteCashCategory}
       />
     </main>
   )

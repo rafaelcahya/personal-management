@@ -2,6 +2,9 @@ import constants from '../../../../../fixtures/app-constants.json'
 
 const BASE = constants.endpoints.investment_flow.list
 const MOVE_BASE = constants.endpoints.investment_flow.move
+const UNINVESTED_CASH_BASE = constants.endpoints.investment_flow.uninvested_cash
+const CASH_CATEGORIES_BASE = constants.endpoints.investment_flow.uninvested_cash_categories
+const HIGHLIGHTS_BASE = constants.endpoints.investment_flow.highlights
 
 // ─── list ─────────────────────────────────────────────────────────────────────
 
@@ -51,4 +54,74 @@ Cypress.Commands.add('moveInvestmentFlowNode', (body = {}) => {
 
 Cypress.Commands.add('moveInvestmentFlowNodeNoAuth', (body = {}) => {
   return cy.apiRequestNoAuth('PUT', MOVE_BASE, { body })
+})
+
+// ─── uninvested cash ──────────────────────────────────────────────────────────
+
+Cypress.Commands.add('getUninvestedCash', () => {
+  return cy.apiRequestWithSession('GET', UNINVESTED_CASH_BASE)
+})
+
+Cypress.Commands.add('getUninvestedCashNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', UNINVESTED_CASH_BASE)
+})
+
+Cypress.Commands.add('patchUninvestedCash', (body = {}) => {
+  return cy.apiRequestWithSession('PATCH', UNINVESTED_CASH_BASE, { body })
+})
+
+Cypress.Commands.add('patchUninvestedCashNoAuth', (body = {}) => {
+  return cy.apiRequestNoAuth('PATCH', UNINVESTED_CASH_BASE, { body })
+})
+
+// ─── uninvested cash categories ───────────────────────────────────────────────
+
+Cypress.Commands.add('listUninvestedCashCategories', () => {
+  return cy.apiRequestWithSession('GET', CASH_CATEGORIES_BASE)
+})
+
+Cypress.Commands.add('listUninvestedCashCategoriesNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', CASH_CATEGORIES_BASE)
+})
+
+Cypress.Commands.add('createUninvestedCashCategory', (body = {}) => {
+  return cy.apiRequestWithSession('POST', CASH_CATEGORIES_BASE, { body })
+})
+
+Cypress.Commands.add('createUninvestedCashCategoryNoAuth', (body = {}) => {
+  return cy.apiRequestNoAuth('POST', CASH_CATEGORIES_BASE, { body })
+})
+
+Cypress.Commands.add('updateUninvestedCashCategory', (id, body = {}) => {
+  return cy.apiRequestWithSession('PUT', `${CASH_CATEGORIES_BASE}/${id}`, { body })
+})
+
+Cypress.Commands.add('updateUninvestedCashCategoryNoAuth', (id, body = {}) => {
+  return cy.apiRequestNoAuth('PUT', `${CASH_CATEGORIES_BASE}/${id}`, { body })
+})
+
+Cypress.Commands.add('deleteUninvestedCashCategory', (id) => {
+  return cy.apiRequestWithSession('DELETE', `${CASH_CATEGORIES_BASE}/${id}`)
+})
+
+Cypress.Commands.add('deleteUninvestedCashCategoryNoAuth', (id) => {
+  return cy.apiRequestNoAuth('DELETE', `${CASH_CATEGORIES_BASE}/${id}`)
+})
+
+// ─── highlights ───────────────────────────────────────────────────────────────
+
+Cypress.Commands.add('getInvestmentFlowHighlights', () => {
+  return cy.apiRequestWithSession('GET', HIGHLIGHTS_BASE)
+})
+
+Cypress.Commands.add('getInvestmentFlowHighlightsNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', HIGHLIGHTS_BASE)
+})
+
+Cypress.Commands.add('patchInvestmentFlowHighlights', (body = {}) => {
+  return cy.apiRequestWithSession('PATCH', HIGHLIGHTS_BASE, { body })
+})
+
+Cypress.Commands.add('patchInvestmentFlowHighlightsNoAuth', (body = {}) => {
+  return cy.apiRequestNoAuth('PATCH', HIGHLIGHTS_BASE, { body })
 })

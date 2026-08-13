@@ -78,7 +78,7 @@ function RestockTable({ items, startIndex = 0 }) {
             <TableHead align="right">Restocks</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody divider={false}>
+        <TableBody>
           {items.map((item, index) => (
             <TableRow key={item.id}>
               <TableCell className="text-slate-500 text-xs" align="center">
@@ -86,14 +86,9 @@ function RestockTable({ items, startIndex = 0 }) {
               </TableCell>
               <TableCell>
                 <p className="text-xs text-slate-400">{item.brand || '—'}</p>
-                <div className="flex flex-col items-start gap-1.5 mt-0.5">
-                  <p className="font-semibold text-slate-900">{item.product}</p>
-                  {item.type && (
-                    <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                      {item.type}
-                    </span>
-                  )}
-                </div>
+                <p className="font-semibold text-slate-900">
+                  {item.product} {item.type}
+                </p>
               </TableCell>
               <TableCell className="text-slate-700">
                 {item.last_restock_date
@@ -176,7 +171,7 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
           </CardHeaderContent>
         </CardHeader>
 
-        <CardContent className="p-4 md:p-0">
+        <CardContent className="p-0">
           {loading ? (
             <TableSkeleton />
           ) : error ? (
@@ -226,7 +221,7 @@ export default function MostRestocked({ items, loading, error, onRetry }) {
               <ModalDescription>Sorted by most restocked</ModalDescription>
             </ModalHeaderContent>
           </ModalHeader>
-          <ModalBody>
+          <ModalBody className="p-0">
             <RestockTable items={modalItems} startIndex={modalStartIndex} />
           </ModalBody>
           {modalTotalPages > 1 && (
