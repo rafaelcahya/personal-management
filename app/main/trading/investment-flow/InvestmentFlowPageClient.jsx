@@ -19,6 +19,7 @@ import InvestmentFlowTreeView from './components/InvestmentFlowTreeView'
 import CategoryNodeForm from './components/CategoryNodeForm'
 import TickerNodeForm from './components/TickerNodeForm'
 import DeleteNodeDialog from './components/DeleteNodeDialog'
+import ClosePositionDialog from './components/ClosePositionDialog'
 import UninvestedCashNode from './components/UninvestedCashNode'
 import UninvestedCashForm from './components/UninvestedCashForm'
 import UninvestedCashCategoryForm from './components/UninvestedCashCategoryForm'
@@ -51,6 +52,7 @@ export default function InvestmentFlowPageClient() {
     createNode,
     updateNode,
     deleteNode,
+    closePosition,
     moveNode,
     updateUninvestedCash,
     saveHighlights,
@@ -87,6 +89,7 @@ export default function InvestmentFlowPageClient() {
     node: null,
   })
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [closeTarget, setCloseTarget] = useState(null)
   const [uninvestedCashFormOpen, setUninvestedCashFormOpen] = useState(false)
   const [cashCategoryFormState, setCashCategoryFormState] = useState({
     open: false,
@@ -286,6 +289,7 @@ export default function InvestmentFlowPageClient() {
                 createNode={createNode}
                 updateNode={updateNode}
                 deleteNode={deleteNode}
+                closePosition={closePosition}
                 uninvestedCash={uninvestedCash}
                 uninvestedCashPct={uninvestedCashPct}
                 onEditUninvestedCash={() => setUninvestedCashFormOpen(true)}
@@ -306,6 +310,7 @@ export default function InvestmentFlowPageClient() {
                   onAddTicker={openAddTicker}
                   onEdit={openEdit}
                   onDelete={setDeleteTarget}
+                  onClosePosition={setCloseTarget}
                   onMove={handleMove}
                   hideAmounts={hideAmounts}
                   highlights={highlights}
@@ -347,6 +352,13 @@ export default function InvestmentFlowPageClient() {
         onOpenChange={(open) => !open && setDeleteTarget(null)}
         node={deleteTarget}
         onConfirm={deleteNode}
+      />
+      <ClosePositionDialog
+        open={Boolean(closeTarget)}
+        onOpenChange={(open) => !open && setCloseTarget(null)}
+        node={closeTarget}
+        cashCategories={cashCategories}
+        onConfirm={closePosition}
       />
       <UninvestedCashForm
         open={uninvestedCashFormOpen}

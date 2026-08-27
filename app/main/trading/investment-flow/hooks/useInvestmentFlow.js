@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import {
   createNode,
   deleteNode,
+  closePosition,
   getInvestmentFlowTree,
   moveNode,
   updateNode,
@@ -14,6 +15,7 @@ import {
   updateCashCategory,
   deleteCashCategory,
 } from '@/lib/api/investmentFlow'
+import { formatRupiah } from '@/lib/utils/currencyFormatter'
 
 function buildTree(flatNodes) {
   const nodeMap = new Map()
@@ -185,6 +187,27 @@ export function useInvestmentFlow() {
     [loadTree]
   )
 
+  const handleClosePosition = useCallback(
+    async (id, payload) => {
+      try {
+        const result = await closePosition(id, payload)
+        const pnl = result?.realized_pnl ?? 0
+        const sign = pnl >= 0 ? '+' : '−'
+        toast.success(
+          `${result?.node_name ?? 'Position'} closed — proceeds ${formatRupiah(
+            result?.proceeds ?? 0
+          )}, realized P&L ${sign}${formatRupiah(Math.abs(pnl))}`
+        )
+        await loadTree()
+        return true
+      } catch (err) {
+        toast.error(err.message || 'Failed to close position')
+        return false
+      }
+    },
+    [loadTree]
+  )
+
   const handleMoveNode = useCallback(
     async (id, newParentId) => {
       try {
@@ -285,6 +308,7 @@ export function useInvestmentFlow() {
     createNode: handleCreateNode,
     updateNode: handleUpdateNode,
     deleteNode: handleDeleteNode,
+    closePosition: handleClosePosition,
     moveNode: handleMoveNode,
     updateUninvestedCash: handleUpdateUninvestedCash,
     saveHighlights: handleSaveHighlights,
