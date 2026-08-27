@@ -5,6 +5,7 @@ import dagre from '@dagrejs/dagre'
 import { ReactFlow, Background, Controls, Handle, Position } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import {
+  CircleDollarSign,
   FolderTree,
   Layers,
   Palette,
@@ -94,6 +95,7 @@ function NodeColorPicker({ nodeId }) {
 import CategoryNodeForm from './CategoryNodeForm'
 import TickerNodeForm from './TickerNodeForm'
 import DeleteNodeDialog from './DeleteNodeDialog'
+import ClosePositionDialog from './ClosePositionDialog'
 import UninvestedCashCategoryForm from './UninvestedCashCategoryForm'
 
 const NODE_WIDTH = 240
@@ -284,9 +286,12 @@ function CategoryNodeCard({ data }) {
 }
 
 function TickerNodeCard({ data }) {
-  const { node, onAddTicker, onEdit, onDelete } = data
+  const { node, onAddTicker, onEdit, onDelete, onClosePosition } = data
   const { hideAmounts, highlights } = useContext(FlowDisplayContext)
   const highlightColor = highlights[node.id] ?? null
+  // A ticker keeps its own nominal only while it is a leaf position; parents
+  // have it cleared to null, so this doubles as the "is a closable position" test.
+  const canClose = node.nominal != null
 
   return (
     <div
@@ -340,6 +345,17 @@ function TickerNodeCard({ data }) {
         >
           <Pencil className="size-3.5" aria-hidden="true" />
         </Button>
+        {canClose && onClosePosition && (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={`Close position ${node.name}`}
+            id={`treeViewClosePositionBtn_${node.id}_investmentFlowPage`}
+            onClick={() => onClosePosition(node)}
+          >
+            <CircleDollarSign className="size-3.5 text-emerald-500" aria-hidden="true" />
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon-sm"
@@ -469,6 +485,7 @@ export default function InvestmentFlowTreeView({
   createNode,
   updateNode,
   deleteNode,
+  closePosition,
   uninvestedCash,
   uninvestedCashPct,
   onEditUninvestedCash,
@@ -493,6 +510,7 @@ export default function InvestmentFlowTreeView({
     node: null,
   })
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [closeTarget, setCloseTarget] = useState(null)
   const [cashCategoryFormState, setCashCategoryFormState] = useState({
     open: false,
     mode: 'create',
@@ -616,6 +634,7 @@ export default function InvestmentFlowTreeView({
           onAddTicker: openAddTicker,
           onEdit: openEdit,
           onDelete: setDeleteTarget,
+          onClosePosition: setCloseTarget,
         },
       })),
     ]
@@ -713,6 +732,14 @@ export default function InvestmentFlowTreeView({
           onOpenChange={(open) => !open && setDeleteTarget(null)}
           node={deleteTargetWithChildren}
           onConfirm={deleteNode}
+        />
+
+        <ClosePositionDialog
+          open={Boolean(closeTarget)}
+          onOpenChange={(open) => !open && setCloseTarget(null)}
+          node={closeTarget}
+          cashCategories={cashCategories}
+          onConfirm={closePosition}
         />
 
         <UninvestedCashCategoryForm

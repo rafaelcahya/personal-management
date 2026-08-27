@@ -10,6 +10,7 @@ export default function InvestmentTree({
   onAddTicker,
   onEdit,
   onDelete,
+  onClosePosition,
   onMove,
   hideAmounts = false,
   highlights = {},
@@ -39,6 +40,7 @@ export default function InvestmentTree({
           onAddTicker={onAddTicker}
           onEdit={onEdit}
           onDelete={onDelete}
+          onClosePosition={onClosePosition}
           onMove={onMove}
           draggedId={draggedId}
           onDragStart={setDraggedId}
