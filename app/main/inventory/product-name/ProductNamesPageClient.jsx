@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import ProductNamesTable from './list/ProductNamesTable'
 import ProductNameTableHeader from './list/component/ProductNameTableHeader'
 import AddProductName from './AddProductName'
@@ -44,14 +45,22 @@ function NameSearchInput({ searchQuery, setSearchQuery }) {
 }
 
 export default function ProductNamesPageClient() {
+  const searchParams = useSearchParams()
   const [names, setNames] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [filterStatus, setFilterStatus] = useState(null)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') ?? '')
   const [sortOrder, setSortOrder] = useState('name_asc')
+
+  // Keep search in sync when arriving via a deep-link (?search=…). A same-pathname
+  // navigation reuses this component, so the initial useState value won't re-run.
+  const urlSearch = searchParams.get('search') ?? ''
+  useEffect(() => {
+    setSearchQuery(urlSearch)
+  }, [urlSearch])
 
   const totalPages = Math.ceil(total / LIMIT)
   const hasActiveFilters = !!searchQuery || !!filterStatus

@@ -14,6 +14,13 @@ export const TEST_IDS = {
     running_dashboard_nav: 'runningDashboardNav_sidebar',
   },
 
+  navbar: {
+    command_palette_trigger: 'commandPaletteTrigger_navbar',
+    command_palette_input: 'commandPaletteInput_navbar',
+    command_palette_list: 'commandPaletteList_navbar',
+    command_palette_empty: 'commandPaletteEmpty_navbar',
+  },
+
   shared: {
     submit_btn: 'submit-btn',
     cancel_btn: 'cancel-btn',
