@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Button from '@/components/base/Button/Button'
 import { SidebarHeader, SidebarContent, SidebarFooter } from '@/components/base/Sidebar/Sidebar.jsx'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
   Package,
@@ -17,11 +17,8 @@ import {
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
-  Menu,
   X,
   Package2,
-  LogOut,
-  Loader2,
   Activity,
   BarChart2,
   BrainCircuit,
@@ -32,12 +29,11 @@ import {
   MapPin,
   Microscope,
   GitBranch,
-  ShieldCheck,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { toast } from 'sonner'
 import packageJson from '@/package.json'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { useNavShell } from './NavShellProvider'
 
 const INVENTORY_ITEMS = [
   {
@@ -283,113 +279,13 @@ function SidebarNav({ collapsed, onNavClick }) {
   )
 }
 
-function UserSection({ collapsed, user, mobile = false }) {
-  const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const ref = useRef(null)
-  const router = useRouter()
-
-  useEffect(() => {
-    function handler(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
-
-  const handleLogout = async () => {
-    setLoading(true)
-    sessionStorage.setItem('intentional_logout', 'true')
-    try {
-      const res = await fetch('/api/auth/logout', { method: 'POST' })
-      if (!res.ok) throw new Error()
-      router.push('/login')
-      router.refresh()
-    } catch {
-      sessionStorage.removeItem('intentional_logout')
-      toast.error("Couldn't sign you out — please try again.")
-      setLoading(false)
-    }
-  }
-
-  const name = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'
-  const email = user?.email || ''
-  const initials = name.charAt(0).toUpperCase()
-
-  return (
-    <div className="relative" ref={ref}>
-      {open && (
-        <div className="absolute bottom-full left-0 right-0 mb-1 bg-popover border border-border rounded-xl shadow-lg overflow-hidden z-10">
-          {!collapsed && (
-            <div className="px-3 py-2.5 border-b border-border">
-              <p className="text-sm font-medium text-foreground truncate text-left w-fit">{name}</p>
-              <p
-                id={mobile ? 'userMenuEmail_mobile' : 'userMenuEmail_landingPage'}
-                className="text-xs text-muted-foreground truncate text-left w-fit"
-              >
-                {email}
-              </p>
-            </div>
-          )}
-          <Link
-            id={mobile ? 'securityLink_mobile' : 'securityLink_sidebar'}
-            href="/main/security"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-foreground hover:bg-accent rounded-none w-full"
-          >
-            <ShieldCheck className="size-4 text-muted-foreground shrink-0" aria-hidden="true" />
-            Security
-          </Link>
-          <Button
-            id={mobile ? 'userMenuSignOut_mobile' : 'logoutBtn'}
-            variant="ghost"
-            fullWidth
-            onClick={handleLogout}
-            disabled={loading}
-            aria-label="Sign out from application"
-            className="justify-start gap-2.5 px-3 py-5 text-foreground hover:bg-accent"
-          >
-            {loading ? (
-              <Loader2 className="size-4 animate-spin text-muted-foreground shrink-0" />
-            ) : (
-              <LogOut className="size-4 text-muted-foreground shrink-0" />
-            )}
-            {loading ? 'Signing out...' : 'Sign out'}
-          </Button>
-        </div>
-      )}
-      <Button
-        id={mobile ? 'userMenuTrigger_mobile' : 'userMenuTrigger_landingPage'}
-        variant="ghost"
-        fullWidth
-        aria-label="User menu"
-        onClick={() => setOpen(!open)}
-        className={cn(
-          'justify-start gap-2.5 p-0 hover:bg-transparent active:bg-transparent',
-          collapsed && 'justify-center'
-        )}
-      >
-        <div className="size-8 rounded-full bg-secondary flex items-center justify-center shrink-0 text-primary font-semibold text-sm">
-          {initials}
-        </div>
-        {!collapsed && (
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate text-left w-fit">{name}</p>
-            <p className="text-xs text-muted-foreground truncate text-left w-fit">{email}</p>
-          </div>
-        )}
-      </Button>
-    </div>
-  )
-}
-
 const EDGE_THRESHOLD = 30
 const SWIPE_MIN_X = 60
 const SWIPE_MAX_Y = 80
 
-export default function Sidebar({ user }) {
+export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const { mobileOpen, setMobileOpen } = useNavShell()
   const pathname = usePathname()
 
   useEffect(() => {
@@ -485,7 +381,6 @@ export default function Sidebar({ user }) {
               v{packageJson.version}
             </p>
           )}
-          <UserSection collapsed={collapsed} user={user} />
         </SidebarFooter>
 
         {/* Collapse toggle */}
@@ -506,27 +401,7 @@ export default function Sidebar({ user }) {
         </Button>
       </aside>
 
-      {/* ── Mobile top bar ── */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-card border-b border-border flex items-center px-4 gap-3">
-        <Button
-          id="mobileMenuTrigger"
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => setMobileOpen(true)}
-          aria-label="Open navigation menu"
-          className="rounded-lg hover:bg-accent"
-        >
-          <Menu className="size-5 text-foreground" />
-        </Button>
-        <div className="flex items-center gap-2">
-          <div className="size-6 bg-primary rounded-md flex items-center justify-center">
-            <Package2 className="size-3.5 text-primary-foreground" />
-          </div>
-          <span className="font-semibold text-foreground text-sm">Personal Management</span>
-        </div>
-      </div>
-
-      {/* ── Mobile drawer ── */}
+      {/* ── Mobile drawer (opened from Navbar hamburger) ── */}
       {mobileOpen && (
         <>
           <div
@@ -561,7 +436,6 @@ export default function Sidebar({ user }) {
               >
                 v{packageJson.version}
               </p>
-              <UserSection collapsed={false} user={user} mobile={true} />
             </SidebarFooter>
           </aside>
         </>
