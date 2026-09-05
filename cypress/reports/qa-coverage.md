@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-08-13 (issue #783 — investment flow highlights)
-**Branch:** release/v1.30
+**Last Updated:** 2026-09-05 (issue #801 — navbar + notification center)
+**Branch:** feat/issue-801-navbar-notifications
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,598  | 51%  |
+| API       | 1,632  | 51%  |
 | UI        | 1,551  | 49%  |
-| **Total** | **3,149** | 100% |
+| **Total** | **3,183** | 100% |
 
 ---
 
@@ -23,9 +23,10 @@
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 474   | 695   | 1,169 |
+| Notifications        | 34    | 0     | 34    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,598** | **1,551** | **3,149** |
+| **Total**            | **1,632** | **1,551** | **3,183** |
 
 ---
 
@@ -333,6 +334,20 @@
 
 ---
 
+### Notifications
+
+| Feature                 | API | UI | Total |
+| ----------------------- | --- | -- | ----- |
+| List + Pagination/Filter | 15  | 0  | 15    |
+| Unread Count            | 4   | 0  | 4     |
+| Mark Read (+ IDOR/validation) | 10 | 0 | 10   |
+| Mark All Read           | 5   | 0  | 5     |
+| **Subtotal**            | **34** | **0** | **34** |
+
+**Notifications Total — API: 34 | UI: 0 | Total: 34**
+
+---
+
 ### Landing Page
 
 | Feature        | API | UI | Total |
@@ -359,6 +374,7 @@
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 474   | 695   | 1,169 |
+| Notifications        | 34    | 0     | 34    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,598** | **1,551** | **3,149** |
+| **Total**            | **1,632** | **1,551** | **3,183** |

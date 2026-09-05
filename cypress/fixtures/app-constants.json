@@ -230,6 +230,12 @@
       "uninvested_cash": "/api/investment-flow/v1/uninvested-cash",
       "uninvested_cash_categories": "/api/investment-flow/v1/uninvested-cash/categories",
       "highlights": "/api/investment-flow/v1/highlights"
+    },
+    "notifications": {
+      "list": "/api/notifications/v1",
+      "unread_count": "/api/notifications/v1/unread-count",
+      "read": "/api/notifications/v1/read",
+      "read_all": "/api/notifications/v1/read-all"
     }
   },
   "test_ids": {
