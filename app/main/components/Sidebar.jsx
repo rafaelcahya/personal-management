@@ -5,115 +5,12 @@ import Button from '@/components/base/Button/Button'
 import { SidebarHeader, SidebarContent, SidebarFooter } from '@/components/base/Sidebar/Sidebar.jsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
-  LayoutDashboard,
-  Package,
-  Tag,
-  Type,
-  History,
-  TrendingUp,
-  Receipt,
-  Calendar,
-  Settings,
-  PanelLeftClose,
-  PanelLeftOpen,
-  X,
-  Package2,
-  Activity,
-  BarChart2,
-  BrainCircuit,
-  Trophy,
-  Timer,
-  DollarSign,
-  ChevronDown,
-  MapPin,
-  Microscope,
-  GitBranch,
-} from 'lucide-react'
+import { PanelLeftClose, PanelLeftOpen, X, Package2, DollarSign, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import packageJson from '@/package.json'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useNavShell } from './NavShellProvider'
-
-const INVENTORY_ITEMS = [
-  {
-    id: 'inventoryDashboardNav_sidebar',
-    name: 'Dashboard',
-    tooltip: 'Inventory Dashboard',
-    href: '/main/inventory',
-    icon: LayoutDashboard,
-  },
-  { name: 'Product List', href: '/main/inventory/product-list', icon: Package },
-  { name: 'Product Brand', href: '/main/inventory/product-brand', icon: Tag },
-  { name: 'Product Name', href: '/main/inventory/product-name', icon: Type },
-  { name: 'Product History', href: '/main/inventory/product-history', icon: History },
-]
-
-const TRADING_ITEMS = [
-  {
-    id: 'tradingDashboardNav_sidebar',
-    name: 'Dashboard',
-    tooltip: 'Trading Dashboard',
-    href: '/main/trading/dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    id: 'tradingValuationNav_sidebar',
-    name: 'Valuation',
-    tooltip: 'Stock Valuation',
-    href: '/main/trading/valuation',
-    icon: BarChart2,
-  },
-  { name: 'Trades', href: '/main/trading/trade', icon: TrendingUp },
-  { name: 'Market Events', href: '/main/trading/event', icon: Calendar },
-  { name: 'Research', href: '/main/trading/research', icon: Microscope },
-  { name: 'Fees', href: '/main/trading/fee', icon: Receipt },
-  { name: 'Investment Flow', href: '/main/trading/investment-flow', icon: GitBranch },
-  { name: 'Settings', href: '/main/trading/settings', icon: Settings },
-]
-
-const CURRENCY_SUBITEMS = [
-  {
-    id: 'currencyDashboardNav_sidebar',
-    name: 'Dashboard',
-    href: '/main/trading/currency',
-    exact: true,
-    icon: LayoutDashboard,
-  },
-  {
-    id: 'currencyHoldingsNav_sidebar',
-    name: 'Holdings',
-    href: '/main/trading/currency/holdings',
-    icon: BarChart2,
-  },
-]
-
-const RUNNING_ITEMS = [
-  {
-    id: 'runningDashboardNav_sidebar',
-    name: 'Dashboard',
-    tooltip: 'Running Dashboard',
-    href: '/main/running/dashboard',
-    icon: LayoutDashboard,
-  },
-  { name: 'Activities', href: '/main/running/activities', icon: Activity },
-  { name: 'Race Log', href: '/main/running/race-log', icon: Trophy },
-  { name: 'Analytics', href: '/main/running/analytics', icon: BarChart2 },
-  { name: 'AI Coach', href: '/main/running/ai', icon: BrainCircuit },
-  {
-    id: 'runCalcNav_sidebar',
-    name: 'Run Calc',
-    href: '/main/running/run-calculator',
-    icon: Timer,
-  },
-  {
-    id: 'routeBuilderNav_sidebar',
-    name: 'Routes',
-    href: '/main/running/route-builder',
-    icon: MapPin,
-  },
-  { name: 'Settings', href: '/main/running/settings', icon: Settings },
-]
+import { INVENTORY_ITEMS, TRADING_ITEMS, CURRENCY_SUBITEMS, RUNNING_ITEMS } from '../lib/navItems'
 
 function NavItem({ item, collapsed, onClick }) {
   const pathname = usePathname()
