@@ -13,13 +13,12 @@ import {
   AccordionContent,
 } from '@/components/base/Accordion/Accordion'
 
-const DISTANCES = ['1K', '1 mile', '5K', '5 mile', '10K', '15K', 'Half-Marathon']
+const DISTANCES = ['1K', '1 mile', '5K', '10K', '15K', 'Half-Marathon']
 
 const DISTANCE_SLUGS = {
   '1K': '1k',
   '1 mile': '1mile',
   '5K': '5k',
-  '5 mile': '5mile',
   '10K': '10k',
   '15K': '15k',
   'Half-Marathon': 'halfMarathon',
