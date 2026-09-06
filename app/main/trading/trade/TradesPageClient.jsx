@@ -19,7 +19,7 @@ import Card, { CardContent, CardFooter } from '@/components/base/Card/Card'
 
 const DEFAULT_SORT_KEY = 'sell_date'
 const DEFAULT_SORT_DIR = 'desc'
-const DEBOUNCE_MS = 300
+const DEBOUNCE_MS = 400
 
 function sortTrades(trades, key, dir) {
   return [...trades].sort((a, b) => {

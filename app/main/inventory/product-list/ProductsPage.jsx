@@ -69,7 +69,7 @@ export default function ProductsPageClient() {
   const [summaryLoading, setSummaryLoading] = useState(true)
   const [restockPredictions, setRestockPredictions] = useState({})
 
-  const debouncedSearch = useDebounce(search, 300)
+  const debouncedSearch = useDebounce(search, 400)
 
   // initialised ref so URL params run only once
   const initialised = useRef(false)

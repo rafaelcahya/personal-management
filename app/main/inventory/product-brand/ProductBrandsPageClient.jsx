@@ -13,6 +13,7 @@ import Button from '@/components/base/Button/Button'
 import { Search, X, Tag, AlertCircle } from 'lucide-react'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import Card, { CardContent } from '@/components/base/Card/Card'
+import { useDebounce } from '@/hooks/useDebounce'
 
 const LIMIT = 15
 
@@ -54,6 +55,7 @@ export default function ProductBrandsPageClient() {
   const [filterStatus, setFilterStatus] = useState(null)
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') ?? '')
   const [sortOrder, setSortOrder] = useState('name_asc')
+  const debouncedSearch = useDebounce(searchQuery, 400)
 
   // Keep search in sync when arriving via a deep-link (?search=…). A same-pathname
   // navigation reuses this component, so the initial useState value won't re-run.
@@ -67,7 +69,7 @@ export default function ProductBrandsPageClient() {
   // Reset to page 1 when filters/sort/search change
   useEffect(() => {
     setPage(1)
-  }, [searchQuery, filterStatus, sortOrder])
+  }, [debouncedSearch, filterStatus, sortOrder])
 
   useEffect(() => {
     let cancelled = false
@@ -77,7 +79,7 @@ export default function ProductBrandsPageClient() {
     fetchProductBrand({
       page,
       limit: LIMIT,
-      search: searchQuery || undefined,
+      search: debouncedSearch || undefined,
       status: filterStatus || undefined,
       sort: sortOrder,
     })
@@ -97,7 +99,7 @@ export default function ProductBrandsPageClient() {
     return () => {
       cancelled = true
     }
-  }, [page, searchQuery, filterStatus, sortOrder])
+  }, [page, debouncedSearch, filterStatus, sortOrder])
 
   const handleRefresh = () => setPage((p) => p)
 
