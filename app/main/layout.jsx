@@ -2,13 +2,14 @@ import { requireAuth } from '@/lib/auth/utils'
 import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
 import { NavShellProvider } from './components/NavShellProvider'
+import { UserProfileProvider } from './components/UserProfileProvider'
 import NextTopLoader from 'nextjs-toploader'
 
 export default async function MainLayout({ children }) {
   const user = await requireAuth()
 
   return (
-    <>
+    <UserProfileProvider>
       <NextTopLoader color="var(--color-violet-600)" height={3} showSpinner={false} />
       <NavShellProvider>
         <div className="flex h-screen bg-slate-50 overflow-hidden">
@@ -19,6 +20,6 @@ export default async function MainLayout({ children }) {
           </div>
         </div>
       </NavShellProvider>
-    </>
+    </UserProfileProvider>
   )
 }

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { LogOut, Loader2, ShieldCheck } from 'lucide-react'
+import { LogOut, Loader2, ShieldCheck, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/base/Avatar/Avatar'
 import {
@@ -13,16 +13,25 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/base/DropdownMenu/DropdownMenu'
+import { useUserProfile } from '../UserProfileProvider'
 
 export default function UserMenu({ user }) {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { profile } = useUserProfile()
 
-  const name = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'
-  const fullName = user?.user_metadata?.full_name || name
+  // Prefer the editable profile (nickname/username) so topbar updates the moment Settings saves.
+  const displayName =
+    profile?.nickname ||
+    profile?.username ||
+    user?.user_metadata?.full_name ||
+    user?.email?.split('@')[0] ||
+    'User'
+  const name = displayName.split(' ')[0]
+  const fullName = displayName
   const email = user?.email || ''
   const initials = name.charAt(0).toUpperCase()
-  const avatarUrl = user?.user_metadata?.avatar_url
+  const avatarUrl = profile?.avatar || user?.user_metadata?.avatar_url
 
   const handleLogout = async () => {
     setLoading(true)
@@ -71,6 +80,16 @@ export default function UserMenu({ user }) {
             {email}
           </p>
         </div>
+        <DropdownMenuItem asDiv className="p-0">
+          <Link
+            id="settingsLink_navbar"
+            href="/main/settings"
+            className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-foreground"
+          >
+            <Settings className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            Settings
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asDiv className="p-0">
           <Link
             id="securityLink_navbar"
