@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getActivities } from '@/lib/services/running/activities/getActivities'
 import { createActivity } from '@/lib/services/running/activities/createActivity'
 import { createActivitySchema } from '@/schemas/runningManualEntry'
+import { invalidateRunningAnalytics } from '@/lib/services/running/analyticsCache'
 
 const MAX_LIMIT = 100
 const DEFAULT_LIMIT = 20
@@ -91,6 +92,8 @@ export async function POST(request) {
         { status: 409 }
       )
     }
+
+    invalidateRunningAnalytics(user.id)
 
     return NextResponse.json({ data: result.data }, { status: 201 })
   } catch (err) {

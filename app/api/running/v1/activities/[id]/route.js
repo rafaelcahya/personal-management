@@ -6,6 +6,7 @@ import { computeAndSaveDerivedMetrics } from '@/lib/services/running/metrics'
 import { computeGapSecPerKm } from '@/lib/services/running/activities/getGapPace'
 import { computeBurnBar } from '@/lib/services/running/activities/getBurnBar'
 import { estimateFuelBurn } from '@/lib/services/running/utils/estimateFuelBurn'
+import { invalidateRunningAnalytics } from '@/lib/services/running/analyticsCache'
 
 export async function GET(_request, { params }) {
   try {
@@ -354,6 +355,8 @@ export async function PATCH(request, { params }) {
 
     if (updateError) throw updateError
 
+    invalidateRunningAnalytics(user.id)
+
     return NextResponse.json({ data: updated }, { status: 200 })
   } catch (err) {
     console.error('[running/activities/:id PATCH]', err)
@@ -405,6 +408,8 @@ export async function DELETE(_request, { params }) {
       .eq('user_id', user.id)
 
     if (deleteError) throw deleteError
+
+    invalidateRunningAnalytics(user.id)
 
     return new Response(null, { status: 204 })
   } catch (err) {

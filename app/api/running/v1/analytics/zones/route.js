@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getZoneAnalytics } from '@/lib/services/running/analytics/getZoneAnalytics'
+import { getCachedZoneAnalytics } from '@/lib/services/running/analyticsCache'
 import { analyticsQuerySchema } from '@/schemas/runningAnalyticsQuery'
 
 export async function GET(request) {
@@ -39,8 +39,7 @@ export async function GET(request) {
 
     const { range, activity_type, start_date, end_date, tz_offset } = parsed.data
     const tzOffsetMs = (tz_offset ?? 0) * 60 * 1000
-    const data = await getZoneAnalytics(
-      supabase,
+    const data = await getCachedZoneAnalytics(
       user.id,
       range,
       activity_type,
