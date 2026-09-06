@@ -9,7 +9,7 @@ import { COMMAND_GROUPS } from '../lib/navItems'
 import { fuzzyScore } from '../lib/fuzzyMatch'
 import { searchEntities } from '../lib/entitySearch'
 
-const ENTITY_DEBOUNCE_MS = 250
+const ENTITY_DEBOUNCE_MS = 400
 const FIELD_STYLING =
   'text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500'
 
