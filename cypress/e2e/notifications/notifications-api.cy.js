@@ -124,6 +124,8 @@ describe('Notifications API — GET list response shape (authenticated)', () => 
       'anomaly',
       'race_reminder',
       'product_update',
+      'pr_achieved',
+      'gear_mileage',
     ]
     cy.getNotifications().then((res) => {
       const { items } = res.body.data

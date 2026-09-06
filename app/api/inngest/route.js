@@ -7,6 +7,7 @@ import { weeklyReview } from '@/lib/inngest/functions/weeklyReview'
 import { dailyInsight } from '@/lib/inngest/functions/dailyInsight'
 import { fridayPrepNotification } from '@/lib/inngest/functions/fridayPrepNotification'
 import { raceReminderNotification } from '@/lib/inngest/functions/raceReminderNotification'
+import { gearMileageNotification } from '@/lib/inngest/functions/gearMileageNotification'
 import { stravaFetchStreams } from '@/lib/inngest/functions/stravaFetchStreams'
 import { stravaBackfill } from '@/lib/inngest/functions/stravaBackfill'
 import { stravaHandleWebhookEvent } from '@/lib/inngest/functions/stravaHandleWebhookEvent'
@@ -22,6 +23,7 @@ export const { GET, POST, PUT } = serve({
     dailyInsight,
     fridayPrepNotification,
     raceReminderNotification,
+    gearMileageNotification,
     stravaFetchStreams,
     stravaBackfill,
     stravaHandleWebhookEvent,
