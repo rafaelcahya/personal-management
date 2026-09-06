@@ -16,17 +16,12 @@ export async function GET() {
       )
     }
 
-    const { data, error } = await supabase
-      .from('users')
-      .select('id, username, nickname, avatar')
-      .eq('id', user.id)
-      .single()
-
-    if (error) throw error
-
-    if (data.avatar) {
-      const { data: avatarData } = supabase.storage.from('avatar').getPublicUrl(data.avatar)
-      data.avatar = avatarData.publicUrl
+    const meta = user.user_metadata || {}
+    const data = {
+      id: user.id,
+      username: meta.username ?? '',
+      nickname: meta.nickname ?? meta.full_name ?? '',
+      avatar: meta.avatar_url ?? '',
     }
 
     return NextResponse.json({ data: { user: data }, message: 'User fetched successfully' })
@@ -56,16 +51,18 @@ export async function PUT(req) {
     const body = await req.json()
     const { username, nickname, avatar } = body
 
-    const updateData = {}
-    if (username) updateData.username = username
-    if (nickname) updateData.nickname = nickname
-    if (avatar) updateData.avatar = avatar
+    // Store the profile on the Supabase Auth user so it's always tied to the logged-in
+    // account; avatar is kept as a public URL under avatar_url (what the navbar reads).
+    const metadata = {}
+    if (username !== undefined) metadata.username = username
+    if (nickname !== undefined) metadata.nickname = nickname
+    if (avatar !== undefined) metadata.avatar_url = avatar
 
-    const { error } = await supabase.from('users').update(updateData).eq('id', user.id)
+    const { error } = await supabase.auth.updateUser({ data: metadata })
 
     if (error) throw error
 
-    return NextResponse.json({ data: { user: updateData }, message: 'User updated successfully' })
+    return NextResponse.json({ data: { user: metadata }, message: 'User updated successfully' })
   } catch {
     return NextResponse.json(
       { error: 'INTERNAL_ERROR', message: 'Something went wrong' },
